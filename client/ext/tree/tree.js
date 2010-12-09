@@ -147,7 +147,7 @@ return ext.register("ext/tree/tree", {
                 if (!trFiles.$hasLoadStatus(parent, "loaded"))
                     break;
                 name    = names.pop();
-                console.log("CHECKING", parent, name);
+                // console.log("CHECKING", parent, name);
                 node    = parent.selectSingleNode("node()[@name=\"" + name + "\"]");
                 if (!node) {
                     var path = parent.getAttribute("path") + "/" + name,
@@ -155,7 +155,7 @@ return ext.register("ext/tree/tree", {
                         
                     if (names.length > 0 || e.type == "folder")
                         xmlNode = "<folder type='folder' " + " path='" + path + "' name='" + name + "' />";
-                    console.log("INSERTING", xmlNode, parent);
+                    // console.log("INSERTING", xmlNode, parent);
                     trFiles.add(xmlNode, parent);
                     break;   
                 }

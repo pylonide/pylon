@@ -171,9 +171,7 @@ VERSION:'3.0beta',
     OFFLINE : 4,
 
     
-    debug         : true,
-    debugType     : "Memory",
-    debugFilter   : "!teleport",
+    debug         : false,
     
 
     includeStack  : [],
@@ -545,15 +543,6 @@ VERSION:'3.0beta',
     },
 
     
-    /**
-     * Restarts the application.
-     */
-    reboot : function(){
-        apf.console.info("Restarting application...");
-
-        location.href = location.href;
-    },
-    
 
     /**
      * Extends an object with one or more other objects by copying all their
@@ -654,9 +643,6 @@ VERSION:'3.0beta',
         this.host     = location.hostname && sHref.replace(/(\/\/[^\/]*)\/.*$/, "$1");
         this.hostPath = sHref.replace(/\/[^\/]*$/, "") + "/";
 
-        
-        apf.console.info("Starting Ajax.org Platform Application...");
-        apf.console.warn("Debug build of Ajax.org Platform " + (apf.VERSION ? "version " + apf.VERSION : ""));
         
 
         //mozilla root detection
@@ -832,23 +818,11 @@ VERSION:'3.0beta',
         // for speed, we check for the most common  case first
         if (arguments.length == 1) {
             
-            if (!classRef) {
-                throw new Error(apf.formatErrorString(0, this,
-                    "Implementing class",
-                    "Could not implement from '" + classRef[i] + "'", this));
-            }
-            
             classRef.call(this);//classRef
         }
         else {
             for (var a, i = 0, l = arguments.length; i < l; i++) {
                 a = arguments[i];
-                
-                if (!a) {
-                    throw new Error(apf.formatErrorString(0, this,
-                        "Implementing class",
-                        "Could not implement from '" + arguments[i] + "'", this));
-                }
                 
                 arguments[i].call(this);//classRef
             }
@@ -923,196 +897,6 @@ VERSION:'3.0beta',
      */
     console : {
         
-        /**
-         * @private
-         */
-        data : {
-            time  : {
-                messages : {}
-            },
-
-            log   : {
-                messages : {}
-            },
-            
-            custom   : {
-                messages : {}
-            },
-
-            warn  : {
-                messages : {}
-            },
-
-            error : {
-                messages : {}
-            },
-            
-            repeat : {
-                messages : {}
-            }
-        },
-
-        /**
-         * @private
-         */
-        toggle : function(node, id){
-            var sPath = apf.$debugwin ? apf.$debugwin.resPath : apf.basePath + "core/debug/resources/";
-            if (node.style.display == "block") {
-                node.style.display = "none";
-                node.parentNode.style.backgroundImage = "url(" + sPath + "splus.gif)";
-                node.innerHTML = "";
-            }
-            else {
-                node.style.display = "block";
-                node.parentNode.style.backgroundImage = "url(" + sPath + "smin.gif)";
-                node.innerHTML = this.cache[id]
-                    .replace(/\&/g, "&amp;")
-                    .replace(/\t/g,"&nbsp;&nbsp;&nbsp;")
-                    .replace(/ /g,"&nbsp;")
-                    .replace(/\</g, "&lt;")
-                    .replace(/\n/g, "<br />");
-
-                var p  = node.parentNode.parentNode.parentNode,
-                    el = node.parentNode.parentNode;
-                if(p.scrollTop + p.offsetHeight < el.offsetTop + el.offsetHeight)
-                    p.scrollTop = el.offsetTop + el.offsetHeight - p.offsetHeight;
-            }
-        },
-
-        cache : [],
-        history : [],
-        typeLut : {time: "log", repeat: "log"},
-        $lastmsg : "",
-        $lastmsgcount : 0,
-
-        $detectSameMessage : function(){
-            apf.console.$lastmsg = "";
-            if (apf.console.$lastmsgcount) {
-                var msg = apf.console.$lastmsgcount + " times the same message";
-                apf.console.$lastmsgcount = 0;
-                apf.console.write(msg, "repeat");
-                clearTimeout(apf.console.$timer);
-            }
-        },
-        
-        teleportList : [],
-        teleport : function(log){
-            if (this.teleportModel)
-                log.setXml(this.teleportModel.data);
-            
-            this.teleportList.push(log);
-        },
-        setTeleportModel : function(mdl){
-            if (this.teleportModel == mdl)
-                return;
-            
-            this.teleportModel = mdl;
-            var xml = apf.getXml("<teleport />");
-            for (var i = 0; i < this.teleportList.length; i++) {
-                this.teleportList[i].setXml(xml);
-            }
-            
-            mdl.load(xml);
-        },
-
-        /**
-         * @private
-         * @event debug Fires when a message is sent to the console.
-         *   object:
-         *      {String} message the content of the message.
-         */
-        write : function(msg, type, subtype, data, forceWin, nodate){
-            clearTimeout(this.$timer);
-            if (msg == this.$lastmsg) {
-                this.$lastmsgcount++;
-                this.$timer = $setTimeout(this.$detectSameMessage, 1000);
-                return;
-            }
-
-            this.$detectSameMessage();
-            this.$lastmsg = msg;
-            this.$timer = $setTimeout(this.$detectSameMessage, 1000);
-            
-            //if (!apf.debug) return;
-            if (!Number.prototype.toPrettyDigit) {
-                Number.prototype.toPrettyDigit = function() {
-                    var n = this.toString();
-                    return (n.length == 1) ? "0" + n : n;
-                }
-            }
-
-            var dt   = new Date(),
-                ms   = String(dt.getMilliseconds());
-            while (ms.length < 3)
-                ms += "0";
-            var date = dt.getHours().toPrettyDigit()   + ":"
-                     + dt.getMinutes().toPrettyDigit() + ":"
-                     + dt.getSeconds().toPrettyDigit() + "." + ms;
-
-            msg = (!nodate ? "<span class='console_date'>[" + date + "]</span> " : "")
-                    + String(msg)
-                        .replace(/(<[^>]+>)| /g, function(m, tag, sp){
-                            if (tag) return tag;
-                            return "&nbsp;";
-                        })
-                        //.replace(/\n/g, "\n<br />")
-                        .replace(/\t/g,"&nbsp;&nbsp;&nbsp;");
-            var sPath = apf.$debugwin && apf.$debugwin.resPath
-                ? apf.$debugwin.resPath
-                : apf.basePath + "core/debug/resources/";
-
-            if (data) {
-                msg += "<blockquote style='margin:2px 0 0 0;"
-                    +  "background:url(" + sPath + "splus.gif) no-repeat 2px 3px'>"
-                    +  "<strong style='width:120px;cursor:default;display:block;padding:0 0 0 17px' "
-                    +  "onmousedown='(self.apf || window.opener.apf).console.toggle(this.nextSibling, "
-                    +  (this.cache.push(data) - 1) + ")'>More information"
-                    +  "</strong><div style='display:none;background-color:#EEEEEE;"
-                    +  "padding:3px 3px 20px 3px;overflow:auto;max-height:200px'>"
-                    +  "</div></blockquote>";
-            }
-
-            msg = "<div class='console_line console_" 
-                + type + "' >" + msg + "</div>"; //\n<br style='line-height:0'/>
-
-            //deprecated
-            if (!subtype)
-                subtype = "default";
-
-            this.history.push([this.typeLut[type] || type, msg]);
-
-            if (this.win && !this.win.closed)
-                this.showWindow(msg);
-
-            //if (apf.debugFilter.match(new RegExp("!" + subtype + "(\||$)", "i")))
-            //    return;
-
-            this.debugInfo.push(msg);
-
-            if (self.console && (!document.all || apf.config.debug)) {
-                console[type == "warn" ? "warn" : 
-                    (type == "error" ? "error" : "log")]
-                        (apf.html_entity_decode(msg.replace(/<[^>]*>/g, "")));
-            }
-
-            if (apf.dispatchEvent)
-                apf.dispatchEvent("debug", {message: msg, type: type});
-        },
-        
-        clear : function(){
-            this.history = [];
-        },
-        
-        getAll : function(err, wrn, log) {
-            var hash = {"error": err, "warn": wrn, "log": log, "custom": 1};
-            var out = [];
-            for (var i = 0, l = this.history.length; i < l; i++) {
-                if (hash[this.history[i][0]])
-                    out.push(this.history[i][1]);
-            }
-            return out.join("");
-        },
-        
 
         /**
          * Writes a message to the console.
@@ -1121,8 +905,6 @@ VERSION:'3.0beta',
          * @param {String} data     extra data that might help in debugging.
          */
         debug : function(msg, subtype, data){
-            
-            this.write(msg, "time", subtype, data);
             
         },
 
@@ -1134,8 +916,6 @@ VERSION:'3.0beta',
          */
         time : function(msg, subtype, data){
             
-            this.write(msg, "time", subtype, data);
-            
         },
 
         /**
@@ -1145,8 +925,6 @@ VERSION:'3.0beta',
          * @param {String} data     extra data that might help in debugging.
          */
         log : function(msg, subtype, data){
-            
-            this.write(apf.htmlentities(msg).replace(/\n/g, "<br />"), "log", subtype, data);
             
         },
 
@@ -1159,8 +937,6 @@ VERSION:'3.0beta',
          */
         info : function(msg, subtype, data){
             
-            this.log(apf.htmlentities(msg).replace(/\n/g, "<br />"), subtype, data);
-            
         },
 
         /**
@@ -1172,8 +948,6 @@ VERSION:'3.0beta',
          */
         warn : function(msg, subtype, data){
             
-            this.write(apf.htmlentities(msg).replace(/\n/g, "<br />"), "warn", subtype, data);
-            
         },
 
         /**
@@ -1184,8 +958,6 @@ VERSION:'3.0beta',
          * @param {String} data     extra data that might help in debugging.
          */
         error : function(msg, subtype, data){
-            
-            this.write(msg.replace(/\n/g, "<br />"), "error", subtype, data);
             
         },
 
@@ -1208,35 +980,6 @@ VERSION:'3.0beta',
         }
         
         
-        ,
-        debugInfo : [],
-        debugType : "",
-
-        /**
-         * Shows a browser window with the contents of the console.
-         * @param {String} msg a new message to add to the new window.
-         */
-        showWindow : function(msg){
-            if (!this.win || this.win.closed) {
-                this.win = window.open("", "debug");
-                this.win.document.write(
-                    '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
-                  + '<body style="margin:0;font-family:Verdana;font-size:8pt;"></body>');
-            }
-            if (!this.win) {
-                if (!this.haspopupkiller)
-                    alert("Could not open debug window, please check your popupkiller");
-                this.haspopupkiller = true;
-            }
-            else {
-                this.win.document.write((msg || this.debugInfo.join(""))
-                    .replace(/\{imgpath\}/g, apf.debugwin
-                        ? apf.debugwin.resPath
-                        : apf.basePath + "core/debug/resources/"));
-            }
-        }
-
-        
     },
 
     html_entity_decode : function(s){return s},
@@ -1252,68 +995,8 @@ VERSION:'3.0beta',
      */
     formatErrorString : function(number, control, process, message, amlContext, outputname, output){
         
-        var str = [];
-        if (amlContext && amlContext.ownerDocument) {
-            if (amlContext.nodeType == 9)
-                amlContext = amlContext.documentElement;
-
-            //Determine file context
-            if (amlContext.ownerDocument.documentElement) {
-                var file = amlContext.ownerDocument.documentElement.getAttribute("filename");
-                if (!file && amlContext.ownerDocument.documentElement.tagName == "html")
-                    file = location.href;
-                file = file
-                    ? apf.removePathContext(apf.hostPath, file)
-                    : "Unkown filename";
-            }
-            else file = "Unknown filename";
-
-            //Get serialized version of context
-            if (apf.$debugwin)
-                var amlStr = apf.$debugwin.$serializeObject(amlContext);
-            else
-                var amlStr = (amlContext.outerHTML || amlContext.xml || amlContext.serialize())
-                    .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/ajax.org\/2005\/aml" \/\>/g, "")
-                    .replace(/xmlns:a="[^"]*"\s*/g, "");
-
-            //Determine line number
-            var diff, linenr = 0, w = amlContext.previousSibling
-                || amlContext.parentNode && amlContext.parentNode.previousSibling;
-            while (w && w[apf.TAGNAME] != "body") {
-                diff    = (w.outerHTML || w.xml || w.serialize()).split("\n").length;
-                linenr += diff - 1;
-                w       = w.previousSibling || w.parentNode && w.parentNode.previousSibling;
-            }
-            if (w && w[apf.TAGNAME] != "body")
-                linenr = "unknown";
-            else if(amlContext.ownerDocument 
-              && amlContext.ownerDocument.documentElement.tagName == "html")
-                linenr += apf.lineBodyStart;
-
-            //Grmbl line numbers are wrong when \n's in attribute space
-
-            //Set file and line number
-            str.push("aml file: [line: " + linenr + "] " + file);
-        }
-
-        if (control)
-            str.push("Element: "
-              + (apf.$debugwin && !apf.isDebugWindow
-                ? apf.$debugwin.$serializeObject(control)
-                : "'" + (control.name
-                    || (control.$aml ? control.getAttribute("id") : null)
-                    || "{Anonymous}")
-                    + "' [" + control.tagName + "]"));
-        if (process)
-            str.push("Process: " + process.replace(/ +/g, " "));
-        if (message)
-            str.push("Message: [" + number + "] " + message.replace(/ +/g, " "));
-        if (outputname)
-            str.push(outputname + ": " + output);
-        if (amlContext && amlStr)
-            str.push("Related Markup: " + amlStr);
-
-        return (apf.lastErrorMessage = str.join("\n"));
+        apf.lastErrorMessage = message;
+        return message;
         
     },
 
@@ -1359,9 +1042,6 @@ VERSION:'3.0beta',
      * @type  {void}
      */
     include : function(sourceFile, doBase, type, text, callback){
-        
-        if (apf.started)
-            apf.console.info("including js file: " + sourceFile);
         
         
         var sSrc = doBase ? apf.getAbsolutePath(apf.basePath || "", sourceFile) : sourceFile;
@@ -1490,20 +1170,10 @@ VERSION:'3.0beta',
      */
     parsePartialAml : function(docElement){
         
-        apf.console.warn("The aml namespace definition wasn't found "
-                       + "on the root node of this document. We're assuming "
-                       + "you want to load a partial piece of aml embedded "
-                       + "in this document. Starting to search for it now.");
-        
 
         var findAml;
         if (apf.isIE) {
             findAml = function(htmlNode){
-                
-                if (htmlNode.outerHTML.match(/\/>$/)) {
-                    throw new Error("Cannot have self closing elements!\n"
-                        + htmlNode.outerHTML);
-                }
                 
                 
                 try {
@@ -1525,14 +1195,6 @@ VERSION:'3.0beta',
                             });
                 } 
                 catch(e) {
-                    
-                    throw new Error(apf.formatErrorString(0, null,
-                        "Parsing inline aml (without xmlns on root node)",
-                        "Could not parse inline aml. This happens when the html"
-                      + "is mangled too much by Internet Explorer. Either you "
-                      + "are using a cdata section or javascript containing "
-                      + "symbols that throw off the browser. Please put this aml "
-                      + "in a seperate file and load it using an include element."));
                     
                     
                     return;
@@ -1728,9 +1390,6 @@ VERSION:'3.0beta',
 
             if (this.parseStrategy == 1 || apf.amlParts.length) {
                 
-                if (apf.amlParts.length)
-                    apf.console.warn("Aml found, parsing...");
-                
 
                 apf.isParsingPartial = true;
 
@@ -1743,8 +1402,6 @@ VERSION:'3.0beta',
                 return;
             }
             else {
-                
-                apf.console.warn("No aml found.");
                 
                 isEmptyDocument = true;
             }
@@ -1760,9 +1417,6 @@ VERSION:'3.0beta',
           .split(">", 1)[0]
           .indexOf(apf.ns.aml) == -1) {
             
-            apf.console.warn("The aml namespace declaration wasn't found. "
-                           + "No aml elements were found in the body. Exiting");
-            
             return false;
         }
 
@@ -1771,8 +1425,6 @@ VERSION:'3.0beta',
             return apf.oHttp.get((apf.alternativeAml 
               || document.body && document.body.getAttribute("xmlurl") 
               || location.href).split(/#/)[0], {
-                
-                type : "markup",
                 
                 callback: function(xmlString, state, extra){
                     if (state != apf.SUCCESS) {
@@ -1786,9 +1438,6 @@ VERSION:'3.0beta',
                         throw oError;
                     }
 
-                    
-                    apf.lineBodyStart = (xmlString.replace(/\n/g, "\\n")
-                        .match(/(.*)<body/) || [""])[0].split("\\n").length;
                     
 
                     //@todo apf3.0 rewrite this flow
@@ -2079,8 +1728,6 @@ VERSION:'3.0beta',
      * Unloads the aml application.
      */
     unload : function(exclude){
-        
-        apf.console.info("Initiating self destruct...");
         
 
         this.isDestroying = true;
@@ -2587,16 +2234,13 @@ apf.Class.prototype = new (function(){
         else if (exclNr === 0) {
             options = {
                 parsecode : true
-                , nothrow : this.target.match(/-debug$/) ? true : false 
+                
             };
         }
         
         if (this.liveedit)
             (options || (options = {})).liveedit = true;
         
-        
-        if (apf.config.debugLm)
-            (options || (options = {})).nothrow = true;
         
 
         //Compile pValue through JSLT parser
@@ -2614,9 +2258,6 @@ apf.Class.prototype = new (function(){
         //Special case for model due to needed extra signalling
         if (prop == MODEL)
             (this.$modelParsed = fParsed).instruction = pValue
-        
-        else if (exclNr === 0)
-            this.$lastFParsed = fParsed;
         
 
         //if it's only text return setProperty()
@@ -3012,9 +2653,6 @@ apf.Class.prototype = new (function(){
         }
         else {*/
             
-            if (options && !options.bubbles && options.currentTarget && options.currentTarget != this)
-                throw new Error("Invalid use of options detected in dispatch Event");
-            
         
             //@todo rewrite this and all dependencies to match w3c
             if ((!e || !e.currentTarget) && (!options || !options.currentTarget)) {
@@ -3073,8 +2711,6 @@ apf.Class.prototype = new (function(){
         if (--apf.$eventDepth == 0 && this.ownerDocument 
           && !this.ownerDocument.$domParser.$parseContext
           && !apf.isDestroying && apf.loaded
-          
-          && eventName != "debug"
           
           && apf.queue
         ) {
@@ -3258,12 +2894,6 @@ apf.Class.prototype = new (function(){
             }
         }
 
-        
-        if (deep !== false && this.childNodes && this.childNodes.length) {
-            apf.console.warn("You have destroyed an Aml Node without destroying "
-                           + "it's children. Please be aware that if you don't "
-                           + "maintain a reference, memory might leak");
-        }
         
         
         //Remove id from global js space
@@ -4771,10 +4401,6 @@ apf.hotkeys = {};
         }
 
         
-        if (!key) {
-            throw new Error("missing key for hotkey: " + hotkey);
-        }
-        
 
         (_self.$keys[hashId] || (_self.$keys[hashId] = {}))[key] = handler;
     };
@@ -5639,9 +5265,6 @@ apf.nameserver = {
             this.lookup[type] = [];
         
         
-        if(this.onchange)
-            this.onchange(type, item);
-        
         
         return this.lookup[type].push(item) - 1;
     },
@@ -5650,9 +5273,6 @@ apf.nameserver = {
         if (!this.lookup[type])
             this.lookup[type] = {};
 
-        
-        if (this.onchange)
-            this.onchange(type, item, id);
         
         
         if (this.waiting[id]) {
@@ -6505,13 +6125,6 @@ apf.setStyleClass = function(oHtml, className, exclusion, userAction){
         return;
 
     
-    if (oHtml.nodeFunc) {
-        throw new Error(apf.formatErrorString(0, this,
-            "Setting style class",
-            "Trying to set style class on aml node. Only xml or html nodes can \
-             be passed to this function"));
-    }
-    
 
     if (className) {
         if (exclusion)
@@ -7142,16 +6755,7 @@ apf.parseExpression = function(str){
         return str;
 
     
-    try {
-    
         return eval(RegExp.$1);
-    
-    }
-    catch(e) {
-        throw new Error(apf.formatErrorString(0, null,
-            "Parsing Expression",
-            "Invalid expression given '" + str + "'"));
-    }
     
 };
 apf.parseExpression.regexp = /^\{([\s\S]*)\}$/;
@@ -7438,18 +7042,6 @@ apf.getNode = function(data, tree){
  */
 apf.getFirstElement = function(xmlNode){
     
-    try {
-        xmlNode.firstChild.nodeType == 1
-            ? xmlNode.firstChild
-            : xmlNode.firstChild.nextSibling
-    }
-    catch (e) {
-        throw new Error(apf.formatErrorString(1052, null,
-            "Xml Selection",
-            "Could not find element:\n"
-            + (xmlNode ? xmlNode.xml : "null")));
-    }
-    
 
     return xmlNode.firstChild.nodeType == 1
         ? xmlNode.firstChild
@@ -7463,18 +7055,6 @@ apf.getFirstElement = function(xmlNode){
  * @throw error when no child element is found.
  */
 apf.getLastElement = function(xmlNode){
-    
-    try {
-        xmlNode.lastChild.nodeType == 1
-            ? xmlNode.lastChild
-            : xmlNode.lastChild.nextSibling
-    }
-    catch (e) {
-        throw new Error(apf.formatErrorString(1053, null,
-            "Xml Selection",
-            "Could not find last element:\n"
-            + (xmlNode ? xmlNode.xml : "null")));
-    }
     
 
     return xmlNode.lastChild.nodeType == 1
@@ -8113,17 +7693,6 @@ apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
         //Temp hack
         var isAddId = paths[i].match(/(\w+)\[@([\w-]+)=(\w+)\]/);
         
-        if (!isAddId && paths[i].match(/\@|\[.*\]|\(.*\)/)) {
-            throw new Error(apf.formatErrorString(1041, this,
-                "Select via xPath",
-                "Could not use xPath to create xmlNode: " + xPath));
-        }
-        if (!isAddId && paths[i].match(/\/\//)) {
-            throw new Error(apf.formatErrorString(1041, this,
-                "Select via xPath",
-                "Could not use xPath to create xmlNode: " + xPath));
-        }
-        
 
         if (isAddId)
             paths[i] = isAddId[1];
@@ -8504,11 +8073,6 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
 
     if (xmlNode.nodeType != 2 && !xmlNode.parentNode && !xmlNode.ownerElement) {
         
-        throw new Error(apf.formatErrorString(0, null,
-            "Converting XML to Xpath",
-            "Error xml node without parent and non matching context cannot\
-             be converted to xml.", xmlNode));
-        
 
         return false;
     }
@@ -8539,11 +8103,6 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
 //for RDB: Xpath statement --> xmlNode
 apf.xpathToXml = function(xpath, xmlNode){
     if (!xmlNode) {
-        
-        throw new Error(apf.formatErrorString(0, null,
-            "Converting Xpath to XML",
-            "Error context xml node is empty, thus xml node cannot \
-             be found for '" + xpath + "'"));
         
 
         return false;
@@ -9037,8 +8596,6 @@ apf.xmlDiff = function (doc1, doc2){
         reorderRules = [],
         preserveWhiteSpace = doc1.ownerDocument.$domParser.preserveWhiteSpace,
         
-        
-        dt = new Date().getTime(),
         
         
         APPEND       = 1,
@@ -9762,12 +9319,6 @@ apf.xmlDiff = function (doc1, doc2){
         switch((item = appendRules[i])[0]) {//@todo optimize
             case UPDATE:
                 
-                if (debug) {
-                    apf.console.log("XmlDiff: UPDATE " 
-                        + item[1].nodeValue + " with "
-                        + item[2].nodeValue);
-                }
-                
             
                 //item[1].nodeValue = item[2].nodeValue;
                 item[1].$setValue(item[2].nodeValue);
@@ -9780,12 +9331,6 @@ apf.xmlDiff = function (doc1, doc2){
                 //@todo need trigger for aml node
                 break;
             case APPEND:
-                
-                if (debug) {
-                    apf.console.log("XmlDiff: APPEND " 
-                        + (item[2].tagName ? "<" + item[2].tagName + ">" : item[2].nodeValue) + " to "
-                        + "<" + item[1].localName + "> [" + item[1].$uniqueId + "]");
-                }
                 
             
                 if (!item[1].canHaveChildren) {
@@ -9864,12 +9409,6 @@ apf.xmlDiff = function (doc1, doc2){
         switch((item = rules[i])[0]) {
             case REMOVE:
                 
-                if (debug) {
-                    apf.console.log("XmlDiff: REMOVE " 
-                        + (item[1].localName ? "<" + item[1].localName + ">" : item[1].nodeValue) 
-                        + " [" + item[1].$uniqueId + "] ");
-                }
-                
                 if ((node = item[1]).destroy) {
                     node.destroy(true, true);
                 }
@@ -9879,12 +9418,6 @@ apf.xmlDiff = function (doc1, doc2){
                     node.ownerElement.removeAttributeNode(node);
                 break;
             case SETATTRIBUTE:
-                
-                if (debug) {
-                    apf.console.log("XmlDiff: ATTRIBUTE " 
-                        + "<" + item[1].localName + "> [" + item[1].$uniqueId + "] " 
-                        + item[2].nodeName + "=\"" + item[2].nodeValue + "\"");
-                }
                 
 
                 item[1].setAttribute((item = item[2]).nodeName, item.nodeValue);
@@ -9904,19 +9437,6 @@ apf.xmlDiff = function (doc1, doc2){
     
     apf.queue.empty();
 
-    
-    if (debug)
-        apf.console.time("Diff time:" + (time = (new Date() - dt)));
-    
-    /*var res1 = (apf.formatXml(doc2.xml));
-    var res2 = (apf.formatXml(doc1.serialize()));
-    
-    if(res1 != res2) {
-        throw new Error("A potentially serious xml diff problem was detected. \
-            Please contact the author of this library:\n" 
-            + res1 + "\n\n" + res2); //@todo make this into a proper apf3.0 error
-    }*/
-        
     
 }
 
@@ -10174,14 +9694,6 @@ apf.extend(apf.config, {
         
         
         "debug" : function(value) {
-            
-            if (value) {
-                apf.$debugwin.activate();
-                apf.addEventListener("load", function(){
-                    //$setTimeout("apf.$debugwin.activate();", 200) //@todo has a bug in gecko, chrome
-                    apf.removeEventListener("load", arguments.callee);
-                });
-            }
             
             apf.debug = value;
         }
@@ -10563,14 +10075,7 @@ apf.getData = function(instruction, options){
     var result, chr = instruction.charAt(0), callback = options.callback;
 
     
-    var gCallback  = function(data, state, extra){
-        var _self = this;
-        $setTimeout(function(){
-            s2.call(_self, data, state, extra);
-        });
-    }
-    
-    var s2 = 
+    var gCallback = 
     
 
     function(data, state, extra){
@@ -10638,21 +10143,10 @@ apf.getData = function(instruction, options){
             }
             
             
-            if (!model) {
-                throw new Error("Could not find model '" + model + "' in " + instruction); //@todo apf3.0 make proper error
-            }
-            
         
             return gCallback(model.data.selectSingleNode(xpath), apf.SUCCESS, {});
         }
         else {
-            
-            if (!options.xmlNode) {
-                return apf.console.error(apf.formatErrorString(0, null,
-                    "Loading data",
-                    "Xpath found without model and no xmlNode specified" 
-                    + instruction));
-            }
             
             
             return gCallback(options.xmlNode.data.selectSingleNode(fParsed.xpaths[1]), apf.SUCCESS, {});
@@ -10756,8 +10250,6 @@ apf.setModel = function(instruction, amlNode){
         //@todo apf3.0 check here if string is valid url (relative or absolute)
         if (instruction.indexOf(".") == -1 && instruction.indexOf("/") == -1) {
             
-            apf.console.warn("Could not find model '" + instruction + "'");
-            
             return;
         }
     }
@@ -10769,21 +10261,11 @@ apf.setModel = function(instruction, amlNode){
             if (fParsed.xpaths.length == 2 && fParsed.xpaths[0] != '#' && fParsed.xpaths [1] != '#') {
                 
                 
-                if (!apf.nameserver.get("model", fParsed.xpaths[0])) {
-                    throw new Error("Could not find model '" + fParsed.xpaths[0] + "' in " + instruction); //@todo apf3.0 make proper error
-                }
-                
                 
                 apf.nameserver.get("model", fParsed.xpaths[0]).register(amlNode, fParsed.xpaths[1]);
                 
                 return;
             }
-        }
-        
-        else {
-            //throw new Error(apf.formatErrorString(0, amlNode,
-            apf.console.warn("Xpath found without model. This might fail if no\
-                context is specified using local(): " + instruction);
         }
         
     }
@@ -12140,15 +11622,6 @@ apf.htmlCleaner = (function() {
             }
 
             
-            // check for VALID XHTML in DEBUG mode...
-            try {
-                apf.getXml("<source>" + html.replace(/&.{3,5};/g, "")
-                    + "</source>");
-            }
-            catch(ex) {
-                apf.console.error(ex.message + "\n" + html.escapeHTML());
-            }
-            
 
             return html;
         }
@@ -13413,12 +12886,6 @@ apf.skins = {
         var type = skinName[1];
 
         
-        if (!this.skins[name]) {
-            throw new Error(apf.formatErrorString(1076, null,
-                "Retrieving Skin",
-                "Could not find skin '" + name + "'", amlNode.$aml));
-        }
-        
 
         amlNode.iconPath  = this.skins[name].iconPath;
         amlNode.mediaPath = this.skins[name].mediaPath;
@@ -13434,10 +12901,6 @@ apf.skins = {
                 return false;
             
             
-            throw new Error(apf.formatErrorString(1077, null,
-                "Retrieving Template",
-                "Could not find skin '" + name + "'"));
-            
             
             return false;
         }
@@ -13450,12 +12913,6 @@ apf.skins = {
         if (!originals) {
             originals = this.skins[name].originals[type] = {};
 
-            
-            if (!$xmlns(skin, "presentation", apf.ns.aml)[0]) {
-                throw new Error(apf.formatErrorString(1078, null,
-                    "Retrieving Template",
-                    "Missing presentation tag in '" + name + "'"));
-            }
             
 
             var nodes = $xmlns(skin, "presentation", apf.ns.aml)[0].childNodes;
@@ -13532,8 +12989,6 @@ apf.skins = {
         //Assuming image url
         {
             
-            //@todo check here if it is really a url
-            
 
             oHtml.style.backgroundImage = "url(" + (iconPath || "")
                 + strQuery + ")";
@@ -13600,13 +13055,6 @@ apf.Sort = function(xmlNode){
         else if (xmlNode["sort-method"]) {
             settings.method = self[xmlNode["sort-method"]];
             
-            
-            if (!settings.method) {
-                throw new Error(apf.formatErrorString(0, null, 
-                    "Sorting nodes",
-                    "Invalid or missing sort function name provided '" 
-                    + xmlNode["sort-method"] + "'", xmlNode));
-            }
             
         }
         else
@@ -14166,12 +13614,6 @@ var ID        = "id",
                     : modules.htmlcss;
 
         
-        if (!info.method)
-            throw new Error(apf.formatErrorString(0, this,
-                "Single Value Tween",
-                "Could not find method for tweening operation '"
-                + info.type + "'"));
-        
 
         if (useCSSAnim) {
             var type = CSSPROPS[info.type];
@@ -14353,12 +13795,6 @@ var ID        = "id",
                             : modules.htmlcss;
 
 
-            
-            if (!data.method)
-                throw new Error(apf.formatErrorString(0, this,
-                    "Multi Value Tween",
-                    "Could not find method for tweening operation '"
-                    + data.type + "'"));
             
 
             if (animCSS) {
@@ -15075,11 +14511,6 @@ apf.xmldb = new (function(){
     // make sure that "0" is never a listener index
     this.$listeners = [null];
     this.addNodeListener = function(xmlNode, o, uId){
-        
-        if (!o || (!o.$xmlUpdate && !o.setProperty))
-            throw new Error(apf.formatErrorString(1040, null,
-                "Adding Node listener",
-                "Interface not supported."));
         
 
         var id, listen = String(xmlNode.getAttribute(this.xmlListenTag) || "");
@@ -16373,25 +15804,8 @@ apf.http = function(){
             httpUrl = autoroute ? this["route-server"] : url;
 
         
-        if (!options.hideLogMessage) {
-            apf.console.teleport(this.queue[id].log = new apf.teleportLog({
-                id      : id,
-                tp      : this,
-                type    : options.type,
-                method  : this.method || options.method || "GET",
-                url     : url,
-                route   : autoroute ? httpUrl : "",
-                data    : new String(data && data.xml ? data.xml : data),
-                start   : new Date()
-            }));
-        }
-        
-        var headers = [];
-        
         
         function setRequestHeader(name, value){
-            
-            headers.push(name + ": " + value);
             
             http.setRequestHeader(name, value);
         }
@@ -16411,14 +15825,6 @@ apf.http = function(){
             // experimental for Firefox Cross Domain problem
             // http://ubiquity-xforms.googlecode.com/svn/wiki/CrossDomainSubmissionDeployment.wiki
             
-            
-            try {
-                if (apf.isGecko)
-                    netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
-            }
-            catch (e) {
-            
-            
                 //Currently we don't support html5 cross domain access
                 if (apf.hasHtml5XDomain
                   && httpUrl.match(/^http:\/\//)
@@ -16427,10 +15833,6 @@ apf.http = function(){
                         this, "Communication error", "Url: " + httpUrl
                             + "\nReason: Same origin policy in effect"));
                   }
-            
-            
-            }
-            
             
             //end experimental
 
@@ -16500,25 +15902,12 @@ apf.http = function(){
         }
         
         
-        if (!options.hideLogMessage)
-            this.queue[id].log.request(headers);
-        
 
         function handleError(){
             var msg = self.navigator && self.navigator.onLine
                 ? "File or Resource not available " + url
                 : "Browser is currently working offline";
 
-            
-            apf.console.warn(msg, "teleport");
-            if (!options.hideLogMessage)
-                _self.queue[id].log.response({
-                    
-                    end     : new Date(),
-                    
-                    message : msg,
-                    http    : http
-                });
             
 
             var state = self.navigator && navigator.onLine
@@ -16653,22 +16042,10 @@ apf.http = function(){
         }
         
         
-        if (!qItem.options.hideLogMessage) {
-            apf.console.info("[HTTP] Receiving [" + id + "]"
-                + (http.isCaching
-                    ? "[<span style='color:orange'>cached</span>]"
-                    : "")
-                + " from " + qItem.url,
-                "teleport",
-                http.responseText);
-        }
-        
 
         //Gonna check for validity of the http response
         var errorMessage = [],
             extra = {
-                
-                end      : new Date(),
                 
                 tpModule : this,
                 http     : http,
@@ -16729,9 +16106,6 @@ apf.http = function(){
             extra.message = errorMessage.join("\n");
 
             
-            if (qItem.log)
-                qItem.log.response(extra);
-            
 
             // Send callback error state
             if (!callback || !callback(extra.data, apf.ERROR, extra))
@@ -16742,9 +16116,6 @@ apf.http = function(){
 
         
 
-        
-        if (qItem.log)
-            qItem.log.response(extra);
         
 
         //Http call was successfull Success
@@ -16779,13 +16150,9 @@ apf.http = function(){
         http.abort();
 
         
-        apf.console.info("HTTP Timeout [" + id + "]", "teleport");
-        
 
         var extra;
         var noClear = callback ? callback(null, apf.TIMEOUT, extra = {
-            
-            end     : new Date(),
             
             userdata: qItem.options.userdata,
             http    : http,
@@ -16796,9 +16163,6 @@ apf.http = function(){
             retries : qItem.retries || 0
         }) : false;
         
-        
-        if (qItem.log)
-            qItem.log.response(extra);
         
         
         if (!noClear)
@@ -16891,8 +16255,6 @@ apf.http = function(){
 
         
 
-        
-        apf.console.info("[HTTP] Retrying request [" + id + "]", "teleport");
         
 
         qItem.retries++;
@@ -17148,12 +16510,6 @@ apf.DOMParser.prototype = new (function(){
                 doc.$parentNode = options.host; //This is for sub docs that need to access the outside tree
             
             
-            //Check for children in Aml node
-            /*if (!xmlNode.childNodes.length) {
-                apf.console.warn("DOMParser got markup without any children");
-                return (docFrag || doc);
-            }*/
-            
             
             //Let's start building our tree
             amlNode = this.$createNode(doc, xmlNode.nodeType, xmlNode); //Root node
@@ -17337,23 +16693,9 @@ apf.DOMParser.prototype = new (function(){
                 }
 
                 
-                if (!namespaceURI) {
-                    throw new Error("Missing namespace definition."); //@todo apf3.0 make proper error
-                }
-                if (!apf.namespaces[namespaceURI]) {
-                    if (this.allowAnyElement)
-                        namespaceURI = apf.ns.xhtml;
-                    else 
-                        throw new Error("Missing namespace handler for '" + namespaceURI + "'"); //@todo apf3.0 make proper error
-                }
-                
                 
                 var els = apf.namespaces[namespaceURI].elements;
 
-                
-                if (!(els[nodeName] || els["@default"])) {
-                    throw new Error("Missing element constructor: " + nodeName); //@todo apf3.0 make proper error
-                }
                 
                 
                 o = new (els[nodeName] || els["@default"])(null, nodeName);
@@ -17405,10 +16747,6 @@ apf.DOMParser.prototype = new (function(){
                 break;
             case 7:
                 var target = nodeName || xmlNode && xmlNode.nodeName;
-                
-                if(!apf.aml.processingInstructions[target])
-                    throw new Error(apf.formatErrorString(0, null,
-                        "The processing instruction does not exist", "Could not find the processing instruction with target: " + target));
                 
                 o = new apf.aml.processingInstructions[target]();
 
@@ -17752,12 +17090,6 @@ apf.AmlNode = function(){
      */
     this.insertBefore = function(amlNode, beforeNode, noHtmlDomEdit){
         
-        if (!amlNode || !amlNode.hasFeature || !amlNode.hasFeature(apf.__AMLNODE__)){
-            throw new Error(apf.formatErrorString(1072, this,
-                "Insertbefore DOM operation",
-                "Invalid argument passed. Expecting an AmlElement."));
-        }
-        
 
         if (this.nodeType == this.NODE_DOCUMENT) {
             if (this.childNodes.length) {
@@ -17791,15 +17123,6 @@ apf.AmlNode = function(){
         if (beforeNode) {
             index = this.childNodes.indexOf(beforeNode);
             if (index < 0) {
-                
-                if (beforeNode == this)
-                    throw new Error(apf.formatErrorString(1072, this,
-                        "Insertbefore DOM operation",
-                        "Before node is the same node as inserted node"));
-                else 
-                    throw new Error(apf.formatErrorString(1072, this,
-                        "Insertbefore DOM operation",
-                        "Before node is not a child of the parent node specified"));
                 
 
                 return false;
@@ -17910,23 +17233,10 @@ apf.AmlNode = function(){
      */
     this.removeNode = function(doOnlyAdmin, noHtmlDomEdit){
         
-        if (doOnlyAdmin && typeof doOnlyAdmin != "boolean") {
-            throw new Error(apf.formatErrorString(0, this,
-                "Removing node from parent",
-                "Invalid DOM Call. removeNode() does not take any arguments."));
-        }
-        
 
         if (!this.parentNode || !this.parentNode.childNodes)
             return this;
 
-        
-        if (!this.parentNode.childNodes.contains(this)) {
-            /*throw new Error(apf.formatErrorString(0, this,
-                "Removing node from parent",
-                "Passed node is not a child of this node.", this.$aml));*/
-            return false;
-        }
         
 
         this.parentNode.childNodes.remove(this);
@@ -17970,12 +17280,6 @@ apf.AmlNode = function(){
      * supported.
      */
     this.removeChild = function(childNode) {
-        
-        if (!childNode || !childNode.hasFeature || !childNode.hasFeature(apf.__AMLNODE__)) {
-            throw new Error(apf.formatErrorString(0, this,
-                "Removing a child node",
-                "Invalid Argument. removeChild() requires one argument of type AMLElement."));
-        }
         
 
         childNode.removeNode();
@@ -18247,12 +17551,6 @@ apf.AmlElement = function(struct, tagName){
          */
         "id": function(value){
             
-            if (value == "apf") {
-                throw new Error(apf.formatErrorString(0, this, 
-                    "Setting Name of Element",
-                    "Cannot set name of element to 'apf'"));
-            }
-            
             
             if (this.name == value)
                 return;
@@ -18266,16 +17564,7 @@ apf.AmlElement = function(struct, tagName){
                 }
                 catch(ex) {
                     
-                    var error = true;
-                    
                 }
-            }
-            
-            if (error && value in self) {
-                apf.console.warn("trying to set a value in the global scope with "
-                                + "a reserved name '" + value + "'.\nNothing wrong "
-                                + "with that, except that you will not be able to "
-                                + "reference\nthe object from the global scope in JS.")
             }
             
             
@@ -18471,8 +17760,6 @@ apf.AmlElement = function(struct, tagName){
      */
     this.replaceMarkup = function(amlDefNode, options) {
         
-        apf.console.info("Remove all children from element");
-        
 
         if (!options)
             options = {};
@@ -18518,8 +17805,6 @@ apf.AmlElement = function(struct, tagName){
      *    clear
      */
     this.insertMarkup = function(amlDefNode, options){
-        
-        apf.console.info("Loading sub markup from external source");
         
 
         
@@ -18663,12 +17948,6 @@ apf.AmlElement = function(struct, tagName){
         if (value && this.$booleanProperties[prop])
             value = apf.isTrue(value);
 
-        
-        if (typeof this[prop] == "function") {
-            throw new Error("Could not set property/attribute '" + prop
-                + "' which has the same name as a method on this object: '"
-                + this.toString() + "'");
-        }
         
 
         this[prop] = value;
@@ -19657,10 +18936,6 @@ apf.AmlProcessingInstruction = function(isPrototype){
         this.$setDynamicProperty("calcdata", this.data);
         
         
-        if (this.target.match(/\-debug$/)) {
-            apf.console.info(this.$lastFParsed.toString());
-        }
-        
     }, true);
     
     /*this.addEventListener("DOMNodeRemovedFromDocument", function(e){
@@ -19827,11 +19102,6 @@ apf.AmlSelection = function(doc){
      */
     this.collapseToStart = function(){
         
-        if (!this.rangeCount) {
-            
-            return;
-        }
-        
         
         var range = this.$ranges[0];
         this.collapse(range.startContainer, range.startOffset);
@@ -19841,11 +19111,6 @@ apf.AmlSelection = function(doc){
      * Replaces the selection with an empty one at the position of the end of the current selection.
      */
     this.collapseToEnd = function(){
-        
-        if (!this.rangeCount) {
-            
-            return;
-        }
         
         
         var range = this.$ranges[this.rangeCount - 1];
@@ -21734,13 +20999,9 @@ apf.aml.setElement("include", apf.XiInclude);
     
     function loadIncludeFile(path){
         
-        apf.console.info("Loading include file: " + path);
-        
 
         var _self = this;
         apf.getData(path, apf.extend(this.options || {}, {
-            
-            type : "markup",
             
             callback : function(xmlString, state, extra){
                 if (state != apf.SUCCESS) {
@@ -21779,8 +21040,6 @@ apf.aml.setElement("include", apf.XiInclude);
                 }
                 xmlNode.setAttribute("filename", extra.url);
 
-                
-                apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " include done from file: " + extra.url);
                 
 
                 finish.call(_self, xmlNode); //@todo add recursive includes support here
@@ -23373,9 +22632,6 @@ apf.GuiElement = function(){
             this.visible = true;
 
         
-        if (apf.debug && this.$ext && this.$ext.nodeType)
-            this.$ext.setAttribute("uniqueId", this.$uniqueId);
-        
 
         
         if (this.$focussable && typeof this.focussable == "undefined")
@@ -23456,11 +22712,6 @@ apf.GuiElement = function(){
 
                     if (!self[menuId]) {
                         
-                        throw new Error(apf.formatErrorString(0, this,
-                            "Showing contextmenu",
-                            "Could not find contextmenu by name: '" + menuId + "'"),
-                            this.$aml);
-                        
                         
                         return;
                     }
@@ -23490,11 +22741,6 @@ apf.GuiElement = function(){
                 : this.contextmenus[0].getAttribute("menu")
 
             if (!self[menuId]) {
-                
-                throw new Error(apf.formatErrorString(0, this,
-                    "Showing contextmenu",
-                    "Could not find contextmenu by name: '" + menuId + "'",
-                    this.$aml));
                 
                 
                 return;
@@ -24257,25 +23503,11 @@ apf.Presentation = function(){
 
     this.$getNewContext = function(type, amlNode){
         
-        if (type != type.toLowerCase()) {
-            throw new Error("Invalid layout node name ('" + type + "'). lowercase required");
-        }
-
-        if (!this.$originalNodes[type]) {
-            throw new Error(apf.formatErrorString(0, this,
-                "Getting new skin item",
-                "Missing node in skin description '" + type + "'"));
-        }
-        
 
         this.$pNodes[type] = this.$originalNodes[type].cloneNode(true);
     };
 
     this.$hasLayoutNode = function(type){
-        
-        if (type != type.toLowerCase()) {
-            throw new Error("Invalid layout node name ('" + type + "'). lowercase required");
-        }
         
 
         return this.$originalNodes[type] ? true : false;
@@ -24283,25 +23515,9 @@ apf.Presentation = function(){
 
     this.$getLayoutNode = function(type, section, htmlNode){
         
-        if (type != type.toLowerCase()) {
-            throw new Error("Invalid layout node name ('" + type + "'). lowercase required");
-        }
-        if (!this.$pNodes) {
-            throw new Error("Skin not loaded for :" + this.serialize(true));
-        }
-        
 
         var node = this.$pNodes[type] || this.$originalNodes[type];
         if (!node) {
-            
-            if (!this.$dcache)
-                this.$dcache = {}
-
-            if (!this.$dcache[type + "." + this.skinName]) {
-                this.$dcache[type + "." + this.skinName] = true;
-                apf.console.info("Could not find node '" + type
-                                 + "' in '" + this.skinName + "'", "skin");
-            }
             
             return false;
         }
@@ -24650,15 +23866,11 @@ apf.DataBinding = function(){
         }
         
         
-        if (!attr) {
-            apf.console.error("Could not find attribute handler for property '" 
-                + prop + "' on " + this.localName + ":" + (this.id || ""));
-            return;
-        }
-        
         
         
 
+        
+        try {
         
             if (attr.cvalue.asyncs) { //if async
                 var _self = this;
@@ -24672,6 +23884,13 @@ apf.DataBinding = function(){
             else {
                 var value = attr.cvalue.call(this, xmlNode);
             }
+        
+        }
+        catch(e){
+            apf.console.warn("[400] Could not execute binding for property "
+                + prop + "\n\n" + e.message);
+            return;
+        }
         
         
         this.setProperty(prop, undoObj && undoObj.extra.range || value, true); //@todo apf3.0 range
@@ -24936,13 +24155,6 @@ apf.DataBinding = function(){
             }
             
             
-            if (this.$amlLoaded && !this.$attrBindings) {
-                apf.console.warn("Could not load data yet in " + (this.localName
-                  ? this.localName + "[" + (this.name || "") + "]"
-                  : this.nodeName) + ". The loaded data is queued "
-                      + "until smartbinding rules are loaded or set manually.");
-            }
-            
 
             return this.$loadqueue = [xmlNode, cacheId];
         }
@@ -24952,10 +24164,6 @@ apf.DataBinding = function(){
             this.dataParent.parent.signalXmlUpdate[this.$uniqueId] = !xmlNode;
 
         if (!xmlNode && (!cacheId || !this.$isCached || !this.$isCached(cacheId))) {
-            
-            apf.console.warn("No xml root node was given to load in "
-                + this.localName + "[" + (this.name || '') + "]. Clearing any "
-                + "loaded xml in this component");
             
 
             this.clear(noClearMsg);
@@ -24982,11 +24190,6 @@ apf.DataBinding = function(){
         if (this.dispatchEvent("beforeload", {xmlNode : xmlNode}) === false)
             return false;
 
-        
-        apf.console.info("Loading XML data in "
-          + (this.localName 
-            ? this.localName + "[" + (this.name || '') + "]"
-            : this.nodeName));
         
 
         this.clear(true, true);
@@ -25078,9 +24281,6 @@ apf.DataBinding = function(){
 
             //||apf.xmldb.findModel(xmlRootNode)
             var mdl = this.getModel(true);
-            
-            if (!mdl)
-                throw new Error("Could not find model");
             
 
             var amlNode = this;
@@ -25525,11 +24725,6 @@ apf.DataBinding = function(){
             return;
         
         
-        if (!apf.nameserver.get(prop, value))
-            throw new Error(apf.formatErrorString(1064, this,
-                "Setting " + prop,
-                "Could not find " + prop + " by name '" + value + "'"));
-        
 
         apf.nameserver.get(prop, value).register(this);
         
@@ -25549,10 +24744,6 @@ apf.DataBinding = function(){
         if (fParsed.models) {
             
             if (this.hasFeature(apf.__MULTISELECT__)) {
-                
-                if (eachBinds[prop]) {
-                    //throw new Error("Cannot use external model inside " + prop + " rule"); //@todo apf3.0 convert to apf error
-                }
                 
             }
             
@@ -25887,11 +25078,6 @@ apf.DataBinding = function(){
                 var xpath = apf.xmlToXpath(value, null, true) || ".";
                 
                 
-                if (model.queryNode(xpath) != value) {
-                    throw new Error("xml data node is not attached to model (" 
-                        + xpath + ") : " + value + ":" + (value && value.xml));
-                }
-                
                 
                 model.register(this, xpath);
                 return;
@@ -26098,13 +25284,6 @@ apf.MultiselectBinding = function(){
                     var htmlNode = apf.xmldb.findHtmlNode(sNodes[i], _self);
 
                     
-                    if (!_self.$findContainer){
-                        throw new Error(apf.formatErrorString(_self,
-                            "Sorting Nodes",
-                            "This component does not \
-                             implement _self.$findContainer"));
-                    }
-                    
 
                     var container = _self.$findContainer(htmlNode);
 
@@ -26157,11 +25336,6 @@ apf.MultiselectBinding = function(){
      * @param {XMLElement} [xmlNode] the parent element on which the each query is applied.
      */
     this.getTraverseNodes = function(xmlNode){
-        
-        if (!this.each) {
-            throw new Error("Could not render bound data. Missing 'each' rule for " 
-                + this.localName + (this.id && "[" + this.id + "]" || "")); //@todo apf3.0 make into proper apf error
-        }
         
         
         
@@ -26661,11 +25835,6 @@ apf.MultiselectBinding = function(){
             this.$fill(result);
 
             
-            if (this.selectable && !this.xmlRoot.selectSingleNode(this.each))
-                apf.console.warn("No traversable nodes were found for "
-                                 + this.name + " [" + this.localName + "]\n\
-                                  Traverse Rule : " + this.$getBindRule("each")[4].getAttribute("match"));
-            
 
             if (this.selectable && (length === 0 || !this.xmlRoot.selectSingleNode(this.each)))
                 return;
@@ -26749,12 +25918,6 @@ apf.MultiselectBinding = function(){
                 var model = this.getModel(true);
 
                 
-                if (!model)
-                    throw new Error(apf.formatErrorString(0, this,
-                        "Setting change notifier on component",
-                        "Component without a model is listening for changes",
-                        this.$aml));
-                
 
                 return model.$waitForXml(this);
             }
@@ -26836,13 +25999,6 @@ apf.MultiselectBinding = function(){
      * representation is created via $add().
      */
     this.$addNodes = function(xmlNode, parent, checkChildren, isChild, insertBefore, depth, action){
-        
-        if (!this.each) {
-            throw new Error(apf.formatErrorString(1060, this,
-                "adding Nodes for load",
-                "No each SmartBinding rule was specified. This rule is \
-                 required for a " + this.localName + " component.", this.$aml));
-        }
         
 
         var htmlNode, lastNode;
@@ -26975,10 +26131,6 @@ apf.MultiselectBinding = function(){
         if (this.xmlRoot && !this.$bindRuleTimer && this.$amlLoaded) {
             var _self = this;
             apf.queue.add("reload" + this.$uniqueId, function(){
-                
-                apf.console.log("Reloading multiselect based on attribute '" 
-                                 + prop + "' bind change to value '" 
-                                 + value + "'\n\n" + _self.serialize(true));
                 
                 _self.reload();
             });
@@ -27239,15 +26391,6 @@ apf.StandardBinding = function(){
             }
             
             if (retreatToListenMode || this.xmlRoot == xmlNode) {
-                
-                //RLD: Disabled because sometimes indeed components do not 
-                //have a model when their xmlRoot is removed.
-                if (!model) {
-                    throw new Error(apf.formatErrorString(0, this, 
-                        "Setting change notifier on component", 
-                        "Component without a model is listening for changes", 
-                        this.$aml));
-                }
                 
 
                 //Set Component in listening state untill data becomes available again.
@@ -27584,14 +26727,6 @@ apf.MultiSelect = function(){
             return;
 
         
-        //We're not removing the XMLRoot, that would be suicide ;)
-        if (nodeList.contains(this.xmlRoot)) {
-            throw new Error(apf.formatErrorString(0,
-                "Removing nodes",
-                "You are trying to delete the xml root of this \
-                 element. This is not allowed."));
-        }
-        
 
         var changes = [];
         for (var i = 0; i < nodeList.length; i++) {
@@ -27803,13 +26938,6 @@ apf.MultiSelect = function(){
                 addXmlNode = pNode.ownerDocument.importNode(addXmlNode, true); 
 
             
-            if (!pNode) {
-                throw new Error(apf.formatErrorString(0, amlNode,
-                    "Executing add action",
-                    "Missing parent node. You can only add nodes to a list if it\
-                     has data loaded. Unable to perform action."));
-            }
-            
 
             if (amlNode.$executeAction("appendChild",
               [pNode, addXmlNode, beforeNode], "add", addXmlNode) !== false
@@ -27828,11 +26956,6 @@ apf.MultiSelect = function(){
             if (rule.get)
                 return apf.getData(rule.get, {xmlNode: refNode, callback: callback})
             else {
-                
-                throw new Error(apf.formatErrorString(0, this,
-                    "Executing add action",
-                    "Missing add action defined in action rules. Unable to \
-                     perform action."));
                 
             }
         }
@@ -27892,16 +27015,6 @@ apf.MultiSelect = function(){
             if (!this.bindingRules && !this.caption) 
                 return false;
 
-            
-            if (!this.caption && !this.bindingRules[this.$mainBind] && !this.bindingRules["caption"]) {
-                if (noError)
-                    return false;
-                
-                throw new Error(apf.formatErrorString(1074, this,
-                    "Retrieving the value of this component.",
-                    "No value rule has been defined. There is no way \
-                     to determine the value of the selected item."));
-            }
             
 
             return this.$applyBindRule(this.$mainBind, xmlNode || this.selected, null, true)
@@ -27993,10 +27106,6 @@ apf.MultiSelect = function(){
 
         /**** Type Detection ****/
         if (!xmlNode) {
-            
-            throw new Error(apf.formatErrorString(1075, this,
-                "Making a selection",
-                "No selection was specified"))
             
 
             return false;
@@ -28269,10 +27378,6 @@ apf.MultiSelect = function(){
             }
 
             if (!xmlNode) {
-                
-                apf.console.warn("Component : " + this.name + " ["
-                    + this.localName + "]\nMessage : xmlNode whilst selecting a "
-                    + "list of xmlNodes could not be found. Ignoring.")
                 
                 continue;
             }
@@ -28656,25 +27761,6 @@ apf.MultiSelect = function(){
         }
         
         
-        var rule = this.$getBindRule("value", this.xmlRoot);
-        if (rule) {
-            /*var compiled = rule.cvalue || rule.cmatch;
-            if (compiled.type != 3) {
-                throw new Error(apf.formatErrorString(0,
-                    "Setting value attribute",
-                    "Value attribute does not have legal value."));
-            }*/
-
-            if (rule.models[0] == this.$model && rule.cvalue.xpaths[0] != "#") {
-                throw new Error(apf.formatErrorString(0, this,
-                    "Setting value attribute",
-                    "Value should not point to the same model where the items\
-                     are loaded from. Please use value=\"[mdlName::xpath]\" to\
-                     specify the value. Use selected=\"[xpath]\" to just select\
-                     a node without making a databinding to it."));
-            }
-        }
-        
 
         if (value || value === 0 || this["default"])
             this.select(String(value) || this["default"]);
@@ -28735,11 +27821,6 @@ apf.MultiSelect = function(){
                 return;
         }
         
-        
-        if (prop == "selection" && (this.getAttribute("selection") || "*").substr(0, 1) != "*"){
-            apf.console.warn("Selection attribute (" + this.getAttributeNode("selection") 
-                + ") should select multiple nodes. Please prefix xpath query with a * (ex.: *[item]).");
-        }
         
 
         if (this.$isSelecting) {
@@ -29451,15 +28532,6 @@ apf.DataAction = function(){
         var actionRule = this.$actions && this.$actions.getRule(name, xmlContext);
         if (!actionRule && apf.config.autoDisableActions && this.$actions) {
             
-            if (!xmlContext) {
-                apf.console.warn("Tried starting new action but no xml \
-                    context was specified.");
-            }
-            else {
-                apf.console.warn("Tried starting new action but no '" + name 
-                    + "' action rule was found.");
-            }
-            
             
             return false;
         }
@@ -29522,9 +28594,6 @@ apf.DataAction = function(){
     this.$executeAction = function(atAction, args, action, xmlNode, noevent, contextNode, multiple){
         
 
-        
-        apf.console.info("Executing action '" + action + "' for " + (this.name || "")
-                         + " [" + (this.localName || "") + "]");
         
 
         //Get Rules from Array
@@ -29606,13 +28675,6 @@ apf.DataAction = function(){
         //recompile bindrule to create nodes
         if (!rule) {
             
-            if (this.$getBindRule(setName))
-                throw new Error("There is no rule that matches the xml node for this operation.\
-                                 Please make sure you are matching a node and using the value to \
-                                 specify it's value <a:" + setName + " match='person' \
-                                 value='[@name]' /> : " + xmlNode.xml); //@todo make apf Error
-            else
-            
                 return false;
         }
 
@@ -29629,9 +28691,6 @@ apf.DataAction = function(){
                 compiled = null;
         });
         
-        
-        if (!compiled)
-            throw new Error("Cannot create from rule that isn't a single xpath"); //@todo make apf Error
         
 
         var atAction, model, node,
@@ -30731,8 +29790,7 @@ apf.BaseButton = function(){
     this.$propHandlers["background"] = function(value){
         var oNode = this.$getLayoutNode("main", "background", this.$ext);
         
-        if (!oNode)
-            return apf.console.warn("No background defined in the Button skin", "button");
+        if (!oNode) return;
         
 
         if (value) {
@@ -31617,23 +30675,6 @@ apf.BaseList = function(){
             }
             else {
                 
-                throw new Error(apf.formatErrorString(0, this,
-                        "Could not find check attribute",
-                        'Maybe the attribute check is missing from your skin file:\
-                            <a:item\
-                              class        = "."\
-                              caption      = "label/u/text()"\
-                              icon         = "label"\
-                              openclose    = "span"\
-                              select       = "label"\
-                              check        = "label/b"\
-                              container    = "following-sibling::blockquote"\
-                            >\
-                                <div><span> </span><label><b> </b><u>-</u></label></div>\
-                                <blockquote> </blockquote>\
-                            </a:item>\
-                        '));
-                
                 return false;
             }
         }
@@ -31779,12 +30820,6 @@ apf.BaseList = function(){
                     : "") + " custom='1' />";
             }
             else {
-                
-                apf.console.warn("No add action rule is defined for element while more='true'.");
-                /*throw new Error(apf.formatErrorString(0, this,
-                    "Could not start more",
-                    "No add action rule is defined for this component",
-                    this.$aml));*/
                 
                 //return false;
                 xmlNode = "<item />";
@@ -32860,26 +31895,17 @@ apf.BaseTab = function(){
             }
             
             
-            apf.console.warn("Setting tab page which doesn't exist, \
-                              referenced by name: '" + next + "'");
-            
 
             return false;
         }
 
         if (page.parentNode != this) {
             
-            apf.console.warn("Setting active page on page component which \
-                              isn't a child of this tab component. Cancelling.");
-            
 
             return false;
         }
 
         if (!page.visible || page.disabled) {
-            
-            apf.console.warn("Setting active page on page component which \
-                              is not visible or disabled. Cancelling.");
             
 
             return false;
@@ -36132,9 +35158,6 @@ apf.DragDrop = function(){
      */
     this.enableDragDrop = function(){
         
-        apf.console.info("Initializing Drag&Drop for " + this.localName
-            + "[" + (this.name || '') + "]");
-        
 
         //Set cursors
         //SHOULD come from skin
@@ -38613,43 +37636,6 @@ apf.__TELEPORT__ = 1 << 28;
 }).call(apf.Teleport.prototype = new apf.AmlElement());
 
 
-apf.teleportLog = function(extra){
-    var xml, request = extra.method + " " + extra.url + " HTTP/1.1\n\n" + extra.data;
-
-    this.setXml = function(pNode){
-        if (!xml) {
-            var doc = pNode.ownerDocument;
-            xml = doc.createElement(extra.tp.localName || extra.type || "http");
-            xml.appendChild(doc.createElement("request")).appendChild(doc.createTextNode(request || "-"));
-            xml.appendChild(doc.createElement("response")).appendChild(doc.createTextNode(response || "-"));
-        }
-
-        apf.xmldb.appendChild(pNode, xml);
-    }
-
-    this.request = function(headers){
-        request = request.replace(/\n\n/, "\n" + headers.join("\n") + "\n\n");
-
-        if (xml)
-            apf.setQueryValue(xml, "request/text()", request);
-
-        this.request = function(){}
-    }
-
-    var response = "";
-    this.response = function(extra){
-        try {
-            var headers = extra.http.getAllResponseHeaders();
-            response = "HTTP/1.1 " + extra.status + " " + extra.statusText + "\n"
-                + (headers ? headers + "\n" : "\n")
-                + extra.http.responseText;
-
-            if (xml)
-                apf.setQueryValue(xml, "response/text()", response);
-        } catch(ex) {}
-    }
-}
-
 
 
 
@@ -38819,8 +37805,6 @@ apf.Transaction = function(){
         }
         else {
             
-            apf.console.info("Committing transaction on " + this.localName + "[" + this.name + "]");
-            
             
             this.$at.reset();//purge();
             this.$inTransaction = false;
@@ -38877,8 +37861,6 @@ apf.Transaction = function(){
             return;
         
         
-        apf.console.info("Rolling back transaction on " + this.localName + "[" + this.name + "]");
-        
         
         if (this.$at) {
             if (this.rpcMode == "realtime")
@@ -38928,16 +37910,12 @@ apf.Transaction = function(){
                  back previously started transaction.", this.oldRoot));*/
             
             
-            apf.console.warn("Rolling back transaction, while starting a new one");
-            
             
             if (this.autoshow)
                 this.autoshow = -1;
             this.rollback();
         }
 
-        
-        apf.console.info("Beginning transaction on " + this.localName + "[" + this.name + "]");
         
 
         //Add should look at dataParent and take selection or xmlRoot
@@ -38955,12 +37933,6 @@ apf.Transaction = function(){
                     : null)) || this.xmlRoot && "update";*/
         }
         
-        
-        if (!this.$lastAction) {
-            throw new Error(apf.formatErrorString(0, this, 
-                "Starting Transaction", 
-                "Could not determine whether to add or update."));
-        }
         
         
         //Determines the actiontracker to integrate the grouped action into
@@ -39007,13 +37979,6 @@ apf.Transaction = function(){
 
         this.$inTransaction = true;
         function begin(){
-            
-            if (!this.$transactionNode) {
-                throw new Error(apf.formatErrorString(0, this, 
-                    "Starting transaction", 
-                    "Missing transaction node. Cannot start transaction. \
-                     This error is unrecoverable."));
-            }
             
 
             this.$inTransaction = -1;
@@ -39138,10 +38103,6 @@ apf.Transaction = function(){
                 if (rule && rule.get)
                     return apf.getData(rule.get, {xmlNode: refNode, callback: callback})
                 else {
-                    
-                    throw new Error(apf.formatErrorString(0, this,
-                        "Starting transaction", 
-                        "Missing add rule for transaction"));
                     
                 }
             }
@@ -39847,13 +38808,6 @@ apf.VirtualViewport = function(){
             
             var mdl = this.getModel(true);
             
-            if (!mdl)
-                throw new Error("Could not find model");
-            
-            if (!rule.getAttribute("total")) {
-                throw new Error(apf.formatErrorString(this, "Loading data", "Error in load rule. Missing total xpath. Expecting <a:load total='xpath' />"))                
-            }
-            
 
             mdl.$insertFrom(rule.getAttribute("get"), {
                 
@@ -40485,12 +39439,6 @@ apf.window = function(){
             list    = fParent.$tabList;
 
         
-        if (list[tabindex]) {
-            apf.console.warn("Aml node already exist for tabindex " + tabindex
-                             + ". Will insert " + amlNode.tagName + " ["
-                             + (amlNode.name || "") + "] before existing one");
-        }
-        
 
         if (!amlNode.$isWindowContainer)
             amlNode.$focusParent = fParent;
@@ -40527,8 +39475,6 @@ apf.window = function(){
             return; //or maybe when force do $focus
 
         
-        var hadAlreadyFocus = aEl == amlNode;
-        
 
         this.$settingFocus = amlNode;
 
@@ -40560,10 +39506,6 @@ apf.window = function(){
         
 
         
-        if (!hadAlreadyFocus)
-            apf.console.info("Focus given to " + amlNode.localName +
-                " [" + (amlNode.name || "") + "]");
-        
 
         
     };
@@ -40573,9 +39515,6 @@ apf.window = function(){
         if (aEl != amlNode)
             return false;
 
-        
-        apf.console.info(aEl.localName + " ["
-            + (aEl.name || "") + "] was blurred.");
         
 
         aEl.$focusParent.$lastFocussed = null;
@@ -40775,9 +39714,6 @@ apf.window = function(){
         if (amlNode && (switchWindows || amlNode != apf.document.documentElement)) {
             start   = (list || []).indexOf(amlNode);
             if (start == -1) {
-                
-                apf.console.warn("Moving focus from element which isn't in the list\
-                                  of it's parent. This should never happen.");
                 
 
                 return;
@@ -41476,10 +40412,6 @@ apf.window = function(){
         
 
          
-        apf.console.info("Start parsing main application");
-        
-        
-        apf.Latometer.start();
         
         
         //Put this in callback in between the two phases
@@ -41535,13 +40467,7 @@ apf.window = function(){
                 //END OF ENTIRE APPLICATION STARTUP
         
                 
-                apf.console.info("Initialization finished");
                 
-                
-                
-                apf.Latometer.end();
-                apf.Latometer.addPoint("Total load time");
-                apf.Latometer.start(true);
                 
           }
         }); //async
@@ -41793,9 +40719,6 @@ apf.runGecko = function(){
      ****************************************************************************/
     function Error(nr, msg){
         
-        if (!apf.$debugwin.nativedebug) 
-            apf.$debugwin.errorHandler(msg, "", 0);
-        
         
         this.message = msg;
         this.nr = nr;
@@ -42034,10 +40957,6 @@ apf.runIE = function(){
                 : "beforeEnd", str);
         }
         catch(e) {
-            
-            apf.console.warn("Warning found block element inside a " 
-              + pNode.tagName 
-              + " element. Rendering will give unexpected results");
             
             
             pNode.insertAdjacentHTML("afterEnd", str);
@@ -43940,266 +42859,6 @@ global.SHA1 = function(str) {
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
-
-
-/**
- * Returns a string giving information on a javascript object.
- *
- * @param {mixed} obj the object to investigate
- */
-apf.dump =
-apf.vardump = function(obj, o, depth, stack){
-	o = o || {};
-	if(o.maxdepth === undefined)o.maxdepth = 99;
-
-    if (apf.isWebkit) //@todo RIK please fix this issue.
-        return "";
-    if (!obj) return obj + "";
-    if (!stack) stack = "";
-    if (!depth) depth = 0;
-    var str;
-    switch (obj.dataType) {
-        case apf.STRING:
-            return "\"" + (o.clip?(obj.length>o.clip?(obj.slice(0,o.clip)+"..."):obj):obj).replace(/[\"]/g,"'") + "\"";
-        case apf.NUMBER:
-            return obj;
-        case apf.BOOLEAN:
-            return (obj ? "true" : "false");
-        case apf.DATE:
-            return "Date(\"" + obj + "\)";
-        case apf.ARRAY:
-            if(obj[obj.length-2]=='$__vardump'){
-                return "this"+obj[obj.length-1]; 
-            }
-            obj.push('$__vardump',stack);
-            str = ["[ "];
-            for (var i = 0; i < obj.length-2; i++) {
-                str.push( str.length>1?",":"",
-                    (depth >= o.maxdepth ? typeof(obj[i]) :
-                    apf.vardump(obj[i], o, depth + 1, stack+'['+i+']')) );
-            }
-            str.push( " ]");
-            obj.pop();obj.pop();
-            return str.join('');
-        default:
-            if (typeof obj == "function")
-                return "function";
-        	if (obj.nodeType !== undefined)
-                return o.xml?(str=obj.xml,o.clip?((str=str.replace(/\s*[\r\n]\s*/g,"")).length>o.clip?str.slice(0,o.clip)+"...>":str):str):("<" + obj.tagName+"../>") ;
-                //return depth == 0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
-            if (depth >= o.maxdepth)
-                return "object";
-
-            //((typeof obj[prop]).match(/(function|object)/) ? RegExp.$1 : obj[prop])
-            if (obj['$__vardump']) return "this"+obj['$__vardump']+"";
-            obj['$__vardump'] = stack;
-            str = ["{"+(o.clip?"":"\n")];
-            for (var prop in obj) if(prop!='$__vardump'){
-            	if(o.clipobj && str.join('').length>o.clipobj){str.push( ", ..."); break;}
-                try {
-                    var propname = prop;
-                    if(str.length>1)str.push(o.clip?", ":",\n");
-                    str.push( o.clip?"":("\t".repeat(depth+1)), propname, ": ",
-                      (depth >= o.maxdepth ? typeof(obj[prop]):
-                        apf.vardump(obj[prop], o, depth + 1, stack+'.'+prop)) );
-                } catch(e) {
-                    str.push( o.clip?"":("\t".repeat(depth+1)) , prop , ": dumperror");
-                }
-            }
-            str.push(o.clip?"":"\n", o.clip?"":("\t".repeat(depth)), "}");
-            
-            function cleanup(obj){
-                if(obj['$__vardump']!== undefined)
-                    delete obj['$__vardump'];
-                else return;
-                for(var prop in obj){
-                    var v = obj[prop];
-                    if(typeof(v)=='object' && v) cleanup(v);
-                }
-            }
-            cleanup(obj);
-            
-            return str.join('');
-    }
-};
-
-if (apf.isOpera) {
-    window.console = {};
-    ["log", "debug", "info", "warn", "error"].forEach(function(type) {
-        window.console[type] = function() {
-            if (typeof arguments === "undefined") return null;
-            if (arguments.length === 1) { // single argument provided
-                opera.postError(type + ": " + arguments[0]);
-                return type + ": " + arguments[0];
-            }
-            var s      = arguments[0],
-                // string substitution patterns of firebug console
-                regexp = /%([sdifo])/g,
-                i      = 0,
-                match  = null;
-            // replace found matches with given arguments
-            while (match = regexp.exec(s)) {
-                s = s.replace(match[0], String(arguments[++i]));
-            }
-            // display log messages
-            var len = arguments.length;
-            while (len > i++) {
-                if (arguments[i]) {
-                    s += ' ';
-                    s += String(arguments[i]);
-                }
-            }
-            opera.postError(type + ": " + s);
-        };
-    });
-}
-
-/**
- * Returns a string giving more detailed informations on a javascript object.
- *
- * @param {mixed} obj the object to investigate
- */
-apf.dump2 =
-apf.vardump2 = function (obj, depth, recur, stack){
-    if(!obj) return obj + "";
-    if(!depth) depth = 0;
-
-    switch(obj.dataType){
-        case "string":    return "\"" + obj + "\"";
-        case "number":    return obj;
-        case "boolean": return obj ? "true" : "false";
-        case "date": return "Date[" + new Date() + "]";
-        case "array":
-            var str = "{\n";
-            for(var i=0;i < obj.length;i++){
-                str += "     ".repeat(depth+1) + i + " => " + (!recur && depth > 0 ? typeof obj[i] : apf.vardump(obj[i], depth+1, !recur)) + "\n";
-            }
-            str += "     ".repeat(depth) + "}";
-            
-            return str;
-        default:
-            if(typeof obj == "function") return "function";
-            //if(obj.xml) return depth==0 ? "[ " + obj.xml + " ]" : "XML Element";
-            if(obj.xml || obj.serialize) return depth==0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
-            
-            if(!recur && depth>0) return "object";
-        
-            //((typeof obj[prop]).match(/(function|object)/) ? RegExp.$1 : obj[prop])
-            var str = "{\n";
-            for(prop in obj){
-                try{
-                    str += "     ".repeat(depth+1) + prop + " => " + (!recur && depth > 0? typeof obj[prop] : apf.vardump(obj[prop], depth+1, !recur)) + "\n";
-                }catch(e){
-                    str += "     ".repeat(depth+1) + prop + " => [ERROR]\n";
-                }
-            }
-            str += "     ".repeat(depth) + "}";
-            
-            return str;
-    }
-}
-
-String.prototype.s = function(){
-    return this.replace(/[\r\n]/g, "");
-}
-
-/**
- * Alerts string giving information on a javascript object.
- * This is older version of this function
- *
- * @param {mixed} obj the object to investigate
- */
-apf.alert_r = function(obj, recur){
-    alert(apf.vardump(obj, null, recur));
-}
-
-/**
- * Alerts string giving information on a javascript object.
- *
- * @param {mixed} obj the object to investigate
- */
-apf.alert_r2 = function(obj, recur){
-    alert(apf.vardump2(obj, null, !recur));
-}
-
-/**
- * Object timing the time between one point and another.
- *
- * @param {Boolean} nostart whether the profiler should start measuring at creation.
- * @constructor
- */
-apf.ProfilerClass = function(nostart){
-    this.totalTime = 0;
-
-    /**
-     * Starts the timer.
-     * @param {Boolean} clear resets the total time.
-     */
-    this.start = function(clear){
-        if (clear) this.totalTime = 0;
-        this.startTime = new Date().getTime();
-
-        this.isStarted = true;
-    }
-
-    /**
-     * Stops the timer.
-     * @method
-     */
-    this.stop =
-    this.end = function(){
-        if (!this.startTime) return;
-        this.totalTime += new Date().getTime() - this.startTime;
-        this.isStarted = false;
-    }
-
-    /**
-     * Sends the total time to the console.
-     * @param {String} msg Message displayed in the console.
-     */
-    this.addPoint = function(msg){
-        this.end();
-        apf.console.time("[TIME] " + (msg || "Profiled Section") + ": " + this.totalTime + "ms");
-        this.start(true);
-    }
-
-    if (!nostart)
-        this.start();
-};
-
-apf.Latometer = new apf.ProfilerClass(true);//backward compatibility
-
-if (self.navigator && navigator.userAgent.indexOf("Opera") != -1) {
-    window.console = {};
-    ["log", "debug", "info", "warn", "error"].forEach(function(type) {
-        window.console[type] = function() {
-            if (typeof arguments === "undefined") return null;
-            if (arguments.length === 1) { // single argument provided
-                opera.postError(type + ": " + arguments[0]);
-                return type + ": " + arguments[0];
-            }
-            var s      = arguments[0],
-                // string substitution patterns of firebug console
-                regexp = /%([sdifo])/g,
-                i      = 0,
-                match  = null;
-            // replace found matches with given arguments
-            while (match = regexp.exec(s)) {
-                s = s.replace(match[0], String(arguments[++i]));
-            }
-            // display log messages
-            var len = arguments.length;
-            while (len > i++) {
-                if (arguments[i]) {
-                    s += ' ';
-                    s += String(arguments[i]);
-                }
-            }
-            opera.postError(type + ": " + s);
-        };
-    });
-}
 
 
 
@@ -46454,10 +45113,10 @@ apf.lm_exec = new (function(){
     // value of node by xpath
     function __val(n, x){
         if (!n)
-            return (wlvl > 1 && wnode(x),"")
+            return ("")
         return (n = (!n.nodeType && n || (n = n.selectSingleNode(x)) //!= 1 
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
-          && n.nodeValue || (wlvl > 2 && wxpath(x, "_val"),"");
+          && n.nodeValue || ("");
     }
 
     var __valattrrx = /(["'])/g;
@@ -46466,10 +45125,10 @@ apf.lm_exec = new (function(){
     }
     function __valattr(n, x){
         if (!n)
-            return (wlvl > 1 && wnode(x),"")
+            return ("")
         return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) 
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
-          &&  n.nodeValue.replace(__valattrrx,__valattrrp) || (wlvl > 2 && wxpath(x, "_val"),"");
+          &&  n.nodeValue.replace(__valattrrx,__valattrrp) || ("");
     }
 
     
@@ -46479,18 +45138,18 @@ apf.lm_exec = new (function(){
         if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
           || ((n = apf.nameserver.lookup.model[m]) && n.data)))
           || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
-            return (wlvl > 0 && wmodel(m, x, "_valm"),"");
+            return ("");
         return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) 
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
-          && n.nodeValue || (wlvl > 2 && wxpath(x),"");
+          && n.nodeValue || ("");
     }
 
     function __nod(n, x){           // node by xpath
-        return n ? n.selectSingleNode(x) : (wlvl > 1 && wnode(x, "_nod"),null);
+        return n ? n.selectSingleNode(x) : (null);
     }
 
     function _nods(n, x){           // array of nodes by xpath
-        return n ? n.selectNodes(x) : (wlvl > 1 && wnode(x, "_nods"),[]);
+        return n ? n.selectNodes(x) : ([]);
     }
 
     function __nodm(m, x){          // node of model by xpath
@@ -46498,7 +45157,7 @@ apf.lm_exec = new (function(){
         if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
           || ((n = apf.nameserver.lookup.model[m]) && n.data)))
           || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
-            return (wlvl > 0 && wmodel(m, x, "_nodm"),null);
+            return (null);
 
         return n.selectSingleNode(x);
     }
@@ -46508,13 +45167,13 @@ apf.lm_exec = new (function(){
         if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
           || ((n = apf.nameserver.lookup.model[m]) && n.data)))
           || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
-            return (wlvl > 0 && wmodel(m, x, "_nodsm"),[]);
+            return ([]);
 
         return n.selectNodes(x);
     }
 
     function __cnt(n, x){        // count nodes by xpath
-        return n ? n.selectNodes(x).length:(wlvl > 1 && wnode(x, "_cnt"),0);
+        return n ? n.selectNodes(x).length:(0);
     }
 
     function __cntm(m, x){      // count nodes from model by xpath
@@ -46522,7 +45181,7 @@ apf.lm_exec = new (function(){
         if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
           || ((n = apf.nameserver.lookup.model[m]) && n.data)))
           || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
-            return (wlvl>0&&wmodel(m,x,"_cntm"),0);
+            return (0);
 
         return n.selectNodes(x).length;
     }
@@ -46559,10 +45218,10 @@ apf.lm_exec = new (function(){
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
             ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
         (m.$isModel?m.data:(m.charAt?0:m))))
-            return (wlvl>0&&wmodel(m,x,"_xml"),"");
+            return ("");
 
         return (n && (n = n.selectSingleNode(x))) && n.xml ||
-        (wlvl>0&&!n&&wnode(x,"_xml"),"");
+        ("");
     }
 
     function _xmls(n, m, x){    // serialize nodes by xpath with .xml concatenated
@@ -46570,7 +45229,7 @@ apf.lm_exec = new (function(){
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
             ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
         (m.$isModel?m.data:(m.charAt?0:m))))
-            return (wlvl>0&&wmodel(m,x,"_xmls"),"");
+            return ("");
         for(var i = 0,j = ((n=n.selectNodes(x))).length,o = [];i<j;i++)
             o[i] = n[i].xml;
         return o.join("");
@@ -46581,7 +45240,7 @@ apf.lm_exec = new (function(){
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
             ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
         (m.$isModel?m.data:(m.charAt?0:m))))
-            return (wlvl>0&&wmodel(m,x,"_valcr"),"");
+            return ("");
 
         if(cr){
             apf.createNodeFromXpath( ni, x );
@@ -46590,7 +45249,7 @@ apf.lm_exec = new (function(){
             return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) &&
                 (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n))) && n.nodeValue || ""
         }
-        return (wlvl>2&&wxpath(x,"_valcr"),"");
+        return ("");
     }
 
     function _nodcr(n, cr, m, x){ // node with create flag
@@ -46598,14 +45257,14 @@ apf.lm_exec = new (function(){
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
             ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
         (m.$isModel?m.data:(m.charAt?0:m))))
-            return (wlvl>0&&wmodel(m,x,"_nodcr"),null);
+            return (null);
         return n.selectSingleNode(x) || (cr && apf.createNodeFromXpath( n, x ));
     }
 
     function _valst(n, x){      // a value with state holding
         var m = apf.xmldb.findModel(n);
         if(!m)
-            return (wlvl>0&&wmodel(m,x,"_valst"),"");
+            return ("");
         return "[" + m.id + "::" + apf.xmlToXpath(n, m.data, true) + (!x || x == "." ? "" : "/" + x) + "]";
     }
 
@@ -46642,7 +45301,7 @@ apf.lm_exec = new (function(){
         // check what n is.. if string parse
         if(n && n.charAt && n.charAt(0)=="<")
             return apf.getXmlDom(n).documentElement;
-        if(!n && wlvl>1)wnode("-","_local");
+        
         return n;
     }
 
@@ -47526,11 +46185,6 @@ apf.XPath = {
             this.cache[sExpr] = this.compile(sExpr);
 
         
-        if (sExpr.length > 20) {
-            this.lastExpr    = sExpr;
-            this.lastCompile = this.cache[sExpr];
-        }
-        
         
         if (typeof this.cache[sExpr] == "string"){
             if (this.cache[sExpr] == ".")
@@ -47855,12 +46509,6 @@ apf.BindingRule = function(struct, tagName){
     });
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
-        
-        if (!this.match && (!this.value && !this.childNodes.length && !this.get
-          || this.localName == "each") || this.select) {
-            throw new Error(apf.formatErrorString(0, this, "Bindingrule",
-                "Missing attribute 'match'")); //@todo apf3.0 turn this into a good error
-        }
         
 
         var first;
@@ -48543,9 +47191,6 @@ apf.actiontracker = function(struct, tagName){
             if (!UndoObj) return;
 
             
-            if (id != undoStack.length - 1) //@todo callstack got corrupted?
-                throw new Error("callstack got corrupted");
-            
             undoStack.length--;
             redoStack.push(UndoObj); //@todo check: moved from outside if(single)
 
@@ -48572,8 +47217,6 @@ apf.actiontracker = function(struct, tagName){
             return;
 
         
-        this.log && this.log("Executing " + (undo ? "undo" : "redo"));
-        
 
         //Undo the last X places - where X = id;
         if (id == -1)
@@ -48587,12 +47230,6 @@ apf.actiontracker = function(struct, tagName){
             if (!undoStack[undoStack.length - 1]) {
                 undoStack.length--;
 
-                
-                apf.console.error("The actiontracker is in an invalid \
-                                   state. The entire undo and redo stack will \
-                                   be cleared to prevent further corruption\
-                                   This is a serious error, please contact \
-                                   the system administrator.");
                 
 
                 this.$undostack = [];
@@ -48630,11 +47267,6 @@ apf.actiontracker = function(struct, tagName){
                   bubbles : true
               })) === false) {
 
-                
-                this.log && this.log("You have cancelled the automatic undo \
-                    process! Please be aware that if you don't retry this call \
-                    the queue will fill up and none of the other actions will \
-                    be sent through.");
                 
 
                 return true; //don't delete the call from the queue
@@ -51404,8 +50036,7 @@ apf.button  = function(struct, tagName){
 
     this.$propHandlers["icon"] = function(value){
         
-        if (!this.oIcon)
-            return apf.console.warn("No icon defined in the Button skin", "button");
+        if (!this.oIcon) return;
         
 
         if (value)
@@ -51530,12 +50161,6 @@ apf.button  = function(struct, tagName){
             this.$setState("Down", {});
 
         
-        if (!menu) {
-            throw new Error(apf.formatErrorString(0, this,
-                "Showing submenu",
-                "Could not find submenu '" + this.submenu + "'"));
-        }
-        
 
         if (!this.value) {
             menu.hide();
@@ -51583,12 +50208,6 @@ apf.button  = function(struct, tagName){
 
         var menu = self[this.submenu];
 
-        
-        if (!menu) {
-            throw new Error(apf.formatErrorString(0, this,
-                "Showing submenu",
-                "Could not find submenu '" + this.submenu + "'"));
-        }
         
 
         var pos = apf.getAbsolutePosition(this.$ext, menu.$ext.offsetParent);
@@ -51855,29 +50474,17 @@ apf.button.actions  = {
         if (this.target && self[this.target])
             self[this.target].remove()
         
-        else
-            apf.console.warn("Target to remove wasn't found or specified:'"
-                             + this.target + "'");
-        
     },
 
     "add" : function(){
         if (this.target && self[this.target])
             self[this.target].add()
         
-        else
-            apf.console.warn("Target to add wasn't found or specified:'"
-                             + this.target + "'");
-        
     },
 
     "rename" : function(){
         if (this.target && self[this.target])
             self[this.target].startRename()
-        
-        else
-            apf.console.warn("Target to rename wasn't found or specified:'"
-                             + this.target + "'");
         
     },
     
@@ -51925,10 +50532,6 @@ apf.button.actions  = {
             if (!model) {
                 model = apf.globalModel;
                 if (!model) {
-                    
-                    throw new Error(apf.formatErrorString(0, this,
-                        "Finding a model to submit",
-                        "Could not find a model to submit."));
                     
     
                     return;
@@ -52027,10 +50630,6 @@ apf.button.actions  = {
 
         if (parent && parent.close)
             parent.close();
-        
-        else
-            apf.console.warn("Target to close wasn't found or specified:'"
-                             + this.target + "'");
         
     }
 };
@@ -53139,9 +51738,6 @@ apf.datagrid = function(struct, tagName){
             h = rules[i];
             
             
-            if (!h.$width)
-                throw new Error("missing width"); //temporary check
-            
             
             if (!h.$isPercentage)
                 fixed += parseFloat(h.$width) || 0;
@@ -53287,23 +51883,6 @@ apf.datagrid = function(struct, tagName){
                         this.$setStyleClass(oRow, "checked");
                 }
                 else {
-                    
-                    throw new Error(apf.formatErrorString(0, this,
-                        "Could not find check attribute",
-                        'Maybe the attribute check is missing from your skin file:\
-                            <a:item\
-                              class        = "."\
-                              caption      = "label/u/text()"\
-                              icon         = "label"\
-                              openclose    = "span"\
-                              select       = "label"\
-                              check        = "label/b"\
-                              container    = "following-sibling::blockquote"\
-                            >\
-                                <div><span> </span><label><b> </b><u>-</u></label></div>\
-                                <blockquote> </blockquote>\
-                            </a:item>\
-                        '));
                     
                     return false;
                 }
@@ -56972,10 +55551,6 @@ apf.item  = function(struct, tagName){
         var menu = self[this.submenu];
         if (!menu) {
             
-            throw new Error(apf.formatErrorString(0, this,
-                "Displaying submenu",
-                "Could not find submenu '" + this.submenu + "'", this.$aml));
-            
 
             return;
         }
@@ -60271,8 +58846,6 @@ apf.model = function(struct, tagName){
         this.dispatchEvent("beforeretrieve");
 
         
-        var amlNode = options.amlNode;
-        
 
         var callback = options.callback, _self = this;
         options.callback = function(data, state, extra){
@@ -60284,12 +58857,6 @@ apf.model = function(struct, tagName){
             if (state != apf.SUCCESS) {
                 var oError;
 
-                
-                oError = new Error(apf.formatErrorString(0,
-                    _self, "Inserting xml data", "Could not insert data\n"
-                  + "Instruction:" + instruction + "\n"
-                  + "Url: " + extra.url + "\n"
-                  + "Info: " + extra.message + "\n\n" + data));
                 
 
                 if (extra.tpModule.retryTimeout(extra, state, 
@@ -60354,12 +58921,6 @@ apf.model = function(struct, tagName){
             options.insertPoint = this.data;
 
         
-        if (!options.insertPoint) {
-            throw new Error(apf.formatErrorString(0, amlNode || _self,
-                "Inserting data", "Could not determine insertion point for "
-              + "instruction: " + instruction));
-        }
-        
 
         //if(this.dispatchEvent("beforeinsert", parentXMLNode) === false) return false;
 
@@ -60409,13 +58970,6 @@ apf.model = function(struct, tagName){
         if (!xmlNode)
             xmlNode = this.data;
 
-        
-        if (!xmlNode) {
-            throw new Error(apf.formatErrorString(0, this, 
-                "Submitting model",
-                "Could not submit data, because no data was passed and the "
-              + "model does not have data loaded."));
-        }
         
 
         if (!type)
@@ -60954,10 +59508,6 @@ apf.page = function(struct, tagName){
                          page.parentNode.remove(page, event);');
                          
                     btncontainer.appendChild(elBtnClose);
-                }
-                
-                else {
-                    apf.console.warn("Missing close button in tab skin");
                 }
                 
             }
@@ -61601,9 +60151,7 @@ apf.propedit    = function(struct, tagName){
 
             //Assuming value is xml node
             
-            setTimeout(function(){
-                propLoadObj.load(value);
-            });
+            propLoadObj.load(value);
             
         }
         
@@ -62247,13 +60795,6 @@ apf.propedit    = function(struct, tagName){
         var ceditor = apf.lm.compile(editor, {xpathmode: 2});
         if (ceditor.type == 2) {
             
-            if (!editor) {
-                if (prop.childNodes.length) //It's a group
-                    return;
-                else 
-                    throw new Error("Missing editor attribute on property element: " + prop.xml); //@todo apf3.0 make into proper error
-            }
-            
             
             if (!this.$editors[editor]) {
                 var constr = apf.namespaces[apf.ns.aml].elements[editor];
@@ -62717,8 +61258,7 @@ apf.radiobutton = function(struct, tagName){
      */
     this.$propHandlers["icon"] = function(value){
         
-        if (!this.oIcon)
-            return apf.console.warn("No icon defined in the Button skin", "button");
+        if (!this.oIcon) return;
         
 
         if (value)
@@ -63406,9 +61946,6 @@ apf.rpc = function(struct, tagName){
         
         if (!apf[value]) {
             
-            throw new Error(apf.formatErrorString(1025, null, "Teleport baseclass",
-                "Could not find Ajax.org Teleport RPC Component '" + value + "'", this));
-            
             return;
         }
         var _self = this;
@@ -63436,10 +61973,6 @@ apf.rpc = function(struct, tagName){
      */
     this.setCallback = function(name, func){
         
-        if (!this.$methods[name])
-            throw new Error(apf.formatErrorString(0, this, "Teleport RPC",
-                "Trying to set callback: method not found."));
-        
             
         this.$methods[name].callback = func;
     };
@@ -63456,10 +61989,6 @@ apf.rpc = function(struct, tagName){
      * @param {String} url  the target url of method defined on this object.
      */
     this.setUrl = function(name, url) {
-        
-        if (!this.$methods[name])
-            throw new Error(apf.formatErrorString(0, this, "Teleport RPC",
-                "Trying to set callback: method not found."));
         
 
         this.$methods[name].setProperty("url", url);
@@ -63580,11 +62109,6 @@ apf.rpc = function(struct, tagName){
      */
     this.purge = function(callback, userdata, async, extradata){
         
-        if (!this.stack[this.url] || !this.stack[this.url].length) {
-            throw new Error(apf.formatErrorString(0, null, "Executing a multicall", 
-                "No RPC calls where executed before calling purge()."));
-        }
-        
 
         // Get Data
         var data = this.createMessage("multicall", [this.stack[this.url]]), //function of module
@@ -63628,10 +62152,6 @@ apf.rpc = function(struct, tagName){
      */
     this.$addMethod = function(amlNode){
         if (amlNode.localName != "method"){
-            
-            throw new Error(apf.formatErrorString(0, this,
-                "Parsing RPC Teleport node",
-                "Found element which is not a method", this));
             
             return false;
         }
@@ -63699,11 +62219,6 @@ apf.rpc = function(struct, tagName){
             this.forceMulticall = true;
     
         //Set information later neeed
-        
-        if (!this[method])
-            throw new Error(apf.formatErrorString(0, null, "Saving/Loading data",
-                "Could not find RPC function by name '" + method + "' in data "
-              + "instruction '" + options.instruction + "'"));
         
         
         var props = this.$methods[method];
@@ -64232,8 +62747,6 @@ apf.scrollbar = function(struct, tagName){
 
         if (this.$curValue == NaN) {
             
-            apf.console.warn("Scrollbar is hidden while scrolling.");
-            
             return;
         }
         
@@ -64692,15 +63205,6 @@ apf.aml.setElement("skin", apf.skin);
         }
 
         
-        if (!found) {
-            throw new Error(apf.formatErrorString(0, null,
-                "Checking for the aml namespace",
-                "The Ajax.org Platform xml namespace was not found in "
-                + (xmlNode.getAttribute("filename")
-                    ? "in '" + xmlNode.getAttribute("filename") + "'"
-                    : "")));
-        }
-        
 
         return found;
     }
@@ -64737,8 +63241,6 @@ apf.aml.setElement("skin", apf.skin);
         var _self = this;
 
         
-        apf.console.info("Loading include file: " + apf.getAbsolutePath(path, includeNode.getAttribute("src")));
-        
 
         
         apf.getData(
@@ -64767,8 +63269,6 @@ apf.aml.setElement("skin", apf.skin);
             }
             else if (--_self.$includesRemaining == 0) {
                 
-                apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " skin done from file: " + extra.url);
-                
 
                 finish.call(_self, xmlNode);
             }
@@ -64779,16 +63279,12 @@ apf.aml.setElement("skin", apf.skin);
     
     function loadSkinFile(path){
         
-        apf.console.info("Loading include file: " + path);
-        
 
         var _self = this;
         
         apf.getData(
         
           path, {
-          
-          type : "skin",
           
           callback: function(xmlString, state, extra){
              if (state != apf.SUCCESS) {
@@ -64824,8 +63320,6 @@ apf.aml.setElement("skin", apf.skin);
             var xmlNode = apf.getXml(xmlString);//apf.getAmlDocFromString(xmlString);
             
             
-            checkForAmlNamespace(xmlNode);
-            
             
             if (!xmlNode) {
                 throw new Error(apf.formatErrorString(0, _self,
@@ -64848,8 +63342,6 @@ apf.aml.setElement("skin", apf.skin);
             else 
             
             {
-                
-                apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " skin done from file: " + extra.url);
                 
                 
                 finish.call(_self, xmlNode);
@@ -65649,12 +64141,6 @@ apf.smartbinding = function(struct, tagName){
         this[prop] = value;
         
         
-        /*if (!apf.nameserver.get(name, attr[i].nodeValue))
-            throw new Error(apf.formatErrorString(1036, this, 
-                "Connecting " + name, 
-                "Could not find " + name + " by name '" 
-                + attr[i].nodeValue + "'"));*/
-        
     };
     
     this.add = function(node){
@@ -65775,10 +64261,6 @@ apf.smartbinding = function(struct, tagName){
         if (this.parentNode.hasFeature(apf.__DATABINDING__))
             this.register(this.parentNode);
 
-        
-        apf.console.info(this.name
-            ? "Creating SmartBinding [" + this.name + "]"
-            : "Creating implicitly assigned SmartBinding");
         
     });
 }).call(apf.smartbinding.prototype = new apf.AmlElement());
@@ -67120,13 +65602,6 @@ apf.state = function(struct, tagName){
             for (var i = 0; i < q.length; i++) {
                 if (!self[q[i][0]] || !self[q[i][0]].setProperty) {
                     
-                    /*throw new Error(apf.formatErrorString(1013, this,
-                        "Setting State",
-                        "Could not find object to give state: '"
-                        + q[i][0] + "' on property '" + q[i][1] + "'"));*/
-                    apf.console.warn("Could not find object to give state: " 
-                        + q[i][0] + "' on property '" + q[i][1] + "'");
-                    
                     
                     continue;
                 }
@@ -67148,8 +65623,6 @@ apf.state = function(struct, tagName){
             this.dispatchEvent("activate");
 
             
-            apf.console.info("Setting state '" + this.name + "' to ACTIVE");
-            
         }
 
         //Deactivate State
@@ -67157,8 +65630,6 @@ apf.state = function(struct, tagName){
             this.setProperty("active", false);
             this.dispatchEvent("deactivate");
 
-            
-            apf.console.info("Setting state '" + this.name + "' to INACTIVE");
             
         }
     };
@@ -67632,8 +66103,6 @@ apf.table = function(struct, tagName){
     
     this.$propHandlers["columns"] = function(value){
         if (!value.match(/^((?:\d+\%?|\*)\s*(?:,\s*|\s*$))+$/)) {
-            
-            apf.console.warn("Invalid column string found for table: " + value);
             
             return;
         }
@@ -69536,23 +68005,6 @@ apf.tree = function(struct, tagName){
             }
             else {
                 
-                throw new Error(apf.formatErrorString(0, this,
-                        "Could not find check attribute",
-                        'Maybe the attribute check is missing from your skin file:\
-                            <a:item\
-                              class        = "."\
-                              caption      = "label/u/text()"\
-                              icon         = "label"\
-                              openclose    = "span"\
-                              select       = "label"\
-                              check        = "label/b"\
-                              container    = "following-sibling::blockquote"\
-                            >\
-                                <div><span> </span><label><b> </b><u>-</u></label></div>\
-                                <blockquote> </blockquote>\
-                            </a:item>\
-                        '));
-                
                 return false;
             }
         }
@@ -70135,9 +68587,6 @@ apf.webdav = function(struct, tagName){
         }
 
         
-        apf.console.error(extra.message + ' (username: ' + extra.username
-                          + ', server: ' + extra.server + ')', 'webdav');
-        
 
         return this.dispatchEvent("authfailure", extra);
     }
@@ -70166,9 +68615,6 @@ apf.webdav = function(struct, tagName){
             unregister.call(this, 'auth-callback');
         }
 
-        
-        apf.console.error(extra.message + ' (username: ' + extra.username
-                          + ', server: ' + extra.server + ')', 'webdav');
         
 
         return this.dispatchEvent("connectionerror", extra);
@@ -70801,8 +69247,6 @@ apf.webdav = function(struct, tagName){
         
         this.doRequest(function(data, state, extra) {
             
-            apf.console.dir(data);
-            
         }, sPath, buildPropertiesBlock.call(this, oPropsSet, oPropsDel),
            sLock ? {"If": "<" + sLock + ">"} : null, true);
     };
@@ -71007,9 +69451,6 @@ apf.webdav = function(struct, tagName){
                 this.report(args[0], args[1], args[2], cb);
                 break;
             default:
-                
-                throw new Error(apf.formatErrorString(0, null, "Saving/Loading data",
-                    "Invalid WebDAV method '" + method + "'"));
                 
                 break;
         }
