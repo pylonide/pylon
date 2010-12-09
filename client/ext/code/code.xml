@@ -8,7 +8,7 @@
             "application/xhtml+xml": "html",
             "application/xml": "xml",
             "text/x-script.python": "python",
-            "text/x-script.cooffeescript": "python" // TODO
+            "text/x-script.coffeescript": "python" // TODO
         }
 
         function getSyntax(type) {
