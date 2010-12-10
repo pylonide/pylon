@@ -72,7 +72,15 @@
 		        return false;
 		    } else
                 return true;
-        };       
+        };
+        
+        function copy(a, b) {
+            davProject.copy(a, b + /\/[^\/]*$/.exec(a));
+        };
+
+        function move(a, b) {
+            davProject.move(a, b + /\/[^\/]*$/.exec(a));
+        };
     ]]></a:script>
 
     <a:window id="winFilesViewer" flex="3" skin="dockwin" title="Files" modal="false" visible="true" buttons="close" optimize="true">
@@ -96,8 +104,8 @@
             <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
             <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
             <a:rename set="{davProject.rename([@name], [@path])}"/>
-            <a:copy match="[file|folder]" set="{davProject.copy([@path], [../@path])}"/>
-            <a:move set="{davProject.move([@path], [../@path])}"/>
+            <a:copy match="[file|folder]" set="{copy([@path], [../@path])}"/>
+            <a:move set="{move([@path], [../@path])}"/>
             <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
 
             <a:drag match="[folder|file]" />
