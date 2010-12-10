@@ -27,7 +27,37 @@ module.exports = Ide = function(options, httpServer, exts) {
         staticUrl: options.staticUrl || "/static",
         workspaceId: options.workspaceId || "ide",
         settingsFile: options.settingsFile || ".settings.xml",
-        db: options.db || null
+        db: options.db || null,
+        plugins: options.plugins || [
+            "ext/filesystem/filesystem",
+            "ext/settings/settings",
+            "ext/editors/editors",
+            "ext/themes/themes",
+            "ext/themes_default/themes_default",
+            "ext/panels/panels",
+            "ext/tree/tree",
+            "ext/save/save",
+            "ext/gotofile/gotofile",
+            "ext/newresource/newresource",
+            "ext/undo/undo",
+            "ext/clipboard/clipboard",
+            "ext/searchinfiles/searchinfiles",
+            "ext/searchreplace/searchreplace",
+            "ext/quickwatch/quickwatch",
+            "ext/quicksearch/quicksearch",
+            "ext/gotoline/gotoline",
+            "ext/html/html",
+            "ext/browser/browser",
+            "ext/code/code",
+            "ext/extmgr/extmgr",
+            "ext/run/run", //Add location rule
+            "ext/debugger/debugger", //Add location rule
+            "ext/noderunner/noderunner", //Add location rule
+            "ext/console/console",
+            "ext/tabbehaviors/tabbehaviors",
+            "ext/keybindings/keybindings",
+            "ext/watcher/watcher"
+        ]
     }
 
     this.clients = [];
@@ -74,9 +104,10 @@ sys.inherits(Ide, EventEmitter);
                 debug: self.options.debug,
                 staticUrl: self.options.staticUrl,
                 sessionId: req.sessionID, // set by connect
-                workspaceId: self.options.workspaceId
+                workspaceId: self.options.workspaceId,
+                plugins: self.options.plugins
             }; 
- 
+
             var settingsPath = self.options.workspaceDir + "/" + self.options.settingsFile;
             Path.exists(settingsPath, function(exists) {
                 if (exists) {

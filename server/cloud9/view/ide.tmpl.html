@@ -50,48 +50,11 @@
                     require(list, function(ide, ext, util){
                         ide.settings = <%settingsXml%>;
 
-                        var modules = [
-                            // VERSION == FILES ? (
-                                "ext/filesystem/filesystem",
-                                "ext/settings/settings",
-                                "ext/editors/editors",
-                                "ext/themes/themes",
-                                "ext/themes_default/themes_default",
-                                "ext/panels/panels",
-                                "ext/tree/tree",
-                                "ext/save/save",
-                                "ext/gotofile/gotofile",
-                                "ext/newresource/newresource",
-                                "ext/undo/undo",
-                                "ext/clipboard/clipboard",
-                                //"ext/refactor/refactor",
-                                "ext/searchinfiles/searchinfiles",
-                                "ext/searchreplace/searchreplace",
-                                "ext/quickwatch/quickwatch",
-                                "ext/quicksearch/quicksearch",
-                                "ext/gotoline/gotoline",
-                                "ext/html/html",
-                                "ext/browser/browser",
-                                "ext/code/code",
-                                "ext/extmgr/extmgr",
-                                //"ext/formatjson/formatjson",
-                                //"ext/docs/docs",
-                                //"ext/richtext/richtext",
-                                "ext/run/run", //Add location rule
-                                "ext/debugger/debugger", //Add location rule
-                                "ext/noderunner/noderunner", //Add location rule
-                                "ext/console/console",
-                                "ext/tabbehaviors/tabbehaviors",
-                                "ext/keybindings/keybindings",
-                                //"ext/terminal/terminal"
-                                "ext/watcher/watcher"
-                            // ) : "js/modules"
-                        ];
-
+                        var plugins = <%plugins%>;
                         apf.addEventListener("load", function(){
                             //Load extensions
-                            require(modules, function(){
-                                ide.dispatchEvent("extload", {modules: modules});
+                            require(plugins, function(){
+                                ide.dispatchEvent("extload", {modules: plugins});
                             });
                         });
                     });

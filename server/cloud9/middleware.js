@@ -7,8 +7,12 @@ exports.staticProvider = function(path, mount) {
     return function(req, resp, next) {
         var path = require("url").parse(req.url).pathname;
         if (path.indexOf(mount) === 0) {
+            var originalUrl = req.url;
             req.url = req.url.replace(mount, "") || "/";
-            common(req, resp, next);
+            common(req, resp, function(err) {
+                req.url = originalUrl;
+                next(err);
+            });
         }
         else {
             next();
