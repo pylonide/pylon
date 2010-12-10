@@ -168,7 +168,9 @@ return ext.register("ext/debugger/debugger", {
         "xml" : "application/xml",
         "php" : "application/x-httpd-php",
         "html" : "text/html",
-        "xhtml" : "application/xhtml+xml"
+        "xhtml" : "application/xhtml+xml",
+        "coffee" : "text/x-script.coffeescript",
+        "py" : "text/x-script.python"
     },
 
     getContentType : function(file) {
