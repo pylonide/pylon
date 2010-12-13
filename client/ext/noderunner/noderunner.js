@@ -4,13 +4,14 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/noderunner/noderunner",
-    ["core/ide",
-     "core/ext",
-     "core/util",
-     "ext/console/console",
-     "text!ext/noderunner/noderunner.xml"], 
-     function(ide, ext, util, log, markup) {
+ 
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+var util = require("core/util");
+var log = require("ext/console/console");
+var markup = require("text!ext/noderunner/noderunner.xml");
 
 return ext.register("ext/noderunner/noderunner", {
     name   : "Node Runner",
@@ -27,7 +28,7 @@ return ext.register("ext/noderunner/noderunner", {
             }
         }
     },
-
+ˇ
     init : function(amlNode){
         ide.addEventListener("socketDisconnect", this.onDisconnect.bind(this));
         ide.addEventListener("socketMessage", this.onMessage.bind(this));

@@ -4,13 +4,15 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/run/run",
-    ["core/ide",
-     "core/ext",
-     "ext/noderunner/noderunner",
-     "ext/settings/settings",
-     "ext/save/save",
-     "text!ext/run/run.xml"], function(ide, ext, noderunner, settings, save, markup) {
+
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+var noderunner = require("ext/noderunner/noderunner");
+var settings = require("ext/settings/settings");
+var save = require("ext/save/save");
+var markup = require("text!ext/run/run.xml");
 
 return ext.register("ext/run/run", {
     name   : "Run Toolbar",
