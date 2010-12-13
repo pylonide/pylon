@@ -4,18 +4,18 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/searchinfiles/searchinfiles",
-    ["core/ide",
-     "core/ext",
-     "core/util",
-     "ace/plugin_manager",
-     "ace/search",
-     "ext/editors/editors",
-     "ext/console/console",
-     "text!ext/searchinfiles/skin.xml", 
-     "text!ext/searchinfiles/searchinfiles.xml"],
-    function(ide, ext, util, plugins, search, editors, console, skin, markup) {
-
+ 
+define(function(require, exports, module) {
+ 
+ var ide = require("core/ide");
+ var ext = require("core/ext");
+ var util = require("core/util");
+ var canon = require("pilot/canon");
+ var editors = require("ext/editors/editors");
+ var console = require("ext/console/console");
+ var skin = require("text!ext/searchinfiles/skin.xml");
+ var markup = require("text!ext/searchinfiles/searchinfiles.xml");
+  
 return ext.register("ext/searchinfiles/searchinfiles", {
     name     : "Search in files",
     dev      : "Ajax.org",

@@ -7,11 +7,11 @@
 require.def("ext/searchreplace/searchreplace",
     ["core/ide",
      "core/ext",
-     "ace/plugin_manager",
+     "pilot/canon",
      "ace/search",
      "ext/editors/editors", 
      "text!ext/searchreplace/searchreplace.xml"],
-    function(ide, ext, plugins, search, editors, markup) {
+    function(ide, ext, canon, search, editors, markup) {
 
 return ext.register("ext/searchreplace/searchreplace", {
     name    : "Searchreplace",
@@ -49,12 +49,13 @@ return ext.register("ext/searchreplace/searchreplace", {
         this.hotitems["search"] = [this.nodes[1]];
         this.hotitems["searchreplace"] = [this.nodes[2]];
         
-        /*plugins.registerCommand("find", function(editor, selection) {
-            _self.setEditor(editor, selection).toggleDialog(false, true);
-        });*/
-        plugins.registerCommand("replace", function(editor, selection) {
-            _self.setEditor(editor, selection).toggleDialog(true, true);
+        canon.addCommand({
+            name: "replace",
+            exec: function(env, args, request) { 
+                _self.setEditor(env.editor, env.selection).toggleDialog(true, true);
+            }
         });
+        
     },
 
     init : function(amlNode){

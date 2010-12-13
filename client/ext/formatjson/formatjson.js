@@ -4,14 +4,15 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/formatjson/formatjson",
-    ["core/ide", 
-     "core/ext", 
-     "core/util", 
-     "ext/editors/editors", 
-     "ace/range", 
-     "text!ext/formatjson/formatjson.xml"],
-    function(ide, ext, util, editors, Range, markup) {
+ 
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+var util = require("core/util");
+var editors = require("ext/editors/editors");
+var Range = require("ace/range").Range;
+var markup = require("text!ext/formatjson/formatjson.xml");
         
 return ext.register("ext/formatjson/formatjson", {
     name     : "JSON Formatter",

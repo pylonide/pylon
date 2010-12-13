@@ -4,14 +4,15 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/code/code",
-    ["core/ide", 
-     "core/ext", 
-     "text!ext/code/code.xml",
-     "text!ext/code/settings.xml",
-     "ace/document"
-    ],
-    function(ide, ext, markup, settings, Document) {
+ 
+ 
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+var Document = require("ace/document").Document;
+var markup = require("text!ext/code/code.xml");
+var settings = require("text!ext/code/settings.xml");
 
 apf.actiontracker.actions.aceupdate = function(undoObj, undo){
     var q = undoObj.args;

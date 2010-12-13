@@ -4,15 +4,16 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/quicksearch/quicksearch",
-    ["core/ide",
-     "core/ext",
-     "ace/plugin_manager",
-     "ace/search",
-     "ext/editors/editors", 
-     "text!ext/quicksearch/skin.xml",
-     "text!ext/quicksearch/quicksearch.xml"],
-    function(ide, ext, plugins, search, editors, skin, markup) {
+ 
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+var canon = require("pilot/canon");
+var editors = require("ext/editors/editors");
+var Search = require("ace/search").Search;
+var skin = require("text!ext/quicksearch/skin.xml");
+var markup = require("text!ext/quicksearch/quicksearch.xml");
 
 return ext.register("ext/quicksearch/quicksearch", {
     name    : "quicksearch",
@@ -30,9 +31,11 @@ return ext.register("ext/quicksearch/quicksearch", {
 
     hook : function(){
         var _self = this;
-
-        plugins.registerCommand("find", function(editor, selection) {
-            _self.toggleDialog(1);
+        canon.addCommand({
+            name: "find",
+            exec: function(env, args, request) { 
+                _self.toggleDialog(1);
+            }
         });
     },
 
@@ -187,7 +190,7 @@ return ext.register("ext/quicksearch/quicksearch", {
             caseSensitive: true, 
             wholeWord: false, 
             regExp: false, 
-            scope: search.ALL 
+            scope: Search.ALL 
         }
 
         if (this.$crtSearch != txt) {

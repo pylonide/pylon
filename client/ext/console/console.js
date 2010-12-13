@@ -4,16 +4,17 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/console/console",
-    ["core/ide",
-     "core/ext",
-     "ace/lib/lang",
-     "ext/panels/panels",
-     "ext/console/parser",
-     "ext/console/trie",
-     "text!ext/console/console.css",
-     "text!ext/console/console.xml"],
-    function(ide, ext, lang, panels, parserCls, Trie, css, markup) {
+ 
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+var lang = require("pilot/lang").lang;
+var panels = require("ext/panels/panels");
+var Parser = require("ext/console/parser");
+var Trie = require("ext/console/trie");
+var css = require("text!ext/console/console.css");
+var markup = require("text!ext/console/console.xml");
 
 var trieCommands,
     commands   = {},
@@ -22,7 +23,7 @@ var trieCommands,
     cmdHistory = [],
     cmdBuffer  = "",
     lastSearch = null,
-    parser     = new parserCls();
+    parser     = new Parser();
 
 var tt=0;
 return ext.register("ext/console/console", {

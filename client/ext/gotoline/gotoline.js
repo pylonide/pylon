@@ -4,15 +4,15 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/gotoline/gotoline",
-    ["core/ide",
-     "core/ext",
-     "ace/plugin_manager",
-     "ace/search",
-     "ext/editors/editors", 
-     "text!ext/gotoline/skin.xml",
-     "text!ext/gotoline/gotoline.xml"],
-    function(ide, ext, plugins, search, editors, skin, markup) {
+ 
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+var canon = require("pilot/canon");
+var editors = require("ext/editors/editors");
+var skin = require("text!ext/gotoline/skin.xml");
+var markup = require("text!ext/gotoline/gotoline.xml");
 
 return ext.register("ext/gotoline/gotoline", {
     name    : "Gotoline Window",
@@ -43,8 +43,11 @@ return ext.register("ext/gotoline/gotoline", {
 
         this.hotitems["gotoline"] = [this.nodes[1]];
 
-        plugins.registerCommand("gotoline", function(editor, selection) {
-            _self.gotoline(1);
+        canon.addCommand({
+            name: "gotoline",
+            exec: function(env, args, request) { 
+                _self.gotoline(1);
+            }
         });
     },
 
