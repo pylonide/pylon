@@ -4,9 +4,13 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/editors/editors",
-    ["core/ide", "core/ext", "core/util", "ext/panels/panels"],
-    function(ide, ext, util, panels) {
+ 
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+var util = require("core/util");
+var panels = require("ext/panels/panels");
 
 return ext.register("ext/editors/editors", {
     name    : "Editors",
@@ -417,6 +421,55 @@ return ext.register("ext/editors/editors", {
             acedoc.replace(sel.getRange(), e.data);
             sel.clearSelection();
         });
+    },
+
+    showFile : function(path, row, column, text) {
+        var name = path.split("/").pop();
+        var node = apf.n("<file />")
+            .attr("name", name)
+            .attr("contenttype", this.getContentType(name))
+            .attr("path", path)
+            .node();
+    
+        this.jump(node, row, column, text);
+    },
+    
+    jump : function(fileEl, row, column, text, doc, page) {
+        var path    = fileEl.getAttribute("path");
+        var hasData = page && tabEditors.getPage(path).$doc ? true : false;
+    
+        if (row !== undefined) {
+            var jumpTo = function(){
+                setTimeout(function() {
+                    // TODO move this to the editor
+                    ceEditor.$editor.gotoLine(row, column);
+                    if (text)
+                        ceEditor.$editor.find(text);
+                    ceEditor.focus();
+                }, 100);
+            }
+            
+            if (hasData) {
+                tabEditors.set(path);
+                jumpTo();
+            }
+            else
+                ide.addEventListener("afteropenfile", function(e) {
+                    var node = e.doc.getNode();
+                    
+                    if (node.getAttribute("path") == path) {
+                        ide.removeEventListener("afteropenfile", arguments.callee);
+                        jumpTo();
+                    }
+                });
+        }
+        
+        if (!hasData && !page) 
+            ide.dispatchEvent("openfile", {
+                doc: doc || ide.createDocument(fileEl)
+            });
+        else
+            tabEditors.set(path);
     },
 
     enable : function(){

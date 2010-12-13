@@ -10,8 +10,9 @@ require.def("ext/gotofile/gotofile",
      "ext/filesystem/filesystem", 
      "ext/settings/settings",
      "ext/tree/tree",
+     "ext/editors/editors",
      "text!ext/gotofile/gotofile.xml"],
-    function(ide, ext, fs, settings, tree, markup) {
+    function(ide, ext, fs, settings, tree, editors, markup) {
         
 return ext.register("ext/gotofile/gotofile", {
     name    : "Filter Tree",
@@ -81,7 +82,7 @@ return ext.register("ext/gotofile/gotofile", {
             winGoToFile.hide();
             var root = trFiles.xmlRoot.selectSingleNode("folder[1]"),
                 path   = root.getAttribute("path") + apf.getTextNode(e.xmlNode).nodeValue;
-            require("ext/debugger/debugger").showFile(path, 0, 0);
+            editors.showFile(path, 0, 0);
         });
     },
     

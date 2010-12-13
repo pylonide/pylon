@@ -4,12 +4,15 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/quickwatch/quickwatch",
-    ["core/ide",
-     "core/ext",
-     "ext/editors/editors",
-     "text!ext/quickwatch/quickwatch.xml"],
-    function(ide, ext, editors, markup) {
+ 
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+var editors = require("ext/editors/editors");
+var log = require("ext/console/console");
+var noderunner = require("ext/noderunner/noderunner");
+var markup = require("text!ext/editors/editors.xml");
 
 return ext.register("ext/quickwatch/quickwatch", {
     name    : "quickwatch",
@@ -17,6 +20,7 @@ return ext.register("ext/quickwatch/quickwatch", {
     type    : ext.GENERAL,
     alone   : true,
     markup  : markup,
+    deps   : [noderunner],
     commands : {
         "quickwatch": {hint: "quickly inspect the variable that is under the cursor"}
     },
@@ -33,7 +37,7 @@ return ext.register("ext/quickwatch/quickwatch", {
                 if (!this.value.trim())
                     return dgWatch.clear();
 
-                require('ext/console/console').evaluate(this.value);
+                log.evaluate(this.value);
             }
             else if (e.keyCode == 40 && dgWatch.length) {
                 var first = dgWatch.getFirstTraverseNode();
@@ -76,7 +80,7 @@ return ext.register("ext/quickwatch/quickwatch", {
             if (value) {
                 txtCurObject.setValue(value);
                 if (exec) {
-                    require('ext/console/console').evaluate(value);
+                    log.evaluate(value);
                     txtCurObject.focus();
                 }
             }

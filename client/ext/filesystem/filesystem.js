@@ -4,8 +4,12 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/filesystem/filesystem",
-    ["core/ide", "core/ext", "core/util"], function(ide, ext, util) {
+ 
+define(function(require, exports, module) {
+ 
+var ide = require("core/ide");
+var ext = require("core/ext");
+var util = require("core/util");
 
 return ext.register("ext/filesystem/filesystem", {
     name   : "File System",
@@ -216,17 +220,6 @@ return ext.register("ext/filesystem/filesystem", {
         }
         ide.addEventListener("consolecommand.open", openHandler);
         ide.addEventListener("consolecommand.c9",   openHandler);
-
-        ide.addEventListener("consoleresult.internal-isfile", function(e) {
-            var data = e.data;
-            if (data.sender != "filesystem")
-                return;
-            var path = data.cwd.replace(ide.workspaceDir, ide.davPrefix);
-            if (data.isfile)
-                require("ext/debugger/debugger").showFile(path);
-            else
-                require("ext/console/console").log("'" + path + "' is not a file.");
-        });
 
         /*this.model.insert(url, {
             insertPoint : this.model.queryNode("folder[@root='1']")

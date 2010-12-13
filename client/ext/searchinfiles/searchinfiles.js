@@ -87,7 +87,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
                 path = node.getAttribute("path");
                 text = node.getAttribute("query");
             }
-            require("ext/debugger/debugger").showFile(root.getAttribute("path") + "/" + path, line, 0, text);
+            editors.showFile(root.getAttribute("path") + "/" + path, line, 0, text);
         });
     },
 

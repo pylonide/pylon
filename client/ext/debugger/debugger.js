@@ -4,16 +4,18 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/debugger/debugger",
-    ["core/ide",
-     "core/document",
-     "core/ext",
-     "ext/console/console",
-     "ext/noderunner/noderunner",
-     "ext/panels/panels",
-     "ext/filesystem/filesystem",
-     "text!ext/debugger/debugger.xml"],
-    function(ide, Document, ext, log, noderunner, panels, fs, markup) {
+ 
+
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+var console = require("ext/console/console");
+var editors = require("ext/editors/editors");
+var panels = require("ext/panels/panels");
+var fs = require("ext/filesystem/filesystem");
+var noderunner = require("ext/noderunner/noderunner");
+var markup = require("text!ext/debugger/debugger.xml");
 
 return ext.register("ext/debugger/debugger", {
     name   : "Debug",
@@ -21,7 +23,7 @@ return ext.register("ext/debugger/debugger", {
     type   : ext.GENERAL,
     alone  : true,
     markup : markup,
-    deps   : [log, fs],
+    deps   : [fs, noderunner],
     commands: {
         "debug": {
             "hint": "run and debug a node program on the server",
@@ -49,20 +51,6 @@ return ext.register("ext/debugger/debugger", {
             return false;
         });
 
-        ide.addEventListener("consoleresult.internal-isfile", function(e) {
-            var data = e.data;
-            if (data.sender != "debugger")
-                return;
-            var path = data.cwd.replace(ide.workspaceDir, ide.davPrefix);
-            if (data.isfile) {
-                require("ext/debugger/debugger").showFile(path);
-                require("ext/run/run").run(true);
-            }
-            else {
-                require("ext/console/console").log("'" + path + "' is not a file.");
-            }
-        });
-        
         panels.register(this);
     },
 
@@ -80,6 +68,12 @@ return ext.register("ext/debugger/debugger", {
 
         this.paths = {};
         var _self = this;
+        stDebugProcessRunning.addEventListener("activate", function() {
+            _self.enable();
+        });
+        stProcessRunning.addEventListener("deactivate", function() {
+            _self.disable();
+        });
         mdlDbgSources.addEventListener("afterload", function() {
             _self.$syncTree();
         });
@@ -121,44 +115,6 @@ return ext.register("ext/debugger/debugger", {
                 //console.log("v8 updated", e);
             });
         })
-        //log.enable(true);
-    },
-
-    jump : function(fileEl, row, column, text, doc, page) {
-        var path    = fileEl.getAttribute("path");
-        var hasData = page && tabEditors.getPage(path).$doc ? true : false;
-
-        if (row !== undefined) {
-            var jumpTo = function(){
-                setTimeout(function() {
-                    ceEditor.$editor.gotoLine(row, column);
-                    if (text)
-                        ceEditor.$editor.find(text);
-                    ceEditor.focus();
-                }, 100);
-            }
-            
-            if (hasData) {
-                tabEditors.set(path);
-                jumpTo();
-            }
-            else
-                ide.addEventListener("afteropenfile", function(e) {
-                    var node = e.doc.getNode();
-                    
-                    if (node.getAttribute("path") == path) {
-                        ide.removeEventListener("afteropenfile", arguments.callee);
-                        jumpTo();
-                    }
-                });
-        }
-        
-        if (!hasData && !page) 
-            ide.dispatchEvent("openfile", {
-                doc: doc || ide.createDocument(fileEl)
-            });
-        else
-            tabEditors.set(path);
     },
 
     contentTypes : {
@@ -178,22 +134,11 @@ return ext.register("ext/debugger/debugger", {
         return this.contentTypes[type] || "text/plain";
     },
 
-    showFile : function(path, row, column, text) {
-        var name = path.split("/").pop();
-        var node = apf.n("<file />")
-            .attr("name", name)
-            .attr("contenttype", this.getContentType(name))
-            .attr("path", path)
-            .node();
-
-        this.jump(node, row, column, text);
-    },
-
     showDebugFile : function(scriptId, row, column, text) {
         var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
 
         if (file) {
-            this.jump(file, row, column, text, null, true);
+            editors.jump(file, row, column, text, null, true);
         } else {
             var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
             if (!script)
@@ -217,12 +162,12 @@ return ext.register("ext/debugger/debugger", {
                         .attr("scriptname", script.getAttribute("scriptname"))
                         .attr("lineoffset", "0").node();
                 }
-                this.jump(node, row, column, text, null, page ? true : false);
+                editors.jump(node, row, column, text, null, page ? true : false);
             }
             else {
                 var page = tabEditors.getPage(value);
                 if (page)
-                    this.jump(page.xmlRoot, row, column, text, null, true);
+                    editors.jump(page.xmlRoot, row, column, text, null, true);
                 else {
                     var node = apf.n("<file />")
                         .attr("name", value)
@@ -233,11 +178,9 @@ return ext.register("ext/debugger/debugger", {
                         .attr("debug", "1")
                         .attr("lineoffset", "0").node();
 
-                    var _self = this;
                     dbg.loadScript(script, function(source) {
                         var doc = ide.createDocument(node, source);
-    
-                        _self.jump(node, row, column, text, doc);
+                        editors.jump(node, row, column, text, doc);
                     });
                 }
             }
@@ -282,7 +225,6 @@ return ext.register("ext/debugger/debugger", {
                 item.show();
         });
         this.rightPane.setProperty("visible", true);
-        //log.enable(true);
 
         //Quick Fix
         if (apf.isGecko)

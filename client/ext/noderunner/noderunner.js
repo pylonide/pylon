@@ -10,7 +10,6 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
-var log = require("ext/console/console");
 var markup = require("text!ext/noderunner/noderunner.xml");
 
 return ext.register("ext/noderunner/noderunner", {
@@ -19,7 +18,6 @@ return ext.register("ext/noderunner/noderunner", {
     type   : ext.GENERAL,
     alone  : true,
     markup : markup,
-    deps   : [log],
     commands: {
         "run": {
             "hint": "run a node program on the server",
@@ -28,7 +26,7 @@ return ext.register("ext/noderunner/noderunner", {
             }
         }
     },
-ˇ
+
     init : function(amlNode){
         ide.addEventListener("socketDisconnect", this.onDisconnect.bind(this));
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
@@ -49,25 +47,10 @@ return ext.register("ext/noderunner/noderunner", {
             }));
             return false;
         });
-
-        ide.addEventListener("consoleresult.internal-isfile", function(e) {
-            var data = e.data;
-            if (data.sender != "noderunner")
-                return;
-            var path = data.cwd.replace(ide.workspaceDir, ide.davPrefix);
-            if (data.isfile) {
-                require("ext/debugger/debugger").showFile(path);
-                require("ext/run/run").run(false);
-            }
-            else {
-                require("ext/console/console").log("'" + path + "' is not a file.");
-            }
-        });
     },
 
     $onDebugProcessActivate : function() {
         dbg.attach(dbgNode, 0);
-        require("ext/debugger/debugger").enable();
     },
 
     $onDebugProcessDeactivate : function() {
@@ -84,7 +67,6 @@ return ext.register("ext/noderunner/noderunner", {
                 break;
 
             case "chrome-debug-ready":
-                alert("READY")
                 winTab.show();
                 dbgChrome.loadTabs();
                 ide.dispatchEvent("debugready");
@@ -101,10 +83,6 @@ return ext.register("ext/noderunner/noderunner", {
                 ide.dispatchEvent("noderunnerready");
                 break;
 
-            case "node-data":            
-                log.logNodeStream(message.data, message.stream, true);
-                break;
-                
             case "error":
                 if (message.code !== 6)
                     util.alert("Server Error", "Server Error", message.message);
@@ -145,13 +123,9 @@ return ext.register("ext/noderunner/noderunner", {
         };
         ide.socket.send(JSON.stringify(command));
 
-        log.clear();
-        log.showOutput();
-
         if (debug)
             stDebugProcessRunning.activate();
 
-        log.enable();
         stProcessRunning.activate();
     },
 
@@ -159,7 +133,6 @@ return ext.register("ext/noderunner/noderunner", {
         if (!stProcessRunning.active)
             return
 
-        require("ext/debugger/debugger").disable();
         ide.socket.send(JSON.stringify({"command": "kill"}));
     },
 

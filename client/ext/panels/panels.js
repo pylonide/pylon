@@ -4,10 +4,14 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/panels/panels",
-    ["core/ide", "core/ext", "ext/settings/settings", "text!ext/panels/panels.xml"],
-    function(ide, ext, settings, markup) {
-        
+
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+var settings = require("ext/settings/settings");
+var markup = require("text!ext/panels/panels.xml");
+
 return ext.register("ext/panels/panels", {
     name   : "Panel Manager",
     dev    : "Ajax.org",
@@ -64,11 +68,10 @@ return ext.register("ext/panels/panels", {
     },
     
     $setEvents : function(panelExt){
-        panelExt.panel.addEventListener("show", function(){
-            var panels = require("ext/panels/panels");
-
-            if (!panels.togglingAll && !panels.showingAll) 
-                panels.showAll();
+        var _self = this;
+        panelExt.panel.addEventListener("show", function(){            
+            if (!_self.togglingAll && !_self.showingAll) 
+                _self.showAll();
             else {
                 if (!this.parentNode.visible)
                     this.parentNode.show();
@@ -76,8 +79,6 @@ return ext.register("ext/panels/panels", {
             }
         });
         panelExt.panel.addEventListener("hide", function(){
-            var panels = require("ext/panels/panels");
-
             panelExt.mnuItem.uncheck();
             if (!this.parentNode.selectSingleNode("node()[not(@visible='false')]"))
                 this.parentNode.hide();

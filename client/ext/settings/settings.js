@@ -4,11 +4,16 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/settings/settings",
-    ["core/ide", "core/ext", "core/util", "ext/filesystem/filesystem",
-     "text!ext/settings/settings.xml", "text!ext/settings/template.xml"],
-    function(ide, ext, util, fs, markup, template) {
-
+ 
+define(function(require, exports, module) {
+ 
+var ide = require("core/ide");
+var ext = require("core/ext");
+var util = require("core/util");
+var fs = require("ext/filesystem/filesystem");
+var markup = require("text!ext/settings/settings.xml");
+var template = require("text!ext/settings/template.xml");
+  
 return ext.register("ext/settings/settings", {
     name    : "Settings",
     dev     : "Ajax.org",

@@ -11,6 +11,8 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var lang = require("pilot/lang").lang;
 var panels = require("ext/panels/panels");
+var editors = require("ext/editors/editors");
+var run = require("ext/run/run");
 var Parser = require("ext/console/parser");
 var Trie = require("ext/console/trie");
 var css = require("text!ext/console/console.css");
@@ -82,7 +84,7 @@ return ext.register("ext/console/console", {
     jump: function(path, row, column) {
         row = parseInt(row.slice(1));
         column = column ? parseInt(column.slice(1)) : 0;
-        require("ext/debugger/debugger").showFile(path, row, column);
+        editors.showFile(path, row, column);
     },
 
     getCwd: function() {
@@ -117,8 +119,8 @@ return ext.register("ext/console/console", {
 
             log.push("<div class='item'><span style='" + style + "'>" + lines[i]
                 .replace(/\s/g, "&nbsp;")
-                .replace(wsrRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>$1$2$3</a>")
-                .replace(wsRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>"+workspaceDir+"/$1$2$3</a>")
+                .replace(wsrRe, "<a href='javascript:void(0)' onclick='require(\"ext/editors/editors\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>$1$2$3</a>")
+                .replace(wsRe, "<a href='javascript:void(0)' onclick='require(\"ext/editors/editors\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>"+workspaceDir+"/$1$2$3</a>")
                 .replace(/(((http:\/\/)|(www\.))[\w\d\.]*(:\d+)?(\/[\w\d]+)?)/, "<a href='$1' target='_blank'>$1</a>")
                 .replace(/\033\[(?:(\d+);)?(\d+)m/g, function(m, extra, color) {
                     style = "color:" + (colors[color] || "#eee");
@@ -456,6 +458,10 @@ return ext.register("ext/console/console", {
                 //console.log("error: ", message.body);
                 this.log(message.body);
                 this.log("", "divider");
+                break;
+            
+             case "node-data":            
+                this.logNodeStream(message.data, message.stream, true);
                 break;
         }
 
@@ -890,6 +896,7 @@ return ext.register("ext/console/console", {
     },
 
     init : function(amlNode){
+        var _self = this
         this.panel = tabConsole;
         this.$cwd  = "/workspace";
 
@@ -897,8 +904,25 @@ return ext.register("ext/console/console", {
         mainRow.appendChild(winDbgConsole); //selectSingleNode("a:hbox[1]/a:vbox[2]").
 
         apf.importCssString((this.css || "") + " .console_date{display:inline}");
-
+        
+        stProcessRunning.addEventListener("activate", function() {
+            _self.clear();
+            _self.showOutput();
+            _self.enable();
+        });
+        
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
+        ide.addEventListener("consoleresult.internal-isfile", function(e) {
+            var data = e.data;
+            var path = data.cwd.replace(ide.workspaceDir, ide.davPrefix);
+            if (data.isfile) {
+                editors.showFile(path);
+                if (data.sender == "noderunner" || data.sender == "debugger")
+                    run.run(false);
+            }
+            else
+                _self.log("'" + path + "' is not a file.");
+        });
     },
 
     enable : function(fromParent){
