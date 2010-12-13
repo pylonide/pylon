@@ -387,8 +387,6 @@ apf.$x = apf.$loader
     )
     .wait()
     .script(
-        "elements/codeeditor.js",
-
         "elements/actiontracker/undodata.js",
         "elements/actiontracker/xmlactions.js",
 
@@ -438,6 +436,7 @@ apf.$x = apf.$loader
         else {
             if (window.require && typeof require.def == "function") {
                 require([
+                    "pilot/fixoldbrowsers",
                     "apf/elements/codeeditor",
                     "apf/elements/debugger",
                     "apf/elements/debughost"

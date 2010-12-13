@@ -39,9 +39,13 @@
 if (!apf.hasRequireJS)
     apf.aml.setElement("codeeditor", apf.textbox);
 else
-    require.def("apf/elements/codeeditor",
-        ["ace/editor", "ace/virtual_renderer", "ace/document", "ace/undomanager", "ace/range"],
-        function(Editor, VirtualRenderer, Document, UndoManager, Range) {
+    define(function(require, exports, module) {
+        
+var Editor = require("ace/editor").Editor;
+var Document = require("ace/document").Document;
+var VirtualRenderer = require("ace/virtual_renderer").VirtualRenderer;
+var UndoManager = require("ace/undomanager").UndoManager;
+var Range = require("ace/range").Range;
 
 apf.codeeditor = function(struct, tagName) {
     this.$init(tagName || "codeeditor", apf.NODE_VISIBLE, struct);
@@ -274,12 +278,12 @@ apf.codeeditor = function(struct, tagName) {
             return callback(this.$modes[syntax]);
 
         var _self = this;
-        require([syntax], function(ModeClass) {
+        require([syntax], function(modeModule) {
             // #ifdef __DEBUG
-            if (typeof ModeClass != "function")
+            if (typeof modeModule.Mode != "function")
                 return apf.console.error("Unkown syntax type: '" + syntax + "'");
             // #endif
-            _self.$modes[syntax] = new ModeClass();
+            _self.$modes[syntax] = new modeModule.Mode();
             callback(_self.$modes[syntax]);
         });
     };
