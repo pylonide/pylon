@@ -2131,14 +2131,29 @@
             color: #bfbfbf;
             font-size : 18px;
             font-family : Arial;
-            padding : 3px;
+            margin : 3px;
             cursor : pointer;
             font-weight : bold;
         }
         .wn_cp_window .wn_cp_border_t .wn_cp_buttons div:hover{
             color: #7d7d7d;
         }
-
+        
+        .wn_cp_window .wn_cp_border_t .wn_cp_buttons .close {
+            background: url(images/big_close.png) no-repeat 0 0;
+            width: 14px;
+            height: 15px;
+            margin-top: 6px;
+        }
+        
+        .wn_cp_window .wn_cp_border_t .wn_cp_buttons .close.hover {
+            background-position: -15px 0;
+        }
+        
+        .wn_cp_window .wn_cp_border_t .wn_cp_buttons .close.down {
+            background-position: -30px 0;
+        }
+        
         .wn_cp_window .wn_cp_content {
             position            : relative;
             width               : 100%;
@@ -2221,7 +2236,7 @@
             </div>
         </a:main>
         <a:button>
-            <div>X</div>
+            <div></div>
         </a:button>
     </a:presentation>
 </a:modalwindow>
