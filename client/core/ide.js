@@ -135,6 +135,7 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
                     clearTimeout(ide.$retryTimer);
                     winReconnect.hide();
                     stServerConnected.activate();
+                    ide.dispatchEvent("socketConnect");
                 }
 
                 ide.dispatchEvent("socketMessage", {
