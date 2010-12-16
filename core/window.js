@@ -1060,16 +1060,16 @@ apf.window = function(){
     apf.addListener(document, "selectstart", function(e){
         if (!e) e = event;
 
+        var amlNode   = apf.findHost(e.srcElement);
         var canSelect = !(!apf.document
           && (!apf.isParsingPartial || amlNode)
           || apf.dragMode);
         
-        var amlNode = apf.findHost(e.srcElement);
         if (canSelect) {
             //(!amlNode.canHaveChildren || !apf.isChildOf(amlNode.$int, e.srcElement))
             if (!apf.config.allowSelect 
-              || amlNode && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
-              && !amlNode.textselect) //&& !amlNode.$int // getElementsByTagNameNS(apf.ns.xhtml, "*").length
+              && (amlNode && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
+              && !amlNode.textselect)) //&& !amlNode.$int // getElementsByTagNameNS(apf.ns.xhtml, "*").length
                 canSelect = false;
         }
 
