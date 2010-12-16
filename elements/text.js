@@ -74,7 +74,7 @@ apf.text = function(struct, tagName){
      */
     this.$booleanProperties["scrolldown"] = true;
     this.$booleanProperties["secure"]     = true;
-    this.$booleanProperties["textselect"]     = true;
+    this.$booleanProperties["textselect"] = true;
     this.$supportedProperties.push("behavior", "scrolldown", "secure", "value");
 
     this.$isTextInput = function(){
