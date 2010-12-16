@@ -173,6 +173,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
         var node = this.$currentScope = grpSFScope.value == "projects"
             ? trFiles.xmlRoot.selectSingleNode("folder[1]")
             : this.getSelectedTreeNode();
+        trSFResult.setAttribute("empty-message", "No results found for '" + txtSFFind.value.trim() + "'");
         this.$model.load("{davProject.report('" + node.getAttribute("path")
             + "', 'codesearch', " + JSON.stringify(this.getOptions()) + ")}");
     },

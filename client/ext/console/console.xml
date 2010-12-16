@@ -33,7 +33,7 @@
                     else if (tabConsole.activepagenr == 1)    
                         txtOutput.clear();
                   "/>
-                <a:page caption="Console">
+                <a:page caption="Console" name="console">
                     <a:hbox anchors="0 0 0 0">
                         <a:text id="txtConsole"
                           margin     = "3 0 0 0"
@@ -49,7 +49,7 @@
                           width     = "17" />
                     </a:hbox>
                 </a:page>
-                <a:page caption="Output">
+                <a:page caption="Output" name="output">
                     <a:hbox anchors="0 0 0 0">
                         <a:text id="txtOutput"
                           margin     = "3 0 0 0"
