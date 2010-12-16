@@ -374,14 +374,16 @@ apf.button  = function(struct, tagName){
         if (!menuPressed || menuPressed == this)
             return;
 
+        var menu = self[this.submenu];
+        if(menu.getAttribute('pinned'))
+            return;
+
         menuPressed.setValue(false);
         var oldMenu = self[menuPressed.submenu];
         oldMenu.$propHandlers["visible"].call(oldMenu, false, true);//.hide();
 
         this.setValue(true);
         this.parentNode.menuIsPressed = this;
-
-        var menu = self[this.submenu];
 
         //#ifdef __DEBUG
         if (!menu) {
@@ -511,7 +513,7 @@ apf.button  = function(struct, tagName){
         if (strEvent && this.dispatchEvent(strEvent, {htmlEvent: e}) === false)
             return;
         
-        if(parentNode.$button2 && parentNode.$button2.value && !this.submenu)
+        if(parentNode && parentNode.$button2 && parentNode.$button2.value && !this.submenu)
             return;
 
         this.$doBgSwitch(this.states[state]);

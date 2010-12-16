@@ -98,7 +98,7 @@ apf.rest = function(){
             apf.console.log("Found method " + options["http-method"] + ". Taking body from last argument");
         //#endif
         
-        var body    = "NOTIFY|SEND|POST|PUT".indexOf(options["http-method"]) > -1 ? args.pop() : "",
+        var body = "NOTIFY|SEND|POST|PUT".indexOf(options["http-method"].toUpperCase()) > -1 ? args.pop() : "",
             url;
 
         this.method = options["http-method"];
