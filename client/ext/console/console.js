@@ -9,7 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var lang = require("pilot/lang").lang;
+var lang = require("pilot/lang");
 var panels = require("ext/panels/panels");
 var editors = require("ext/editors/editors");
 var run = require("ext/run/run");
