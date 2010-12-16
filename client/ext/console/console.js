@@ -408,6 +408,10 @@ return ext.register("ext/console/console", {
     onMessage: function(e) {
         var res,
             message = e.message;
+            
+        if (message.type == "node-data")
+            return this.logNodeStream(message.data, message.stream, true);
+        
         if (message.type != "result")
             return;
 
@@ -458,10 +462,6 @@ return ext.register("ext/console/console", {
                 //console.log("error: ", message.body);
                 this.log(message.body);
                 this.log("", "divider");
-                break;
-            
-             case "node-data":            
-                this.logNodeStream(message.data, message.stream, true);
                 break;
         }
 
