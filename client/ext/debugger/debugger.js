@@ -117,23 +117,6 @@ return ext.register("ext/debugger/debugger", {
         })
     },
 
-    contentTypes : {
-        "js" : "application/javascript",
-        "json" : "application/json",
-        "css" : "text/css",
-        "xml" : "application/xml",
-        "php" : "application/x-httpd-php",
-        "html" : "text/html",
-        "xhtml" : "application/xhtml+xml",
-        "coffee" : "text/x-script.coffeescript",
-        "py" : "text/x-script.python"
-    },
-
-    getContentType : function(file) {
-        var type = file.split(".").pop() || "";
-        return this.contentTypes[type] || "text/plain";
-    },
-
     showDebugFile : function(scriptId, row, column, text) {
         var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
 

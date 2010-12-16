@@ -423,6 +423,23 @@ return ext.register("ext/editors/editors", {
         });
     },
 
+    contentTypes : {
+        "js" : "application/javascript",
+        "json" : "application/json",
+        "css" : "text/css",
+        "xml" : "application/xml",
+        "php" : "application/x-httpd-php",
+        "html" : "text/html",
+        "xhtml" : "application/xhtml+xml",
+        "coffee" : "text/x-script.coffeescript",
+        "py" : "text/x-script.python"
+    },
+    
+    getContentType : function(file) {
+        var type = file.split(".").pop() || "";
+        return this.contentTypes[type] || "text/plain";
+    },
+    
     showFile : function(path, row, column, text) {
         var name = path.split("/").pop();
         var node = apf.n("<file />")
