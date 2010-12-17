@@ -41,6 +41,7 @@ if (!apf.hasRequireJS)
 else
     define(function(require, exports, module) {
         
+require("pilot/fixoldbrowsers");
 var Editor = require("ace/editor").Editor;
 var Document = require("ace/document").Document;
 var VirtualRenderer = require("ace/virtual_renderer").VirtualRenderer;
