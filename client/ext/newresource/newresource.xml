@@ -15,5 +15,6 @@
         <a:item value="xml" icon="page_white_code_red.png">XML file</a:item>
         <a:item value="css" icon="css.png">CSS file</a:item>
         <a:item value="py" icon="script_code.png">Python file</a:item>
+        <a:item value="php" icon="page_white_php.png">PHP file</a:item>
     </a:menu>
 </a:application>

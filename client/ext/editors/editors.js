@@ -432,7 +432,8 @@ return ext.register("ext/editors/editors", {
         "html" : "text/html",
         "xhtml" : "application/xhtml+xml",
         "coffee" : "text/x-script.coffeescript",
-        "py" : "text/x-script.python"
+        "py" : "text/x-script.python",
+        "php" : "application/x-httpd-php"
     },
     
     getContentType : function(file) {

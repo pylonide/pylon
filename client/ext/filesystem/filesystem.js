@@ -104,7 +104,7 @@ return ext.register("ext/filesystem/filesystem", {
         }
     },
 
-    createFile: function(filename, contenttype) {
+    createFile: function(filename) {
         var node = trFiles.selected;
         if (!node)
             node = trFiles.xmlRoot.selectSingleNode("folder");
