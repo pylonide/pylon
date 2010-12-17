@@ -138,10 +138,12 @@
       }
    
       .searchtree .empty, .searchtree .offline, .searchtree .loading{
-          padding: 0 0 0px 0;
+          padding: 8px;
           color: #AAA;
           font-weight : normal;
           height : 0;
+          overflow: visible;
+          text-align: left !important;
       }
   
       .searchtree div.loading{

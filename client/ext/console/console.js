@@ -294,6 +294,7 @@ return ext.register("ext/console/console", {
 
             this.log(this.getPrompt() + " " + parser.argv.join(" "), "prompt");
             this.enable();
+            tabConsole.set("console");
 
             switch (cmd) {
                 case "help":
