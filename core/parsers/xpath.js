@@ -303,7 +303,7 @@ apf.XPath = {
                 continue;
             else if (sections[i] == "..")
                 results.push([this.getParentNode, null]);
-            else if (sections[i].match(/^[\w-_\.]+(?:\:[\w-_\.]+){0,1}$/))
+            else if (sections[i].match(/^[\w\-_\.]+(?:\:[\w\-_\.]+){0,1}$/))
                 results.push([this.getChildNode, sections[i]]);//.toUpperCase()
             else if (sections[i].match(/^\#\#(\d+)$/))
                 results.push([this.doQuery, ["num+1 == " + parseInt(RegExp.$1)]]);
