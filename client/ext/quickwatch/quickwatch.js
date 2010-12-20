@@ -12,7 +12,7 @@ var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var log = require("ext/console/console");
 var noderunner = require("ext/noderunner/noderunner");
-var markup = require("text!ext/editors/editors.xml");
+var markup = require("text!ext/quickwatch/quickwatch.xml");
 
 return ext.register("ext/quickwatch/quickwatch", {
     name    : "quickwatch",
