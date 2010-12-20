@@ -36,10 +36,10 @@ return ext.register("ext/debugger/debugger", {
     nodes : [],
 
     hook : function(){
-        /*this.$layoutItem = mnuModes.appendChild(new apf.item({
+        this.$layoutItem = mnuModes.appendChild(new apf.item({
             value   : "ext/debugger/debugger",
             caption : this.name
-        }));*/
+        }));
 
         ide.addEventListener("consolecommand.debug", function(e) {
             ide.socket.send(JSON.stringify({
@@ -50,30 +50,25 @@ return ext.register("ext/debugger/debugger", {
             }));
             return false;
         });
-
-        panels.register(this);
-    },
-
-    init : function(amlNode){
-        this.panel = winDbgStack;
         
-        this.rightPane = colRight;
-        this.nodes.push(
-            //Append the stack window at the right
-            this.rightPane.appendChild(winDbgStack)
-
-            //Append the variable window on the right
-            //this.rightPane.appendChild(winDbgInspect)
-        );
-
-        this.paths = {};
         var _self = this;
-        stDebugProcessRunning.addEventListener("activate", function() {
+        stDebugProcessRunning.addEventListener("activate", function() {            
             _self.enable();
         });
         stProcessRunning.addEventListener("deactivate", function() {
             _self.disable();
         });
+        
+        panels.register(this);
+    },
+
+    init : function(amlNode){
+        this.panel = winDbgStack;
+        this.rightPane = colRight;
+        this.nodes.push(this.rightPane.appendChild(winDbgStack));
+
+        this.paths = {};
+        var _self = this;
         mdlDbgSources.addEventListener("afterload", function() {
             _self.$syncTree();
         });
