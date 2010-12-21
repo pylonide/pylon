@@ -377,9 +377,8 @@ apf.http = function(){
                 start   : new Date()
             }));
         }
-        
-        var headers = [];
         // #endif
+        var headers = [];
         
         function setRequestHeader(name, value){
             //#ifdef __DEBUG
