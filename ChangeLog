@@ -1,3 +1,23 @@
+2010.12.20, Version 0.2.0
+
+* smarter smart tab handling
+* PHP and Python syntax modes
+* IE and Opera fixes
+* fix character size measurement
+* properly handle empty documents
+* fixed some rendering bugs
+* Merge in Skywriter changes
+* Add PHP and Python file types
+* Add hotkey for the console (Shift-Escape)
+* Add live update support to the debugger
+* Auto reconnect with server
+* Improve console styling
+* Allow multiple concurrent sessions to the same workspace
+* Make IDE relocatable. It is possible to mount the IDE to any URL path.
+* Improved Console tab-switching when entering a command
+* Search in Files now shows a progress message
+* Search in Files now shows a proper message when no results are found
+
 2010.11.05, Version 0.1.5
 
 - fix running and debugging node applications on Linux
