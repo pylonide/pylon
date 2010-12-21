@@ -10863,6 +10863,46 @@
         }
     </a:style>
     <a:style condition="apf.isWebkit"><![CDATA[
+        .datagrid {
+            position: relative;
+            border: 1px solid #c3c3c3;
+            background-color: white;
+            cursor: default;
+            overflow : hidden;
+            font-family: Tahoma;
+            font-size: 8pt;
+            padding: 0;
+            color : #333;
+        }
+
+        .datagrid .headings {
+            position : absolute;
+            top : 20px;
+            left : 0;
+            right:0px;
+            height : 20px;
+            z-index : 10;
+            background-color : #e6e6e6;
+            white-space : nowrap;
+        }
+        
+        .datagrid .records {
+            overflow-x: hidden;
+            overflow-y: scroll;
+            position : absolute;
+            top : 0px;
+            bottom:0;
+            height:auto;
+            left:0;
+            right:0;
+            white-space : nowrap;
+            border-color:white;
+            border-style:solid;
+            border-width:1px 0 0;
+            display:block;
+            margin:0;
+        }
+        
         .datagrid div.records .treecell strong {
 			top : 0px;
 		}
