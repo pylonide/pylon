@@ -33,7 +33,7 @@ exports.main = function(options) {
             transports:  ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling']
         };
         var socketIo = IO.listen(server, socketOptions);
-        socketIo.on("clientConnect", function(client) {
+        socketIo.on("connection", function(client) {
             ide.addClientConnection(client, null);
         });
         
@@ -58,7 +58,6 @@ exports.main = function(options) {
     var server = Connect.createServer();
     //server.use(Connect.logger());
     server.use(Connect.conditionalGet());
-    //server.use(Connect.gzip());
     server.use(ideProvider(projectDir, server));
     server.use(middleware.staticProvider(Path.normalize(__dirname + "/../../support"), "/static/support"));
     server.use(middleware.staticProvider(Path.normalize(__dirname + "/../../client"), "/static"));
