@@ -16,7 +16,7 @@ function cloud9WatcherPlugin(ide) {
     var filenames = {};
 
     function unwatchFile(filename) {
-        console.log("No longer watching file " + filename);
+        // console.log("No longer watching file " + filename);
         delete filenames[filename];
         fs.unwatchFile(filename);
         return true;
@@ -40,9 +40,9 @@ function cloud9WatcherPlugin(ide) {
             switch (type) {
             case "watchFile":
                 if (filenames[filename]) 
-                    console.log("Already watching file " + filename);
+                    ; // console.log("Already watching file " + filename);
                 else {
-                    console.log("Watching file " + filename);
+                    // console.log("Watching file " + filename);
                     that = this;
                     fs.watchFile(filename, function (curr, prev) {
                         if (curr.nlink == 1 && prev.nlink == 0)
@@ -71,7 +71,7 @@ function cloud9WatcherPlugin(ide) {
                             "path"      : path,
                             "files"     : files
                         }));
-                        console.log("Sent " + subtype + " notification for file " + filename);
+                        // console.log("Sent " + subtype + " notification for file " + filename);
                     });
                     filenames[filename] = filename;
                 }
