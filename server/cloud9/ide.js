@@ -82,8 +82,10 @@ sys.inherits(Ide, EventEmitter);
             this.$serveIndex(req, res, next)
         }
         else if (path.match(this.workspaceRe)) {
-            this.davServer = jsDAV.mount(this.options.workspaceDir, this.options.davPrefix, this.httpServer);
-            this.emit("configureDav", this.davServer);
+            if (!this.davServer) {
+                this.davServer = jsDAV.mount(this.options.workspaceDir, this.options.davPrefix, this.httpServer, false);
+                this.emit("configureDav", this.davServer);
+            }
             this.davServer.exec(req, res);
         } else
             next();
