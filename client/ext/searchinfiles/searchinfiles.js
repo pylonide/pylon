@@ -103,7 +103,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
     toggleDialog: function(isReplace, forceShow) {
         ext.initExtension(this);
 
-        if (apf.isWin) {
+        if (apf.isWin && (location.host.indexOf('localhost') > -1 || location.host.indexOf('127.0.0.1') > -1)) {
             return util.alert("Search in Files", "Not Supported",
                 "I'm sorry, searching through files is not yet supported on the Windows platform.");
         }
