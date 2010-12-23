@@ -22,6 +22,12 @@
                 workspaceId: <%workspaceId%>,                
                 name: <%name%>
             };
+            
+            // prevent console messages crash our app!
+            if (typeof window["console"] == "undefined") {
+                var K = function() {};
+                window.console = {log:K,debug:K,dir:K,trace:K,error:K,warn:K,profileStart:K,profileEnd:K};
+            }
 
             var RELEASE = "release";
             var DEBUG   = "debug";
