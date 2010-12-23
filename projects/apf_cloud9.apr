@@ -429,7 +429,7 @@
 
         <p:define name="__AMLPROPEDIT" value="1" />
         <p:define name="__WITH_ZERO_TIMEOUT" value="1" />
-
+        <p:define name="__WITH_OUTLINE" value="1" />
 
 
 
@@ -485,7 +485,6 @@
         <p:define name="__TP_RPC_JSON" value="1" />
         <p:define name="__TP_RPC_RDB" value="1" />
         <p:define name="__ENABLE_INTERACTIVE_CANCEL" value="1" />
-        <p:define name="__WITH_OUTLINE" value="1" />
         <p:define name="__WITH_LISTGRID" value="1" />
         <p:define name="__AMLSTATEGROUP" value="1" />
         <p:define name="__WITH_A11Y" value="1" />
