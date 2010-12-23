@@ -112,7 +112,6 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
             };
 
             ide.socketDisconnect = function() {
-                stProcessRunning.deactivate();
                 ide.dispatchEvent("socketDisconnect");
 
                 clearTimeout(ide.$retryTimer);
