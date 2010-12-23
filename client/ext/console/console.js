@@ -27,7 +27,6 @@ var trieCommands,
     lastSearch = null,
     parser     = new Parser();
 
-var tt=0;
 return ext.register("ext/console/console", {
     name   : "Console",
     dev    : "Ajax.org",
