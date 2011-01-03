@@ -86,14 +86,12 @@ exports.staticGzip = function(options){
             filename = path.join(root, url.pathname),
             mime = utils.mime.type(filename).split(';')[0];
 
-        console.log("Request for", filename);
         // MIME type not white-listed
         if (!~compress.indexOf(mime)) return next();
 
         // Check if gzipped static is available
         gzipped(filename, function(err, path, ext){
             if (err && err.errno === process.ENOENT) {
-                console.log("POOF");
                 next();
                 // We were looking for a gzipped static,
                 // so lets gzip it!

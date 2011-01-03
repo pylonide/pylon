@@ -93,7 +93,8 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
         ide.addEventListener("extload", function() {
             // fire up the socket connection:
             var options = {
-                transports:  ["websocket", "htmlfile", "xhr-multipart", "xhr-polling", "jsonp-polling"],
+                rememberTransport: false,
+                transports:  ["websocket", "htmlfile", "xhr-polling", "jsonp-polling"],
                 transportOptions: {
                     "xhr-polling": {
                         timeout: 30000
@@ -103,6 +104,7 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
                     }
                 }
             };
+
             ide.socketConnect = function() {
                 ide.socket.send(JSON.stringify({
                     command: "attach",
@@ -112,7 +114,6 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
             };
 
             ide.socketDisconnect = function() {
-                stProcessRunning.deactivate();
                 ide.dispatchEvent("socketDisconnect");
 
                 clearTimeout(ide.$retryTimer);
