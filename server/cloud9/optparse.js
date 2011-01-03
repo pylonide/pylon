@@ -39,8 +39,12 @@ var Parser = module.exports = function(options) {
     }
 
     this.parseArguments = function(argv) {
+        argv = argv.concat();
         var arg, key, opt, opts = {}, opts_def = {};
-        while (argv.length && (arg = argv.shift())) {
+        while (argv.length && argv.length) {
+            arg = argv.shift();
+            if (!arg)
+                continue;
             opt = this.$getArg(argv, arg);
             opts[opt.key] = opt.value;
         }
