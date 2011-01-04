@@ -185,7 +185,8 @@ apf.BaseTree = function(){
         apf.asyncForEach(pathList,
             function(item, next){
                 var paths = item.split("/");
-                var lastNode = null;//root.selectSingleNode(paths.shift());
+                var lastNode = root;//root.selectSingleNode(paths.shift());
+
                 //var lastPath = paths.pop();
                 apf.asyncForEach(paths, 
                     function(part, next2, index) {

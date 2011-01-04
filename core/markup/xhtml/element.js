@@ -112,9 +112,9 @@ apf.XhtmlElement = function(struct, tagName){
               pHtmlNode.appendChild(document.createElement(this.localName));
         }
         
-        try{
+        if (this.localName != "a")
             this.$ext.host = this;
-        }catch(e){} //Links
+
         this.style = this.$ext.style;
     }, true);
     
