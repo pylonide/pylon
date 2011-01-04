@@ -30,7 +30,7 @@ exports.main = function(options) {
         
         // create web socket
         var socketOptions = {
-            transports:  ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling']
+            transports:  ['websocket', 'flashsocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling']
         };
         var socketIo = IO.listen(server, socketOptions);
         socketIo.on("connection", function(client) {
