@@ -712,7 +712,7 @@ apf.webdav = function(struct, tagName){
         if (oProperties) {
             for (var prop in oProperties) {
                 aCont.push('<D:' + prop, (oProperties[prop]
-                    ? '>' + oProperties[prop] + '</D:' + prop + '>'
+                    ? '>' + apf.xmlentities(apf.escapeXML(oProperties[prop])) + '</D:' + prop + '>'
                     : '/>'));
             }
         }
