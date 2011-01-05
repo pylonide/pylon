@@ -120,6 +120,8 @@ apf.MultiselectBinding = function(){
 
         var _self = this;
         (function sortNodes(xmlNode, htmlParent) {
+            if(!xmlNode)
+                return;
             var sNodes = _self.$sort.apply(
                 apf.getArrayFromNodelist(xmlNode.selectNodes(_self.each)));
 
