@@ -106,7 +106,7 @@
         <a:divider skin="hordivider" />
         <a:hbox pack="end" padding="7" edge="0 10 0 10">
             <a:button id="btnConfirmOk" default="3" class="ui-btn-green">Ok</a:button>
-            <a:button onclick="winConfirm.hide()">Cancel</a:button>
+            <a:button id="btnConfirmCancel" onclick="winConfirm.hide()">Cancel</a:button>
         </a:hbox>
     </a:vbox>
 </a:window>

@@ -200,7 +200,10 @@ return ext.register("ext/filesystem/filesystem", {
             var dav_url = location.href.replace(location.path + location.hash, "") + ide.davPrefix;
             this.webdav = new apf.webdav({
                 id  : "davProject",
-                url : dav_url
+                url : dav_url,
+                onauthfailure: function(e) {
+                    ide.dispatchEvent("authrequired");
+                }
             });
             url = "{davProject.getroot()}";
         }
