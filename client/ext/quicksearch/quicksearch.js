@@ -198,7 +198,7 @@ return ext.register("ext/quicksearch/quicksearch", {
             ace.find(txt, options);
         }
         else {
-            ace.findNext(options);
+            ace.find(txt, options);
         }
         
         var settings = require("ext/settings/settings");
