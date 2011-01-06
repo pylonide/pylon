@@ -283,8 +283,11 @@ apf.webdav = function(struct, tagName){
         }
 
         // #ifdef __DEBUG
-        apf.console.error(extra.message + ' (username: ' + extra.username
-                          + ', server: ' + extra.server + ')', 'webdav');
+        try{
+            apf.console.error(extra.message.toString() + ' (username: ' + extra.username
+                              + ', server: ' + extra.server + ')', 'webdav');
+        }
+        catch(ex){}
         // #endif
 
         return this.dispatchEvent("authfailure", extra);
@@ -712,7 +715,7 @@ apf.webdav = function(struct, tagName){
         if (oProperties) {
             for (var prop in oProperties) {
                 aCont.push('<D:' + prop, (oProperties[prop]
-                    ? '>' + oProperties[prop] + '</D:' + prop + '>'
+                    ? '>' + apf.xmlentities(apf.escapeXML(oProperties[prop])) + '</D:' + prop + '>'
                     : '/>'));
             }
         }
@@ -1011,10 +1014,9 @@ apf.webdav = function(struct, tagName){
      * @private
      */
     function parsePropertyPackets(oXml, state, extra, callback) {
-        if (parseInt(extra.status) == 403 || !oXml) {
-            // TODO: dispatch onerror event
-            return;
-        }
+        var status = parseInt(extra.status)
+        if (status == 403 || status == 401 || !oXml)
+            return callback ? callback.call(this, null, state, extra) : notAuth.call(this);
 
         var aResp = $xmlns(oXml, "response", apf.webdav.NS.D),
             aOut = [];
