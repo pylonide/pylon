@@ -13702,6 +13702,7 @@
             -khtml-user-select : none;
             user-select        : none;
             height             : 38px;
+            width              : 18px;
         }
 
         .btn_console_openOver {
