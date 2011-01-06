@@ -94,6 +94,8 @@ return ext.register("ext/searchreplace/searchreplace", {
             if (value)
                 this.txtFind.setValue(value);
 
+            winSearchReplace.setAttribute("title", isReplace
+                    ? "Search &amp; Replace" : "Search");            
             winSearchReplace.show();
         }
         else
@@ -140,7 +142,7 @@ return ext.register("ext/searchreplace/searchreplace", {
             caseSensitive: !chkMatchCase.checked,
             wholeWord: chkWholeWords.checked,
             regExp: chkRegEx.checked,
-            scope: chkSearchSelection.checked ? search.SELECTION : search.ALL
+            scope: chkSearchSelection.checked ? search.Search.SELECTION : search.Search.ALL
         };
     },
 
@@ -165,11 +167,14 @@ return ext.register("ext/searchreplace/searchreplace", {
             //     wholeWord: false,
             //     regExp: false
             // }
+            console.log(options);
             this.$editor.find(txt, options);
         }
         else {
-            this.$editor.findNext(options);
+            console.log(options);
+            this.$editor.find(txt, options);
         }
+        chkSearchSelection.setAttribute("checked", false);
     },
 
     replace: function() {
@@ -181,6 +186,7 @@ return ext.register("ext/searchreplace/searchreplace", {
             return;
         var options = this.getOptions();
         options.needle = this.txtFind.getValue()
+        options.scope = search.Search.SELECTION;
         this.$editor.replace(this.txtReplace.getValue() || "", options);
         this.$editor.find(this.$crtSearch, options);
     },
