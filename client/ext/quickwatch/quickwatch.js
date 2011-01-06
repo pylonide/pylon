@@ -10,7 +10,6 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
-var log = require("ext/console/console");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/quickwatch/quickwatch.xml");
 
@@ -37,7 +36,7 @@ return ext.register("ext/quickwatch/quickwatch", {
                 if (!this.value.trim())
                     return dgWatch.clear();
 
-                log.evaluate(this.value);
+                require("ext/console/console").evaluate(this.value);
             }
             else if (e.keyCode == 40 && dgWatch.length) {
                 var first = dgWatch.getFirstTraverseNode();
@@ -80,7 +79,7 @@ return ext.register("ext/quickwatch/quickwatch", {
             if (value) {
                 txtCurObject.setValue(value);
                 if (exec) {
-                    log.evaluate(value);
+                    require("ext/console/console").evaluate(value);
                     txtCurObject.focus();
                 }
             }
