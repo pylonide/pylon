@@ -94,13 +94,13 @@ apf.runGecko = function(){
         var frag, l, node, i;
         if (nodeList) {
             frag = document.createDocumentFragment();
-	        for (i = nodeList.length - 1; i >= 0; i--) {
-	            node = nodeList[i];
-	            frag.insertBefore(node, frag.firstChild);
-	        }
+            for (i = nodeList.length - 1; i >= 0; i--) {
+                node = nodeList[i];
+                frag.insertBefore(node, frag.firstChild);
+            }
         }
         
-        o.innerHTML = s || apf.html_entity_decode(serializer.serializeToString(frag))
+        o.innerHTML = typeof s == "string" ? s : apf.html_entity_decode(serializer.serializeToString(frag))
             .replace(/<([^>]+)\/>/g, "<$1></$1>");
 
         frag = document.createDocumentFragment();
