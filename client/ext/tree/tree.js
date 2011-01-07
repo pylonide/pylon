@@ -216,6 +216,7 @@ return ext.register("ext/tree/tree", {
         trFiles.getModel().load("<data><folder type='folder' name='" + "Project" + "' path='" + ide.davPrefix + "' root='1'/></data>");
         this.expandedList = {};
         this.loading = true;
+        ide.dispatchEvent("track_action", {type: "reloadtree"});
         try {
             var _self = this;
                     

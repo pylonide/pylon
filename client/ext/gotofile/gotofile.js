@@ -57,6 +57,7 @@ return ext.register("ext/gotofile/gotofile", {
                 var node = trFiles.xmlRoot.selectSingleNode("folder[1]");
                 mdlGoToFile.load("{davProject.report('" + node.getAttribute("path")
                     + "', 'filesearch', {query: '" + txtGoToFile.value + "'})}");
+                ide.dispatchEvent("track_action", {type: "gotofile"});
             }
             else if (e.keyCode == 40 && dgGoToFile.length) {
                 var first = dgGoToFile.getFirstTraverseNode();
@@ -83,6 +84,7 @@ return ext.register("ext/gotofile/gotofile", {
             var root = trFiles.xmlRoot.selectSingleNode("folder[1]"),
                 path   = root.getAttribute("path") + apf.getTextNode(e.xmlNode).nodeValue;
             editors.showFile(path, 0, 0);
+            ide.dispatchEvent("track_action", {type: "fileopen"});
         });
     },
     

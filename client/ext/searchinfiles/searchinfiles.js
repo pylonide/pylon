@@ -176,6 +176,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
         trSFResult.setAttribute("empty-message", "No results found for '" + txtSFFind.value.trim() + "'");
         this.$model.load("{davProject.report('" + node.getAttribute("path")
             + "', 'codesearch', " + JSON.stringify(this.getOptions()) + ")}");
+        ide.dispatchEvent("track_action", {type: "searchinfiles"});
     },
 
     replaceAll: function() {
@@ -187,6 +188,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
         this.$crtSearch = null;
         var options = this.getOptions();
         this.$editor.replaceAll(this.txtReplace.getValue() || "", options);
+        ide.dispatchEvent("track_action", {type: "replace"});
     },
 
     enable : function(){

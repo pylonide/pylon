@@ -189,6 +189,7 @@ return ext.register("ext/searchreplace/searchreplace", {
         options.scope = search.Search.SELECTION;
         this.$editor.replace(this.txtReplace.getValue() || "", options);
         this.$editor.find(this.$crtSearch, options);
+        ide.dispatchEvent("track_action", {type: "replace"});
     },
 
     replaceAll: function() {
@@ -200,6 +201,7 @@ return ext.register("ext/searchreplace/searchreplace", {
         var options = this.getOptions();
         options.needle = this.txtFind.getValue()
         this.$editor.replaceAll(this.txtReplace.getValue() || "", options);
+        ide.dispatchEvent("track_action", {type: "replace"});
     },
 
     enable : function(){

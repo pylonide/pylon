@@ -114,8 +114,10 @@ return ext.register("ext/run/run", {
         if (!config) {
             this.addConfig();
         }
-        else
+        else {
             this.runConfig(config, debug);
+            ide.dispatchEvent("track_action", {type: debug ? "debug" : "run"});
+        }
     },
 
     $updateMenu : function() {

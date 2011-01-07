@@ -392,6 +392,7 @@ return ext.register("ext/console/console", {
                             line: line,
                             cwd: this.getCwd()
                         };
+                        ide.dispatchEvent("track_action", {type: "console", cmd: cmd});
                         if (ext.execCommand(cmd, data) !== false) {
                             if (ide.dispatchEvent("consolecommand." + cmd, {
                               data: data
