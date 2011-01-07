@@ -46,16 +46,31 @@ exports.errorHandler = function() {
             err = new error.InternalServerError(err + "")
         }
         else if (!(err instanceof error.HttpError)) {
-            err.code = 500
+            err.code = 500;
             err.defaultMessage = "Internal Server Error"
         }
 
+        fs.readFile(__dirname + "/../../../../client/start/error.tmpl.html", "utf8", function(e, html) {
+            if (e)
+                return next(e);
+
+            html = html
+                .toString('utf8')
+                .replace(/\<%errormsg%\>/g, err.toString());
+            
+            res.writeHead(err.code, {"Content-Type": "text/html"});
+            res.end(html);
+        })
+        
+        /*
         res.writeHead(err.code, {
             "Content-Type": "text/plain"
         });
+        
         res.end(err.message + (err.stack ? "\n" + err.stack : ""));
         if (err.stack)
             console.log("Exception found" + err.message + "\n" + err.stack);
+        */
     }
 };
 
