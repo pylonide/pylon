@@ -44,6 +44,14 @@ return ext.register("ext/tree/tree", {
             ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
         });
         
+        trFiles.addEventListener("beforecopy", function(e) {
+            setTimeout(function () {
+                var args     = e.args[0].args,
+                    filename = args[1].getAttribute("name");
+                fs.beforeRename(args[1], null, args[0].getAttribute("path").replace(/[\/]+$/, "") + "/" + filename);
+            });
+        });
+        
         trFiles.addEventListener("beforerename", function(e){
             setTimeout(function(){
                 fs.beforeRename(e.args[0], e.args[1]);

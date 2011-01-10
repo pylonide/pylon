@@ -22,8 +22,12 @@
         };
         
         function getIcon(xmlNode){
-            var mime = xmlNode.getAttribute('contenttype').split(";")[0];
-            var icon = SupportedIcons[mime] || SupportedIcons[mime.split("/")[0]] || "page_white_text";
+            var ctype = xmlNode.getAttribute('contenttype'),
+                icon  = "page_white_text";
+            if (ctype) {
+                var mime = ctype.split(";")[0];
+                var icon = SupportedIcons[mime] || SupportedIcons[mime.split("/")[0]] || "page_white_text";
+            }
             return icon + ".png";
         }
         
