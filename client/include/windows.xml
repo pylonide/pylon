@@ -59,7 +59,7 @@
             <div class="alertWarn" margin="0 10 0 10"/>
             <a:vbox flex="1" padding="5">
                 <h3 id="winAlertHeader"></h3>
-                <div id="winAlertMsg" class="alertMsg">sadfasdf</div>
+                <div id="winAlertMsg" class="alertMsg">An unexpected error occurred. Please refresh your browser window.</div>
             </a:vbox>
         </a:hbox>
         <a:divider skin="hordivider" />
@@ -99,7 +99,7 @@
   skin      = "change_photo">
     <a:vbox padding="10" edge="15 20 20 20">
         <h3 id="winConfirmHeader"></h3>
-        <div id="winConfirmMsg" class="alertMsg">sadfasdf</div>
+        <div id="winConfirmMsg" class="alertMsg">An unexpected error occurred. Please refresh your browser window.</div>
     </a:vbox>
 
     <a:vbox edge="0 0 4 0" padding="8">
@@ -122,7 +122,7 @@
   skin      = "change_photo">
     <a:vbox padding="10" edge="15 20 20 20">
         <h3 id="winQuestionHeader"></h3>
-        <div id="winQuestionMsg" class="alertMsg">sadfasdf</div>
+        <div id="winQuestionMsg" class="alertMsg">An unexpected error occurred. Please refresh your browser window.</div>
     </a:vbox>
 
     <a:vbox edge="0 0 4 0" padding="8">
