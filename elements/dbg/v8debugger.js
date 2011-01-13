@@ -320,13 +320,13 @@ var V8Debugger = function(dbg, host) {
                     bp.ignoreCount = parseInt(modelBp.getAttribute("ignorecount") || 0);
                     bp.enabled = modelBp.getAttribute("enabled") == "true";
                     bp.attach(_self.$debugger, function() {
-		                model.removeXml(modelBp);
+		                if (modelBp.parentNode) model.removeXml(modelBp);
 		                model.appendXml(_self.$getBreakpointXml(bp, 0));
 		                next();
                     });
                 }
                 else {
-	                model.removeXml(modelBp);
+	                if (modelBp.parentNode) model.removeXml(modelBp);
 	                model.appendXml(_self.$getBreakpointXml(bp, 0));
 	                next();
                 }
