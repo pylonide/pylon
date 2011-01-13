@@ -50,27 +50,26 @@ exports.errorHandler = function() {
             err.defaultMessage = "Internal Server Error"
         }
 
-        fs.readFile(__dirname + "/../../../../client/start/error.tmpl.html", "utf8", function(e, html) {
-            if (e)
-                return next(e);
+        var isXHR = req.headers["x-requested-with"] && req.headers["x-requested-with"].toLowerCase() == "xmlhttprequest";
+        if (!isXHR) {
+            fs.readFile(__dirname + "/../../../../client/start/error.tmpl.html", "utf8", function(e, html) {
+                if (e)
+                    return next(e);
 
-            html = html
-                .toString('utf8')
-                .replace(/\<%errormsg%\>/g, err.toString());
-            
-            res.writeHead(err.code, {"Content-Type": "text/html"});
-            res.end(html);
-        })
-        
-        /*
-        res.writeHead(err.code, {
-            "Content-Type": "text/plain"
-        });
-        
-        res.end(err.message + (err.stack ? "\n" + err.stack : ""));
-        if (err.stack)
-            console.log("Exception found" + err.message + "\n" + err.stack);
-        */
+                html = html
+                    .toString('utf8')
+                    .replace(/\<%errormsg%\>/g, err.toString());
+                
+                res.writeHead(err.code, {"Content-Type": "text/html"});
+                return res.end(html);
+            })
+        } else {
+            res.writeHead(err.code, {"Content-Type": "text/plain"});
+            res.end(err.message);
+            //res.end(err.message + (err.stack ? "\n" + err.stack : ""));
+            if (err.stack)
+                console.log("Exception found" + err.message + "\n" + err.stack);
+        }
     }
 };
 
