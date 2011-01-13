@@ -269,44 +269,44 @@ var apf = {
          * Specifies whether the application is running in the Opera browser.
          * @type {Boolean}
          */
-        this.isOpera      = b===4 || b===5;//(self.opera && Object.prototype.toString.call(self.opera) == "[object Opera]");
+        this.isOpera       = b===4 || b===5;//(self.opera && Object.prototype.toString.call(self.opera) == "[object Opera]");
         //b = 5 for Opera 9
         
         /**
          * Specifies whether the application is running in the Konqueror browser.
          * @type {Boolean}
          */
-        this.isKonqueror  = b===5;//sAgent.indexOf("konqueror") != -1;
+        this.isKonqueror   = b===5;//sAgent.indexOf("konqueror") != -1;
         
         /**
          * Specifies whether the application is running in the Safari browser.
          * @type {Boolean}
          */
-        this.isSafari     = b===3;//a/.__proto__ == "//";
+        this.isSafari      = b===3;//a/.__proto__ == "//";
         
         /**
          * Specifies whether the application is running in the Safari browser version 2.4 or below.
          * @type {Boolean}
          */
-        this.isSafariOld  = false;
+        this.isSafariOld   = false;
 
         /**
          * Specifies whether the application is running on the Iphone.
          * @type {Boolean}
          */
-        this.isIphone     = sAgent.indexOf("iphone") != -1 || sAgent.indexOf("aspen simulator") != -1;
+        this.isIphone      = sAgent.indexOf("iphone") != -1 || sAgent.indexOf("aspen simulator") != -1;
 
         /**
          * Specifies whether the application is running in the Chrome browser.
          * @type {Boolean}
          */
-        this.isChrome     = b===2;//Boolean(/source/.test((/a/.toString + ""))) || sAgent.indexOf("chrome") != -1;
+        this.isChrome      = b===2;//Boolean(/source/.test((/a/.toString + ""))) || sAgent.indexOf("chrome") != -1;
         
         /**
          * Specifies whether the application is running in a Webkit-based browser
          * @type {Boolean}
          */
-        this.isWebkit     = this.isSafari || this.isChrome || this.isKonqueror;
+        this.isWebkit      = this.isSafari || this.isChrome || this.isKonqueror;
 
         if (this.isWebkit) {
             var matches   = sAgent.match(/applewebkit\/(\d+)/);
@@ -315,12 +315,18 @@ var apf = {
                 this.isSafariOld = parseInt(matches[1]) < 420;
             }
         }
+        
+        /**
+         * Specifies whether the application is running in the AIR runtime.
+         * @type {Boolean}
+         */
+        this.isAIR         = sAgent.indexOf("adobeair") != -1;
 
         /**
          * Specifies whether the application is running in a Gecko based browser.
          * @type {Boolean}
          */
-        this.isGecko      = b===0;//(function(o) { o[o] = o + ""; return o[o] != o + ""; })(new String("__count__"));
+        this.isGecko       = b===0;//(function(o) { o[o] = o + ""; return o[o] != o + ""; })(new String("__count__"));
 
         /**
          * Specifies whether the application is running in the Firefox browser version 3.
@@ -330,7 +336,7 @@ var apf = {
         this.isGecko35     = this.isGecko && (/a/[-1] && Object.getPrototypeOf) ? true : false;
         this.versionGecko  = this.isGecko ? parseFloat(sAgent.match(/(?:gecko)\/([\d\.]+)/i)[1]) : -1;
         this.versionFF     = this.isGecko ? parseFloat(sAgent.match(/(?:firefox(-[\d.]+)?|minefield)\/([\d.]+)/i)[2]) : -1;
-        this.versionSafari = this.isSafari ? parseFloat(sAgent.match(/(?:version)\/([\d\.]+)/i)[1]) : -1;
+        this.versionSafari = this.isSafari && !this.isAIR ? parseFloat(sAgent.match(/(?:version)\/([\d\.]+)/i)[1]) : -1;
         this.versionChrome = this.isChrome ? parseFloat(sAgent.match(/(?:chrome)\/([\d\.]+)/i)[1]) : -1;
         this.versionOpera  = this.isOpera 
             ? parseFloat(sAgent.match(b===4 
@@ -389,12 +395,6 @@ var apf = {
          * @type {Boolean}
          */
         this.isLinux     = (os == "linux");
-
-        /**
-         * Specifies whether the application is running in the AIR runtime.
-         * @type {Boolean}
-         */
-        this.isAIR       = sAgent.indexOf("adobeair") != -1;
 
         /*#ifdef __SUPPORT_GWT
         this.isGWT       = true;
