@@ -52,7 +52,7 @@ exports.errorHandler = function() {
 
         var isXHR = req.headers["x-requested-with"] && req.headers["x-requested-with"].toLowerCase() == "xmlhttprequest";
         if (!isXHR) {
-            fs.readFile(__dirname + "/client/start/error.tmpl.html", "utf8", function(e, html) {
+            fs.readFile(__dirname + "/view/error.tmpl.html", "utf8", function(e, html) {
                 if (e)
                     return next(e);
 
