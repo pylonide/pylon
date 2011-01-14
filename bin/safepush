@@ -1,0 +1,12 @@
+#!/bin/bash -e
+cd `dirname $0`
+cd ..
+
+# check if any of your submodules have uncommitted changes
+git submodule --quiet foreach --recursive 'if [ -n "$(git diff)" ]; then echo "WARNING - Uncommitted changes in: $name"; fi;'
+
+#check if your submodules have not been pushed
+git submodule --quiet foreach --recursive 'if [ -n "$(git rev-list -1 $sha1 --not --remotes)" ]; then echo "ERROR - You have not pushed: $name"; exit 1; fi;'
+
+#finally push
+git push
