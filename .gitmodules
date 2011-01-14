@@ -19,6 +19,3 @@
 [submodule "support/ace"]
 	path = support/ace
 	url = http://github.com/ajaxorg/ace.git
-[submodule "support/apf"]
-	path = support/apf
-	url = http://github.com/ajaxorg/apf.git
