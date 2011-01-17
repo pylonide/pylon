@@ -35,11 +35,12 @@ return ext.register("ext/keybindings/keybindings", {
     },
 
     onLoad : function(def) {
-        // parse keybindings definition
-        this.current = def;
-
         // update keybindings for extensions:
         def = def.ext;
+        
+        // parse keybindings definition
+        this.current = def;
+        
         var i, j, l, name, oExt, command, bindings, items, item, val;
         for (i in ext.extLut) {
             name     = i.substr(i.lastIndexOf("/") + 1).toLowerCase();

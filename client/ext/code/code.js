@@ -211,6 +211,7 @@ return ext.register("ext/code/code", {
         ide.addEventListener("keybindingschange", function(e){
             if (typeof ceEditor == "undefined")
                 return;
+                
             var bindings = e.keybindings.code;
             ceEditor.$editor.setKeyboardHandler(new HashHandler(bindings));
         });

@@ -108,7 +108,7 @@ return ext.register("ext/noderunner/noderunner", {
         this.$run(true);
     },
 
-    run : function(path, args, debug) {
+    run : function(path, args, debug) {        
         if (stProcessRunning.active || !stServerConnected.active || !path)
             return false;
 

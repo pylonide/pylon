@@ -186,8 +186,7 @@ sys.inherits(Ide, EventEmitter);
         }
         // if we get here, no hook function was successfully delegated to an
         // extension.
-
-        this.error("Error: " + hook + " not available.");
+        // this.error("Error: " + hook + " not available.");
     };
 
     this.error = function(description, code, message, client) {
