@@ -11,7 +11,7 @@ require.paths.unshift(__dirname + "/async/lib");
 require.paths.unshift(__dirname + "/jsdav/lib");
 require.paths.unshift(__dirname + "/socket.io/lib");
 require.paths.unshift(__dirname + "/ace/lib");
-require.paths.unshift(__dirname + "/ace/support/cockpit/support/pilot/lib");
+require.paths.unshift(__dirname + "/ace/support/pilot/lib");
 require.paths.unshift(__dirname + "/lib-v8debug/lib");
 require.paths.unshift(__dirname);
 

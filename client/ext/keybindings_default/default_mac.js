@@ -94,7 +94,7 @@ return keys.onLoad({
             "selecttoend": "Command-Shift-Down",
             "gotoend": "Command-End|Command-Down",
             "selectdown": "Shift-Down",
-            "godown": "Down",
+            "golinedown": "Down",
             "selectwordleft": "Option-Shift-Left",
             "gotowordleft": "Option-Left",
             "selecttolinestart": "Command-Shift-Left",

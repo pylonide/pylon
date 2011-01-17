@@ -11,6 +11,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var Document = require("ace/document").Document;
+var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
 var markup = require("text!ext/code/code.xml");
 var settings = require("text!ext/code/settings.xml");
 
@@ -211,7 +212,7 @@ return ext.register("ext/code/code", {
             if (typeof ceEditor == "undefined")
                 return;
             var bindings = e.keybindings.code;
-            ceEditor.$editor.keyBinding.setConfig(bindings);
+            ceEditor.$editor.setKeyboardHandler(new HashHandler(bindings));
         });
     },
 
