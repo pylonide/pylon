@@ -163,4 +163,9 @@ sys.inherits(ShellPlugin, Plugin);
             callback(tail, matches);
         });
     };
+    
+    this.dispose = function(callback) {
+        // TODO kill all running processes!
+        callback();
+    }
 }).call(ShellPlugin.prototype);

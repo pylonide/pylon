@@ -10,20 +10,21 @@ var fs      = require("fs"),
 function cloud9WatcherPlugin(ide) {
     this.ide = ide;
     this.hooks  = ["disconnect", "command"];
+    this.filenames = {};
 }
 
 (function() {
-    var filenames = {};
-
     function unwatchFile(filename) {
         // console.log("No longer watching file " + filename);
-        delete filenames[filename];
+        delete this.filenames[filename];
         fs.unwatchFile(filename);
         return true;
     }
 
+    // TODO: this does not look correct. There could be more than one client be
+    // attached. There needs to be a per client list with ref counting
     this.disconnect = function() {
-        for (var filename in filenames) 
+        for (var filename in this.filenames) 
             unwatchFile(filename);
         return true;
     };
@@ -39,7 +40,7 @@ function cloud9WatcherPlugin(ide) {
             filename = path.replace(/\/workspace/, this.ide.workspaceDir);
             switch (type) {
             case "watchFile":
-                if (filenames[filename]) 
+                if (this.filenames[filename]) 
                     ; // console.log("Already watching file " + filename);
                 else {
                     // console.log("Watching file " + filename);
@@ -73,7 +74,7 @@ function cloud9WatcherPlugin(ide) {
                         }));
                         // console.log("Sent " + subtype + " notification for file " + filename);
                     });
-                    filenames[filename] = filename;
+                    this.filenames[filename] = filename;
                 }
                 return true;
             case "unwatchFile":
@@ -83,6 +84,13 @@ function cloud9WatcherPlugin(ide) {
             }
         }
     };
+    
+    this.dispose = function(callback) {
+        for (filename in this.filenames)
+            unwatchFile(this.filenames[filename]);
+        callback();
+    };
+    
 }).call(cloud9WatcherPlugin.prototype = new plugin());
 
 module.exports = cloud9WatcherPlugin;

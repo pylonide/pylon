@@ -75,4 +75,10 @@ sys.inherits(ShellGitPlugin, Plugin);
 
         return true;
     };
+    
+    this.dispose = function(callback) {
+        // TODO kill all running processes!
+        callback();
+    };
+    
 }).call(ShellGitPlugin.prototype);
