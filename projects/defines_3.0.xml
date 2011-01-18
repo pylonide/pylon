@@ -928,6 +928,10 @@
           requires="__WITH_HTML_CLEANER">
             <p:define name="__ENABLE_LIVEEDIT_RICHTEXT" />
         </p:define>
+        <p:define name="__WITH_CONTENTEDITABLE"
+          match=""
+          short=""
+          desc="" />
         <p:define name="__WITH_CONTENTEDITABLE2"
           match=""
           short=""
