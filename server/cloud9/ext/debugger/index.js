@@ -88,25 +88,29 @@ sys.inherits(DebuggerPlugin, Plugin);
                     this.ide.broadcast('{"type": "node-debug-ready"}');
                 break;
             case "kill":
-                var child = this.child;
-                if (!child)
-                    break;
-                try {
-                    child.kill();
-                    // check after 2sec if the process is really dead
-                    // If not kill it harder
-                    setTimeout(function() {
-                        if (child.pid > 0)
-                            child.kill("SIGKILL");
-                    }, 2000)
-                }
-                catch(e) {}
+                this.$kill();
                 break;
             default:
                 res = false;
                 break;
         }
         return res;
+    };
+
+    this.$kill = function() {
+        var child = this.child;
+        if (!child)
+            return;
+        try {
+            child.kill();
+            // check after 2sec if the process is really dead
+            // If not kill it harder
+            setTimeout(function() {
+                if (child.pid > 0)
+                    child.kill("SIGKILL");
+            }, 2000)
+        }
+        catch(e) {}
     };
 
     this.$run = function(message, client) {
@@ -205,4 +209,10 @@ sys.inherits(DebuggerPlugin, Plugin);
 
         this.nodeDebugProxy.connect();
     };
+    
+    this.dispose = function(callback) {
+        this.$kill();
+        callback();
+    };
+    
 }).call(DebuggerPlugin.prototype);

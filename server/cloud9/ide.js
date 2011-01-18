@@ -130,6 +130,7 @@ sys.inherits(Ide, EventEmitter);
     this.addClientConnection = function(client, message) {
         var _self = this;
         this.clients[client.sessionId] = client;
+        this.onClientCountChange();
         
         client.on("message", function(message) {
             _self.onClientMessage(message, client);
@@ -138,10 +139,15 @@ sys.inherits(Ide, EventEmitter);
         client.on("disconnect", function() {
             _self.execHook("disconnect");
             delete _self.clients[client.sessionId];
+            _self.onClientCountChange();
         });
         
         if (message)
             _self.onClientMessage(message, client);            
+    };
+    
+    this.onClientCountChange = function() {
+        this.emit("clientCountChange", Object.keys(this.clients).length);
     };
 
     this.onClientMessage = function(message, client) {
@@ -186,7 +192,9 @@ sys.inherits(Ide, EventEmitter);
         }
         // if we get here, no hook function was successfully delegated to an
         // extension.
-        // this.error("Error: " + hook + " not available.");
+
+        //this.error("Error: no handler found for hook '" + hook + "'. Arguments: "
+        //    + sys.inspect(args), 9, args[0]);
     };
 
     this.error = function(description, code, message, client) {
@@ -202,5 +210,18 @@ sys.inherits(Ide, EventEmitter);
             client.send(error)
         else
             this.broadcast(error);
+    };
+    
+    this.dispose = function(callback) {
+        var count;
+        for (var name in this.exts) {
+            count++;
+            var ext = this.exts[name];
+            ext.dispose(function() {
+                count--;
+                if (count == 0)
+                    callback();
+            });
+        }
     };
 }).call(Ide.prototype);

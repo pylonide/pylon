@@ -58,6 +58,11 @@ function cloud9Plugin() {}
 
         return child;
     };
+    
+    this.dispose = function(callback) {
+        callback();
+    };
+    
 }).call(cloud9Plugin.prototype = new Events.EventEmitter());
 
 module.exports = cloud9Plugin;
