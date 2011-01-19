@@ -14,7 +14,7 @@ function cloud9WatcherPlugin(ide) {
 }
 
 (function() {
-    function unwatchFile(filename) {
+    this.unwatchFile = function(filename) {
         // console.log("No longer watching file " + filename);
         delete this.filenames[filename];
         fs.unwatchFile(filename);
@@ -25,7 +25,7 @@ function cloud9WatcherPlugin(ide) {
     // attached. There needs to be a per client list with ref counting
     this.disconnect = function() {
         for (var filename in this.filenames) 
-            unwatchFile(filename);
+            this.unwatchFile(filename);
         return true;
     };
 
@@ -78,7 +78,7 @@ function cloud9WatcherPlugin(ide) {
                 }
                 return true;
             case "unwatchFile":
-                return unwatchFile(filename);
+                return this.unwatchFile(filename);
             default:
                 return false;
             }
@@ -87,7 +87,7 @@ function cloud9WatcherPlugin(ide) {
     
     this.dispose = function(callback) {
         for (filename in this.filenames)
-            unwatchFile(this.filenames[filename]);
+            this.unwatchFile(this.filenames[filename]);
         callback();
     };
     
