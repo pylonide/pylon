@@ -43,7 +43,7 @@ else
         
 require("pilot/fixoldbrowsers");
 var Editor = require("ace/editor").Editor;
-var Document = require("ace/document").Document;
+var EditSession = require("ace/edit_session").EditSession;
 var VirtualRenderer = require("ace/virtual_renderer").VirtualRenderer;
 var UndoManager = require("ace/undomanager").UndoManager;
 var Range = require("ace/range").Range;
@@ -128,7 +128,7 @@ apf.codeeditor = function(struct, tagName) {
             key = this.$getCacheKey(value);
 
         //Assuming document
-        if (value instanceof Document)
+        if (value instanceof EditSession)
             doc = value;
 
         if (!doc && key)
@@ -140,7 +140,7 @@ apf.codeeditor = function(struct, tagName) {
                     ? value : value.parentNode, this);
             }
 
-            doc = new Document(typeof value == "string"
+            doc = new EditSession(typeof value == "string"
               ? value
               : (value.nodeType > 1 && value.nodeType < 5 //@todo replace this by a proper function
                     ? value.nodeValue
@@ -169,7 +169,7 @@ apf.codeeditor = function(struct, tagName) {
             _self.$removeDocListeners && _self.$removeDocListeners();
             _self.$removeDocListeners = _self.$addDocListeners(doc);
             
-            _self.$editor.setDocument(doc);            
+            _self.$editor.setSession(doc);            
 
             _self.$updateMarker();
             _self.$updateBreakpoints(doc);
@@ -232,7 +232,7 @@ apf.codeeditor = function(struct, tagName) {
     };
 
     this.$updateBreakpoints = function(doc) {
-        doc = doc || this.$editor.getDocument();
+        doc = doc || this.$editor.getSession();
 
         doc.setBreakpoints([]);
         if (!this.$breakpoints)
@@ -265,7 +265,7 @@ apf.codeeditor = function(struct, tagName) {
     this.$propHandlers["syntax"] = function(value) {
         var _self = this;
         this.$getMode(value, function(mode) {
-            _self.$editor.getDocument().setMode(mode);
+            _self.$editor.getSession().setMode(mode);
         });
     };
 
@@ -318,11 +318,11 @@ apf.codeeditor = function(struct, tagName) {
     };
 
     this.$propHandlers["tabsize"] = function(value, prop, initial) {
-        this.$editor.getDocument().setTabSize(parseInt(value));
+        this.$editor.getSession().setTabSize(parseInt(value));
     };
 
     this.$propHandlers["softtabs"] = function(value, prop, initial) {
-        this.$editor.getDocument().setUseSoftTabs(value);
+        this.$editor.getSession().setUseSoftTabs(value);
     };
 
     this.$propHandlers["scrollspeed"] = function(value, prop, initial) {
@@ -433,15 +433,16 @@ apf.codeeditor = function(struct, tagName) {
      * @return {String}
      */
     this.getValue = function(){
-        return this.$editor.getDocument().toString(); //@todo very inefficient
+        return this.$editor.getSession().getValue(); //@todo very inefficient
     };
 
-    this.getDocument = function() {
-        return this.$editor.getDocument();        
+    this.getDocument = 
+    this.getSession = function() {
+        return this.$editor.getSession();        
     };
 
     this.getSelection = function() {
-        return this.$editor.getDocument().getSelection();        
+        return this.$editor.getSession().getSelection();        
     };
     
     this.getLastSearchOptions = function() {
@@ -482,7 +483,7 @@ apf.codeeditor = function(struct, tagName) {
     };
 
     this.syncValue = function() {
-        var doc = this.$editor.getDocument();
+        var doc = this.$editor.getSession();
         if (!doc.cacheId || doc.cacheId == this.$getCacheKey(this.value)) {
             var value = this.getValue();
             if (this.value != value)
@@ -546,7 +547,7 @@ apf.codeeditor = function(struct, tagName) {
     
     this.$loadAml = function(){
         var ed  = this.$editor,
-            doc = ed.getDocument();
+            doc = ed.getSession();
         
         if (this.syntax == undefined)
             this.syntax = "Text";
