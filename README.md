@@ -103,7 +103,7 @@ Main projects that we use as building blocks:
   * [jsDAV] by [mikedeboer]
   * [connect] by [senchalabs](http://github,com/senchalabs)
   * [socket.io] by [LearnBoost](http://github.com/LearnBoost)
-  * [ace](http://github.com/ajaxorg/editor) by [fjakobs]
+  * [ace](http://github.com/ajaxorg/ace) by [fjakobs]
   * [apf](http://www.ajax.org) by [ajax.org]
   * and of course [Node.JS]!
   
