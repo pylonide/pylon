@@ -20,7 +20,7 @@ Written in Javascript, for Javascripters.
   * Bundled plugins: browser, clipboard, code (editor), console, debugger, docs, editors, filesystem, html, keybindings, newresource, noderunner, panels, refactor, richtext, save, searchreplace, settings, tree, undo
 
 ## Browser Support
-We are developing on firefox and this is a development repo, other browsers might be less stable until a proper release.
+We are developing on firefox and chrome and this is a development repo, other browsers might be less stable until a proper release.
 
 ## Usage
 
