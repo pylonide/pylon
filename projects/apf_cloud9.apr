@@ -44,8 +44,8 @@
 
         <p:compress
           cmd      = "yuicompressor"
-          in       = "{cwd}/build/apf_release.js"
-          out      = "{cwd}/build/apf_release.js" />
+          in       = "{cwd}/../../client/js/apf_release.js"
+          out      = "{cwd}/../../client/js/apf_release.js" />
     </p:process>
 
     <p:files>
