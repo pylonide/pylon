@@ -19,6 +19,26 @@ exports.findFreePort = function(start, hostname, callback) {
     });
 }
 
+exports.isPortOpen = function(hostname, port, timeout, callback) {
+    var stream = net.createConnection(port, hostname);
+
+    stream.on("connect", function() {
+        clearTimeout(id);
+        stream.end();
+        callback(true);
+    });
+    
+    stream.on("error", function() {
+        clearTimeout(id);        
+        callback(false);
+    });
+    
+    var id = setTimeout(function() {
+        stream.end();
+        callback(false);
+    }, timeout);
+};
+
 function asyncRepeat(callback, onDone) {
     callback(function() {
         asyncRepeat(callback, onDone);
