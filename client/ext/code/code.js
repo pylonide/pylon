@@ -10,7 +10,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var Document = require("ace/document").Document;
+var EditSession = require("ace/edit_session").EditSession;
 var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
 var markup = require("text!ext/code/code.xml");
 var settings = require("text!ext/code/settings.xml");
@@ -58,7 +58,7 @@ return ext.register("ext/code/code", {
     getDocument : function(){
         if (typeof ceEditor == "undefined")
             return null;
-        return ceEditor.getDocument();
+        return ceEditor.getSession();
     },
     
     setDocument : function(doc, actiontracker){
@@ -66,7 +66,7 @@ return ext.register("ext/code/code", {
             var _self = this;
 
             doc.isInited = doc.hasValue();
-            doc.acedoc = new Document(doc.getValue() || "");
+            doc.acedoc = new EditSession(doc.getValue() || "");
             doc.acedoc.setUndoManager(actiontracker);
             
             doc.addEventListener("prop.value", function(e){
