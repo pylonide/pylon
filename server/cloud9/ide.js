@@ -21,6 +21,7 @@ module.exports = Ide = function(options, httpServer, exts) {
     var baseUrl = (options.baseUrl || "").replace(/\/+$/, "");
     this.options = {
         workspaceDir: this.workspaceDir,
+        mountDir: options.mountDir || this.workspaceDir,
         davPrefix: options.davPrefix || (baseUrl + "/workspace"),
         baseUrl: baseUrl,
         debug: options.debug === true,
@@ -83,7 +84,7 @@ sys.inherits(Ide, EventEmitter);
         }
         else if (path.match(this.workspaceRe)) {
             if (!this.davServer) {
-                this.davServer = jsDAV.mount(this.options.workspaceDir, this.options.davPrefix, this.httpServer, false);
+                this.davServer = jsDAV.mount(this.options.mountDir, this.options.davPrefix, this.httpServer, false);
                 this.emit("configureDav", this.davServer);
             }
             this.davServer.exec(req, res);
