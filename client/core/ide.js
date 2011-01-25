@@ -4,7 +4,10 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
+var deps = ["core/document"];
+if (!window.cloud9config.standalone)
+    deps.push("/socket.io/socket.io.js");
+require.def("core/ide", deps,
     function(Document) {
         var ide = new apf.Class().$init();
 
