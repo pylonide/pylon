@@ -815,7 +815,7 @@ apf.Class.prototype = new (function(){
             var resetting = value === "" || typeof value == "undefined";
             if (inherited != 10 && !value) {
                 delete this.$inheritProperties[prop];
-                if (this.$setInheritedAttribute(prop))
+                if (this.$setInheritedAttribute && this.$setInheritedAttribute(prop))
                     return;
             }
             else if (inherited != 10) { //Keep the current setting (for dynamic properties)

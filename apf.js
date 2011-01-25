@@ -335,7 +335,8 @@ var apf = {
         this.isGecko3      = this.isGecko;// && (function x(){})[-5] == "x";
         this.isGecko35     = this.isGecko && (/a/[-1] && Object.getPrototypeOf) ? true : false;
         this.versionGecko  = this.isGecko ? parseFloat(sAgent.match(/(?:gecko)\/([\d\.]+)/i)[1]) : -1;
-        this.versionFF     = this.isGecko ? parseFloat(sAgent.match(/(?:firefox(-[\d.]+)?|minefield)\/([\d.]+)/i)[2]) : -1;
+        var m = sAgent.match(/(?:firefox(-[\d.]+)?|minefield)\/([\d.]+)/i);
+        this.versionFF     = this.isGecko && m && m.length ? parseFloat(m[2]) : 4.0;
         this.versionSafari = this.isSafari && !this.isAIR ? parseFloat(sAgent.match(/(?:version)\/([\d\.]+)/i)[1]) : -1;
         this.versionChrome = this.isChrome ? parseFloat(sAgent.match(/(?:chrome)\/([\d\.]+)/i)[1]) : -1;
         this.versionOpera  = this.isOpera 
