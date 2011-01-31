@@ -56,16 +56,15 @@
         }
 
         .dockwin .dockcontent {
-            background   : #f5f5f5;
-            // overflow     : hidden;
-            position     : relative;
-            border       : 1px solid #8C8C8C;
-            border-width : 0 1px 1px 1px;
-            position : absolute;
-            top : 19px;
-            right : 0;
-            left : 0;
-            bottom : 1px;
+            background    : #f5f5f5;
+            // overflow   : hidden;
+            position      : relative;
+            border-bottom : 1px solid #8C8C8C;
+            position      : absolute;
+            top           : 19px;
+            right         : 0;
+            left          : 0;
+            bottom        : 1px;
         }
 
         .smallheader.dockwin .dockcontent {
@@ -5156,12 +5155,13 @@
             font-family : Trebuchet MS;
             font-size : 12px;
             border-bottom : 1px solid #515256;
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(47,48,50)),color-stop(1, rgb(72,73,76)));
+            background: url(images/editor_tabs_container_bg.gif);
+            /*background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(47,48,50)),color-stop(1, rgb(72,73,76)));
             background: -moz-linear-gradient(center bottom,rgb(47,48,50) 0%,rgb(72,73,76) 100%);
             border-radius : 4px 4px 0 0;
             -moz-border-radius: 4px 4px 0 0;
             -webkit-border-top-right-radius: 4px;
-            -webkit-border-top-left-radius: 4px;
+            -webkit-border-top-left-radius: 4px;*/
             margin-top : -32px;
             width : auto;
         }
@@ -17898,4 +17898,669 @@
         </a:main>
     </a:presentation>
 </a:scrollbar>
+
+<!-- MSP TODO Manager additions -->
+<a:modalwindow name="todowin">
+    <a:style><![CDATA[
+        .todowin_container{
+            z-index : 101;
+            padding : 3px;
+            border                : 1px solid #444;
+            -moz-border-radius    : 5px;
+            -webkit-border-radius : 5px;
+            -webkit-border-top-right-radius: 0px;
+            -moz-border-radius-topright: 0px;
+            background: #444;
+        }
+
+        .todowin{
+            position              : relative;
+            padding               : 20px 0 0 0;
+            border   : 1px solid #8c8c8c;
+        }
+
+        .todowin .todowinhead{
+            height           : 22px;
+            line-height      : 22px;
+            margin           : -20px 0 0px 0;
+            background       : #333;
+            background       : -moz-linear-gradient(top, #e3e3e3, #d4d4d4 );
+            background-image : -webkit-gradient(linear, 0% 0%, 0% 100%, from(#e3e3e3), to(#d4d4d4));
+            color            : #202020;
+            border-bottom    : 1px solid #8c8c8c;
+            font-family      : Trebuchet MS;
+            font-size        : 10pt;
+        }
+        
+        .todowin .todowinhead span.title {
+            display          : inline-block;
+            background       : #f6f6f6;
+            background       : -moz-linear-gradient(top, #eee, #f6f6f6 );
+            background-image : -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eee), to(#f6f6f6));
+            padding          : 0 15px 0 13px;
+            height           : 24px;
+            line-height      : 24px;
+            border-right     : 1px solid #8c8c8c;
+        }
+        
+        .todowin .toolbar.top_border {
+            border-top: 1px solid #8c8c8c;
+        }
+        
+        .todowin .toolbar .subbar {
+            /*background       : #eff1f4;
+            background       : -moz-linear-gradient(top, #eff1f4, #e6e8eb );
+            background-image : -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eff1f4), to(#e6e8eb));*/
+            background    : #f6f6f6;
+            border-bottom : 1px solid #b2b2b2;
+        }
+        
+        .todowin .toolbar .subbar .toolbarbutton div{
+            color: #fff;
+        }
+
+        .todowinActive .todowinhead{
+            background : #25a8e7 url(images/sectionheadactive.gif);
+            color      : white;
+        }
+        
+        .todowin .vbox {
+            border-top : 1px solid #505153;
+        }
+        
+        .todowin .dockwin {
+            overflow: hidden;
+            padding: 0px;
+        }
+        
+        .todowin .todopanel.top_border {
+        }
+        
+        .todowin .dockwin .docktitle {
+            display: none;
+        }
+        
+        .todowin .dockwin .dockcontent {
+            top: 1px;
+        }
+        
+        .todowin .todowincontainer{
+            width      : 100%;
+            height     : 100%;
+            background : #f4f8fa;
+        }
+
+        .todowinCurrent .todowinhead{
+            /*border-bottom : 2px solid #c3c3c3;
+            padding-bottom  : 2px;
+            z-index         : 10;
+            position        : relative;*/
+        }
+
+        .todowin .todowinhead div{
+            float      : right;
+            width      : 14px;
+            height     : 14px;
+            margin     : -1px 3px 0 0;
+            border     : 1px solid transparent;
+            background : no-repeat 2px 2px;
+        }
+
+        .todowin .todowinhead div.hover{
+            border : 1px solid white;
+        }
+        .todowin .todowinhead .max{
+            background-image: url(images/cmswin_max.gif);
+        }
+        .todowinMax .todowinhead .max{
+            background-image: url(images/cmswin_restore.gif);
+        }
+        .todowin .todowinhead div.down{
+            background-color : white;
+        }
+        
+        .todowin .todowincontainer .list{
+            background: transparent;
+            border: none;
+        }
+        
+        .todowin .todowincontainer .dockcontent > div {
+            margin-left: 5px;
+        }
+        
+        .todowin .todowincontainer .dockcontent .dropdown {
+            left: 5px;
+        }
+        
+        .todowin .todolist {
+        }
+    ]]></a:style>
+    <a:presentation>
+        <a:main 
+          collapsed-height = "20"
+          min-width        = "150"
+          min-height       = "80"
+          container        = "div[1]/div[2]"
+          drag             = "div[1]/div[1]" 
+          title            = "div[1]/div[1]/span[1]/text()"
+          icon             = "div[1]/div[1]/span[2]">
+            <div class="todowin_container">
+                <div class="todowin">
+                    <div class="todowinhead">
+                        <span class="title">-</span>
+                        <span></span>
+                    </div>
+                    <div class="todowincontainer"></div>
+                </div>
+            </div>
+        </a:main>
+        <a:button>
+            <div> </div>
+        </a:button>
+    </a:presentation>
+</a:modalwindow>
+<a:list name="todolist">
+    <a:style><![CDATA[
+        .todolist{
+            overflow: hidden;
+            background: transparent;
+            cursor: default;
+        }
+        
+        .todolist, .draglist{
+            font-family: Tahoma;
+            font-size: 8pt;
+        }
+
+        .todolist>DIV, .draglist{
+            padding: 0;
+            clear: left;
+        }
+
+        .todolist>DIV>SPAN, .draglist SPAN{
+            padding: 0 0 0 20px;
+            background: no-repeat 1px center;
+            float: left;
+        }
+
+        .todolist>DIV>SPAN>U, .draglist U{
+            text-decoration: none;
+            color: #333;
+            cursor: default;
+            display: block;
+            padding: 8px 4px 8px 2px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .todolist #txt_rename{
+            border: 1px solid #bbb;
+            padding: 1px 15px 1px 1px;
+            font-family: Tahoma;
+            font-size: 8pt;
+            color: black;
+            word-break: keep-all;
+            overflow: visible;
+            margin-top : 0px;
+            cursor: text;
+            height: 13px;
+            display: block;
+            outline : none;
+        }
+
+        .todolist .empty, .todolist .offline, .todolist .loading{
+            text-align: center;
+            padding: 8px 0 0 5px;
+            color: #fff;
+            font-weight : normal;
+        }
+
+        .shortlist{
+            border : 0;
+            overflow-y : auto;
+            overflow-x : hidden;
+            max-height : 90px;
+            width : auto;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class='todolist'>
+            </div>
+        </a:main>
+        <a:item
+            class    = "."
+            caption  = "span/u"
+            icon     = "span"
+            select   = "span"
+        >
+            <div><span><u>-</u></span></div>
+        </a:item>
+        <a:dragindicator>
+            <div class='draglist'><span><u>-</u></span></div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading">Loading...</div>
+        </a:loading>
+        <a:empty caption=".">
+            <div class="message">-</div>
+        </a:empty>
+    </a:presentation>
+</a:list>
+<a:modalwindow name="todopanel">
+    <a:style><![CDATA[
+        .todopanel {
+
+        }
+    ]]></a:style>
+    <a:presentation>
+        <a:main container="." collapsed-height="0"
+          min-width="0" min-height="0" class=".">
+            <div class="todopanel">
+            
+            </div>
+        </a:main>
+    </a:presentation>
+</a:modalwindow>
+<a:bar name="debug-panel">
+    <a:style><![CDATA[
+        .debug-panel {
+            position         : relative;
+            overflow         : hidden;
+            width            : 43px;
+            border-left      : 1px solid #2e2e2e;
+            background-color : #e7e7e7;
+            filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5');
+            -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5')";
+            background       : -webkit-gradient(linear, left center, right center, from(#f3f3f3), color-stop(1, #e5e5e5));
+            background       : -moz-linear-gradient(center left, #f3f3f3 0%, #e5e5e5 100%) repeat scroll 0 0 transparent;
+        }
+        
+        .debug-panel .bar_inset {
+            width            : 43px;
+            height           : 12px;
+            position         : relative;
+            border-top       : 1px solid #000;
+            background       : url(images/sidebar_right_bar_inset.gif);
+        }
+        
+        .debug-panel .body {
+            position    : absolute;
+            top         : 13px;
+            left        : 0;
+            right       : 0;
+            bottom      : 0;
+            border-top  : 1px solid #ffffff;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="div[2]">
+            <div class="debug-panel">
+                <div class="bar_inset"></div>
+                <div class="body"></div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:bar>
+<a:divider name="divider-debugpanel">
+    <a:style><![CDATA[
+        .divider-debugpanel {
+            position      : relative;
+            overflow      : hidden;
+            border-top    : 1px solid #bebebe;
+            border-bottom : 1px solid #f3f3f3;
+            width         : 34px;
+            height        : 2px;
+            margin        : 5px 0 5px 3px;
+        }
+        
+        .divider-debugpanel DIV {
+            border-bottom : 1px solid #bebebe;
+            border-top    : 1px solid #f3f3f3;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main
+          container = "div"
+          caption   = "div">
+            <div class="divider-debugpanel">
+                <div></div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:divider>
+<a:button name="button-debug">
+    <a:style><![CDATA[
+        .button-debug {
+            width              : 41px;
+            height             : 40px;
+            padding-top        : 3px;
+            overflow           : hidden;
+            cursor             : default;
+            position           : relative;
+            -moz-user-select   : none; 
+            -khtml-user-select : none; 
+            user-select        : none;
+            background-repeat:no-repeat;
+            background-position: 0 0;
+        }
+        
+        .button-debug-footer {
+            height: 10px;
+            filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5');
+            -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5')";
+            background       : -webkit-gradient(linear, left center, right center, from(#f3f3f3), color-stop(1, #e5e5e5));
+            background       : -moz-linear-gradient(center left, #f3f3f3 0%, #e5e5e5 100%) repeat scroll 0 0 transparent;
+        }
+        
+        .button-debug.default_hidden {
+            display: none;
+        }
+        
+        .button-debugOver {
+            background-image    : url(images/collaboration_panel_sprite.png);
+            background-position : 4px 3px;
+        }
+        
+        .button-debugDown {
+            background-image    : url(images/collaboration_panel_sprite.png);
+            background-position : 4px -36px;
+        }
+        
+        .button-debugChecked {
+            background: #444;
+        }
+        
+        .button-debugChecked .button-debug-footer {
+            -webkit-border-top-left-radius : 5px;
+            -moz-border-radius-topleft     : 5px;
+        }
+        
+        .button-debug .icon {
+            width  : 33px;
+            height : 33px;
+            background-image    : url(images/collaboration_panel_sprite.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            margin              : 1px 1px 1px 4px;
+        }
+        
+        .button-debug.debug1 .icon {
+            background-position: 0 -437px;
+        }
+        
+        .button-debugChecked.debug1 .icon {
+            background-position: 0 -556px;
+        }
+        
+        .button-debug.debug2 .icon {
+            background-position: 0 -475px;
+        }
+        
+        .button-debug.call_stack .icon {
+            background-position: 0 -515px;
+        }
+        
+        .button-debug.todo_check .icon {
+            background-position: 0 -163px;
+        }
+        
+        .button-debugChecked.todo_check .icon {
+            background-position: 0 -201px;
+        }
+        
+        .button-debug.contact_list .icon {
+            background-position: 0 -243px;
+        }
+        
+        .button-debugChecked.contact_list .icon {
+            background-position: 0 -281px;
+        }
+        
+    ]]></a:style>
+
+     <a:presentation>
+        <a:main 
+          caption    = "div" 
+          label      = "div"
+          background = "."
+          icon       = "div">
+            <div class="button-debug">
+                <div class="icon"></div>
+                <div class="button-debug-footer"></div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:button>
+<a:bar name="dock-panel">
+    <a:style><![CDATA[
+        .dock-panel {
+            position         : relative;
+            overflow         : hidden;
+            width            : 65px;
+            border-right     : 1px solid #2e2e2e;
+            background       : url(images/dock_cloud9_bg.gif);
+        }
+
+        .dock-panel .body {
+            position    : absolute;
+            top         : 0;
+            left        : 0;
+            right       : 0;
+            bottom      : 0;
+        }
+        
+        .dock-panel .c9menulogo {
+            width    : 65px;
+            height   : 32px;
+            position : relative;
+            margin-top: 20px;
+        }
+        
+        .dock-panel .c9menulogo span {
+            background  : url(images/c9menulogo.png) no-repeat 0 0;
+            width       : 45px;
+            height      : 29px;
+            position    : absolute;
+            left        : 50%;
+            margin-left : -22px;
+            top         : 0;
+        }
+        
+        .dock-panel .c9version {
+            color       : #696969;
+            font-family : Tahoma;
+            font-size   : 10px;
+            text-align  : center;
+            padding     : 0 0 3px 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="div[1]">
+            <div class="dock-panel">
+                <div class="body"></div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:bar>
+<a:list name="dock-list">
+    <a:style><![CDATA[
+        .gitui-icon-menu {
+            width            : 65px;
+            overflow         : visible;
+            position         : relative;
+            border-top       : 1px solid #232323;
+        }
+        
+        .gitui-icon-menu .menu-item {
+            width               : 65px;
+            height              : 19px;
+            padding-top         : 47px;
+            border-bottom       : 1px solid #232323;
+            border-top          : 1px solid #3f3f41;
+            font-family         : Tahoma;
+            font-size           : 10px;
+            color               : #aaaaaa;
+            text-align          : center;
+            position            : relative;
+            cursor              : default;
+        }
+        
+        .gitui-icon-menu .menu-item .icon {
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            width               : 40px;
+            height              : 40px;
+            position            : absolute;
+            top                 : 7px;
+            left                : 12px;
+        }
+        
+        .gitui-icon-menu .menu-item .pointer {
+            background-image    : url(images/gitui_close_arrow.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            position            : absolute;
+            width               : 11px;
+            height              : 9px;
+            top                 : 6px;
+            right               : 5px;
+            display             : none;
+        }
+        
+        .gitui-icon-menu .selected {
+            color : white;
+        }
+        
+        .gitui-icon-menu .selected .pointer {
+            display:block;
+        }
+        
+        .gitui-icon-menu .selected .icon {
+            background-position:-40px 0;
+        }
+        
+        .gitui-icon-menu .shop-item {
+            width    : 65px;
+            height   : 45px;
+            padding  : 0;
+            border   : 0;
+            position : relative;
+        }
+        
+        .gitui-icon-menu .spacer-item {
+            border     : 0;
+            border-top : 1px solid #3f3f41;
+            width      : 65px;
+            height     : 2px;
+            padding    : 0;
+            position   : relative;
+        }
+        
+        .gitui-icon-menu .spacer-item .pointer {
+            display : none;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class='gitui-icon-menu'>
+            </div>
+        </a:main>
+        <a:item
+            class   = "."
+            caption = "text()"
+            icon    = "div"
+            select  = "."
+        >
+            <div class="menu-item">-<div class="icon"></div><div class="pointer"></div></div>
+        </a:item>
+        <a:dragindicator>
+            <div class='draglist'><span><u>-</u></span></div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading">Loading...</div>
+        </a:loading>
+        <a:empty caption=".">
+            <div class="message">-</div>
+        </a:empty>
+    </a:presentation>
+</a:list>
+<a:list name="collaboratelist">
+    <a:style><![CDATA[
+        .collaboratelist {
+            background: #fff;
+        }
+        
+        .collaboratelist .menu-item {
+           position:relative;
+           height:24px;
+           line-height: 24px;
+           padding: 0px 15px 0px 22px;
+           cursor: default;
+        }
+        
+        .collaboratelist .menu-item .icon {
+            width:10px;
+            height:10px;
+            background-color:yellow;
+            position:absolute;
+            top:7px;
+            right:5px;
+        }
+        
+        .collaboratelist .menu-item .status {
+            width:8px;
+            height:10px;
+            background: url(icons/contact_online.png) no-repeat;
+            position:absolute;
+            top:7px;
+            left:7px;
+        }
+        
+        .collaboratelist .offline .status {
+            background: url(icons/contact_offline.png) no-repeat;
+        }
+        
+        .collaboratelist .hover {
+			
+        }
+        
+        .collaboratelist .menu-item.selected {
+            border-top       : 1px solid #0d76d7;
+            filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#5a9edb', endColorstr='#1f79c3');
+            -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#5a9edb', endColorstr='#1f79c3')";
+            background       : -webkit-gradient(linear, left top, left bottom, from(#5a9edb), color-stop(1, #1f79c3));
+            background       : -moz-linear-gradient(center top, #5a9edb 0%, #1f79c3 100%) repeat scroll 0 0 transparent;
+            color: #fff;
+		}
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="collaboratelist">
+            </div>
+        </a:main>
+        <a:item
+            class   = "."
+            caption = "text()"
+            select  = "."
+        >
+            <div class="menu-item">-<div class="status"></div></div>
+        </a:item>
+        <a:dragindicator>
+            <div class='draglist'><span><u>-</u></span></div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading">Loading...</div>
+        </a:loading>
+        <a:empty select="." caption="Loading...">
+            <div class="message">Loading users from server...</div>
+        </a:empty>
+    </a:presentation>
+</a:list>
 </a:skin>

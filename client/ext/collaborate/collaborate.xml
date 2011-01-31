@@ -1,0 +1,60 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window
+      id        = "winCollaborators"
+      title     = "Collaborators"
+      center    = "false"
+      modal     = "false"
+      draggable = "false"
+      visible   = "false"
+      width     = "260"
+      right     = "42"
+      skin      = "todowin">
+        <a:toolbar>
+            <a:bar height="36">
+                <a:hbox edge="5">
+                    <a:textbox realtime="true" flex="1" skin="searchbox_textbox" focusselect="true" />
+                </a:hbox>
+            </a:bar>
+        </a:toolbar>
+        <a:panel 
+          skin      = "todopanel"
+          visible   = "true"
+        >
+            <a:panel
+              class = "top_border"
+              skin  = "todopanel"
+            >
+                <a:model id="collaborators">
+                    <data>
+                        <item online="1" status="" user_id="3" user_name="Matt Pardee">Matt Pardee</item>
+                        <item online="1" status="" user_id="4" user_name="Ruben Daniels">Ruben Daniels</item>
+                        <item online="0" status="" user_id="5" user_name="Rik Arends">Rik Arends</item>
+                    </data>
+                </a:model>
+                <a:list 
+                    onafterchoose = "require('ext/collaborate/collaborate').openChat(this)"
+                    skin          = "collaboratelist"
+                    model         = "collaborators"
+                    autoselect    = "false"
+                    height        = "300"
+                >
+                    <a:bindings>
+                        <a:caption match="[@user_name]" />
+                        <a:each match="[item]" />
+                        <a:css match="{[@online] == '1'}" value="online"></a:css>
+                        <a:css match="{[@online] == '0'}" value="offline"></a:css>
+                    </a:bindings>
+                </a:list>
+            </a:panel>
+        </a:panel>
+        <a:toolbar class="top_border">
+            <a:bar height="27">
+                 <a:button
+                  icon    = "debugger/monitorexpression_tsk{this.disabled ? '_disabled' : ''}.gif"
+                  onclick = "require('c9/ext/todo/todo').expandNewTodo(this);"
+                  left    = "0"
+                 />
+            </a:bar>
+        </a:toolbar>
+    </a:window>
+</a:application>

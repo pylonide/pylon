@@ -13,6 +13,7 @@ var ext = require("core/ext");
 var console = require("ext/console/console");
 var editors = require("ext/editors/editors");
 var panels = require("ext/panels/panels");
+var dock   = require("ext/dockpanel/dockpanel");
 var fs = require("ext/filesystem/filesystem");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/debugger/debugger.xml");
@@ -23,6 +24,7 @@ return ext.register("ext/debugger/debugger", {
     type   : ext.GENERAL,
     alone  : true,
     markup : markup,
+    buttonClassName : "debug1",
     deps   : [fs, noderunner],
     commands: {
         "debug": {
@@ -60,6 +62,7 @@ return ext.register("ext/debugger/debugger", {
         });
         
         panels.register(this);
+        dock.register(this);
     },
 
     init : function(amlNode){
@@ -235,6 +238,7 @@ return ext.register("ext/debugger/debugger", {
         this.nodes = [];
         
         panels.unregister(this);
+        dock.unregister(this);
     }
 });
 

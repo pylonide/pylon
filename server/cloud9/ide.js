@@ -36,6 +36,7 @@ module.exports = Ide = function(options, httpServer, exts) {
             "ext/themes/themes",
             "ext/themes_default/themes_default",
             "ext/panels/panels",
+            "ext/dockpanel/dockpanel",
             "ext/tree/tree",
             "ext/save/save",
             "ext/gotofile/gotofile",
@@ -57,7 +58,8 @@ module.exports = Ide = function(options, httpServer, exts) {
             "ext/console/console",
             "ext/tabbehaviors/tabbehaviors",
             "ext/keybindings/keybindings",
-            "ext/watcher/watcher"
+            "ext/watcher/watcher",
+            "ext/collaborate/collaborate"
         ]
     }
 
