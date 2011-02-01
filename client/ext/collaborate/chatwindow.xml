@@ -1,1 +1,38 @@
-empty file.
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window
+      id        = "chatWindow"
+      title     = "New Chat"
+      center    = "false"
+      modal     = "false"
+      draggable = "false"
+      visible   = "false"
+      width     = "260"
+      right     = "42"
+      skin      = "todowin">
+        <a:toolbar>
+            <a:bar height="36">
+                <a:hbox edge="5">
+                </a:hbox>
+            </a:bar>
+        </a:toolbar>
+        <a:panel 
+          skin      = "todopanel"
+          visible   = "true"
+        >
+            <a:panel
+              class = "top_border"
+              skin  = "todopanel"
+            >
+            </a:panel>
+        </a:panel>
+        <a:toolbar class="top_border">
+            <a:bar height="27">
+                 <a:button
+                  icon    = "debugger/monitorexpression_tsk{this.disabled ? '_disabled' : ''}.gif"
+                  onclick = "require('c9/ext/todo/todo').expandNewTodo(this);"
+                  left    = "0"
+                 />
+            </a:bar>
+        </a:toolbar>
+    </a:window>
+</a:application>

@@ -26,7 +26,38 @@ return ext.register("ext/collaborate/collaborate", {
     nodes : [],
 
     openChat : function(listItem) {
-        
+
+        tempChatWindow = new apf.panel({
+            htmlNode   : document.body,
+            id         : "chatUser",
+            buttons    : "close",
+            title      : "New Chat",
+            skin       : "todowin",
+            visible    : true,
+            width      : 350,
+            height     : 270,
+            childNodes : [
+                new apf.toolbar({
+                  childNodes : [
+                    new apf.bar({
+                      height     : 36,
+                      childNodes : [
+                        new apf.hbox({
+                          edge : 5
+                        })
+                      ]
+                    })
+                  ]
+                }),
+                new apf.panel({
+                    skin    : "todopanel",
+                    visible : "true"
+                })
+            ]
+        });
+                      
+        //apf.document.body.insertMarkup('/static/ext/collaborate/chatwindow.xml');
+        //dock.registerChatWindow();
     },
 
     hook : function(){

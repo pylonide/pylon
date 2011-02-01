@@ -32,7 +32,7 @@
                     </data>
                 </a:model>
                 <a:list 
-                    onafterchoose = "require('ext/collaborate/collaborate').openChat(this)"
+                    onafterchoose = "require('ext/collaborate/collaborate').openChat(this.selected)"
                     skin          = "collaboratelist"
                     model         = "collaborators"
                     autoselect    = "false"

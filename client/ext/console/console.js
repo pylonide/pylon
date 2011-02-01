@@ -233,8 +233,8 @@ return ext.register("ext/console/console", {
     },
 
     keydownHandler: function(e) {
-        if (e.keyCode == 9 || e.keyCode == 13)
-            return this.commandTextHandler(e);
+        //if (e.keyCode == 9 || e.keyCode == 13)
+        //    return this.commandTextHandler(e);
     },
 
     commandTextHandler: function(e) {

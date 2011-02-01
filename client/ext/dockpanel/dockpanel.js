@@ -69,7 +69,21 @@ return ext.register("ext/dockpanel/dockpanel", {
         }
     },
     
-    register : function(panelExt, position){
+    /**
+     * Registers a basic chat window
+     * This is as opposed to a regular registration -- this simply keeps track of
+     * a button and window connection
+     * 
+     **/
+    registerWindow : function(){
+        
+    },
+    
+    unregisterWindow : function(){
+        
+    },
+    
+    register : function(panelExt, btn_position){
         var _self = this;
         /*panelExt.mnuItem = mnuPanels.appendChild(new apf.item({
             caption : panelExt.name,
@@ -80,7 +94,7 @@ return ext.register("ext/dockpanel/dockpanel", {
                 this.checked ? panelExt.enable() : panelExt.disable();
             }
         }));*/
-        
+
         //<a:button skin="button-debug" class="contact_list" state="true" />
         btnTemp = new apf.button({
             skin: "button-debug",
@@ -93,13 +107,13 @@ return ext.register("ext/dockpanel/dockpanel", {
             }
         });
     
-        //var appendedDockBtn = dockPanelRight.insertBefore(btnTemp, dockPanelRight.childNodes[1]);
-        if(typeof position === 'undefined') {
+        var appendedDockBtn = dockPanelRight.insertBefore(btnTemp, dockPanelRight.childNodes[1]);
+        if(typeof btn_position === 'undefined') {
             var appendedDockBtn = dockPanelRight.insertBefore(btnTemp, dockRightDivider);
         }
         
         else {
-            var appendedDockBtn = dockPanelRight.insertBefore(btnTemp, dockPanelRight.childNodes[position]);   
+            var appendedDockBtn = dockPanelRight.insertBefore(btnTemp, dockPanelRight.childNodes[btn_position]);   
         }
     
         this.nodes.push(appendedDockBtn);
@@ -107,7 +121,9 @@ return ext.register("ext/dockpanel/dockpanel", {
         /*if (this.$settings && this.$settings[panelExt.path]) {
             this.setPanelSettings(panelExt, _self.$settings[panelExt.path]);
         }
-        else*/ if (panelExt.visible) {
+        else*/
+        
+        if (panelExt.visible) {
             if (panelExt.skin) {
                 setTimeout(function(){
                     this.initPanel(panelExt);
@@ -121,7 +137,7 @@ return ext.register("ext/dockpanel/dockpanel", {
         // Set the position of the extension window associated with new button
         //panelExt.panel.setTop(apf.getAbsolutePosition(btnObj.$ext)[1]);
 
-        this.panels[panelExt.path] = { ext : panelExt, btn : appendedDockBtn };
+        //this.panels[panelExt.path] = { ext : panelExt, btn : appendedDockBtn };
     },
     
     unregister : function(panelExt){
