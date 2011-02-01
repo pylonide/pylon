@@ -33,6 +33,15 @@ return ext.register("ext/tree/tree", {
 
     init : function() {
         this.panel = winFilesViewer;
+        
+        winFilesViewer.addEventListener("hide", function(){
+            splitterPanelLeft.hide();
+        });
+        
+        winFilesViewer.addEventListener("show", function() {
+           splitterPanelLeft.show(); 
+        });
+        
         colLeft.appendChild(winFilesViewer);
         trFiles.setAttribute("model", fs.model);
         
@@ -238,12 +247,10 @@ return ext.register("ext/tree/tree", {
 
     enable : function(){
         winFilesViewer.show();
-        splitterPanelLeft.show();
     },
 
     disable : function(){
         winFilesViewer.hide();
-        splitterPanelLeft.hide();
     },
 
     destroy : function(){
