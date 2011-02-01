@@ -80,7 +80,7 @@ return ext.register("ext/panels/panels", {
         });
         panelExt.panel.addEventListener("hide", function(){
             panelExt.mnuItem.uncheck();
-            panelExt.disable();
+
             if (!this.parentNode.selectSingleNode("node()[not(@visible='false')]"))
                 this.parentNode.hide();
             
