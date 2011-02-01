@@ -238,10 +238,12 @@ return ext.register("ext/tree/tree", {
 
     enable : function(){
         winFilesViewer.show();
+        splitterPanelLeft.show();
     },
 
     disable : function(){
         winFilesViewer.hide();
+        splitterPanelLeft.hide();
     },
 
     destroy : function(){

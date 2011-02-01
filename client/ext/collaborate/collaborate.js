@@ -12,7 +12,7 @@ var ext    = require("core/ext");
 var util   = require("core/util");
 var dock   = require("ext/dockpanel/dockpanel");
 var markup = require("text!ext/collaborate/collaborate.xml");
-        
+
 return ext.register("ext/collaborate/collaborate", {
     name            : "Collaboration",
     dev             : "Ajax.org",
@@ -29,62 +29,15 @@ return ext.register("ext/collaborate/collaborate", {
 
         tempChatWindow = new apf.modalwindow({
             htmlNode   : document.body,
-            id         : "chatUser",
-            buttons    : "close",
-            title      : "New Chat",
-            visible    : true,
+            id         : "chatUser" + listItem.getAttribute("user_id"),
+            title      : listItem.getAttribute("user_name"),
+            visible    : false,
             right      : "42",
             width      : "250",
             height     : "350",
+            modal      : false,
+            draggable  : false,
             skin       : "todowin",
-            childNodes : [
-                new apf.toolbar({
-                  childNodes : [
-                    new apf.bar({
-                      height     : 36,
-                      childNodes : [
-                        new apf.hbox({
-                          edge : 5
-                        })
-                      ]
-                    })
-                  ]
-                }),
-                new apf.panel({
-                    skin    : "todopanel",
-                    visible : "true",
-                    childNodes : [
-                        new apf.panel({
-                            skin    : "todopanel",
-                            'class' : "top_border"
-                        })
-                    ]
-                }),
-                new apf.toolbar({
-                    'class' : "top_border",
-                    childNodes : [
-                        new apf.bar({
-                            height : 27,
-                            childNodes : [
-                                new apf.button({
-                                    left    : 0,
-                                    icon    : "debugger/monitorexpression_tsk{this.disabled ? '_disabled' : ''}.gif"
-                                })
-                            ]
-                        })
-                    ]
-                })
-            ]
-        });
-        /*tempChatWindow = new apf.panel({
-            htmlNode   : document.body,
-            id         : "chatUser",
-            buttons    : "close",
-            title      : "New Chat",
-            skin       : "todowin",
-            visible    : true,
-            width      : 350,
-            height     : 270,
             childNodes : [
                 new apf.toolbar({
                   childNodes : [
@@ -116,7 +69,6 @@ return ext.register("ext/collaborate/collaborate", {
                             childNodes : [
                                 new apf.button({
                                     icon    : "debugger/monitorexpression_tsk{this.disabled ? '_disabled' : ''}.gif",
-                                    onclick : "require('c9/ext/todo/todo').expandNewTodo(this);",
                                     left    : 0
                                 })
                             ]
@@ -124,9 +76,8 @@ return ext.register("ext/collaborate/collaborate", {
                     ]
                 })
             ]
-        });*/
-                      
-        //apf.document.body.insertMarkup('/static/ext/collaborate/chatwindow.xml');
+        });
+
         //dock.registerChatWindow();
     },
 
