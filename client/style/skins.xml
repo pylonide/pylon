@@ -5155,7 +5155,7 @@
             font-family : Trebuchet MS;
             font-size : 12px;
             border-bottom : 1px solid #515256;
-            background: url(images/editor_tabs_container_bg.gif);
+            background: #2b2c2e url(images/editor_tabs_container_bg.gif);
             /*background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(47,48,50)),color-stop(1, rgb(72,73,76)));
             background: -moz-linear-gradient(center bottom,rgb(47,48,50) 0%,rgb(72,73,76) 100%);
             border-radius : 4px 4px 0 0;
