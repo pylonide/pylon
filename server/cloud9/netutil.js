@@ -1,4 +1,5 @@
 var net = require("net");
+var exec = require("child_process").exec;
 
 exports.findFreePort = function(start, hostname, callback) {
     var port = start;
@@ -18,6 +19,35 @@ exports.findFreePort = function(start, hostname, callback) {
         callback(port);
     });
 }
+
+exports.isPortOpen = function(hostname, port, timeout, callback) {
+    var stream = net.createConnection(port, hostname);
+
+    stream.on("connect", function() {
+        clearTimeout(id);
+        stream.end();
+        callback(true);
+    });
+    
+    stream.on("error", function() {
+        clearTimeout(id);        
+        callback(false);
+    });
+    
+    var id = setTimeout(function() {
+        stream.end();
+        callback(false);
+    }, timeout);
+};
+
+exports.getHostName = function(callback) {
+    exec("hostname", function (error, stdout, stderr) {
+        if (error)
+            return callback(stderr);
+            
+        callback(null, stdout.toString().split("\n")[0]);
+    });
+};
 
 function asyncRepeat(callback, onDone) {
     callback(function() {
