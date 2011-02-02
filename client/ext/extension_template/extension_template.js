@@ -91,7 +91,7 @@ var ide = require("core/ide");
  * 
  * The core extension module (core/ext) references this markup and inserts 
  * it into the body of the browser document. You can then reference elements 
- * within your markup by their id attribute
+ * within your markup by their id attribute or by performing XPATH operations
  * 
  * Note: Your extension does not need to have markup associated with it. You 
  * only need to reference markup if your extension has a primary user 
