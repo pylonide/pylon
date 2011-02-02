@@ -131,7 +131,7 @@ return ext.register("ext/extension_template/extension_template", {
     markup   : markup,
     
     /**
-     * The nodes variable is used to hold references to AML elements
+     * The nodes variable is used to hold references to APF objects
      * created by the extension at runtime. When the extension is destroyed 
      * (the destroy() method, defined below, is called), a loop goes 
      * through all nodes and destroys them as well.
