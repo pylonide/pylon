@@ -42,8 +42,6 @@
  *    - Look for the line with "plugins: options.plugins || [" (at the time of
  *      this writing, on line 32)
  *    - Add your extension path to the list that follows
- *    - ??CHECK?? If your extension depends on other modules, be sure to 
- *      include your extension path AFTER those dependencies
  * 
  * 
  *                      *** TROUBLESHOOTING ***
