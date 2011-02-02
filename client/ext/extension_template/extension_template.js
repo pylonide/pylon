@@ -74,7 +74,8 @@ define(function(require, exports, module) {
  * For example, to add your extension to the dock panel, you would need
  * to first require("ext/dockpanel/dockpanel")
  * 
- * require() returns an object we can then manipulate from within our extension
+ * require() returns an object we can then interface with from within 
+ * our extension
  * 
  * To learn more about requireJS, please see the Website for requireJS at:
  * http://requirejs.org/
@@ -97,8 +98,8 @@ var ide = require("core/ide");
  * only need to reference markup if your extension has a primary user 
  * interface component
  * 
- * Please see http://ui.ajax.org/ for getting started with AML, the Ajax.org
- * Markup Language used by Cloud9
+ * Please see http://ui.ajax.org/ for getting started with APF, the Ajax.org 
+ * PlatForm and AML, the Ajax.org Markup Language used by Cloud9
  */
 
 var markup = require("text!ext/extension_template/extension_template.xml");
@@ -239,9 +240,9 @@ return ext.register("ext/extension_template/extension_template", {
      *  _required_
      * 
      * This function is called when the extension is enabled. This should not 
-     * be mistaken with enabling/disabling extension in the extension manager, 
-     * which calls init and destroy. This function is called for instance 
-     * when a panel extension is shown via the Windows Menu.
+     * be mistaken with enabling/disabling the extension in the extension 
+     * manager, which calls init and destroy. This function is called for 
+     * instance when a panel extension is shown via the Windows menu.
      */
     enable : function(){
         this.nodes.each(function(item){
@@ -254,9 +255,9 @@ return ext.register("ext/extension_template/extension_template", {
      *  _required_
      * 
      * This function is called when the extension is disabled. This should not 
-     * be mistaken with enabling/disabling extension in the extension manager, 
-     * which calls init and destroy. This function is called for instance when 
-     * a panel extension is hidden via the Windows Menu.
+     * be mistaken with enabling/disabling the extension in the extension 
+     * manager, which calls init and destroy. This function is called for 
+     * instance when a panel extension is hidden via the Windows menu.
      */
     disable : function(){
         this.nodes.each(function(item){
