@@ -184,7 +184,7 @@ return ext.register("ext/extension_template/extension_template", {
      * If you are creating a panel extension, you are required to set
      * this.panel to an element that will operate as a panel in the Cloud9 UI 
      * (usually this is a window element). In addition you will need to require
-     * the panels module...
+     * the panels module above with the other require() statements...
      *   var panels = require("ext/panels/panels");
      * and in your hook() method you will need to call:
      *   panels.register(this);
@@ -252,6 +252,7 @@ return ext.register("ext/extension_template/extension_template", {
     /**
      * disable
      *  _required_
+     * 
      * This function is called when the extension is disabled. This should not 
      * be mistaken with enabling/disabling extension in the extension manager, 
      * which calls init and destroy. This function is called for instance when 
