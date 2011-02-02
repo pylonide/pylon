@@ -49,7 +49,7 @@
  * browser's developer console (or FireBug on FireFox) to inspect any errors.
  * Consult the Web for information regarding your browser's developer console.
  * 
- * You can run your local cloud9 instance in debug mode to see extensive status 
+ * You can run your local cloud9 instance in debug mode to see verbose status 
  * and error messages. Include the -d flag when starting cloud9 from your
  * terminal. These status and error messages are outputted to your browser's
  * developer console.
