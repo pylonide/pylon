@@ -18232,9 +18232,9 @@
         </a:main>
     </a:presentation>
 </a:divider>
-<a:button name="button-debug">
+<a:button name="dockButton">
     <a:style><![CDATA[
-        .button-debug {
+        .dockButton {
             width              : 41px;
             height             : 40px;
             padding-top        : 3px;
@@ -18248,7 +18248,7 @@
             background-position: 0 0;
         }
         
-        .button-debug-footer {
+        .dockButton-footer {
             height: 10px;
             filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5');
             -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5')";
@@ -18256,30 +18256,30 @@
             background       : -moz-linear-gradient(center left, #f3f3f3 0%, #e5e5e5 100%) repeat scroll 0 0 transparent;
         }
         
-        .button-debug.default_hidden {
+        .dockButton.default_hidden {
             display: none;
         }
         
-        .button-debugOver {
+        .dockButtonOver {
             background-image    : url(images/collaboration_panel_sprite.png);
             background-position : 4px 3px;
         }
         
-        .button-debugDown {
+        .dockButtonDown {
             background-image    : url(images/collaboration_panel_sprite.png);
             background-position : 4px -36px;
         }
         
-        .button-debugChecked {
+        .dockButtonChecked {
             background: #444;
         }
         
-        .button-debugChecked .button-debug-footer {
+        .dockButtonChecked .dockButton-footer {
             -webkit-border-top-left-radius : 5px;
             -moz-border-radius-topleft     : 5px;
         }
         
-        .button-debug .icon {
+        .dockButton .icon {
             width  : 33px;
             height : 33px;
             background-image    : url(images/collaboration_panel_sprite.png);
@@ -18288,36 +18288,44 @@
             margin              : 1px 1px 1px 4px;
         }
         
-        .button-debug.debug1 .icon {
+        .dockButton.debug1 .icon {
             background-position: 0 -437px;
         }
         
-        .button-debugChecked.debug1 .icon {
+        .dockButtonChecked.debug1 .icon {
             background-position: 0 -556px;
         }
         
-        .button-debug.debug2 .icon {
+        .dockButton.debug2 .icon {
             background-position: 0 -475px;
         }
         
-        .button-debug.call_stack .icon {
+        .dockButton.call_stack .icon {
             background-position: 0 -515px;
         }
         
-        .button-debug.todo_check .icon {
+        .dockButton.todo_check .icon {
             background-position: 0 -163px;
         }
         
-        .button-debugChecked.todo_check .icon {
+        .dockButtonChecked.todo_check .icon {
             background-position: 0 -201px;
         }
         
-        .button-debug.contact_list .icon {
+        .dockButton.contact_list .icon {
             background-position: 0 -243px;
         }
         
-        .button-debugChecked.contact_list .icon {
+        .dockButtonChecked.contact_list .icon {
             background-position: 0 -281px;
+        }
+        
+        .dockButton.defaultUser .icon {
+            background-position: 0 -360px;
+        }
+        
+        .dockButtonChecked.defaultUser .icon {
+            background-position: 0 -400px;
         }
         
     ]]></a:style>
@@ -18328,9 +18336,9 @@
           label      = "div"
           background = "."
           icon       = "div">
-            <div class="button-debug">
+            <div class="dockButton">
                 <div class="icon"></div>
-                <div class="button-debug-footer"></div>
+                <div class="dockButton-footer"></div>
             </div>
         </a:main>
     </a:presentation>

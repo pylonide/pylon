@@ -78,7 +78,7 @@ return ext.register("ext/collaborate/collaborate", {
             ]
         });
 
-        //dock.registerChatWindow();
+        dock.registerChatWindow(tempChatWindow);
     },
 
     hook : function(){

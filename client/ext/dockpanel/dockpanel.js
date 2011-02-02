@@ -16,7 +16,7 @@ return ext.register("ext/dockpanel/dockpanel", {
     dev    : "Ajax.org",
     alone  : true,
     type   : ext.GENERAL,
-    
+
     nodes : [],
     panels : {},
     
@@ -38,23 +38,31 @@ return ext.register("ext/dockpanel/dockpanel", {
     
     togglePanel : function(panelExt, btnObj) {
         var btnClasses = btnObj.getAttribute("class").split(" ");
-
-        if(btnClasses.length > 1) {
-            panelExt.panel.hide();
-            panelExt.disable();
-            btnObj.setAttribute("class", btnClasses[0]);
+        
+        /****
+        * IMPORTANT: This code assumes only one panel can be open at a
+        * time, at all, for the right side dock. Modify if more than
+        * one panel is permitted to be open at once
+        *****/
+        var btnWasActive = false;
+        for(btnIt in btnClasses) {
+            if(btnClasses[btnIt] == "dockButtonChecked") {
+                panelExt.panel.hide();
+                panelExt.disable();
+                btnObj.setAttribute("class", btnClasses[0]);
+                btnWasActive = true;
+                break;
+            }
         }
         
-        else {
-            // Hide other panels
-            /****
-             * IMPORTANT: This code assumes only one panel can be open at a
-             * time, at all, for the right side dock. Modify if more than
-             * one panel is permitted to be open at once
-             *****/
+        console.log(btnWasActive);
+        if(btnWasActive == false) {
+            // Pressing new button, hide other panels
             for(p in this.panels) {
                 if(this.panels[p].ext.panel && this.panels[p].ext.panel.visible) {
+                    console.log(this.panels[p]);
                     this.panels[p].ext.panel.hide();
+                    this.panels[p].ext.disable();
                     this.panels[p].btn.setAttribute(
                             "class",
                             this.panels[p].ext.buttonClassName
@@ -63,9 +71,11 @@ return ext.register("ext/dockpanel/dockpanel", {
                 }
             }
             
+            this.initPanel(panelExt);
+            panelExt.enable();
             panelExt.panel.setTop(apf.getAbsolutePosition(btnObj.$ext)[1]);
             panelExt.panel.show();
-            btnObj.setAttribute("class", btnClasses[0] + " button-debugChecked");
+            btnObj.setAttribute("class", btnClasses[0] + " dockButtonChecked");
         }
     },
     
@@ -75,11 +85,46 @@ return ext.register("ext/dockpanel/dockpanel", {
      * a button and window connection
      * 
      **/
-    registerWindow : function(){
+    registerChatWindow : function(apfChatWin){
+        apfChatWinID = apfChatWin.getAttribute("id");
+        this.nodes.each(function(item){
+            if(item.getAttribute("id") == apfChatWinID) {
+                // Chat window is already open, select it and return
+                
+                return;
+            }
+        });
         
+        // Create a new button for this chat window
+        btnTemp = new apf.button({
+            skin: "dockButton",
+            'class': 'defaultUser',
+            state: "true",
+            onclick: function() {
+                apfChatWin.show();
+            }
+        });
+
+        /*if(dockRightDivider.nextSibling && dockRightDivider.nextSibling.nodeType == 1) {
+            var appendedDockBtn = dockPanelRight.insertBefore(btnTemp, 
+                                    dockRightDivider.nextSibling);
+            console.log("Appended");
+        }
+        
+        else {*/
+        
+        // As it turns out, the childNodes list is ordered by time of insertion,
+        // NOT by linear DOM position. So for now simply appending
+        var appendedDockBtn = dockPanelRight.appendChild(btnTemp);
+
+        apfChatWin.setTop(apf.getAbsolutePosition(appendedDockBtn.$ext)[1]);
+        apfChatWin.show();
+
+        this.nodes.push(apfChatWin);
+        this.nodes.push(appendedDockBtn);
     },
     
-    unregisterWindow : function(){
+    unregisterChatWindow : function(){
         
     },
     
@@ -95,14 +140,12 @@ return ext.register("ext/dockpanel/dockpanel", {
             }
         }));*/
 
-        //<a:button skin="button-debug" class="contact_list" state="true" />
+        //<a:button skin="dockButton" class="contact_list" state="true" />
         btnTemp = new apf.button({
-            skin: "button-debug",
+            skin: "dockButton",
             'class': panelExt.buttonClassName,
             state: "true",
             onclick: function() {
-                _self.initPanel(panelExt);
-                panelExt.enable();
                 _self.togglePanel(panelExt, this);
             }
         });
@@ -123,7 +166,7 @@ return ext.register("ext/dockpanel/dockpanel", {
         }
         else*/
         
-        if (panelExt.visible) {
+        /*if (panelExt.visible) {
             if (panelExt.skin) {
                 setTimeout(function(){
                     this.initPanel(panelExt);
@@ -132,12 +175,9 @@ return ext.register("ext/dockpanel/dockpanel", {
             else {
                 this.initPanel(panelExt);
             }
-        }
-        
-        // Set the position of the extension window associated with new button
-        //panelExt.panel.setTop(apf.getAbsolutePosition(btnObj.$ext)[1]);
+        }*/
 
-        //this.panels[panelExt.path] = { ext : panelExt, btn : appendedDockBtn };
+        this.panels[panelExt.path] = { ext : panelExt, btn : appendedDockBtn };
     },
     
     unregister : function(panelExt){
