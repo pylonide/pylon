@@ -18,6 +18,7 @@
             "application/javascript": 'page_white_code',
             "text/x-script.python": 'script_code',
             "application/x-httpd-php": 'page_white_php',
+            "text/x-script.ruby": "page_white_ruby",
             "text/x-script.coffeescript": 'script_code'
         };
         
