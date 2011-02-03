@@ -21,12 +21,12 @@ module.exports = Ide = function(options, httpServer, exts) {
     var baseUrl = (options.baseUrl || "").replace(/\/+$/, "");
     this.options = {
         workspaceDir: this.workspaceDir,
-        mountDir: options.mountDir || this.workspaceDir,
+        mountDir: options.mountDir || this.workspaceDir,
         davPrefix: options.davPrefix || (baseUrl + "/workspace"),
         baseUrl: baseUrl,
         debug: options.debug === true,
         staticUrl: options.staticUrl || "/static",
-        workspaceId: options.workspaceId || "ide",
+        workspaceId: options.workspaceId || "ide",
         settingsFile: options.settingsFile || ".settings.xml",
         db: options.db || null,
         plugins: options.plugins || [
@@ -59,7 +59,7 @@ module.exports = Ide = function(options, httpServer, exts) {
             "ext/keybindings/keybindings",
             "ext/watcher/watcher"
         ]
-    }
+    };
 
     this.clients = [];
     this.nodeCmd = process.argv[0];
@@ -80,7 +80,7 @@ sys.inherits(Ide, EventEmitter);
         if (path.match(this.indexRe)) {
             if (req.method !== "GET")
                 return next();
-            this.$serveIndex(req, res, next)
+            this.$serveIndex(req, res, next);
         }
         else if (path.match(this.workspaceRe)) {
             if (!this.davServer) {
@@ -88,8 +88,9 @@ sys.inherits(Ide, EventEmitter);
                 this.emit("configureDav", this.davServer);
             }
             this.davServer.exec(req, res);
-        } else
+        } else {
             next();
+        }
     };
 
     this.$serveIndex = function(req, res, next) {

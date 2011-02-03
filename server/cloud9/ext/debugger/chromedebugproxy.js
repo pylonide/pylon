@@ -25,13 +25,13 @@ module.exports = DebugProxy = function(port) {
     this.stream = new ChromeDebugMessageStream(socket);
 
     this.stream.addEventListener('connect', function(msg) {
-        console.log("CONNECT")
+        console.log("CONNECT");
         _self.connected = true;
         _self.emit("connection");
     });
 
     this.stream.addEventListener('message', function(msg) {
-        console.log("message " + msg)
+        console.log("message " + msg);
         _self.emit("message", msg.data.getContent());
     });
 };

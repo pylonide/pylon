@@ -46,7 +46,7 @@ exports.main = function(options) {
             staticUrl: "/static",
             workspaceId: name,
             name: name
-        }
+        };
         var ide = new IdeServer(serverOptions, server, exts);
         
         return function(req, res, next) {

@@ -2,17 +2,19 @@
  * @copyright 2010, Ajax.org Services B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var Events = require("events"),
-    Spawn  = require("child_process").spawn;
+var Spawn = require("child_process").spawn;
+var sys = require("sys");
 
 function cloud9Plugin() {}
+
+sys.inherits(cloud9Plugin, process.EventEmitter);
 
 (function() {
     this.getHooks = function() {
         return this.hooks || [];
     };
 
-    this.extend = function(dest, src){
+    this.extend = function(dest, src) {
         for (var prop in src) {
             dest[prop] = src[prop];
         }
@@ -63,6 +65,6 @@ function cloud9Plugin() {}
         callback();
     };
     
-}).call(cloud9Plugin.prototype = new Events.EventEmitter());
+}).call(cloud9Plugin.prototype);
 
 module.exports = cloud9Plugin;

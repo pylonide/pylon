@@ -5,7 +5,8 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var fs      = require("fs"),
-    plugin  = require("cloud9/plugin");
+    sys     = require("sys"),
+    Plugin  = require("cloud9/plugin");
 
 function cloud9WatcherPlugin(ide) {
     this.ide = ide;
@@ -13,13 +14,15 @@ function cloud9WatcherPlugin(ide) {
     this.filenames = {};
 }
 
+sys.inherits(cloud9WatcherPlugin, Plugin);
+
 (function() {
     this.unwatchFile = function(filename) {
         // console.log("No longer watching file " + filename);
         delete this.filenames[filename];
         fs.unwatchFile(filename);
         return true;
-    }
+    };
 
     // TODO: this does not look correct. There could be more than one client be
     // attached. There needs to be a per client list with ref counting
@@ -91,6 +94,6 @@ function cloud9WatcherPlugin(ide) {
         callback();
     };
     
-}).call(cloud9WatcherPlugin.prototype = new plugin());
+}).call(cloud9WatcherPlugin.prototype);
 
 module.exports = cloud9WatcherPlugin;
