@@ -45,7 +45,8 @@ return ext.register("ext/code/code", {
         "text/html",
         "application/xhtml+xml",
         "text/x-script.python",
-        "text/x-script.coffeescript"
+        "text/x-script.coffeescript",
+        "text/x-script.ruby"
     ],
     markup  : markup,
 
