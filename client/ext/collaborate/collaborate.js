@@ -19,7 +19,6 @@ return ext.register("ext/collaborate/collaborate", {
     alone           : true,
     type            : ext.GENERAL,
     markup          : markup,
-    buttonClassName : "contact_list",
     commands        : {},
     hotitems        : {},
     
@@ -78,16 +77,24 @@ return ext.register("ext/collaborate/collaborate", {
             ]
         });
 
-        dock.registerChatWindow(tempChatWindow);
-    },
-
-    hook : function(){
-        var _self = this;
-        dock.register(this, 1);
+        dock.registerWindow(tempChatWindow, {
+                dockPosition: "bottom",
+                backgroundImage: "/static/style/images/collaboration_panel_sprite.png",
+                defaultState: { x: 0, y: -360 },
+                activeState: { x: 0, y: -400 }
+            },
+            true    // Force this chat window to show right away
+        );
     },
     
     init : function(amlNode){
         this.panel = winCollaborators;
+        dock.registerWindow(winCollaborators, {
+            dockPosition: "top",
+            backgroundImage: "/static/style/images/collaboration_panel_sprite.png",
+            defaultState: { x: 0, y: -243 },
+            activeState: { x: 0, y: -281 }
+        });
     },
     
     enable : function(){

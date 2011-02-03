@@ -59,7 +59,8 @@ module.exports = Ide = function(options, httpServer, exts) {
             "ext/tabbehaviors/tabbehaviors",
             "ext/keybindings/keybindings",
             "ext/watcher/watcher",
-            "ext/collaborate/collaborate"
+            "ext/collaborate/collaborate",
+            "ext/todo/todo"
         ]
     }
 

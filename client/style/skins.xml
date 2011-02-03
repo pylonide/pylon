@@ -17898,19 +17898,16 @@
         </a:main>
     </a:presentation>
 </a:scrollbar>
-
-<!-- MSP TODO Manager additions -->
 <a:modalwindow name="todowin">
     <a:style><![CDATA[
         .todowin_container{
-            z-index : 101;
-            padding : 3px;
-            border                : 1px solid #444;
-            -moz-border-radius    : 5px;
-            -webkit-border-radius : 5px;
-            -webkit-border-top-right-radius: 0px;
-            -moz-border-radius-topright: 0px;
-            background: #444;
+            z-index                         : 101;
+            padding                         : 3px;
+            -moz-border-radius              : 5px;
+            -webkit-border-radius           : 5px;
+            -webkit-border-top-right-radius : 0px;
+            -moz-border-radius-topright     : 0px;
+            background: #333 url('images/dockPanelSpeckledBG.png') repeat;
         }
 
         .todowin{
@@ -18266,15 +18263,12 @@
         }
         
         .dockButtonDown {
-            background-image    : url(images/collaboration_panel_sprite.png);
-            background-position : 4px -36px;
+            /*background-image    : url(images/collaboration_panel_sprite.png);
+            background-position : 4px -36px;*/
+            background          : #333 url(images/dockPanelButtonDown.png) no-repeat;
         }
         
-        .dockButtonChecked {
-            background: #444;
-        }
-        
-        .dockButtonChecked .dockButton-footer {
+        .dockButtonDown .dockButton-footer {
             -webkit-border-top-left-radius : 5px;
             -moz-border-radius-topleft     : 5px;
         }

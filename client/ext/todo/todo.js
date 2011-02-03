@@ -159,7 +159,8 @@ return ext.register("ext/todo/todo", {
     
     hook : function(){
         var _self = this;
-        dock.register(this);
+        ext.initExtension(this);
+        //dock.register(this);
     },
     
     init : function(amlNode){
@@ -167,6 +168,13 @@ return ext.register("ext/todo/todo", {
         this.panel = winTodo;
         this.overrideManualSetTimeTo = false;
         this.stopAutomaticSetTimeTo = false;
+        
+        dock.registerWindow(winTodo, {
+                dockPosition: "top",
+                backgroundImage: "/static/style/images/collaboration_panel_sprite.png",
+                defaultState: { x: 0, y: -163 },
+                activeState: { x: 0, y: -201 }
+        });
     },
     
     enable : function(){
@@ -186,7 +194,7 @@ return ext.register("ext/todo/todo", {
             item.destroy(true, true);
         });
         this.nodes = [];
-        dock.unregister(this);
+        //dock.unregister(this);
         this.winTodo.destroy(true, true);
     }
 });

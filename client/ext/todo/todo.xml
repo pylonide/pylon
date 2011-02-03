@@ -13,7 +13,7 @@
             <a:bar>
                 <a:button
                   icon    = "debugger/monitorexpression_tsk{this.disabled ? '_disabled' : ''}.gif"
-                  onclick = "require('c9/ext/todo/todo').expandNewTodo(this);"
+                  onclick = "require('ext/todo/todo').expandNewTodo(this);"
                   right   = "35"
                 />
                 <a:divider 
@@ -21,7 +21,7 @@
                 />
                 <a:button
                   icon    = "arrow_refresh.png"
-                  onclick = "require('c9/ext/todo/todo').refreshList();"
+                  onclick = "require('ext/todo/todo').refreshList();"
                   right   = "0"
                 />
             </a:bar>
@@ -44,11 +44,11 @@
                     />
                     <a:dropdown 
                       id            = "timeTodoFrom"
-                      model         = "/static/c9/ext/todo/time.xml"
+                      model         = "/static/ext/todo/time.xml"
                       each          = "[item]"
                       caption       = "[@value]"
                       width         = "80"
-                      onafterchange = "require('c9/ext/todo/todo').setTimeTo();"
+                      onafterchange = "require('ext/todo/todo').setTimeTo();"
                     />
                 </a:hbox>
                 <a:label for="hboxDateTo">To</a:label>
@@ -62,11 +62,11 @@
                     />
                     <a:dropdown 
                       id            = "timeTodoTo"
-                      model         = "/static/c9/ext/todo/time.xml"
+                      model         = "/static/ext/todo/time.xml"
                       each          = "[item]"
                       caption       = "[@value]"
                       width         = "80"
-                      onafterchange = "require('c9/ext/todo/todo').manualSetTimeTo();"
+                      onafterchange = "require('ext/todo/todo').manualSetTimeTo();"
                     />
                 </a:hbox>
                 <a:button
@@ -74,14 +74,14 @@
                     width   = "50"
                     top     = "130"
                     right   = "85"
-                    onclick = "require('c9/ext/todo/todo').addNewTodo(this);"
+                    onclick = "require('ext/todo/todo').addNewTodo(this);"
                 />
                 <a:button
                     caption = "Cancel"
                     width   = "70"
                     top     = "130"
                     right   = "5"
-                    onclick = "require('c9/ext/todo/todo').cancelAddNewTodo();"
+                    onclick = "require('ext/todo/todo').cancelAddNewTodo();"
                 />
             </a:panel>
             <a:panel

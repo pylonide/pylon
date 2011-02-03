@@ -62,7 +62,7 @@ return ext.register("ext/debugger/debugger", {
         });
         
         panels.register(this);
-        dock.register(this);
+        //dock.register(this);
     },
 
     init : function(amlNode){
