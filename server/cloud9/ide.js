@@ -4,6 +4,7 @@
  */
 var jsDAV = require("jsdav"),
     Async = require("async"),
+    User = require("./user"),
     fs = require("fs"),
     sys = require("sys"),
     Path = require("path"),
@@ -61,7 +62,7 @@ module.exports = Ide = function(options, httpServer, exts) {
         ]
     };
 
-    this.clients = [];
+    this.$users = {};
     this.nodeCmd = process.argv[0];
 
     this.registerExts(exts);
@@ -129,42 +130,53 @@ sys.inherits(Ide, EventEmitter);
         });
     };
 
-    this.addClientConnection = function(client, message) {
-        var _self = this;
-        this.clients[client.sessionId] = client;
-        this.onClientCountChange();
-        
-        client.on("message", function(message) {
-            _self.onClientMessage(message, client);
-        });
-
-        client.on("disconnect", function() {
-            _self.execHook("disconnect");
-            delete _self.clients[client.sessionId];
-            _self.onClientCountChange();
-        });
-        
-        if (message)
-            _self.onClientMessage(message, client);            
+    this.addClientConnection = function(username, role, client, message) {
+        var permissions = ({
+            "owner"       : User.OWNER_PERMISSIONS,
+            "collaborator": User.COLLABORATOR_PERMISSIONS,
+            "viritor"     : User.VISITOR_PERMISSIONS
+        }[role]) || User.VISITOR_PERMISSIONS;
+          
+        var user = this.$users[username];
+        if (user) {
+            user.setPermissions(permissions);
+        }
+        else {
+            user = this.$users[username] = new User(username, permissions);
+            
+            var _self = this;
+            user.on("message", function(msg) {
+                _self.onUserMessage(msg.message, msg.client, msg,user);
+            });
+            user.on("disconnectClient", function(msg) {
+                _self.execHook("disconnect", msg.client, msg.user);
+            });
+            user.on("disconnectUser", function(user) {
+                delete _self.$users[user.name];
+                _self.onUserCountChange(Object.keys(_self.$users).length);
+            });
+            
+            this.onUserCountChange();
+        }
+        user.addClientConnection(client, message);
     };
     
-    this.onClientCountChange = function() {
-        this.emit("clientCountChange", Object.keys(this.clients).length);
+    this.onUserMessage = function(message, client, user) {
+        console.log(message);
+        this.execHook("command", message, client, user);
     };
-
-    this.onClientMessage = function(message, client) {
-        try {
-            message = JSON.parse(message);
-        } catch (e) {
-            return this.error("Error parsing message: " + e + "\nmessage: " + message, 8);
-        }
-
-        this.execHook("command", message, client);
+    
+    this.onUserCountChange = function() {
+        this.emit("userCountChange", Object.keys(this.$users).length);
+        
+        // TODO remove
+        this.emit("clientCountChange", Object.keys(this.$users).length);
     };
 
     this.broadcast = function(msg) {
-        for (var id in this.clients) 
-            this.clients[id].send(msg);
+        // TODO check permissions
+        for (var username in this.$users) 
+            this.$users[username].broadcast(msg);
     };
 
     this.registerExts = function(exts) {
@@ -182,7 +194,7 @@ sys.inherits(Ide, EventEmitter);
        return this.exts[name] || null;
     };
 
-    this.execHook = function() {
+    this.execHook = function(hook) {
         var ext, hooks,
             args = Array.prototype.slice.call(arguments),
             hook = args.shift().toLowerCase().replace(/^[\s]+/, "").replace(/[\s]+$/, "");
@@ -199,6 +211,7 @@ sys.inherits(Ide, EventEmitter);
         //    + sys.inspect(args), 9, args[0]);
     };
 
+    // TODO remove
     this.error = function(description, code, message, client) {
         //console.log("Socket error: " + description, new Error().stack);
         var sid = (message || {}).sid || -1;

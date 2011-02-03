@@ -32,7 +32,7 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
         return true;
     };
 
-    this.command = function(message) {
+    this.command = function(message, client, user) {
         var filename, that, subtype, files;
 
         if (!message || message.command != "watcher") 

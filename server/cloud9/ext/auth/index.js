@@ -16,7 +16,7 @@ sys.inherits(AuthPlugin, Plugin);
 
 (function() {
     
-    this.command = function(message, client) {
+    this.command = function(message, client, user) {
         if (message.command != "attach")
             return false;
 
@@ -26,7 +26,7 @@ sys.inherits(AuthPlugin, Plugin);
         }
 
         client.send('{"type": "attached"}')
-        this.ide.execHook("connect");        
+        this.ide.execHook("connect", client, user);
         return true;
     };
       

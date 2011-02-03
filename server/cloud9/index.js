@@ -34,7 +34,7 @@ exports.main = function(options) {
         };
         var socketIo = IO.listen(server, socketOptions);
         socketIo.on("connection", function(client) {
-            ide.addClientConnection(client, null);
+            ide.addClientConnection("fabian", "owner", client, null);
         });
         
         var name = projectDir.split("/").pop();

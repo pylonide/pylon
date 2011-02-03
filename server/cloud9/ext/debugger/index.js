@@ -31,7 +31,7 @@ sys.inherits(DebuggerPlugin, Plugin);
     this.NODE_DEBUG_PORT = 5858;
     this.CHROME_DEBUG_PORT = 9222;
 
-    this.command = function(message, client) {
+    this.command = function(message, client, user) {
         var _self = this;
 
         var cmd = (message.command || "").toLowerCase(),

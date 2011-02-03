@@ -18,7 +18,7 @@ var ShellPlugin = module.exports = function(ide) {
 sys.inherits(ShellPlugin, Plugin);
 
 (function() {
-    this.command = function(message) {
+    this.command = function(message, client, user) {
         if (!this[message.command])
             return false;
 
