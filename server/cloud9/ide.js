@@ -3,6 +3,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var jsDAV = require("jsdav"),
+    DavPermission = require("./dav/permission"),
     Async = require("async"),
     User = require("./user"),
     fs = require("fs"),
@@ -86,8 +87,11 @@ sys.inherits(Ide, EventEmitter);
         else if (path.match(this.workspaceRe)) {
             if (!this.davServer) {
                 this.davServer = jsDAV.mount(this.options.mountDir, this.options.davPrefix, this.httpServer, false);
+                
+                this.davServer.plugins["permission"] = DavPermission;
                 this.emit("configureDav", this.davServer);
             }
+            this.davServer.user = req.session.user;
             this.davServer.exec(req, res);
         } else {
             next();
@@ -130,13 +134,7 @@ sys.inherits(Ide, EventEmitter);
         });
     };
 
-    this.addClientConnection = function(username, role, client, message) {
-        var permissions = ({
-            "owner"       : User.OWNER_PERMISSIONS,
-            "collaborator": User.COLLABORATOR_PERMISSIONS,
-            "viritor"     : User.VISITOR_PERMISSIONS
-        }[role]) || User.VISITOR_PERMISSIONS;
-          
+    this.addUser = function(req, username, permissions) {
         var user = this.$users[username];
         if (user) {
             user.setPermissions(permissions);
@@ -152,12 +150,21 @@ sys.inherits(Ide, EventEmitter);
                 _self.execHook("disconnect", msg.client, msg.user);
             });
             user.on("disconnectUser", function(user) {
+                // TODO delay removal (use timeout)
                 delete _self.$users[user.name];
                 _self.onUserCountChange(Object.keys(_self.$users).length);
             });
             
             this.onUserCountChange();
         }
+        req.session.user = user;        
+    };
+
+    this.addClientConnection = function(username, client, message) {
+        var user = this.$users[username];
+        if (!user)
+            return this.error("No session for user " + user, 99, message, client);
+            
         user.addClientConnection(client, message);
     };
     
