@@ -26,7 +26,8 @@ return ext.register("ext/collaborate/collaborate", {
 
     openChat : function(listItem) {
 
-        var chatIdent = this.name + listItem.getAttribute("user_id");
+        var chatUserID = listItem.getAttribute("user_id");
+        var chatIdent  = this.name + chatUserID;
         
         // Check to see if window exists already. If so, select it
         if(dock.windowExists(chatIdent, true)) {
@@ -35,7 +36,7 @@ return ext.register("ext/collaborate/collaborate", {
         
         tempChatWindow = new apf.modalwindow({
             htmlNode   : document.body,
-            id         : "chatUser" + listItem.getAttribute("user_id"),
+            id         : "chatUser" + chatUserID,
             title      : listItem.getAttribute("user_name"),
             visible    : false,
             right      : "42",
@@ -60,22 +61,39 @@ return ext.register("ext/collaborate/collaborate", {
                 new apf.panel({
                     skin    : "todopanel",
                     visible : "true",
+                    flex    : "1",
                     childNodes : [
-                        new apf.panel({
-                            skin    : "todopanel",
-                            'class' : "top_border"
-                        })
-                    ]
-                }),
-                new apf.toolbar({
-                    'class' : "top_border",
-                    childNodes : [
-                        new apf.bar({
-                            height : 27,
+                        new apf.hbox({
+                            height     : "230",
                             childNodes : [
-                                new apf.button({
-                                    icon    : "debugger/monitorexpression_tsk{this.disabled ? '_disabled' : ''}.gif",
-                                    left    : 0
+                                new apf.text({
+                                    id         : "txtChat" + chatUserID,
+                                    margin     : "3 0 0 0",
+                                    height     : "*",
+                                    flex       : "1",
+                                    scrolldown : "true",
+                                    textselect : "true",
+                                    focussable : "true",
+                                    'class'    : "chat_text"
+                                }),
+                                
+                                new apf.scrollbar({
+                                    'for'     : "txtChat" + chatUserID,
+                                    height    : "*",
+                                    margin    : "0",
+                                    skin      : "sbcollaborators",
+                                    width     : "9"
+                                })
+                            ]
+                        }),
+                        new apf.hbox({
+                            height     : "54",
+                            edge       : "8 7 7 7",
+                            'class'    : "hboxchatinput",
+                            childNodes : [
+                                new apf.textbox({
+                                    flex   : "1",
+                                    height : "37"
                                 })
                             ]
                         })

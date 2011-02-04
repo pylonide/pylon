@@ -18150,6 +18150,25 @@
         .todopanel {
 
         }
+        
+        .todopanel .hbox.hboxchatinput {
+            filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#4a4a4a', endColorstr='#404040');
+            -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#4a4a4a', endColorstr='#404040')";
+            background       : -webkit-gradient(linear, left top, left bottom, from(#4a4a4a), color-stop(1, #404040));
+            background       : -moz-linear-gradient(center top, #4a4a4a 0%, #404040 100%) repeat scroll 0 0 transparent;
+        }
+        
+        .todopanel .hbox.hboxchatinput .tb_textbox .sbtb_middle {
+            height : 33px;
+            border : none;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+        }
+        
+        .todopanel .hbox.hboxchatinput .tb_textbox .sbtb_middle input {
+            height: 32px;
+            line-height: 32px;
+        }
     ]]></a:style>
     <a:presentation>
         <a:main container="." collapsed-height="0"

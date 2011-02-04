@@ -19,17 +19,25 @@
           skin      = "todopanel"
           visible   = "true"
         >
-            <a:panel
-              class = "top_border"
-              skin  = "todopanel"
-            >
-            </a:panel>
+            <a:hbox edge="3 0 3 0">
+                <a:text id   = "txtChat"
+                  margin     = "3 0 0 0"
+                  flex       = "1"
+                  scrolldown = "true"
+                  textselect = "true"
+                  focussable = "true"
+                  class      = "chat_text" />
+                <a:scrollbar
+                  for       = "txtChat"
+                  margin    = "0"
+                  skin      = "sbcollaborators"
+                  width     = "9" />
+            </a:hbox>
         </a:panel>
         <a:toolbar class="top_border">
             <a:bar height="27">
                  <a:button
                   icon    = "debugger/monitorexpression_tsk{this.disabled ? '_disabled' : ''}.gif"
-                  onclick = "require('c9/ext/todo/todo').expandNewTodo(this);"
                   left    = "0"
                  />
             </a:bar>
