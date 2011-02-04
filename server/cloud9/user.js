@@ -9,30 +9,50 @@ var User = function (name, permissions) {
 sys.inherits(User, process.EventEmitter);
 
 User.OWNER_PERMISSIONS = {
-    "read": 1,
-    "write": 1,
-    "debugger": 1,
-    "shell": 1,
-    "git": 1,
-    "watcher": 1
+    client_exclude: "",
+    server_exclude: "",
+    dav: "rw"
 };
 
 User.COLLABORATOR_PERMISSIONS = {
-    "read": 1,
-    "write": 1,
-    "debugger": 1,
-    "shell": 1,
-    "watcher": 1
+    client_exclude: "",
+    server_exclude: "git",
+    dav: "rw"
 };
 
 User.VISITOR_PERMISSIONS = {
-    "read": 1
+    client_exclude: [
+        //"ext/save/save",
+        "ext/newresource/newresource",
+        "ext/undo/undo",
+        "ext/clipboard/clipboard",
+        "ext/searchreplace/searchreplace",
+        "ext/quickwatch/quickwatch",
+        "ext/extmgr/extmgr",
+        "ext/run/run", //Add location rule
+        "ext/debugger/debugger", //Add location rule
+        "ext/noderunner/noderunner", //Add location rule
+        "ext/watcher/watcher",
+        "c9/ext/projectinfo/projectinfo"
+        
+        //"ext/tabbehaviors/tabbehaviors"
+    ].join("|"),
+    server_exclude: [
+        "git",
+        "debugger",
+        "shell"
+    ].join("|"),
+    dav: "ro"
 };
 
 (function() {
     
     this.setPermissions = function(permissions) {
         this.permissions = permissions;
+    };
+    
+    this.getPermissions = function(permissions) {
+        return this.permissions;
     };
     
     this.addClientConnection = function(client, message) {
