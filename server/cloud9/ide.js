@@ -121,7 +121,8 @@ sys.inherits(Ide, EventEmitter);
                 staticUrl: self.options.staticUrl,
                 sessionId: req.sessionID, // set by connect
                 workspaceId: self.options.workspaceId,
-                plugins: plugins
+                plugins: plugins,
+                readonly: (permissions.dav !== "rw")
             };
 
             var settingsPath = self.options.workspaceDir + "/" + self.options.settingsFile;

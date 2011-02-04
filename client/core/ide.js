@@ -32,6 +32,7 @@ require.def("core/ide", deps,
             this.settingsUrl = window.cloud9config.settingsUrl;
             this.sessionId = window.cloud9config.sessionId;
             this.workspaceId = window.cloud9config.workspaceId;
+            this.readonly = window.cloud9config.readonly;
 
             this.dispatchEvent("load");
 

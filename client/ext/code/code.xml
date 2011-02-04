@@ -35,7 +35,7 @@
       scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
       contextmenu       = "mnuCtxEditor"
       debugger          = "{this.syntax == 'javascript' ? dbg : null}"
-      readonly          = "{location.host and stDebugProcessRunning.active and [@scriptid]}"
+      readonly          = "{cloud9config.readonly or (location.host and stDebugProcessRunning.active and [@scriptid])}"
     />
     
     <a:menu id="mnuCtxEditor" render="runtime">
