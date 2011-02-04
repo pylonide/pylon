@@ -22,10 +22,9 @@ User.COLLABORATOR_PERMISSIONS = {
 
 User.VISITOR_PERMISSIONS = {
     client_exclude: [
-        //"ext/save/save",
+        "ext/save/save",
         "ext/newresource/newresource",
         "ext/undo/undo",
-        "ext/clipboard/clipboard",
         "ext/searchreplace/searchreplace",
         "ext/quickwatch/quickwatch",
         "ext/extmgr/extmgr",
@@ -33,14 +32,15 @@ User.VISITOR_PERMISSIONS = {
         "ext/debugger/debugger", //Add location rule
         "ext/noderunner/noderunner", //Add location rule
         "ext/watcher/watcher",
-        "c9/ext/projectinfo/projectinfo"
+        "c9/ext/projectinfo/projectinfo",
         
-        //"ext/tabbehaviors/tabbehaviors"
+        "ext/tabbehaviors/tabbehaviors"
     ].join("|"),
     server_exclude: [
         "git",
         "debugger",
-        "shell"
+        "shell",
+        "runvm"
     ].join("|"),
     dav: "ro"
 };
