@@ -106,6 +106,17 @@ sys.inherits(Ide, EventEmitter);
                
             res.writeHead(200, {"Content-Type": "text/html"});
             
+            if (req.session.user) {
+                var plugins = lang.arrayToMap(self.options.plugins);
+                var client_exclude = lang.arrayToMap(req.session.user.getPermissions().client_exclude.split("|"));
+                for (plugin in client_exclude)
+                    delete plugins[plugin];
+                plugins = Object.keys(plugins);
+            } 
+            else {
+                var plugins = self.options.plugins.concat()
+            }
+            
             var replacements = {
                 davPrefix: self.options.davPrefix,
                 workspaceDir: self.options.workspaceDir,
@@ -114,8 +125,8 @@ sys.inherits(Ide, EventEmitter);
                 staticUrl: self.options.staticUrl,
                 sessionId: req.sessionID, // set by connect
                 workspaceId: self.options.workspaceId,
-                plugins: self.options.plugins
-            }; 
+                plugins: plugins
+            };
 
             var settingsPath = self.options.workspaceDir + "/" + self.options.settingsFile;
             Path.exists(settingsPath, function(exists) {
