@@ -26,6 +26,13 @@ return ext.register("ext/collaborate/collaborate", {
 
     openChat : function(listItem) {
 
+        var chatIdent = this.name + listItem.getAttribute("user_id");
+        
+        // Check to see if window exists already. If so, select it
+        if(dock.windowExists(chatIdent, true)) {
+            return false;   
+        }
+        
         tempChatWindow = new apf.modalwindow({
             htmlNode   : document.body,
             id         : "chatUser" + listItem.getAttribute("user_id"),
@@ -83,6 +90,8 @@ return ext.register("ext/collaborate/collaborate", {
                 defaultState: { x: 0, y: -360 },
                 activeState: { x: 0, y: -400 }
             },
+            
+            chatIdent, // Window identifer
             true    // Force this chat window to show right away
         );
     },

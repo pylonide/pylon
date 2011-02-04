@@ -20,32 +20,49 @@
           skin      = "todopanel"
           visible   = "true"
         >
-            <a:panel
-              class = "top_border"
-              skin  = "todopanel"
-            >
+            <a:hbox edge="3 0 3 0">
                 <a:model id="collaborators">
                     <data>
-                        <item online="1" status="" user_id="3" user_name="Matt Pardee">Matt Pardee</item>
-                        <item online="1" status="" user_id="4" user_name="Ruben Daniels">Ruben Daniels</item>
-                        <item online="0" status="" user_id="5" user_name="Rik Arends">Rik Arends</item>
+                        <item online="1" status="" user_id="3" color="FF0000" user_name="Matt Pardee" />
+                        <item online="0" status="" user_id="5" color="FF0000" user_name="Rik Arends" />
+                        <item online="1" status="" user_id="4" color="FF0000" user_name="Ruben Daniels" />
+                        <item online="1" status="" user_id="6" color="FF0000" user_name="Fabian Jakobs" />
+                        <item online="1" status="" user_id="7" color="FF0000" user_name="David" />
+                        <item online="1" status="" user_id="8" color="FF0000" user_name="Lukasz Lipinski" />
+                        <item online="1" status="" user_id="9" color="FF0000" user_name="Mike De Boer" />
+                        <item online="0" status="" user_id="10" color="FF0000" user_name="Sergi" />
+                        <item online="1" status="" user_id="11" color="FF0000" user_name="Linh Nguyen" />
+                        <item online="1" status="" user_id="12" color="FF0000" user_name="Eddy Bruel" />
+                        <item online="1" status="" user_id="13" color="FF0000" user_name="Gabor Krizsanits" />
+                        <item online="0" status="" user_id="14" color="FF0000" user_name="Giannis Panagiotou" />
+                        <item online="1" status="" user_id="15" color="FF0000" user_name="Jos Uijterwaal" />
+                        <item online="1" status="" user_id="16" color="FF0000" user_name="Lieke Arends" />
                     </data>
                 </a:model>
                 <a:list 
+                    id            = "collaboratorsList"
                     onafterchoose = "require('ext/collaborate/collaborate').openChat(this.selected)"
                     skin          = "collaboratelist"
                     model         = "collaborators"
                     autoselect    = "false"
                     height        = "300"
+                    flex          = "1"
+                    sort          = "[@online]"
+                    order         = "descending"
                 >
                     <a:bindings>
                         <a:caption match="[@user_name]" />
-                        <a:each match="[item]" />
+                        <a:each match="[item]" sort="[@online]" order="descending" />
                         <a:css match="{[@online] == '1'}" value="online"></a:css>
                         <a:css match="{[@online] == '0'}" value="offline"></a:css>
                     </a:bindings>
                 </a:list>
-            </a:panel>
+                <a:scrollbar
+                    for       = "collaboratorsList"
+                    margin    = "0"
+                    skin      = "sbcollaborators"
+                    width     = "9" />
+            </a:hbox>
         </a:panel>
         <a:toolbar class="top_border">
             <a:bar height="27">

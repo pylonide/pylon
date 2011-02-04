@@ -48,7 +48,7 @@ return ext.register("ext/dockpanel/dockpanel", {
     },
     
     /**
-     * Dock Panel functionality
+     *           ***** DOCK PANEL METHODS *****
      */
      
     /**
@@ -59,14 +59,23 @@ return ext.register("ext/dockpanel/dockpanel", {
      * 
      * @buttonProperties = {
      *  dockPosition : "top" || "bottom",
-     *  backgroundImage : spritePngURL,
+     *  backgroundImage : spriteURL,
      *  defaultState : { x: pos_x, y: pos_y },
      *  activeState  : { x: pos_x, y: pos_y }
      * }
      * 
-     * @forceShow immediately shows the window being registered
+     * @windowIdent Optional ident to associate with window. Extension must 
+     *              formulate this as [@extensionName] + [@identifier] in order 
+     *              for the identifiers to remain unique
+     * 
+     * @forceShow   Immediately shows the window being registered
      */
-    registerWindow : function(windowObj, buttonProperties, forceShow){
+    registerWindow : function(windowObj, buttonProperties, windowIdent, forceShow){
+        
+        if(typeof windowIdent !== "undefined" && this.windowExists(windowIdent)) {
+            return false;
+        }
+        
         var _self = this;
         this.numDockButtons++;
         
@@ -104,6 +113,7 @@ return ext.register("ext/dockpanel/dockpanel", {
         if(buttonProperties.dockPosition == "top") {
             var appendedDockBtn = 
                     dockPanelRight.insertBefore(btnTemp, dockRightDivider);
+            this.repositionWindows();
         }
         
         else {
@@ -116,16 +126,56 @@ return ext.register("ext/dockpanel/dockpanel", {
         windowObj.setTop(apf.getAbsolutePosition(appendedDockBtn.$ext)[1]);
         
         this.nodes.push(appendedDockBtn);
-        this.dockObjects.push({ win : windowObj, btn : appendedDockBtn });
+        this.dockObjects.push({ 
+            win   : windowObj, 
+            btn   : appendedDockBtn,
+            ident : -1
+        });
+        
+        if(typeof windowIdent !== "undefined") {
+            this.dockObjects[this.dockObjects.length-1].ident = windowIdent;   
+        }
 
         if(typeof forceShow !== "undefined" && forceShow == true) {
-            /*this.hideActiveWindow();
-            appendedDockBtn.setValue(true);
-            windowObj.show();*/
             this.toggleWindow(appendedDockBtn);
         }
     },
     
+    /**
+     * Unregisters a window and associated button
+     * 
+     * @windowIdent identifier passed during registerWindow() call
+     */
+    unregisterWindow: function(windowIdent){
+        for(var doi = 0; doi < this.dockObjects.length; doi++) {
+            if(this.dockObjects[doi].ident == windowIdent) {
+                this.dockObjects[doi].win.destroy(true, true);
+                this.dockObjects[doi].btn.destroy(true, true);
+                this.dockObjects.splice(doi, 1);
+                
+                // Re-associated every button's window position to buttons
+                // that may have shifted
+                this.repositionWindows();
+                return true;
+            }
+        }
+        
+        return false;
+    },
+    
+    /**
+     * Re-positions windows associated with buttons
+     * This happens for example when a window is unregistered, or when a
+     * window is registered at the "top" of the dock (above divider)
+     */
+    repositionWindows: function(){
+        for(var doi = 0; doi < this.dockObjects.length; doi++) {
+            this.dockObjects[doi].win.setTop(
+                apf.getAbsolutePosition(this.dockObjects[doi].btn.$ext)[1]
+            );
+        }
+    },
+
     /**
      * Toggles the visibility of a window and sets the state of the button
      * associated with the window
@@ -160,6 +210,25 @@ return ext.register("ext/dockpanel/dockpanel", {
                 btnObj.setValue(true);
             }
         }
+    },
+    
+    /**
+     * Checks to see if a window has already been registered with the 
+     * supplied identifier
+     * 
+     * @showWindow if true, toggles the window's visibility
+     */
+    windowExists: function(windowIdent, showWindow){
+       for(var doi = 0; doi < this.dockObjects.length; doi++) {
+           if(this.dockObjects[doi].ident == windowIdent) {
+               if(typeof showWindow !== "undefined" && showWindow == true) {
+                   this.toggleWindow(this.dockObjects[doi].btn);
+               }
+               return true;
+           }
+       }
+       
+       return false;
     },
     
     /**
