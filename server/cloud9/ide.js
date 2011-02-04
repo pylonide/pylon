@@ -152,10 +152,10 @@ sys.inherits(Ide, EventEmitter);
             
             var _self = this;
             user.on("message", function(msg) {
-                _self.onUserMessage(msg.message, msg.client, msg,user);
+                _self.onUserMessage(msg.user, msg.message, msg.client);
             });
             user.on("disconnectClient", function(msg) {
-                _self.execHook("disconnect", msg.client, msg.user);
+                _self.execHook("disconnect", msg.user, msg.client);
             });
             user.on("disconnectUser", function(user) {
                 // TODO delay removal (use timeout)
@@ -193,9 +193,9 @@ sys.inherits(Ide, EventEmitter);
         user.addClientConnection(client, message);
     };
     
-    this.onUserMessage = function(message, client, user) {
-        //console.log(message);
-        this.execHook("command", message, client, user);
+    this.onUserMessage = function(user, message, client) {
+//        console.log(message);
+        this.execHook("command", user, message, client);
     };
     
     this.onUserCountChange = function() {
@@ -226,11 +226,16 @@ sys.inherits(Ide, EventEmitter);
        return this.exts[name] || null;
     };
 
-    this.execHook = function(hook) {
+    this.execHook = function(hook, user /* varargs */) {
         var ext, hooks,
-            args = Array.prototype.slice.call(arguments),
-            hook = args.shift().toLowerCase().replace(/^[\s]+/, "").replace(/[\s]+$/, "");
+            args = Array.prototype.slice.call(arguments, 1),
+            hook = hook.toLowerCase().replace(/^[\s]+/, "").replace(/[\s]+$/, "");
+
+        var server_exclude = lang.arrayToMap(user.getPermissions().server_exclude.split("|"));
         for (var name in this.exts) {
+            if (server_exclude[name]) {
+                return;
+            }
             ext   = this.exts[name];
             hooks = ext.getHooks();            
             if (hooks.indexOf(hook) > -1 && ext[hook].apply(ext, args) === true)

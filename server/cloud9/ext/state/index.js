@@ -16,7 +16,7 @@ sys.inherits(cloud9StatePlugin, Plugin);
 
 (function() {
     this.command =
-    this.connect = function(message) {
+    this.connect = function(user, message, client) {
         if (message && message.command !== "state")
             return false;
 
