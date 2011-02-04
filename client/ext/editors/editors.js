@@ -235,13 +235,14 @@ return ext.register("ext/editors/editors", {
 
         fake.$at.addEventListener("afterchange", function(){
             var val;
-            
             if (fake.$at.ignoreChange) {
                 val = undefined;
                 fake.$at.ignoreChange = false;
-            } else
-                val = this.undolength ? 1 : undefined;
-            if (fake.changed != val) {
+            } else if(this.undolength === 0 && fake.$doc.undo_ptr === undefined)
+                val = undefined;
+            else
+                val = (this.undolength !== fake.$doc.undo_ptr) ? 1 : undefined;
+            if (fake.changed !== val) {
                 fake.changed = val;
                 model.setQueryValue("@changed", (val ? "1" : "0"));
             }
