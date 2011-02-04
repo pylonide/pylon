@@ -91,7 +91,7 @@ sys.inherits(Ide, EventEmitter);
                 this.davServer.plugins["permission"] = DavPermission;
                 this.emit("configureDav", this.davServer);
             }
-            this.davServer.user = req.session.user;
+            this.davServer.permissions = this.getPermissions(req);
             this.davServer.exec(req, res);
         } else {
             next();
@@ -106,16 +106,12 @@ sys.inherits(Ide, EventEmitter);
                
             res.writeHead(200, {"Content-Type": "text/html"});
             
-            if (req.session.user) {
-                var plugins = lang.arrayToMap(self.options.plugins);
-                var client_exclude = lang.arrayToMap(req.session.user.getPermissions().client_exclude.split("|"));
-                for (plugin in client_exclude)
-                    delete plugins[plugin];
-                plugins = Object.keys(plugins);
-            } 
-            else {
-                var plugins = self.options.plugins.concat()
-            }
+            var permissions = self.getPermissions(req);
+            var plugins = lang.arrayToMap(self.options.plugins);
+            var client_exclude = lang.arrayToMap(permissions.client_exclude.split("|"));
+            for (plugin in client_exclude)
+                delete plugins[plugin];
+            plugins = Object.keys(plugins);
             
             var replacements = {
                 davPrefix: self.options.davPrefix,
@@ -168,14 +164,31 @@ sys.inherits(Ide, EventEmitter);
             
             this.onUserCountChange();
         }
-        req.session.user = user;        
+        if (!req.session.ide)
+            req.session.ide = {};
+            
+        var workspaceId = this.options.workspaceId;
+        if (!req.session.ide[workspaceId])
+            req.session.ide[workspaceId] = {};
+            
+        req.session.ide[workspaceId][username] = permissions;        
+    };
+    
+    this.getPermissions = function(req) {
+        var workspaceId = this.options.workspaceId;
+        return (
+            (req.session &&
+            req.session.ide &&
+            req.session.ide[workspaceId] &&
+            req.session.ide[workspaceId][req.session.username]) || User.VISITOR_PERMISSIONS
+        );
     };
 
     this.addClientConnection = function(username, client, message) {
         var user = this.$users[username];
         if (!user)
             return this.error("No session for user " + user, 99, message, client);
-            
+
         user.addClientConnection(client, message);
     };
     

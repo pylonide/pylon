@@ -18,8 +18,8 @@ sys.inherits(Permission, jsDAV_ServerPlugin);
 (function() {
 
     this.checkPermission = function(e) {
-        var user = this.handler.server.user;
-        if (!user || user.getPermissions().dav !== "rw") {
+        var permissions = this.handler.server.permissions;
+        if (!permissions || permissions.dav !== "rw") {
             this.handler.httpResponse.writeHead(403);
             this.handler.httpResponse.end("operation not permitted!");
             e.stop();
