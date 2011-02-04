@@ -162,7 +162,7 @@ sys.inherits(Ide, EventEmitter);
     };
     
     this.onUserMessage = function(message, client, user) {
-        console.log(message);
+        //console.log(message);
         this.execHook("command", message, client, user);
     };
     

@@ -12,7 +12,6 @@ var ext = require("core/ext");
 var lang = require("pilot/lang");
 var panels = require("ext/panels/panels");
 var editors = require("ext/editors/editors");
-var run = require("ext/run/run");
 var Parser = require("ext/console/parser");
 var Trie = require("ext/console/trie");
 var css = require("text!ext/console/console.css");
@@ -916,11 +915,8 @@ return ext.register("ext/console/console", {
         ide.addEventListener("consoleresult.internal-isfile", function(e) {
             var data = e.data;
             var path = data.cwd.replace(ide.workspaceDir, ide.davPrefix);
-            if (data.isfile) {
+            if (data.isfile)
                 editors.showFile(path);
-                if (data.sender == "noderunner" || data.sender == "debugger")
-                    run.run(false);
-            }
             else
                 _self.log("'" + path + "' is not a file.");
         });
