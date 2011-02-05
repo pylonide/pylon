@@ -29,7 +29,7 @@ return ext.register("ext/save/save", {
         var _self = this;
         
         tabEditors.addEventListener("close", this.$close = function(e){
-            if (e.page.$at.undolength !== e.page.$doc.undo_ptr) {
+            if (e.page.$doc.undo_ptr !== undefined && e.page.$at.undolength !== e.page.$doc.undo_ptr) {
                 ext.initExtension(_self);
                 
                 winCloseConfirm.page = e.page;
@@ -120,7 +120,7 @@ return ext.register("ext/save/save", {
     saveall : function(){
         var pages = tabEditors.getPages();
         for (var i = 0; i < pages.length; i++) {
-            if (pages[i].$at.undolength !== pages[i].$at.undo_ptr)
+            if (pages[i].$at.undo_ptr !== undefined && pages[i].$at.undolength !== pages[i].$at.undo_ptr)
                 this.quicksave(pages[i]);
         }
     },
@@ -132,7 +132,7 @@ return ext.register("ext/save/save", {
                 
         var _self = this;
         apf.asyncForEach(pages, function(item, next){
-            if (item.$at.undolength !== item.$at.undo_ptr) {
+            if (item.$at.undo_ptr !== undefined && item.$at.undolength !== item.$at.undo_ptr) {
                 if (winCloseConfirm.all == 1)
                     _self.quicksave(item);
                 //else if (winCloseConfirm.all == -1)
