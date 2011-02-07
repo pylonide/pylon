@@ -5,6 +5,7 @@ var User = function (name, permissions) {
     this.name = name;
     this.permissions = permissions;
     this.clients = [];
+    this.$server_exclude = {};
 };
 
 sys.inherits(User, process.EventEmitter);
