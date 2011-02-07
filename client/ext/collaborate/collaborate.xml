@@ -23,20 +23,20 @@
             <a:hbox edge="3 0 3 0">
                 <a:model id="collaborators">
                     <data>
-                        <item online="1" status="" user_id="3" color="FF0000" user_name="Matt Pardee" />
-                        <item online="0" status="" user_id="5" color="FF0000" user_name="Rik Arends" />
-                        <item online="1" status="" user_id="4" color="FF0000" user_name="Ruben Daniels" />
-                        <item online="1" status="" user_id="6" color="FF0000" user_name="Fabian Jakobs" />
-                        <item online="1" status="" user_id="7" color="FF0000" user_name="David" />
-                        <item online="1" status="" user_id="8" color="FF0000" user_name="Lukasz Lipinski" />
-                        <item online="1" status="" user_id="9" color="FF0000" user_name="Mike De Boer" />
-                        <item online="0" status="" user_id="10" color="FF0000" user_name="Sergi" />
-                        <item online="1" status="" user_id="11" color="FF0000" user_name="Linh Nguyen" />
-                        <item online="1" status="" user_id="12" color="FF0000" user_name="Eddy Bruel" />
-                        <item online="1" status="" user_id="13" color="FF0000" user_name="Gabor Krizsanits" />
-                        <item online="0" status="" user_id="14" color="FF0000" user_name="Giannis Panagiotou" />
-                        <item online="1" status="" user_id="15" color="FF0000" user_name="Jos Uijterwaal" />
-                        <item online="1" status="" user_id="16" color="FF0000" user_name="Lieke Arends" />
+                        <item online="1" status="" user_id="3" sb_pos="0" color="FF0000" user_name="Matt Pardee" />
+                        <item online="0" status="" user_id="5" sb_pos="0" color="FF0000" user_name="Rik Arends" />
+                        <item online="1" status="" user_id="4" sb_pos="0" color="FF0000" user_name="Ruben Daniels" />
+                        <item online="1" status="" user_id="6" sb_pos="0" color="FF0000" user_name="Fabian Jakobs" />
+                        <item online="1" status="" user_id="7" sb_pos="0" color="FF0000" user_name="David" />
+                        <item online="1" status="" user_id="8" sb_pos="0" color="FF0000" user_name="Lukasz Lipinski" />
+                        <item online="1" status="" user_id="9" sb_pos="0" color="FF0000" user_name="Mike De Boer" />
+                        <item online="0" status="" user_id="10" sb_pos="0" color="FF0000" user_name="Sergi" />
+                        <item online="1" status="" user_id="11" sb_pos="0" color="FF0000" user_name="Linh Nguyen" />
+                        <item online="1" status="" user_id="12" sb_pos="0" color="FF0000" user_name="Eddy Bruel" />
+                        <item online="1" status="" user_id="13" sb_pos="0" color="FF0000" user_name="Gabor Krizsanits" />
+                        <item online="0" status="" user_id="14" sb_pos="0" color="FF0000" user_name="Giannis Panagiotou" />
+                        <item online="1" status="" user_id="15" sb_pos="0" color="FF0000" user_name="Jos Uijterwaal" />
+                        <item online="1" status="" user_id="16" sb_pos="0" color="FF0000" user_name="Lieke Arends" />
                     </data>
                 </a:model>
                 <a:list 

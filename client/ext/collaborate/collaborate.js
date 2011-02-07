@@ -29,14 +29,18 @@ return ext.register("ext/collaborate/collaborate", {
         var chatUserID = listItem.getAttribute("user_id");
         var chatIdent  = this.name + chatUserID;
         
-        // Check to see if window exists already. If so, select it
+        // Check to see if window exists already. If so, select it (2nd arg)
         if(dock.windowExists(chatIdent, true)) {
             return false;   
         }
-        
+
         tempChatWindow = new apf.modalwindow({
             htmlNode   : document.body,
             id         : "chatUser" + chatUserID,
+            onhide     : "require('ext/collaborate/collaborate').onChatHide("
+                            + chatUserID + ")",
+            onshow     : "require('ext/collaborate/collaborate').onChatShow("
+                            + chatUserID + ")",
             title      : listItem.getAttribute("user_name"),
             visible    : false,
             right      : "42",
@@ -64,7 +68,8 @@ return ext.register("ext/collaborate/collaborate", {
                     flex    : "1",
                     childNodes : [
                         new apf.hbox({
-                            height     : "230",
+                            height     : "243",
+                            edge       : "3 0 5 7",
                             childNodes : [
                                 new apf.text({
                                     id         : "txtChat" + chatUserID,
@@ -79,6 +84,7 @@ return ext.register("ext/collaborate/collaborate", {
                                 
                                 new apf.scrollbar({
                                     'for'     : "txtChat" + chatUserID,
+                                    id        : "sbChat" + chatUserID,
                                     height    : "*",
                                     margin    : "0",
                                     skin      : "sbcollaborators",
@@ -87,13 +93,14 @@ return ext.register("ext/collaborate/collaborate", {
                             ]
                         }),
                         new apf.hbox({
-                            height     : "54",
+                            height     : "41",
                             edge       : "8 7 7 7",
                             'class'    : "hboxchatinput",
                             childNodes : [
                                 new apf.textbox({
-                                    flex   : "1",
-                                    height : "37"
+                                    flex      : "1",
+                                    height    : "20",
+                                    onkeydown : "return require('ext/collaborate/collaborate').chatkeyHandler(event, this, " + chatUserID + ")"
                                 })
                             ]
                         })
@@ -112,8 +119,81 @@ return ext.register("ext/collaborate/collaborate", {
             chatIdent, // Window identifer
             true    // Force this chat window to show right away
         );
+        
+        eval("chatUser" + chatUserID).selectSingleNode("panel/hbox[2]/textbox").focus();
     },
     
+    closeChat: function(ev, anchorEl){
+        ev.preventDefault();
+    },
+    
+    /**
+     * Get the scrollbar position when the window hides so we can reset it
+     * when it is re-shown. For WebKit-based browsers.
+     */
+    onChatHide: function(userID){
+        if(apf.isWebkit) {
+            tUserSB = eval("sbChat" + userID);
+            // Store this somewhere...
+            collaborators.queryNode("item[@user_id=" 
+                    + userID + "]").setAttribute("sb_pos", tUserSB.getPosition());
+        }
+    },
+    
+    onChatShow: function(userID){
+        if(apf.isWebkit) {
+            sb_pos = collaborators.queryNode("item[@user_id=" + userID
+                        + "]").getAttribute("sb_pos");
+            eval("sbChat" + userID).setPosition(sb_pos);
+        }
+        
+        eval("chatUser" + userID).selectSingleNode("panel/hbox[2]/textbox").focus();
+    },
+    
+    chatkeyHandler: function(ev, txtObj, userID){
+        if(ev.keyCode == 13) {
+            var chatInput = txtObj.getValue();
+            if(chatInput != "") {
+                require("ext/collaborate/collaborate").appendToChatWin(
+                                userID, 
+                                'chatmessage',
+                                {
+                                    message: chatInput,
+                                    fromMe: true
+                                }
+                            );
+                            
+                eval("sbChat" + userID).setPosition(1);
+            }
+            
+            txtObj.clear();
+            return false;
+        }
+        
+        return true;
+    },
+    
+    appendToChatWin: function(userID, type, messageDetails){
+        txtOutputWin = eval("txtChat" + userID);
+        
+        switch(type){
+            case 'chatmessage':
+                var outStr = '<div class="chat_message_block">';
+                if(messageDetails.fromMe == true) {
+                    outStr += '<div class="chat_me_header">\
+                                    <span class="chat_msg_name">You</span>\
+                                    <span class="chat_msg_timestamp">12:01 AM</span></div>\
+                                  <div class="chat_message">'
+                                  + messageDetails.message + '</div>'
+                }
+                
+                outStr += '</div>';
+                
+                txtOutputWin.addValue(outStr);
+                break;
+        }
+    },
+
     init : function(amlNode){
         this.panel = winCollaborators;
         dock.registerWindow(winCollaborators, {

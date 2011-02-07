@@ -17929,12 +17929,12 @@
             font-size        : 10pt;
         }
         
-        .todowin .todowinhead span.title {
+        .todowin .todowinhead .title {
             display          : inline-block;
             background       : #f6f6f6;
             background       : -moz-linear-gradient(top, #eee, #f6f6f6 );
             background-image : -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eee), to(#f6f6f6));
-            padding          : 0 15px 0 13px;
+            padding          : 0 5px 0 13px;
             height           : 24px;
             line-height      : 24px;
             border-right     : 1px solid #8c8c8c;
@@ -17994,7 +17994,7 @@
             position        : relative;*/
         }
 
-        .todowin .todowinhead div{
+        /*.todowin .todowinhead div{
             float      : right;
             width      : 14px;
             height     : 14px;
@@ -18014,6 +18014,21 @@
         }
         .todowin .todowinhead div.down{
             background-color : white;
+        }*/
+
+        .todowin .todowinhead .close {
+            margin-left: 5px;
+        }
+        
+        .todowin .todowinhead .close a {
+            display    : inline-block;
+            width      : 14px;
+            height     : 14px;
+            background : url(images/close_tab_btn.png) 0px 0px no-repeat;
+        }
+        
+        .todowin .todowinhead .close a:hover {
+            background-position: -14px 0px;
         }
         
         .todowin .todowincontainer .list{
@@ -18039,13 +18054,16 @@
           min-height       = "80"
           container        = "div[1]/div[2]"
           drag             = "div[1]/div[1]" 
-          title            = "div[1]/div[1]/span[1]/text()"
-          icon             = "div[1]/div[1]/span[2]">
+          title            = "div[1]/div[1]/div[1]/text()">
             <div class="todowin_container">
                 <div class="todowin">
                     <div class="todowinhead">
-                        <span class="title">-</span>
-                        <span></span>
+                        <div class="title">-
+                            <span class="close">
+                                <a href="#" 
+                                   onclick="require('ext/collaborate/collaborate').closeChat(event, this)"></a>
+                            </span>
+                        </div>
                     </div>
                     <div class="todowincontainer"></div>
                 </div>
@@ -18159,15 +18177,35 @@
         }
         
         .todopanel .hbox.hboxchatinput .tb_textbox .sbtb_middle {
-            height : 33px;
+            height : 20px;
             border : none;
             -webkit-border-radius: 4px;
             -moz-border-radius: 4px;
         }
         
         .todopanel .hbox.hboxchatinput .tb_textbox .sbtb_middle input {
-            height: 32px;
-            line-height: 32px;
+            height: 20px;
+            line-height: 20px;
+        }
+        
+        .todopanel .hbox .chat_text {
+            overflow: hidden;
+            word-wrap: break-word;
+            padding-right: 7px;
+            padding-bottom: 5px;
+        }
+        
+        .todopanel .hbox .chat_text .chat_message_block {
+            padding: 5px 0;
+        }
+        
+        .chat_message_block .chat_me_header {
+            color: #ababab;
+            padding-bottom: 5px;
+        }
+        
+        .chat_message_block .chat_msg_timestamp {
+            float: right;
         }
     ]]></a:style>
     <a:presentation>
