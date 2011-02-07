@@ -142,7 +142,7 @@ sys.inherits(Ide, EventEmitter);
         });
     };
 
-    this.addUser = function(req, username, permissions) {
+    this.addUser = function(username, permissions) {
         var user = this.$users[username];
         if (user) {
             user.setPermissions(permissions);
@@ -165,40 +165,24 @@ sys.inherits(Ide, EventEmitter);
             
             this.onUserCountChange();
         }
-        if (!req.session.ide)
-            req.session.ide = {};
-            
-        var workspaceId = this.options.workspaceId;
-        if (!req.session.ide[workspaceId])
-            req.session.ide[workspaceId] = {};
-            
-        req.session.ide[workspaceId][username] = permissions;        
     };
     
     this.getPermissions = function(req) {
-        var workspaceId = this.options.workspaceId;
-        return (
-            (req.session &&
-            req.session.ide &&
-            req.session.ide[workspaceId] &&
-            req.session.ide[workspaceId][req.session.username]) || User.VISITOR_PERMISSIONS
-        );
+        var username = req.session.username;
+        if (!username || !this.$users[username])
+            return User.VISITOR_PERMISSIONS
+        else
+            return this.$users[username].getPermissions();
     };
     
-    this.hasPermissions = function(req) {
-        var workspaceId = this.options.workspaceId;
-        return !!(
-            (req.session &&
-            req.session.ide &&
-            req.session.ide[workspaceId] &&
-            req.session.ide[workspaceId][req.session.username])
-        );
+    this.hasUser = function(username) {
+        return !!this.$users[username];
     };
 
     this.addClientConnection = function(username, client, message) {
         var user = this.$users[username];
         if (!user)
-            return this.error("No session for user " + user, 99, message, client);
+            return this.error("No session for user " + username, 99, message, client);
 
         user.addClientConnection(client, message);
     };
