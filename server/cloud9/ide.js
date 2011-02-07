@@ -108,9 +108,16 @@ sys.inherits(Ide, EventEmitter);
             
             var permissions = self.getPermissions(req);
             var plugins = lang.arrayToMap(self.options.plugins);
+
             var client_exclude = lang.arrayToMap(permissions.client_exclude.split("|"));
             for (plugin in client_exclude)
                 delete plugins[plugin];
+                
+            var client_include = lang.arrayToMap((permissions.client_include || "").split("|"));
+            for (plugin in client_include)
+                if (plugin)
+                    plugins[plugin] = 1;
+            
             plugins = Object.keys(plugins);
             
             var replacements = {
