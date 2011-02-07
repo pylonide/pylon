@@ -7,7 +7,7 @@ exports.findFreePort = function(start, hostname, callback) {
         var stream = net.createConnection(port, hostname);
         
         stream.on("connect", function() {
-            stream.end();
+            stream.destroy();
             port++;
             next();
         });
@@ -18,24 +18,25 @@ exports.findFreePort = function(start, hostname, callback) {
     }, function() {
         callback(port);
     });
-}
+};
 
 exports.isPortOpen = function(hostname, port, timeout, callback) {
     var stream = net.createConnection(port, hostname);
 
     stream.on("connect", function() {
         clearTimeout(id);
-        stream.end();
+        stream.destroy();
         callback(true);
     });
     
     stream.on("error", function() {
         clearTimeout(id);        
+        stream.destroy();
         callback(false);
     });
     
     var id = setTimeout(function() {
-        stream.end();
+        stream.destroy();
         callback(false);
     }, timeout);
 };
