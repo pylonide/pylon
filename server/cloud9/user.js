@@ -1,4 +1,5 @@
 var sys = require("sys");
+var lang = require("pilot/lang");
 
 var User = function (name, permissions) {
     this.name = name;
@@ -48,6 +49,7 @@ User.VISITOR_PERMISSIONS = {
 (function() {
     
     this.setPermissions = function(permissions) {
+        this.$server_exclude = lang.arrayToMap(permissions.server_exclude.split("|"));
         this.permissions = permissions;
     };
     
@@ -113,12 +115,17 @@ User.VISITOR_PERMISSIONS = {
             "message": description
         });
         if (client)
-            client.send(error)
+            client.send(error);
         else
             this.broadcast(error);
     };
     
-    this.broadcast = function(msg) {
+    this.broadcast = function(msg, scope) {
+        console.log(scope, this.$server_exclude[scope]);
+        
+        if (scope && this.$server_exclude[scope])
+            return;
+            
         for (var id in this.clients) 
             this.clients[id].send(msg);
     };

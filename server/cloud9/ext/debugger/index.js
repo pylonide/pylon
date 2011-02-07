@@ -75,7 +75,7 @@ sys.inherits(DebuggerPlugin, Plugin);
                 this.chromeDebugProxy.connect();
 
                 this.chromeDebugProxy.addEventListener("connection", function() {
-                    _self.ide.broadcast('{"type": "chrome-debug-ready"}');
+                    _self.ide.broadcast('{"type": "chrome-debug-ready"}', _self.name);
                 });
                 break;
             case "debugnode":
@@ -86,7 +86,7 @@ sys.inherits(DebuggerPlugin, Plugin);
                 break;
             case "debugattachnode":
                 if (this.nodeDebugProxy)
-                    this.ide.broadcast('{"type": "node-debug-ready"}');
+                    this.ide.broadcast('{"type": "node-debug-ready"}', _self.name);
                 break;
             case "kill":
                 this.$kill();
@@ -153,7 +153,7 @@ sys.inherits(DebuggerPlugin, Plugin);
         var child = _self.child = Spawn(proc, args, {cwd: cwd, env: env});
         _self.debugClient = args.join(" ").search(/(?:^|\b)\-\-debug\b/) != -1;
         _self.ide.getExt("state").publishState();
-        _self.ide.broadcast(JSON.stringify({"type": "node-start"}));
+        _self.ide.broadcast(JSON.stringify({"type": "node-start"}), _self.name);
 
         child.stdout.on("data", sender("stdout"));
         child.stderr.on("data", sender("stderr"));
@@ -165,12 +165,12 @@ sys.inherits(DebuggerPlugin, Plugin);
                     "stream": stream,
                     "data": data.toString("utf8")
                 };
-                _self.ide.broadcast(JSON.stringify(message));
+                _self.ide.broadcast(JSON.stringify(message), _self.name);
             };
         }
 
         child.on("exit", function(code) {
-            _self.ide.broadcast(JSON.stringify({"type": "node-exit"}));
+            _self.ide.broadcast(JSON.stringify({"type": "node-exit"}), _self.name);
 
             _self.debugClient = false;
             delete _self.child;
@@ -195,11 +195,11 @@ sys.inherits(DebuggerPlugin, Plugin);
                 "type": "node-debug",
                 "body": body
             };
-            _self.ide.broadcast(JSON.stringify(msg));
+            _self.ide.broadcast(JSON.stringify(msg), _self.name);
         });
 
         this.nodeDebugProxy.on("connection", function() {
-            _self.ide.broadcast('{"type": "node-debug-ready"}');
+            _self.ide.broadcast('{"type": "node-debug-ready"}', _self.name);
         });
 
         this.nodeDebugProxy.on("end", function() {

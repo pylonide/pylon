@@ -28,7 +28,7 @@ sys.inherits(cloud9Plugin, process.EventEmitter);
             subtype: type || "error",
             sid    : sid  || 0,
             body   : msg  || "Access denied."
-        }));
+        }), this.name);
     };
 
     this.spawnCommand = function(cmd, args, cwd, onerror, ondata, onexit) {

@@ -205,10 +205,12 @@ sys.inherits(Ide, EventEmitter);
         this.emit("clientCountChange", Object.keys(this.$users).length);
     };
 
-    this.broadcast = function(msg) {
+    this.broadcast = function(msg, scope) {
         // TODO check permissions
-        for (var username in this.$users) 
-            this.$users[username].broadcast(msg);
+        for (var username in this.$users) {
+            var user = this.$users[username];            
+            user.broadcast(msg, scope);
+        }
     };
 
     this.registerExts = function(exts) {
