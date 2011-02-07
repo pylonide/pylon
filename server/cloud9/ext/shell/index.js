@@ -13,6 +13,7 @@ var Plugin = require("cloud9/plugin"),
 var ShellPlugin = module.exports = function(ide) {
     this.ide = ide;
     this.hooks = ["command"];
+    this.name = "shell";
 }
 
 sys.inherits(ShellPlugin, Plugin);

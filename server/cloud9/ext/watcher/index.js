@@ -10,7 +10,8 @@ var fs      = require("fs"),
 
 function cloud9WatcherPlugin(ide) {
     this.ide = ide;
-    this.hooks  = ["disconnect", "command"];
+    this.hooks = ["disconnect", "command"];
+    this.name = "watcher";
     this.filenames = {};
 }
 

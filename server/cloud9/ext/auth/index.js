@@ -10,7 +10,8 @@ var sys = require("sys");
 var AuthPlugin = module.exports = function(ide) {
     this.ide = ide;
     this.hooks = ["command"];
-}
+    this.name = "auth";
+};
 
 sys.inherits(AuthPlugin, Plugin);
 
@@ -25,7 +26,7 @@ sys.inherits(AuthPlugin, Plugin);
             return true;
         }
 
-        client.send('{"type": "attached"}')
+        client.send('{"type": "attached"}');
         this.ide.execHook("connect", user, client);
         return true;
     };

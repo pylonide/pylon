@@ -15,6 +15,7 @@ var Path             = require("path"),
 var DebuggerPlugin = module.exports = function(ide) {
     this.ide = ide;
     this.hooks = ["command"];
+    this.name = "debugger";
 };
 
 sys.inherits(DebuggerPlugin, Plugin);

@@ -10,6 +10,7 @@ var sys = require("sys");
 var cloud9StatePlugin = module.exports = function(ide) {
     this.ide = ide;
     this.hooks = ["connect", "command"];
+    this.name = "state";
 };
 
 sys.inherits(cloud9StatePlugin, Plugin);
