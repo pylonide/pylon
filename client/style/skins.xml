@@ -18176,6 +18176,15 @@
             background       : -moz-linear-gradient(center top, #4a4a4a 0%, #404040 100%) repeat scroll 0 0 transparent;
         }
         
+        .todopanel .hbox.hboxchatinput .ta {
+            overflow: auto;
+            overflow-x: hidden;
+            padding: 4px 5px;
+            border: none;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+        }
+        
         .todopanel .hbox.hboxchatinput .tb_textbox .sbtb_middle {
             height : 20px;
             border : none;

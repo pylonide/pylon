@@ -97,10 +97,9 @@ return ext.register("ext/collaborate/collaborate", {
                             edge       : "8 7 7 7",
                             'class'    : "hboxchatinput",
                             childNodes : [
-                                new apf.textbox({
+                                new apf.textarea({
                                     flex      : "1",
-                                    height    : "20",
-                                    onkeydown : "return require('ext/collaborate/collaborate').chatkeyHandler(event, this, " + chatUserID + ")"
+                                    height    : "24"
                                 })
                             ]
                         })
@@ -120,7 +119,64 @@ return ext.register("ext/collaborate/collaborate", {
             true    // Force this chat window to show right away
         );
         
-        eval("chatUser" + chatUserID).selectSingleNode("panel/hbox[2]/textbox").focus();
+        cta = eval("chatUser" + chatUserID).selectSingleNode("panel/hbox[2]/textarea");
+        
+        var _self = this;
+
+        cta.onkeydown = function(event) {
+            if(event.keyCode == 13) {
+                event.preventDefault();
+
+                var chatInput = event.currentTarget.getValue();
+                if(chatInput != "") {
+                    _self.appendToChatWin(chatUserID, 'chatmessage',
+                                            {
+                                                message: chatInput,
+                                                fromMe: true
+                                            }
+                                        );
+                    eval("sbChat" + chatUserID).setPosition(1);
+                    
+                    // Reset heights of elements if they have been modified
+                    if(this.getHeight() > 24) {
+                        this.setHeight(24);
+                        tcu = eval("chatUser" + chatUserID);
+                        tcu.selectSingleNode("panel/hbox[1]").setHeight(243);
+                        tcu.selectSingleNode("panel/hbox[2]").setHeight(41);
+                    }
+                }
+                
+                event.currentTarget.clear();
+                return false;
+            }
+        };
+        
+        cta.onkeyup = function(event) {
+            // For every keypress besides [enter] and [tab], we will process
+            // the height of the 
+            if(event.keyCode != 9){
+                if(event.htmlEvent) {
+                    if(event.htmlEvent.target.clientHeight < 
+                            event.htmlEvent.target.scrollHeight) {
+                        if(this.getHeight() < 65) {
+                            this.setHeight(this.getHeight() + 15);
+                            tcu = eval("chatUser" + chatUserID);
+                            tcu.selectSingleNode("panel/hbox[1]").setHeight(
+                                tcu.selectSingleNode("panel/hbox[1]").getHeight()
+                                    - 15
+                            );
+                            
+                            tcu.selectSingleNode("panel/hbox[2]").setHeight(
+                                tcu.selectSingleNode("panel/hbox[2]").getHeight()
+                                    + 15
+                            );
+                        }
+                    }
+                }
+            }
+        };
+        
+        cta.focus();
     },
     
     closeChat: function(ev, anchorEl){
@@ -147,32 +203,9 @@ return ext.register("ext/collaborate/collaborate", {
             eval("sbChat" + userID).setPosition(sb_pos);
         }
         
-        eval("chatUser" + userID).selectSingleNode("panel/hbox[2]/textbox").focus();
+        eval("chatUser" + userID).selectSingleNode("panel/hbox[2]/textarea").focus();
     },
-    
-    chatkeyHandler: function(ev, txtObj, userID){
-        if(ev.keyCode == 13) {
-            var chatInput = txtObj.getValue();
-            if(chatInput != "") {
-                require("ext/collaborate/collaborate").appendToChatWin(
-                                userID, 
-                                'chatmessage',
-                                {
-                                    message: chatInput,
-                                    fromMe: true
-                                }
-                            );
-                            
-                eval("sbChat" + userID).setPosition(1);
-            }
-            
-            txtObj.clear();
-            return false;
-        }
-        
-        return true;
-    },
-    
+
     appendToChatWin: function(userID, type, messageDetails){
         txtOutputWin = eval("txtChat" + userID);
         
