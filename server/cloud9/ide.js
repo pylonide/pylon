@@ -184,6 +184,16 @@ sys.inherits(Ide, EventEmitter);
             req.session.ide[workspaceId][req.session.username]) || User.VISITOR_PERMISSIONS
         );
     };
+    
+    this.hasPermissions = function(req) {
+        var workspaceId = this.options.workspaceId;
+        return !!(
+            (req.session &&
+            req.session.ide &&
+            req.session.ide[workspaceId] &&
+            req.session.ide[workspaceId][req.session.username])
+        );
+    };
 
     this.addClientConnection = function(username, client, message) {
         var user = this.$users[username];

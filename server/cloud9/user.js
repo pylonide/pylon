@@ -121,8 +121,6 @@ User.VISITOR_PERMISSIONS = {
     };
     
     this.broadcast = function(msg, scope) {
-        console.log(scope, this.$server_exclude[scope]);
-        
         if (scope && this.$server_exclude[scope])
             return;
             
