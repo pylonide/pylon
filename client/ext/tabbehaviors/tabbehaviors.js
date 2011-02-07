@@ -73,7 +73,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
                         onclick : this.closealltabs.bind(this)
                     }),
                     new apf.item({
-                        caption : "Close All But This Tab",
+                        caption : "Close Other Tabs",
                         onclick : function(){
                             _self.closeallbutme(tabEditors.contextPage);
                         }
