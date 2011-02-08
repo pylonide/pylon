@@ -1,4 +1,10 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:skin
+       id  = "collaborate"
+       src = "{require('text!ext/collaborate/skin.xml')}"
+       media-path = "/static/style/images/"
+       icon-path  = "/static/style/icons/"
+    />
     <a:window
       id        = "winCollaborators"
       title     = "Collaborators"
@@ -8,6 +14,7 @@
       visible   = "false"
       width     = "260"
       right     = "42"
+      skinset   = "collaborate"
       skin      = "todowin">
         <a:toolbar>
             <a:bar height="36">
@@ -42,6 +49,7 @@
                 <a:list 
                     id            = "collaboratorsList"
                     onafterchoose = "require('ext/collaborate/collaborate').openChat(this.selected)"
+                    skinset       = "collaborate"
                     skin          = "collaboratelist"
                     model         = "collaborators"
                     autoselect    = "false"
