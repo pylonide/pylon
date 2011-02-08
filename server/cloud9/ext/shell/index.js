@@ -13,12 +13,13 @@ var Plugin = require("cloud9/plugin"),
 var ShellPlugin = module.exports = function(ide) {
     this.ide = ide;
     this.hooks = ["command"];
+    this.name = "shell";
 }
 
 sys.inherits(ShellPlugin, Plugin);
 
 (function() {
-    this.command = function(message) {
+    this.command = function(user, message, client) {
         if (!this[message.command])
             return false;
 

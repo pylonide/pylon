@@ -20,7 +20,7 @@ Written in Javascript, for Javascripters.
   * Bundled plugins: browser, clipboard, code (editor), console, debugger, docs, editors, filesystem, html, keybindings, newresource, noderunner, panels, refactor, richtext, save, searchreplace, settings, tree, undo
 
 ## Browser Support
-We are developing on firefox and this is a development repo, other browsers might be less stable until a proper release.
+We are developing on firefox and chrome and this is a development repo, other browsers might be less stable until a proper release.
 
 ## Usage
 
@@ -111,7 +111,7 @@ Main projects that we use as building blocks:
   * [jsDAV] by [mikedeboer]
   * [connect] by [senchalabs](http://github,com/senchalabs)
   * [socket.io] by [LearnBoost](http://github.com/LearnBoost)
-  * [ace](http://github.com/ajaxorg/editor) by [fjakobs]
+  * [ace](http://github.com/ajaxorg/ace) by [fjakobs]
   * [apf](http://www.ajax.org) by [ajax.org]
   * and of course [Node.JS]!
   

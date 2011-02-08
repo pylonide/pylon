@@ -9,6 +9,7 @@ var IO = require("socket.io");
 var Fs = require("fs");
 var Path = require("path");
 var IdeServer = require("./ide");
+var User = require("./user");
 var middleware = require("./middleware");
 
 exports.main = function(options) {
@@ -34,7 +35,7 @@ exports.main = function(options) {
         };
         var socketIo = IO.listen(server, socketOptions);
         socketIo.on("connection", function(client) {
-            ide.addClientConnection(client, null);
+            ide.addClientConnection("owner", client, null);
         });
         
         var name = projectDir.split("/").pop();
@@ -46,18 +47,21 @@ exports.main = function(options) {
             staticUrl: "/static",
             workspaceId: name,
             name: name
-        }
+        };
         var ide = new IdeServer(serverOptions, server, exts);
         
         return function(req, res, next) {
-            req.sessionId = "123";
+            req.session.username = "owner";
+            ide.addUser("owner", User.OWNER_PERMISSIONS);
             ide.handle(req, res, next);
-        }
-    }
+        };
+    };
     
     var server = Connect.createServer();
     //server.use(Connect.logger());
     server.use(Connect.conditionalGet());
+    server.use(Connect.cookieDecoder());
+    server.use(Connect.session());
     server.use(ideProvider(projectDir, server));
     server.use(middleware.staticProvider(Path.normalize(__dirname + "/../../support"), "/static/support"));
     server.use(middleware.staticProvider(Path.normalize(__dirname + "/../../client"), "/static"));
@@ -74,8 +78,8 @@ exports.main = function(options) {
 process.on("uncaughtException", function(e) {
     console.log("uncaught exception:");
     console.log(e.stack + "");
-})
+});
 
 if (module === require.main) {
-    exports.main({workspace: ".", port: 3000, ip: '127.0.0.1'})
+    exports.main({workspace: ".", port: 3000, ip: '127.0.0.1'});
 }

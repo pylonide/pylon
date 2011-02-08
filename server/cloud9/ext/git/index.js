@@ -10,7 +10,8 @@ var sys    = require("sys");
 var ShellGitPlugin = module.exports = function(ide) {
     this.ide = ide;
     this.hooks = ["command"];
-}
+    this.name = "git";
+};
 
 sys.inherits(ShellGitPlugin, Plugin);
 
@@ -58,7 +59,7 @@ sys.inherits(ShellGitPlugin, Plugin);
         return this.extend(struct, map || {});
     };
 
-    this.command = function(message) {
+    this.command = function(message, client, user) {
         if (message.command != "git")
             return false;
 

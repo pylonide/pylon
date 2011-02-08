@@ -40,7 +40,8 @@ return ext.register("ext/settings/settings", {
 
     saveToFile : function(){
         //apf.console.log("SAVING SETTINGS");
-        fs.saveFile(this.file, this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || "");
+        if (!ide.readonly)
+            fs.saveFile(this.file, this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || "");
     },
 
     saveSettingsPanel: function() {
