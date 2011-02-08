@@ -17944,10 +17944,12 @@
             border-top: 1px solid #8c8c8c;
         }
         
+        .todowin .toolbar {
+            background    : #f6f6f6;
+            border-bottom : 1px solid #b2b2b2;
+        }
+
         .todowin .toolbar .subbar {
-            /*background       : #eff1f4;
-            background       : -moz-linear-gradient(top, #eff1f4, #e6e8eb );
-            background-image : -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eff1f4), to(#e6e8eb));*/
             background    : #f6f6f6;
             border-bottom : 1px solid #b2b2b2;
         }
@@ -18197,6 +18199,17 @@
             line-height: 20px;
         }
         
+        .chat_history_overview {
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #dbdbdb;
+            margin-bottom: 3px;
+        }
+        
+        .chat_history_overview img {
+            float: left;
+            padding: 3px 3px 0 0;
+        }
+        
         .todopanel .hbox .chat_text {
             overflow: hidden;
             word-wrap: break-word;
@@ -18205,16 +18218,37 @@
         }
         
         .todopanel .hbox .chat_text .chat_message_block {
-            padding: 5px 0;
+            padding-top: 10px;
         }
         
-        .chat_message_block .chat_me_header {
-            color: #ababab;
+        .todopanel .hbox .chat_text .chat_message_block.same_user {
+            padding-top: 3px;
+        }
+        
+        .chat_message_block .chat_header {
             padding-bottom: 5px;
+            font-weight: bold;
         }
         
         .chat_message_block .chat_msg_timestamp {
             float: right;
+            color: #ababab;
+        }
+
+        .chat_message_block .timestamp_divider {
+            height: 1px;
+            margin-bottom: 2px;
+            border-bottom: 2px dashed #dbdbdb;
+        }
+        
+        .chat_message_block .chat_msg_timestamp.cmt_divider {
+            position   : relative;
+            top        : -10px;
+            background : #ccc;
+            color      : #fff;
+            padding    : 0px 3px;
+            -webkit-border-radius : 8px;
+            -moz-border-radius    : 8px;
         }
     ]]></a:style>
     <a:presentation>
