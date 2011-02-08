@@ -11,6 +11,7 @@ var ide    = require("core/ide");
 var ext    = require("core/ext");
 var util   = require("core/util");
 var dock   = require("ext/dockpanel/dockpanel");
+var skin   = require("text!ext/collaborate/skin.xml");
 var markup = require("text!ext/collaborate/collaborate.xml");
 
 return ext.register("ext/collaborate/collaborate", {
@@ -18,6 +19,7 @@ return ext.register("ext/collaborate/collaborate", {
     dev             : "Ajax.org",
     alone           : true,
     type            : ext.GENERAL,
+    skin            : skin,
     markup          : markup,
     commands        : {},
     hotitems        : {},
@@ -51,6 +53,7 @@ return ext.register("ext/collaborate/collaborate", {
             height     : "350",
             modal      : false,
             draggable  : false,
+            skinset    : "collaborate",
             skin       : "todowin",
             childNodes : [
                 new apf.toolbar({
@@ -294,6 +297,8 @@ return ext.register("ext/collaborate/collaborate", {
         this.chatUsers[userID].messages.push(messageDetails);
     },
 
+    
+    
     init : function(amlNode){
         this.panel = winCollaborators;
         dock.registerWindow(winCollaborators, {
