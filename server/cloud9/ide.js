@@ -168,19 +168,20 @@ Ide.DEFAULT_PLUGINS = [
                 _self.execHook("disconnect", msg.user, msg.client);
             });
             user.on("disconnectUser", function(user) {
-                // TODO delay removal (use timeout)
                 delete _self.$users[user.name];
                 _self.onUserCountChange(Object.keys(_self.$users).length);
+                _self.emit("userLeave", user);
             });
             
             this.onUserCountChange();
+            this.emit("userJoin", user);
         }
     };
     
     this.getPermissions = function(req) {
         var username = req.session.username;
         if (!username || !this.$users[username])
-            return User.VISITOR_PERMISSIONS
+            return User.VISITOR_PERMISSIONS;
         else
             return this.$users[username].getPermissions();
     };
@@ -198,7 +199,6 @@ Ide.DEFAULT_PLUGINS = [
     };
     
     this.onUserMessage = function(user, message, client) {
-//        console.log(message);
         this.execHook("command", user, message, client);
     };
     
@@ -243,7 +243,7 @@ Ide.DEFAULT_PLUGINS = [
                 return;
             }
             ext   = this.exts[name];
-            hooks = ext.getHooks();            
+            hooks = ext.getHooks();
             if (hooks.indexOf(hook) > -1 && ext[hook].apply(ext, args) === true)
                 return;
         }
