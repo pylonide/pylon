@@ -102,7 +102,7 @@ User.VISITOR_PERMISSIONS = {
         var count = Object.keys(this.clients).length;
         this.emit("clientCountChange", count);
         
-        if (count === 0)
+        if (count == 0)
             this.emit("disconnectUser", this);
     };
     

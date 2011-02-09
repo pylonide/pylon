@@ -52,42 +52,42 @@ return ext.register("ext/watcher/watcher", {
             
             if (removedPaths[path]) {
                 util.question(
-	                "File removed, keep tab open?",
-	                path + " has been deleted, or is no longer available.",
-	                "Do you wish to keep the file open in the editor?",
-	                function() { // Yes
-	                    apf.xmldb.setAttribute(data, "changed", "1");
-	                    delete removedPaths[path];
-	                    --removedPathCount;
-	                    winQuestion.hide();
-	                },
-	                function() { // Yes to all
-	                    var pages = tabEditors.getPages();
-	                    
-	                    pages.forEach(function(page) {
-	                       apf.xmldb.setAttribute(page.$model.data, "changed", "1");
-	                    });
-	                    removedPaths = {};
-	                    removedPathCount = 0;
-	                    winQuestion.hide();
-	                },
-	                function() { // No
-	                    tabEditors.remove(page);
-	                    delete removedPaths[path];
-	                    --removedPathCount;
-	                    winQuestion.hide();
-	                },
-	                function() { // No to all
-	                    var pages = tabEditors.getPages();
-	                    
-	                    pages.forEach(function(page) {
-	                    if (removedPaths[page.$model.data.getAttribute("path")])
-	                        tabEditors.remove(page);
-	                    });
-	                    removedPaths = {};
-	                    removedPathCount = 0;
-	                    winQuestion.hide();
-	                }
+                    "File removed, keep tab open?",
+                    path + " has been deleted, or is no longer available.",
+                    "Do you wish to keep the file open in the editor?",
+                    function() { // Yes
+                        apf.xmldb.setAttribute(data, "changed", "1");
+                        delete removedPaths[path];
+                        --removedPathCount;
+                        winQuestion.hide();
+                    },
+                    function() { // Yes to all
+                        var pages = tabEditors.getPages();
+                        
+                        pages.forEach(function(page) {
+                           apf.xmldb.setAttribute(page.$model.data, "changed", "1");
+                        });
+                        removedPaths = {};
+                        removedPathCount = 0;
+                        winQuestion.hide();
+                    },
+                    function() { // No
+                        tabEditors.remove(page);
+                        delete removedPaths[path];
+                        --removedPathCount;
+                        winQuestion.hide();
+                    },
+                    function() { // No to all
+                        var pages = tabEditors.getPages();
+                        
+                        pages.forEach(function(page) {
+                            if (removedPaths[page.$model.data.getAttribute("path")])
+                                tabEditors.remove(page);
+                        });
+                        removedPaths = {};
+                        removedPathCount = 0;
+                        winQuestion.hide();
+                    }
                 );
                 btnQuestionYesToAll.setAttribute("visible", removedPathCount > 1);
                 btnQuestionNoToAll.setAttribute("visible", removedPathCount > 1);
@@ -177,11 +177,11 @@ return ext.register("ext/watcher/watcher", {
             with (e.message) {
                 if (type != "watcher")
                     return;
-	            if (expandedPaths[path])
-	                return ide.dispatchEvent("treechange", {
-	                    path    : path,
-	                    files   : files
-	                });
+                if (expandedPaths[path])
+                    return ide.dispatchEvent("treechange", {
+                        path    : path,
+                        files   : files
+                    });
                 if (!pages.some(function (page) {
                     return page.$model.data.getAttribute("path") == path;
                 }))
@@ -243,5 +243,4 @@ return ext.register("ext/watcher/watcher", {
     },
 });
 
-    }
-);
+});
