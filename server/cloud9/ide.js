@@ -240,12 +240,13 @@ Ide.DEFAULT_PLUGINS = [
         var server_exclude = lang.arrayToMap(user.getPermissions().server_exclude.split("|"));
         for (var name in this.exts) {
             if (server_exclude[name]) {
-                return;
+                continue;
             }
             ext   = this.exts[name];
             hooks = ext.getHooks();
-            if (hooks.indexOf(hook) > -1 && ext[hook].apply(ext, args) === true)
+            if (hooks.indexOf(hook) > -1 && ext[hook].apply(ext, args) === true) {
                 return;
+            }
         }
         // if we get here, no hook function was successfully delegated to an
         // extension.
