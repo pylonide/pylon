@@ -422,7 +422,7 @@ apf.scrollbar = function(struct, tagName){
     
     this.setPosition = function(pos, noEvent){
         this.$curValue = pos;
-        setScroll(null, noEvent);
+        this.setScroll(null, noEvent);
     };
     
     this.updatePos = function(){
