@@ -511,6 +511,9 @@ apf.textbox  = function(struct, tagName){
         
         if (!this.realtime)
             this.change(this.getValue());
+    
+        if (e)
+            e.cancelBubble = true;
 
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus", "capsLock"]);
 
