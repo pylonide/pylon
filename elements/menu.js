@@ -117,7 +117,7 @@ apf.menu = function(struct, tagName){
             if (lastFocus != this.opener && this.opener && this.opener.$blur)
                 this.opener.$blur();
 
-            if (this.opener && this.opener.parentNode.localName == "menu") {
+            if (this.opener && this.opener.parentNode && this.opener.parentNode.localName == "menu") {
                 if (!this.$hideTree)
                     this.$hideTree = -1
                 this.opener.parentNode.focus();
@@ -512,7 +512,9 @@ apf.menu = function(struct, tagName){
 
     //Hide menu when it looses focus or when the popup hides itself
     function forceHide(e){
-        if (this.$showingSubMenu || this.autohide === false || apf.isChildOf(e.fromElement, e.toElement))
+        if (this.$showingSubMenu || this.autohide === false
+                || apf.isChildOf(e.fromElement, e.toElement)
+                || apf.isChildOf(this, e.toElement) || !e.toElement)
             return;
 
         if (this.$hideTree != -1) {
