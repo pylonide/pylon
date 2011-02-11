@@ -53,7 +53,7 @@ apf.popup = {
             
             //@todo can this cancelBubble just go?
             //apf.cancelBubble(e, null, true);
-            e.cancelBubble = true;
+            //e.cancelBubble = true;
         };
         
         return content.ownerDocument;
