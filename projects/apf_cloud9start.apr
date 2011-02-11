@@ -108,11 +108,12 @@
         <p:define name="__WITH_CONTEXTMENU" value="1" />
         <p:define name="__WITH_CONVENIENCE_API" value="1" />
         <p:define name="__WITH_STYLE" value="1" />
+        <p:define name="__WITH_JSON2XML" value="1" />
         <p:define name="__WITH_JSON_API" value="1" />
         <p:define name="__WITH_XML_UTIL" value="1" />
         <p:define name="__WITH_DATE" value="1" />
         <p:define name="__WITH_DATE_EXT" value="1" />
-        
+
         <p:define name="__WITH_DATA_INSTRUCTIONS" value="1" />
         <p:define name="__WITH_ECMAEXT" value="1" />
         <p:define name="__WITH_ENTITY_ENCODING" value="1" />
@@ -128,11 +129,11 @@
         <p:define name="__WITH_MULTISELECT_BINDINGS" value="1" />
         <p:define name="__WITH_NAMESERVER" value="1" />
         <p:define name="__WITH_NS_SUPPORT" value="1" />
-        
+
         <p:define name="__WITH_PARSE_DOC_BY_RELOADING" value="1" />
         <p:define name="__WITH_PLANE" value="1" />
         <p:define name="__WITH_POPUP" value="1" />
-        
+
         <p:define name="__WITH_PROPERTY_BINDING" value="1" />
         <p:define name="__WITH_QUERYAPPEND" value="1" />
         <p:define name="__WITH_REGISTRY" value="1" />
@@ -171,7 +172,7 @@
         <p:define name="__PARSER_AML" value="1" />
         <p:define name="__WITH_EXPLICIT_LOWERCASE" value="1" />
         <p:define name="__WITH_SKIN_INCLUDES" value="1" />
-        
+
         <p:define name="__WITH_DOMPARSER" value="1" />
         <p:define name="__DOMPARSER" value="1" />
         <p:define name="__PARSER_XPATH" value="1" />
@@ -217,7 +218,7 @@
         <p:define name="__WITH_AMLATTR" value="1" />
         <p:define name="__WITH_AMLTEXT" value="1" />
         <!-- binding options -->
-        
+
         <!-- new defines -->
         <p:define name="__WITH_PROPERTY_INHERITANCE" value="1" />
         <p:define name="__PARSER_XHTML" value="1" />
@@ -261,7 +262,7 @@
         <p:define name="__AMLTAB" value="1" />
         <p:define name="__AMLPAGES" value="1" />
         <p:define name="__AMLTELEPORT" value="1" />
-        
+
         <p:define name="__AMLLABEL" value="1" />
         <p:define name="__AMLBUTTON" value="1" />
 
@@ -296,5 +297,15 @@
         <p:define name="__ENABLED_LIVETEXT" value="0" />
         <p:define name="__WITH_UNSAFE_XMLHTTP" value="0" />
         <p:define name="__WITH_VISUALIZER" value="0" />
+
+        <p:define name="__WITH_MULTICHECK_TREE" value="1" />
+        <p:define name="__AMLBASETREE" value="1" />
+        <p:define name="__AMLTREE" value="1" />
+        <p:define name="__WITH_AUTH" value="1" />
+        <p:define name="__ENABLE_BUTTON_ACTIONS" value="1" />
+        <p:define name="__AMLIMG" value="1" />
+        <p:define name="__AMLDATAGRID" value="1" />
+        <p:define name="__WITH_SCROLLBAR" value="1" />
+        <p:define name="__WITH_CSS_BINDS" value="1" />
     </p:defines>
 </p:project>
