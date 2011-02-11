@@ -42,10 +42,10 @@
           out      = "{cwd}/../../client/js/ace.js"
           filehead = "1" /-->
 
-        <!--p:compress
+        <p:compress
           cmd      = "yuicompressor"
-          in       = "{cwd}/build/apf_release.js"
-          out      = "{cwd}/build/apf_release.js" /-->
+          in       = "{cwd}/../../client/js/apf_release.js"
+          out      = "{cwd}/../../client/js/apf_release.js" />
     </p:process>
 
     <p:files>
@@ -113,7 +113,7 @@
             <p:node path="jpack_end.js" />
         </p:node>
         
-        <p:node path="{__dirname}/../../../support/ace/build/ace/editor.js" group="ace" />
+        <!--p:node path="{__dirname}/../../../support/ace/build/ace/editor.js" group="ace" />
         <p:node path="{__dirname}/../../../support/ace/build/ace/lib/oop.js" group="ace" />
         <p:node path="{__dirname}/../../../support/ace/build/ace/lib/core.js" group="ace" />
         <p:node path="{__dirname}/../../../support/ace/build/ace/lib/event.js" group="ace" />
@@ -192,7 +192,7 @@
         <p:node path="{__dirname}/../../../client/ext/console/console.js" group="modules" />
         <p:node path="{__dirname}/../../../client/ext/tabbehaviors/tabbehaviors.js" group="modules" />
         <p:node path="{__dirname}/../../../client/ext/keybindings/keybindings.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/watcher/watcher.js" group="modules" />
+        <p:node path="{__dirname}/../../../client/ext/watcher/watcher.js" group="modules" /-->
     </p:files>
 
     <p:defines defaults="defines.xml">
@@ -216,7 +216,7 @@
         <p:define name="__WITH_CSS_BINDS" value="1" />
         <p:define name="__WITH_DATE" value="1" />
 		<p:define name="__WITH_DATE_EXT" value="1" />
-        
+
         <p:define name="__WITH_DATA_INSTRUCTIONS" value="1" />
         <p:define name="__WITH_ECMAEXT" value="1" />
         <p:define name="__WITH_ENTITY_ENCODING" value="1" />
@@ -236,12 +236,12 @@
         <p:define name="__WITH_MULTISELECT_BINDINGS" value="1" />
         <p:define name="__WITH_NAMESERVER" value="1" />
         <p:define name="__WITH_NS_SUPPORT" value="1" />
-        
+
         <p:define name="__WITH_PARTIAL_AML_LOADING" value="1" />
         <p:define name="__WITH_PARSE_DOC_BY_RELOADING" value="1" />
         <p:define name="__WITH_PLANE" value="1" />
         <p:define name="__WITH_POPUP" value="1" />
-        
+
         <p:define name="__WITH_PROPERTY_BINDING" value="1" />
         <p:define name="__WITH_QUERYAPPEND" value="1" />
         <p:define name="__WITH_REGISTRY" value="1" />
@@ -277,7 +277,7 @@
         <p:define name="__WITH_POPUP_IE" value="1" />
         <p:define name="__SUPPORT_GECKO" value="1" />
         <p:define name="__WITH_ELEMENT_FROM_POINT" value="1" />
-        <p:define name="__SUPPORT_WEBKIT" value="1" />        
+        <p:define name="__SUPPORT_WEBKIT" value="1" />
         <p:define name="__SUPPORT_CHROME" value="1" />
         <p:define name="__SUPPORT_OPERA" value="1" />
         <p:define name="__SUPPORT_IE_API" value="1" />
@@ -288,7 +288,7 @@
         <p:define name="__WITH_SKIN_AUTOLOAD" value="1" />
         <p:define name="__WITH_SKIN_INCLUDES" value="1" />
         <p:define name="__WITH_HTML5" value="1" />
-        
+
         <p:define name="__WITH_DOMPARSER" value="1" />
         <p:define name="__DOMPARSER" value="1" />
         <p:define name="__PARSER_JS" value="1" />
@@ -346,7 +346,7 @@
         <p:define name="__WITH_AMLATTR" value="1" />
         <p:define name="__WITH_AMLTEXT" value="1" />
         <!-- binding options -->
-        
+
         <!-- include all components -->
         <p:define name="__ENABLE_BUTTON_ACTIONS" value="1" />
         <p:define name="__ENABLE_TEXTBOX_MASKING" value="1" />
@@ -406,7 +406,7 @@
         <p:define name="__AMLTAB" value="1" />
         <p:define name="__AMLPAGES" value="1" />
         <p:define name="__AMLTELEPORT" value="1" />
-        
+
         <p:define name="__AMLLABEL" value="1" />
         <p:define name="__AMLBUTTON" value="1" />
         <p:define name="__AMLSTATUSBAR" value="1" />
@@ -429,8 +429,8 @@
 
         <p:define name="__AMLPROPEDIT" value="1" />
         <p:define name="__WITH_ZERO_TIMEOUT" value="1" />
-
-
+        <p:define name="__WITH_OUTLINE" value="1" />
+        <p:define name="__WITH_VALIDATION" value="1" />
 
 
         <!-- NOT USED DEFINES -->
@@ -454,7 +454,6 @@
         <p:define name="__WITH_AMLTEXTRECTANGLE" value="1" />
 
         <p:define name="__ENABLE_DRAW_CANVAS" value="1" />
-        <p:define name="__WITH_VALIDATION" value="1" />
         <p:define name="__WITH_SYNTAX" value="1" />
         <p:define name="__WITH_HTTP_CACHE" value="1" />
         <p:define name="__ENABLE_BINDING_METHOD" value="1" />
@@ -485,7 +484,6 @@
         <p:define name="__TP_RPC_JSON" value="1" />
         <p:define name="__TP_RPC_RDB" value="1" />
         <p:define name="__ENABLE_INTERACTIVE_CANCEL" value="1" />
-        <p:define name="__WITH_OUTLINE" value="1" />
         <p:define name="__WITH_LISTGRID" value="1" />
         <p:define name="__AMLSTATEGROUP" value="1" />
         <p:define name="__WITH_A11Y" value="1" />
