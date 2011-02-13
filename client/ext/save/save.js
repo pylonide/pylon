@@ -6,7 +6,7 @@
  */
 require.def("ext/save/save",
     ["core/ide", "core/ext", "core/util", "ext/filesystem/filesystem",
-            "text!ext/save/save.xml"],
+     "text!ext/save/save.xml"],
     function(ide, ext, util, fs, markup) {
 
 return ext.register("ext/save/save", {
