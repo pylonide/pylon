@@ -197,7 +197,7 @@ apf.codeeditor = function(struct, tagName) {
     this.$updateMarker = function(removeOnly) {
         if (this.$marker) {
             this.$editor.renderer.removeGutterDecoration(this.$lastRow[0], this.$lastRow[1]);
-            this.$editor.renderer.removeMarker(this.$marker);
+            this.$editor.getSession().removeMarker(this.$marker);
             this.$marker = null;
             
             if (removeOnly)
@@ -222,7 +222,7 @@ apf.codeeditor = function(struct, tagName) {
         var row = parseInt(frame.getAttribute("line")) - lineOffset;
         var range = new Range(row, 0, row+1, 0);
 
-        this.$marker = this.$editor.renderer.addMarker(range, isTop ? "ace_step" : "ace_stack", "line");
+        this.$marker = this.$editor.getSession().addMarker(range, isTop ? "ace_step" : "ace_stack", "line");
         var type = isTop ? "arrow" : "stack";
         this.$lastRow = [row, type];
         this.$editor.renderer.addGutterDecoration(row, type);
