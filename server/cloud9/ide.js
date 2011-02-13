@@ -31,6 +31,7 @@ module.exports = Ide = function(options, httpServer, exts) {
         plugins: options.plugins || [
             "ext/filesystem/filesystem",
             "ext/settings/settings",
+            "ext/offline/offline",
             "ext/editors/editors",
             "ext/themes/themes",
             "ext/themes_default/themes_default",

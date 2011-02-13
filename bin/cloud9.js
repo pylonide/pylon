@@ -10,8 +10,8 @@ var Sys = require("sys"),
     Parser = require("cloud9/optparse"),
     parser = new Parser({
         w: { key: "workspace", hint: "WORKSPACE_DIR ('{def}')", def: "." },
-        p: { key: "port", parser: parseInt, hint: "PORT ({def})", def: 3000 },
-        l: { key: "ip", hint: "LISTEN_IP ('{def}')", def: "127.0.0.1" },
+        p: { key: "port", parser: parseInt, hint: "PORT ({def})", def: process.env.C9_PORT },
+        l: { key: "ip", hint: "LISTEN_IP ('{def}')", def: "0.0.0.0" },
         a: { key: "action", hint: "ACTION", def:null, parser: function(value) {
             return value.split(/\s+/g);
         }},
