@@ -125,7 +125,7 @@ User.VISITOR_PERMISSIONS = {
     this.broadcast = function(msg, scope) {
         if (scope && this.$server_exclude[scope])
             return;
-            
+
         for (var id in this.clients) 
             this.clients[id].send(msg);
     };
