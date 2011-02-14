@@ -216,6 +216,10 @@ Ide.DEFAULT_PLUGINS = [
             user.broadcast(msg, scope);
         }
     };
+    
+    this.sendToUser = function(username, msg) {
+        this.$users[username].broadcast(msg);
+    }
 
     this.registerExts = function(exts) {
         this.exts = {}
@@ -238,10 +242,12 @@ Ide.DEFAULT_PLUGINS = [
             hook = hook.toLowerCase().replace(/^[\s]+/, "").replace(/[\s]+$/, "");
 
         var server_exclude = lang.arrayToMap(user.getPermissions().server_exclude.split("|"));
+
         for (var name in this.exts) {
             if (server_exclude[name]) {
                 continue;
             }
+
             ext   = this.exts[name];
             hooks = ext.getHooks();
             if (hooks.indexOf(hook) > -1 && ext[hook].apply(ext, args) === true) {

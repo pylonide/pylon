@@ -79,14 +79,19 @@ return ext.register("ext/dockpanel/dockpanel", {
         var _self = this;
         this.numDockButtons++;
         
-        btnTemp = new apf.button({
+        /*btnTemp = new apf.button({
             skin    : "dockButton",
             'class' : "dockButton" + _self.numDockButtons,
             state   : "true",
             onclick : function() {
                 _self.toggleWindow(windowObj, this);
             }
-        });
+        });*/
+        
+        // When the window is shown, we can reset the notification count
+        windowObj.onshow = function() {
+            _self.resetNotificationCount(windowIdent);    
+        }
         
         var dockButtonID = "dockButton" + _self.numDockButtons;
         var tmpAML = '<a:application xmlns:a="http://ajax.org/2005/aml">\
@@ -130,7 +135,8 @@ return ext.register("ext/dockpanel/dockpanel", {
             win       : windowObj, 
             btn       : appendedDockBtn,
             ident     : -1,
-            objhidden : false
+            objhidden : false,
+            notCount  : 0   // Notification count
         });
         
         if(typeof windowIdent !== "undefined") {
@@ -258,6 +264,22 @@ return ext.register("ext/dockpanel/dockpanel", {
     },
     
     /**
+     * Simply hides a window/deactivates button
+     * Useful for dock objects that want to "shelve" their windows
+     */
+    hideWindow: function(windowIdent){
+        for(var doi = 0; doi < this.dockObjects.length; doi++) {
+            if(this.dockObjects[doi].ident == windowIdent) {
+                this.dockObjects[doi].win.hide();
+                this.dockObjects[doi].btn.setValue(false);
+                return true;
+            }
+        }
+        
+        return false;
+    },
+    
+    /**
      * Checks to see if a window has already been registered with the 
      * supplied identifier
      * 
@@ -292,6 +314,68 @@ return ext.register("ext/dockpanel/dockpanel", {
                this.dockObjects[doi].win.hide();
            }
        }
+    },
+    
+    /**
+     * Increases the notification number count by one
+     * 
+     * @windowIdent identifier of the dock object
+     */
+    increaseNotificationCount: function(windowIdent){
+        for(var doi = 0; doi < this.dockObjects.length; doi++) {
+            if(this.dockObjects[doi].ident == windowIdent) {
+                // Only increase notification count if window is hidden
+                if(this.dockObjects[doi].win.visible == false) {
+                    this.dockObjects[doi].notCount++;
+                    this.updateNotificationElement(
+                            this.dockObjects[doi].btn
+                            , this.dockObjects[doi].notCount
+                    );
+                }
+                
+                return true;
+            }
+        }
+        
+        return false;
+    },
+    
+    /**
+     * Resets the notification count to 0
+     */
+    resetNotificationCount: function(windowIdent){
+        for(var doi = 0; doi < this.dockObjects.length; doi++) {
+            if(this.dockObjects[doi].ident == windowIdent) {
+                this.dockObjects[doi].notCount = 0;
+                this.updateNotificationElement(this.dockObjects[doi].btn, 0);
+                return true;
+            }
+        }
+        
+        return false;
+    },
+    
+    /**
+     * Updates the notification element to visually reflect notCount
+     */
+    updateNotificationElement: function(btnObj, count){
+        if(count == 0) {
+            var countInner = "";
+        }
+        
+        else {
+            var countInner = count;
+        }
+
+        if(apf.isGecko) {
+            btnObj.$ext.getElementsByClassName("dock_notification")[0].textContent = countInner;
+        }
+            
+        else {
+            btnObj.$ext.getElementsByClassName("dock_notification")[0].innerText = countInner;
+        }
+        
+        return true;
     }
 });
 
