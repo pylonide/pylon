@@ -152,13 +152,13 @@ Ide.DEFAULT_PLUGINS = [
         });
     };
 
-    this.addUser = function(username, permissions) {
+    this.addUser = function(username, permissions, userData) {
         var user = this.$users[username];
         if (user) {
             user.setPermissions(permissions);
         }
         else {
-            user = this.$users[username] = new User(username, permissions);
+            user = this.$users[username] = new User(username, permissions, userData);
             
             var _self = this;
             user.on("message", function(msg) {

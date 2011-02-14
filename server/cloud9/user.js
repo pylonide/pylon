@@ -1,9 +1,10 @@
 var sys = require("sys");
 var lang = require("pilot/lang");
 
-var User = function (name, permissions) {
+var User = function (name, permissions, data) {
     this.name = name;
     this.permissions = permissions;
+    this.data = data;
     this.clients = [];
     this.$server_exclude = {};
 };
