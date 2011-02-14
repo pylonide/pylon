@@ -18101,11 +18101,12 @@
         }
         
         .dockButton .icon {
-            width  : 33px;
-            height : 30px;
-            -webkit-border-radius: 3px;
-            -moz-border-radius: 3px;
-            background-image: -webkit-gradient(
+            width                 : 34px;
+            height                : 32px;
+            -webkit-border-radius : 3px;
+            -moz-border-radius    : 3px;
+            margin                : 0px 1px 2px 4px;
+            /*background-image: -webkit-gradient(
                linear,
                left bottom,
                left top,
@@ -18118,8 +18119,22 @@
                rgb(175,225,201) 50%,
                rgb(221,242,232) 100%,
                rgb(197,233,216) 50%
-            );
-            margin              : 1px 1px 4px 4px;
+            );*/
+        }
+        
+        .dockButton .dock_notification {
+            position    : absolute;
+            top         : 1px;
+            right       : 1px;
+            width       : 12px;
+            text-align  : center;
+            background  : url('images/dock_notification_bg.png') 0px 0px no-repeat;
+            color       : #fff;
+            font-size   : 5pt;
+            padding     : 0px 1px 1px 3px;
+            text-shadow : 1px 1px 0px #000;
+            letter-spacing: 1px;
+            line-height : 9pt;
         }
         
         .dockButton.debug1 .icon {
@@ -18172,6 +18187,7 @@
           icon       = "div">
             <div class="dockButton">
                 <div class="icon"></div>
+                <span class="dock_notification"></span>
                 <div class="dockButton-footer"></div>
             </div>
         </a:main>

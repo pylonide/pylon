@@ -169,11 +169,20 @@ Ide.DEFAULT_PLUGINS = [
             });
             user.on("disconnectUser", function(user) {
                 // TODO delay removal (use timeout)
+                _self.emit("userLeave", user.name);
+                _self.broadcast(
+                    JSON.stringify({
+                        type    : "chat",
+                        action  : "userleave",
+                        user_id : user.name
+                    })
+                );
                 delete _self.$users[user.name];
                 _self.onUserCountChange(Object.keys(_self.$users).length);
             });
             
             this.onUserCountChange();
+            this.emit("userJoin", user);
         }
     };
     
@@ -198,7 +207,6 @@ Ide.DEFAULT_PLUGINS = [
     };
     
     this.onUserMessage = function(user, message, client) {
-//        console.log(message);
         this.execHook("command", user, message, client);
     };
     
@@ -216,6 +224,10 @@ Ide.DEFAULT_PLUGINS = [
             user.broadcast(msg, scope);
         }
     };
+    
+    this.sendToUser = function(username, msg) {
+        this.$users[username].broadcast(msg);
+    }
 
     this.registerExts = function(exts) {
         this.exts = {}
@@ -238,10 +250,12 @@ Ide.DEFAULT_PLUGINS = [
             hook = hook.toLowerCase().replace(/^[\s]+/, "").replace(/[\s]+$/, "");
 
         var server_exclude = lang.arrayToMap(user.getPermissions().server_exclude.split("|"));
+
         for (var name in this.exts) {
             if (server_exclude[name]) {
-                return;
+                continue;
             }
+
             ext   = this.exts[name];
             hooks = ext.getHooks();            
             if (hooks.indexOf(hook) > -1 && ext[hook].apply(ext, args) === true)
