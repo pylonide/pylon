@@ -117,7 +117,8 @@ apf.errorbox = function(struct, tagName){
             x       : x,
             y       : y,
             animate : false,
-            ref     : refHtml
+            ref     : refHtml,
+            allowTogether: true
         });
 
         this.$setStyleClass(this.$ext,

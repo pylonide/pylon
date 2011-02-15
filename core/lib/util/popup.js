@@ -92,7 +92,7 @@ apf.popup = {
             noleft       : false
         }, options);
         
-        if ((!options.allowTogether || options.allowTogether != this.last) && this.last != cacheId)
+        if ((!options.allowTogether || options.allowTogether !== true && options.allowTogether != this.last) && this.last != cacheId)
             this.hide();
 
         var o = this.cache[cacheId];
