@@ -152,13 +152,13 @@ Ide.DEFAULT_PLUGINS = [
         });
     };
 
-    this.addUser = function(username, permissions) {
+    this.addUser = function(username, permissions, userData) {
         var user = this.$users[username];
         if (user) {
             user.setPermissions(permissions);
         }
         else {
-            user = this.$users[username] = new User(username, permissions);
+            user = this.$users[username] = new User(username, permissions, userData);
             
             var _self = this;
             user.on("message", function(msg) {
@@ -168,19 +168,20 @@ Ide.DEFAULT_PLUGINS = [
                 _self.execHook("disconnect", msg.user, msg.client);
             });
             user.on("disconnectUser", function(user) {
-                // TODO delay removal (use timeout)
                 delete _self.$users[user.name];
                 _self.onUserCountChange(Object.keys(_self.$users).length);
+                _self.emit("userLeave", user);
             });
             
             this.onUserCountChange();
+            this.emit("userJoin", user);
         }
     };
     
     this.getPermissions = function(req) {
         var username = req.session.username;
         if (!username || !this.$users[username])
-            return User.VISITOR_PERMISSIONS
+            return User.VISITOR_PERMISSIONS;
         else
             return this.$users[username].getPermissions();
     };
@@ -198,7 +199,6 @@ Ide.DEFAULT_PLUGINS = [
     };
     
     this.onUserMessage = function(user, message, client) {
-//        console.log(message);
         this.execHook("command", user, message, client);
     };
     
@@ -216,6 +216,10 @@ Ide.DEFAULT_PLUGINS = [
             user.broadcast(msg, scope);
         }
     };
+    
+    this.sendToUser = function(username, msg) {
+        this.$users[username] && this.$users[username].broadcast(msg);
+    }
 
     this.registerExts = function(exts) {
         this.exts = {}
@@ -238,14 +242,17 @@ Ide.DEFAULT_PLUGINS = [
             hook = hook.toLowerCase().replace(/^[\s]+/, "").replace(/[\s]+$/, "");
 
         var server_exclude = lang.arrayToMap(user.getPermissions().server_exclude.split("|"));
+
         for (var name in this.exts) {
             if (server_exclude[name]) {
+                continue;
+            }
+
+            ext   = this.exts[name];
+            hooks = ext.getHooks();
+            if (hooks.indexOf(hook) > -1 && ext[hook].apply(ext, args) === true) {
                 return;
             }
-            ext   = this.exts[name];
-            hooks = ext.getHooks();            
-            if (hooks.indexOf(hook) > -1 && ext[hook].apply(ext, args) === true)
-                return;
         }
         // if we get here, no hook function was successfully delegated to an
         // extension.

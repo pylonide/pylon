@@ -1,9 +1,10 @@
 var sys = require("sys");
 var lang = require("pilot/lang");
 
-var User = function (name, permissions) {
+var User = function (name, permissions, data) {
     this.name = name;
     this.permissions = permissions;
+    this.data = data;
     this.clients = [];
     this.$server_exclude = {};
 };
@@ -102,7 +103,7 @@ User.VISITOR_PERMISSIONS = {
         var count = Object.keys(this.clients).length;
         this.emit("clientCountChange", count);
         
-        if (count === 0)
+        if (count == 0)
             this.emit("disconnectUser", this);
     };
     
@@ -124,7 +125,7 @@ User.VISITOR_PERMISSIONS = {
     this.broadcast = function(msg, scope) {
         if (scope && this.$server_exclude[scope])
             return;
-            
+
         for (var id in this.clients) 
             this.clients[id].send(msg);
     };
