@@ -78,16 +78,7 @@ return ext.register("ext/dockpanel/dockpanel", {
         
         var _self = this;
         this.numDockButtons++;
-        
-        /*btnTemp = new apf.button({
-            skin    : "dockButton",
-            'class' : "dockButton" + _self.numDockButtons,
-            state   : "true",
-            onclick : function() {
-                _self.toggleWindow(windowObj, this);
-            }
-        });*/
-        
+
         // When the window is shown, we can reset the notification count
         windowObj.onshow = function() {
             _self.resetNotificationCount(windowIdent);    
@@ -101,8 +92,8 @@ return ext.register("ext/dockpanel/dockpanel", {
                 require(\'ext/dockpanel/dockpanel\').toggleWindow(this)">\
             </a:button>\
             <a:style><![CDATA[ .' + dockButtonID + ' .icon { background: transparent \
-                url("/static/style/images/collaboration_panel_sprite.png\
-                    ") ' + buttonProperties.defaultState.x + 'px '
+                url("' + buttonProperties.backgroundImage + '") '
+                    + buttonProperties.defaultState.x + 'px '
                     + buttonProperties.defaultState.y + 'px;\
                 } .' + dockButtonID + '.dockButtonDown .icon { \
                     background-position: ' + buttonProperties.activeState.x 
