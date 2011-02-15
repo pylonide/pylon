@@ -57,11 +57,13 @@ return ext.register("ext/dockpanel/dockpanel", {
      * The dockPosition property of buttonProperties designates whether
      * the button is position above or below the divider element
      * 
-     * @buttonProperties = {
+     * @properties = {
      *  dockPosition : "top" || "bottom",
-     *  backgroundImage : spriteURL,
-     *  defaultState : { x: pos_x, y: pos_y },
-     *  activeState  : { x: pos_x, y: pos_y }
+     *  @primary = {
+     *      backgroundImage : spriteURL,
+     *      defaultState : { x: pos_x, y: pos_y },
+     *      activeState  : { x: pos_x, y: pos_y }
+     *  }
      * }
      * 
      * @windowIdent Optional ident to associate with window. Extension must 
@@ -70,7 +72,7 @@ return ext.register("ext/dockpanel/dockpanel", {
      * 
      * @forceShow   Immediately shows the window being registered
      */
-    registerWindow : function(windowObj, buttonProperties, windowIdent, forceShow){
+    registerWindow : function(windowObj, properties, windowIdent, forceShow){
         
         if(typeof windowIdent !== "undefined" && this.windowExists(windowIdent)) {
             return false;
@@ -91,22 +93,31 @@ return ext.register("ext/dockpanel/dockpanel", {
                 state="true" visible="false" onclick="\
                 require(\'ext/dockpanel/dockpanel\').toggleWindow(this)">\
             </a:button>\
-            <a:style><![CDATA[ .' + dockButtonID + ' .icon { background: transparent \
-                url("' + buttonProperties.backgroundImage + '") '
-                    + buttonProperties.defaultState.x + 'px '
-                    + buttonProperties.defaultState.y + 'px;\
-                } .' + dockButtonID + '.dockButtonDown .icon { \
-                    background-position: ' + buttonProperties.activeState.x 
-                      + 'px ' + buttonProperties.activeState.y + 'px; }\
-                ]]>\
-            </a:style></a:application>';
+            <a:style><![CDATA[ .' + dockButtonID + ' .dii_primary { background: transparent \
+                url("' + properties.primary.backgroundImage + '") '
+                    + properties.primary.defaultState.x + 'px '
+                    + properties.primary.defaultState.y + 'px;\
+                } .' + dockButtonID + '.dockButtonDown .dii_primary { \
+                    background-position: ' + properties.primary.activeState.x 
+                      + 'px ' + properties.primary.activeState.y + 'px; }';
+                      
+        if(properties.secondary) {
+             tmpAML += ' .' + dockButtonID + ' .dii_secondary { background: '
+                    + properties.secondary.backgroundColor + ' url("'
+                    + properties.secondary.backgroundImage + '") '
+                    + properties.secondary.defaultState.x + 'px '
+                    + properties.secondary.defaultState.y + 'px no-repeat; \
+                    border: 1px solid #c7c7c7; }';
+        }
+        
+        tmpAML += ' ]]> </a:style></a:application>';
         
         //apf.document.body.insertMarkup(tmpAML);
         dockPanelRight.insertMarkup(tmpAML);
 
         btnTemp = eval(dockButtonID);
         
-        if(buttonProperties.dockPosition == "top") {
+        if(properties.dockPosition == "top") {
             var appendedDockBtn = 
                     dockPanelRight.insertBefore(btnTemp, dockRightDivider);
             this.repositionWindows();
