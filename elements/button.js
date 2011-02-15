@@ -544,7 +544,8 @@ apf.button  = function(struct, tagName){
         if (hide) {
             this.setValue(false);
             this.$setState("Out", {}, "mouseout");
-            this.parentNode.menuIsPressed = false;
+            if(this.parentNode)
+                this.parentNode.menuIsPressed = false;
         }
     };
     //#endif
