@@ -18085,12 +18085,12 @@
         }
         
         .dockButtonOver {
-            background-image    : url(images/collaboration_panel_sprite.png);
+            background-image    : url(images/dock_button_sprite.png);
             background-position : 4px 3px;
         }
         
         .dockButtonDown {
-            /*background-image    : url(images/collaboration_panel_sprite.png);
+            /*background-image    : url(images/dock_button_sprite.png);
             background-position : 4px -36px;*/
             background          : #333 url(images/dockPanelButtonDown.png) no-repeat;
         }
