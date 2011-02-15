@@ -218,7 +218,7 @@ Ide.DEFAULT_PLUGINS = [
     };
     
     this.sendToUser = function(username, msg) {
-        this.$users[username].broadcast(msg);
+        this.$users[username] && this.$users[username].broadcast(msg);
     }
 
     this.registerExts = function(exts) {
