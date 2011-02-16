@@ -66,10 +66,9 @@ exports.errorHandler = function() {
         } else {
             res.writeHead(err.code, {"Content-Type": "text/plain"});
             res.end(err.message);
-            //res.end(err.message + (err.stack ? "\n" + err.stack : ""));
-            if (err.stack)
-                console.log("Exception found" + err.message + "\n" + err.stack);
         }
+//        if (err.stack)
+//            console.log("Exception found" + err.message + "\n" + err.stack);
     }
 };
 

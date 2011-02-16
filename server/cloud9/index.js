@@ -51,7 +51,7 @@ exports.main = function(options) {
         var ide = new IdeServer(serverOptions, server, exts);
         
         return function(req, res, next) {
-            req.session.username = "owner";
+            req.session.uid = "owner";
             ide.addUser("owner", User.OWNER_PERMISSIONS);
             ide.handle(req, res, next);
         };
