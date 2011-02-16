@@ -58,11 +58,11 @@ apf.MultiCheck = function(){
      * @event  aftercheck  Fires after a check is made
      *
      */
-    this.check = function(xmlNode, userAction){ 
+    this.check = function(xmlNode, userAction){
         if (userAction && this.disabled 
           || this.$checkedList.indexOf(xmlNode) > -1)
             return;
-        
+
         if (userAction
           && this.$executeSingleValue("check", "checked", xmlNode, "true") !== false)
             return;
@@ -425,7 +425,8 @@ apf.MultiCheck = function(){
     });
     
     this.addEventListener("xmlupdate", function(e){
-        if (e.action == "synchronize" || e.action == "update") {
+        if (e.action == "attribute" || e.action == "text"
+          || e.action == "synchronize" || e.action == "update") {
             //@todo list support!
             var c1 = apf.isTrue(this.$applyBindRule("checked", e.xmlNode));
             var c2 = this.isChecked(e.xmlNode);
