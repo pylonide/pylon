@@ -7,32 +7,36 @@ require ("../support/paths");
 
 var Sys = require("sys"),
     Fs  = require("fs"),
-    Parser = require("cloud9/optparse"),
-    parser = new Parser({
-        w: { key: "workspace", hint: "WORKSPACE_DIR ('{def}')", def: "." },
-        p: { key: "port", parser: parseInt, hint: "PORT ({def})", def: 3000 },
-        l: { key: "ip", hint: "LISTEN_IP ('{def}')", def: "127.0.0.1" },
-        a: { key: "action", hint: "ACTION", def:null, parser: function(value) {
-            return value.split(/\s+/g);
-        }},
-        d: { key: "debug", hint: "DEBUG", def: false, type: "boolean"},
-        u: { key: "user", hint: "RUN_AS_USER", def: null },
-        g: { key: "group", hint: "RUN_AS_GROUP", def: null },
-        c: { key: "_config", parser: function(value) {
-            var pref = ( value.charAt(0) == "/" ) ? "" :  process.cwd() + "/";
-                return require(pref + value.replace(".js", "")).Config;
-            },
-            hint: "configFile"
-        }
-    });
-
+    Parser = require("cloud9/optparse");
 
 if (parseInt(process.version.split(".")[1]) < 2) {
     Sys.puts("ERROR: Cloud9 IDE requires node version 0.2.x or higher, but you are using " + process.version);
     process.exit(1);
 }
 
-var options = parser.parseArguments(process.argv.slice(2));
+var options = Parser.parse([
+    {short: "w", long: "workspace", description: "Path to the workspace that will be loaded in Cloud9 (may be relative or absolute).", value: true, def: "." },
+    {short: "p", long: "port", parser: parseInt, description: "Port number where Cloud9 will serve from.", value: true, def: 3000 },
+    {short: "l", long: "ip", description: "IP address where Cloud9 will serve from.", value: true, def: "127.0.0.1" },
+    {short: "a", long: "action", description: "Define an action to execute after the Cloud9 server is started.", value: true, def: null, parser: function(value) {
+        return value.split(/\s+/g);
+    }},
+    {short: "d", long: "debug", description: "Activate debug-mode.", def: false},
+    {short: "u", long: "user", description: "Run child processes as a specific user.", def: false },
+    {short: "g", long: "group", description: "Run child processes with a specific group.", def: false },
+    {short: "c", long: "config", description: "Load the configuration from a config file. Overrides command-line options.", value: true, def: null, parser: function(value) {
+            var pref = ( value.charAt(0) == "/" ) ? "" :  process.cwd() + "/";
+            return require(pref + value.replace(".js", "")).Config;
+        }
+    }
+], true);
+
+// options in a config file override CLI options
+if (options.config) {
+    for (var key in options.config)
+        options[key] = options.config[key];
+}
+
 var version = JSON.parse(Fs.readFileSync(__dirname + "/../package.json")).version;
 
 require("cloud9").main(options);
@@ -66,7 +70,7 @@ if (options.ip === "all" || options.ip === "0.0.0.0")
 
 var url = "http://" + options.ip + ":" + options.port;
 if (options.action) {
-    Sys.puts("Trying to start your browser in: "+url);
+    Sys.puts("Trying to start your browser in: " + url);
     options.action.push(url);
     require("child_process").spawn(options.action[0], options.action.slice(1));
 }
