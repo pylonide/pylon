@@ -10,9 +10,6 @@
 [submodule "support/jsdav"]
 	path = support/jsdav
 	url = http://github.com/ajaxorg/jsDAV.git
-[submodule "support/node-builds"]
-	path = support/node-builds
-	url = http://github.com/ajaxorg/node-builds.git
 [submodule "support/lib-v8debug"]
 	path = support/lib-v8debug
 	url = http://github.com/ajaxorg/lib-v8debug.git
@@ -22,3 +19,6 @@
 [submodule "support/apf"]
 	path = support/apf
 	url = http://github.com/ajaxorg/apf.git
+[submodule "support/node-builds-v4"]
+	path = support/node-builds-v4
+	url = http://github.com/ajaxorg/node-builds-v4.git

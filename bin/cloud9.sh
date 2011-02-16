@@ -10,24 +10,29 @@ fi
 
 case `uname -a` in
 Linux*x86_64*)  echo "Linux 64 bit"   
-	support/node-builds/lin64/node bin/cloud9.js "$@" -a x-www-browser
+	support/node-builds/node-linux64 bin/cloud9.js "$@" -a x-www-browser
 	;;
 
 Linux*i686*)  echo "Linux 32 bit"   
-	support/node-builds/lin32/node bin/cloud9.js "$@" -a x-www-browser
+	support/node-builds/node-linux32 bin/cloud9.js "$@" -a x-www-browser
 	;;
     
 Darwin*)  echo  "OSX"
-    support/node-builds/osx64/node bin/cloud9.js "$@" -a open
+    support/node-builds/node-darwin bin/cloud9.js "$@" -a open
     ;;
 
 CYGWIN*)  echo  "Cygwin"
-    support/node-builds/win32/node.exe bin/cloud9.js "$@" -a "cmd /c start"
+    support/node-builds/node-cygwin.exe bin/cloud9.js "$@" -a "cmd /c start"
     ;;
 
 MING*)  echo  "MingW"
-    support/node-builds/win32/node.exe bin/cloud9.js "$@" -a "cmd /c start"
+    support/node-builds/node-cygwin.exe bin/cloud9.js "$@" -a "cmd /c start"
     ;;    
+
+SunOS*)  echo  "Solaris"
+    support/node-builds/node-sunos.exe bin/cloud9.js "$@"
+    ;;
+
 
 *) echo "Unknown OS"
    ;;
