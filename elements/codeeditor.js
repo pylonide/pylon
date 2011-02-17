@@ -156,6 +156,7 @@ apf.codeeditor = function(struct, tagName) {
         else if (typeof value == "string" && !doc.hasValue) {
             //@todo big hack!
             doc.setValue(value);
+            this.$editor.moveCursorTo(0, 0);
             doc.hasValue = true;
         }
 
