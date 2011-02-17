@@ -96,17 +96,27 @@ return ext.register("ext/dockpanel/dockpanel", {
             <a:style><![CDATA[ .' + dockButtonID + ' .dii_primary { background: transparent \
                 url("' + properties.primary.backgroundImage + '") '
                     + properties.primary.defaultState.x + 'px '
-                    + properties.primary.defaultState.y + 'px;\
+                    + properties.primary.defaultState.y + 'px no-repeat;\
                 } .' + dockButtonID + '.dockButtonDown .dii_primary { \
                     background-position: ' + properties.primary.activeState.x 
                       + 'px ' + properties.primary.activeState.y + 'px; }';
-                      
+        
         if(properties.secondary) {
-             tmpAML += ' .' + dockButtonID + ' .dii_secondary { background: '
-                    + properties.secondary.backgroundColor + ' url("'
-                    + properties.secondary.backgroundImage + '") '
-                    + properties.secondary.defaultState.x + 'px '
-                    + properties.secondary.defaultState.y + 'px no-repeat; \
+            tmpAML += ' .' + dockButtonID + ' .dii_secondary { background: '
+                + ' url("' + properties.secondary.backgroundImage + '") '
+                + properties.secondary.defaultState.x + 'px '
+                + properties.secondary.defaultState.y + 'px no-repeat;\
+                } .' + dockButtonID + '.dockButtonDown .dii_secondary { \
+                background-position: ' + properties.secondary.activeState.x 
+                  + 'px ' + properties.secondary.activeState.y + 'px; }';
+        }
+        
+        if(properties.tertiary) {
+             tmpAML += ' .' + dockButtonID + ' .dii_tertiary { background: '
+                    + properties.tertiary.backgroundColor + ' url("'
+                    + properties.tertiary.backgroundImage + '") '
+                    + properties.tertiary.defaultState.x + 'px '
+                    + properties.tertiary.defaultState.y + 'px no-repeat; \
                     border: 1px solid #c7c7c7; }';
         }
         
