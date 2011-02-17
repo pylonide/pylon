@@ -183,7 +183,8 @@ apf.menu = function(struct, tagName){
                 this.opener.$submenu(true, true);
 
                 //@todo problem with loosing focus when window looses focus
-                if (this.$hideTree === true && this.opener.parentNode.localName == "menu") {
+                if (this.$hideTree === true && this.opener
+                    && this.opener.parentNode && this.opener.parentNode.localName == "menu") {
                     this.opener.parentNode.$hideTree = true
                     this.opener.parentNode.hide();
                 }
