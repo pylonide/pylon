@@ -576,7 +576,7 @@ apf.GuiElement.propHandlers = {
             if (this.$ext)
                 this.$ext.style.display = "none";
             
-            if (apf.document.activeElement == this || this.canHaveChildren
+            if (apf.document.activeElement == this || this.canHaveChildren == 2
               && apf.isChildOf(this, apf.document.activeElement, false)) {
                 if (apf.config.allowBlur && this.hasFeature(apf.__FOCUSSABLE__))
                     this.blur();
