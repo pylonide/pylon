@@ -1018,6 +1018,9 @@ apf.webdav = function(struct, tagName){
         if (status == 403 || status == 401 || !oXml)
             return callback ? callback.call(this, null, state, extra) : notAuth.call(this);
 
+        if(typeof oXml == 'string')
+            oXml = apf.getXml(oXml);
+        
         var aResp = $xmlns(oXml, "response", apf.webdav.NS.D),
             aOut = [];
         if (aResp.length) //we got a valid result set, so assume that any possible AUTH has succeeded
