@@ -71,6 +71,7 @@ return ext.register("ext/code/code", {
             
             doc.addEventListener("prop.value", function(e){
                 doc.acedoc.setValue(e.value || "");
+                ceEditor.$editor.moveCursorTo(0, 0);
                 doc.isInited = true;
             });
             
