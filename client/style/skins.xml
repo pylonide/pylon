@@ -18102,7 +18102,7 @@
         
         .dockButton .icon {
             width                 : 35px;
-            height                : 33px;
+            height                : 35px;
             -webkit-border-radius : 3px;
             -moz-border-radius    : 3px;
             margin                : 0px 1px 2px 4px;
@@ -18145,7 +18145,14 @@
             top                   : 3px;
             left                  : 3px;
             width                 : 34px;
-            height                : 31px;
+            height                : 33px;
+        }
+        
+        .dockButton .dock_icon_image.dii_primary {
+            left   : 6px;
+            top    : 5px;
+            width  : 31px;
+            height : 31px;
         }
         
         .dockButton .dock_icon_image.dii_secondary {
@@ -18202,6 +18209,7 @@
           background = "."
           icon       = "div">
             <div class="dockButton">
+                <span class="dock_icon_image dii_tertiary"></span>
                 <span class="dock_icon_image dii_secondary"></span>
                 <span class="dock_icon_image dii_primary"></span>
                 <div class="icon"></div>
