@@ -1,7 +1,10 @@
 var sys = require("sys");
 var lang = require("pilot/lang");
+var EventEmitter = require("events").EventEmitter;
 
 var User = function (name, permissions, data) {
+    EventEmitter.call(this);
+    
     this.name = name;
     this.permissions = permissions;
     this.data = data;
@@ -9,7 +12,7 @@ var User = function (name, permissions, data) {
     this.$server_exclude = {};
 };
 
-sys.inherits(User, process.EventEmitter);
+sys.inherits(User, EventEmitter);
 
 User.OWNER_PERMISSIONS = {
     client_exclude: "",
@@ -53,6 +56,7 @@ User.VISITOR_PERMISSIONS = {
     this.setPermissions = function(permissions) {
         this.$server_exclude = lang.arrayToMap(permissions.server_exclude.split("|"));
         this.permissions = permissions;
+        this.emit("changePermissions");
     };
     
     this.getPermissions = function(permissions) {
