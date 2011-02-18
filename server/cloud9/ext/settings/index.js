@@ -27,7 +27,7 @@ sys.inherits(SettingsPlugin, Plugin);
         
         var _self = this;
         if (message.action == "get") {
-            this.loadSettings(function(err, settings) {
+            this.loadSettings(user, function(err, settings) {
                 client.send(JSON.stringify({
                     "type": "settings",
                     "settings": err ? "" : settings
@@ -35,7 +35,7 @@ sys.inherits(SettingsPlugin, Plugin);
             });
         }
         else if (message.action == "set") {
-            this.storeSettings(message.settings, function(err) {
+            this.storeSettings(user, message.settings, function(err) {
                 if (err)
                     _self.ide.error(err, 500, message, client);
             });
@@ -43,7 +43,7 @@ sys.inherits(SettingsPlugin, Plugin);
         return true;
     };
     
-    this.loadSettings = function(callback) {
+    this.loadSettings = function(user, callback) {
         // console.log("load settings", this.settingsPath);
         var _self = this;
         Path.exists(this.settingsPath, function(exists) {
@@ -56,7 +56,7 @@ sys.inherits(SettingsPlugin, Plugin);
         });
     };
     
-    this.storeSettings = function(settings, callback) {
+    this.storeSettings = function(user, settings, callback) {
         // console.log("store settings", this.settingsPath);
         fs.writeFile(this.settingsPath, settings, "utf8", callback);
     };
