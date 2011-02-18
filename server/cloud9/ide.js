@@ -135,11 +135,12 @@ Ide.DEFAULT_PLUGINS = [
             };
 
             var settingsPlugin = _self.getExt("settings");
-            if (!settingsPlugin) {
+            var user = _self.getUser(req);
+            if (!settingsPlugin || !user) {
                 index = template.fill(index, replacements);
                 res.end(index);
             } else {
-                settingsPlugin.loadSettings(function(err, settings) {
+                settingsPlugin.loadSettings(user, function(err, settings) {
                     replacements.settingsXml = err ? "" : settings;
                     index = template.fill(index, replacements);
                     res.end(index);
@@ -164,7 +165,7 @@ Ide.DEFAULT_PLUGINS = [
                 _self.execHook("disconnect", msg.user, msg.client);
             });
             user.on("disconnectUser", function(user) {
-                delete _self.$users[user.name];
+                delete _self.$users[user.uid];
                 _self.onUserCountChange(Object.keys(_self.$users).length);
                 _self.emit("userLeave", user);
             });
@@ -174,12 +175,20 @@ Ide.DEFAULT_PLUGINS = [
         }
     };
     
-    this.getPermissions = function(req) {
+    this.getUser = function(req) {
         var uid = req.session.uid;
         if (!uid || !this.$users[uid])
+            return null;
+        else
+            return this.$users[uid];
+    };
+    
+    this.getPermissions = function(req) {
+        var user = this.getUser(req);
+        if (!user)
             return User.VISITOR_PERMISSIONS;
         else
-            return this.$users[uid].getPermissions();
+            return user.getPermissions();
     };
     
     this.hasUser = function(username) {
