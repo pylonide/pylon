@@ -170,8 +170,7 @@ apf.Validation = function(){
         this.dispatchEvent("xforms-" + (valid ? "valid" : "invalid"));
         #endif*/
         
-        if (!valid)
-            this.dispatchEvent("invalid", this.validityState);
+        this.dispatchEvent(!valid ? "invalid" : "valid", this.validityState);
             
         return valid;
     };
