@@ -29,7 +29,6 @@ require.def("core/ide", deps,
 
             this.workspaceDir = window.cloud9config.workspaceDir.replace(/\/+$/, "");
             this.davPrefix = window.cloud9config.davPrefix.replace(/\/+$/, "");
-            this.settingsUrl = window.cloud9config.settingsUrl;
             this.sessionId = window.cloud9config.sessionId;
             this.workspaceId = window.cloud9config.workspaceId;
             this.readonly = window.cloud9config.readonly;

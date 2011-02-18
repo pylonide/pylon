@@ -29,7 +29,6 @@ module.exports = Ide = function(options, httpServer, exts) {
         debug: options.debug === true,
         staticUrl: options.staticUrl || "/static",
         workspaceId: options.workspaceId || "ide",
-        settingsFile: options.settingsFile || ".settings.xml",
         db: options.db || null,
         plugins: options.plugins || Ide.DEFAULT_PLUGINS
     };
@@ -102,15 +101,15 @@ Ide.DEFAULT_PLUGINS = [
     };
 
     this.$serveIndex = function(req, res, next) {
-        var self = this;
+        var _self = this;
         fs.readFile(__dirname + "/view/ide.tmpl.html", "utf8", function(err, index) {
             if (err)
                 return next(err);
                
             res.writeHead(200, {"Content-Type": "text/html"});
             
-            var permissions = self.getPermissions(req);
-            var plugins = lang.arrayToMap(self.options.plugins);
+            var permissions = _self.getPermissions(req);
+            var plugins = lang.arrayToMap(_self.options.plugins);
 
             var client_exclude = lang.arrayToMap(permissions.client_exclude.split("|"));
             for (plugin in client_exclude)
@@ -124,31 +123,28 @@ Ide.DEFAULT_PLUGINS = [
             plugins = Object.keys(plugins);
             
             var replacements = {
-                davPrefix: self.options.davPrefix,
-                workspaceDir: self.options.workspaceDir,
-                settingsUrl: self.options.baseUrl + "/workspace/" + self.options.settingsFile,
-                debug: self.options.debug,
-                staticUrl: self.options.staticUrl,
+                davPrefix: _self.options.davPrefix,
+                workspaceDir: _self.options.workspaceDir,
+                debug: _self.options.debug,
+                staticUrl: _self.options.staticUrl,
                 sessionId: req.sessionID, // set by connect
-                workspaceId: self.options.workspaceId,
+                workspaceId: _self.options.workspaceId,
                 plugins: plugins,
-                readonly: (permissions.dav !== "rw")
+                readonly: (permissions.dav !== "rw"),
+                settingsXml: ""
             };
 
-            var settingsPath = self.options.workspaceDir + "/" + self.options.settingsFile;
-            Path.exists(settingsPath, function(exists) {
-                if (exists) {
-                    fs.readFile(settingsPath, "utf8", function(err, settings) {
-                        replacements.settingsXml = settings;
-                        index = template.fill(index, replacements);
-                        res.end(index);
-                    });
-                }
-                else {
+            var settingsPlugin = _self.getExt("settings");
+            if (!settingsPlugin) {
+                index = template.fill(index, replacements);
+                res.end(index);
+            } else {
+                settingsPlugin.loadSettings(function(err, settings) {
+                    replacements.settingsXml = err ? "" : settings;
                     index = template.fill(index, replacements);
                     res.end(index);
-                }
-            });
+                });
+            }
         });
     };
 
