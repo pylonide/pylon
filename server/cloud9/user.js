@@ -2,10 +2,15 @@ var sys = require("sys");
 var lang = require("pilot/lang");
 var EventEmitter = require("events").EventEmitter;
 
-var User = function (name, permissions, data) {
+var User = function (uid, permissions, data) {
     EventEmitter.call(this);
     
-    this.name = name;
+    // TODO deprecated
+    Object.defineProperty(this, "name",
+       {get: function() { console.log("DEPRECATED: name use uid"); console.trace(); return uid; }}
+    );
+    
+    this.uid = uid;
     this.permissions = permissions;
     this.data = data;
     this.clients = [];
