@@ -230,7 +230,7 @@ return ext.register("ext/filesystem/filesystem", {
             var node = doc.getNode();
 
             if (doc.hasValue()) {
-                ide.dispatchEvent("afteropenfile", {doc: doc});
+                ide.dispatchEvent("afteropenfile", {doc: doc, node: node});
                 return;
             }
 
