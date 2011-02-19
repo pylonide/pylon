@@ -144,7 +144,7 @@ Ide.DEFAULT_PLUGINS = [
                 workspaceId: _self.options.workspaceId,
                 plugins: Object.keys(plugins),
                 readonly: (permissions.dav !== "rw"),
-                requirejsConfig: requirejsConfig,
+                requirejsConfig: _self.options.requirejsConfig,
                 settingsXml: ""
             };
 

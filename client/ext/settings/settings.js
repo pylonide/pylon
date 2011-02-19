@@ -38,7 +38,6 @@ return ext.register("ext/settings/settings", {
     },
 
     saveToFile : function(){
-        console.log("SAVING SETTINGS");        
         ide.socket.send(JSON.stringify({
             command: "settings",
             action: "set",

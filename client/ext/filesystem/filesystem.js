@@ -235,7 +235,7 @@ return ext.register("ext/filesystem/filesystem", {
             }
 
             // add a way to hook into loading of files
-            if (ide.dispatchEvent("readfile") === false)
+            if (ide.dispatchEvent("readfile", {doc: doc, node: node}) == false)
                 return;
 
             var path = node.getAttribute("path");
@@ -250,6 +250,7 @@ return ext.register("ext/filesystem/filesystem", {
                     }
                 }
                 else {
+                    // TODO this should be moved to the debugger in the afteropenfile event!
                     node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
                     
                     doc.setValue(data);
