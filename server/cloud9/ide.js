@@ -34,6 +34,7 @@ module.exports = Ide = function(options, httpServer, exts) {
     };
 
     this.$users = {};
+
     this.nodeCmd = process.argv[0];
 
     this.registerExts(exts);
@@ -74,7 +75,7 @@ Ide.DEFAULT_PLUGINS = [
 ];
 
 (function () {
-    
+
     this.handle = function(req, res, next) {
         var path = Url.parse(req.url).pathname;
         
@@ -159,15 +160,26 @@ Ide.DEFAULT_PLUGINS = [
             
             var _self = this;
             user.on("message", function(msg) {
+                if(_self.$users[msg.user.uid]) {
+                    _self.$users[msg.user.uid].last_message_time = new Date().getTime();
+                }
                 _self.onUserMessage(msg.user, msg.message, msg.client);
             });
             user.on("disconnectClient", function(msg) {
                 _self.execHook("disconnect", msg.user, msg.client);
             });
             user.on("disconnectUser", function(user) {
-                delete _self.$users[user.uid];
-                _self.onUserCountChange(Object.keys(_self.$users).length);
-                _self.emit("userLeave", user);
+                console.log("User disconnected but running timer...");
+                
+                setTimeout(function() {
+                    var now = new Date().getTime();
+                    if((now - user.last_message_time) > 21000) {
+                        console.log("User " + user.uid + " fully disconnected");
+                        delete _self.$users[user.uid];
+                        _self.onUserCountChange(Object.keys(_self.$users).length);
+                        _self.emit("userLeave", user);
+	            	}
+                }, 20000);
             });
             
             this.onUserCountChange();

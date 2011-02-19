@@ -14,6 +14,7 @@ var User = function (uid, permissions, data) {
     this.permissions = permissions;
     this.data = data;
     this.clients = [];
+    this.last_message_time = new Date().getTime();
     this.$server_exclude = {};
 };
 
@@ -112,8 +113,10 @@ User.VISITOR_PERMISSIONS = {
         var count = Object.keys(this.clients).length;
         this.emit("clientCountChange", count);
         
-        if (count == 0)
+        if (count == 0) {
+            this.dconn_time = new Date().getTime();
             this.emit("disconnectUser", this);
+        }
     };
     
     this.error = function(description, code, message, client) {
