@@ -169,16 +169,15 @@ Ide.DEFAULT_PLUGINS = [
                 _self.execHook("disconnect", msg.user, msg.client);
             });
             user.on("disconnectUser", function(user) {
-                console.log("User disconnected but running timer...");
-                
+                console.log("Running user disconnect timer...");
+
                 setTimeout(function() {
                     var now = new Date().getTime();
-                    if((now - user.last_message_time) > 21000) {
-                        console.log("User " + user.uid + " fully disconnected");
+                    if((now - user.last_message_time) > 19000) {
                         delete _self.$users[user.uid];
                         _self.onUserCountChange(Object.keys(_self.$users).length);
                         _self.emit("userLeave", user);
-	            	}
+                    }
                 }, 20000);
             });
             
