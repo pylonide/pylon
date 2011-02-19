@@ -95,7 +95,7 @@ return ext.register("ext/searchreplace/searchreplace", {
                 this.txtFind.setValue(value);
 
             winSearchReplace.setAttribute("title", isReplace
-                    ? "Search &amp; Replace" : "Search");            
+                    ? "Search & Replace" : "Search");            
             winSearchReplace.show();
         }
         else
