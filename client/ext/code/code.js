@@ -62,30 +62,32 @@ return ext.register("ext/code/code", {
     },
     
     setDocument : function(doc, actiontracker){
-        if (!doc.acedoc) {
+        if (!doc.acesession) {
             var _self = this;
 
             doc.isInited = doc.hasValue();
-            doc.acedoc = new EditSession(doc.getValue() || "");
-            doc.acedoc.setUndoManager(actiontracker);
+            doc.acesession = new EditSession(doc.getValue() || "");
+            doc.acedoc = doc.editsession.getDocument();
+            
+            doc.acesession.setUndoManager(actiontracker);
             
             doc.addEventListener("prop.value", function(e){
-                doc.acedoc.setValue(e.value || "");
+                doc.acesession.setValue(e.value || "");
                 ceEditor.$editor.moveCursorTo(0, 0);
                 doc.isInited = true;
             });
             
             doc.addEventListener("retrievevalue", function(e){
                 if (!doc.isInited) return e.value;
-                else return doc.acedoc.toString();
+                else return doc.acesession.getValue();
             });
             
             doc.addEventListener("close", function(){
-                //??? destroy doc.acedoc
+                //??? destroy doc.acesession
             });
         }
 
-        ceEditor.setProperty("value", doc.acedoc);
+        ceEditor.setProperty("value", doc.acesession);
     },
 
     hook : function() {

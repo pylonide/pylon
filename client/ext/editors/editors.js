@@ -412,13 +412,13 @@ return ext.register("ext/editors/editors", {
         });
         
         ide.addEventListener("afterreload", function(e) {
-            var doc     = e.doc,
-                acedoc  = doc.acedoc,
-                sel     = acedoc.getSelection();
+            var doc         = e.doc,
+                acesession  = doc.acesession,
+                sel         = acesession.getSelection();
             
             sel.selectAll();
-            acedoc.getUndoManager().ignoreChange = true;
-            acedoc.replace(sel.getRange(), e.data);
+            acesession.getUndoManager().ignoreChange = true;
+            acesession.replace(sel.getRange(), e.data);
             sel.clearSelection();
         });
     },
