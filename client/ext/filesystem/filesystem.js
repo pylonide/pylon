@@ -49,7 +49,7 @@ return ext.register("ext/filesystem/filesystem", {
     
     exists : function(path, callback) {
         this.readFile(path, function (data, state, extra) {
-            callback(state == apf.SUCCESS)
+            callback(state == apf.SUCCESS);
         });
     },
 
@@ -82,25 +82,25 @@ return ext.register("ext/filesystem/filesystem", {
                     name = prefix + "." + index++;
                     _self.exists(path + "/" + name, test);     
                 } else {
-		            tree.focus();
-		            _self.webdav.exec("mkdir", [path, name], function(data) {
-		                // @todo: in case of error, show nice alert dialog
-		                if (data instanceof Error)
-		                    throw Error;
-		                
-		                var strXml = data.match(new RegExp(("(<folder path='" + path 
-		                        + "/" + name + "'.*?>)").replace(/\//g, "\\/")))[1];
-		
-		                var folder = apf.xmldb.appendChild(node, apf.getXml(strXml));
-		
-		                tree.select(folder);
-		                tree.startRename();
-		            });
-	            }
-	        }
-	        
-	        name = prefix;
-	        this.exists(path + "/" + name, test);
+                    tree.focus();
+                    _self.webdav.exec("mkdir", [path, name], function(data) {
+                        // @todo: in case of error, show nice alert dialog
+                        if (data instanceof Error)
+                            throw Error;
+                        
+                        var strXml = data.match(new RegExp(("(<folder path='" + path 
+                                + "/" + name + "'.*?>)").replace(/\//g, "\\/")))[1];
+        
+                        var folder = apf.xmldb.appendChild(node, apf.getXml(strXml));
+        
+                        tree.select(folder);
+                        tree.startRename();
+                    });
+                }
+            }
+            
+            name = prefix;
+            this.exists(path + "/" + name, test);
         }
     },
 
@@ -124,31 +124,31 @@ return ext.register("ext/filesystem/filesystem", {
             
             var index = 0;
             
-            function test(exists) {
+            var test = function(exists) {
                 if (exists) {
                     filename = prefix + "." + index++;
                     _self.exists(path + "/" + filename, test);    
                 } else {
-		            _self.webdav.exec("create", [path, filename], function(data) {
-		                _self.webdav.exec("readdir", [path], function(data) {
-		                    // @todo: in case of error, show nice alert dialog
-		                    if (data instanceof Error)
-		                        throw Error;
-		                    
-		                    var strXml = data.match(new RegExp(("(<file path='" + path 
-		                        + "/" + filename + "'.*?>)").replace(/\//g, "\\/")))[1];
-		
-		                    var file = apf.xmldb.appendChild(node, apf.getXml(strXml));
-		                    
-		                    trFiles.select(file);
-		                    trFiles.startRename();
-		                });
-		            });
-		        }
-            }
-	        
-	        filename = prefix;
-	        this.exists(path + "/" + filename, test);
+                    _self.webdav.exec("create", [path, filename], function(data) {
+                        _self.webdav.exec("readdir", [path], function(data) {
+                            // @todo: in case of error, show nice alert dialog
+                            if (data instanceof Error)
+                                throw Error;
+                            
+                            var strXml = data.match(new RegExp(("(<file path='" + path +
+                                "/" + filename + "'.*?>)").replace(/\//g, "\\/")))[1];
+        
+                            var file = apf.xmldb.appendChild(node, apf.getXml(strXml));
+                            
+                            trFiles.select(file);
+                            trFiles.startRename();
+                        });
+                    });
+                }
+            };
+            
+            filename = prefix;
+            this.exists(path + "/" + filename, test);
         }
     },
 
@@ -159,7 +159,7 @@ return ext.register("ext/filesystem/filesystem", {
         if (name)
             newPath = path.replace(/^(.*\/)[^\/]+$/, "$1" + name);
         else
-            name = newPath.match(/[^/]+$/);
+            name = newPath.match(/[^\/]+$/);
             
         node.setAttribute("path", newPath);
         apf.xmldb.setAttribute(node, "name", name);
@@ -172,7 +172,7 @@ return ext.register("ext/filesystem/filesystem", {
             page = tabEditors.getPage(path),
             newpath = parent.getAttribute("path") + "/" + node.getAttribute("name");
 
-        node.setAttribute("path", newpath);//apf.xmldb.setAttribute(node, "path", newpath);
+        node.setAttribute("path", newpath);
         if (page)
             page.setAttribute("id", newpath);
     },
@@ -224,10 +224,6 @@ return ext.register("ext/filesystem/filesystem", {
         ide.addEventListener("consolecommand.open", openHandler);
         ide.addEventListener("consolecommand.c9",   openHandler);
 
-        /*this.model.insert(url, {
-            insertPoint : this.model.queryNode("folder[@root='1']")
-        });*/
-
         var fs = this;
         ide.addEventListener("openfile", function(e){
             var doc  = e.doc;
@@ -237,6 +233,10 @@ return ext.register("ext/filesystem/filesystem", {
                 ide.dispatchEvent("afteropenfile", {doc: doc});
                 return;
             }
+
+            // add a way to hook into loading of files
+            if (ide.dispatchEvent("readfile") === false)
+                return;
 
             var path = node.getAttribute("path");
             fs.readFile(path, function(data, state, extra) {
@@ -250,10 +250,10 @@ return ext.register("ext/filesystem/filesystem", {
                     }
                 }
                 else {
-	                node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
+                    node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
                     
                     doc.setValue(data);
-	                ide.dispatchEvent("afteropenfile", {doc: doc});	                
+                    ide.dispatchEvent("afteropenfile", {doc: doc});	                
                 }
             });
         });
@@ -264,16 +264,16 @@ return ext.register("ext/filesystem/filesystem", {
                 path = node.getAttribute("path");
             
             fs.readFile(path, function(data, state, extra) {
-	            if (state != apf.SUCCESS) {
-	                if (extra.status == 404)
-	                    ide.dispatchEvent("filenotfound", {
-	                        node : node,
-	                        url  : extra.url,
-	                        path : path
-	                    });
-	            } else {
-	               ide.dispatchEvent("afterreload", {doc : doc, data : data});
-	            }
+                if (state != apf.SUCCESS) {
+                    if (extra.status == 404)
+                        ide.dispatchEvent("filenotfound", {
+                            node : node,
+                            url  : extra.url,
+                            path : path
+                        });
+                } else {
+                   ide.dispatchEvent("afterreload", {doc : doc, data : data});
+                }
             });
         });   
 
