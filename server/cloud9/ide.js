@@ -21,16 +21,28 @@ module.exports = Ide = function(options, httpServer, exts) {
 
     this.workspaceDir = Async.abspath(options.workspaceDir).replace(/\/+$/, "");
     var baseUrl = (options.baseUrl || "").replace(/\/+$/, "");
+    var staticUrl = options.staticUrl || "/static";
+    var requirejsConfig = options.requirejsConfig || {
+        paths: {
+            "pilot": staticUrl + "/support/ace/support/pilot/lib/pilot",
+            "ace": staticUrl + "/support/ace/lib/ace",
+            "debug": staticUrl + "/support/lib-v8debug/lib/v8debug",
+            "apf": staticUrl + "/support/apf"
+        },
+        waitSeconds: 30
+    };
+    
     this.options = {
         workspaceDir: this.workspaceDir,
         mountDir: options.mountDir || this.workspaceDir,
         davPrefix: options.davPrefix || (baseUrl + "/workspace"),
         baseUrl: baseUrl,
         debug: options.debug === true,
-        staticUrl: options.staticUrl || "/static",
+        staticUrl: staticUrl,
         workspaceId: options.workspaceId || "ide",
         db: options.db || null,
-        plugins: options.plugins || Ide.DEFAULT_PLUGINS
+        plugins: options.plugins || Ide.DEFAULT_PLUGINS,
+        requirejsConfig: requirejsConfig
     };
 
     this.$users = {};
@@ -120,23 +132,24 @@ Ide.DEFAULT_PLUGINS = [
                 if (plugin)
                     plugins[plugin] = 1;
             
-            plugins = Object.keys(plugins);
+            var staticUrl = _self.options.staticUrl;
             
             var replacements = {
                 davPrefix: _self.options.davPrefix,
                 workspaceDir: _self.options.workspaceDir,
                 debug: _self.options.debug,
-                staticUrl: _self.options.staticUrl,
+                staticUrl: staticUrl,
                 sessionId: req.sessionID, // set by connect
                 workspaceId: _self.options.workspaceId,
-                plugins: plugins,
+                plugins: Object.keys(plugins),
                 readonly: (permissions.dav !== "rw"),
+                requirejsConfig: requirejsConfig,
                 settingsXml: ""
             };
 
             var settingsPlugin = _self.getExt("settings");
             var user = _self.getUser(req);
-            if (!settingsPlugin || !user) {
+            if (!settingsPlugin || !user) {
                 index = template.fill(index, replacements);
                 res.end(index);
             } else {
