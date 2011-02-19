@@ -45,40 +45,40 @@ var Offline = function(namespace, detectUrl){
     
     cache.addEventListener("offline", function(e){
         console.log(e.type);
-    });
+    }, false);
     
     cache.addEventListener("online", function(e){
         console.log(e.type);
-    });
+    }, false);
     
     cache.addEventListener("checking", function(e){
         console.log(e.type);
-    });
+    }, false);
     
     cache.addEventListener("downloading", function(e){
         console.log(e.type);
-    });
+    }, false);
     
     cache.addEventListener("progress", function(e){
         console.log(e.type);
-    });
+    }, false);
     
     cache.addEventListener("cached", function(e){
         console.log(e.type);
-    });
+    }, false);
     
     cache.addEventListener("noupdate", function(e){
         console.log(e.type);
-    });
+    }, false);
     
     cache.addEventListener("updateready", function(e){
         console.log(e.type);
         cache.swapCache();
-    });
+    }, false);
     
     cache.addEventListener("error", function(e){
         console.log(e.type);
-    });
+    }, false);
 };
 
 (function(){
@@ -89,8 +89,8 @@ var Offline = function(namespace, detectUrl){
         //If we were offline lets stay offline
         if (this.offlineTime)
             this.goOffline();
-        else //Else we try to go online
-            this.goOnline();
+        //else //Else we try to go online
+            //this.goOnline();
         
         this.startDetect();
     }
@@ -99,6 +99,11 @@ var Offline = function(namespace, detectUrl){
     
     this.isSiteAvailable = function(callback){
         var _self = this;
+        
+        if (!this.http) {
+            this.http = new apf.http();
+            this.http.timeout = this.interval;
+        }
         
         this.http.get(apf.getNoCacheUrl(this.detectUrl), {
             callback: function(data, state, extra){
@@ -127,9 +132,6 @@ var Offline = function(namespace, detectUrl){
                 return !_self.goOffline();//callback //@todo callback???
             }
         });
-        
-        this.http = new apf.http();
-        this.http.timeout = this.interval;
         
         //Check if we have connection right now
         this.isSiteAvailable();

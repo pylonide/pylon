@@ -1,12 +1,12 @@
 /**
- * Node Runner Module for the Cloud9 IDE
+ * File System Module for the Cloud9 IDE
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
  
 define(function(require, exports, module) {
- 
+
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
@@ -193,8 +193,15 @@ return ext.register("ext/filesystem/filesystem", {
     
     init : function(amlNode){
         this.model = new apf.model();
-        this.model.load("<data><folder type='folder' name='" + this.projectName + "' path='" + ide.davPrefix + "' root='1'/></data>");
-
+        
+        var _self = this;
+        ide.addEventListener("afteronline", function(){
+            _self.model.load("<data><folder type='folder' name='" + _self.projectName + "' path='" + ide.davPrefix + "' root='1'/></data>");
+            _self.setProjectName(ide.workspaceDir.split("/").pop());
+            
+            ide.removeEventListener("afteronline", arguments.callee);
+        });
+        
         var url;
         if (location.host) {
             var dav_url = location.href.replace(location.path + location.hash, "") + ide.davPrefix;
@@ -272,9 +279,7 @@ return ext.register("ext/filesystem/filesystem", {
 	               ide.dispatchEvent("afterreload", {doc : doc, data : data});
 	            }
             });
-        });   
-
-        fs.setProjectName(ide.workspaceDir.split("/").pop());
+        });
     },
 
     setProjectName : function(name) {

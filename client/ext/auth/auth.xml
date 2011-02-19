@@ -1,0 +1,167 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:auth id="auth"
+      login         = "{require('ext/auth/auth').login(username, password)}" 
+      logout        = "{require('ext/auth/auth').signout()}" 
+      fail-state    = "stFail" 
+      error-state   = "stError" 
+      login-state   = "stIdle" 
+      logout-state  = "stSignedOut"
+      waiting-state = "stSigningIn" />
+      
+    <a:state id="stCloning" active="false" />
+    
+    <a:state-group id="stGr1">
+        <a:state id="stFail" />
+        <a:state id="stError" />
+        <a:state id="stSignedOut" winLogin.visible="true" />
+        <a:state id="stSigningIn" />
+        <a:state id="stSignedIn" onactivate="vboxRegister.hide();require('ext/auth/auth').signedIn()" />
+        <a:state id="stIdle" onactivate="require('ext/auth/auth').idle()" />
+        <a:state id="stAuthReq" winLogin.visible="true" />
+    </a:state-group>
+    
+    <a:rpc id="comm" protocol="rest">
+        <a:method name= "auth"
+          url         = "{apf.config.baseurl+'/auth'}"
+          http-method = "POST"
+          content-type= "application/json" />
+    </a:rpc>
+    
+    <a:window
+      id        = "winLogin"
+      mode      = "login"
+      icon      = ""
+      title     = "Please log in"
+      center    = "true"
+      modal     = "true"
+      width     = "350"
+      height    = "250"
+      onshow    = "
+        this.getAttribute('mode') == 'gainaccess'
+            ? this.setAttribute('title', 'Access this project')
+            : this.setAttribute('title', 'Authorization is required');
+        apf.n(this, './/a:secret|.//a:textbox').attr('value', '');
+        pgPass.set(this.getAttribute('mode') == 'gainaccess' ? 1 : 0);
+    
+        if (self.tbUserInviteLogin) {
+            var creds = auth.getCredentials();
+            tbUserInviteLogin.setValue(creds[0]);
+            tbPassInviteLogin.setValue(creds[1]);
+        }
+      ">
+        <a:pages id="pgPass" style="overflow:hidden" activepage="{winLogin.getAttribute('mode')}">
+            <a:page id="login">
+                <a:vbox padding="10" edge="15 20 15 20" validgroup="vgInviteLogin">
+                    <p><?lm
+                        winLogin.getAttribute('mode') == 'gainaccess'
+                            ? "Enter your e-mail address and password to log in and get gainaccessed."
+                            : "It seems you were logged out, or your network connection has gone away. Enter your e-mail address and password to log in again";
+                    ?></p>
+                    <a:hbox align="center" padding="20" edge="5 5 0 5">
+                        <a:label width="100">E-mail</a:label>
+                        <a:textbox id="tbUserInviteLogin"
+                          datatype2   = "a:email"
+                          invalidmsg = "Invalid E-mail address; Enter your e-mail address to log in"
+                          required   = "true"
+                          flex       = "1" />
+                    </a:hbox>
+                    <a:hbox align="center" padding="20" edge="0 5 5 5">
+                        <a:label width="100">Password</a:label>
+                        <a:secret id="tbPassInviteLogin"
+                          class      = "padlock"
+                          minlength  = "3"
+                          maxlength  = "20"
+                          invalidmsg = "Invalid Password; Enter your password"
+                          required   = "true"
+                          flex       = "1" />
+                    </a:hbox>
+                </a:vbox>
+                <a:divider skin="hordivider" />
+                <a:hbox pack="end" edge="10 10 5 10" padding="10" align="start">
+                    <a style="cursor:pointer;white-space:nowrap;" flex="1" margin="3 0 0 5"
+                      onclick = "pgPass.set(0);"
+                      visible = "{winLogin.getAttribute('mode') == 'gainaccess'}">
+                        Not a member yet? Subscribe now!
+                    </a>
+                    <a:label id="winPwStatus" flex="1" margin="3 0 0 5"
+                      visible = "{winLogin.getAttribute('mode') != 'gainaccess'}" />
+                    <a:button class="ui-btn-green" default="4" onclick="
+                        var app = require('ext/auth/auth');
+                        if (vgInviteLogin.validate()) {
+                            if (winLogin.getAttribute('mode') == 'gainaccess') {
+                                app.inviteInfo   = winLogin.inviteInfo;
+                                app.redirectPage = winLogin.inviteInfo[0];
+                            }
+                            else {
+                                var creds = auth.getCredentials();
+                                if (tbUserInviteLogin.value != creds[0])
+                                    app.logout();
+                            }
+                            auth.logIn(tbUserInviteLogin.value, tbPassInviteLogin.value, function(){
+                                if (auth.loggedIn)
+                                    winLogin.hide();
+                            });
+                        }
+                    ">Log in</a:button>
+                </a:hbox>
+            </a:page>
+            <a:page id="forgetpassword">
+            
+            </a:page>
+            <a:page id="gainaccess" render="runtime"
+              trans-in  = "{winLogin.getAttribute('mode') == 'gainaccess' ? 'push-right' : ''}"
+              trans-out = "{winLogin.getAttribute('mode') == 'gainaccess' ? 'push-right' : ''}">
+                <a:vbox padding="10" edge="15 20 15 20" validgroup="vgNewPerson">
+                    <a:vbox id="vboxRegister" visible="true" validgroup="vgRegister">
+                        <h3>Registration</h3>
+                        <a:hbox align="center">
+                            <div style="width: 150px;">First name</div>
+                            <a:textbox id="tbRgFirstName" value="Linh"></a:textbox>
+                        </a:hbox>
+                        <a:hbox align="center">
+                            <div style="width: 150px;">Last name</div>
+                            <a:textbox id="tbRgLastName" value="Nguyen"></a:textbox>
+                        </a:hbox>
+                        <a:hbox align="center">
+                            <div style="width: 150px;">Email</div>
+                            <a:textbox id="tbRgEmail" required="true" value="linh@ajax.org"></a:textbox>
+                        </a:hbox>
+                        <a:hbox align="center">
+                            <div style="width: 150px;">Username</div>
+                            <a:textbox id="tbRgUsername" required="true" value="javelinh"></a:textbox>
+                        </a:hbox>
+                        <a:hbox align="center">
+                            <div style="width: 150px;">Password</div>
+                            <a:secret id="tbRgPassword"
+                              type       = "password"
+                              required   = "true"
+                              invalidmsg = "Password is required to sign up" value="12345"></a:secret>
+                        </a:hbox>
+                        <a:hbox align="center">
+                            <div style="width: 150px;">Confirm password</div>
+                            <a:secret id="tbRgPassword2"
+                              type       = "password"
+                              required   = "true"
+                              checkequal = "tbRgPassword"
+                              invalidmsg = "Password does not match" value="12345"></a:secret>
+                        </a:hbox>
+                        <a:hbox pack="end">
+                            <a:button id="btnRgSubmit" skin="btnsmall"
+                              onclick="
+                                if (vgRegister.validate()) {
+                                    this.disable();
+                                    require('ext/auth/auth').register();
+                                }
+                              ">Register</a:button>
+                        </a:hbox>
+                    </a:vbox>
+                </a:vbox>
+                <a:divider skin="hordivider" />
+                <a:hbox pack="end" edge="10 10 5 10" padding="10" align="start">
+                    <a style="cursor:pointer;" flex="1" margin="3 0 0 5" onclick="pgPass.set(1);">I am already a member</a>
+                    <a:button class="ui-btn-green" onclick="require('ext/auth/auth').create.person();" default="4">Set password</a:button>
+                </a:hbox>
+            </a:page>
+        </a:pages>
+    </a:window>
+</a:application>

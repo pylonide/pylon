@@ -103,6 +103,14 @@ return ext.register("ext/settings/settings", {
             });
         });*/
 
+        ide.addEventListener("afteronline", function(){
+            _self.load();
+            ide.removeEventListener("afteronline", arguments.callee);
+        });
+    },
+    
+    load : function(){
+        var _self = this;
         this.model.load(this.convertOrBackup() ? template : ide.settings);
 
         ide.dispatchEvent("loadsettings", {

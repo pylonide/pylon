@@ -2,10 +2,15 @@
  * Offline Support for Cloud9
  *
  * @copyright 2010, Ajax.org B.V.
- * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/offline/offline", ["core/ext", "core/ide", "ext/offline/lib-offline", "ext/offline/lib-sync", "ext/filesystem/filesystem"],
-    function(ext, ide, Offline, Sync, fs) {
+
+define(function(require, exports, module) {
+
+var ide     = require("core/ide");
+var ext     = require("core/ext");
+var Offline = require("ext/offline/lib-offline");
+var Sync    = require("ext/offline/lib-sync");
+var fs      = require("ext/filesystem/filesystem");
 
 return ext.register("ext/offline/offline", {
     dev         : "Ajax.org",
@@ -15,16 +20,29 @@ return ext.register("ext/offline/offline", {
     deps        : [fs],
     
     test : function(online){
-        this.offline.stopDetect();
+        ide.testOffline = true;
         if (online)
-            this.offline.goOnline();
+            ide.socket.connect();
         else
-            this.offline.goOffline();
+            ide.socket.disconnect();
     },
     
     init : function(){
-        var offline = this.offline = new Offline("cloud9", "static/ext/offline/ping.txt");
+        var _self   = this;
+        var offline = this.offline = new Offline("cloud9");//, "static/ext/offline/ping.txt");
         var sync    = this.sync    = new Sync("cloud9");
+        
+        //Replace http checking because we already have a socket
+        offline.isSiteAvailable = function(){}
+        
+        //Set events necessary for checking online status using socket poll loop
+        ide.addEventListener("socketConnect", function(e){
+            //offline.goOnline();
+        });
+        
+        ide.addEventListener("socketDisconnect", function(e){
+            offline.goOffline(); 
+        });
         
         //Forward Events
         offline.dispatchEvent = function(name, e){
@@ -44,6 +62,7 @@ return ext.register("ext/offline/offline", {
                 fs.realWebdav = fs.webdav;
             fs.webdav = offlineWebdav
             
+            _self.indicator.style.display = "block";
             ide.onLine = false;
         });
         
@@ -54,7 +73,6 @@ return ext.register("ext/offline/offline", {
                     var item = data.item;
                     //Execute sync task here
                     console.log("SYNC ITEM");
-                    item.handler(item);
                     
                     if (next() < 0) //End of loop
                         offline.goOnline();
@@ -67,6 +85,7 @@ return ext.register("ext/offline/offline", {
             if (fs.realWebdav)
                 fs.webdav = fs.realWebdav;
             
+            _self.indicator.style.display = "none";
             ide.onLine = true;
         });
         
@@ -77,8 +96,7 @@ return ext.register("ext/offline/offline", {
             write : function(path, data, x, callback){
                 sync.add(path, {
                     path: path,
-                    data: data,
-                    handler: function(){}
+                    data: data
                 });
                 
                 if (callback)
@@ -105,6 +123,16 @@ return ext.register("ext/offline/offline", {
                 callback(null, apf.ERROR, {});
             }
         }
+        
+        this.indicator = document.body.appendChild(document.createElement("div"));
+        this.indicator.style.backgroundColor = "red";
+        this.indicator.innerHTML = "OFFLINE";
+        this.indicator.style.padding = "3px";
+        this.indicator.style.position = "absolute"
+        this.indicator.style.zIndex = 10000;
+        this.indicator.style.right = "10px";
+        this.indicator.style.top = "10px";
+        this.indicator.style.display = "none";
         
         offline.start();
     },
