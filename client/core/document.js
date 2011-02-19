@@ -14,6 +14,10 @@ var Document = function(node, docValue){
         return node;
     }
     
+    this.setNode = function(newNode) {
+        return node = newNode;    
+    }
+    
     this.hasValue = function(){
         return docValue !== undefined;
     }

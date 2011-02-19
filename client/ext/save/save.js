@@ -259,6 +259,7 @@ return ext.register("ext/save/save", {
                     model.load(node);
                     file = model.data;
                     fs.beforeRename(file, null, newPath);
+                    page.$doc.setNode(file);
                 }
 	            setTimeout(function () {
 	               if (panel.caption == "Saved file " + newPath)

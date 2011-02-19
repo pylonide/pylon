@@ -1,2 +1,14 @@
+.*.gz
+build
+support/node-builds
 common/apf
 common/packager
+support/ace/support/requirejs
+support/ace/support/node-o3-xml
+support/ace/support/jsdom
+support/ace/support/cockpit/support/requirejs
+support/apf/debugwin
+support/apf/test
+support/connect/support/expresso
+support/connect/support/coffee-script
+support/socket.io/support/expresso
