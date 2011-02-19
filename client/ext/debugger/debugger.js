@@ -61,6 +61,14 @@ return ext.register("ext/debugger/debugger", {
             _self.disable();
         });
         
+        ide.addEventListener("afteropenfile", function(e) {
+            var doc = e.doc;
+            var node = e.node;
+            var path = node.getAttribute("path");
+            
+            node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
+        });
+        
         panels.register(this);
         //dock.register(this);
     },

@@ -250,11 +250,8 @@ return ext.register("ext/filesystem/filesystem", {
                     }
                 }
                 else {
-                    // TODO this should be moved to the debugger in the afteropenfile event!
-                    node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
-                    
                     doc.setValue(data);
-                    ide.dispatchEvent("afteropenfile", {doc: doc});	                
+                    ide.dispatchEvent("afteropenfile", {doc: doc, node: node});	                
                 }
             });
         });
