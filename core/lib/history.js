@@ -73,7 +73,7 @@ apf.history = {
     delay : 1,
 
     init  : function(defName, getVar, delay){
-        if (this.inited)
+        if (this.inited || window.history.pushState)
             return;
 
         if (delay)

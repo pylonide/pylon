@@ -689,10 +689,11 @@ apf.textbox  = function(struct, tagName){
                     var v;
                     if (!_self.mask && (v = _self.getValue()) != _self.value)
                         _self.change(v); 
-                    _self.dispatchEvent("keyup", {keyCode : keyCode});//@todo
+                     if (apf.isIE) 
+                        _self.dispatchEvent("keyup", {keyCode : keyCode});//@todo
                 });
             }
-            else {
+            else if (apf.isIE) {
                 _self.dispatchEvent("keyup", {keyCode : keyCode});//@todo
             }
 
