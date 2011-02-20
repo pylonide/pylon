@@ -114,7 +114,13 @@ return ext.register("ext/settings/settings", {
                 }
             });
             
-            ide.socket.send(JSON.stringify({command: "settings", action: "get"}));
+            if (ide.onLine) {
+                ide.addEventListener("socketConnect", function(){
+                    ide.socket.send(JSON.stringify({command: "settings", action: "get"}));
+                });
+            }
+            else 
+                ide.socket.send(JSON.stringify({command: "settings", action: "get"}));
             return;
         }
         
