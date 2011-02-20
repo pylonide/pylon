@@ -13,11 +13,12 @@ var util = require("core/util");
 var markup = require("text!ext/noderunner/noderunner.xml");
 
 return ext.register("ext/noderunner/noderunner", {
-    name   : "Node Runner",
-    dev    : "Ajax.org",
-    type   : ext.GENERAL,
-    alone  : true,
-    markup : markup,
+    name    : "Node Runner",
+    dev     : "Ajax.org",
+    type    : ext.GENERAL,
+    alone   : true,
+    offline : false,
+    markup  : markup,
     commands: {
         "run": {
             "hint": "run a node program on the server",

@@ -22,12 +22,13 @@ exports.alert = function(title, header, msg, onhide) {
         winAlert.onhide = null;
 };
 
-exports.confirm = function(title, header, msg, onconfirm) {
+exports.confirm = function(title, header, msg, onconfirm, oncancel) {
     winConfirm.show();   
     winConfirm.setAttribute("title", title);
     winConfirmHeader.$ext.innerHTML = header;
     winConfirmMsg.$ext.innerHTML = msg;
     btnConfirmOk.onclick = onconfirm;
+    btnConfirmCancel.onclick = oncancel;
 };
 
 exports.question = function(title, header, msg, onyes, onyestoall, onno, onnotoall) {

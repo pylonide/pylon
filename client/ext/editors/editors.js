@@ -102,6 +102,9 @@ return ext.register("ext/editors/editors", {
                         _self.afterswitch(e);
                     },
                     onclose : function(e){
+                        if (!ide.onLine) //For now prevent tabs from being closed
+                            return false;
+                            
                         _self.close(e.page);
                     }
                 })/*,
@@ -402,7 +405,7 @@ return ext.register("ext/editors/editors", {
                         continue;
 
                     var copy = apf.xmldb.cleanNode(file.cloneNode(false));
-                    copy.removeAttribute("changed");
+                    //copy.removeAttribute("changed");
                     pNode.appendChild(copy);
                 }
             }

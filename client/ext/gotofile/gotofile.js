@@ -18,8 +18,10 @@ return ext.register("ext/gotofile/gotofile", {
     name    : "Filter Tree",
     dev     : "Ajax.org",
     alone   : true,
+    offline : false,
     type    : ext.GENERAL,
     markup  : markup,
+    offline : 0,
     commands : {
         "gotofile": {hint: "search for a filename and jump to it"}
     },
@@ -85,6 +87,8 @@ return ext.register("ext/gotofile/gotofile", {
             editors.showFile(path, 0, 0);
             ide.dispatchEvent("track_action", {type: "fileopen"});
         });
+        
+        this.nodes.push(winGoToFile);
     },
     
     gotofile : function(){

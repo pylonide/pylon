@@ -6,7 +6,7 @@
  */
 require.def("ext/save/save",
     ["core/ide", "core/ext", "core/util", "ext/filesystem/filesystem",
-            "text!ext/save/save.xml"],
+     "text!ext/save/save.xml"],
     function(ide, ext, util, fs, markup) {
 
 return ext.register("ext/save/save", {
@@ -51,10 +51,11 @@ return ext.register("ext/save/save", {
         });
 
         this.nodes.push(ide.barTools.appendChild(new apf.button({
-            id      : "btnSave",
-            icon    : "save_btn_ico{this.disabled ? '_disabled' : ''}.png",
-            caption : "Save",
-            onclick : this.quicksave
+            id       : "btnSave",
+            icon     : "save_btn_ico{this.disabled ? '_disabled' : ''}.png",
+            caption  : "Save",
+            disabled : "{!tabEditors.activepage}",
+            onclick  : this.quicksave
         })));
 
         var saveItem, saveAsItem;

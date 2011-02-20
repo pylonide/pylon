@@ -9,11 +9,11 @@ require.def("ext/docs/docs",
     function(ide, ext, panels, markup) {
 
 return ext.register("ext/docs/docs", {
-    name   : "Documentation",
-    dev    : "Ajax.org",
-    type   : ext.GENERAL,
-    alone  : true,
-    markup : markup,
+    name    : "Documentation",
+    dev     : "Ajax.org",
+    type    : ext.GENERAL,
+    alone   : true,
+    markup  : markup,
     
     hook : function(){
         panels.register(this);

@@ -12,6 +12,7 @@ return ext.register("ext/themes/themes", {
     name    : "Themes",
     dev     : "Ajax.org",
     alone   : true,
+    offline : false,
     type    : ext.GENERAL,
     nodes   : [],
 
