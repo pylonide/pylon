@@ -66,7 +66,7 @@ return ext.register("ext/code/code", {
             var _self = this;
 
             doc.isInited = doc.hasValue();
-            doc.acesession = new EditSession(doc.getValue() || "");
+            doc.acesession = new EditSession(doc.acedoc || doc.getValue() || "");
             doc.acedoc = doc.acesession.getDocument();
             
             doc.acesession.setUndoManager(actiontracker);
