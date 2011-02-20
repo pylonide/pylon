@@ -39,12 +39,15 @@ require.def("core/ide", deps,
 
             //Catch all unhandled errors
             var loc = location.href;
-            if (false && location.protocol != "file:"
-              && loc.indexOf("dev") == -1
-              && loc.indexOf("cloud9ide.com") > -1) {
+            if (
+                false 
+                && location.protocol != "file:"
+                && loc.indexOf("dev") == -1
+                && loc.indexOf("cloud9ide.com") > -1) 
+            {
                 window.onerror = function(m, u, l) {
                     if (self.console)
-                        console.log("An error occurred, the Cloud9 system admin has been notified.")
+                        console.log("An error occurred, the Cloud9 system admin has been notified.");
                     apf.ajax("/debug", {
                         method      : "POST",
                         contentType : "application/json",
