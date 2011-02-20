@@ -59,6 +59,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/filesystem/filesystem",
     "ext/settings/settings",
     "ext/editors/editors",
+    "ext/connect/connect",
     "ext/themes/themes",
     "ext/themes_default/themes_default",
     "ext/panels/panels",

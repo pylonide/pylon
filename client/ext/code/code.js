@@ -12,6 +12,8 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var EditSession = require("ace/edit_session").EditSession;
 var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
+var Document = require("ace/document").Document;
+var ProxyDocument = require("ext/code/proxydocument");
 var markup = require("text!ext/code/code.xml");
 var settings = require("text!ext/code/settings.xml");
 
@@ -66,12 +68,13 @@ return ext.register("ext/code/code", {
             var _self = this;
 
             doc.isInited = doc.hasValue();
-            doc.acesession = new EditSession(doc.acedoc || doc.getValue() || "");
+            doc.acedoc = doc.acedoc || new ProxyDocument(new Document(doc.getValue() || ""));
+            doc.acesession = new EditSession(doc.acedoc);
             doc.acedoc = doc.acesession.getDocument();
             
             doc.acesession.setUndoManager(actiontracker);
             
-            doc.addEventListener("prop.value", function(e){
+            doc.addEventListener("prop.value", function(e) {
                 doc.acesession.setValue(e.value || "");
                 ceEditor.$editor.moveCursorTo(0, 0);
                 doc.isInited = true;
