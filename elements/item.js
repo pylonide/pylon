@@ -339,7 +339,7 @@ apf.item  = function(struct, tagName){
      * @attribute {Boolean} disabled whether the item is active.
      */
     this.$propHandlers["disabled"] = function(value){
-        if (apf.isTrue(value))
+        if (apf.isTrue(value) || value == -1)
             apf.setStyleClass(this.$ext, "disabled");
         else
             apf.setStyleClass(this.$ext, "", ["disabled"]);
