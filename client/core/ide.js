@@ -7,6 +7,7 @@
 var deps = ["core/document"];
 if (!window.cloud9config.standalone)
     deps.push("/socket.io/socket.io.js");
+
 require.def("core/ide", deps,
     function(Document) {
         var ide = new apf.Class().$init();
@@ -32,6 +33,8 @@ require.def("core/ide", deps,
             this.sessionId = window.cloud9config.sessionId;
             this.workspaceId = window.cloud9config.workspaceId;
             this.readonly = window.cloud9config.readonly;
+
+            this.loggedIn = true;
 
             this.dispatchEvent("load");
 
@@ -101,6 +104,7 @@ require.def("core/ide", deps,
             var options = {
                 rememberTransport: false,
                 transports:  ["websocket", "htmlfile", "xhr-multipart", "flashsocket", "xhr-polling", "jsonp-polling"],
+                connectTimeout: 5000,
                 transportOptions: {
                     "xhr-polling": {
                         timeout: 60000
@@ -112,6 +116,8 @@ require.def("core/ide", deps,
             };
 
             ide.socketConnect = function() {
+                clearTimeout(ide.$retryTimer);
+                
                 ide.socket.send(JSON.stringify({
                     command: "attach",
                     sessionId: ide.sessionId,
@@ -120,15 +126,16 @@ require.def("core/ide", deps,
             };
 
             ide.socketDisconnect = function() {
-                ide.dispatchEvent("socketDisconnect");
-
                 clearTimeout(ide.$retryTimer);
+                
                 var retries = 0;
                 ide.$retryTimer = setInterval(function() {
-                    if (retries++ == 1)
-                        winReconnect.show();
-                    ide.socket.connect();
-                }, 2000);
+                    if (++retries == 1)
+                        ide.dispatchEvent("socketDisconnect");
+                    
+                    if (!ide.socket.connecting && !ide.testOffline && ide.loggedIn)
+                        ide.socket.connect();
+                }, 500);
             };
 
             ide.socketMessage = function(message) {
@@ -138,20 +145,19 @@ require.def("core/ide", deps,
                     return;
                 }
 
-                if (message.type == "attached") {
-                    clearTimeout(ide.$retryTimer);
-                    winReconnect.hide();
-                    stServerConnected.activate();
+                if (message.type == "attached")
                     ide.dispatchEvent("socketConnect");
-                }
 
                 ide.dispatchEvent("socketMessage", {
                     message: message
                 });
-                if (message.type && message.type == "state") {
-                    stProcessRunning.setProperty("active", message.processRunning);
-                }
             };
+            
+            //@todo see if this can be moved to noderunner
+            ide.addEventListener("socketMessage", function(e){
+                if (e.message.type && e.message.type == "state")
+                    stProcessRunning.setProperty("active", e.message.processRunning);
+            });
 
             ide.socket = new io.Socket(null, options);
             ide.socket.on("message",    ide.socketMessage);

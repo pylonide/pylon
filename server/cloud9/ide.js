@@ -42,7 +42,8 @@ module.exports = Ide = function(options, httpServer, exts) {
         workspaceId: options.workspaceId || "ide",
         db: options.db || null,
         plugins: options.plugins || Ide.DEFAULT_PLUGINS,
-        requirejsConfig: requirejsConfig
+        requirejsConfig: requirejsConfig,
+        offlineManifest: options.offlineManifest || ""
     };
 
     this.$users = {};
@@ -57,6 +58,8 @@ sys.inherits(Ide, EventEmitter);
 Ide.DEFAULT_PLUGINS = [
     "ext/filesystem/filesystem",
     "ext/settings/settings",
+    "ext/offline/offline",
+    "ext/auth/auth",
     "ext/editors/editors",
     "ext/themes/themes",
     "ext/themes_default/themes_default",
@@ -145,7 +148,8 @@ Ide.DEFAULT_PLUGINS = [
                 plugins: Object.keys(plugins),
                 readonly: (permissions.dav !== "rw"),
                 requirejsConfig: _self.options.requirejsConfig,
-                settingsXml: ""
+                settingsXml: "",
+                offlineManifest: _self.options.offlineManifest
             };
 
             var settingsPlugin = _self.getExt("settings");
@@ -319,3 +323,4 @@ Ide.DEFAULT_PLUGINS = [
         }
     };
 }).call(Ide.prototype);
+

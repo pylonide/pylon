@@ -13,11 +13,12 @@ return ext.register("ext/watcher/watcher", {
     name    : "Watcher",
     dev     : "Ajax.org",
     alone   : true,
+    offline : false,
     type    : ext.GENERAL,
     markup  : null,
     visible : true,
     
-    hook : function() {
+    init : function() {
         // console.log("Initializing watcher");
         
         var removedPaths        = {},
@@ -25,7 +26,8 @@ return ext.register("ext/watcher/watcher", {
             changedPaths        = {},
             changedPathCount    = 0,
             ignoredPaths        = {},
-            expandedPaths       = {};
+            expandedPaths       = {},
+            _self               = this;
             
         function sendWatchFile(path) {
             // console.log("Sending watchFile message for file " + path);
@@ -130,8 +132,9 @@ return ext.register("ext/watcher/watcher", {
         }
         
         stServerConnected.addEventListener("activate", function() {
-            var pages = tabEditors.getPages();
+            if (_self.disabled) return;
             
+            var pages = tabEditors.getPages();
             pages.forEach(function (page) {
                 sendWatchFile(page.$model.data.getAttribute("path"));
             });
@@ -153,8 +156,9 @@ return ext.register("ext/watcher/watcher", {
         });        
 
         ide.addEventListener("closefile", function(e) {
+            if (_self.disabled) return;
+            
             var path = e.xmlNode.getAttribute("path");
-
             if (ide.socket)
                 sendUnwatchFile(path);
             else
@@ -165,15 +169,17 @@ return ext.register("ext/watcher/watcher", {
         });
         
         ide.addEventListener("afterfilesave", function(e) {
-            var path = e.node.getAttribute("path");
+            if (_self.disabled) return;
             
+            var path = e.node.getAttribute("path");
             // console.log("Adding " + path + " to ignore list");
             ignoredPaths[path] = path;
         });
                 
         ide.addEventListener("socketMessage", function(e) {
-            var pages = tabEditors.getPages();
+            if (_self.disabled) return;
             
+            var pages = tabEditors.getPages();
             with (e.message) {
                 if (type != "watcher")
                     return;
@@ -216,12 +222,15 @@ return ext.register("ext/watcher/watcher", {
         });
         
         tabEditors.addEventListener("afterswitch", function(e) {
+            if (_self.disabled) return;
+            
             checkPage();
         });
         
         trFiles.addEventListener("expand", function(e) {
-            var node = e.xmlNode;
+            if (_self.disabled) return;
             
+            var node = e.xmlNode;
             if (node.getAttribute("type") == "folder") {
                 var path = node.getAttribute("path");
                 
@@ -231,8 +240,9 @@ return ext.register("ext/watcher/watcher", {
         });
         
         trFiles.addEventListener("collapse", function (e) {
+            if (_self.disabled) return;
+
             var node = e.xmlNode;
-            
             if (node.getAttribute("type") == "folder") {
                 var path = node.getAttribute("path");
                 
@@ -241,6 +251,20 @@ return ext.register("ext/watcher/watcher", {
             }
         });
     },
+    
+    enable : function(){
+        this.disabled = false;
+        
+        //@todo add code here to set watchers again based on the current state
+    },
+    
+    disable : function(){
+        this.disabled = true;
+    },
+    
+    destroy : function(){
+        
+    }
 });
 
 });

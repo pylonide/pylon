@@ -19,13 +19,14 @@ var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/debugger/debugger.xml");
 
 return ext.register("ext/debugger/debugger", {
-    name   : "Debug",
-    dev    : "Ajax.org",
-    type   : ext.GENERAL,
-    alone  : true,
-    markup : markup,
+    name    : "Debug",
+    dev     : "Ajax.org",
+    type    : ext.GENERAL,
+    alone   : true,
+    //offline : false,
+    markup  : markup,
     buttonClassName : "debug1",
-    deps   : [fs, noderunner],
+    deps    : [fs, noderunner],
     commands: {
         "debug": {
             "hint": "run and debug a node program on the server",

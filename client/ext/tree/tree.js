@@ -47,13 +47,15 @@ return ext.register("ext/tree/tree", {
         
         trFiles.addEventListener("afterchoose", this.$afterselect = function(e) {
             var node = this.selected;
-            if (!node || node.tagName != "file" || this.selection.length > 1)
+            if (!node || node.tagName != "file" || this.selection.length > 1 || !ide.onLine) //ide.onLine can be removed after update apf
                 return;
 
             ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
         });
         
         trFiles.addEventListener("beforecopy", function(e) {
+            if (!ide.onLine) return false;
+            
             setTimeout(function () {
                 var args     = e.args[0].args,
                     filename = args[1].getAttribute("name");
@@ -62,12 +64,16 @@ return ext.register("ext/tree/tree", {
         });
         
         trFiles.addEventListener("beforerename", function(e){
+            if (!ide.onLine) return false;
+            
             setTimeout(function(){
                 fs.beforeRename(e.args[0], e.args[1]);
             });
         });
         
         trFiles.addEventListener("beforemove", function(e){
+            if (!ide.onLine) return false;
+            
             setTimeout(function(){
                 var changes = e.args;
                 for (var i = 0; i < changes.length; i++) {
@@ -75,7 +81,27 @@ return ext.register("ext/tree/tree", {
                 }
             });
         });
-
+        
+        var cancelWhenOffline = function(){
+            if (!ide.onLine) return false;
+        };
+        
+        trFiles.addEventListener("beforeadd", cancelWhenOffline);
+        trFiles.addEventListener("renamestart", cancelWhenOffline);
+        trFiles.addEventListener("beforeremove", cancelWhenOffline);
+        trFiles.addEventListener("dragstart", cancelWhenOffline);
+        trFiles.addEventListener("dragdrop", cancelWhenOffline);
+        
+        /*ide.addEventListener("afteroffline", function(e){
+            //trFiles.setAttribute("contextmenu", "");
+            mnuCtxTree.disable();
+        });
+        
+        ide.addEventListener("afteronline", function(e){
+            //trFiles.setAttribute("contextmenu", "mnuCtxTree");
+            mnuCtxTree.enable();
+        });*/
+        
         /**** Support for state preservation ****/
         
         var _self = this;
@@ -105,9 +131,20 @@ return ext.register("ext/tree/tree", {
                 
                 //Unstable - temporary fix
                 try{
-                    trFiles.expandList(_self.currentSettings, function(){
-                        _self.loading = false;
-                    });
+                    if (!trFiles.xmlRoot) {
+                        trFiles.addEventListener("afterload", function(){
+                            trFiles.expandList(_self.currentSettings, function(){
+                                _self.loading = false;
+                            });
+                            
+                            trFiles.removeEventListener("load", arguments.callee);
+                        });
+                    }
+                    else {
+                        trFiles.expandList(_self.currentSettings, function(){
+                            _self.loading = false;
+                        });
+                    }
                 }catch(e){
                     e.model.setQueryValue("auto/tree/text()", "");
                 }
