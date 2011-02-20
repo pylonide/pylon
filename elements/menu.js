@@ -217,7 +217,7 @@ apf.menu = function(struct, tagName){
         this.opener = opener;
         
         //Show / hide Child Nodes Based on XML
-        if (xmlNode) {
+        if (xmlNode && !this.disabled) {
             var last, i, node,
                 nodes = this.childNodes,
                 c     = 0,
