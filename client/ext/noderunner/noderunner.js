@@ -85,8 +85,9 @@ return ext.register("ext/noderunner/noderunner", {
                 break;
 
             case "error":
-                if (message.code !== 6)
-                    util.alert("Server Error", "Server Error", message.message);
+                if (message.code !== 6 && message.code != 99)
+                    util.alert("Server Error", "Server Error " 
+                        + (message.code || ""), message.message);
                 ide.socket.send('{"command": "state"}');
                 break;
                 

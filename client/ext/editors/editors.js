@@ -285,7 +285,18 @@ return ext.register("ext/editors/editors", {
 
         at.reset();
         at.destroy();
-
+        
+        //If there are no more pages left, reset location
+        if (!tabEditors.getPage()) {
+            if (window.history.pushState) {
+                var p = location.pathname.split("/");
+                window.history.pushState(path, path, "/" + (p[1] || "") + "/" + (p[2] || ""));
+            }
+            else {
+                apf.history.setHash("");
+            }
+        }
+        
         //Destroy the app page if it has no application instance
         //if (!tabEditors.selectNodes("page[@type='" + page.type + "']").length && editorPage)
             //editorPage.destroy(true, true);
@@ -320,7 +331,16 @@ return ext.register("ext/editors/editors", {
                 fromHandler.disable();
             toHandler.enable();
         }
-
+        
+        var path = page.$model.data.getAttribute("path").replace(/^\/workspace/, "");
+        if (window.history.pushState) {
+            var p = location.pathname.split("/");
+            window.history.pushState(path, path, "/" + (p[1] || "name") + "/" + (p[2] || "project") + path);
+        }
+        else {
+            apf.history.setHash("!" + path);
+        }
+        
         //toHandler.$itmEditor.select();
         //toHandler.$rbEditor.select();
 
@@ -336,6 +356,18 @@ return ext.register("ext/editors/editors", {
 
     hook : function(){
         panels.register(this);
+        
+        window.onpopstate  = function(e){
+            var page = "/workspace" + e.state;
+            if (tabEditors.activepage != page && tabEditors.getPage(page))
+                tabEditors.set(page);
+        }
+        
+        apf.addEventListener("hashchange", function(e){
+            var page = "/workspace" + e.page;
+            if (tabEditors.activepage != page && tabEditors.getPage(page))
+                tabEditors.set(page);
+        });
     },
 
     init : function(){
