@@ -136,6 +136,10 @@ Ide.DEFAULT_PLUGINS = [
                     plugins[plugin] = 1;
             
             var staticUrl = _self.options.staticUrl;
+            var aceScripts = 
+                '<script type="text/javascript" src="' + staticUrl + '/support/ace/build/src/ace-uncompressed.js"></script>\n' +
+                '<script type="text/javascript" src="' + staticUrl + '/support/ace/build/src/mode-javascript.js"></script>\n' +
+                '<script type="text/javascript" src="' + staticUrl + '/support/ace/build/src/theme-textmate.js"></script>';
             
             var replacements = {
                 davPrefix: _self.options.davPrefix,
@@ -148,7 +152,8 @@ Ide.DEFAULT_PLUGINS = [
                 readonly: (permissions.dav !== "rw"),
                 requirejsConfig: _self.options.requirejsConfig,
                 settingsXml: "",
-                offlineManifest: _self.options.offlineManifest
+                offlineManifest: _self.options.offlineManifest,
+                scripts: _self.options.debug ? "" : aceScripts
             };
 
             var settingsPlugin = _self.getExt("settings");
