@@ -78,7 +78,7 @@ oop.inherits(ProxyDocument, Document);
     };
 
     this.revertDeltas = function (deltas) {
-        return this.doc.applyDeltas(deltas);
+        return this.doc.revertDeltas(deltas);
     };
 }).call(ProxyDocument.prototype);
 
