@@ -51,7 +51,7 @@ exports.main = function(options) {
         var ide = new IdeServer(serverOptions, server, exts);
         
         return function(req, res, next) {
-            req.session.username = "owner";
+            req.session.uid = "owner";
             ide.addUser("owner", User.OWNER_PERMISSIONS);
             ide.handle(req, res, next);
         };
@@ -61,7 +61,9 @@ exports.main = function(options) {
     //server.use(Connect.logger());
     server.use(Connect.conditionalGet());
     server.use(Connect.cookieDecoder());
-    server.use(Connect.session());
+    server.use(Connect.session({
+        key: "cloud9.sid"
+    }));
     server.use(ideProvider(projectDir, server));
     server.use(middleware.staticProvider(Path.normalize(__dirname + "/../../support"), "/static/support"));
     server.use(middleware.staticProvider(Path.normalize(__dirname + "/../../client"), "/static"));

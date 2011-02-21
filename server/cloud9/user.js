@@ -1,14 +1,24 @@
 var sys = require("sys");
 var lang = require("pilot/lang");
+var EventEmitter = require("events").EventEmitter;
 
-var User = function (name, permissions) {
-    this.name = name;
+var User = function (uid, permissions, data) {
+    EventEmitter.call(this);
+    
+    // TODO deprecated
+    Object.defineProperty(this, "name",
+       {get: function() { console.log("DEPRECATED: name use uid"); console.trace(); return uid; }}
+    );
+    
+    this.uid = uid;
     this.permissions = permissions;
+    this.data = data;
     this.clients = [];
+    this.last_message_time = new Date().getTime();
     this.$server_exclude = {};
 };
 
-sys.inherits(User, process.EventEmitter);
+sys.inherits(User, EventEmitter);
 
 User.OWNER_PERMISSIONS = {
     client_exclude: "",
@@ -52,6 +62,7 @@ User.VISITOR_PERMISSIONS = {
     this.setPermissions = function(permissions) {
         this.$server_exclude = lang.arrayToMap(permissions.server_exclude.split("|"));
         this.permissions = permissions;
+        this.emit("changePermissions", this);
     };
     
     this.getPermissions = function(permissions) {
@@ -102,8 +113,10 @@ User.VISITOR_PERMISSIONS = {
         var count = Object.keys(this.clients).length;
         this.emit("clientCountChange", count);
         
-        if (count === 0)
+        if (count == 0) {
+            this.dconn_time = new Date().getTime();
             this.emit("disconnectUser", this);
+        }
     };
     
     this.error = function(description, code, message, client) {
@@ -124,7 +137,7 @@ User.VISITOR_PERMISSIONS = {
     this.broadcast = function(msg, scope) {
         if (scope && this.$server_exclude[scope])
             return;
-            
+
         for (var id in this.clients) 
             this.clients[id].send(msg);
     };

@@ -15,12 +15,13 @@ var save = require("ext/save/save");
 var markup = require("text!ext/run/run.xml");
 
 return ext.register("ext/run/run", {
-    name   : "Run Toolbar",
-    dev    : "Ajax.org",
-    type   : ext.GENERAL,
-    alone  : true,
-    markup : markup,
-    deps   : [noderunner],
+    name    : "Run Toolbar",
+    dev     : "Ajax.org",
+    type    : ext.GENERAL,
+    alone   : true,
+    offline : false,
+    markup  : markup,
+    deps    : [noderunner],
     commands : {
         "resume"   : {hint: "resume the current paused process"},
         "stepinto" : {hint: "step into the function that is next on the execution stack"},
@@ -35,7 +36,9 @@ return ext.register("ext/run/run", {
         while(tbRun.childNodes.length) {
             var button = tbRun.firstChild;
             ide.barTools.appendChild(button);
-            this.nodes.push(button);
+            
+            if (button.nodeType == 1)
+                this.nodes.push(button);
         }
         
         this.hotitems["resume"]   = [btnResume];
@@ -171,15 +174,26 @@ return ext.register("ext/run/run", {
     },
 
     enable : function(){
+        if (!this.disabled) return;
+        
         this.nodes.each(function(item){
-            item.enable();
+            item.setProperty("disabled", item.$lastDisabled !== undefined
+                ? item.$lastDisabled
+                : true);
+            delete item.$lastDisabled;
         });
+        this.disabled = false;
     },
 
     disable : function(){
+        if (this.disabled) return;
+        
         this.nodes.each(function(item){
+            if (!item.$lastDisabled)
+                item.$lastDisabled = item.disabled;
             item.disable();
         });
+        this.disabled = true;
     },
 
     destroy : function(){

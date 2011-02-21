@@ -13,11 +13,12 @@ return ext.register("ext/watcher/watcher", {
     name    : "Watcher",
     dev     : "Ajax.org",
     alone   : true,
+    offline : false,
     type    : ext.GENERAL,
     markup  : null,
     visible : true,
     
-    hook : function() {
+    init : function() {
         // console.log("Initializing watcher");
         
         var removedPaths        = {},
@@ -25,7 +26,8 @@ return ext.register("ext/watcher/watcher", {
             changedPaths        = {},
             changedPathCount    = 0,
             ignoredPaths        = {},
-            expandedPaths       = {};
+            expandedPaths       = {},
+            _self               = this;
             
         function sendWatchFile(path) {
             // console.log("Sending watchFile message for file " + path);
@@ -52,42 +54,42 @@ return ext.register("ext/watcher/watcher", {
             
             if (removedPaths[path]) {
                 util.question(
-	                "File removed, keep tab open?",
-	                path + " has been deleted, or is no longer available.",
-	                "Do you wish to keep the file open in the editor?",
-	                function() { // Yes
-	                    apf.xmldb.setAttribute(data, "changed", "1");
-	                    delete removedPaths[path];
-	                    --removedPathCount;
-	                    winQuestion.hide();
-	                },
-	                function() { // Yes to all
-	                    var pages = tabEditors.getPages();
-	                    
-	                    pages.forEach(function(page) {
-	                       apf.xmldb.setAttribute(page.$model.data, "changed", "1");
-	                    });
-	                    removedPaths = {};
-	                    removedPathCount = 0;
-	                    winQuestion.hide();
-	                },
-	                function() { // No
-	                    tabEditors.remove(page);
-	                    delete removedPaths[path];
-	                    --removedPathCount;
-	                    winQuestion.hide();
-	                },
-	                function() { // No to all
-	                    var pages = tabEditors.getPages();
-	                    
-	                    pages.forEach(function(page) {
-	                    if (removedPaths[page.$model.data.getAttribute("path")])
-	                        tabEditors.remove(page);
-	                    });
-	                    removedPaths = {};
-	                    removedPathCount = 0;
-	                    winQuestion.hide();
-	                }
+                    "File removed, keep tab open?",
+                    path + " has been deleted, or is no longer available.",
+                    "Do you wish to keep the file open in the editor?",
+                    function() { // Yes
+                        apf.xmldb.setAttribute(data, "changed", "1");
+                        delete removedPaths[path];
+                        --removedPathCount;
+                        winQuestion.hide();
+                    },
+                    function() { // Yes to all
+                        var pages = tabEditors.getPages();
+                        
+                        pages.forEach(function(page) {
+                           apf.xmldb.setAttribute(page.$model.data, "changed", "1");
+                        });
+                        removedPaths = {};
+                        removedPathCount = 0;
+                        winQuestion.hide();
+                    },
+                    function() { // No
+                        tabEditors.remove(page);
+                        delete removedPaths[path];
+                        --removedPathCount;
+                        winQuestion.hide();
+                    },
+                    function() { // No to all
+                        var pages = tabEditors.getPages();
+                        
+                        pages.forEach(function(page) {
+                            if (removedPaths[page.$model.data.getAttribute("path")])
+                                tabEditors.remove(page);
+                        });
+                        removedPaths = {};
+                        removedPathCount = 0;
+                        winQuestion.hide();
+                    }
                 );
                 btnQuestionYesToAll.setAttribute("visible", removedPathCount > 1);
                 btnQuestionNoToAll.setAttribute("visible", removedPathCount > 1);
@@ -130,8 +132,9 @@ return ext.register("ext/watcher/watcher", {
         }
         
         stServerConnected.addEventListener("activate", function() {
-            var pages = tabEditors.getPages();
+            if (_self.disabled) return;
             
+            var pages = tabEditors.getPages();
             pages.forEach(function (page) {
                 sendWatchFile(page.$model.data.getAttribute("path"));
             });
@@ -153,8 +156,9 @@ return ext.register("ext/watcher/watcher", {
         });        
 
         ide.addEventListener("closefile", function(e) {
+            if (_self.disabled) return;
+            
             var path = e.xmlNode.getAttribute("path");
-
             if (ide.socket)
                 sendUnwatchFile(path);
             else
@@ -165,23 +169,25 @@ return ext.register("ext/watcher/watcher", {
         });
         
         ide.addEventListener("afterfilesave", function(e) {
-            var path = e.node.getAttribute("path");
+            if (_self.disabled) return;
             
+            var path = e.node.getAttribute("path");
             // console.log("Adding " + path + " to ignore list");
             ignoredPaths[path] = path;
         });
                 
         ide.addEventListener("socketMessage", function(e) {
-            var pages = tabEditors.getPages();
+            if (_self.disabled) return;
             
+            var pages = tabEditors.getPages();
             with (e.message) {
                 if (type != "watcher")
                     return;
-	            if (expandedPaths[path])
-	                return ide.dispatchEvent("treechange", {
-	                    path    : path,
-	                    files   : files
-	                });
+                if (expandedPaths[path])
+                    return ide.dispatchEvent("treechange", {
+                        path    : path,
+                        files   : files
+                    });
                 if (!pages.some(function (page) {
                     return page.$model.data.getAttribute("path") == path;
                 }))
@@ -216,12 +222,15 @@ return ext.register("ext/watcher/watcher", {
         });
         
         tabEditors.addEventListener("afterswitch", function(e) {
+            if (_self.disabled) return;
+            
             checkPage();
         });
         
         trFiles.addEventListener("expand", function(e) {
-            var node = e.xmlNode;
+            if (_self.disabled) return;
             
+            var node = e.xmlNode;
             if (node.getAttribute("type") == "folder") {
                 var path = node.getAttribute("path");
                 
@@ -231,8 +240,9 @@ return ext.register("ext/watcher/watcher", {
         });
         
         trFiles.addEventListener("collapse", function (e) {
+            if (_self.disabled) return;
+
             var node = e.xmlNode;
-            
             if (node.getAttribute("type") == "folder") {
                 var path = node.getAttribute("path");
                 
@@ -241,7 +251,20 @@ return ext.register("ext/watcher/watcher", {
             }
         });
     },
+    
+    enable : function(){
+        this.disabled = false;
+        
+        //@todo add code here to set watchers again based on the current state
+    },
+    
+    disable : function(){
+        this.disabled = true;
+    },
+    
+    destroy : function(){
+        
+    }
 });
 
-    }
-);
+});

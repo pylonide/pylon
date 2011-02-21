@@ -21,6 +21,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
     dev      : "Ajax.org",
     type     : ext.GENERAL,
     alone    : true,
+    offline  : false,
     markup   : markup,
     skin     : skin,
     commands  : {

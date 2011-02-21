@@ -20,7 +20,6 @@ return ext.register("ext/settings/settings", {
     alone   : true,
     type    : ext.GENERAL,
     markup  : markup,
-    file    : ide.settingsUrl,
     commands : {
         "showsettings": {hint: "open the settings window"}
     },
@@ -39,9 +38,11 @@ return ext.register("ext/settings/settings", {
     },
 
     saveToFile : function(){
-        //apf.console.log("SAVING SETTINGS");
-        if (!ide.readonly)
-            fs.saveFile(this.file, this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || "");
+        ide.socket.send(JSON.stringify({
+            command: "settings",
+            action: "set",
+            settings: this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || ""
+        }));
     },
 
     saveSettingsPanel: function() {
@@ -71,11 +72,11 @@ return ext.register("ext/settings/settings", {
             page = pgSettings.getPage(id);
         if (page)
             return page;
-		var node = this.model.queryNode(xpath + "/" + tagName);
+        var node = this.model.queryNode(xpath + "/" + tagName);
         if (!node) {
             this.model.appendXml('<' + tagName + ' name="' + name +'" page="' + id + '" />', xpath);
-		} else
-			node.setAttribute("page", id);
+        } else
+            node.setAttribute("page", id);
         page = pgSettings.add(name, id);
         page.$at = new apf.actiontracker();
         page.$commit = cbCommit || apf.K;
@@ -93,18 +94,42 @@ return ext.register("ext/settings/settings", {
         this.hotitems["showsettings"] = [this.nodes[0]];
 
         this.model = new apf.model();
-        /*fs.readFile(_self.file, function(data, state, extra){
-            if (state != apf.SUCCESS)
-                _self.model.load(template);
-            else
-                _self.model.load(data);
 
-            ide.dispatchEvent("loadsettings", {
-                model : _self.model
+        ide.addEventListener("afteronline", this.$handleOnline = function(){
+            _self.load();
+        });
+    },
+    
+    load : function(){
+        var _self = this;
+        
+        //@todo this should actually be an identifier to know that it was rights that prevented loading it
+        ide.settings = ide.settings == "defaults" ? template : ide.settings;
+        
+        if (!ide.settings){
+            ide.addEventListener("socketMessage", function(e){
+                if (e.message.type == "settings") {
+                    var settings = e.message.settings;
+                    if (!settings || settings == "defaults")
+                        settings = template;
+                    ide.settings =  settings;
+                    _self.load();
+                    
+                    ide.removeEventListener("socketMessage", arguments.callee);
+                }
             });
-        });*/
-
-        this.model.load(this.convertOrBackup() ? template : ide.settings);
+            
+            if (ide.onLine !== true) {
+                ide.addEventListener("socketConnect", function(){
+                    ide.socket.send(JSON.stringify({command: "settings", action: "get"}));
+                });
+            }
+            else 
+                ide.socket.send(JSON.stringify({command: "settings", action: "get"}));
+            return;
+        }
+        
+        this.model.load(ide.settings);
 
         ide.dispatchEvent("loadsettings", {
             model : _self.model
@@ -123,35 +148,8 @@ return ext.register("ext/settings/settings", {
         ide.addEventListener("$event.loadsettings", function(callback) {
             callback({model: _self.model});
         });
-    },
-
-    convertOrBackup: function() {
-        if (!ide.settings || ide.settings.indexOf("d:error") > -1)
-            return true;
-        // <section> elements are from version < 0.0.3 (deprecated)...
-        if (ide.settings.indexOf("<section") > -1) {
-            // move file to /workspace/.settings.xml.old
-            var moved = false,
-                _self = this;
-            apf.asyncWhile(function() {
-                return !moved;
-            },
-            function(iter, next) {
-                //move = function(sFrom, sTo, bOverwrite, bLock, callback)
-                var newfile = _self.file + ".old" + (iter === 0 ? "" : iter);
-                fs.webdav.move(_self.file, newfile, false, null, function(data, state, extra) {
-                    var iStatus = parseInt(extra.status);
-                    if (iStatus != 403 && iStatus != 409 && iStatus != 412
-                      && iStatus != 423 && iStatus != 424 && iStatus != 502 && iStatus != 500) {
-                        moved = true;
-                    }
-                    next();
-                });
-            });
-            return true;
-        }
-
-        return false;
+        
+        ide.removeEventListener("afteronline", this.$handleOnline);
     },
 
     init : function(amlNode){

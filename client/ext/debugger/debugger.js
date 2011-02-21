@@ -13,17 +13,20 @@ var ext = require("core/ext");
 var console = require("ext/console/console");
 var editors = require("ext/editors/editors");
 var panels = require("ext/panels/panels");
+var dock   = require("ext/dockpanel/dockpanel");
 var fs = require("ext/filesystem/filesystem");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/debugger/debugger.xml");
 
 return ext.register("ext/debugger/debugger", {
-    name   : "Debug",
-    dev    : "Ajax.org",
-    type   : ext.GENERAL,
-    alone  : true,
-    markup : markup,
-    deps   : [fs, noderunner],
+    name    : "Debug",
+    dev     : "Ajax.org",
+    type    : ext.GENERAL,
+    alone   : true,
+    //offline : false,
+    markup  : markup,
+    buttonClassName : "debug1",
+    deps    : [fs, noderunner],
     commands: {
         "debug": {
             "hint": "run and debug a node program on the server",
@@ -59,7 +62,16 @@ return ext.register("ext/debugger/debugger", {
             _self.disable();
         });
         
+        ide.addEventListener("afteropenfile", function(e) {
+            var doc = e.doc;
+            var node = e.node;
+            var path = node.getAttribute("path");
+            
+            node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
+        });
+        
         panels.register(this);
+        //dock.register(this);
     },
 
     init : function(amlNode){
@@ -235,6 +247,7 @@ return ext.register("ext/debugger/debugger", {
         this.nodes = [];
         
         panels.unregister(this);
+        dock.unregister(this);
     }
 });
 

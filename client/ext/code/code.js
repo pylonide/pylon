@@ -12,6 +12,8 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var EditSession = require("ace/edit_session").EditSession;
 var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
+var Document = require("ace/document").Document;
+var ProxyDocument = require("ext/code/proxydocument");
 var markup = require("text!ext/code/code.xml");
 var settings = require("text!ext/code/settings.xml");
 
@@ -62,29 +64,33 @@ return ext.register("ext/code/code", {
     },
     
     setDocument : function(doc, actiontracker){
-        if (!doc.acedoc) {
+        if (!doc.acesession) {
             var _self = this;
 
             doc.isInited = doc.hasValue();
-            doc.acedoc = new EditSession(doc.getValue() || "");
-            doc.acedoc.setUndoManager(actiontracker);
+            doc.acedoc = doc.acedoc || new ProxyDocument(new Document(doc.getValue() || ""));
+            doc.acesession = new EditSession(doc.acedoc);
+            doc.acedoc = doc.acesession.getDocument();
             
-            doc.addEventListener("prop.value", function(e){
-                doc.acedoc.setValue(e.value || "");
+            doc.acesession.setUndoManager(actiontracker);
+            
+            doc.addEventListener("prop.value", function(e) {
+                doc.acesession.setValue(e.value || "");
+                ceEditor.$editor.moveCursorTo(0, 0);
                 doc.isInited = true;
             });
             
             doc.addEventListener("retrievevalue", function(e){
                 if (!doc.isInited) return e.value;
-                else return doc.acedoc.toString();
+                else return doc.acesession.getValue();
             });
             
             doc.addEventListener("close", function(){
-                //??? destroy doc.acedoc
+                //??? destroy doc.acesession
             });
         }
 
-        ceEditor.setProperty("value", doc.acedoc);
+        ceEditor.setProperty("value", doc.acesession);
     },
 
     hook : function() {
@@ -111,20 +117,22 @@ return ext.register("ext/code/code", {
     init : function(amlPage) {
         var def = ceEditor.getDefaults();
         
-        //check default settings...
-        var settings = require("ext/settings/settings"),
-            model    = settings.model,
-            base     = model.data.selectSingleNode("editors/code");
-        if (!base)
-            base = model.appendXml('<code name="' + this.name +'" page="' + settings.getSectionId(this.name) + '" />', "editors");
+        ide.addEventListener("loadsettings", function() {
+            //check default settings...
+            var settings = require("ext/settings/settings"),
+                model    = settings.model,
+                base     = model.data.selectSingleNode("editors/code");
+            if (!base)
+                base = model.appendXml('<code name="' + this.name +'" page="' + settings.getSectionId(this.name) + '" />', "editors");
         
-        // go through all default settings and append them to the XML if they're not there yet
-        for (var prop in def) {
-            if (!prop) continue;
-            if (!base.getAttribute(prop))
-                base.setAttribute(prop, def[prop]);
-        }
-        apf.xmldb.applyChanges("synchronize", base);
+            // go through all default settings and append them to the XML if they're not there yet
+            for (var prop in def) {
+                if (!prop) continue;
+                if (!base.getAttribute(prop))
+                    base.setAttribute(prop, def[prop]);
+            }
+            apf.xmldb.applyChanges("synchronize", base);
+        });
 
         amlPage.appendChild(ceEditor);
         ceEditor.show();
