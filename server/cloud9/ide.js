@@ -40,6 +40,7 @@ module.exports = Ide = function(options, httpServer, exts) {
         debug: options.debug === true,
         staticUrl: staticUrl,
         workspaceId: options.workspaceId || "ide",
+        context: options.context || null,
         db: options.db || null,
         plugins: options.plugins || Ide.DEFAULT_PLUGINS,
         requirejsConfig: requirejsConfig
