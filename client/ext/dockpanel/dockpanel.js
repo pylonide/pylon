@@ -87,7 +87,16 @@ return ext.register("ext/dockpanel/dockpanel", {
         }
         
         var dockButtonID = "dockButton" + _self.numDockButtons;
-        var tmpAML = '<a:application xmlns:a="http://ajax.org/2005/aml">\
+        var btnTemp = new apf.button({
+            id: dockButtonID,
+            "class": dockButtonID,
+            skin: dockButton,
+            state: true,
+            visible: false,
+            value: "{" + windowObj.id + ".visible}"
+        });
+        
+        /*var tmpAML = '<a:application xmlns:a="http://ajax.org/2005/aml">\
             <a:button id="' + dockButtonID + '" class="' + dockButtonID 
                 + '" skin="dockButton" \
                 state="true" visible="false" onclick="\
@@ -125,7 +134,7 @@ return ext.register("ext/dockpanel/dockpanel", {
         //apf.document.body.insertMarkup(tmpAML);
         dockPanelRight.insertMarkup(tmpAML);
 
-        btnTemp = eval(dockButtonID);
+        btnTemp = eval(dockButtonID);*/
         
         if(properties.dockPosition == "top") {
             var appendedDockBtn = 
