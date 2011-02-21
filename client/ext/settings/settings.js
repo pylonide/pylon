@@ -94,7 +94,37 @@ return ext.register("ext/settings/settings", {
         this.hotitems["showsettings"] = [this.nodes[0]];
 
         this.model = new apf.model();
-        this.model.load(ide.settings || template);
+
+        ide.addEventListener("afteronline", this.$handleOnline = function(){
+            _self.load();
+        });
+    },
+    
+    load : function(){
+        var _self = this;
+        
+        //@todo this should actually be an identifier to know that it was rights that prevented loading it
+        if (!ide.settings){
+            ide.addEventListener("socketMessage", function(e){
+                if (e.message.type == "settings") {
+                    ide.settings =  e.message.settings || template;
+                    _self.load();
+                    
+                    ide.removeEventListener("socketMessage", arguments.callee);
+                }
+            });
+            
+            if (ide.onLine) {
+                ide.addEventListener("socketConnect", function(){
+                    ide.socket.send(JSON.stringify({command: "settings", action: "get"}));
+                });
+            }
+            else 
+                ide.socket.send(JSON.stringify({command: "settings", action: "get"}));
+            return;
+        }
+        
+        this.model.load(ide.settings);
 
         ide.dispatchEvent("loadsettings", {
             model : _self.model
@@ -113,6 +143,8 @@ return ext.register("ext/settings/settings", {
         ide.addEventListener("$event.loadsettings", function(callback) {
             callback({model: _self.model});
         });
+        
+        ide.removeEventListener("afteronline", this.$handleOnline);
     },
 
     init : function(amlNode){

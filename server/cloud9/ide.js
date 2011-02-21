@@ -43,7 +43,8 @@ module.exports = Ide = function(options, httpServer, exts) {
         context: options.context || null,
         db: options.db || null,
         plugins: options.plugins || Ide.DEFAULT_PLUGINS,
-        requirejsConfig: requirejsConfig
+        requirejsConfig: requirejsConfig,
+        offlineManifest: options.offlineManifest || ""
     };
 
     this.$users = {};
@@ -59,6 +60,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/filesystem/filesystem",
     "ext/settings/settings",
     "ext/editors/editors",
+    "ext/connect/connect",
     "ext/themes/themes",
     "ext/themes_default/themes_default",
     "ext/panels/panels",
@@ -146,7 +148,8 @@ Ide.DEFAULT_PLUGINS = [
                 plugins: Object.keys(plugins),
                 readonly: (permissions.dav !== "rw"),
                 requirejsConfig: _self.options.requirejsConfig,
-                settingsXml: ""
+                settingsXml: "",
+                offlineManifest: _self.options.offlineManifest
             };
 
             var settingsPlugin = _self.getExt("settings");
@@ -320,3 +323,4 @@ Ide.DEFAULT_PLUGINS = [
         }
     };
 }).call(Ide.prototype);
+

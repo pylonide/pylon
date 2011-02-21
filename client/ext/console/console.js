@@ -34,6 +34,7 @@ return ext.register("ext/console/console", {
     markup : markup,
     css    : css,
     
+    commandHistoryIndex : 0,
     excludeParent : true,
     visible  : true,
     commands : {
@@ -240,24 +241,29 @@ return ext.register("ext/console/console", {
 
     commandTextHandler: function(e) {
         var line      = e.currentTarget.getValue(),
-            idx       = cmdHistory.indexOf(line),
+            //idx       = cmdHistory.indexOf(line),
             hisLength = cmdHistory.length,
             newVal    = "";
-        if (cmdBuffer === null || (idx == -1 && cmdBuffer !== line))
+        if (cmdBuffer === null || (this.commandHistoryIndex == 0 && cmdBuffer !== line))
             cmdBuffer = line;
         parser.parseLine(line);
 
         if (e.keyCode == 38) { //UP
             if (!hisLength)
                 return;
-            newVal = cmdHistory[--idx < 0 ? hisLength - 1 : idx];
-            e.currentTarget.setValue(newVal);
+            newVal = cmdHistory[--this.commandHistoryIndex];
+            if (this.commandHistoryIndex < 0)
+                this.commandHistoryIndex = 0;
+            if (newVal)
+                e.currentTarget.setValue(newVal);
             return false;
         }
         else if (e.keyCode == 40) { //DOWN
             if (!hisLength)
                 return;
-            newVal = (++idx > hisLength - 1 || idx === 0) ? (cmdBuffer || "") : cmdHistory[idx];
+            newVal = cmdHistory[++this.commandHistoryIndex] || "";//(++idx > hisLength - 1 || idx === 0) ? (cmdBuffer || "") : 
+            if (this.commandHistoryIndex >= cmdHistory.length)
+                this.commandHistoryIndex = cmdHistory.length;
             e.currentTarget.setValue(newVal);
             return false;
         }
@@ -287,7 +293,7 @@ return ext.register("ext/console/console", {
                 return false;
             }
 
-            cmdHistory.push(line);
+            this.commandHistoryIndex = cmdHistory.push(line);
             cmdBuffer = null;
             e.currentTarget.setValue(newVal);
             this.hideHints();
@@ -398,7 +404,10 @@ return ext.register("ext/console/console", {
                             if (ide.dispatchEvent("consolecommand." + cmd, {
                               data: data
                             }) !== false) {
-                                ide.socket.send(JSON.stringify(data));
+                                if (!ide.onLine)
+                                    this.write("Cannot execute command. You are currently offline.");
+                                else
+                                    ide.socket.send(JSON.stringify(data));
                             }
                         }
                         return;
@@ -439,7 +448,7 @@ return ext.register("ext/console/console", {
             case "cd":
                 res = message.body;
                 if (res.cwd) {
-                    this.$cwd = res.cwd;
+                    this.$cwd = res.cwd.replace(ide.workspaceDir, "/workspace");
                     this.write("Working directory changed.");
                 }
                 break;

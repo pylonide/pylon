@@ -35,15 +35,21 @@ return ext.register("ext/extmgr/extmgr", {
     },
     
     enable : function(){
+        if (!this.disabled) return;
+        
         this.nodes.each(function(item){
             item.enable();
         });
+        this.disabled = false;
     },
     
     disable : function(){
+        if (this.disabled) return;
+        
         this.nodes.each(function(item){
             item.disable();
         });
+        this.disabled = true;
     },
     
     destroy : function(){
