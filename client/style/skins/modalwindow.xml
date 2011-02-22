@@ -40,11 +40,13 @@
         }
 
         .fm-window .fm-content {
-            position:relative;
+            position:absolute;
             overflow:visible;
             border-right:1px solid #7b7b7b;
-            height : 100%;
-            top : -30px;
+            left : 0;
+            top  : 30px;
+            right : 0;
+            bottom : 0;
         }
     ]]></a:style>
     

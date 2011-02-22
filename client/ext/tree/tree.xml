@@ -93,7 +93,7 @@
         <a:button
           top="-22"
           skin="header-btn"
-          right="7"
+          right="5"
           icon="refresh.png"
           onclick="require('ext/tree/tree').refresh()" />
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->

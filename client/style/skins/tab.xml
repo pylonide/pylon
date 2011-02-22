@@ -418,7 +418,7 @@
             z-index : 10;
             margin: 0 auto;
             background-color: #e8e8e8;
-            border-bottom: 1px solid #8C8C8C;
+            /*border-bottom: 1px solid #8C8C8C;*/
             border-top:4px solid #e8e8e8;
             overflow: hidden;
             clear: both;

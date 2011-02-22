@@ -97,12 +97,12 @@
           onclick  = "require('ext/run/run').run(true)"
           disabled = "{stProcessRunning.active and 1}"
           submenu  = "mnuDebugCfg" />
-        <a:splitbutton
+        <!--a:splitbutton
           icon     = "run.png"
           caption  = "run"
           onclick  = "require('ext/run/run').run(false)"
           disabled = "{stProcessRunning.active and 1}"
-          submenu  = "mnuRunCfg" />
+          submenu  = "mnuRunCfg" /-->
         <a:button
           icon     = "stop.png"
           caption  = "stop"
