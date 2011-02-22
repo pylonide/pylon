@@ -181,6 +181,25 @@
         </a:cover>
     </a:presentation>
 </a:modalwindow>
+<a:modalwindow name="dockwindowbasic">
+    <a:style><![CDATA[
+        .dockwindowbasic{
+            position : relative;
+            background: #333;
+            -moz-border-radius: 3px;
+            -webkit-border-radius: 3px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="div">
+            <div class="dockwindowbasic">
+                <div class="innerdockwindow">
+                </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:modalwindow>
 <a:tslider name="tslider">
     <a:style><![CDATA[
         .tslider {
