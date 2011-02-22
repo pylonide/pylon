@@ -1,0 +1,13 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml"><a:chart name="chart">
+    <a:style><![CDATA[
+    .chart {
+        background-color:transparent;
+    }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="chart" style="position:relative; overflow:hidden;"/>
+        </a:main>
+    </a:presentation>
+</a:chart></a:skin>

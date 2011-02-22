@@ -1,0 +1,151 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+<a:bar name="bar">
+    <a:style><![CDATA[
+        .bar{
+            overflow : hidden;
+            position : relative;
+        }
+    ]]></a:style>
+        <a:main container="div">
+            <div class="bar">
+                <div class="contents"> </div>
+                <div class="barFooter"><div><div> </div></div></div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:bar>
+<a:bar name="basic">
+    <a:style><![CDATA[
+        .basic{
+            position : relative;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="basic">
+            </div>
+        </a:main>
+    </a:presentation>
+</a:bar>
+<a:bar name="headerbar">
+    <a:style><![CDATA[
+        .headerbar{
+            /*background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,127,189)),color-stop(0.9, rgb(63,144,215)),color-stop(1, rgb(38,118,188)));
+            background: -moz-linear-gradient(center bottom,rgb(51,127,189) 0%,rgb(63,144,215) 90%,rgb(38,118,188) 100%);
+            border-bottom: 1px solid #3f8fd5;
+            -webkit-box-shadow: 0px -1px 1px;
+            -moz-box-shadow: 0px -1px 1px;
+            box-shadow: 0px -1px 1px;
+            height: 24px;
+            padding : 3px 0 0 5px;*/
+            
+            position : relative;
+            height: 5px;
+            overflow: visible;
+            z-index: 10;
+            background: url(images/headerBarBg.png) repeat-x 0 0;
+        }
+
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="headerbar">
+            </div>
+        </a:main>
+    </a:presentation>
+</a:bar>
+<a:bar name="debug-panel">
+    <a:style><![CDATA[
+        .debug-panel {
+            position         : relative;
+            overflow         : hidden;
+            width            : 43px;
+            border-left      : 1px solid #2e2e2e;
+            background-color : #e7e7e7;
+            filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5');
+            -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5')";
+            background       : -webkit-gradient(linear, left center, right center, from(#f3f3f3), color-stop(1, #e5e5e5));
+            background       : -moz-linear-gradient(center left, #f3f3f3 0%, #e5e5e5 100%) repeat scroll 0 0 transparent;
+        }
+        
+        .debug-panel .bar_inset {
+            width            : 43px;
+            height           : 12px;
+            position         : relative;
+            border-top       : 1px solid #000;
+            background       : url(images/sidebar_right_bar_inset.gif);
+        }
+        
+        .debug-panel .body {
+            position    : absolute;
+            top         : 13px;
+            left        : 0;
+            right       : 0;
+            bottom      : 0;
+            border-top  : 1px solid #ffffff;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="div[2]">
+            <div class="debug-panel">
+                <div class="bar_inset"/>
+                <div class="body"/>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:bar>
+<a:bar name="dock-panel">
+    <a:style><![CDATA[
+        .dock-panel {
+            position         : relative;
+            overflow         : hidden;
+            width            : 65px;
+            border-right     : 1px solid #2e2e2e;
+            background       : url(images/dock_cloud9_bg.gif);
+        }
+
+        .dock-panel .body {
+            position    : absolute;
+            top         : 0;
+            left        : 0;
+            right       : 0;
+            bottom      : 0;
+        }
+        
+        .dock-panel .c9menulogo {
+            width    : 65px;
+            height   : 32px;
+            position : relative;
+            margin-top: 20px;
+        }
+        
+        .dock-panel .c9menulogo span {
+            background  : url(images/c9menulogo.png) no-repeat 0 0;
+            width       : 45px;
+            height      : 29px;
+            position    : absolute;
+            left        : 50%;
+            margin-left : -22px;
+            top         : 0;
+        }
+        
+        .dock-panel .c9version {
+            color       : #696969;
+            font-family : Tahoma;
+            font-size   : 10px;
+            text-align  : center;
+            padding     : 0 0 3px 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="div[1]">
+            <div class="dock-panel">
+                <div class="body"/>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:bar></a:skin>

@@ -1,0 +1,66 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml"><a:divider name="divider">
+    <a:style><![CDATA[
+        .divider{
+            height : 0;
+            border: 1px solid white;
+            border-width : 1px 0 1px 0;
+            border-color : #c3c3c3 white white #c3c3c3;
+            line-height : 0;
+            cursor : default;
+        }
+
+        .hbox .divider, .vdivider{
+            width : 0;
+            margin : 0 10px 0 10px;
+            height: 17px;
+            border-width : 0 1px 0 1px;
+            height: 17px;
+        }
+
+        .divider span{
+            color : #333;
+            background : #f5f5f5;
+            padding : 0 2px 0 2px;
+            position : relative;
+            top : -1px;
+            display : none;
+            font-size : 8pt;
+        }
+
+        .table .divider, .vbox .divider, .hbox .divider{
+            margin : 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="." caption="span" minheight="2" minwidth="2">
+            <div class="divider"><span> </span> </div>
+        </a:main>
+    </a:presentation>
+</a:divider>
+<a:divider name="divider-debugpanel">
+    <a:style><![CDATA[
+        .divider-debugpanel {
+            position      : relative;
+            overflow      : hidden;
+            border-top    : 1px solid #bebebe;
+            border-bottom : 1px solid #f3f3f3;
+            width         : 34px;
+            height        : 2px;
+            margin        : 5px 0 5px 3px;
+        }
+        
+        .divider-debugpanel DIV {
+            border-bottom : 1px solid #bebebe;
+            border-top    : 1px solid #f3f3f3;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="div" caption="div">
+            <div class="divider-debugpanel">
+                <div/>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:divider></a:skin>
