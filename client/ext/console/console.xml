@@ -45,7 +45,7 @@
                         <a:scrollbar
                           for       = "txtConsole"
                           margin    = "0"
-                          skin      = "wnscrollbar"
+                          skin      = "console_scrollbar"
                           width     = "17" />
                     </a:hbox>
                 </a:page>

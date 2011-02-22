@@ -1,0 +1,399 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml"><a:markupedit name="debugmarkup">
+    <a:style><![CDATA[
+        .debugmarkup{
+            background : white url(images/splitter_docs.gif) no-repeat 50% bottom;
+            font-family : Monaco, 'Courier New';
+            font-size : 11px;
+            cursor : default;
+            padding : 1px 1px 4px 1px;
+            border : 1px solid #c3c3c3;
+        }
+        .debugmarkup blockquote{
+            margin : 0;
+            padding : 0px;
+            overflow : auto;
+            width : 100%;
+            height : 100%;
+            position : relative;
+            line-height : 1.4em;
+        }
+        .debugmarkup .attribute{
+            margin : 0 -7px 0 0;
+        }
+        .debugmarkup .generated{
+            margin : 0;
+        }
+        .debugmarkup dl,
+        .debugmarkup dt,
+        .debugmarkup dd{
+            margin : 0;
+            display:inline-block;
+        }
+        .debugmarkup dt,
+        .debugmarkup span{
+            color : #0000FF;
+        }
+        .debugmarkup dt{
+            cursor : pointer;
+        }
+        .attribute dl,
+        .attribute dt,
+        .attribute dd{
+            display : inline-block;
+        }
+        .debugmarkup #txt_rename{
+            display : inline-block;
+            background-color : white;
+            color : black;
+            border : 1px solid gray;
+            padding : 0 2px 1px 2px;
+            margin : 0 -3px 0 -1px;
+            line-height : auto;
+            height : 15px;
+            cursor : text;
+        }
+        .debugmarkup #txt_rename.attrvalue{
+            position : relative;
+            left : -2px;
+            padding-right : 2px;
+            margin-right : -5px;
+        }
+        .debugmarkup DIV .attribute{
+            cursor : pointer;
+        }
+        .debugmarkup .selected .attribute{
+            cursor : default;
+        }
+        .debugmarkup .attribute DT,
+        .debugmarkup .attribute DD{
+            cursor : text;
+        }
+        .attribute dt{
+            color : #191970;
+        }
+        .attribute dd{
+            color : #FF0000;
+        }
+        .debugmarkup dt,
+        .attribute,
+        .debugmarkup .selected span{}
+        .debugmarkup dl.attribute{
+            padding : 0 0 0 5px;
+        }
+        .debugmarkup dl{
+            /*height : 18px;*/
+            white-space : normal;
+        }
+        .debugmarkup dl dt{
+            white-space : normal;
+            padding : 1px 0 2px 2px;
+        }
+        .debugmarkup dl dl{
+            /*height : 14px;*/
+            white-space : nowrap;
+        }
+        .debugmarkup dl dl dt{
+            white-space : nowrap;
+        }
+        .debugmarkup span{
+            display : inline-block;
+            padding : 2px;
+        }
+        .debugmarkup u{
+            text-decoration : none;
+            display : inline-block;
+            height : 18px;
+        }
+        .debugmarkup strong{
+            font-weight : normal;
+        }
+        .debugmarkup DIV{
+            cursor : default;
+            padding : 0 0 0 14px;
+            position : relative;
+            margin : 0 0 -2px 0;
+        }
+        .debugmarkup DIV>SPAN{
+            margin : 0 0 -2px 0;
+            padding-top : 1px;
+            display : block;
+        }
+        /*.debugmarkup DIV>DL{
+            display : block;
+        }*/
+        .debugmarkup .selected,
+        .debugmarkup .selected dl,
+        .debugmarkup .selected dd,
+        .debugmarkup .selected dt,
+        .debugmarkup .selected span,
+        .debugmarkup .selected strong{
+            background-color : #25a8e7;
+            color : #FFFFFF;
+        }
+        .has_apf .debugmarkup .highlight{
+            background-color : #FFFF00;
+            color : #000000;
+        }
+        .debugmarkup I{
+            width : 9px;
+            height : 9px;
+            position : absolute;
+            left : 2px;
+            top : 5px;
+            background-repeat : no-repeat;
+        }
+        .debugmarkup I.pluslast {
+            background-image:url(images/splus.gif);
+        }
+        .debugmarkup I.minlast {
+            background-image:url(images/smin.gif);
+        }
+        .debugmarkup I.plus {
+            background-image:url(images/splus.gif);
+        }
+        .debugmarkup I.min, .debugmarkup .open I {
+            background-image:url(images/smin.gif);
+        }
+        .debugmarkup DIV BLOCKQUOTE{
+            margin : -3px 0 0 0;
+            padding : 0 0 0 10px;
+            display : none;
+            height : 0;
+            overflow : visible;
+            width : auto;
+        }
+        .debugmarkup .plus>span, .debugmarkup .pluslast>span{
+            display : none;
+        }
+
+        .debugmarkup .anynode{
+            padding : 1px 1px 1px 16px;
+        }
+
+        .debugmarkup .anynode strong{
+            margin : 0 0 0 10px;
+            cursor : text;
+            width : 0;
+            height : 1em;
+            overflow : hidden;
+            display : inline-block;
+            white-space : pre-wrap;
+        }
+        .debugmarkup .anynode #txt_rename{
+            display : block;
+            margin : -1px 20px -2px 9px;
+            border : 1px dotted gray;
+            height : auto;
+            white-space : pre-wrap;
+        }
+        .debugmarkup .anynode #txt_rename p{
+            margin : 0;
+        }
+
+        .debugmarkup .open strong{
+            width : auto;
+            overflow : visible;
+            display : block;
+            height : auto;
+        }
+
+        .debugmarkup .comment{
+            color : green;
+        }
+
+        .debugmarkup .cdata{
+            color : gray;
+        }
+
+        .debugmarkup .procinstr{
+            color : orange;
+        }
+
+        .debugmarkup .procinstr strong, .debugmarkup .cdata strong{
+            color : #333;
+        }
+
+        .debugmarkup .textnode{
+            padding : 3px 1px 3px 16px;
+            color : #333;
+            cursor : text;
+            white-space : pre-wrap;
+        }
+        .debugmarkup .textnode u{
+            text-decoration : none;
+        }
+        .debugmarkup .textnode #txt_rename{
+            margin-top : -1px;
+            margin-bottom : 1px;
+        }
+    ]]></a:style>
+    <a:presentation>
+        <a:main container="blockquote" startclosed="false">
+            <div class="debugmarkup">
+                <blockquote> </blockquote>
+            </div>
+        </a:main>
+        <a:item class="dl" begintag="dl/dt" begintail="dl/span" endtag="span" attributes="dl" openclose="i" select="dl" container="blockquote">
+            <div><dl><dt>-</dt><span> </span></dl><blockquote> </blockquote><span>-</span><i> </i></div>
+        </a:item>
+        <a:attribute name="dt" value="dd">
+            <dl class="attribute"><dt> </dt>="<dd> </dd>"</dl>
+        </a:attribute>
+        <a:textnode text="u">
+            <div class="textnode"><u>-</u></div>
+        </a:textnode>
+        <a:anynode text="strong" tagend="text()[2]" tagstart="text()" openclose="i">
+            <div class="anynode">-<strong>-</strong>-<i class="plus"> </i></div>
+        </a:anynode>
+        <a:loading>
+            <div class="loading"> </div>
+        </a:loading>
+        <a:empty container=".">
+            <div class="empty"/>
+        </a:empty>
+    </a:presentation>
+</a:markupedit>
+<a:markupedit name="markupedit">
+    <a:style><![CDATA[
+        .markupedit {
+            border: 1px solid gray;
+
+            background-color: #FFF;
+            width: 200px;
+            height: 500px;
+            overflow: auto;
+
+            font-family: Courier New;
+            font-size: 11px;
+            cursor: default;
+        }
+
+        .markupedit dl, .markupedit dt, .markupedit dd{
+            margin: 0;
+        }
+
+        .markupedit dt, .markupedit span{
+            color: #0000FF;
+        }
+
+        .markupedit dt{
+            cursor: hand;
+            cursor: pointer;
+        }
+
+        .markupedit .attribute dl, .markupedit .attribute dt, .markupedit .attribute dd{
+            display: inline;
+        }
+
+        #override .markupedit .textedit{
+            background-color: white;
+            color: black;
+            border: 1px solid black;
+            padding: 1px 2px 1px 2px;
+            margin: -2px -4px -5px -3px;
+        }
+        #override strong.textedit{
+            position: relative;
+        }
+
+        #override .markupedit DIV .attribute DT, #override .markupedit DIV .attribute DD{
+            cursor: text;
+        }
+
+        .markupedit .attribute dt{
+            color: #191970;
+        }
+
+        .markupedit .attribute dd{
+            color: #FF0000;
+        }
+
+        .markupedit dt, .markupedit .attribute, .markupedit .selected span{
+            float: left;
+        }
+
+        .markupedit dl.attribute{
+            padding: 0 0 0 5px;
+        }
+
+        .markupedit dl{
+            height: 14px;
+            white-space: nowrap;
+        }
+
+        .markupedit span{
+            display: block;
+        }
+
+        .markupedit u{
+            float: left;
+            text-decoration: none;
+        }
+
+        .markupedit strong{
+            font-weight: normal;
+            float: left;
+        }
+
+        .markupedit .textnode strong{
+            cursor: text;
+        }
+
+        .markupedit DIV{
+            cursor: default;
+            padding: 0 0 0 14px;
+            background-repeat: no-repeat;
+            background-position: 2px 3px;
+        }
+
+        .markupedit .selected dl, .markupedit .selected dd, .markupedit .selected dt, .markupedit .selected span, .markupedit .selected strong{
+            background-color: #191970;
+            color: #FFFFFF;
+        }
+
+        #override .markupedit .highlight{
+            background-color: #FFFF00;
+            color: #000000;
+        }
+
+        .markupedit DIV.pluslast {background-image:url(images/splus.gif)}
+        .markupedit DIV.minlast {background-image:url(images/smin.gif)}
+        .markupedit DIV.plus {background-image:url(images/splus.gif)}
+        .markupedit DIV.min {background-image:url(images/smin.gif)}
+
+        .markupedit BLOCKQUOTE{
+            margin: 0;
+            padding: 0 0 0 10px;
+            display: none;
+            height: 0;
+            overflow: hidden;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="." startclosed="false">
+            <div class="markupedit">
+
+            </div>
+        </a:main>
+        <a:item class="dl" begintag="dl/dt" begintail="dl/span" endtag="span" attributes="dl" openclose="." select="dl" container="blockquote">
+            <div>
+                <dl><dt>-</dt><span> </span></dl>
+                <blockquote> </blockquote>
+                <span>-</span>
+            </div>
+        </a:item>
+        <a:attribute name="dt" value="dd">
+            <dl class="attribute"><dt> </dt>="<dd> </dd>"</dl>
+        </a:attribute>
+        <a:textnode text="strong" tag="u">
+            <strong class="textnode"><u> </u><strong>-</strong></strong>
+        </a:textnode>
+        <a:loading>
+            <div class="loading"><span> </span><label>Loading...</label></div>
+        </a:loading>
+        <a:empty caption=".">
+            <div class="empty"/>
+        </a:empty>
+    </a:presentation>
+</a:markupedit></a:skin>

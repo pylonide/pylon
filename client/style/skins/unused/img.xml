@@ -1,0 +1,25 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml"><a:img name="img">
+    <a:style><![CDATA[
+        .img{
+            padding : 10px;
+            border : 1px solid #c3c3c3;
+            background : #fafbfc no-repeat 50% 50%;
+            overflow : hidden;
+            position : relative;
+            text-align : center;
+        }
+
+        .img img{
+            margin : auto;
+            position : relative;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main image="img/@src">
+            <div class="img">
+                <img src=""/>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:img></a:skin>

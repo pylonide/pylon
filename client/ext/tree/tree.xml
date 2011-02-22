@@ -89,14 +89,14 @@
             davProject.move(a, b + /\/[^\/]*$/.exec(a));
         };
     ]]></a:script>
-    <a:window id="winFilesViewer" flex="3" skin="dockwin" title="Files" modal="false" visible="true" buttons="close" optimize="true">
+    <a:window id="winFilesViewer" flex="3" skin="fm-window" title="File Manager" modal="false" visible="true" buttons="close" optimize="true">
         <a:button
-          top="-15"
-          skin="btn_icon_only"
-          class="dim14-14"
-          right="20"
-          icon="refresh-icon-states.png"
+          top="-22"
+          skin="header-btn"
+          right="5"
+          icon="refresh.png"
           onclick="require('ext/tree/tree').refresh()" />
+        <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
           
         <a:tree id="trFiles" canrename="true" anchors="0 0 0 0" border="0"
           contextmenu="mnuCtxTree" multiselect="true" reselectable="true"

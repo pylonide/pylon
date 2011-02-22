@@ -108,7 +108,7 @@
         </div>
 
         <a:skin
-          src        = "[%staticUrl%]/style/skins.xml"
+          src        = "[%staticUrl%]/style/skins/_index.xml"
           media-path = "[%staticUrl%]/style/images/"
           icon-path  = "[%staticUrl%]/style/icons/" />
 
@@ -138,51 +138,31 @@
         <a:include src="[%staticUrl%]/include/windows.xml" />
 
         <a:vbox anchors="0 0 0 0" id="vbMain">
-            <a:bar skin="headerbar">
-                <a id="logo" href="#" title="cloud9 ide">cloud9</a>
+            <a:bar skin="c9-menu-bar" id="logobar">
+                <a:hbox>
+                    <a:hbox id="barMenu" edge="9 5 0 5" padding="3" align="center">
+                        <a:button skin="c9-menu-btn" submenu="mnuFile" margin="1 0 0 0">File</a:button>
+                        <a:button skin="c9-menu-btn" submenu="mnuEdit" margin="1 0 0 0">Edit</a:button>
+                        <a:button skin="c9-menu-btn" submenu="mnuView" margin="1 0 0 0">View</a:button>
+                    </a:hbox>
+                    <a:hbox id="barTools" edge="8 0 0 0" padding="3" align="center">
+                        <a:divider skin="c9-divider-double" />
+                    </a:hbox>
+                </a:hbox>
             </a:bar>
-            <a:toolbar id="tbMain">
-                <a:menubar id="barMenu" class="headerMenuBar">
-                    <a:button submenu="mnuFile">File</a:button>
-                    <a:button submenu="mnuEdit">Edit</a:button>
-                    <a:button submenu="mnuView">View</a:button>
-                </a:menubar>
-                <a:bar id="barTools">
-
-                </a:bar>
-            </a:toolbar>
 
             <a:vbox id="mainRow" padding="0" flex="1" splitters="true">
                 <a:hbox id="hboxMain" padding="0" edge="0" flex="1">
-                    <a:bar skin="dock-panel">
-                        <a:list skin="dock-list">
-                            <a:each match="[item]">
-                                <a:caption match="[text()]"></a:caption>
-                                <a:icon match="[@icon]"></a:icon>
-                                <a:css match="{[@type] == 'shop'}" value="shop-item"></a:css>
-                                <a:css match="{[@type] == 'spacer'}" value="spacer-item"></a:css>
-                            </a:each>
-                            <a:model>
-                                <data>
-                                    <item icon="project_files.png">Project Files</item>
-                                    <item icon="open_files.png">Open Files</item>
-                                    <item icon="visual_editor.png">Visual Editor</item>
-                                    <item icon="preferences.png">Preferences</item>
-                                    <item icon="git_corner.png">Git Corner</item>
-                                    <item icon="deploy.png">Deploy</item>
-                                    <item icon="the_store.png">The Store</item>
-                                    <item type="spacer" />
-                                    <item icon="shop1.png" type="shop"></item>
-                                    <item icon="shop2.png" type="shop"></item>
-                                    <item icon="shop3.png" type="shop"></item>
-                                    <item icon="shop4.png" type="shop"></item>
-                                </data>
-                            </a:model>
-                        </a:list>
+                    <a:bar skin="black-menu-bar" skin_old="dock-panel">
+                        <a:group id="acg1"> 
+                            <a:radiobutton skin="menu-radiobutton" value="opensource" class="project_files" checked="true">Project Files</a:radiobutton> 
+                            <!--a:radiobutton skin="menu-radiobutton" value="commercial" class="open_files">Open Files</a:radiobutton>
+                            <a:radiobutton skin="menu-radiobutton" value="commercial2" class="preferences">Preferences</a:radiobutton-->
+                        </a:group>
                         <div class="c9menulogo">
                             <span></span>
                         </div>
-                        <div class="c9version">Version 0.95</div>
+                        <div class="c9version">Version 0.31</div>
                     </a:bar>
                     <a:vbox id="colLeft" padding="8" width="200" />
                     <a:splitter width="3" id="splitterPanelLeft" />
