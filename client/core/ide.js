@@ -145,6 +145,8 @@ require.def("core/ide", deps,
                     return;
                 }
 
+				console.log(message);
+
                 if (message.type == "attached")
                     ide.dispatchEvent("socketConnect");
 
