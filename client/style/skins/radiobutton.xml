@@ -1,0 +1,274 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+<a:radiobutton name="classic">
+    <a:style><![CDATA[
+        .rbclassic {
+            height   : 15px;
+            position : relative;
+            overflow : hidden;
+            color    : #333;
+            cursor   : default;
+            padding-left:14px;
+            margin-bottom:1px;
+        }
+        
+        .rbclassic .radio {
+            width      : 12px;
+            height     : 12px;
+            position   : absolute;
+            top:1px;
+            left:0;
+            background : url("images/radio.png") no-repeat 0 -12px;
+        }
+
+        .rbclassic span {
+            font-family : Tahoma;
+            font-size   : 11px;
+            padding     : 0 2px 0px 2px;
+            height      : 15px;
+            margin      : 0;
+            overflow    : hidden;
+            position:relative;
+        }
+
+        .rbclassicFocus span {
+            border : 1px dotted #BBB;
+        }
+
+        .rbclassicDown .radio{
+            background-position: 0 -36px;
+        }
+
+        .rbclassicChecked .radio{
+            background-position: 0 -24px;
+        }
+
+        .rbclassicDisabled .radio{
+            background-position: 0 -0px;
+        }
+
+        .rbclassicDisabled span{
+            color: #bebebe;
+        }
+
+        .rbclassicError span{
+            background-color : #ffb500;
+            color: #fbfbfb;
+        }
+
+        .rbclassic br{
+            display: none;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main label="span">
+            <div class="rbclassic">
+                <div class="radio"> </div>
+                <span>-</span>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:radiobutton>
+<a:radiobutton name="radiobutton">
+    <a:style><![CDATA[
+        .rbcontainer {
+            border: 1px solid #8C8C8C;
+            color: #f5f5f5;
+            cursor: pointer;
+            font-family: "Trebuchet MS";
+            font-size:11px;
+            position:relative;
+            -webkit-box-shadow: 0px 1px 0px #ffffff;
+            -moz-box-shadow: 0px 1px 0px #ffffff;
+            box-shadow: 0px 1px 0px #ffffff;
+            text-shadow  : rgba(17, 92, 158, .71) 0px 1px 0px;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(71,73,77)),color-stop(1, rgb(49,52,55)));
+            background: -moz-linear-gradient(center bottom,rgb(71,73,77) 0%,rgb(49,52,55) 100%);
+            text-align : center;
+            width : 91px;
+            height : 22px;
+            padding: 2px 0 2px 0;
+        }
+
+        .rbcontainerOver {
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(105,107,109)),color-stop(1, rgb(92,93,96)));
+            background: -moz-linear-gradient(center bottom,rgb(105,107,109) 0%,rgb(92,93,96) 100%);
+        }
+
+        .rbcontainerChecked {
+            color:#000000;
+            text-shadow: none;
+            border-top : 0;
+            padding-top: 3px;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(255,255,255)),color-stop(1, rgb(232,232,232)));
+            background: -moz-linear-gradient(center bottom,rgb(255,255,255) 0%,rgb(232,232,232) 100%);
+        }
+
+        .rbcontainerFocus {
+        }
+
+        .rbcontainerDisabled {
+            color: #bebebe;
+        }
+
+        .rbcontainerError {
+            background-color : #ffb500;
+            color: #fbfbfb;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main label="div">
+            <div class="rbcontainer">
+                <div>
+
+                </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:radiobutton>
+    <a:radiobutton name="menu-radiobutton">
+    <a:style><![CDATA[
+        .menu-radiobutton {
+            width               : 65px;
+            height              : 19px;
+            padding-top         : 47px;
+            border-bottom       : 1px solid #232323;
+            border-top          : 1px solid #3f3f41;
+            position            : relative;
+            cursor              : default;
+            overflow            : hidden;
+        }
+        
+        .menu-radiobuttonOver,
+        .menu-radiobuttonChecked {
+            background : url(images/radiobutton_over.png) no-repeat 0 0;
+        }
+        
+        .menu-radiobutton .icon {
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            width               : 40px;
+            height              : 40px;
+            position            : absolute;
+            top                 : 7px;
+            left                : 12px;
+        }
+        
+        .menu-radiobutton .pointer {
+            background-image    : url(images/gitui_close_arrow.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            position            : absolute;
+            width               : 11px;
+            height              : 9px;
+            top                 : 6px;
+            right               : 5px;
+            display             : none;
+        }
+        
+        .menu-radiobutton SPAN {
+            font-family         : Tahoma;
+            font-size           : 10px;
+            color               : #aaaaaa;
+            text-align          : center;
+            position:relative;
+            display:block;
+            overflow:hidden;
+        }
+        
+        .menu-radiobuttonChecked SPAN {
+            color : white;
+        }
+        
+        .menu-radiobuttonChecked .pointer {
+            display:block;
+        }
+        
+        .menu-radiobuttonChecked .icon {
+            background-position:-40px 0;
+        }
+        
+        .menu-radiobutton.spacer {
+            border     : 0;
+            border-top : 1px solid #3f3f41;
+            width      : 65px;
+            height     : 15px;
+            padding    : 0;
+            position   : relative;
+        }
+        
+        .menu-radiobutton.spacer .pointer,
+        .menu-radiobutton.spacer .icon,
+        .menu-radiobutton.spacer SPAN {
+            display : none;
+        }
+        
+        .menu-radiobutton.project_files .icon {
+            background-image:url(images/project_files.png);
+        }
+        
+        .menu-radiobutton.open_files .icon {
+            background-image:url(images/open_files.png);
+        }
+        
+        .menu-radiobutton.visual_editor .icon {
+            background-image:url(images/visual_editor.png);
+        }
+        
+        .menu-radiobutton.preferences .icon {
+            background-image:url(images/preferences.png);
+        }
+        
+        .menu-radiobutton.git_corner .icon {
+            background-image:url(images/git_corner.png);
+        }
+        
+        .menu-radiobutton.deploy .icon {
+            background-image:url(images/deploy.png);
+        }
+        
+        .menu-radiobutton.the_store .icon {
+            background-image:url(images/the_store.png);
+        }
+        
+        .menu-radiobutton.shop {
+            width    : 65px;
+            height   : 45px;
+            padding  : 0;
+            border   : 0;
+            position : relative;
+        }
+        
+        .menu-radiobutton.shop1 .icon {
+            background-image:url(images/shop1.png);
+        }
+        
+        .menu-radiobutton.shop2 .icon {
+            background-image:url(images/shop2.png);
+        }
+        
+        .menu-radiobutton.shop3 .icon {
+            background-image:url(images/shop3.png);
+        }
+        
+        .menu-radiobutton.shop4 .icon {
+            background-image:url(images/shop4.png);
+        }
+        
+        .menu-radiobutton.shop SPAN {
+            display:none;
+        }
+    ]]></a:style>
+    
+    <a:presentation>
+        <a:main label="span">
+            <div class="menu-radiobutton">
+                <div class="icon"></div>
+                <div class="pointer"></div>
+                <span>-</span>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:radiobutton>
+</a:skin>

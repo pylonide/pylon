@@ -52,8 +52,9 @@ return ext.register("ext/save/save", {
 
         this.nodes.push(ide.barTools.appendChild(new apf.button({
             id       : "btnSave",
-            icon     : "save_btn_ico{this.disabled ? '_disabled' : ''}.png",
+            //icon     : "save_btn_ico{this.disabled ? '_disabled' : ''}.png",
             caption  : "Save",
+            skin     : "c9-toolbarbutton",
             disabled : "{!tabEditors.activepage}",
             onclick  : this.quicksave
         })));

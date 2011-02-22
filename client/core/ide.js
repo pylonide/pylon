@@ -20,10 +20,10 @@ require.def("core/ide", deps,
             var last = "";
 
             //Set references to global elements - aka extension points
-            this.tbMain       = tbMain;
+            //this.tbMain       = tbMain;
             this.mnuFile      = mnuFile;
             this.mnuEdit      = mnuEdit;
-            this.barMenu      = barMenu;
+            //this.barMenu      = barMenu;
             this.barTools     = barTools;
             this.sbMain       = sbMain;
             this.vbMain       = vbMain;

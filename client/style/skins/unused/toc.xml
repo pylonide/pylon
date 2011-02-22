@@ -1,0 +1,76 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml"><a:toc name="toc">
+    <a:style><![CDATA[
+    ul.toc{
+        margin : 0;
+        height : 30px;
+        padding-left : 10px;
+    }
+
+    ul.toc li{
+        float : left;
+        display : inline;
+        margin : 0 0 10px -10px;
+
+        font-size : 8pt;
+        font-weight : bold;
+
+        cursor : hand;
+        cursor : pointer;
+        text-align : center;
+        list-style-item : none;
+    }
+
+    ul.toc li span{
+        display : block;
+        padding : 8px 15px 8px 5px;
+        margin-left : 10px;
+    }
+
+    ul.toc li.past{
+        color : white;
+        background : red;
+    }
+    ul.toc li.past span {
+    }
+
+    ul.toc li.present{
+        color : white;
+        background : blue;
+    }
+    ul.toc li.present span {
+    }
+
+    ul.toc li.future{
+        color : #cccccc;
+        background : gray;
+    }
+
+    ul.toc li.future span {
+    }
+
+    ul.toc li.hover {
+        color : white;
+        background : url(images/TocLiBgHover.png) no-repeat left;
+    }
+
+    ul.toc li.hover span {
+        background-color : #099be0;
+    }
+
+    ul.tocDisabled li {
+        cursor : default;
+    }
+]]>
+    </a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <ul class="toc"> </ul>
+        </a:main>
+        <a:page caption="span">
+            <li>
+                <span>-</span>
+            </li>
+        </a:page>
+    </a:presentation>
+</a:toc></a:skin>
