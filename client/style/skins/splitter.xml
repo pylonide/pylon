@@ -1,34 +1,23 @@
-<a:skin xmlns:a="http://ajax.org/2005/aml"><a:splitter name="splitter">
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+    <a:splitter name="splitter">
         <a:style><![CDATA[
             .splitter {
-                zIndex     : 100;
-                overflow   : hidden;
-                background : url(images/spacer.gif);
-                padding    : 1px;
-                position   : relative;
+                position : relative;
+                display  : -moz-box;
+                display  : -webkit-box;
+                display  : -ms-box;
+                z-index  : 1000000;
             }
             
-            .thin_splitter .splitter{
-                border-top : 1px solid #8c8c8c;
-                background : #3e3e3e;
-            }
-
-            .packager .splitter {
-                background-color : #dddddd;
-                margin-top       : 1px;
-            }
-
             .splitterFocus {
-                border  : 1px dotted black;
-                padding : 0;
             }
 
             .w-resize {
-                cursor : w-resize;
+                cursor : ew-resize;
             }
 
             .n-resize {
-                cursor : n-resize;
+                cursor : ns-resize;
             }
 
             .splitterMoving {
@@ -38,29 +27,26 @@
             .splitterRealtime{
                 background : url(images/spacer.gif);
             }
-
-            /*.horizontal div {
-                height     : 2px;
-                width      : 18px;
-                background : url(images/splitter_handle_horizontal.gif);
-                margin     : 0 auto 0 auto;
+            
+            .splitter.vertical div{
+                width : 5px;
+                margin-left : -3px;
+                background : url(images/spacer.gif);
             }
-
-            .vertical div {
-                height     : 18px;
-                width      : 2px;
-                background : url(images/splitter_handle_vertical.gif);
-                position   : relative;
-                top        : 50%;
-                margin     : -9px 0 0 0;
-            }*/
+            
+            .splitter.horizontal div{
+                height : 5px;
+                margin-top : -3px;
+                background : url(images/spacer.gif);
+            }
         ]]></a:style>
 
         <a:presentation>
             <a:main handle=".">
                 <div class="splitter">
-                    <div/>
+                    <div> </div>
                 </div>
             </a:main>
         </a:presentation>
-    </a:splitter></a:skin>
+    </a:splitter>
+</a:skin>

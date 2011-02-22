@@ -6,8 +6,11 @@
             cursor           : default;
             position         : relative;
             overflow         : auto;
-            background-image : url(images/tree_backg.png);
-            border-right:1px solid #f5f5f5;
+            border-right     : 1px solid #f5f5f5;
+            
+            -moz-box-shadow    : 6px 0 40px rgba(0, 0, 0, 0.18) inset;
+            -webkit-box-shadow : 6px 0 40px rgba(0, 0, 0, 0.18) inset;
+            box-shadow         : 6px 0 40px rgba(0, 0, 0, 0.18) inset;
         }
         
         .filemgr-tree U {
@@ -140,8 +143,8 @@
             overflow:hidden;
         }
         
-        .filemgr-tree BLOCKQUOTE.root .item-fix.min .item SPAN, 
-        .filemgr-tree BLOCKQUOTE.root .item-fix.plus .item SPAN,
+        .filemgr-tree U.root .item-fix.min .item SPAN, 
+        .filemgr-tree U.root .item-fix.plus .item SPAN,
         .filemgr-tree .item-fix.root .item SPAN {
             background-image:url(images/tree_close_arrow_small.png);
             background-repeat: no-repeat;

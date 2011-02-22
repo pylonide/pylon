@@ -1,4 +1,120 @@
-<a:skin xmlns:a="http://ajax.org/2005/aml"><a:dropdown name="dropdown">
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+<a:dropdown name="black_dropdown">
+    <a:style><![CDATA[
+        .c9-dropdown {
+            position : relative;
+            overflow : hidden;
+            height   : 21px;
+            
+            -moz-border-radius    : 5px;
+            -webkit-border-radius : 5px;
+            border-radius         : 5px;
+            border                : 1px solid #1c1c1c;
+            
+            -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
+            -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
+            box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
+            
+            background         : #383838;
+            filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#383838', endColorstr='#323232');
+            -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#383838', endColorstr='#323232')";
+            background         : -webkit-gradient(linear, left top, left bottom, from(#383838), color-stop(1, #323232));
+            background         :-moz-linear-gradient(center bottom, #323232 0%, #383838 100%) repeat scroll 0 0 transparent;
+         }
+         
+         .c9-dropdown .label {
+            position:relative;
+            overflow:hidden;
+            height:17px;
+            padding:4px 0 0 6px;
+            margin:0 15px 0 0;
+            font-family:Arial;
+            font-size:12px;
+            color:#d6d6d6;
+            line-height:14px;
+            border-right:1px solid #1c1c1c;
+         }
+         
+         .c9-dropdown .button {
+            width:14px;
+            border-left:1px solid #4d4c4d;
+            height:21px;
+            position:absolute;
+            top:0;
+            right:0;
+            background:url(images/btn-arrow.png) no-repeat 4px 9px;
+         }
+         
+         .c9-dropdownDown {
+            background         : #2d2d2d;
+            filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#272727', endColorstr='#2d2d2d');
+            -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#272727', endColorstr='#2d2d2d')";
+            background         : -webkit-gradient(linear, left top, left bottom, from(#272727), color-stop(1, #2d2d2d));
+            background         :-moz-linear-gradient(center bottom, #2d2d2d 0%, #272727 100%) repeat scroll 0 0 transparent;
+         }
+         
+         .c9-optionList {
+            width               : 174px;
+            overflow            : hidden;
+            z-index             : 99999;
+            position            : absolute;
+            margin              : 0 0 0 0;
+            display             : none;
+            background-color    : #1c1c1c;
+            border              : 1px solid rgba(255, 255, 255, 0.1);
+            padding             : 0 0 4px 0;
+            
+            -moz-box-shadow    : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
+            -webkit-box-shadow : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
+            box-shadow         : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
+            
+            filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626');
+            -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626')";
+            background         : -webkit-gradient(linear, left top, left bottom, from(#1c1c1c), color-stop(0.9, #262626));
+            background         :-moz-linear-gradient(center bottom, #262626 0%, #1c1c1c 20%) repeat scroll 0 0 transparent;
+        }
+        
+        .c9-optionList .c9-dd-item {
+            height:18px;
+            padding:3px 6px 0 6px;
+            position:relative;
+            overflow:hidden;
+            font-family   : Tahoma;
+            font-size     : 11px;
+            line-height   : 14px;
+            color         : white;
+            cursor:default;
+        }
+        
+        .c9-optionList .c9-dd-item.hover {
+            background-color : #292929;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main label="div[1]/text()" button="." width-diff="-1" item-height="21" minheight="23" maxheight="23">
+            <div class="c9-dropdown">
+                <div class="label">-</div>
+                <div class="button"> </div>
+            </div>
+        </a:main>
+        <a:container contents=".">
+            <div class="c9-optionList">
+            </div>
+        </a:container>
+        <a:item
+          class       = "."
+          caption     = "text()"
+          select      = "."
+          inherit     = "true">
+            <div class="c9-dd-item">-</div>
+        </a:item>
+        <a:empty caption=".">
+            <div class="empty">-</div>
+        </a:empty>
+    </a:presentation>
+</a:dropdown>
+<a:dropdown name="dropdown">
     <a:style><![CDATA[
         .dropdown{
             position: relative;
