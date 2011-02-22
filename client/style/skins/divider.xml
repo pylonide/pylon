@@ -63,4 +63,52 @@
             </div>
         </a:main>
     </a:presentation>
-</a:divider></a:skin>
+</a:divider>
+    <a:divider name="c9-divider">
+    <a:style><![CDATA[
+        .c9-divider {
+            position   : relative;
+            overflow   : hidden;
+            width:0px;
+            height     : 23px;
+            border-left:1px solid #000000;
+            border-right:1px solid #404040;
+        }
+    ]]></a:style>
+    
+    <a:presentation>
+        <a:main>
+            <div class="c9-divider"> </div>
+        </a:main>
+    </a:presentation>
+</a:divider>
+
+<a:divider name="c9-divider-double">
+    <a:style><![CDATA[
+        .c9-divider-double {
+            position   : relative;
+            overflow   : hidden;
+            width      : 2px;
+            height     : 23px;
+            border-left:1px solid #000000;
+            border-right:1px solid #404040;
+        }
+        
+        .c9-divider-double DIV {
+            position:relative;
+            width:1px;
+            height:23px;
+            border-left:1px solid #404040;
+            border-right:1px solid #000000;
+        }
+    ]]></a:style>
+    
+    <a:presentation>
+        <a:main>
+            <div class="c9-divider-double">
+                <div></div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:divider>
+</a:skin>

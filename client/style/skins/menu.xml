@@ -1,4 +1,5 @@
-<a:skin xmlns:a="http://ajax.org/2005/aml"><a:menu name="menu">
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+<!--a:menu name="menu">
     <a:style><![CDATA[
         .menu {
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(245,245,245)),color-stop(0.2, rgb(255,255,255)));
@@ -125,4 +126,98 @@
             <div class="menu_divider"/>
         </a:divider>
     </a:presentation>
-</a:menu></a:skin>
+</a:menu-->
+<a:menu name="menu">
+    <a:style><![CDATA[
+        .c9-menu {
+            width               : 174px;
+            overflow            : hidden;
+            z-index             : 99999;
+            position            : absolute;
+            margin:-2px 0 0 0;
+            display             : none;
+            background-color : #1c1c1c;
+            border:1px solid rgba(255, 255, 255, 0.1);
+            padding:0 0 4px 0;
+            
+            -moz-box-shadow    : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
+            -webkit-box-shadow : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
+            box-shadow         : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
+            
+            filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626');
+            -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626')";
+            background         : -webkit-gradient(linear, left top, left bottom, from(#1c1c1c), color-stop(0.9, #262626));
+            background         :-moz-linear-gradient(center bottom, #262626 0%, #1c1c1c 20%) repeat scroll 0 0 transparent;
+        }
+        
+        .c9-menu .c9-menu-item {
+            height:18px;
+            padding:3px 16px 0 23px;
+            position:relative;
+            overflow:hidden;
+            font-family   : Tahoma;
+            font-size     : 11px;
+            line-height   : 14px;
+            color         : white;
+            cursor:default;
+        }
+        
+        .c9-menu .hover {
+            background-color : #292929;
+        }
+        
+        .c9-menu .c9-menu-item SPAN {
+            position:absolute;
+            overflow:hidden;
+            display:block;
+            height:18px;
+            padding:3px 0 0 0;
+            right:16px;
+            top:0;
+        }
+        
+        .c9-menu .c9-menu-item U {
+            width:23px;
+            height:9px;
+            position:absolute;
+            display:block;
+            right:26px;
+            top:6px;
+        }
+        
+        .c9-menu .c9-menu-item.submenu U {
+            background:url(images/submenu_arrow.gif) no-repeat right -15px;
+            right:8px;
+            top:7px;
+        }
+        
+        .c9-menu .c9-menu-divider {
+            position:relative;
+            overflow:hidden;
+            margin:1px 3px;
+            border-top:1px solid #000000;
+            border-bottom:1px solid #313131;
+        }
+    ]]></a:style>
+    
+    <a:presentation>
+        <a:main container="." overlay="strong">
+            <div class="c9-menu">
+               
+            </div>
+        </a:main>
+        <a:item 
+          caption = "text()" 
+          icon    = "u" 
+          hotkey  = "span" 
+          inherit = "true">
+            <div class="c9-menu-item"><u> </u>-
+                <span> </span>
+            </div>
+        </a:item>
+        <a:divider inherit="true">
+            <div class="c9-menu-divider"></div>
+        </a:divider>
+    </a:presentation>
+</a:menu>
+</a:skin>

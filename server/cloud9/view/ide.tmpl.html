@@ -140,17 +140,13 @@
         <a:vbox anchors="0 0 0 0" id="vbMain">
             <a:bar skin="c9-menu-bar" id="logobar">
                 <a:hbox>
-                    <a:hbox id="barMenu" edge="9 0 0 0" padding="3" align="center">
-                        <a:button skin="c9-menu-btn" margin="1 0 0 0">File</a:button>
+                    <a:hbox id="barMenu" edge="9 5 0 5" padding="3" align="center">
+                        <a:button skin="c9-menu-btn" submenu="mnuFile" margin="1 0 0 0">File</a:button>
                         <a:button skin="c9-menu-btn" submenu="mnuEdit" margin="1 0 0 0">Edit</a:button>
-                        <a:button skin="c9-menu-btn" margin="1 0 0 0">View</a:button>
-                        <a:button skin="c9-menu-btn" margin="1 0 0 0">Windows</a:button>
+                        <a:button skin="c9-menu-btn" submenu="mnuView" margin="1 0 0 0">View</a:button>
                     </a:hbox>
                     <a:hbox id="barTools" edge="9 0 0 0" padding="3" align="center">
-                        <a:divider skin="c9-divider" />
-                        <a:divider skin="c9-divider" margin="0 1 0 -2" />
-                        
-                        
+                        <a:divider skin="c9-divider-double" />
                     </a:hbox>
                 </a:hbox>
             </a:bar>
@@ -160,17 +156,8 @@
                     <a:bar skin="black-menu-bar" skin_old="dock-panel">
                         <a:group id="acg1"> 
                             <a:radiobutton skin="menu-radiobutton" value="opensource" class="project_files" checked="true">Project Files</a:radiobutton> 
-                            <a:radiobutton skin="menu-radiobutton" value="commercial" class="open_files">Open Files</a:radiobutton>
-                            <a:radiobutton skin="menu-radiobutton" value="commercial1" class="visual_editor">Visual Editor</a:radiobutton> 
-                            <a:radiobutton skin="menu-radiobutton" value="commercial2" class="preferences">Preferences</a:radiobutton>
-                            <a:radiobutton skin="menu-radiobutton" value="commercial3" class="git_corner">Git Corner</a:radiobutton>
-                            <a:radiobutton skin="menu-radiobutton" value="commercial4" class="deploy">Deploy</a:radiobutton>
-                            <a:radiobutton skin="menu-radiobutton" value="commercial5" class="the_store">The Store</a:radiobutton>
-                            <a:radiobutton skin="menu-radiobutton" value="commercial6" class="spacer"></a:radiobutton>
-                            <a:radiobutton skin="menu-radiobutton" value="commercial7" class="shop shop1"></a:radiobutton>
-                            <a:radiobutton skin="menu-radiobutton" value="commercial8" class="shop shop2"></a:radiobutton>
-                            <a:radiobutton skin="menu-radiobutton" value="commercial9" class="shop shop3"></a:radiobutton>
-                            <a:radiobutton skin="menu-radiobutton" value="commercial10" class="shop shop4"></a:radiobutton>
+                            <!--a:radiobutton skin="menu-radiobutton" value="commercial" class="open_files">Open Files</a:radiobutton>
+                            <a:radiobutton skin="menu-radiobutton" value="commercial2" class="preferences">Preferences</a:radiobutton-->
                         </a:group>
                         <div class="c9menulogo">
                             <span></span>

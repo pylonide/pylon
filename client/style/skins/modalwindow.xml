@@ -1,4 +1,77 @@
-<a:skin xmlns:a="http://ajax.org/2005/aml"><a:modalwindow name="dockwin">
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+<a:modalwindow name="fm-window">
+    <a:style><![CDATA[
+        .fm-window {
+            position : relative;
+            overflow : hidden;
+			z-index	 : 10000;
+            padding  : 30px 0 0 0;
+        }
+        
+        .fm-window .fm-header {
+            position : relative;
+            overflow : hidden;
+            height   : 30px;
+            top      : -30px;
+        }
+        
+        .fm-window .fm-header .hcontent {
+            background    : url(images/header_backg.png)  repeat-x 0 0;
+            margin-right  : 6px;
+            position      : relative;
+            overflow      : hidden;
+            height        : 24px;
+            padding       : 6px 0 0 6px;
+            font-family : Tahoma;
+            font-size   : 12px;
+            line-height:16px;
+            font-weight : bold;
+            color       : #1d4566;
+            text-shadow   : rgba(255, 255, 255, 0.25) 0px 1px 0px;
+        }
+        
+        .fm-window .fm-header .right {
+            width:6px;
+            height:30px;
+            position:absolute;
+            top:0;
+            right:0;
+            background:url(images/header_right.png) no-repeat 0 0;
+        }
+
+        .fm-window .fm-content {
+            position:relative;
+            overflow:visible;
+            border-right:1px solid #7b7b7b;
+            height : 100%;
+            top : -30px;
+        }
+    ]]></a:style>
+    
+    <a:presentation>
+        <a:main 
+          collapsed-height = "30"
+          minheight        = "30"
+          minwidth         = "60"
+          container        = "div[2]" 
+          drag             = "div[2]" 
+          title            = "div[1]/div[1]/text()" 
+          icon             = "div[1]/div[1]/div[1]"
+          buttons          = "div[1]/div[1]/div[2]">
+            <div class="fm-window">
+                <div class="fm-header">
+                    <div class="hcontent">-<div class="icon"></div><div class="buttons"></div></div>
+                    <div class="right"></div>
+                </div>
+                <div class="fm-content"> </div>
+            </div>
+        </a:main>
+        <a:button>
+            <div> </div>
+        </a:button>
+    </a:presentation>
+</a:modalwindow>
+<a:modalwindow name="dockwin">
     <a:alias>panel</a:alias>
 
     <a:style><![CDATA[

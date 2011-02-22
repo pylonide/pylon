@@ -181,7 +181,7 @@
         </a:page>
     </a:presentation>
 </a:tab>
-<a:tab name="editor_tab">
+    <a:tab name="editor_tab">
     <a:style><![CDATA[
         .editor_tab {
             padding : 0 0 0 0;
@@ -190,34 +190,32 @@
             position:relative;
             padding-top: 32px;
             border-bottom: 1px solid white;
+            background-color:#e8e8e8;
         }
 
-        .editor_tab .btnsesssioncontainer{
-            padding : 5px 20px 0 0;
-            /*position : absolute;*/
+        .editor_tab .btnsesssioncontainer {
+            padding : 5px 20px 0 1px;
             z-index : 100;
             height: 25px;
             overflow: visible;
             white-space: nowrap;
-            color: #d9d9d9;
+            color: #f5f5f5;
             font-family : Trebuchet MS;
             font-size : 12px;
-            border-bottom : 1px solid #515256;
-            background: #2b2c2e url(images/editor_tabs_container_bg.gif);
-            /*background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(47,48,50)),color-stop(1, rgb(72,73,76)));
-            background: -moz-linear-gradient(center bottom,rgb(47,48,50) 0%,rgb(72,73,76) 100%);
-            border-radius : 4px 4px 0 0;
-            -moz-border-radius: 4px 4px 0 0;
-            -webkit-border-top-right-radius: 4px;
-            -webkit-border-top-left-radius: 4px;*/
+            border-bottom : 1px solid white;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(47,48,50)),color-stop(1, rgb(72,73,76)));
+            background: -moz-linear-gradient(center bottom,#262829 0%, #2f3031 100%);
             margin-top : -32px;
             width : auto;
+            
+            -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
+            -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
+            box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
         }
 
         .editor_tab .btnsesssioncontainer>div {
             cursor: default;
             display: block;
-            /*float: left;*/
             display : inline-block;
             margin: 0 0 0 0;
             padding: 0;
@@ -228,14 +226,11 @@
         .editor_tab .btnsesssioncontainer .session_btn {
             padding      : 0 20px;
             position     : relative;
-            /*cursor       : pointer;*/
-            margin-right : -16px;
-            margin-top   : 1px;
+            margin-right : -20px;
+            margin-top   : 0;
+            height:25px;
+            border-bottom:1px solid white;
         }
-
-        /*.editor_tab .btnsesssioncontainer div.firstbtn {
-            margin-left: 0;
-        }*/
 
         .editor_tab .btnsesssioncontainer .session_btn .tab_middle {
             background-image    : url(images/editor_tab.png);
@@ -309,10 +304,15 @@
             cursor      : default;
             text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
             z-index     : 1;
+            height:25px;
+            border-bottom:1px solid #e8e8e8;
         }
 
         .editor_tab .btnsesssioncontainer div.curbtn .tab_middle {
             background-position : 0 -26px;
+            padding             : 6px 0 0 0;
+            height:19px;
+            color:#000000;
         }
         .editor_tab .btnsesssioncontainer div.curbtn .tab_left {
             background-position : 0 0;
@@ -338,7 +338,6 @@
             position            : absolute;
             right               : 0;
             top                 : 7px;
-            /*cursor              : pointer;*/
             background-image    : url(images/close_tab_btn.png);
             background-repeat   : no-repeat;
             background-position : 0 -14px;
@@ -366,15 +365,15 @@
         }
 
         .editor_tab .editor_bg {
-		    top : 32px;
-		    bottom : 0px;
-		    height : auto;
+            top : 32px;
+            bottom : 0px;
+            height : auto;
             position : absolute;
             margin: 0 auto;
             background: #e8e8e8 url(images/editor_tab_bg.png) repeat 0 0;
-            border-bottom: 1px solid #8c8c8c;
+            /*border-bottom: 1px solid #8c8c8c;
             border-left: 1px solid #8c8c8c;
-            border-right: 1px solid #8c8c8c;
+            border-right: 1px solid #8c8c8c;*/
             overflow: hidden;
             clear: both;
             left: 0;
@@ -412,16 +411,15 @@
         .editor_tab .session_page {
             display : none;
             position : absolute;
-            top : 31px;
+            top : 32px;
             bottom : 0;
             left : 0;
             right : 0;
             z-index : 10;
             margin: 0 auto;
             background-color: #e8e8e8;
-            border-left: 1px solid #8c8c8c;
-            border-right: 1px solid #8c8c8c;
             border-bottom: 1px solid #8C8C8C;
+            border-top:4px solid #e8e8e8;
             overflow: hidden;
             clear: both;
         }
@@ -446,7 +444,12 @@
                 </div>
             </div>
         </a:main>
-        <a:button caption="div[1]/div[2]/text()" container="div" icon="div[1]/div" maxwidth="150" minwidth="0">
+        <a:button
+          caption   = "div[1]/div[2]/text()"
+          container = "div"
+          icon      = "div[1]/div"
+          maxwidth  = "150"
+          minwidth  = "0">
             <div class="session_btn">
                 <div class="tab_middle">
                     <div class="sessiontab_icon"> </div>

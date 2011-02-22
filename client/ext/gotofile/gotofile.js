@@ -44,6 +44,7 @@ return ext.register("ext/gotofile/gotofile", {
                 id      : "btnOpen",
                 //icon    : "save_btn_ico{this.disabled ? '_disabled' : ''}.png",
                 caption : "Open...",
+                skin    : "c9-toolbarbutton",
                 onclick : function() {
                     _self.toggleDialog(true);
                 }
