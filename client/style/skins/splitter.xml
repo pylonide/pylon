@@ -3,9 +3,6 @@
         <a:style><![CDATA[
             .splitter {
                 position : relative;
-                display  : -moz-box;
-                display  : -webkit-box;
-                display  : -ms-box;
                 z-index  : 1000000;
             }
             
@@ -28,16 +25,28 @@
                 background : url(images/spacer.gif);
             }
             
+            .splitter.vertical{
+                display  : -moz-box;
+                display  : -webkit-box;
+                display  : -ms-box;
+            }
+            
             .splitter.vertical div{
                 width : 5px;
                 margin-left : -3px;
                 background : url(images/spacer.gif);
             }
             
+            .splitter.horizontal{
+                margin : -2px 0 0 0;
+            }
+            
             .splitter.horizontal div{
                 height : 5px;
-                margin-top : -3px;
+                margin-top : -2px;
                 background : url(images/spacer.gif);
+                position : absolute;
+                width : 100%;
             }
         ]]></a:style>
 
