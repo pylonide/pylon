@@ -223,6 +223,7 @@ return ext.register("ext/editors/editors", {
                 page.$at     = new apf.actiontracker();
                 page.$doc    = doc;
                 page.$editor = editor;
+                page.setAttribute("tooltip", "[@path]");
                 
                 page.setAttribute("model", page.$model = model);
                 page.$model.load(xmlNode);
@@ -288,13 +289,14 @@ return ext.register("ext/editors/editors", {
         
         //If there are no more pages left, reset location
         if (!tabEditors.getPage()) {
-            if (window.history.pushState) {
+            /*if (window.history.pushState) {
                 var p = location.pathname.split("/");
                 window.history.pushState(path, path, "/" + (p[1] || "") + "/" + (p[2] || ""));
             }
             else {
                 apf.history.setHash("");
-            }
+            }*/
+            apf.history.setHash("");
         }
         
         //Destroy the app page if it has no application instance
@@ -333,13 +335,14 @@ return ext.register("ext/editors/editors", {
         }
         
         var path = page.$model.data.getAttribute("path").replace(/^\/workspace/, "");
-        if (window.history.pushState) {
+        /*if (window.history.pushState) {
             var p = location.pathname.split("/");
             window.history.pushState(path, path, "/" + (p[1] || "name") + "/" + (p[2] || "project") + path);
         }
         else {
             apf.history.setHash("!" + path);
-        }
+        }*/
+        apf.history.setHash("!" + path);
         
         //toHandler.$itmEditor.select();
         //toHandler.$rbEditor.select();

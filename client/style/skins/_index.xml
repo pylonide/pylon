@@ -19,6 +19,7 @@
     <a:include src="slider.xml" />
     <a:include src="splitbutton.xml" />
     <a:include src="splitter.xml" />
+    <a:include src="spinner.xml" />
     <a:include src="statusbar.xml" />
     <a:include src="tab.xml" />
     <a:include src="text.xml" />

@@ -41,7 +41,7 @@
         }
 
         .tab_console .btncontainer .btntab {
-            padding      : 4px 19px 2px;
+            padding      : 4px 27px 2px 27px;
             position     : relative;
             margin-top:-1px;
             text-align: center;
@@ -80,13 +80,12 @@
             color       : #a2c890;
             cursor      : default;
             z-index     : 1;
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(30,31,31)),color-stop(1, rgb(36,36,36)));
-            background: -moz-linear-gradient(center bottom,rgb(30,31,31) 0%,rgb(36,36,36) 100%);
-            border-right : 1px solid #4c4c4c;
-            border-top: 1px solid #4c4c4c;
-            border-left: 1px solid #4c4c4c;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #1d1d1d),color-stop(1, #3d3d3d));
+            background: -moz-linear-gradient(center bottom,#1d1d1d 0%,#3d3d3d 100%);
+            border-top: 1px solid #4f4f4f;
             z-index:101;
-            padding      : 3px 18px 2px;
+            padding      : 2px 27px 2px 27px;
+            text-shadow   : rgba(0, 0, 0, 1) 0px 1px 0px;
         }
 
         .tab_console .scale .btntab .tab_console_middle {
@@ -157,6 +156,15 @@
 
         .tab_console .page.curpage{
             display : block;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
+        .tab_console .btncontainer .btntab {
+            padding      : 5px 27px 1px 27px;
+        }
+        
+        .tab_console .btncontainer div.curbtn {
+            padding      : 3px 27px 1px 27px;
         }
     ]]></a:style>
 
@@ -418,7 +426,7 @@
             margin: 0 auto;
             background-color: #e8e8e8;
             /*border-bottom: 1px solid #8C8C8C;*/
-            border-top:4px solid #e8e8e8;
+            border-top:3px solid #e8e8e8;
             overflow: hidden;
             clear: both;
         }

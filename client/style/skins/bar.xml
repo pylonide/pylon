@@ -169,7 +169,7 @@
         
         .debug-panel .body {
             position    : absolute;
-            top         : 13px;
+            top         : 0px;
             left        : 0;
             right       : 0;
             bottom      : 0;
@@ -178,9 +178,8 @@
     ]]></a:style>
 
     <a:presentation>
-        <a:main container="div[2]">
+        <a:main container="div[1]">
             <div class="debug-panel">
-                <div class="bar_inset"/>
                 <div class="body"/>
             </div>
         </a:main>

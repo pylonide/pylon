@@ -11,6 +11,8 @@
             -moz-box-shadow    : 6px 0 40px rgba(0, 0, 0, 0.18) inset;
             -webkit-box-shadow : 6px 0 40px rgba(0, 0, 0, 0.18) inset;
             box-shadow         : 6px 0 40px rgba(0, 0, 0, 0.18) inset;
+            
+            background:url(images/tree_backg.png) repeat 0 0;
         }
         
         .filemgr-tree U {
@@ -124,9 +126,9 @@
         .filemgr-treeFocus .item-fix.selected {
             border-top:1px solid #3a9bec;
             border-bottom:1px solid #185f97;
-            filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#4596de', endColorstr='#347fbe');
-            -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#4596de', endColorstr='#347fbe')";
-            background : -webkit-gradient(linear, left top, left bottom, from(#538bd7), color-stop(1, #487bbe));
+            filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#2890e5', endColorstr='#1f82d2');
+            -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#2890e5', endColorstr='#1f82d2')";
+            background : -webkit-gradient(linear, left top, left bottom, from(#2890e5), color-stop(1, #1f82d2));
             background : -moz-linear-gradient(center bottom, #1f82d2 0%, #2890e5 100%) repeat scroll 0 0 transparent;
         }
         
@@ -180,13 +182,102 @@
             height:19px;
             padding:1px 0 0 0;
             text-decoration:none;
+            white-space: nowrap;
+        }
+        
+        .filemgr-tree .loading {
+            display : none;
+        }
+        
+        #txt_rename {
+            border:1px solid #2084d6;
+            height:16px;
+            background-color:#b9d4eb;
+            padding-left:4px;
+            margin-top:1px;
+            
+            font-family : Tahoma;
+            font-size   : 11px;
+            color       : #101010;
+            position:relative;
+            overflow:visible;
+            text-decoration:none;
+            white-space: nowrap;
+            word-break: keep-all;
+            cursor: text;
+            outline : none;
+        }
+        
+        .filemgr-dragtree {
+            overflow:hidden;
+            height:22px;
+            border:2px solid rgba(255, 255, 255, 0.5);
+            -moz-box-shadow    : 0px 3px 5px 0px rgba(0, 0, 0, 0.5);
+            -webkit-box-shadow : 0px 3px 5px 0px rgba(0, 0, 0, 0.5);
+            box-shadow         : 0px 3px 5px 0px rgba(0, 0, 0, 0.5);
+        }
+        
+        .filemgr-dragtree .item {
+            height:20px;
+            padding:0;
+            position:relative;
+            overflow:hidden;
+            border-top:1px solid #3a9bec;
+            border-bottom:1px solid #185f97;
+            filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#2890e5', endColorstr='#1f82d2');
+            -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#2890e5', endColorstr='#1f82d2')";
+            background : -webkit-gradient(linear, left top, left bottom, from(#2890e5), color-stop(1, #1f82d2));
+            background : -moz-linear-gradient(center bottom, #1f82d2 0%, #2890e5 100%) repeat scroll 0 0 transparent;
+        }
+        
+        .filemgr-dragtree .item SPAN {
+            display:none;
+        }
+        
+        .filemgr-dragtree .item LABEL {
+            display:block;
+            position:relative;
+            overflow:hidden;
+            height:20px;
+            background-position:0 1px;
+            background-repeat:no-repeat;
+            margin-left:6px;
+            padding-right:6px;
+            float:left;
+        }
+        
+        .filemgr-dragtree .item LABEL .caption {
+            font-family     : Tahoma;
+            font-size       : 11px;
+            color           : white;
+            display         : block;
+            position        : relative;
+            overflow        : hidden;
+            height          : 18px;
+            padding         : 2px 0 0 20px;
+            text-decoration : none;
+            white-space     : nowrap;
         }
     ]]></a:style>
     <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
         .filemgr-tree .item LABEL .caption {
             height:18px;
             padding:2px 0 0 0;
+        }
+        
+        .filemgr-tree .item LABEL {
+            background-position:0 1px;
         } 
+        
+        #txt_rename {
+            height:15px;
+            padding-top:1px;
+        }
+        
+        .filemgr-dragtree .item LABEL .caption {
+            height          : 17px;
+            padding         : 3px 0 0 20px;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -213,11 +304,13 @@
             <u> </u>
         </a:item>
         <a:dragindicator>
-            <div class='dragtree'>
-                <span> </span>
-                <label>
-                    <u>-</u>
-                </label>
+            <div class="filemgr-dragtree">
+                <div class="item">
+                    <span> </span>
+                    <label>
+                        <u class="caption">-</u>
+                    </label>
+                </div>
             </div>
         </a:dragindicator>
         <a:loading>
