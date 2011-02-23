@@ -138,7 +138,7 @@
                 font-family   : Tahoma;
                 font-size     : 11px;
                 line-height   : 14px;
-                color         : white;
+                color         : #f1f1f1;
                 cursor:default;
                 
                 display : none;
@@ -181,7 +181,7 @@
                 
                 margin:0 3px;
                 border-top:1px solid #000000;
-                border-bottom:1px solid #272727;
+                border-bottom:1px solid #313131;
             }
     
             .menu>div.menu_divider{
