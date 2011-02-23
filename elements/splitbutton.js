@@ -78,6 +78,9 @@ apf.splitbutton = function(struct, tagName){
     this.$draw = function(){
         var _self = this;
         this.$ext = this.$pHtmlNode.appendChild(document.createElement("div"));
+        this.$ext.style.overflow = "hidden";
+        //this.$ext.style.position = "relative";
+        
         var skin = this.getAttribute("skin") || this.localName;
         
         this.$button1 = new apf.button({
