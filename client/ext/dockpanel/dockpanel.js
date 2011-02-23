@@ -25,7 +25,10 @@ return ext.register("ext/dockpanel/dockpanel", {
      * Standard Extension functionality
      */
     init : function(amlNode){
-        
+        this.expandCol = colRight;
+        this.expandCol.$ext.className = "dockcol"
+        this.splitter = splitterPanelRight;
+        this.splitter.hide();
     },
 
     enable : function(){
@@ -50,6 +53,32 @@ return ext.register("ext/dockpanel/dockpanel", {
     /**
      *           ***** DOCK PANEL METHODS *****
      */
+     
+    expand : function(){
+        var tab, items = this.dockObjects;
+        for (var i = 0, item; i < items.length; i++) {
+            tab = (item = items[i]).tab || (item.tab = item.win.firstChild);
+            if (!tab.flex)
+                tab.setAttribute("flex", 1);
+           this.expandCol.appendChild(tab);
+        }
+        this.expandCol.show();
+        this.splitter.show();
+        dockPanelRight.hide();
+    },
+    
+    collapse : function(){
+        var tab, items = this.dockObjects;
+        for (var i = 0, item; i < items.length; i++) {
+            if (!(item = items[i]).tab)
+                continue;
+                
+            item.win.appendChild(item.tab);
+        }
+        this.expandCol.hide();
+        this.splitter.hide();
+        dockPanelRight.show();
+    },
      
     /**
      * Creates a new button for the dock and associates it with a window

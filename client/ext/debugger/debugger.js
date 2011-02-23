@@ -71,7 +71,7 @@ return ext.register("ext/debugger/debugger", {
         });
         
         //panels.register(this);
-        //ext.initExtension(this);
+        ext.initExtension(this);
     },
 
     init : function(amlNode){
