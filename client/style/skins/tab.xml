@@ -24,8 +24,8 @@
             border-top: 1px solid #404040;
             border-bottom: 1px solid #000000;
 
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(27,28,28)),color-stop(1, rgb(52,54,59)));
-            background: -moz-linear-gradient(center bottom,rgb(27,28,28) 0%,rgb(52,54,59) 100%);
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #000000),color-stop(1, #292929));
+            background: -moz-linear-gradient(center bottom,#000000 0%, #292929 100%);
             margin-top : -28px;
             width : auto;
         }
