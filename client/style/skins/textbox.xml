@@ -2,15 +2,15 @@
     <a:style><![CDATA[
         .tb_console {
             position : relative;
-            height   : 30px;
+            height   : 31px;
         }
 
         .tb_console .sbtb_middle {
-            height           : 17px;
-            padding          : 5px 10px 7px;
-            -moz-box-shadow  : 1px 1px white inset;
-            -webkit-box-shadow  : 1px 1px white inset;
-            box-shadow       : 1px 1px white inset;
+            height           : 16px;
+            padding          : 7px 10px 7px;
+            -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 1) inset;
+            -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 1) inset;
+            box-shadow         : 0px 1px 0px rgba(255, 255, 255, 1) inset;
             color            : #303030;
             margin           : 0 0 0 26px;
             outline          : none;
@@ -32,7 +32,7 @@
             height           : 17px;
             font-size        : 14px;
             color            : #303030;
-            font-family      : menlo,"courier new",fixed,swiss,sans-serif;
+            font-family      : "courier new",fixed,swiss,sans-serif;
             outline          : none;
             font-weight      : bold;
             background-color : transparent;
