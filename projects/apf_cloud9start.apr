@@ -307,5 +307,7 @@
         <p:define name="__AMLDATAGRID" value="1" />
         <p:define name="__WITH_SCROLLBAR" value="1" />
         <p:define name="__WITH_CSS_BINDS" value="1" />
+        <p:define name="__WITH_MD5" value="1" />
+        <p:define name="__WITH_HISTORY" value="1" />
     </p:defines>
 </p:project>

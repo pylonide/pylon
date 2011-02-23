@@ -7,7 +7,7 @@
       name     = "apf_{version.replace(/\./g, '_')}"
       cwd      = "{__dirname}/.."
       tmp      = "/tmp"
-      platform = "{__dirname}/../../apf"
+      platform = "{__dirname}/../support/apf"
       release  = "~">
     </p:settings>
 
@@ -21,7 +21,7 @@
           type     = "script"
           defines  = "1"
           group    = "apf"
-          out      = "{cwd}/../../client/js/apf_release.js"
+          out      = "{cwd}/build/apf_release.js"
           filehead = "1" />
         <!--p:combine
           type     = "script"
@@ -44,8 +44,8 @@
 
         <p:compress
           cmd      = "yuicompressor"
-          in       = "{cwd}/../../client/js/apf_release.js"
-          out      = "{cwd}/../../client/js/apf_release.js" />
+          in       = "{cwd}/build/apf_release.js"
+          out      = "{cwd}/build/apf_release.js" />
     </p:process>
 
     <p:files>
@@ -112,7 +112,7 @@
             <p:node path="processinginstructions" />
             <p:node path="jpack_end.js" />
         </p:node>
-        
+
         <!--p:node path="{__dirname}/../../../support/ace/build/ace/editor.js" group="ace" />
         <p:node path="{__dirname}/../../../support/ace/build/ace/lib/oop.js" group="ace" />
         <p:node path="{__dirname}/../../../support/ace/build/ace/lib/core.js" group="ace" />
@@ -431,7 +431,9 @@
         <p:define name="__WITH_ZERO_TIMEOUT" value="1" />
         <p:define name="__WITH_OUTLINE" value="1" />
         <p:define name="__WITH_VALIDATION" value="1" />
-
+        <p:define name="__WITH_AUTH" value="1" />
+        <p:define name="__AMLSTATEGROUP" value="1" />
+        <p:define name="__WITH_HISTORY" value="1" />
 
         <!-- NOT USED DEFINES -->
 
@@ -485,7 +487,6 @@
         <p:define name="__TP_RPC_RDB" value="1" />
         <p:define name="__ENABLE_INTERACTIVE_CANCEL" value="1" />
         <p:define name="__WITH_LISTGRID" value="1" />
-        <p:define name="__AMLSTATEGROUP" value="1" />
         <p:define name="__WITH_A11Y" value="1" />
         <p:define name="__WITH_TEXTDIFF" value="1" />
         <p:define name="__SUPPORT_GEARS" value="1" />
@@ -644,5 +645,7 @@
         <p:define name="__ENABLED_LIVETEXT" value="0" />
         <p:define name="__WITH_UNSAFE_XMLHTTP" value="0" />
         <p:define name="__WITH_VISUALIZER" value="0" />
+        <p:define name="__WITH_LIVEMARKUP" value="1" />
+        <p:define name="__AMLSTYLE" value="1" />
     </p:defines>
 </p:project>
