@@ -22,3 +22,6 @@
 [submodule "support/node-builds-v4"]
 	path = support/node-builds-v4
 	url = http://github.com/ajaxorg/node-builds-v4.git
+[submodule "support/gnu-builds"]
+	path = support/gnu-builds
+	url = git://github.com/ajaxorg/gnu-builds.git
