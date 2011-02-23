@@ -224,7 +224,8 @@ apf.menu = function(struct, tagName){
                 l     = nodes.length, result;
             for (i = 0; i < l; i++) {
                 node = nodes[i];
-                if (node.nodeType != 1) continue;
+                if (node.nodeType != 1 || node.localName != "item")
+                    continue;
     
                 result = !xmlNode || !node.match || (node.cmatch || (node.cmatch = apf.lm.compile(node.match, {
                     xpathmode  : 3,

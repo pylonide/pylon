@@ -218,6 +218,8 @@ apf.webdav = function(struct, tagName){
                     else
                         throw oError;
                 }
+                
+                extra.headers = oHeaders;
 
                 var iStatus = parseInt(extra.status);
                 if (iStatus == 401) //authentication requested
@@ -1026,7 +1028,7 @@ apf.webdav = function(struct, tagName){
         if (aResp.length) //we got a valid result set, so assume that any possible AUTH has succeeded
             this.$regVar("authenticated", true);
         // start from 1 (one), because the first element contains PROP info on the path
-        for (var i = 1, j = aResp.length; i < j; i++)
+        for (var i = extra.headers.Depth == 0 ? 0 : 1, j = aResp.length; i < j; i++)
             aOut.push(parseItem.call(this, aResp[i]));
 
         callback && callback.call(this, "<files>" + aOut.join("") + "</files>", state, extra);
@@ -1073,7 +1075,7 @@ apf.webdav = function(struct, tagName){
         
         return oItem.xml = "<" + sType + " path='" + sPath + "'  type='" + sType
             + "' size='" + oItem.size + "' name='" + oItem.name + "' contenttype='"
-            + oItem.contentType + "' creationdate='" + oItem.creationDate
+            + oItem.contentType + "' modifieddate='" + oItem.lastModified + "' creationdate='" + oItem.creationDate
             + "' lockable='" + oItem.lockable.toString() + "' hidden='"
             + bHidden.toString() + "' executable='" + oItem.executable.toString()
             + "'/>";
