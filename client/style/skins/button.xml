@@ -1044,8 +1044,13 @@
             height:15px;
             padding:3px 6px 0 6px;
         }
+        
         .c9-toolbarbuttonIcon .c9-label{
             padding:3px 6px 0 22px;
+        }
+        
+        .c9-toolbarbuttonIcon.preview .c9-label {
+            padding-left : 25px;
         }
         
         .c9-toolbarbuttonDown {

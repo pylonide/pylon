@@ -180,6 +180,7 @@
             height:19px;
             padding:1px 0 0 0;
             text-decoration:none;
+            white-space: nowrap;
         }
     ]]></a:style>
     <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
