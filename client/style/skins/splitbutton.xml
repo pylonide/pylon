@@ -166,15 +166,15 @@
             color:#18191a;
             text-shadow   : rgba(62, 63, 64, 1) 0px 1px 0px;
             border-right:0;
-            padding:1px 2px 0 26px;
+            padding:1px 6px 0 26px;
          }
          
          .c9-dropdown-btnDisabled .c9-arrow {
-            width:14px;
+            width:15px;
             height:15px;
             margin:3px 0 0 0;
             border-left:0;
-            background:url(images/btn-arrow2.png) no-repeat 4px 6px;
+            background:url(images/btn-arrow2.png) no-repeat 0 6px;
          }
     ]]></a:style>
     <a:style condition="apf.isSafari || apf.isChrome"><![CDATA[
