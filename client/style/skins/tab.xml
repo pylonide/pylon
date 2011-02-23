@@ -21,7 +21,7 @@
             font-family : Trebuchet MS;
             font-size : 12px;
 
-            border-top: 1px solid #656565;
+            border-top: 1px solid #404040;
             border-bottom: 1px solid #000000;
 
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(27,28,28)),color-stop(1, rgb(52,54,59)));
@@ -150,7 +150,6 @@
             color: #eeeeee;
 
             border-top: 1px solid #333333;
-            border-bottom:1px solid #000000;
 
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(50,51,52)),color-stop(1, rgb(30,30,30)));
             background: -moz-linear-gradient(center bottom,rgb(50,51,52) 0%,rgb(30,30,30) 100%);
@@ -203,7 +202,7 @@
             font-family : Trebuchet MS;
             font-size : 12px;
             border-bottom : 1px solid white;
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(47,48,50)),color-stop(1, rgb(72,73,76)));
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #262829),color-stop(1, #2f3031));
             background: -moz-linear-gradient(center bottom,#262829 0%, #2f3031 100%);
             margin-top : -32px;
             width : auto;

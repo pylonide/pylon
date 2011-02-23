@@ -1106,10 +1106,9 @@
             background-position : 0 0;
             background-repeat   : no-repeat;
         }
-    ]]></a:style>
-    <a:style condition="apf.isSafari || apf.isChrome"><![CDATA[
-        .header-btn.refresh {
-            background-position : 0 2px;
+        
+        .header-btnOver {
+            background-position : 0 -15px;
         }
     ]]></a:style>
 

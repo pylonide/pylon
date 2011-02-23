@@ -931,6 +931,8 @@ return ext.register("ext/console/console", {
             else
                 _self.log("'" + path + "' is not a file.");
         });
+        
+        winDbgConsole.previousSibling.hide();
     },
 
     enable : function(fromParent){

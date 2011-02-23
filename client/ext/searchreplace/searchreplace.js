@@ -33,13 +33,13 @@ return ext.register("ext/searchreplace/searchreplace", {
         this.nodes.push(
             mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
-                caption : "Search",
+                caption : "Search...",
                 onclick : function() {
                     _self.toggleDialog(false);
                 }
             })),
             mnuEdit.appendChild(new apf.item({
-                caption : "Search & Replace",
+                caption : "Search & Replace...",
                 onclick : function() {
                     _self.toggleDialog(true);
                 }

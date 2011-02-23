@@ -97,12 +97,12 @@
           onclick  = "require('ext/run/run').run(true)"
           disabled = "{stProcessRunning.active and 1}"
           submenu  = "mnuDebugCfg" />
-        <!--a:splitbutton
+        <a:splitbutton
           icon     = "run.png"
           caption  = "run"
           onclick  = "require('ext/run/run').run(false)"
           disabled = "{stProcessRunning.active and 1}"
-          submenu  = "mnuRunCfg" /-->
+          submenu  = "mnuRunCfg" />
         <a:button
           icon     = "stop.png"
           caption  = "stop"
@@ -138,7 +138,9 @@
     	  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
     	<a:divider skin="c9-divider"/>
     	<a:dropdown id="lstScripts"
+          skin       = "black_dropdown"
     	  margin     = "0 0 0 4"
+          width      = "120"
     	  maxitems   = "10"
           model      = "mdlDbgSources"
           disabled   = "{!stDebugProcessRunning.active and 1}" 

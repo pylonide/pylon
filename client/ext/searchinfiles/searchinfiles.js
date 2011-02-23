@@ -39,7 +39,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
         this.nodes.push(
             mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
-                caption : "Search in Files",
+                caption : "Search in Files...",
                 onclick : function() {
                     _self.toggleDialog(false);
                 }

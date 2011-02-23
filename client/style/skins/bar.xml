@@ -50,7 +50,7 @@
             position   : relative;
             overflow   : visible;
             height     : 36px;
-            margin-right:200px;
+            margin-right:164px;
         }
         
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-mbar-round {
@@ -108,6 +108,35 @@
             overflow         : hidden;
             position         : relative;
             background-image : url(images/gitui_menu_backg.png);
+        }
+        
+        .black-menu-bar .c9menulogo {
+            width    : 65px;
+            height   : 32px;
+            position : absolute;
+            bottom   : 20px;
+        }
+        
+        .black-menu-bar .c9menulogo span {
+            background  : url(images/c9menulogo.png) no-repeat 0 0;
+            width       : 45px;
+            height      : 29px;
+            position    : absolute;
+            left        : 50%;
+            margin-left : -22px;
+            top         : 0;
+        }
+        
+        .black-menu-bar .c9version {
+            color       : #696969;
+            font-family : Tahoma;
+            font-size   : 10px;
+            text-align  : center;
+            padding     : 0 0 3px 0;
+            position    : absolute;
+            bottom      : 2px;
+            left        : 0;
+            right       : 0;
         }
      ]]></a:style>
 
@@ -173,31 +202,6 @@
             left        : 0;
             right       : 0;
             bottom      : 0;
-        }
-        
-        .dock-panel .c9menulogo {
-            width    : 65px;
-            height   : 32px;
-            position : relative;
-            margin-top: 20px;
-        }
-        
-        .dock-panel .c9menulogo span {
-            background  : url(images/c9menulogo.png) no-repeat 0 0;
-            width       : 45px;
-            height      : 29px;
-            position    : absolute;
-            left        : 50%;
-            margin-left : -22px;
-            top         : 0;
-        }
-        
-        .dock-panel .c9version {
-            color       : #696969;
-            font-family : Tahoma;
-            font-size   : 10px;
-            text-align  : center;
-            padding     : 0 0 3px 0;
         }
     ]]></a:style>
 

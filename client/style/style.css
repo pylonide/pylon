@@ -64,6 +64,8 @@ BODY {
     padding : 1px;
     margin: 0;
     overflow: hidden;
-    border-top: 1px solid #656565;
+    border-top: 1px solid black;
     /*border-bottom: 1px solid #b2b2b2;*/
+    -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset;
+    -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset;
 }
