@@ -11,6 +11,8 @@
             -moz-box-shadow    : 6px 0 40px rgba(0, 0, 0, 0.18) inset;
             -webkit-box-shadow : 6px 0 40px rgba(0, 0, 0, 0.18) inset;
             box-shadow         : 6px 0 40px rgba(0, 0, 0, 0.18) inset;
+            
+            background:url(images/tree_backg.png) repeat 0 0;
         }
         
         .filemgr-tree U {
@@ -124,9 +126,9 @@
         .filemgr-treeFocus .item-fix.selected {
             border-top:1px solid #3a9bec;
             border-bottom:1px solid #185f97;
-            filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#4596de', endColorstr='#347fbe');
-            -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#4596de', endColorstr='#347fbe')";
-            background : -webkit-gradient(linear, left top, left bottom, from(#538bd7), color-stop(1, #487bbe));
+            filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#2890e5', endColorstr='#1f82d2');
+            -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#2890e5', endColorstr='#1f82d2')";
+            background : -webkit-gradient(linear, left top, left bottom, from(#2890e5), color-stop(1, #1f82d2));
             background : -moz-linear-gradient(center bottom, #1f82d2 0%, #2890e5 100%) repeat scroll 0 0 transparent;
         }
         
@@ -182,12 +184,40 @@
             text-decoration:none;
             white-space: nowrap;
         }
+        
+        .filemgr-tree .loading {
+            display : none;
+        }
+        
+        #txt_rename {
+            border:1px solid #2084d6;
+            height:16px;
+            background-color:#b9d4eb;
+            padding-left:4px;
+            margin-top:1px;
+            
+            font-family : Tahoma;
+            font-size   : 11px;
+            color       : #101010;
+            position:relative;
+            overflow:visible;
+            text-decoration:none;
+            white-space: nowrap;
+            word-break: keep-all;
+            cursor: text;
+            outline : none;
+        }
     ]]></a:style>
     <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
         .filemgr-tree .item LABEL .caption {
             height:18px;
             padding:2px 0 0 0;
         } 
+        
+        #txt_rename {
+            height:15px;
+            padding-top:1px;
+        }
     ]]></a:style>
 
     <a:presentation>

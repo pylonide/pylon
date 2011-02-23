@@ -156,14 +156,14 @@
         }
         
         .menu-radiobutton .pointer {
-            background-image    : url(images/gitui_close_arrow.png);
+            /*background-image    : url(images/gitui_close_arrow.png);
             background-position : 0 0;
             background-repeat   : no-repeat;
             position            : absolute;
             width               : 11px;
             height              : 9px;
             top                 : 6px;
-            right               : 5px;
+            right               : 5px;*/
             display             : none;
         }
         
@@ -182,7 +182,7 @@
         }
         
         .menu-radiobuttonChecked .pointer {
-            display:block;
+            /*display:block;*/
         }
         
         .menu-radiobuttonChecked .icon {
