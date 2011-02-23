@@ -33,6 +33,7 @@ require.def("core/ide", deps,
             this.sessionId = window.cloud9config.sessionId;
             this.workspaceId = window.cloud9config.workspaceId;
             this.readonly = window.cloud9config.readonly;
+            this.projectName = window.cloud9config.projectName;
 
             this.loggedIn = true;
 
