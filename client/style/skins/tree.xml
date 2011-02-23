@@ -11,6 +11,8 @@
             -moz-box-shadow    : 6px 0 40px rgba(0, 0, 0, 0.18) inset;
             -webkit-box-shadow : 6px 0 40px rgba(0, 0, 0, 0.18) inset;
             box-shadow         : 6px 0 40px rgba(0, 0, 0, 0.18) inset;
+            
+            background:url(images/tree_backg.png) repeat 0 0;
         }
         
         .filemgr-tree U {
