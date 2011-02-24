@@ -24,6 +24,8 @@ return ext.register("ext/save/save", {
     nodes       : [],
 
     hook : function(){
+        if (!self.tabEditors) return;
+        
         var _self = this;
         
         tabEditors.addEventListener("close", this.$close = function(e){

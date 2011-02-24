@@ -233,17 +233,13 @@
             .menu div.selected u{
                 background-image: url(images/radio.gif);
                 background-repeat: no-repeat;
-                background-position: 0 0;
+                background-position: 0 -16px;
             }
     
             .menu div.checked u{
                 background-image: url(images/check.gif);
                 background-repeat: no-repeat;
-                background-position: 0 0;
-            }
-    
-            .menu div.hover u{
-                background-position : 0 -16px;
+                background-position: 0 -16px;
             }
         ]]></a:style>
         <a:presentation>

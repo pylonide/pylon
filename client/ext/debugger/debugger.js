@@ -70,14 +70,16 @@ return ext.register("ext/debugger/debugger", {
             node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
         });
         
-        panels.register(this);
-        //dock.register(this);
+        //panels.register(this);
+        //ext.initExtension(this);
     },
 
     init : function(amlNode){
         this.panel = winDbgStack;
-        this.rightPane = colRight;
-        this.nodes.push(this.rightPane.appendChild(winDbgStack));
+        this.panel2 = winDbgWatch;
+        //this.rightPane = colRight;
+        this.nodes.push(winDbgStack);//this.rightPane.appendChild(
+        this.nodes.push(winDbgStack);
 
         this.paths = {};
         var _self = this;
@@ -122,6 +124,15 @@ return ext.register("ext/debugger/debugger", {
                 //console.log("v8 updated", e);
             });
         })
+        
+        dock.registerWindow(winDbgStack, {
+            dockPosition : "top",
+            primary : {defaultState:{}, activeState:{}}
+        });
+        dock.registerWindow(winDbgWatch, {
+            dockPosition : "top",
+            primary : {defaultState:{}, activeState:{}}
+        });
     },
 
     showDebugFile : function(scriptId, row, column, text) {
@@ -214,7 +225,7 @@ return ext.register("ext/debugger/debugger", {
             if (item.show)
                 item.show();
         });
-        this.rightPane.setProperty("visible", true);
+        //this.rightPane.setProperty("visible", true);
 
         //Quick Fix
         if (apf.isGecko)
@@ -229,7 +240,7 @@ return ext.register("ext/debugger/debugger", {
             if (item.hide)
                 item.hide();
         });
-        this.rightPane.setProperty("visible", false);
+        //this.rightPane.setProperty("visible", false);
         //log.disable(true);
 
         //Quick Fix
@@ -246,8 +257,8 @@ return ext.register("ext/debugger/debugger", {
 
         this.nodes = [];
         
-        panels.unregister(this);
-        dock.unregister(this);
+        //panels.unregister(this);
+        dock.unregisterWindow(this);
     }
 });
 
