@@ -189,16 +189,12 @@ return ext.register("ext/filesystem/filesystem", {
 
     /**** Init ****/
 
-    projectName : "Project",
-    
     init : function(amlNode){
         this.model = new apf.model();
         
         var _self = this;
         ide.addEventListener("afteronline", function(){
-            _self.model.load("<data><folder type='folder' name='" + _self.projectName + "' path='" + ide.davPrefix + "' root='1'/></data>");
-            _self.setProjectName(ide.workspaceDir.split("/").pop());
-            
+            _self.model.load("<data><folder type='folder' name='" + ide.projectName + "' path='" + ide.davPrefix + "' root='1'/></data>");
             ide.removeEventListener("afteronline", arguments.callee);
         });
         
@@ -281,11 +277,6 @@ return ext.register("ext/filesystem/filesystem", {
                 }
             });
         });
-    },
-
-    setProjectName : function(name) {
-        this.model && this.model.setQueryValue("folder[@root='1']/@name", name);
-        this.projectName = name;
     },
 
     enable : function(){

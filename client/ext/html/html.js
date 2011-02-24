@@ -38,6 +38,7 @@ return ext.register("ext/html/html", {
         //Append the button bar to the main toolbar
         var nodes = barHtmlMode.childNodes;
         for (var i = nodes.length - 1; i >= 0; i--) {
+            if (nodes[i].nodeType != 1) continue;
             this.nodes.push(ide.barTools.appendChild(nodes[0]));
         }
 

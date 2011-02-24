@@ -235,7 +235,8 @@ return ext.register("ext/dockpanel/dockpanel", {
             childNodes : [
                 new apf.tab({
                     skin    : "docktab",
-                    anchors : "0 0 0 0"
+                    anchors : "0 0 0 0",
+                    buttons : "scale"
                 })
             ]
         }));

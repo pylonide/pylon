@@ -45,6 +45,7 @@ module.exports = Ide = function(options, httpServer, exts) {
         plugins: options.plugins || Ide.DEFAULT_PLUGINS,
         requirejsConfig: requirejsConfig,
         offlineManifest: options.offlineManifest || "",
+        projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version
     };
 
@@ -106,7 +107,11 @@ Ide.DEFAULT_PLUGINS = [
         else if (path.match(this.workspaceRe)) {
             if (!this.davServer) {
                 this.davServer = jsDAV.mount(this.options.mountDir, this.options.davPrefix, this.httpServer, false);
-                
+
+                if(process.platform == "sunos"){
+                    this.davServer.plugins["codesearch"].GREP_CMD = __dirname+"/../../support/gnu-builds/grep-sunos";
+                    this.davServer.plugins["filesearch"].FIND_CMD = __dirname+"/../../support/gnu-builds/find-sunos";
+                }
                 this.davServer.plugins["permission"] = DavPermission;
                 this.emit("configureDav", this.davServer);
             }
@@ -157,6 +162,7 @@ Ide.DEFAULT_PLUGINS = [
                 // TODO fix text plugin loading!!
                 //scripts: _self.options.debug ? "" : aceScripts
                 scripts: "",
+                projectName: _self.options.projectName,
                 version: _self.options.version
             };
 
