@@ -255,6 +255,8 @@ return ext.register("ext/dockpanel/dockpanel", {
         
         var _self = this;
         
+        _self.numDockButtons++;
+        
         var btnLock, dockButtonID = "dockButton" + _self.numDockButtons;
         var btnTemp = section.appendChild(new apf.button({
             "class" : dockButtonID,
