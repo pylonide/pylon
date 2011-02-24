@@ -241,7 +241,7 @@ return ext.register("ext/dockpanel/dockpanel", {
         return section;
     },
     
-    registerPage : function(section, amlPage, properties, windowIdent, forceShow){
+    registerPage : function(section, amlPage, fetchCallback, properties){
         if (!section)
             throw new Error("Missing section when registering page in dockpanel");
         
@@ -255,22 +255,13 @@ return ext.register("ext/dockpanel/dockpanel", {
             "class" : dockButtonID,
             skin    : "dockButton",
             submenu : section.menu.id,
+            page    : amlPage,
             onmousedown  : function(){
                 btnLock = true;
-                section.tab.set(amlPage);
+                section.tab.set(this.page);
                 btnLock = false;
             }
         }));
-        
-        section.tab.appendChild(amlPage);
-        
-        // When the page is shown, we can reset the notification count
-        amlPage.addEventListener("prop.visible", function() {
-            _self.resetNotificationCount(windowIdent);
-            if (!btnLock)
-                btnTemp.showMenu();
-        });
-        amlPage.button = btnTemp;
         
         //@todo this should be changed
         if (properties && properties.primary) {
@@ -306,15 +297,48 @@ return ext.register("ext/dockpanel/dockpanel", {
             dockPanelRight.insertMarkup(tmpAML);
         }
         
-        this.dockObjects.push({ 
-            win       : amlPage, 
-            btn       : btnTemp,
-            ident     : windowIdent == undefined ? -1 : windowIdent,
-            objhidden : false,
-            notCount  : 0   // Notification count
-        });
+        function cont(){
+            section.tab.appendChild(amlPage);
+            
+            // When the page is shown, we can reset the notification count
+            amlPage.addEventListener("prop.visible", function() {
+                //_self.resetNotificationCount(windowIdent);
+                if (!btnLock)
+                    this.button.showMenu();
+            });
+            amlPage.button = btnTemp;
+            
+            _self.dockObjects.push({ 
+                win       : amlPage, 
+                btn       : btnTemp,
+                //ident     : windowIdent == undefined ? -1 : windowIdent,
+                objhidden : false,
+                notCount  : 0   // Notification count
+            });
+        }
         
-        if (forceShow)
+        if (!amlPage) {
+            btnTemp.$initPage = function(e, norecur){
+                if (!norecur) {
+                    var nodes = this.parentNode.childNodes;
+                    for (var i = 0; i < nodes.length; i++) {
+                        if (nodes[i].$initPage)
+                            nodes[i].$initPage(null, true);
+                    }
+                }
+                else {
+                    this.page = amlPage = fetchCallback();
+                    cont();
+                    this.removeEventListener("mousedown", arguments.callee);
+                }
+            }
+            btnTemp.addEventListener("mousedown", btnTemp.$initPage);
+        }
+        else {
+            cont();
+        }
+        
+        if (properties && properties.forceShow)
             btnTemp.showMenu();
     },
     

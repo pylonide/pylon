@@ -69,32 +69,33 @@ return ext.register("ext/debugger/debugger", {
             node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
         });
         
-        //panels.register(this);
-        ext.initExtension(this);
+        var sectionStack = dock.getSection("debugger-stack");
+        var sectionRest = dock.getSection("debugger-rest");
         
-        /*dbgCallStack
-        dbInteractive
-        dbgVariable
-        dbgBreakpoints*/
+        dock.registerPage(sectionStack, null, function(){
+            ext.initExtension(_self);
+            return dbgCallStack;
+        });
+        
+        dock.registerPage(sectionRest, null, function(){
+            ext.initExtension(_self);
+            return dbInteractive;
+        });
+        
+        dock.registerPage(sectionRest, null, function(){
+            ext.initExtension(_self);
+            return dbgVariable;
+        });
+        
+        dock.registerPage(sectionRest, null, function(){
+            ext.initExtension(_self);
+            return dbgBreakpoints;
+        });
     },
 
     init : function(amlNode){
         var _self = this;
-        
-        var sectionStack = dock.getSection("debugger-stack");
-        var sectionRest = dock.getSection("debugger-rest");
-        
-        var nodes = tabDebug.childNodes.slice();
-        for (var i = 0; i < nodes.length; i++) {
-            if (nodes[0].nodeType != 1) continue;
-            
-            this.nodes.push(nodes[i]);
-            
-            dock.registerPage(i == 0 ? sectionStack : sectionRest, nodes[i]);
-        }
-        
-        tabDebug.destroy(true, true);
-        
+
         this.paths = {};
         
         mdlDbgSources.addEventListener("afterload", function() {
@@ -246,7 +247,8 @@ return ext.register("ext/debugger/debugger", {
             item.destroy(true, true);
             dock.unregisterPage(item);
         });
-        winV8.destroy(true, true);
+        
+        tabDebug.destroy(true, true);
         this.$layoutItem.destroy(true, true);
 
         this.nodes = [];

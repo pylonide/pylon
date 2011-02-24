@@ -1,5 +1,5 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:tab id="tabDebug" skin="docktab">
+    <a:tab id="tabDebug" skin="docktab" visible="false">
         <a:page id="dbgCallStack" caption="Call Stack">
             <a:datagrid
               id         = "dgStack"
