@@ -212,7 +212,7 @@ return ext.register("ext/dockpanel/dockpanel", {
             return this.sections[ident];
         
         var section = this.sections[ident] = dockPanelRight.appendChild(new apf.vbox({
-            padding : 1,
+            padding : 0,
             edge : "0 0 3 0",
             "class" : "docksection",
             childNodes : [

@@ -263,10 +263,12 @@
             .dockwindowbasic{
                 position : relative;
                 background: #333;
-                border : 3px solid #333;
-                -moz-border-radius: 7px 0 0 0;
-                -webkit-border-radius: 7px 0 0 0;
+                border : 1px solid #333;
+                /*-moz-border-radius: 7px 0 0 0;
+                -webkit-border-radius: 7px 0 0 0;*/
                 margin-left : -42px;
+                margin-top : 10px;
+                border-top : 3px solid #333;
             }
             
             .dockwindowbasic .page {
