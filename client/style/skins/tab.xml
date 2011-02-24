@@ -474,7 +474,7 @@
         </a:page>
     </a:presentation>
 </a:tab>
-<a:tab name="tab">
+    <a:tab name="tab">
         <a:style><![CDATA[
             .tab {
                 padding : 0 0 0 0;
@@ -701,7 +701,7 @@
             }
     
             .docktab .btncontainer .btntab {
-                padding       : 2px 10px 3px 10px;
+                padding       : 2px 2px 3px 2px;
                 position      : relative;
                 text-align    : center;
                 border-right  : 1px solid #8c8c8c;
@@ -835,7 +835,7 @@
             </a:main>
             <a:button
               caption   = "div[1]/text()"
-              container = "div"
+              container = "."
               maxwidth  = "90"
               minwidth  = "10">
                 <div class="btntab">
