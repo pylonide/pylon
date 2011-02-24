@@ -99,7 +99,7 @@ apf.menu = function(struct, tagName){
     this.matchhide = false;
 
     this.$booleanProperties["animate"]  = true;
-    this.$booleanProperties["autohide"] = true;
+    this.$booleanProperties["pinned"] = true;
     this.$booleanProperties["matchhide"] = true;
     
     this.$propHandlers["visible"] = function(value, prop, force, nofocus, hideOpener){
@@ -274,12 +274,12 @@ apf.menu = function(struct, tagName){
             if (x === null) {
                 apf.popup.show(this.$uniqueId, {
                     x            : 0, 
-                    y            : opener.$ext.offsetHeight, 
+                    y            : this.ref ? 0 : opener.$ext.offsetHeight, 
                     animate      : noanim || !this.animate ? false : "fade",
                     steps        : 10,
-                    ref          : opener.$ext,
+                    ref          : (this.ref || opener).$ext,
                     allowTogether: openMenuId,
-                    autohide     : this.autohide !== false,
+                    autohide     : !this.pinned,
                     noleft       : this.left !== undefined
                 });
             }
@@ -292,7 +292,7 @@ apf.menu = function(struct, tagName){
                     steps        : 10,
                     //ref          : this.$ext.offsetParent,
                     allowTogether: openMenuId,
-                    autohide     : this.autohide !== false
+                    autohide     : !this.pinned
                     //autoCorrect  : false
                 });
             }
@@ -514,7 +514,7 @@ apf.menu = function(struct, tagName){
 
     //Hide menu when it looses focus or when the popup hides itself
     function forceHide(e){
-        if (this.$showingSubMenu || this.autohide === false
+        if (this.$showingSubMenu || this.pinned
                 || apf.isChildOf(e.fromElement, e.toElement)
                 || apf.isChildOf(this, e.toElement) || !e.toElement)
             return;

@@ -161,6 +161,9 @@ apf.splitter = function(struct, tagName){
             this.$thickness = parseInt(this.parentNode.padding);
         }
         
+        if (!this.$previous || !this.$next)
+            return this;
+        
         with (this.$info) {
             var diff = apf.getDiff(this.$ext);
             if (!this.parentNode.$box) {

@@ -637,7 +637,7 @@ apf.vbox = function(struct, tagName){
             //#ifdef __LAYOUT_ENABLE_SPLITTERS
             if (this.splitters && !amlNode.$splitter 
               && amlNode.nextSibling && amlNode.nextSibling.$splitter) {
-                amlNode.nextSibling.$splitter.removeNode();
+                amlNode.nextSibling.removeNode();
             }
             //#endif
         }
