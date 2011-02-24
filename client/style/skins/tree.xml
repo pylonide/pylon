@@ -213,16 +213,11 @@
         }
         
         .filemgr-dragtree .item {
-            height:20px;
+            height:22px;
             padding:0;
             position:relative;
             overflow:hidden;
-            border-top:1px solid #3a9bec;
-            border-bottom:1px solid #185f97;
-            filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#2890e5', endColorstr='#1f82d2');
-            -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#2890e5', endColorstr='#1f82d2')";
-            background : -webkit-gradient(linear, left top, left bottom, from(#2890e5), color-stop(1, #1f82d2));
-            background : -moz-linear-gradient(center bottom, #1f82d2 0%, #2890e5 100%) repeat scroll 0 0 transparent;
+            background:url(images/drag-tree-item-backg.png) repeat-x 0 0;
         }
         
         .filemgr-dragtree .item SPAN {
@@ -234,7 +229,7 @@
             position:relative;
             overflow:hidden;
             height:20px;
-            background-position:0 1px;
+            background-position:0 2px;
             background-repeat:no-repeat;
             margin-left:6px;
             padding-right:6px;
@@ -252,6 +247,7 @@
             padding         : 2px 0 0 20px;
             text-decoration : none;
             white-space     : nowrap;
+            text-shadow : #8394a2 0px 1px 0px;
         }
     ]]></a:style>
     <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
@@ -259,10 +255,6 @@
             height:18px;
             padding:2px 0 0 0;
         }
-        
-        .filemgr-tree .item LABEL {
-            background-position:0 1px;
-        } 
         
         #txt_rename {
             height:15px;
