@@ -58,9 +58,14 @@ return ext.register("ext/dockpanel/dockpanel", {
         var tab, items = this.sections;
         for (var prop in items) {
             tab = (item = items[prop]).tab;
+            
+            if (item.lastChild.$initPage)
+                item.lastChild.$initPage();
+                
             if (!tab.flex)
                 tab.setAttribute("flex", 1);
-           this.expandCol.appendChild(tab);
+            
+            this.expandCol.appendChild(tab);
         }
         this.expandCol.show();
         this.splitter.show();
