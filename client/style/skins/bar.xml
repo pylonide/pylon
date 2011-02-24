@@ -195,19 +195,14 @@
             background       : url(images/dock_cloud9_bg.gif);
         }
 
-        .dock-panel .body {
-            position    : absolute;
-            top         : 0;
-            left        : 0;
-            right       : 0;
-            bottom      : 0;
+        .docksection{
+            border-bottom : 1px solid #333;
         }
     ]]></a:style>
 
     <a:presentation>
-        <a:main container="div[1]">
+        <a:main container=".">
             <div class="dock-panel">
-                <div class="body"/>
             </div>
         </a:main>
     </a:presentation>

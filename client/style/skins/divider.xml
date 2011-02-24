@@ -45,9 +45,7 @@
             overflow      : hidden;
             border-top    : 1px solid #bebebe;
             border-bottom : 1px solid #f3f3f3;
-            width         : 33px;
-            height        : 2px;
-            margin        : 5px 0 5px 5px;
+            height        : 4px;
         }
         
         .divider-debugpanel DIV {

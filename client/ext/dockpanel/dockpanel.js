@@ -55,9 +55,9 @@ return ext.register("ext/dockpanel/dockpanel", {
      */
      
     expand : function(){
-        var tab, items = this.dockObjects;
-        for (var i = 0, item; i < items.length; i++) {
-            tab = (item = items[i]).tab || (item.tab = item.win.firstChild);
+        var tab, items = this.sections;
+        for (var prop in items) {
+            tab = (item = items[prop]).tab;
             if (!tab.flex)
                 tab.setAttribute("flex", 1);
            this.expandCol.appendChild(tab);
@@ -65,15 +65,19 @@ return ext.register("ext/dockpanel/dockpanel", {
         this.expandCol.show();
         this.splitter.show();
         dockPanelRight.hide();
+        
+        //Quick Fix
+//        if (apf.isGecko)
+//            apf.layout.forceResize(ide.vbMain.$ext);
     },
     
     collapse : function(){
-        var tab, items = this.dockObjects;
-        for (var i = 0, item; i < items.length; i++) {
-            if (!(item = items[i]).tab)
+        var tab, items = this.sections;
+        for (var prop in items) {
+            if (!(item = items[prop]).tab)
                 continue;
                 
-            item.win.appendChild(item.tab);
+            item.menu.appendChild(item.tab);
         }
         this.expandCol.hide();
         this.splitter.hide();
@@ -102,7 +106,6 @@ return ext.register("ext/dockpanel/dockpanel", {
      * @forceShow   Immediately shows the window being registered
      */
     registerWindow : function(windowObj, properties, windowIdent, forceShow){
-        
         if(typeof windowIdent !== "undefined" && this.windowExists(windowIdent)) {
             return false;
         }
@@ -122,7 +125,7 @@ return ext.register("ext/dockpanel/dockpanel", {
             skin: dockButton,
             state: true,
             visible: false,
-            value: "{" + windowObj.id + ".visible}"
+            value: "{" + amlPage.id + ".visible}"
         });*/
         
         var tmpAML = '<a:application xmlns:a="http://ajax.org/2005/aml">\
@@ -196,6 +199,127 @@ return ext.register("ext/dockpanel/dockpanel", {
         if(typeof forceShow !== "undefined" && forceShow == true) {
             this.toggleWindow(appendedDockBtn);
         }
+    },
+    
+    sections : {},
+    getSection : function(ident, options){
+        if (this.sections[ident])
+            return this.sections[ident];
+        
+        var section = this.sections[ident] = dockPanelRight.appendChild(new apf.vbox({
+            padding : 1,
+            edge : "0 0 3 0",
+            "class" : "docksection",
+            childNodes : [
+                new apf.divider({
+                    skin : "divider-debugpanel",
+                    margin : "3 5 2 5",
+                })
+            ]
+        }));
+
+        section.menu = apf.document.body.appendChild(new apf.menu({
+            id         : "menu" + section.$uniqueId,
+            //htmlNode   : document.body,
+            width      : options && options.width || 250,
+            height     : options && options.height || 350,
+            ref        : section,
+            pinned     : true,
+            animate    : false,
+            skin       : "dockwindowbasic",
+            childNodes : [
+                new apf.tab({
+                    skin    : "docktab",
+                    anchors : "0 0 0 0"
+                })
+            ]
+        }));
+        section.menu.$ext.style.display = "none";
+        
+        section.tab = section.menu.firstChild;
+        
+        return section;
+    },
+    
+    registerPage : function(section, amlPage, properties, windowIdent, forceShow){
+        if (!section)
+            throw new Error("Missing section when registering page in dockpanel");
+        
+//        if (typeof windowIdent !== "undefined" && this.windowExists(windowIdent))
+//            return false;
+        
+        var _self = this;
+        
+        var btnLock, dockButtonID = "dockButton" + _self.numDockButtons;
+        var btnTemp = section.appendChild(new apf.button({
+            "class" : dockButtonID,
+            skin    : "dockButton",
+            submenu : section.menu.id,
+            onmousedown  : function(){
+                btnLock = true;
+                section.tab.set(amlPage);
+                btnLock = false;
+            }
+        }));
+        
+        section.tab.appendChild(amlPage);
+        
+        // When the page is shown, we can reset the notification count
+        amlPage.addEventListener("prop.visible", function() {
+            _self.resetNotificationCount(windowIdent);
+            if (!btnLock)
+                btnTemp.showMenu();
+        });
+        amlPage.button = btnTemp;
+        
+        //@todo this should be changed
+        if (properties && properties.primary) {
+            var tmpAML = '<a:application xmlns:a="http://ajax.org/2005/aml">\
+                <a:style><![CDATA[ .' + dockButtonID + ' .dii_primary { background: transparent \
+                    url("' + properties.primary.backgroundImage + '") '
+                        + properties.primary.defaultState.x + 'px '
+                        + properties.primary.defaultState.y + 'px no-repeat;\
+                    } .' + dockButtonID + '.dockButtonDown .dii_primary { \
+                        background-position: ' + properties.primary.activeState.x 
+                          + 'px ' + properties.primary.activeState.y + 'px; }';
+            
+            if(properties.secondary) {
+                tmpAML += ' .' + dockButtonID + ' .dii_secondary { background: '
+                    + ' url("' + properties.secondary.backgroundImage + '") '
+                    + properties.secondary.defaultState.x + 'px '
+                    + properties.secondary.defaultState.y + 'px no-repeat;\
+                    } .' + dockButtonID + '.dockButtonDown .dii_secondary { \
+                    background-position: ' + properties.secondary.activeState.x 
+                      + 'px ' + properties.secondary.activeState.y + 'px; }';
+            }
+            
+            if(properties.tertiary) {
+                 tmpAML += ' .' + dockButtonID + ' .dii_tertiary { background: '
+                        + properties.tertiary.backgroundColor + ' url("'
+                        + properties.tertiary.backgroundImage + '") '
+                        + properties.tertiary.defaultState.x + 'px '
+                        + properties.tertiary.defaultState.y + 'px no-repeat; \
+                        border: 1px solid #c7c7c7; }';
+            }
+            
+            tmpAML += ' ]]> </a:style></a:application>';
+            dockPanelRight.insertMarkup(tmpAML);
+        }
+        
+        this.dockObjects.push({ 
+            win       : amlPage, 
+            btn       : btnTemp,
+            ident     : windowIdent == undefined ? -1 : windowIdent,
+            objhidden : false,
+            notCount  : 0   // Notification count
+        });
+        
+        if (forceShow)
+            btnTemp.showMenu();
+    },
+    
+    unregisterPage : function(){
+        
     },
     
     /**
