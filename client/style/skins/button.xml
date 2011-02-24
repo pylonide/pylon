@@ -494,14 +494,12 @@
         }
 
         .btn_console_openOver {
-            background-position: 0 -38px;
         }
 
         .btn_console_openDown {
-            background-position: 0 -76px;
+            background-position: 0 -38px;
         }
         .btn_console_openDown:hover {
-            background-position: 0 -114px;
         }
 
         .btn_console_open.btnDisabled {
