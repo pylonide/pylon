@@ -48,6 +48,15 @@
                 position : absolute;
                 width : 100%;
             }
+            
+            .dockcol .splitter.horizontal{
+                height : 3px;
+                background : #333;
+            }
+            .dockcol .splitter.horizontal div{
+                height : 3px;
+                margin-top : 0;
+            }
         ]]></a:style>
 
         <a:presentation>

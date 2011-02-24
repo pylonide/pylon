@@ -5,7 +5,6 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
  
-
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
@@ -70,19 +69,35 @@ return ext.register("ext/debugger/debugger", {
             node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
         });
         
-        //panels.register(this);
-        //ext.initExtension(this);
+        var sectionStack = dock.getSection("debugger-stack");
+        var sectionRest = dock.getSection("debugger-rest");
+        
+        dock.registerPage(sectionStack, null, function(){
+            ext.initExtension(_self);
+            return dbgCallStack;
+        });
+        
+        dock.registerPage(sectionRest, null, function(){
+            ext.initExtension(_self);
+            return dbInteractive;
+        });
+        
+        dock.registerPage(sectionRest, null, function(){
+            ext.initExtension(_self);
+            return dbgVariable;
+        });
+        
+        dock.registerPage(sectionRest, null, function(){
+            ext.initExtension(_self);
+            return dbgBreakpoints;
+        });
     },
 
     init : function(amlNode){
-        this.panel = winDbgStack;
-        this.panel2 = winDbgWatch;
-        //this.rightPane = colRight;
-        this.nodes.push(winDbgStack);//this.rightPane.appendChild(
-        this.nodes.push(winDbgStack);
+        var _self = this;
 
         this.paths = {};
-        var _self = this;
+        
         mdlDbgSources.addEventListener("afterload", function() {
             _self.$syncTree();
         });
@@ -98,6 +113,7 @@ return ext.register("ext/debugger/debugger", {
             // TODO: optimize this!
             _self.$syncTree();
         });
+        
         //@todo move this to noderunner...
         dbg.addEventListener("changeframe", function(e) {
             e.data && _self.showDebugFile(e.data.getAttribute("scriptid"));
@@ -124,15 +140,6 @@ return ext.register("ext/debugger/debugger", {
                 //console.log("v8 updated", e);
             });
         })
-        
-        dock.registerWindow(winDbgStack, {
-            dockPosition : "top",
-            primary : {defaultState:{}, activeState:{}}
-        });
-        dock.registerWindow(winDbgWatch, {
-            dockPosition : "top",
-            primary : {defaultState:{}, activeState:{}}
-        });
     },
 
     showDebugFile : function(scriptId, row, column, text) {
@@ -219,46 +226,32 @@ return ext.register("ext/debugger/debugger", {
     },
 
     enable : function(){
-        panels.initPanel(this);
+        ext.initExtension(this);
         
         this.nodes.each(function(item){
             if (item.show)
                 item.show();
         });
-        //this.rightPane.setProperty("visible", true);
-
-        //Quick Fix
-        if (apf.isGecko)
-            apf.layout.forceResize(ide.vbMain.$ext);
     },
 
     disable : function(){
-        if (!this.panel)
-            return;
-        
         this.nodes.each(function(item){
             if (item.hide)
                 item.hide();
         });
-        //this.rightPane.setProperty("visible", false);
         //log.disable(true);
-
-        //Quick Fix
-        if (apf.isGecko)
-            apf.layout.forceResize(ide.vbMain.$ext);
     },
 
     destroy : function(){
         this.nodes.each(function(item){
             item.destroy(true, true);
+            dock.unregisterPage(item);
         });
-        winV8.destroy(true, true);
+        
+        tabDebug.destroy(true, true);
         this.$layoutItem.destroy(true, true);
 
         this.nodes = [];
-        
-        //panels.unregister(this);
-        dock.unregisterWindow(this);
     }
 });
 

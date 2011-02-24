@@ -79,6 +79,8 @@ return ext.register("ext/searchinfiles/searchinfiles", {
                 node = trSFResult.selected,
                 line = 0,
                 text = "";
+            if (node.tagName == "d:maxreached")
+                return;
             if (node.tagName == "d:excerpt") {
                 path = node.parentNode.getAttribute("path");
                 line = node.getAttribute("line");
