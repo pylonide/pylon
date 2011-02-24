@@ -97,10 +97,11 @@
       anchors         = "0 0 0 0"
       border          = "0"
       visible         = "false"
-      each            = "[d:response[position() &lt; 50]|d:excerpt[position() &lt; 50]]"
+      each            = "[d:response[position() &lt; 50]|d:excerpt[position() &lt; 50]|d:maxreached]"
       loading-message = "Searching..."
       autoselect      = "false">
         <a:model />
+        <a:caption match="[d:maxreached]">Your search yielded too many results. The first hits are listed below:</a:caption>
         <a:caption match="[d:response]">[@path] (#[d:excerpt])</a:caption>
         <a:caption match="[d:excerpt]"><div class="linenumber">[@line]</div><pre class="excerpt">{apf.htmlentities([text()])}</pre></a:caption>
     </a:tree>

@@ -24,8 +24,8 @@
             border-top: 1px solid #404040;
             border-bottom: 1px solid #000000;
 
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #000000),color-stop(1, #292929));
-            background: -moz-linear-gradient(center bottom,#000000 0%, #292929 100%);
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #191919),color-stop(1, #292929));
+            background: -moz-linear-gradient(center bottom,#191919 0%, #292929 100%);
             margin-top : -28px;
             width : auto;
         }
@@ -150,8 +150,8 @@
 
             border-top: 1px solid #333333;
 
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(50,51,52)),color-stop(1, rgb(30,30,30)));
-            background: -moz-linear-gradient(center bottom,rgb(50,51,52) 0%,rgb(30,30,30) 100%);
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #2a2a2a),color-stop(1, #1d1d1d));
+            background: -moz-linear-gradient(center bottom,#2a2a2a 0%,#1d1d1d 100%);
         }
 
         .tab_console .page.curpage{
