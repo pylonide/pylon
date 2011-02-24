@@ -44,7 +44,8 @@ module.exports = Ide = function(options, httpServer, exts) {
         db: options.db || null,
         plugins: options.plugins || Ide.DEFAULT_PLUGINS,
         requirejsConfig: requirejsConfig,
-        offlineManifest: options.offlineManifest || ""
+        offlineManifest: options.offlineManifest || "",
+        version: options.version
     };
 
     this.$users = {};
@@ -155,7 +156,8 @@ Ide.DEFAULT_PLUGINS = [
                 offlineManifest: _self.options.offlineManifest,
                 // TODO fix text plugin loading!!
                 //scripts: _self.options.debug ? "" : aceScripts
-                scripts: ""
+                scripts: "",
+                version: _self.options.version
             };
 
             var settingsPlugin = _self.getExt("settings");

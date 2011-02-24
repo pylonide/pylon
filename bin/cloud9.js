@@ -37,7 +37,7 @@ if (options.config) {
         options[key] = options.config[key];
 }
 
-var version = JSON.parse(Fs.readFileSync(__dirname + "/../package.json")).version;
+var version = options.version = JSON.parse(Fs.readFileSync(__dirname + "/../package.json")).version;
 
 require("cloud9").main(options);
 
