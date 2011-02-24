@@ -226,7 +226,7 @@ return ext.register("ext/dockpanel/dockpanel", {
         section.menu = apf.document.body.appendChild(new apf.menu({
             id         : "menu" + section.$uniqueId,
             //htmlNode   : document.body,
-            width      : options && options.width || 250,
+            width      : options && options.width || 260,
             height     : options && options.height || 350,
             ref        : section,
             pinned     : true,

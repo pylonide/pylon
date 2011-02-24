@@ -835,7 +835,7 @@
             <a:button
               caption   = "div[1]/text()"
               container = "."
-              maxwidth  = "90"
+              maxwidth  = "80"
               minwidth  = "10">
                 <div class="btntab">
                     <!--div class="tab_icon"> </div-->
