@@ -46,7 +46,8 @@ exports.main = function(options) {
             debug: options.debug,
             staticUrl: "/static",
             workspaceId: name,
-            name: name
+            name: name,
+            version: options.version
         };
         var ide = new IdeServer(serverOptions, server, exts);
         

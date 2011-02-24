@@ -66,13 +66,13 @@ return ext.register("ext/html/html", {
         this.enabled = false;
 
         this.nodes.each(function(item){
-            item.hide();
+            item.hide && item.hide();
         });
     },
 
     destroy : function(){
         this.nodes.each(function(item){
-            item.destroy(true, true);
+            item.destroy && item.destroy(true, true);
         });
         this.nodes = [];
     }

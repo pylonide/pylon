@@ -21,7 +21,8 @@
                 sessionId: <%sessionId%>,
                 workspaceId: <%workspaceId%>,                
                 name: <%name%>,
-                readonly: <%readonly%>
+                readonly: <%readonly%>,
+                version: <%version%>
             };
             
             // prevent console messages crash our app!
@@ -162,11 +163,11 @@
                         <div class="c9menulogo">
                             <span></span>
                         </div>
-                        <div class="c9version">Version 0.31</div>
+                        <div id="c9version" class="c9version">Version 0.31</div>
                     </a:bar>
-                    <a:vbox id="colLeft" padding="8" width="200" />
+                    <a:vbox id="colLeft" padding="3" width="200" />
                     <a:splitter width="0" id="splitterPanelLeft" />
-                    <a:vbox id="colMiddle" flex="1" padding="8" />
+                    <a:vbox id="colMiddle" flex="1" padding="3" />
                     <a:bar id="dockPanelRight" skin="debug-panel">
                         <a:button
                           skin   = "dockButton"
@@ -175,12 +176,9 @@
                           class  = "default_hidden"
                           state  = "true"
                         />
-                        <a:divider 
-                          skin   = "divider-debugpanel"
-                          id     = "dockRightDivider"
-                        />
                     </a:bar>
-                    <a:vbox id="colRight" padding="8" width="300" visible="false" splitters2="true" />
+                    <a:splitter width="0" id="splitterPanelRight" visible="false" />
+                    <a:vbox id="colRight" padding="3" width="300" visible="false" splitters="true" />
                 </a:hbox>
             </a:vbox>
             
