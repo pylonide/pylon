@@ -80,8 +80,7 @@
             color       : #a2c890;
             cursor      : default;
             z-index     : 1;
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #1d1d1d),color-stop(1, #3d3d3d));
-            background: -moz-linear-gradient(center bottom,#1d1d1d 0%,#3d3d3d 100%);
+            background:url(images/console-tab-btn-curr.png) repeat-x 0 0;
             border-top: 1px solid #4f4f4f;
             z-index:101;
             padding      : 2px 27px 2px 27px;
