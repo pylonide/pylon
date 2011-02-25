@@ -14,10 +14,11 @@ var jsDAV = require("jsdav"),
     template = require("./template"),
     EventEmitter = require("events").EventEmitter;
 
-module.exports = Ide = function(options, httpServer, exts) {
+module.exports = Ide = function(options, httpServer, exts, socket) {
     EventEmitter.call(this);
     
     this.httpServer = httpServer;
+    this.socket = socket;
 
     this.workspaceDir = Async.abspath(options.workspaceDir).replace(/\/+$/, "");
     var baseUrl = (options.baseUrl || "").replace(/\/+$/, "");
