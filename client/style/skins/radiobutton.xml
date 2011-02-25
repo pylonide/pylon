@@ -140,7 +140,7 @@
             overflow            : hidden;
         }
         
-        .menu-radiobuttonOver,
+        .menu-radiobuttonDown,
         .menu-radiobuttonChecked {
             background : url(images/radiobutton_over.png) no-repeat 0 0;
         }

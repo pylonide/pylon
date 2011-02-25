@@ -75,21 +75,45 @@ return ext.register("ext/debugger/debugger", {
         dock.registerPage(sectionStack, null, function(){
             ext.initExtension(_self);
             return dbgCallStack;
+        }, {
+            primary : {
+                backgroundImage: "/static/style/images/debugicons.png",
+                defaultState: { x: -6, y: -46 },
+                activeState: { x: -5, y: -45 }
+            },
         });
         
         dock.registerPage(sectionRest, null, function(){
             ext.initExtension(_self);
             return dbInteractive;
+        }, {
+            primary : {
+                backgroundImage: "/static/style/images/debugicons.png",
+                defaultState: { x: -7, y: -130 },
+                activeState: { x: -6, y: -129 }
+            },
         });
         
         dock.registerPage(sectionRest, null, function(){
             ext.initExtension(_self);
             return dbgVariable;
+        }, {
+            primary : {
+                backgroundImage: "/static/style/images/debugicons.png",
+                defaultState: { x: -6, y: -174 },
+                activeState: { x: -5, y: -173 }
+            },
         });
         
         dock.registerPage(sectionRest, null, function(){
             ext.initExtension(_self);
             return dbgBreakpoints;
+        }, {
+            primary : {
+                backgroundImage: "/static/style/images/debugicons.png",
+                defaultState: { x: -6, y: -88 },
+                activeState: { x: -5, y: -87 }
+            },
         });
     },
 

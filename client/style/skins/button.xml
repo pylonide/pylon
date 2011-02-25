@@ -490,7 +490,8 @@
             -khtml-user-select : none;
             user-select        : none;
             height             : 38px;
-            width              : 18px;
+            width              : 20px;
+            backgroudn : no-repeat 0 0;
         }
 
         .btn_console_openOver {
@@ -581,19 +582,15 @@
             background       : -moz-linear-gradient(center left, #f3f3f3 0%, #e5e5e5 100%) repeat scroll 0 0 transparent;
         }
         
-        .dockButton.default_hidden {
-            display: none;
-        }
-        
         .dockButtonOver {
             background-image    : url(images/dock_button_sprite.png);
-            background-position : 4px 3px;
+            background-position : 3px -114px;
         }
         
         .dockButtonDown {
-            /*background-image    : url(images/dock_button_sprite.png);
-            background-position : 4px -36px;*/
-            background          : #333 url(images/dockPanelButtonDown.png) no-repeat;
+            background-image    : url(images/dock_button_sprite.png);
+            background-position : 3px -35px;
+            /*background          : #333 url(images/dockPanelButtonDown.png) no-repeat;*/
         }
         
         .dockButtonDown .dockButton-footer {
@@ -1094,7 +1091,6 @@
         </a:main>
     </a:presentation>
 </a:button>
-
 <a:button name="header-btn">
     <a:style><![CDATA[
         .header-btn {
@@ -1121,6 +1117,55 @@
           background = "."
           icon       = ".">
             <div class="header-btn"> </div>
+        </a:main>
+    </a:presentation>
+</a:button>
+<a:button name="dockheader">
+    <a:style><![CDATA[
+        .dockheader {
+            border-top : 1px solid #727375;
+            border-bottom : 1px solid #f1f1f1;
+            position : relative;
+            filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#5a5b5d', endColorstr='#424244');
+            -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#5a5b5d', endColorstr='#424244')";
+            background       : -webkit-gradient(linear, top center, from(#5a5b5d), color-stop(1, #424244));
+            background       : -moz-linear-gradient(center top, #5a5b5d 0%, #424244 100%) repeat scroll 0 0 transparent;
+            height : 10px;
+            cursor : pointer;
+        }
+        
+        .dockheader span{
+            width : 9px;
+            height : 9px;
+            position : absolute;
+            display : block;
+            right : 2px;
+            top : 0px;
+            background : url(images/toolbar-arrows.png) 0 -10px;
+        }
+        
+        .dockheaderOver {
+            border-top : 1px solid #808183;
+            filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#5a5b5d', endColorstr='#424244');
+            -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#5a5b5d', endColorstr='#424244')";
+            background       : -webkit-gradient(linear, top center, from(#5a5b5d), color-stop(1, #424244));
+            background       : -moz-linear-gradient(center top, #6b6c6e 0%, #555557 100%) repeat scroll 0 0 transparent;
+        }
+        
+        .dockheader.expanded span{
+            background-position : 0 0;
+            right : 3px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption      = "text()"
+          background = "."
+          icon       = ".">
+            <div class="dockheader"> 
+                <span> </span>
+            </div>
         </a:main>
     </a:presentation>
 </a:button>

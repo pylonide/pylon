@@ -173,7 +173,6 @@
             left        : 0;
             right       : 0;
             bottom      : 0;
-            border-top  : 1px solid #ffffff;
         }
     ]]></a:style>
 
@@ -196,6 +195,7 @@
         }
 
         .docksection{
+            /*border : 1px solid #fff;*/
             border-bottom : 1px solid #333;
         }
     ]]></a:style>
