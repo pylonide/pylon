@@ -162,8 +162,7 @@ return ext.register("ext/dockpanel/dockpanel", {
                     + properties.tertiary.backgroundColor + ' url("'
                     + properties.tertiary.backgroundImage + '") '
                     + properties.tertiary.defaultState.x + 'px '
-                    + properties.tertiary.defaultState.y + 'px no-repeat; \
-                    border: 1px solid #c7c7c7; }';
+                    + properties.tertiary.defaultState.y + 'px no-repeat; }';
         }
         
         tmpAML += ' ]]> </a:style></a:application>';
