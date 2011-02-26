@@ -55,7 +55,10 @@ return ext.register("ext/dockpanel/dockpanel", {
      */
      
     expand : function(){
-        this.$currentMenu.hide();
+        this.expanded = true;
+        
+        if (this.$currentMenu)
+            this.$currentMenu.hide();
         
         var tab, items = this.sections;
         for (var prop in items) {
@@ -79,6 +82,8 @@ return ext.register("ext/dockpanel/dockpanel", {
     },
     
     collapse : function(){
+        this.expanded = false;
+        
         var tab, items = this.sections;
         for (var prop in items) {
             if (!(item = items[prop]).tab)
@@ -327,7 +332,7 @@ return ext.register("ext/dockpanel/dockpanel", {
             // When the page is shown, we can reset the notification count
             amlPage.addEventListener("prop.visible", function() {
                 //_self.resetNotificationCount(windowIdent);
-                if (!btnLock)
+                if (!btnLock & !_self.expanded)
                     this.button.showMenu();
             });
             amlPage.button = btnTemp;
