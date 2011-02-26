@@ -34,7 +34,6 @@ require.def("core/ide", deps,
             this.workspaceId = window.cloud9config.workspaceId;
             this.readonly = window.cloud9config.readonly;
             this.projectName = window.cloud9config.projectName;
-            document.getElementById("c9version").innerHTML = "Version " + window.cloud9config.version;
 
             this.loggedIn = true;
 
