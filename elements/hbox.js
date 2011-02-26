@@ -248,13 +248,14 @@ apf.vbox = function(struct, tagName){
             else {
                 var isLast = isLastVisibleChild(this);
                 if (!isLast) {
-                    if (!this.nextSibling.$splitter) {
+                    if (!this.nextSibling.$splitter && !this.nextSibling.nosplitter) {
                         this.parentNode.insertBefore(
                             this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
                             this.nextSibling);
                     }
                 }
-                else if (this.previousSibling && !this.previousSibling.$splitter) {
+                else if (this.previousSibling && !this.previousSibling.$splitter
+                   && !this.previousSibling.nosplitter) {
                     this.parentNode.insertBefore(
                         this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
                         this);
@@ -569,7 +570,7 @@ apf.vbox = function(struct, tagName){
                     visibleHandler.call(amlNode, {value: true});
             }
             //#ifdef __LAYOUT_ENABLE_SPLITTERS
-            else if (this.splitters && !amlNode.$splitter && amlNode.visible !== false) {
+            else if (this.splitters && !amlNode.$splitter && amlNode.visible !== false && !amlNode.nosplitter) {
                 this.insertBefore(
                     this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
                     amlNode.nextSibling);
