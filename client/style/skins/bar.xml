@@ -152,7 +152,7 @@
             position         : relative;
             overflow         : hidden;
             width            : 43px;
-            border-left      : 1px solid #2e2e2e;
+            border-left      : 1px solid #333;
             background-color : #e7e7e7;
             filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5');
             -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5')";
@@ -190,7 +190,7 @@
             position         : relative;
             overflow         : hidden;
             width            : 65px;
-            border-right     : 1px solid #2e2e2e;
+            border-right     : 1px solid #333;
             background       : url(images/dock_cloud9_bg.gif);
         }
 
