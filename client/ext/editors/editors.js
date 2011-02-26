@@ -126,7 +126,7 @@ return ext.register("ext/editors/editors", {
             ext.style.left = (pos[0] - 2) + "px";
             ext.style.top  = pos[1] + "px";
             var d = apf.getDiff(ext);
-            ext.style.width = (ph.offsetWidth + 2 - d[0]) + "px";
+            ext.style.width = (ph.offsetWidth + 2 + (apf.isGecko && colRight.visible ? 2 : 0) - d[0]) + "px";
             ext.style.height = (ph.offsetHeight - d[1]) + "px";
         });
 

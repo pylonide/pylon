@@ -188,9 +188,13 @@
             padding : 4px 3px 0 26px;
             margin  : 0;
         }
-        
-        .c9-dropdown-btnDisabled .c9-label {
-            padding:1px 0px 0 26px;
+
+         .c9-dropdown-btnDisabled .c9-label {
+            padding:1px 4px 0 26px;
+         }
+         
+         .c9-dropdown-btnDisabled .c9-arrow {
+            background-position : 0 6px;
          }
     ]]></a:style>
     

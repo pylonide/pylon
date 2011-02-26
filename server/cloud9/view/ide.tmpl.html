@@ -155,17 +155,20 @@
 
             <a:vbox id="mainRow" padding="0" flex="1" splitters="true">
                 <a:hbox id="hboxMain" padding="0" edge="0" flex="1">
-                    <a:bar skin="black-menu-bar" skin_old="dock-panel">
+                    <a:vbox class="black-menu-bar">
                         <a:group id="acg1"> 
                             <a:radiobutton skin="menu-radiobutton" value="opensource" class="project_files" checked="true">Project Files</a:radiobutton> 
                             <!--a:radiobutton skin="menu-radiobutton" value="commercial" class="open_files">Open Files</a:radiobutton-->
                             <a:radiobutton skin="menu-radiobutton" value="commercial2" class="preferences">Preferences</a:radiobutton>
                         </a:group>
-                        <div class="c9menulogo">
-                            <span></span>
-                        </div>
-                        <div id="c9version" class="c9version">Version [%version%]</div>
-                    </a:bar>
+                        <a:filler />
+                        <a:bar skin="basic">
+                            <div class="c9menulogo">
+                                <span></span>
+                            </div>
+                            <div id="c9version" class="c9version">Version [%version%]</div>
+                        </a:bar>
+                    </a:vbox>
                     <a:vbox id="colLeft" padding="3" width="200" />
                     <a:splitter width="0" id="splitterPanelLeft" />
                     <a:vbox id="colMiddle" flex="1" padding="3" />
@@ -173,7 +176,7 @@
                         <a:button skin="dockheader" onclick="require('ext/dockpanel/dockpanel').expand()" />
                     </a:bar>
                     <a:splitter width="0" id="splitterPanelRight" visible="false" />
-                    <a:vbox id="colRight" padding="3" width="300" visible="false" splitters="true">
+                    <a:vbox id="colRight" padding="3" width="260" visible="false" splitters="true">
                         <a:button skin="dockheader" class="expanded" nosplitter="true" height="12" margin="0 0 -3 0" onclick="require('ext/dockpanel/dockpanel').collapse()" />
                     </a:vbox>
                 </a:hbox>

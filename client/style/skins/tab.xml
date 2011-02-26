@@ -667,7 +667,6 @@
     <a:tab name="docktab">
         <a:style><![CDATA[
             .docktab {
-                padding : 21px 0 0 0;
                 border: 0px solid #c3c3c3;
                 margin : 0 auto;
                 overflow: hidden;
@@ -678,14 +677,13 @@
             .docktab .btncontainer{
                 padding : 0;
                 z-index : 100;
-                height: 20px;
+                height: 18px;
                 overflow: visible;
                 white-space: nowrap;
                 border-bottom : 1px solid #8c8c8c;
                 
                 background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
                 background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
-                margin-top : -21px;
                 width : auto;
             }
     
@@ -700,7 +698,7 @@
             }
     
             .docktab .btncontainer .btntab {
-                padding       : 2px 2px 3px 2px;
+                padding       : 1px 2px 2px 2px;
                 position      : relative;
                 text-align    : center;
                 border-right  : 1px solid #8c8c8c;
@@ -755,7 +753,7 @@
                 color       : #202020;
                 cursor      : default;
                 z-index     : 1;
-                background: -webkit-gradient(linear,left bottom,left top,color-stop(0.6 rgb(246,246,246)),color-stop(1, rgb(237,237,237)));
+                background: -webkit-gradient(linear,left bottom,left top,from(rgb(246,246,246)),color-stop(1, rgb(237,237,237)));
                 background: -moz-linear-gradient(center bottom,rgb(246,246,246) 60%,rgb(237,237,237) 100%);
                 border-right : 1px solid #8c8c8c;
                 border-bottom: 1px solid #F6F6F6;
@@ -808,7 +806,7 @@
             .docktab .page {
                 display : none;
                 position : absolute;
-                top : 21px;
+                top : 19px;
                 bottom : 0;
                 left : 0;
                 right : 0;
@@ -825,6 +823,11 @@
                 display : block;
             }
         ]]></a:style>
+        <a:style condition="apf.isWebkit">
+            .docktab .btncontainer .btntab {
+                padding : 2px 2px 3px 2px;
+            }
+        </a:style>
     
         <a:presentation>
             <a:main pages="." buttons="div[1]">
