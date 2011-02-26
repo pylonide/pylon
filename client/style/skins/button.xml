@@ -590,7 +590,6 @@
         .dockButtonDown {
             background-image    : url(images/dock_button_sprite.png);
             background-position : 3px -35px;
-            background          : #333 url(images/dockPanelButtonDown.png) no-repeat;
         }
         
         .dockButtonDown .dockButton-footer {
