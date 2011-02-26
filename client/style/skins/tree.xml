@@ -180,7 +180,8 @@
             white-space: nowrap;
         }
         
-        .filemgr-tree .loading {
+        .filemgr-tree .loading,
+        .filemgr-tree .empty {
             display : none;
         }
         
