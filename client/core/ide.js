@@ -132,7 +132,7 @@ require.def("core/ide", deps,
                 
                 var retries = 0;
                 ide.$retryTimer = setInterval(function() {
-                    if (++retries == 1)
+                    if (++retries == 3)
                         ide.dispatchEvent("socketDisconnect");
                     
                     if (!ide.socket.connecting && !ide.testOffline && ide.loggedIn)
