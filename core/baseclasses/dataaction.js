@@ -200,7 +200,7 @@ apf.DataAction = function(){
             var curLock = this.$lock[name] = {
                     start      : bHasOffline && !apf.offline.onLine
                                     ? apf.offline.offlineTime
-                                    : new Date().getUTCTime(),
+                                    : new Date().getISOTime(),
                     stopped    : false,
                     xmlContext : xmlContext,
                     instr      : lockInstruction,

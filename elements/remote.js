@@ -401,7 +401,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         qHost.rdbQueue[uri].push({
             uri       : uri,
             args      : args,
-            currdelta : (new Date()).getUTCTime() - oSession.basetime
+            currdelta : (new Date()).getISOTime() - oSession.basetime
         });
     };
 
@@ -482,7 +482,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
 
         // #ifdef __DEBUG
         this.log && this.log(this.logprefix + "timestamp comparison (base: " + oSession.basetime + ") : "
-            + (new Date((new Date()).getUTCTime()).toGMTString())
+            + new Date(new Date().getUTCTime()).toGMTString()
             + ", " + (new Date(time).toGMTString()));
         // #endif
 

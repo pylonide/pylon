@@ -844,6 +844,13 @@
             return "+" + r.substr(1); 
         }
     };
+    
+    $P.getUTCTime = function() {
+        //Date.UTC(year, month[, date[, hrs[, min[, sec[, ms]]]]])
+        return Date.UTC(this.getUTCFullYear(), this.getUTCMonth(), this.getUTCDate(),
+            this.getUTCHours(), this.getUTCMinutes(), this.getUTCSeconds(),
+            this.getUTCMilliseconds());
+    };
 
     /**
      * Returns the number of milliseconds between this date and date.
