@@ -80,9 +80,12 @@ return ext.register("ext/code/code", {
                 doc.isInited = true;
             });
             
-            doc.addEventListener("retrievevalue", function(e){
-                if (!doc.isInited) return e.value;
-                else return doc.acesession.getValue();
+            doc.addEventListener("retrievevalue", function(e) {
+                console.log("get value", doc.isInited)
+                if (!doc.isInited) 
+                    return e.value;
+                else 
+                    return doc.acesession.getValue();
             });
             
             doc.addEventListener("close", function(){
