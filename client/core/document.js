@@ -19,7 +19,7 @@ var Document = function(node, docValue){
     };
     
     this.hasValue = function(){
-        return !!this.getValue();
+        return this.getValue() !== undefined;
     };
     
     this.setValue = function(value){
