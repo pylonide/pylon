@@ -1007,6 +1007,7 @@
             background-position : 0 0;
             background-repeat   : no-repeat;
         }
+        
         .c9-toolbarbuttonIcon .c9-icon{
             display : block;
         }
@@ -1037,6 +1038,14 @@
             line-height:14px;
             height:15px;
             padding:3px 6px 0 6px;
+        }
+        
+        .c9-toolbarbuttonEmpty .c9-icon {
+            position:relative;
+        }
+        
+        .c9-toolbarbuttonEmpty .c9-label {
+            display:none;
         }
         
         .c9-toolbarbuttonIcon .c9-label{
