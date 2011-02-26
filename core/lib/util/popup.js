@@ -92,7 +92,11 @@ apf.popup = {
             noleft       : false
         }, options);
         
-        if ((!options.allowTogether || options.allowTogether !== true && options.allowTogether != this.last) && this.last != cacheId)
+        if ((!options.allowTogether 
+          || options.allowTogether !== true && options.allowTogether != this.last) 
+          && this.last != cacheId
+          && this.cache[this.last]
+          && (!this.cache[this.last].options || this.cache[this.last].options.autohide !== false))
             this.hide();
 
         var o = this.cache[cacheId];
@@ -306,6 +310,10 @@ apf.popup = {
 
         o.$propHandlers["draggable"].call(o, true);
         o.$propHandlers["resizable"].call(o, true);
+    },
+    
+    getCurrentElement : function(){
+        return typeof this.last == "number" && apf.lookup(this.last);
     },
     
     forceHide : function(){

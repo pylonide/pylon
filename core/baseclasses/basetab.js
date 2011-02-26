@@ -327,12 +327,19 @@ apf.BaseTab = function(){
     };
     
     //#ifdef __ENABLE_TAB_SCALE
+    function visCheck(){
+        scalersz.call(this)
+    }
+    
     var btnMoHandler;
     this.$scaleinit = function(node, type, callback){
         var pg = this.getPages();
         var l  = pg.length;
         this.minwidth = this.$minBtnWidth * l + 10; //@todo padding + margin of button container
         this.$ext.style.minWidth = Math.max(0, this.minwidth - apf.getWidthDiff(this.$ext)) + "px";
+        
+        if (!apf.window.vManager.check(this, "tabscale", visCheck))
+            return;
         
         if (!type)
             return scalersz.call(this);
