@@ -55,6 +55,8 @@ return ext.register("ext/dockpanel/dockpanel", {
      */
      
     expand : function(){
+        this.$currentMenu.hide();
+        
         var tab, items = this.sections;
         for (var prop in items) {
             tab = (item = items[prop]).tab;
@@ -210,6 +212,7 @@ return ext.register("ext/dockpanel/dockpanel", {
         if (this.sections[ident])
             return this.sections[ident];
         
+        var _self   = this;
         var section = this.sections[ident] = dockPanelRight.appendChild(new apf.vbox({
             padding : 0,
             edge : "0 0 3 0",
@@ -231,6 +234,20 @@ return ext.register("ext/dockpanel/dockpanel", {
             pinned     : true,
             animate    : false,
             skin       : "dockwindowbasic",
+            "onprop.visible" : function(e){
+                if (e.value) {
+                    if (_self.$currentMenu && _self.$currentMenu != this)
+                        _self.$currentMenu.hide();
+                    _self.$currentMenu = this;
+                    
+                    //Quick Hack!
+                    var menu = this;
+                    setTimeout(function(){
+                        menu.$ext.style.right = "42px";
+                        menu.$ext.style.left = "";
+                    });
+                }
+            },
             childNodes : [
                 new apf.tab({
                     skin    : "docktab",

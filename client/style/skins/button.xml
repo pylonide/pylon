@@ -1136,7 +1136,7 @@
             position : relative;
             filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#5a5b5d', endColorstr='#424244');
             -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#5a5b5d', endColorstr='#424244')";
-            background       : -webkit-gradient(linear, top center, from(#5a5b5d), color-stop(1, #424244));
+            background       : -webkit-gradient(linear, center top, center bottom, from(#5a5b5d), color-stop(1, #424244));
             background       : -moz-linear-gradient(center top, #5a5b5d 0%, #424244 100%) repeat scroll 0 0 transparent;
             height : 10px;
             cursor : pointer;
@@ -1154,9 +1154,9 @@
         
         .dockheaderOver {
             border-top : 1px solid #808183;
-            filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#5a5b5d', endColorstr='#424244');
-            -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#5a5b5d', endColorstr='#424244')";
-            background       : -webkit-gradient(linear, top center, from(#5a5b5d), color-stop(1, #424244));
+            filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#6b6c6e', endColorstr='#555557');
+            -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#6b6c6e', endColorstr='#555557')";
+            background       : -webkit-gradient(linear, center top, center bottom, from(#6b6c6e), color-stop(1, #555557));
             background       : -moz-linear-gradient(center top, #6b6c6e 0%, #555557 100%) repeat scroll 0 0 transparent;
         }
         
