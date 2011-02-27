@@ -11,7 +11,7 @@ require.def("ext/openfiles/openfiles",
     function(ide, ext, editors, settings, panels, markup) {
 
 return ext.register("ext/openfiles/openfiles", {
-    name            : "Open Files",
+    name            : "Active Files",
     dev             : "Ajax.org",
     alone           : true,
     type            : ext.GENERAL,
@@ -85,7 +85,7 @@ return ext.register("ext/openfiles/openfiles", {
             //Close selected files
             var sel = this.getSelection();
             for (var i = 0; i < sel.length; i++) {
-                editors.close(tabEditors.getPage(sel[i].getAttribute("path")));
+                tabEditors.remove(tabEditors.getPage(sel[i].getAttribute("path")));
             }
         });
         

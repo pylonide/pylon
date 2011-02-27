@@ -19,6 +19,7 @@ return ext.register("ext/editors/editors", {
     type    : ext.GENERAL,
     nodes   : [],
     visible : true,
+    alwayson : true,
 
     contentTypes  : {},
 

@@ -38,11 +38,6 @@ return ext.register("ext/debugger/debugger", {
     nodes : [],
 
     hook : function(){
-        this.$layoutItem = mnuModes.appendChild(new apf.item({
-            value   : "ext/debugger/debugger",
-            caption : this.name
-        }));
-
         ide.addEventListener("consolecommand.debug", function(e) {
             ide.socket.send(JSON.stringify({
                 command: "internal-isfile",
@@ -147,6 +142,10 @@ return ext.register("ext/debugger/debugger", {
             if (e.selected && e.selected.getAttribute("scriptid"))
                 _self.showDebugFile(e.selected.getAttribute("scriptid"), parseInt(e.selected.getAttribute("line")) + 1);
             // TODO sometimes we don't have a scriptID
+        });
+        
+        lstScripts.addEventListener("afterselect", function(e) {
+            e.selected && require("ext/debugger/debugger").showDebugFile(e.selected.getAttribute("scriptid"));
         });
 
         ide.addEventListener("afterfilesave", function(e) {

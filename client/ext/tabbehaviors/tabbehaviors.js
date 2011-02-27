@@ -42,6 +42,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
         var _self = this;
         
         this.nodes.push(
+            mnuPanels.appendChild(new apf.divider()),
             mnuPanels.appendChild(new apf.item({
                 caption : "Close Tab",
                 onclick : function(){
@@ -58,7 +59,6 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
                     _self.closeallbutme();
                 }
             })),
-            mnuPanels.appendChild(new apf.divider()),
             apf.document.body.appendChild(new apf.menu({
                 id : "mnuTabs",
                 childNodes : [
@@ -256,7 +256,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
         }
         else if (!this.sep && (len || force)) {
             if (len)
-                this.sep = mnuPanels.insertBefore(new apf.divider(), this.nodes[0]);
+                this.sep = mnuPanels.insertBefore(new apf.divider(), this.nodes[3].nextSibling);
             else
                 this.sep = mnuPanels.appendChild(new apf.divider());
         }

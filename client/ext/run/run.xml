@@ -136,18 +136,6 @@
           skin     = "c9-toolbarbutton"
     	  onclick  = "dbg.stepOut();"
     	  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
-    	<a:divider skin="c9-divider"/>
-    	<a:dropdown id="lstScripts"
-          skin       = "black_dropdown"
-    	  margin     = "0 0 0 4"
-          width      = "120"
-    	  maxitems   = "10"
-          model      = "mdlDbgSources"
-          disabled   = "{!stDebugProcessRunning.active and 1}" 
-          each       = "[file]"
-          caption    = "[@text]"
-          autoselect = "false"
-          icon       = "debugger/file_obj.gif" />
   </a:bar>
 
 </a:application>

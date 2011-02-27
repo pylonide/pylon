@@ -36,7 +36,6 @@ return ext.register("ext/console/console", {
     
     commandHistoryIndex : 0,
     excludeParent : true,
-    visible  : true,
     commands : {
         "help": {hint: "show general help information and a list of available commands"},
         "clear": {hint: "clear all the messages from the console"},

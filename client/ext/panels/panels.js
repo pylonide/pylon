@@ -40,15 +40,17 @@ return ext.register("ext/panels/panels", {
     
     register : function(panelExt){
         var _self = this;
-        panelExt.mnuItem = mnuPanels.appendChild(new apf.item({
-            caption : panelExt.name,
-            type    : "check",
-            checked : panelExt.visible || false,
-            onclick : function(){
-                _self.initPanel(panelExt);
-                this.checked ? panelExt.enable() : panelExt.disable();
-            }
-        }));
+        if (!panelExt.alwayson) {
+            panelExt.mnuItem = mnuPanels.appendChild(new apf.item({
+                caption : panelExt.name,
+                type    : "check",
+                checked : panelExt.visible || false,
+                onclick : function(){
+                    _self.initPanel(panelExt);
+                    this.checked ? panelExt.enable() : panelExt.disable();
+                }
+            }));
+        }
         
         if (this.$settings && this.$settings[panelExt.path]) {
             this.setPanelSettings(panelExt, _self.$settings[panelExt.path]);
