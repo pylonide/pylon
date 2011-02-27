@@ -81,7 +81,6 @@ return ext.register("ext/code/code", {
             });
             
             doc.addEventListener("retrievevalue", function(e) {
-                console.log("get value", doc.isInited)
                 if (!doc.isInited) 
                     return e.value;
                 else 
