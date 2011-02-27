@@ -79,7 +79,6 @@ apf.checkbox = function(struct, tagName){
     //Options
     this.$focussable = apf.KEYBOARD; // This object can get the focus
     this.checked     = false;
-    this.$values     = [1, 0];
 
     /**** Properties and Attributes ****/
 
@@ -92,9 +91,14 @@ apf.checkbox = function(struct, tagName){
     this.$propHandlers["value"] = function(value){
         value = (typeof value == "string" ? value.trim() : value);
 
-        this.checked = (typeof value != "undefined" && value !== null
-            && value.toString() == this.$values[0].toString());
-
+        if (this.$values) {
+            this.checked = (typeof value != "undefined" && value !== null
+                && value.toString() == this.$values[0].toString());
+        }
+        else {
+            this.checked = apf.isTrue(value);
+        }
+        
         if (this.checked)
             apf.setStyleClass(this.$ext, this.$baseCSSname + "Checked");
         else
@@ -108,10 +112,10 @@ apf.checkbox = function(struct, tagName){
         if (!this.$values) {
             if (this.getAttribute("values"))
                 this.$propHandler["values"].call(this, this.getAttribute("values"));
-            else
-                this.$values = [true, false];
+            //else
+                //this.$values = [true, false];
         }
-        this.setProperty("value", this.$values[value ? 0 : 1]);
+        this.setProperty("value", this.$values ? this.$values[value ? 0 : 1] : true);
     };
 
     /**
@@ -163,21 +167,27 @@ apf.checkbox = function(struct, tagName){
      * Returns the current value
      */
     this.getValue = function(){
-        return this.xmlRoot ? this.$values[this.checked ? 0 : 1] : this.value;
+        return this.xmlRoot ? (this.$values 
+            ? this.$values[this.checked ? 0 : 1]
+            : this.checked) : this.value;
     };
 
     /**
      * Sets the checked state and related value
      */
     this.check = function(){
-        this.setProperty("value", this.$values[0], false, true);
+        this.setProperty("value", this.$values
+            ? this.$values[0]
+            : true, false, true);
     };
 
     /**
      * Sets the unchecked state and related value
      */
     this.uncheck = function(){
-        this.setProperty("value", this.$values[1], false, true);
+        this.setProperty("value", this.$values
+            ? this.$values[1]
+            : false, false, true);
     };
     
     //#endif
@@ -185,7 +195,7 @@ apf.checkbox = function(struct, tagName){
     /**** Private state handling methods ****/
 
     this.addEventListener("$clear", function(){
-        this.setProperty("value", this.$values[1]);
+        this.setProperty("value", this.$values ? this.$values[1] : false);
     });
 
     this.$enable = function(){
@@ -217,7 +227,9 @@ apf.checkbox = function(struct, tagName){
 
     this.$clickHandler = function(){
         //this.checked = !this.checked;
-        this.change(this.$values[(!this.checked) ? 0 : 1]);
+        this.change(this.$values
+            ? this.$values[(!this.checked) ? 0 : 1]
+            : !this.checked);
 
         //#ifdef __WITH_VALIDATION
         if (this.validate) //@todo rewrite button

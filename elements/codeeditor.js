@@ -597,7 +597,7 @@ apf.codeeditor = function(struct, tagName) {
             this.overwrite = ed.getOverwrite()//false
         
         if (this.fontsize == undefined)
-            this.fontsize = 10;
+            this.fontsize = 12;
         var wraplimit = doc.getWrapLimitRange();
         if (this.wraplimitmin == undefined)
             this.wraplimitmin = wraplimit.min;
