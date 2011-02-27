@@ -89,7 +89,14 @@
             davProject.move(a, b + /\/[^\/]*$/.exec(a));
         };
     ]]></a:script>
-    <a:window id="winFilesViewer" flex="3" skin="fm-window" title="File Manager" modal="false" visible="true" buttons="close" optimize="true">
+    <a:window id="winFilesViewer" 
+      flex     = "1" 
+      skin     = "fm-window" 
+      title    = "File Manager" 
+      modal    = "false" 
+      visible  = "true" 
+      buttons  = "close" 
+      optimize = "true">
         <a:button
           top="-22"
           skin="header-btn"

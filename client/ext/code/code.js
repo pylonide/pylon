@@ -102,8 +102,8 @@ return ext.register("ext/code/code", {
         
         //Settings Support
         ide.addEventListener("init.ext/settings/settings", function(e){
-            var page = e.ext.addSection("code", name, "editors", commitFunc);
-            page.insertMarkup(settings);
+            e.ext.addSection("code", name, "editors", commitFunc);
+            barSettings.insertMarkup(settings);
         });
         
         ide.addEventListener("loadsettings", function(e) {
@@ -118,7 +118,7 @@ return ext.register("ext/code/code", {
     },
 
     init : function(amlPage) {
-        var def = ceEditor.getDefaults();
+        /*var def = ceEditor.getDefaults();
         
         ide.addEventListener("loadsettings", function() {
             //check default settings...
@@ -126,8 +126,8 @@ return ext.register("ext/code/code", {
                 model    = settings.model,
                 base     = model.data.selectSingleNode("editors/code");
             if (!base)
-                base = model.appendXml('<code name="' + this.name +'" page="' + settings.getSectionId(this.name) + '" />', "editors");
-        
+                base = model.appendXml('<code name="' + this.name +'" />', "editors");
+                
             // go through all default settings and append them to the XML if they're not there yet
             for (var prop in def) {
                 if (!prop) continue;
@@ -135,7 +135,7 @@ return ext.register("ext/code/code", {
                     base.setAttribute(prop, def[prop]);
             }
             apf.xmldb.applyChanges("synchronize", base);
-        });
+        });*/
 
         amlPage.appendChild(ceEditor);
         ceEditor.show();

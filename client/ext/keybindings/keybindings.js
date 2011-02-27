@@ -20,17 +20,29 @@ return ext.register("ext/keybindings/keybindings", {
     init : function(amlNode){
         //Settings Support
         ide.addEventListener("init.ext/settings/settings", function(e){
-            var page = e.ext.addSection("keybindings", "Keybindings", "general");
-            page.insertMarkup(settings);
+            e.ext.addSection("code", "", "general", function(){});
+            barSettings.insertMarkup(settings);
+            ddKeyBind.setValue("default_" + (apf.isMac ? "mac" : "win"));
+            ddKeyBind.addEventListener("afterchange", function(e){
+                require(["ext/keybindings_default/" + this.value]);
+                ide.addEventListener("$event.keybindingschange", function(callback){
+                    if (_self.current)
+                        callback({keybindings: _self.current});
+                });
+            });
         });
 
         // fetch the default keybindings:
-        // @todo fetch latest config from localStorage
         var _self = this;
-        require(["ext/keybindings_default/default_" + (apf.isMac ? "mac" : "win")]);
-        ide.addEventListener("$event.keybindingschange", function(callback){
-            if (_self.current)
-                callback({keybindings: _self.current});
+        ide.addEventListener("loadsettings", function(e){
+            var value = e.model.queryValue("general/keybindings/@preset") 
+                || "default_" + (apf.isMac ? "mac" : "win");
+                
+            require(["ext/keybindings_default/" + value]);
+            ide.addEventListener("$event.keybindingschange", function(callback){
+                if (_self.current)
+                    callback({keybindings: _self.current});
+            });
         });
     },
 

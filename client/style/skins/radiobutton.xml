@@ -127,11 +127,11 @@
         </a:main>
     </a:presentation>
 </a:radiobutton>
-    <a:radiobutton name="menu-radiobutton">
+<a:radiobutton name="menu-radiobutton">
     <a:style><![CDATA[
         .menu-radiobutton {
             width               : 65px;
-            height              : 19px;
+            height              : 68px;
             padding-top         : 47px;
             border-bottom       : 1px solid #232323;
             border-top          : 1px solid #3f3f41;

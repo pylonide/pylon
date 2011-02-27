@@ -76,6 +76,9 @@ return ext.register("ext/dockpanel/dockpanel", {
         this.splitter.show();
         dockPanelRight.hide();
         
+        //Hack for button
+        colRight.firstChild.$ext.onmousemove({});
+        
         //Quick Fix
 //        if (apf.isGecko)
 //            apf.layout.forceResize(ide.vbMain.$ext);
@@ -94,6 +97,9 @@ return ext.register("ext/dockpanel/dockpanel", {
         this.expandCol.hide();
         this.splitter.hide();
         dockPanelRight.show();
+        
+        //Hack for button
+        dockPanelRight.firstChild.$ext.onmousemove({});
     },
      
     /**

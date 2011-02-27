@@ -29,16 +29,34 @@ return ext.register("ext/tree/tree", {
     
     hook : function(){
         panels.register(this);
+
+        navbar.insertBefore(new apf.radiobutton({
+            skin    : "menu-radiobutton",
+            group   : "acg1",
+            value   : "tree",
+            "class" : "project_files",
+            label   : "Project Files"
+        }), navbar.firstChild);
+        
+        var _self = this;
+        acg1.addEventListener("afterchange", function(e){
+            if (e.value == "tree") {
+                panels.initPanel(_self);
+                _self.enable();
+            }
+            else
+                _self.disable();
+        });
     },
 
     init : function() {
         this.panel = winFilesViewer;
         
-        winFilesViewer.addEventListener("hide", function(){
+        colLeft.addEventListener("hide", function(){
             splitterPanelLeft.hide();
         });
         
-        winFilesViewer.addEventListener("show", function() {
+        colLeft.addEventListener("show", function() {
            splitterPanelLeft.show(); 
         });
         
@@ -287,7 +305,8 @@ return ext.register("ext/tree/tree", {
     },
 
     disable : function(){
-        winFilesViewer.hide();
+        if (self.winFilesViewer)
+            winFilesViewer.hide();
     },
 
     destroy : function(){

@@ -1,5 +1,25 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:window
+    <a:skin id="prefs" 
+      src        = "{require('ext/settings/settings').skin}" 
+      media-path = "/static/ext/settings/images/" />
+
+    <a:window id="winSettings"
+      skin      = "fm-window"
+      title     = "Preferences"
+      visible   = "true"
+      flex      = "1"
+      modal     = "false"
+      model     = "{require('ext/settings/settings').model}">
+        <a:bar id="barSettings" skinset="prefs" skin="bar-preferences" anchors="0 0 0 0">
+            <div class="header">
+                <span></span><div>General</div>
+            </div>
+            <a:checkbox class="underlined first" value="[general/@openfiles]">On Load Restore Previous State</a:checkbox>
+            <a:checkbox value="[general/@saveallbeforerun]">Save all files before Running</a:checkbox>
+        </a:bar>
+    </a:window>
+
+    <!--a:window
       id        = "winSettings"
       title     = "Settings"
       icon      = ""
@@ -44,5 +64,5 @@
                 <a:button width="80" disabled="{!atSettings.undolength}">Apply</a:button>
             </a:hbox>
         </a:vbox>
-    </a:window>
+    </a:window-->
 </a:application>

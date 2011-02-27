@@ -13,13 +13,16 @@ var util = require("core/util");
 var fs = require("ext/filesystem/filesystem");
 var markup = require("text!ext/settings/settings.xml");
 var template = require("text!ext/settings/template.xml");
-  
+var panels = require("ext/panels/panels");
+var skin = require("text!ext/settings/skin.xml");
+
 return ext.register("ext/settings/settings", {
     name    : "Settings",
     dev     : "Ajax.org",
     alone   : true,
     type    : ext.GENERAL,
     markup  : markup,
+    skin    : skin,
     commands : {
         "showsettings": {hint: "open the settings window"}
     },
@@ -63,43 +66,12 @@ return ext.register("ext/settings/settings", {
             this.saveToFile();
     },
 
-    getSectionId: function(part) {
-        return "pgSettings" + part.replace(/ /g, "_");
-    },
-
     addSection : function(tagName, name, xpath, cbCommit){
-        var id = this.getSectionId(name),
-            page = pgSettings.getPage(id);
-        if (page)
-            return page;
         var node = this.model.queryNode(xpath + "/" + tagName);
-        if (!node) {
-            this.model.appendXml('<' + tagName + ' name="' + name +'" page="' + id + '" />', xpath);
-        } else
-            node.setAttribute("page", id);
-        page = pgSettings.add(name, id);
-        page.$at = new apf.actiontracker();
-        page.$commit = cbCommit || apf.K;
-        return page;
+        if (!node)
+            this.model.appendXml('<' + tagName + ' name="' + name +'" />', xpath);
     },
 
-    hook : function(){
-        var _self = this;
-        this.nodes.push(
-            ide.mnuFile.insertBefore(new apf.item({
-                caption : "Settings...",
-                onclick : this.showsettings.bind(this)
-            }), ide.mnuFile.childNodes[ide.mnuFile.childNodes.length - 2])
-        );
-        this.hotitems["showsettings"] = [this.nodes[0]];
-
-        this.model = new apf.model();
-
-        ide.addEventListener("afteronline", this.$handleOnline = function(){
-            _self.load();
-        });
-    },
-    
     load : function(){
         var _self = this;
         
@@ -143,7 +115,7 @@ return ext.register("ext/settings/settings", {
         };
         this.$timer = setInterval(checkSave, 60000);
 
-        // apf.addEventListener("exit", checkSave);
+        apf.addEventListener("exit", checkSave);
 
         ide.addEventListener("$event.loadsettings", function(callback) {
             callback({model: _self.model});
@@ -151,14 +123,56 @@ return ext.register("ext/settings/settings", {
         
         ide.removeEventListener("afteronline", this.$handleOnline);
     },
+    
+    hook : function(){
+        panels.register(this);
+        
+        this.nodes.push(navbar.insertBefore(new apf.radiobutton({
+            skin    : "menu-radiobutton",
+            value   : "preferences",
+            group   : "acg1",
+            "class" : "preferences",
+            label   : "Preferences"
+        }), navbar.firstChild));
+        
+        var _self = this;
+        acg1.addEventListener("afterchange", function(e){
+            if (e.value == "preferences") {
+                panels.initPanel(_self);
+                _self.enable();
+            }
+            else
+                _self.disable();
+        });
+        
+        this.hotitems["showsettings"] = [this.nodes[0]];
+
+        this.model = new apf.model();
+
+        ide.addEventListener("afteronline", this.$handleOnline = function(){
+            _self.load();
+        });
+    },
 
     init : function(amlNode){
-        this.btnOK = winSettings.selectSingleNode("a:vbox/a:hbox[2]/a:button[1]");
+        /*this.btnOK = winSettings.selectSingleNode("a:vbox/a:hbox[2]/a:button[1]");
         this.btnOK.onclick = this.saveSettings.bind(this);
         this.btnCancel = winSettings.selectSingleNode("a:vbox/a:hbox[2]/a:button[2]");
         this.btnCancel.onclick = this.cancelSettings;
         this.btnApply = winSettings.selectSingleNode("a:vbox/a:hbox[2]/a:button[3]");
-        this.btnApply.onclick = this.applySettings.bind(this);
+        this.btnApply.onclick = this.applySettings.bind(this);*/
+        
+        this.panel = winSettings;
+        
+        winSettings.addEventListener("hide", function(){
+            colLeft.$ext.style.minWidth = "215px"; //hack
+        });
+        
+        winSettings.addEventListener("show", function() {
+            colLeft.$ext.style.minWidth = "0px"; //hack
+        });
+        
+        colLeft.appendChild(winSettings);
     },
 
     showsettings: function() {
@@ -188,15 +202,12 @@ return ext.register("ext/settings/settings", {
     },
 
     enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
+        winSettings.show();
     },
 
     disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
+        if (self.winSettings)
+            winSettings.hide();
     },
 
     destroy : function(){

@@ -37,6 +37,7 @@
             height        : 36px;
             background    : url(images/c9-menu-backg.png) repeat-x 0 0;
             border-bottom : 1px solid #000000;
+            z-index       : 1000000;
         }
         
         .c9-menu-bar .c9-mbar-logo {
@@ -69,7 +70,7 @@
             position:absolute;
             background:url(images/offline.png) no-repeat 0 0;
             top:23px;
-            right:-66px;
+            right:-30px;
             display:none;
         }
         

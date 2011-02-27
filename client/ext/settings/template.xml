@@ -1,8 +1,7 @@
-<settings version="0.0.2">
+<settings version="0.0.4">
     <auto />
-    <general name="General" page="pgSettingsGeneral" 
-      saveallbeforerun="true" />
-    <editors name="Editor" page="pgSettingsEditors">
+    <general name="General" saveallbeforerun="true" openfiles="true"/>
+    <editors name="Editor">
         <code name="Code Editor"
           overwrite="false"
           selectstyle="line"
@@ -12,6 +11,13 @@
           printmargincolumn="80"
           softtabs="true"
           tabsize="4"
-		  scrollspeed="2"/>
+		  scrollspeed="2"
+          fontsize="10"
+          wrapmode="false"
+          wraplimitmin=""
+          wraplimitmax=""
+          gutter="true"
+          highlightselectedword="true"
+          autohidehorscrollbar="true" />
     </editors>
 </settings>

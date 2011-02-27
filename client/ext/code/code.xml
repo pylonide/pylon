@@ -33,6 +33,15 @@
       softtabs          = "[{require('ext/settings/settings').model}::editors/code/@softtabs]"
       tabsize           = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
       scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
+      
+      fontsize          = "[{require('ext/settings/settings').model}::editors/code/@fontsize]"
+      wrapmode          = "[@wrapmode]"
+      wraplimitmin      = "[{require('ext/settings/settings').model}::editors/code/@wraplimitmin]"
+      wraplimitmax      = "[{require('ext/settings/settings').model}::editors/code/@wraplimitmax]"
+      gutter            = "[{require('ext/settings/settings').model}::editors/code/@gutter]"
+      highlightselectedword = "[{require('ext/settings/settings').model}::editors/code/@highlightselectedword]"
+      autohidehorscrollbar  = "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]"
+      
       contextmenu       = "mnuCtxEditor"
       debugger          = "{this.syntax == 'javascript' ? dbg : null}"
       readonly          = "{cloud9config.readonly or (location.host and stDebugProcessRunning.active and [@scriptid])}"
