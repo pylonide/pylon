@@ -8,6 +8,10 @@ require.def("ext/keybindings/keybindings",
     ["core/ide", "core/ext", "core/util", "text!ext/keybindings/settings.xml"],
     function(ide, ext, util, settings) {
 
+//var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
+//var default_mac = require("ace/keyboard/keybinding/default_mac").bindings;
+//editor.setKeyboardHandler(new HashHandler(default_mac));
+
 return ext.register("ext/keybindings/keybindings", {
     name   : "Keybindings Manager",
     dev    : "Ajax.org",
