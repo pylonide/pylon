@@ -376,7 +376,7 @@ return ext.register("ext/dockpanel/dockpanel", {
         else {
             cont();
         }
-        
+
         if (properties && properties.forceShow)
             section.tab.set(amlPage);
     },
