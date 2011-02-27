@@ -135,7 +135,7 @@ apf.radiobutton = function(struct, tagName){
             : value;
         if (!group) {
             //#ifdef __WITH_NAMESERVER
-            group = apf.nameserver.register("radiogroup", value, 
+            group = apf.nameserver.register("group", value, 
                 new apf.$group());
             group.setAttribute("id", value);
             group.dispatchEvent("DOMNodeInsertedIntoDocument");
@@ -452,7 +452,7 @@ apf.radiobutton = function(struct, tagName){
 
         if (!this.$group) {
             this.$propHandlers["group"].call(this,
-                "radiogroup" + this.parentNode.$uniqueId);
+                "group" + this.parentNode.$uniqueId);
         }
     };
     
@@ -478,7 +478,7 @@ apf.radiobutton = function(struct, tagName){
 apf.aml.setElement("radiobutton", apf.radiobutton);
 
 apf.$group = function(struct, tagName){
-    this.$init(tagName || "radiogroup", apf.NODE_VISIBLE, struct);
+    this.$init(tagName || "group", apf.NODE_VISIBLE, struct);
     
     this.implement(
         apf.StandardBinding,
