@@ -92,7 +92,7 @@
     <a:window id="winFilesViewer" 
       flex     = "1" 
       skin     = "fm-window" 
-      title    = "File Manager" 
+      title    = "Project Files" 
       modal    = "false" 
       visible  = "true" 
       buttons  = "close" 

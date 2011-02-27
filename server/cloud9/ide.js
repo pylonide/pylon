@@ -68,6 +68,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/themes_default/themes_default",
     "ext/panels/panels",
     "ext/dockpanel/dockpanel",
+    "ext/openfiles/openfiles",
     "ext/tree/tree",
     "ext/save/save",
     "ext/gotofile/gotofile",

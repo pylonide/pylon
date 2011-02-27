@@ -165,6 +165,12 @@ return ext.register("ext/filesystem/filesystem", {
         apf.xmldb.setAttribute(node, "name", name);
         if (page)
             page.setAttribute("id", newPath);
+        
+        ide.dispatchEvent("updatefile", {
+            path: path,
+            name: name,
+            xmlNode: node
+        });
     },
 
     beforeMove: function(parent, node) {
@@ -175,6 +181,11 @@ return ext.register("ext/filesystem/filesystem", {
         node.setAttribute("path", newpath);
         if (page)
             page.setAttribute("id", newpath);
+        
+        ide.dispatchEvent("updatefile", {
+            path: path,
+            xmlNode: node
+        });
     },
 
     remove: function(path) {

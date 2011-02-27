@@ -108,7 +108,7 @@
             width            : 65px;
             overflow         : hidden;
             position         : relative;
-            background-image : url(images/gitui_menu_backg.png);
+            background-image : url(images/dockLeftBackground.png);
         }
         
         .black-menu-bar .c9menulogo {

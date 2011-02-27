@@ -1,0 +1,56 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:script><![CDATA[
+        function filesort(value, args, xmlNode) {
+            return (xmlNode.tagName == "folder" ? 0 : 1) + value.toLowerCase();
+        }
+        
+        SupportedIcons = {
+           "application/xhtml+xml":'html',
+           "text/css": "css",
+           "text/html":'html',
+            "application/pdf":'page_white_acrobat',
+            "image":'image',
+            //"application/x-shockwave-flash":'swf',
+            "application/xml":'page_white_code_red',
+            //"video":'movie',
+            //"audio": 'audio',
+            "text/plain": 'page_white_text',
+            "application/javascript": 'page_white_code',
+            "text/x-script.python": 'script_code',
+            "application/x-httpd-php": 'page_white_php',
+            "text/x-script.coffeescript": 'script_code'
+        };
+        
+        function getIcon(xmlNode){
+            var ctype = xmlNode.getAttribute('contenttype'),
+                icon  = "page_white_text";
+            if (ctype) {
+                var mime = ctype.split(";")[0];
+                var icon = SupportedIcons[mime] || SupportedIcons[mime.split("/")[0]] || "page_white_text";
+            }
+            return icon + ".png";
+        }
+    ]]></a:script>
+
+    <a:window id="winOpenFiles" 
+      flex     = "1" 
+      skin     = "fm-window" 
+      title    = "Active Files" 
+      modal    = "false" 
+      visible  = "true" 
+      buttons  = "close" 
+      optimize = "true">
+        <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
+
+        <a:list id="lstOpenFiles" canrename="true" anchors="0 0 0 0" border="0"
+          multiselect="true" skin="tree">
+            <a:each match="[file]" sort="[@name]" sort-method="filesort">
+                <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
+                <a:icon match="[folder|project]" value="folder.png" />
+                <a:icon match="[file]" value="{getIcon(%[.])}" />
+            </a:each>
+
+            <a:remove match="[file|folder]" />
+        </a:list>
+    </a:window>
+</a:application>

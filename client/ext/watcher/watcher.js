@@ -6,8 +6,8 @@
  */
 
 require.def("ext/watcher/watcher",
-    ["core/ext", "core/ide", "core/util"],
-    function(ext, ide, util) {
+    ["core/ext", "core/ide", "core/util", "ext/tree/tree"],
+    function(ext, ide, util, tree) {
 
 return ext.register("ext/watcher/watcher", {
     name    : "Watcher",
