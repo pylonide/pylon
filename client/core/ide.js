@@ -118,7 +118,7 @@ require.def("core/ide", deps,
 
             ide.socketConnect = function() {
                 clearTimeout(ide.$retryTimer);
-                
+
                 ide.socket.send(JSON.stringify({
                     command: "attach",
                     sessionId: ide.sessionId,

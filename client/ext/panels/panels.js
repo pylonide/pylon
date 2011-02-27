@@ -121,8 +121,8 @@ return ext.register("ext/panels/panels", {
             }
             else {
                 if (panel[prop] != set[prop]) {
-                    if (prop == "visible")
-                        panelExt[set[prop] ? "enable" : "disable"]();
+                    //if (prop == "visible")
+                        //panelExt[set[prop] ? "enable" : "disable"]();
                     if (prop == "height" || !panelExt.excludeParent)
                         panel.setAttribute(prop, set[prop]);
                 }
