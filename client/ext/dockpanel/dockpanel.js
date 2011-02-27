@@ -381,8 +381,16 @@ return ext.register("ext/dockpanel/dockpanel", {
             section.tab.set(amlPage);
     },
     
-    unregisterPage : function(){
+    unregisterPage : function(section, ident){
+        for(var doi = 0; doi < this.dockObjects.length; doi++) {
+            if(this.dockObjects[doi].ident == ident) {
+                this.dockObjects[doi].btn.destroy(true, true);
+                this.dockObjects.splice(doi, 1);
+                return true;
+            }
+        }
         
+        return false;
     },
     
     pageExists : function(ident, forceShow){
