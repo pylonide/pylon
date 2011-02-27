@@ -127,25 +127,29 @@ return ext.register("ext/settings/settings", {
     hook : function(){
         panels.register(this);
         
-        this.nodes.push(navbar.insertBefore(new apf.radiobutton({
-            skin    : "menu-radiobutton",
-            value   : "preferences",
-            group   : "acg1",
+        var btn = this.button = navbar.insertBefore(new apf.button({
+            skin    : "mnubtn",
+            state   : true,
             "class" : "preferences",
-            label   : "Preferences"
-        }), navbar.firstChild));
+            caption : "Preferences"
+        }), navbar.firstChild);
         
         var _self = this;
-        acg1.addEventListener("afterchange", function(e){
-            if (e.value == "preferences") {
-                panels.initPanel(_self);
-                _self.enable();
+        btn.addEventListener("mousedown", function(e){
+            var value = this.value;
+            if (navbar.current && (navbar.current != _self || value)) {
+                navbar.current.disable(navbar.current == _self);
+                if (value) 
+                    return;
             }
-            else
-                _self.disable();
+            
+            panels.initPanel(_self);
+            _self.enable(true);
+            
+            navbar.current = _self;
         });
         
-        this.hotitems["showsettings"] = [this.nodes[0]];
+        this.hotitems["showsettings"] = [this.button];
 
         this.model = new apf.model();
 
@@ -201,13 +205,17 @@ return ext.register("ext/settings/settings", {
         }
     },
 
-    enable : function(){
+    enable : function(noButton){
         winSettings.show();
+        if (!noButton)
+            this.button.setValue(true);
     },
 
-    disable : function(){
+    disable : function(noButton){
         if (self.winSettings)
             winSettings.hide();
+        if (!noButton)
+            this.button.setValue(false);
     },
 
     destroy : function(){

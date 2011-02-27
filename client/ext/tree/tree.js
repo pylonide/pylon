@@ -30,22 +30,28 @@ return ext.register("ext/tree/tree", {
     hook : function(){
         panels.register(this);
 
-        navbar.insertBefore(new apf.radiobutton({
-            skin    : "menu-radiobutton",
-            group   : "acg1",
-            value   : "tree",
+        var btn = this.button = navbar.insertBefore(new apf.button({
+            skin    : "mnubtn",
+            state   : "true",
+            value   : "true",
             "class" : "project_files",
-            label   : "Project Files"
+            caption : "Project Files"
         }), navbar.firstChild);
+        navbar.current = this;
         
         var _self = this;
-        acg1.addEventListener("afterchange", function(e){
-            if (e.value == "tree") {
-                panels.initPanel(_self);
-                _self.enable();
+        btn.addEventListener("mousedown", function(e){
+            var value = this.value;
+            if (navbar.current && (navbar.current != _self || value)) {
+                navbar.current.disable(navbar.current == _self);
+                if (value) 
+                    return;
             }
-            else
-                _self.disable();
+            
+            panels.initPanel(_self);
+            _self.enable(true);
+            
+            navbar.current = _self;
         });
     },
 
@@ -300,13 +306,17 @@ return ext.register("ext/tree/tree", {
         }
     },
 
-    enable : function(){
+    enable : function(noButton){
         winFilesViewer.show();
+        if (!noButton)
+            this.button.setValue(true);
     },
 
-    disable : function(){
+    disable : function(noButton){
         if (self.winFilesViewer)
             winFilesViewer.hide();
+        if (!noButton)
+            this.button.setValue(false);
     },
 
     destroy : function(){

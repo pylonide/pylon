@@ -1177,4 +1177,148 @@
         </a:main>
     </a:presentation>
 </a:button>
+<a:button name="mnubtn">
+    <a:style><![CDATA[
+        .mnubtn {
+            width               : 65px;
+            height              : 68px;
+            padding-top         : 47px;
+            border-bottom       : 1px solid #232323;
+            border-top          : 1px solid #3f3f41;
+            position            : relative;
+            cursor              : default;
+            overflow            : hidden;
+        }
+        
+        .mnubtnOver,
+        .mnubtnDown {
+            background : url(images/radiobutton_over.png) no-repeat 0 0;
+        }
+        
+        .mnubtn .icon {
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            width               : 40px;
+            height              : 40px;
+            position            : absolute;
+            top                 : 7px;
+            left                : 12px;
+        }
+        
+        .mnubtn .pointer {
+            /*background-image    : url(images/gitui_close_arrow.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            position            : absolute;
+            width               : 11px;
+            height              : 9px;
+            top                 : 6px;
+            right               : 5px;*/
+            display             : none;
+        }
+        
+        .mnubtn SPAN {
+            font-family         : Tahoma;
+            font-size           : 10px;
+            color               : #aaaaaa;
+            text-align          : center;
+            position:relative;
+            display:block;
+            overflow:hidden;
+        }
+        
+        .mnubtnDown SPAN {
+            color : white;
+        }
+        
+        .mnubtnDown .pointer {
+            /*display:block;*/
+        }
+        
+        .mnubtnDown .icon {
+            background-position:-40px 0;
+        }
+        
+        .mnubtn.spacer {
+            border     : 0;
+            border-top : 1px solid #3f3f41;
+            width      : 65px;
+            height     : 15px;
+            padding    : 0;
+            position   : relative;
+        }
+        
+        .mnubtn.spacer .pointer,
+        .mnubtn.spacer .icon,
+        .mnubtn.spacer SPAN {
+            display : none;
+        }
+        
+        .mnubtn.project_files .icon {
+            background-image:url(images/project_files.png);
+        }
+        
+        .mnubtn.open_files .icon {
+            background-image:url(images/open_files.png);
+        }
+        
+        .mnubtn.visual_editor .icon {
+            background-image:url(images/visual_editor.png);
+        }
+        
+        .mnubtn.preferences .icon {
+            background-image:url(images/preferences.png);
+        }
+        
+        .mnubtn.git_corner .icon {
+            background-image:url(images/git_corner.png);
+        }
+        
+        .mnubtn.deploy .icon {
+            background-image:url(images/deploy.png);
+        }
+        
+        .mnubtn.the_store .icon {
+            background-image:url(images/the_store.png);
+        }
+        
+        .mnubtn.shop {
+            width    : 65px;
+            height   : 45px;
+            padding  : 0;
+            border   : 0;
+            position : relative;
+        }
+        
+        .mnubtn.shop1 .icon {
+            background-image:url(images/shop1.png);
+        }
+        
+        .mnubtn.shop2 .icon {
+            background-image:url(images/shop2.png);
+        }
+        
+        .mnubtn.shop3 .icon {
+            background-image:url(images/shop3.png);
+        }
+        
+        .mnubtn.shop4 .icon {
+            background-image:url(images/shop4.png);
+        }
+        
+        .mnubtn.shop SPAN {
+            display:none;
+        }
+    ]]></a:style>
+    
+    <a:presentation>
+        <a:main caption="span">
+            <div class="mnubtn">
+                <div class="icon"></div>
+                <div class="pointer"></div>
+                <span>-</span>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:button>
 </a:skin>

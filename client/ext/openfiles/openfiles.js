@@ -16,32 +16,32 @@ return ext.register("ext/openfiles/openfiles", {
     alone           : true,
     type            : ext.GENERAL,
     markup          : markup,
-    currentSettings : [],
-    expandedList    : {},
-    loading         : false,
-    changed         : false,
     
     hook : function(){
         panels.register(this);
 
-        navbar.insertBefore(new apf.radiobutton({
-            skin    : "menu-radiobutton",
-            group   : "acg1",
-            value   : "openfiles",
+        var btn = this.button = navbar.insertBefore(new apf.button({
+            skin    : "mnubtn",
+            state   : "true",
             "class" : "open_files",
-            label   : "Active Files"
+            caption : "Active Files"
         }), navbar.firstChild);
         
         var _self = this;
         var model = this.model = new apf.model().load("<files />");
         
-        acg1.addEventListener("afterchange", function(e){
-            if (e.value == "openfiles") {
-                panels.initPanel(_self);
-                _self.enable();
+        btn.addEventListener("mousedown", function(e){
+            var value = this.value;
+            if (navbar.current && (navbar.current != _self || value)) {
+                navbar.current.disable(navbar.current == _self);
+                if (value) 
+                    return;
             }
-            else
-                _self.disable();
+            
+            panels.initPanel(_self);
+            _self.enable(true);
+            
+            navbar.current = _self;
         });
         
         ide.addEventListener("afteropenfile", function(e){
@@ -135,13 +135,17 @@ return ext.register("ext/openfiles/openfiles", {
         });
     },
 
-    enable : function(){
+    enable : function(noButton){
         winOpenFiles.show();
+        if (!noButton)
+            this.button.setValue(true);
     },
 
-    disable : function(){
+    disable : function(noButton){
         if (self.winOpenFiles)
             winOpenFiles.hide();
+        if (!noButton)
+            this.button.setValue(false);
     },
 
     destroy : function(){
