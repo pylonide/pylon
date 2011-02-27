@@ -57,6 +57,9 @@
                             //Load extensions
                             require(plugins, function(){
                                 ide.dispatchEvent("extload", {modules: plugins});
+                                ide.addEventListener("$event.extload", function(cb){
+                                    cb();
+                                });
                             });
                         });
                     });

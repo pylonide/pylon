@@ -403,6 +403,7 @@ return ext.register("ext/editors/editors", {
 
         this.$settings = {}, _self = this;
         ide.addEventListener("loadsettings", function(e){
+            debugger;
             var model = e.model;
             ide.addEventListener("extload", function(){
                 var active = model.queryValue("auto/files/@active");
