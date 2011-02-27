@@ -124,11 +124,11 @@ apf.radiobutton = function(struct, tagName){
             this.$group = null;
             return;
         }
-        
+
         var group = typeof value == "string"
             ?
             //#ifdef __WITH_NAMESERVER
-            apf.nameserver.get("radiogroup", value)
+            apf.nameserver.get("group", value)
             /* #else
             {}
             #endif */

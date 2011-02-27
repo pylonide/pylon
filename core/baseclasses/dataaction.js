@@ -595,10 +595,10 @@ apf.DataAction = function(){
         }
         
         var valueRule = this.$attrBindings["eachvalue"] && "eachvalue" 
-            || this.$bindings["value"] && "value" 
+            || this.$bindings["value"] && "value"
             || this.$hasBindRule("caption") && "caption";
           
-        if (value == (valueRule != "value" && (this.xmlRoot 
+        if (value === (valueRule != "value" && (this.xmlRoot 
           && this.$applyBindRule("value", this.xmlRoot, null, true)) 
           || this.value))
             return false;
