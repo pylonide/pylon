@@ -123,7 +123,7 @@ return ext.register("ext/dockpanel/dockpanel", {
      * 
      * @forceShow   Immediately shows the window being registered
      */
-    registerWindow : function(windowObj, properties, windowIdent, forceShow){
+    /*registerWindow : function(windowObj, properties, windowIdent, forceShow){
         if(typeof windowIdent !== "undefined" && this.windowExists(windowIdent)) {
             return false;
         }
@@ -137,15 +137,7 @@ return ext.register("ext/dockpanel/dockpanel", {
         }
         
         var dockButtonID = "dockButton" + _self.numDockButtons;
-        /*var btnTemp = new apf.button({
-            id: dockButtonID,
-            "class": dockButtonID,
-            skin: dockButton,
-            state: true,
-            visible: false,
-            value: "{" + amlPage.id + ".visible}"
-        });*/
-        
+
         var tmpAML = '<a:application xmlns:a="http://ajax.org/2005/aml">\
             <a:button id="' + dockButtonID + '" class="' + dockButtonID 
                 + '" skin="dockButton" \
@@ -216,7 +208,7 @@ return ext.register("ext/dockpanel/dockpanel", {
         if(typeof forceShow !== "undefined" && forceShow == true) {
             this.toggleWindow(appendedDockBtn);
         }
-    },
+    },*/
     
     sections : {},
     getSection : function(ident, options){
@@ -276,11 +268,15 @@ return ext.register("ext/dockpanel/dockpanel", {
     
     registerPage : function(section, amlPage, fetchCallback, properties){
         if (!section)
-            throw new Error("Missing section when registering page in dockpanel");
+            throw new Error("Missing section when registering page in dockpanel");        
         
-//        if (typeof windowIdent !== "undefined" && this.windowExists(windowIdent))
-//            return false;
-        
+        var winIdent = -1;
+        if(typeof properties.ident !== "undefined") {
+            if(this.pageExists(properties.ident))
+                return false;
+            winIdent = properties.ident;
+        }
+
         var _self = this;
         
         _self.numDockButtons++;
@@ -336,17 +332,25 @@ return ext.register("ext/dockpanel/dockpanel", {
             section.tab.appendChild(amlPage);
             
             // When the page is shown, we can reset the notification count
-            amlPage.addEventListener("prop.visible", function() {
-                //_self.resetNotificationCount(windowIdent);
+            amlPage.addEventListener("prop.visible", function(e) {
+                _self.resetNotificationCount(winIdent);
                 if (!btnLock & !_self.expanded)
                     this.button.showMenu();
+                    
+                if(e.value == true && properties && properties.cbOnPageShow)
+                    properties.cbOnPageShow();
+                    
+                else if(e.value == false && properties && properties.cbOnPageHide)
+                    properties.cbOnPageHide();
             });
+            
             amlPage.button = btnTemp;
             
             _self.dockObjects.push({ 
                 win       : amlPage, 
                 btn       : btnTemp,
-                //ident     : windowIdent == undefined ? -1 : windowIdent,
+                ident     : winIdent,
+                section   : section,
                 objhidden : false,
                 notCount  : 0   // Notification count
             });
@@ -372,20 +376,36 @@ return ext.register("ext/dockpanel/dockpanel", {
         else {
             cont();
         }
-        
+
         if (properties && properties.forceShow)
-            btnTemp.showMenu();
+            section.tab.set(amlPage);
     },
     
     unregisterPage : function(){
         
     },
     
+    pageExists : function(ident, forceShow){
+        for(var doi = 0; doi < this.dockObjects.length; doi++) {
+            if(this.dockObjects[doi].ident == ident) {
+                if(typeof forceShow !== "undefined" && forceShow) {
+                    // TODO Select tab
+                    this.dockObjects[doi].section.tab.set(
+                        this.dockObjects[doi].win
+                    );
+                }
+                return true;
+            }
+        }
+        
+        return false;
+    },
+    
     /**
      * Unregisters a window and associated button
      * 
      * @windowIdent identifier passed during registerWindow() call
-     */
+     *
     unregisterWindow: function(windowIdent){
         for(var doi = 0; doi < this.dockObjects.length; doi++) {
             if(this.dockObjects[doi].ident == windowIdent) {
@@ -410,7 +430,7 @@ return ext.register("ext/dockpanel/dockpanel", {
      * contents intact
      * 
      * @windowIdent identifier passed during registerWindow() call
-     */
+     *
     hideDockObject: function(windowIdent){
         for(var doi = 0; doi < this.dockObjects.length; doi++) {
             if(this.dockObjects[doi].ident == windowIdent) {
@@ -451,7 +471,7 @@ return ext.register("ext/dockpanel/dockpanel", {
      * Re-positions windows associated with buttons
      * This happens for example when a window is unregistered, or when a
      * window is registered at the "top" of the dock (above divider)
-     */
+     *
     repositionWindows: function(){
         for(var doi = 0; doi < this.dockObjects.length; doi++) {
             this.dockObjects[doi].win.setTop(
@@ -465,7 +485,7 @@ return ext.register("ext/dockpanel/dockpanel", {
      * associated with the window
      *
      * Checks the state of other windows/buttons and hides them if visible
-     */
+     *
     toggleWindow: function(btnObj){
         var savedObjPos = -1;
         
@@ -499,7 +519,7 @@ return ext.register("ext/dockpanel/dockpanel", {
     /**
      * Simply hides a window/deactivates button
      * Useful for dock objects that want to "shelve" their windows
-     */
+     *
     hideWindow: function(windowIdent){
         for(var doi = 0; doi < this.dockObjects.length; doi++) {
             if(this.dockObjects[doi].ident == windowIdent) {
@@ -518,7 +538,7 @@ return ext.register("ext/dockpanel/dockpanel", {
      * 
      * @windowIdent identifier passed during registerWindow() call
      * @showWindow if true, toggles the window's visibility
-     */
+     *
     windowExists: function(windowIdent, showWindow){
        for(var doi = 0; doi < this.dockObjects.length; doi++) {
            if(this.dockObjects[doi].ident == windowIdent) {
@@ -539,7 +559,7 @@ return ext.register("ext/dockpanel/dockpanel", {
     
     /**
      * Hides all actively visible windows and de-selects associated button
-     */
+     *
     hideActiveWindows: function(){
        for(var doi = 0; doi < this.dockObjects.length; doi++) {
            if(this.dockObjects[doi].win.visible) {
@@ -547,7 +567,7 @@ return ext.register("ext/dockpanel/dockpanel", {
                this.dockObjects[doi].win.hide();
            }
        }
-    },
+    },*/
     
     /**
      * Increases the notification number count by one
@@ -558,7 +578,7 @@ return ext.register("ext/dockpanel/dockpanel", {
         for(var doi = 0; doi < this.dockObjects.length; doi++) {
             if(this.dockObjects[doi].ident == windowIdent) {
                 // Only increase notification count if window is hidden
-                if(this.dockObjects[doi].win.visible == false) {
+                if(this.dockObjects[doi].btn.value == false) {
                     this.dockObjects[doi].notCount++;
                     this.updateNotificationElement(
                             this.dockObjects[doi].btn
@@ -577,6 +597,8 @@ return ext.register("ext/dockpanel/dockpanel", {
      * Resets the notification count to 0
      */
     resetNotificationCount: function(windowIdent){
+        if(windowIdent == -1) return;
+
         for(var doi = 0; doi < this.dockObjects.length; doi++) {
             if(this.dockObjects[doi].ident == windowIdent) {
                 this.dockObjects[doi].notCount = 0;

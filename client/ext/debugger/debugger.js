@@ -73,7 +73,7 @@ return ext.register("ext/debugger/debugger", {
         }, {
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
-                defaultState: { x: -6, y: -217 /*-46*/ },
+                defaultState: { x: -6, y: -46 /*-46*/ },
                 activeState: { x: -6, y: -217 }
             },
         });
@@ -84,7 +84,7 @@ return ext.register("ext/debugger/debugger", {
         }, {
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
-                defaultState: { x: -7, y: -310 /*-130*/ },
+                defaultState: { x: -7, y: -130 /*-130*/ },
                 activeState: { x: -7, y: -310 }
             },
         });
@@ -95,8 +95,8 @@ return ext.register("ext/debugger/debugger", {
         }, {
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
-                defaultState: { x: -6, y: -260 /*-174*/ },
-                activeState: { x: -6, y: -260 }
+                defaultState: { x: -6, y: -174 /*-174*/ },
+                activeState: { x: -6, y: -261 }
             },
         });
         
@@ -106,7 +106,7 @@ return ext.register("ext/debugger/debugger", {
         }, {
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
-                defaultState: { x: -6, y: -360 /*-88*/ },
+                defaultState: { x: -6, y: -88 /*-88*/ },
                 activeState: { x: -6, y: -360 }
             },
         });
