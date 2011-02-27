@@ -775,7 +775,7 @@
                 display             : block;
                 position            : absolute;
                 right               : 0;
-                top                 : 7px;
+                top                 : 3px;
                 /*cursor              : pointer;*/
                 background-image    : url(images/close_tab_btn.png);
                 background-repeat   : no-repeat;
@@ -792,7 +792,7 @@
     
             .docktab .btncontainer .curbtn.btnclose strong {
                 background-position : 0 0;
-                top: 7px;
+                top: 3px;
             }
     
             .docktab .btncontainer .curbtn.btnclose strong:hover {
