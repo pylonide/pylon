@@ -167,12 +167,12 @@ return ext.register("ext/code/code", {
 
             mnuView.appendChild(new apf.divider()),
 
-            mnuView.appendChild(new apf.item({
+            /*mnuView.appendChild(new apf.item({
                 type    : "check",
                 caption : "Select Full Line",
                 values  : "line|text",
                 value   : "[{require('ext/settings/settings').model}::editors/code/@selectstyle]",
-            })),
+            })),*/
 
             /*mnuView.appendChild(new apf.item({
                 type    : "check",
@@ -180,13 +180,13 @@ return ext.register("ext/code/code", {
                 checked : "{ceEditor.readonly}"
             })),*/
 
-            mnuView.appendChild(new apf.item({
+            /*mnuView.appendChild(new apf.item({
                 type    : "check",
                 caption : "Highlight Active Line",
                 checked : "[{require('ext/settings/settings').model}::editors/code/@activeline]"
             })),
 
-            mnuView.appendChild(new apf.divider()),
+            mnuView.appendChild(new apf.divider()),*/
 
             mnuView.appendChild(new apf.item({
                 type    : "check",
@@ -196,8 +196,8 @@ return ext.register("ext/code/code", {
 
             mnuView.appendChild(new apf.item({
                 type    : "check",
-                caption : "Show Print Margin",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@showprintmargin]"
+                caption : "Wrap Lines",
+                checked : "[ceEditor.wrapmode]"
             }))
             // Wrap Lines (none),
             // Overwrite mode (overwrite),

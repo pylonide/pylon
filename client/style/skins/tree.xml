@@ -104,7 +104,7 @@
             height:20px;
             border-top:1px solid transparent;
             border-bottom:1px solid transparent;
-            width:100%;
+            /*width:100%;*/
         }
         
         .filemgr-tree .item-fix .item {
