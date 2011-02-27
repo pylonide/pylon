@@ -9,7 +9,12 @@
             "application/xml": "xml",
             "application/x-httpd-php": "php",
             "text/x-script.python": "python",
-            "text/x-script.coffeescript": "python" // TODO
+            "text/x-script.ruby": "ruby",
+            "text/x-script.perl": "perl",
+            "text/cpp": "c_cpp",
+            "text/java": "java",
+            "text/csharp": "csharp",
+            "text/x-script.coffeescript": "coffee"
         }
 
         function getSyntax(type) {
@@ -73,5 +78,10 @@
         <a:item type="radio" value="application/xml">XML</a:item>
         <a:item type="radio" value="text/x-script.python">Python</a:item>
         <a:item type="radio" value="application/x-httpd-php">PHP</a:item>
+        <a:item type="radio" value="text/x-script.ruby">Ruby</a:item>
+        <a:item type="radio" value="text/x-script.perl">Perl</a:item>
+        <a:item type="radio" value="text/cpp">Cpp</a:item>
+        <a:item type="radio" value="text/java">Java</a:item>
+        <a:item type="radio" value="text/csharp">C#</a:item>
     </a:menu>
 </a:application>
