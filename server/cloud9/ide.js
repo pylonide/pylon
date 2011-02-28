@@ -161,9 +161,7 @@ Ide.DEFAULT_PLUGINS = [
                 requirejsConfig: _self.options.requirejsConfig,
                 settingsXml: "",
                 offlineManifest: _self.options.offlineManifest,
-                // TODO fix text plugin loading!!
-                //scripts: _self.options.debug ? "" : aceScripts
-                scripts: "",
+                scripts: _self.options.debug ? "" : aceScripts,
                 projectName: _self.options.projectName,
                 version: _self.options.version
             };
