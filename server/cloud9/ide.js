@@ -34,6 +34,7 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
     };
     
     this.options = {
+        staticPrefix: options.staticPrefix,
         workspaceDir: this.workspaceDir,
         mountDir: options.mountDir || this.workspaceDir,
         davPrefix: options.davPrefix || (baseUrl + "/workspace"),
@@ -150,6 +151,7 @@ Ide.DEFAULT_PLUGINS = [
                 '<script type="text/javascript" src="' + staticUrl + '/support/ace/build/src/mode-javascript.js"></script>'
             
             var replacements = {
+                staticPrefix:_self.options.staticPrefix,
                 davPrefix: _self.options.davPrefix,
                 workspaceDir: _self.options.workspaceDir,
                 debug: _self.options.debug,
