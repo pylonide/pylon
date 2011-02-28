@@ -28,8 +28,9 @@ return ext.register("ext/save/save", {
         
         var _self = this;
         
-        tabEditors.addEventListener("close", this.$close = function(e){
-            if (e.page.$doc.undo_ptr !== undefined && e.page.$at.undolength !== e.page.$doc.undo_ptr) {
+        tabEditors.addEventListener("close", this.$close = function(e) {
+            var at = e.page.$at;
+            if (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr) {
                 ext.initExtension(_self);
                 
                 winCloseConfirm.page = e.page;
@@ -118,9 +119,10 @@ return ext.register("ext/save/save", {
     },
     
     saveall : function(){
-        var pages = tabEditors.getPages();
+        var pages = tabEditors.getPages();        
         for (var i = 0; i < pages.length; i++) {
-            if (pages[i].$at.undo_ptr !== undefined && pages[i].$at.undolength !== pages[i].$at.undo_ptr)
+            var at = pages[i].$at;
+            if (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr)
                 this.quicksave(pages[i]);
         }
     },
@@ -131,8 +133,9 @@ return ext.register("ext/save/save", {
         winCloseConfirm.all = 0;
                 
         var _self = this;
-        apf.asyncForEach(pages, function(item, next){
-            if (item.$at.undo_ptr !== undefined && item.$at.undolength !== item.$at.undo_ptr) {
+        apf.asyncForEach(pages, function(item, next) {
+            var at = item.$at;
+            if (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr) {
                 if (winCloseConfirm.all == 1)
                     _self.quicksave(item);
                 //else if (winCloseConfirm.all == -1)
@@ -160,7 +163,7 @@ return ext.register("ext/save/save", {
             else
                 next();
         },
-        function(){
+        function() {
             callback(winCloseConfirm.all);
         });
     },
@@ -202,8 +205,8 @@ return ext.register("ext/save/save", {
                     panel.removeAttribute("caption");
             }, 2500);
         });
-        
-        doc.undo_ptr = page.$at.undolength;
+        var at = page.$at
+        at.undo_ptr = at.$undostack[at.$undostack.length-1];
         page.$at.dispatchEvent("afterchange");
         return false;
     },

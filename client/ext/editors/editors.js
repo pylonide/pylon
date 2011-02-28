@@ -233,15 +233,21 @@ return ext.register("ext/editors/editors", {
         if (init)
             tabEditors.setAttribute("buttons", "close,scale");
 
-        fake.$at.addEventListener("afterchange", function(){
+        fake.$at.addEventListener("afterchange", function(e){
+            if (e.action == "reset") {
+                delete this.undo_ptr;
+                return;
+            }            
+            
             var val;
             if (fake.$at.ignoreChange) {
                 val = undefined;
                 fake.$at.ignoreChange = false;
-            } else if(this.undolength === 0 && fake.$doc.undo_ptr === undefined)
+            } else if(this.undolength === 0 && !this.undo_ptr)
                 val = undefined;
             else
-                val = (this.undolength !== fake.$doc.undo_ptr) ? 1 : undefined;
+                val = (this.$undostack[this.$undostack.length-1] !== this.undo_ptr) ? 1 : undefined;
+                
             if (fake.changed !== val) {
                 fake.changed = val;
                 model.setQueryValue("@changed", (val ? "1" : "0"));
