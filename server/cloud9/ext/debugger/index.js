@@ -150,6 +150,8 @@ sys.inherits(DebuggerPlugin, Plugin);
                 env[key] = process.env[key];
         }
 
+        console.log("Executing node "+proc+" "+args.join(" ")+" "+cwd); 
+
         var child = _self.child = Spawn(proc, args, {cwd: cwd, env: env});
         _self.debugClient = args.join(" ").search(/(?:^|\b)\-\-debug\b/) != -1;
         _self.ide.getExt("state").publishState();

@@ -35,7 +35,7 @@ sys.inherits(cloud9StatePlugin, Plugin);
         };
         this.emit("statechange", state);
 
-        console.log("publish state", JSON.stringify(state))
+        console.log("publish state" + JSON.stringify(state))
         this.ide.broadcast(JSON.stringify(state));
     };
     

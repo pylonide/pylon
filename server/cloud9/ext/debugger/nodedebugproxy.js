@@ -39,7 +39,7 @@ sys.inherits(DebugProxy, process.EventEmitter);
     };
 
     this.send = function(msgJson) {
-        console.log("SEND " + JSON.stringify(msgJson))
+        //console.log("SEND " + JSON.stringify(msgJson))
         this.service.debuggerCommand(0, JSON.stringify(msgJson));
     };
 
