@@ -31,27 +31,38 @@ apf.actiontracker.actions.aceupdate = function(undoObj, undo){
         q[1].redoChanges(q[0]);
 };
 
+var SupportedModes = {
+    "application/javascript": "javascript",
+    "application/json": "javascript",
+    "text/css": "css",
+    "text/html": "html",
+    "application/xhtml+xml": "html",
+    "application/xml": "xml",
+    "application/x-httpd-php": "php",
+    "text/x-script.python": "python",
+    "text/x-script.ruby": "ruby",
+    "text/x-script.perl": "perl",
+    "text/x-c": "c_cpp",
+    "text/x-java-source": "java",
+    "text/x-csharp": "csharp",
+    "text/x-script.coffeescript": "coffee",
+    "text/x-web-textile": "textile"
+};
+
 return ext.register("ext/code/code", {
     name    : "Code Editor",
     dev     : "Ajax.org",
     type    : ext.EDITOR,
-    contentTypes : [
-        "application/javascript",
-        "application/json",
-        "text/css",
-        "application/xml",
-        "text/plain",
-        "application/x-httpd-php",
-        "text/html",
-        "application/xhtml+xml",
-        "text/x-script.python",
-        "text/x-script.coffeescript",
-        "text/x-script.ruby"
-    ],
+    contentTypes : Object.keys(SupportedModes),
     markup  : markup,
 
     nodes : [],
 
+    getSyntax : function(type) {
+        var mime = type.split(";")[0];
+        return (SupportedModes[mime] || "text");
+    },
+    
     getSelection : function(){
         if (typeof ceEditor == "undefined")
             return null;

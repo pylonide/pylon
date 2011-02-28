@@ -19,7 +19,11 @@
             "text/x-script.python": 'script_code',
             "application/x-httpd-php": 'page_white_php',
             "text/x-script.ruby": "page_white_ruby",
-            "text/x-script.coffeescript": 'script_code'
+            "text/x-script.coffeescript": 'script_code',
+            "text/cpp": 'page_white_cplusplus',
+            "text/x-c": 'page_white_c',
+            "text/x-csharp": 'page_white_csharp',
+            "text/text/x-java-source": 'page_white_cup'
         };
         
         function getIcon(xmlNode){

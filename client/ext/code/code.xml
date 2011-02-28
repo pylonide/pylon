@@ -1,33 +1,9 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:script><![CDATA[
-        SupportedModes = {
-            "application/javascript": "javascript",
-            "application/json": "javascript",
-            "text/css": "css",
-            "text/html": "html",
-            "application/xhtml+xml": "html",
-            "application/xml": "xml",
-            "application/x-httpd-php": "php",
-            "text/x-script.python": "python",
-            "text/x-script.ruby": "ruby",
-            "text/x-script.perl": "perl",
-            "text/cpp": "c_cpp",
-            "text/java": "java",
-            "text/csharp": "csharp",
-            "text/x-script.coffeescript": "coffee"
-        }
-
-        function getSyntax(type) {
-            var mime = type.split(";")[0];
-            return (SupportedModes[mime] || "text");
-        }
-     ]]></a:script>
-
     <a:codeeditor id="ceEditor"
       flex              = "1"
       anchors           = "6 0 4 0"
       visible           = "false"
-      syntax            = "{getSyntax([@contenttype])}"
+      syntax            = "{require('ext/code/code').getSyntax([@contenttype])}"
       theme             = "[{require('ext/settings/settings').model}::editors/code/@theme]"
       overwrite         = "[{require('ext/settings/settings').model}::editors/code/@overwrite]"
       selectstyle       = "[{require('ext/settings/settings').model}::editors/code/@selectstyle]"
@@ -80,8 +56,8 @@
         <a:item type="radio" value="application/x-httpd-php">PHP</a:item>
         <a:item type="radio" value="text/x-script.ruby">Ruby</a:item>
         <a:item type="radio" value="text/x-script.perl">Perl</a:item>
-        <a:item type="radio" value="text/cpp">Cpp</a:item>
-        <a:item type="radio" value="text/java">Java</a:item>
-        <a:item type="radio" value="text/csharp">C#</a:item>
+        <a:item type="radio" value="text/x-c">C/C++</a:item>
+        <a:item type="radio" value="text/x-java-source">Java</a:item>
+        <a:item type="radio" value="text/x-csharp">C#</a:item>
     </a:menu>
 </a:application>
