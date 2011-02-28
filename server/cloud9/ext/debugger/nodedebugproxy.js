@@ -15,7 +15,7 @@ module.exports = DebugProxy = function(port) {
 
     var socket = new NodeSocket("localhost", port);
     socket.onend = function() {
-        this.connected = false;
+        _self.connected = false;
         _self.emit("end");
     };
     this.service = new StandaloneV8DebuggerService(socket);
