@@ -52,7 +52,7 @@ return ext.register("ext/panels/panels", {
             }));
         }
         
-        if (this.$settings && this.$settings[panelExt.path]) {
+        if (false && this.$settings && this.$settings[panelExt.path]) {
             this.setPanelSettings(panelExt, _self.$settings[panelExt.path]);
         }
         else if (panelExt.visible) {
@@ -121,9 +121,10 @@ return ext.register("ext/panels/panels", {
             }
             else {
                 if (panel[prop] != set[prop]) {
-                    //if (prop == "visible")
+                    if (prop == "visible") {
                         //panelExt[set[prop] ? "enable" : "disable"]();
-                    if (prop == "height" || !panelExt.excludeParent)
+                    }
+                    else if (prop == "height" || !panelExt.excludeParent)
                         panel.setAttribute(prop, set[prop]);
                 }
             }

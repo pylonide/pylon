@@ -23,7 +23,7 @@ return ext.register("ext/keybindings/keybindings", {
 
     init : function(amlNode){
         //Settings Support
-        ide.addEventListener("init.ext/settings/settings", function(e){
+        /*ide.addEventListener("init.ext/settings/settings", function(e){
             e.ext.addSection("code", "", "general", function(){});
             barSettings.insertMarkup(settings);
             ddKeyBind.setValue("default_" + (apf.isMac ? "mac" : "win"));
@@ -34,7 +34,7 @@ return ext.register("ext/keybindings/keybindings", {
                         callback({keybindings: _self.current});
                 });
             });
-        });
+        });*/
 
         // fetch the default keybindings:
         var _self = this;
