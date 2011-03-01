@@ -278,7 +278,7 @@ apf.button  = function(struct, tagName){
         if (value) {
             this.$lastHotkey = value;
             var _self = this;
-            apf.registerHotkey(value, function(){
+            apf.registerHotkey(value, function(e){
                 //hmm not very scalable...
                 _self.$setState("Over", {});
 
@@ -287,7 +287,7 @@ apf.button  = function(struct, tagName){
                 }, 200);
 
                 if (_self.$clickHandler && _self.$clickHandler())
-                    _self.$updateState (e || event, "click");
+                    _self.$updateState(e || event, "click");
                 else
                     _self.dispatchEvent("click");
             });
