@@ -23,7 +23,7 @@ return keys.onLoad({
             "paste": "Command-V"
         },
         "quickwatch": {
-            "quickwatch": "Command-Q"
+            "quickwatch": "Option-Q"
         },
         "run": {
             "resume": "F8",

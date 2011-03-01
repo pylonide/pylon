@@ -134,25 +134,13 @@ return ext.register("ext/settings/settings", {
             caption : "Preferences"
         }), navbar.firstChild);
         
-        var _self = this;
-        btn.addEventListener("mousedown", function(e){
-            var value = this.value;
-            if (navbar.current && (navbar.current != _self || value)) {
-                navbar.current.disable(navbar.current == _self);
-                if (value) 
-                    return;
-            }
-            
-            panels.initPanel(_self);
-            _self.enable(true);
-            
-            navbar.current = _self;
-        });
+        btn.addEventListener("mousedown", this.showsettings.bind(this));
         
         this.hotitems["showsettings"] = [this.button];
 
         this.model = new apf.model();
 
+        var _self = this;
         ide.addEventListener("afteronline", this.$handleOnline = function(){
             _self.load();
         });
@@ -179,9 +167,22 @@ return ext.register("ext/settings/settings", {
         colLeft.appendChild(winSettings);
     },
 
-    showsettings: function() {
-        ext.initExtension(this);
-        winSettings.show();
+    showsettings: function(e){
+        //ext.initExtension(this);
+        //winSettings.show();
+        //return false;
+        var value = this.button.value;
+        if (navbar.current && (navbar.current != this || value)) {
+            navbar.current.disable(navbar.current == this);
+            if (value) 
+                return false;
+        }
+        
+        panels.initPanel(this);
+        this.enable(true);
+        
+        navbar.current = this;
+        
         return false;
     },
 

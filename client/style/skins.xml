@@ -6571,7 +6571,7 @@
         #txt_rename {
             border:1px solid #2084d6;
             height:16px;
-            background-color:#b9d4eb;
+            background-color: #d7e7f4;
             padding-left:4px;
             margin-top:1px;
             
