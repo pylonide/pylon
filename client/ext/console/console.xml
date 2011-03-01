@@ -4,7 +4,7 @@
     <a:bar id="winDbgConsole" skin="basic" height="41">
         <a:vbox height="{winDbgConsole.height}">
             <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false">
-                <a:button skin="btn_icon_only" icon="console_max.png" top="4" right="5" state="true"
+                <a:button skin="btn_icon_only" icon="console_max.png" top="4" right="5" state="true" visible="false"
                   onprop.value = "
                     if (event.value) {
                         document.body.appendChild(winDbgConsole.$ext);
