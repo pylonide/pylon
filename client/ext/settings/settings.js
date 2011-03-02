@@ -17,7 +17,7 @@ var panels = require("ext/panels/panels");
 var skin = require("text!ext/settings/skin.xml");
 
 return ext.register("ext/settings/settings", {
-    name    : "Settings",
+    name    : "Preferences",
     dev     : "Ajax.org",
     alone   : true,
     type    : ext.GENERAL,
@@ -134,13 +134,33 @@ return ext.register("ext/settings/settings", {
             caption : "Preferences"
         }), navbar.firstChild);
         
-        btn.addEventListener("mousedown", this.showsettings.bind(this));
+        var _self = this;
+
+        btn.addEventListener("mousedown", function(e){
+            var value = this.value;
+            if (navbar.current && (navbar.current != _self || value)) {
+                navbar.current.disable(navbar.current == _self);
+                if (value) 
+                    return;
+            }
+            
+            panels.initPanel(_self);
+            _self.enable(true);
+        });
+        
+        /*btn.addEventListener("mousedown", function() {
+            panels.initPanel(_self);
+            if(_self.panel.visible)
+                _self.disable(true);
+            
+            else
+                _self.enable(true);
+        });*/
         
         this.hotitems["showsettings"] = [this.button];
 
         this.model = new apf.model();
 
-        var _self = this;
         ide.addEventListener("afteronline", this.$handleOnline = function(){
             _self.load();
         });
@@ -205,11 +225,16 @@ return ext.register("ext/settings/settings", {
             pages[i].$at.undo(-1);
         }
     },
-
+    
     enable : function(noButton){
         winSettings.show();
-        if (!noButton)
+        if (!noButton) {
             this.button.setValue(true);
+            if(navbar.current && (navbar.current != this))
+                navbar.current.disable(false);
+        }
+        
+        navbar.current = this;
     },
 
     disable : function(noButton){

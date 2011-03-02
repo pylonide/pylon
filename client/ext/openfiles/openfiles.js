@@ -40,8 +40,6 @@ return ext.register("ext/openfiles/openfiles", {
             
             panels.initPanel(_self);
             _self.enable(true);
-            
-            navbar.current = _self;
         });
         
         ide.addEventListener("afteropenfile", function(e){
@@ -137,8 +135,13 @@ return ext.register("ext/openfiles/openfiles", {
 
     enable : function(noButton){
         winOpenFiles.show();
-        if (!noButton)
+        if (!noButton) {
             this.button.setValue(true);
+            if(navbar.current && (navbar.current != this))
+                navbar.current.disable(false);
+        }
+        
+        navbar.current = this;
     },
 
     disable : function(noButton){
