@@ -111,7 +111,7 @@ return ext.register("ext/noderunner/noderunner", {
     },
 
     run : function(path, args, debug) {        
-        if (stProcessRunning.active || !stServerConnected.active || !path)
+        if (stProcessRunning.active || !stServerConnected.active || !path || typeof path != "string")
             return false;
 
         var page = ide.getActivePageModel();
