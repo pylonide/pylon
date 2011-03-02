@@ -44,7 +44,8 @@ return ext.register("ext/panels/panels", {
             panelExt.mnuItem = mnuPanels.appendChild(new apf.item({
                 caption : panelExt.name,
                 type    : "check",
-                checked : panelExt.visible || false,
+                //checked : panelExt.visible || false,
+                checked : "{panelExt.visible}",
                 onclick : function(){
                     _self.initPanel(panelExt);
                     this.checked ? panelExt.enable() : panelExt.disable();
