@@ -181,7 +181,7 @@ return ext.register("ext/watcher/watcher", {
             
             var pages = tabEditors.getPages();
             with (e.message) {
-                if (e.message.type != "watcher")
+                if (type && type != "watcher")
                     return;
                 if (expandedPaths[path])
                     return ide.dispatchEvent("treechange", {
