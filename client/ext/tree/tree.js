@@ -11,7 +11,7 @@ require.def("ext/tree/tree",
     function(ide, ext, fs, settings, panels, markup) {
 
 return ext.register("ext/tree/tree", {
-    name            : "Tree",
+    name            : "Project Files",
     dev             : "Ajax.org",
     alone           : true,
     type            : ext.GENERAL,
@@ -50,8 +50,6 @@ return ext.register("ext/tree/tree", {
             
             panels.initPanel(_self);
             _self.enable(true);
-            
-            navbar.current = _self;
         });
     },
 
@@ -308,8 +306,13 @@ return ext.register("ext/tree/tree", {
 
     enable : function(noButton){
         winFilesViewer.show();
-        if (!noButton)
+        if (!noButton) {
             this.button.setValue(true);
+            if(navbar.current && (navbar.current != this))
+                navbar.current.disable(false);
+        }
+        
+        navbar.current = this;
     },
 
     disable : function(noButton){
