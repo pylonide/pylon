@@ -27,12 +27,12 @@
  * Remarks:
  *  The following regions are defined:
  *  From:         To:           For:
- *            10        100000  Common Elements (each element a unique z index)
- *       1000000       1100000  Plane (Modal Windows / Maximized Panels) (latest shown highest)
- *       2000000       2100000  Popup (Menus / Dropdown Containers) (latest shown highest)
- *       3000000       3100000  Notifiers
- *       4000000       4100000  Drag Indicators
- *      10000000      11000000  Print
+ *            10        10000  Common Elements (each element a unique z index)
+ *       100000       110000  Plane (Modal Windows / Maximized Panels) (latest shown highest)
+ *       200000       210000  Popup (Menus / Dropdown Containers) (latest shown highest)
+ *       300000       310000  Notifiers
+ *       400000       410000  Drag Indicators
+ *      1000000      1100000  Print
  *
  * @private
  */
@@ -42,19 +42,19 @@ apf.zmanager = function(){
             level  : 10
         },
         "plane" : {
-            level  : 1000000
+            level  : 100000
         },
         "popup" : {
-            level  : 2000000
+            level  : 200000
         },
         "notifier" : {
-            level  : 3000000
+            level  : 300000
         },
         "drag" : {
-            level  : 4000000
+            level  : 400000
         },
         "print" : {
-            level  : 10000000
+            level  : 1000000
         }
     };
     
