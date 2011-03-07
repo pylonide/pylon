@@ -44,6 +44,8 @@ apf.ChildValue = function(){
         if (m && m[1])
             v = "{" + v + "}";
 
+        this.$norecur = true;
+
         //#ifdef __WITH_PROPERTY_BINDING
         if (v.indexOf("{") > -1 || v.indexOf("[") > -1)
             this.$setDynamicProperty(this.$childProperty, v);
@@ -51,6 +53,8 @@ apf.ChildValue = function(){
         //#endif
         if (this[this.$childProperty] != v)
             this.setProperty(this.$childProperty, v);
+       
+        this.$norecur = false;
     });
     
     //@todo Should be buffered
@@ -59,14 +63,14 @@ apf.ChildValue = function(){
     this.addEventListener("DOMNodeRemoved", f);
     
     this.addEventListener("$skinchange", function(e){
-        this.$propHandlers[this.$childProperty].call(this, this.caption || "");
+       this.$propHandlers[this.$childProperty].call(this, this.caption || "");
     });
     
     this.$init(function(){
-        this.addEventListener("prop." + this.$childProperty, function(e){
-            if (!e.value && !this.getAttributeNode(this.$childProperty))
-                f.call(this);
-        });
+       this.addEventListener("prop." + this.$childProperty, function(e){
+           if (!this.$norecur && !e.value && !this.getAttributeNode(this.$childProperty))
+               f.call(this);
+       });
     });
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
