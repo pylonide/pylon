@@ -275,8 +275,8 @@ return ext.register("ext/console/console", {
             // no commmand line input
 
             if (e.name == "keydown") {
-                this.log(this.getPrompt(), "prompt");
-                this.enable();
+                //this.log(this.getPrompt(), "prompt");
+                //this.enable();
             }
         }
         else if (parser.argQL[0]) {
