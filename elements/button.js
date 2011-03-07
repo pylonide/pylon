@@ -60,8 +60,8 @@ apf.button  = function(struct, tagName){
 
     /**** Properties and Attributes ****/
 
-    this.$focussable = apf.KEYBOARD; // This object can get the focus
-    this.value       = null;
+    this.$focussable  = apf.KEYBOARD; // This object can get the focus
+    this.value        = null;
     
     this.$init(function(){
         //@todo reparenting
@@ -197,7 +197,7 @@ apf.button  = function(struct, tagName){
      */
     //this.$booleanProperties["default"] = true;
     this.$booleanProperties["state"]   = true;
-    this.$supportedProperties.push("icon", "value", "tooltip", "state",
+    this.$supportedProperties.push("icon", "value", "tooltip", "state", 
         "color", "caption", "action", "target", "default", "submenu", "hotkey");
 
     this.$propHandlers["icon"] = function(value){
@@ -278,7 +278,7 @@ apf.button  = function(struct, tagName){
         if (value) {
             this.$lastHotkey = value;
             var _self = this;
-            apf.registerHotkey(value, function(){
+            apf.registerHotkey(value, function(e){
                 //hmm not very scalable...
                 _self.$setState("Over", {});
 
@@ -287,7 +287,7 @@ apf.button  = function(struct, tagName){
                 }, 200);
 
                 if (_self.$clickHandler && _self.$clickHandler())
-                    _self.$updateState (e || event, "click");
+                    _self.$updateState(e || event, "click");
                 else
                     _self.dispatchEvent("click");
             });
@@ -337,6 +337,14 @@ apf.button  = function(struct, tagName){
         }
         //#endif
 
+        var menuPressed = this.parentNode.menuIsPressed;
+        if (menuPressed && menuPressed != this) {
+            menuPressed.setValue(false);
+            var oldMenu = self[menuPressed.submenu];
+            if (oldMenu != self[this.submenu])
+                oldMenu.$propHandlers["visible"].call(oldMenu, false, true);
+        }
+        
         if (!this.value) {
             menu.hide();
             this.$setState("Over", {}, "toolbarover");
@@ -375,7 +383,7 @@ apf.button  = function(struct, tagName){
             return;
 
         var menu = self[this.submenu];
-        if(menu.getAttribute('pinned'))
+        if (menu.pinned)
             return;
 
         menuPressed.setValue(false);
@@ -434,8 +442,8 @@ apf.button  = function(struct, tagName){
         this.$focussable = false;
         this.$setStateBehaviour();
 
-        this.addEventListener("mousedown", menuDown);
         this.addEventListener("mouseover", menuOver);
+        this.addEventListener("mousedown", menuDown);
         this.addEventListener("keydown", menuKeyHandler, true);
     };
     //#endif

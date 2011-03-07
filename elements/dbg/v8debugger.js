@@ -33,7 +33,7 @@ var V8Debugger = function(dbg, host) {
         "function": 4
     };
 
-    this.stripPrefix = "",
+    this.stripPrefix = "";
 
     this.setStrip = function(stripPrefix) {
         this.stripPrefix = stripPrefix
@@ -184,7 +184,7 @@ var V8Debugger = function(dbg, host) {
                 return {};
             }
 
-            var frames    = body.frames;
+            var frames    = body.frames;        
             var xmlFrames = model.queryNodes("frame");
             if (xmlFrames.length && _self.$isEqual(xmlFrames, frames)) {
                 for (var i = 0; i < frames.length; i++) {
@@ -194,8 +194,10 @@ var V8Debugger = function(dbg, host) {
             }
             else {
                 var xml = [];
-                for (var i = 0; i < frames.length; i++) {
-                    _self.$buildFrame(frames[i], ref, xml);
+                if (frames) {
+                    for (var i = 0; i < frames.length; i++) {
+                        _self.$buildFrame(frames[i], ref, xml);
+                    }
                 }
                 model.load("<frames>" + xml.join("") + "</frames>");
                 _self.setFrame(model.data.firstChild);

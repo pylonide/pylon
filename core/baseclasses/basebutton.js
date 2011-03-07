@@ -235,7 +235,7 @@ apf.BaseButton = function(){
 
             //Check if the mouse out is meant for us
             var tEl = e.explicitOriginalTarget || e.toElement;
-            if (this == tEl || apf.isChildOf(this, tEl))
+            if (apf.isChildOf(this, tEl)) //this == tEl ||
                 return;
 
             _self.$mouseOver    = false;

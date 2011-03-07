@@ -368,7 +368,8 @@ apf.Presentation = function(){
             }
         }
         else if (this.$isLeechingSkin) {
-            delete this.kin;
+            delete this.skin;
+            this.$isLeechingSkin = false;
             this.$forceSkinChange();
         }
     }

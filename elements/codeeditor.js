@@ -83,11 +83,13 @@ apf.codeeditor = function(struct, tagName) {
     this.$booleanProperties["overwrite"]       = true;
     this.$booleanProperties["softtabs"]        = true;
     this.$booleanProperties["gutter"]          = true;
-
+    this.$booleanProperties["highlightselectedword"] = true;
+    this.$booleanProperties["autohidehorscrollbar"]  = true;
+    
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
         "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
-        "theme", "gutter");
+        "theme", "gutter", "highlightselectedword", "autohidehorscrollbar");
 
     var cacheId = 0;
     this.$getCacheKey = function(value) {
@@ -156,6 +158,7 @@ apf.codeeditor = function(struct, tagName) {
         else if (typeof value == "string" && !doc.hasValue) {
             //@todo big hack!
             doc.setValue(value);
+            this.$editor.moveCursorTo(0, 0);
             doc.hasValue = true;
         }
 
@@ -330,7 +333,28 @@ apf.codeeditor = function(struct, tagName) {
     };
     
     this.$propHandlers["gutter"] = function(value, prop, initial) {
-        this.$editor.setShowGutter(value);
+        this.$editor.renderer.setShowGutter(value);
+    };
+    
+    this.$propHandlers["fontsize"] = function(value, prop, initial) {
+        this.$ext.style.fontSize = value + "px";
+    };
+    this.$propHandlers["wrapmode"] = function(value, prop, initial) {
+        this.$editor.getSession().setUseWrapMode(value);
+    };
+    this.$propHandlers["wraplimitmin"] = function(value, prop, initial) {
+        this.$editor.getSession().setWrapLimitRange(value, this.wraplimitmax);
+        if (value) this.setProperty("wrapmode", true);
+    };
+    this.$propHandlers["wraplimitmax"] = function(value, prop, initial) {
+        this.$editor.getSession().setWrapLimitRange(this.wraplimitmin, value);
+        if (value) this.setProperty("wrapmode", true);
+    };
+    this.$propHandlers["highlightselectedword"] = function(value, prop, initial) {
+        this.$editor.setHighlightSelectedWord(value);
+    };
+    this.$propHandlers["autohidehorscrollbar"] = function(value, prop, initial) {
+        this.$editor.renderer.setHScrollBarAlwaysVisible(!value);
     };
     
     this.$propHandlers["model-breakpoints"] = function(value, prop, inital) {
@@ -571,6 +595,22 @@ apf.codeeditor = function(struct, tagName) {
             this.printmargincolumn = ed.getPrintMarginColumn();//80;
         if (this.overwrite == undefined)
             this.overwrite = ed.getOverwrite()//false
+        
+        if (this.fontsize == undefined)
+            this.fontsize = 12;
+        var wraplimit = doc.getWrapLimitRange();
+        if (this.wraplimitmin == undefined)
+            this.wraplimitmin = wraplimit.min;
+        if (this.wraplimitmax == undefined)
+            this.wraplimitmax = wraplimit.max;
+        if (this.wrapmode == undefined)
+            this.wrapmode = doc.getUseWrapMode(); //false
+        if (this.gutter == undefined)
+            this.gutter = ed.renderer.getShowGutter();
+        if (this.highlightselectedword == undefined)
+            this.highlightselectedword = ed.getHighlightSelectedWord();
+        if (this.autohidehorscrollbar)
+            this.autohidehorscrollbar = !ed.renderer.getHScrollBarAlwaysVisible();
     }
 
 // #ifdef __WITH_DATABINDING

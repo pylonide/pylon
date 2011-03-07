@@ -428,12 +428,12 @@ apf.page = function(struct, tagName){
                  page.canHaveChildren = 2;\
                  page.$setStyleClass(this, "down", null, true);');
             elBtn.setAttribute("onmouseup", 'apf.lookup('
-                + this.parentNode.$uniqueId + ').$setStyleClass(this, "", ["down"], true);');
+                + this.$uniqueId + ').parentNode.$setStyleClass(this, "", ["down"], true);');
             elBtn.setAttribute("onmouseover", 'var o = apf.lookup('
-                + this.parentNode.$uniqueId + ');if(apf.lookup(' + this.$uniqueId
+                + this.$uniqueId + ').parentNode;if(apf.lookup(' + this.$uniqueId
                 + ') != o.$activepage) o.$setStyleClass(this, "over", null, true);');
             elBtn.setAttribute("onmouseout", 'var o = apf.lookup('
-                + this.parentNode.$uniqueId + ');\
+                + this.$uniqueId + ').parentNode;\
                   o.$setStyleClass(this, "", ["over"], true);\
                   var page = apf.lookup(' + this.$uniqueId + ');\
                   page.canHaveChildren = true;');

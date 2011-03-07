@@ -255,7 +255,7 @@ apf.tree = function(struct, tagName){
             
             elIcon.setAttribute("ondblclick", 
               "var o = apf.lookup(" + this.$uniqueId + ");\
-              o.choose();" + 
+              o.choose(null, true);" + 
               //#ifdef __WITH_RENAME
               "o.stopRename();" + 
               //#endif
@@ -313,7 +313,7 @@ apf.tree = function(struct, tagName){
 
         elSelect.setAttribute("ondblclick", 
           "var o = apf.lookup(" + this.$uniqueId + ");\
-          o.choose();" + 
+          o.choose(null, true);" + 
           //#ifdef __WITH_RENAME
           "o.stopRename();this.dorename=false;" + 
           //#endif

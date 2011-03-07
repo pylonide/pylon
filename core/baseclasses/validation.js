@@ -170,8 +170,7 @@ apf.Validation = function(){
         this.dispatchEvent("xforms-" + (valid ? "valid" : "invalid"));
         #endif*/
         
-        if (!valid)
-            this.dispatchEvent("invalid", this.validityState);
+        this.dispatchEvent(!valid ? "invalid" : "valid", this.validityState);
             
         return valid;
     };
@@ -254,7 +253,8 @@ apf.Validation = function(){
         apf.setStyleClass(this.$ext, this.$baseCSSname + "Error");
         this.showMe(); //@todo scroll refHtml into view
 
-        errBox.display(this);
+        if (this.invalidmsg || value)
+            errBox.display(this);
         
         //#ifdef __WITH_HTML5
         if (this.hasFeature(apf.__MULTISELECT__) && this.validityState.$errorXml)
