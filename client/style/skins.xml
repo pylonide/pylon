@@ -45,7 +45,7 @@
             position   : relative;
             overflow   : visible;
             height     : 36px;
-            background : url(images/cloud9logo.png) no-repeat right 0;
+            /*background : url(images/cloud9logo.png) no-repeat right 0;*/
         }
         
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont {
@@ -86,6 +86,18 @@
             height:34px;
             background:url(images/c9-menu-backg2.png) repeat-x 0 5px;
         }
+        
+        .c9-menu-bar .mainlogo {
+            background: url("images/cloud9logo_transparent.png") no-repeat scroll 0 0 transparent;
+            bottom: 0;
+            display: block;
+            height: 21px;
+            position: absolute;
+            right: -146px;
+            text-indent: -800em;
+            top: 8px;
+            width: 152px;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -94,6 +106,7 @@
                 <div class="c9-mbar-logo"> 
                     <div class="c9-mbar-bcont">
                         <div class="c9-mbar-cont"> </div>
+                        <a href="/dashboard.html" class="mainlogo" target="_blank" title="back to dashboard">Dashboard</a>
                         <div class="c9-mbar-round"></div>
                         <div class="c9-offline"></div>
                     </div>
