@@ -40,7 +40,7 @@ var SupportedModes = {
     "application/xml": "xml",
     "application/rdf+xml": "xml",
     "application/rss+xml": "xml",
-    "image/svg+xml": "xml",
+    "image/svg+xml": "svg",
     "application/wsdl+xml": "xml",
     "application/xslt+xml": "xml",
     "application/atom+xml": "xml",
