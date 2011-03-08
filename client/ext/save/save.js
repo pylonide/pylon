@@ -30,6 +30,8 @@ return ext.register("ext/save/save", {
         
         tabEditors.addEventListener("close", this.$close = function(e) {
             var at = e.page.$at;
+            if (!at.undo_ptr)
+                at.undo_ptr = at.$undostack[0];
             if (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr) {
                 ext.initExtension(_self);
                 
