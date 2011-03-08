@@ -43,7 +43,7 @@ exports.staticProvider = function (root, mount) {
 exports.errorHandler = function() {
     return function(err, req, res, next) {
         if (!(err instanceof Error)) {
-            err = new error.InternalServerError(err + "")
+            err = new error.InternalServerError(err.message || err.toString())
         }
         else if (!(err instanceof error.HttpError)) {
             err.code = 500;
@@ -60,11 +60,11 @@ exports.errorHandler = function() {
                     .toString('utf8')
                     .replace(/\<%errormsg%\>/g, err.toString());
                 
-                res.writeHead(err.code, {"Content-Type": "text/html"});
+                res.writeHead(err.code || 500, {"Content-Type": "text/html"});
                 return res.end(html);
             })
         } else {
-            res.writeHead(err.code, {"Content-Type": "text/plain"});
+            res.writeHead(err.code || 500, {"Content-Type": "text/plain"});
             res.end(err.message);
         }
         if (err.stack)
