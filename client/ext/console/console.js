@@ -459,7 +459,6 @@ return ext.register("ext/console/console", {
                 this.logNodeStream(res.out || res.err);
                 this.log("", "divider");
                 break;
-                /*
             case "mkdir":
                 res = message.body;
                 ide.dispatchEvent("treecreate", {
@@ -467,7 +466,6 @@ return ext.register("ext/console/console", {
                     path : this.$cwd + "/" + res.argv[res.argv.length - 1] 
                 });
                 break;
-                */
             case "error":
                 //console.log("error: ", message.body);
                 this.log(message.body);
