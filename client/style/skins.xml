@@ -6619,7 +6619,9 @@
         }
         
         .filemgr-tree U.root .item-fix.min .item SPAN, 
+        .filemgr-tree U.root .item-fix.minlast .item SPAN, 
         .filemgr-tree U.root .item-fix.plus .item SPAN,
+        .filemgr-tree U.root .item-fix.pluslast .item SPAN,
         .filemgr-tree .item-fix.root .item SPAN {
             background-image:url(images/tree_close_arrow_small.png);
             background-repeat: no-repeat;
