@@ -375,7 +375,7 @@ apf.item  = function(struct, tagName){
 
         if (this.submenu) {
             this.$over(null, true);
-            return;
+            //return;
         }
 
         this.parentNode.$hideTree = true;
