@@ -151,7 +151,7 @@ apf.BaseButton = function(){
         }
 
         if (this.$refKeyDown > 0
-          || (this.$refMouseDown > 0 && this.$mouseOver)
+          || (this.$refMouseDown > 0 && (this.$mouseOver || (!apf.isIE && this.$ext === e.currentTarget)))
           || (this.isBoolean && this.value)) {
             this.$setState("Down", e, strEvent);
         }
@@ -193,8 +193,7 @@ apf.BaseButton = function(){
         this.$ext.onmouseup = function(e, force) {
             e = e || window.event;
             //if (e)  e.cancelBubble = true;
-
-            if (_self.disabled || !force && (!_self.$mouseOver || !_self.$refMouseDown))
+            if (_self.disabled || !force && ((!_self.$mouseOver && (!apf.isIE && this !== e.currentTarget)) || !_self.$refMouseDown))
                 return;
 
             _self.$refMouseDown = 0;
