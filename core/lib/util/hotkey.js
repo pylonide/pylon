@@ -76,21 +76,9 @@ apf.hotkeys = {};
     // hash to store the hotkeys in
     this.$keys = {};
 
-    var _self = this;
-
-    /**
-     * Registers a hotkey handler to a key combination.
-     * Example:
-     * <code>
-     *   apf.registerHotkey('Ctrl-Z', undoHandler);
-     * </code>
-     * @param {String}   hotkey  the key combination to user. This is a
-     * combination of Ctrl, Alt, Shift and a normal key to press. Use + to
-     * seperate the keys.
-     * @param {Function} handler the code to be executed when the key
-     * combination is pressed.
-     */
-    apf.registerHotkey = this.register = function(hotkey, handler){
+    var _self = this, trace = 0;
+    
+    function register(hotkey, handler) {
         var key,
             hashId = 0,
             keys   = hotkey.splitSafe("\\-", null, true),
@@ -108,9 +96,31 @@ apf.hotkeys = {};
         if (!key) {
             throw new Error("missing key for hotkey: " + hotkey);
         }
-        //#endif
+        /*#else
+        if (!key) return;
+        #endif*/
 
         (_self.$keys[hashId] || (_self.$keys[hashId] = {}))[key] = handler;
+    }
+
+    /**
+     * Registers a hotkey handler to a key combination.
+     * Example:
+     * <code>
+     *   apf.registerHotkey('Ctrl-Z', undoHandler);
+     * </code>
+     * @param {String}   hotkey  the key combination to user. This is a
+     * combination of Ctrl, Alt, Shift and a normal key to press. Use + to
+     * seperate the keys.
+     * @param {Function} handler the code to be executed when the key
+     * combination is pressed.
+     */
+    apf.registerHotkey = this.register = function(hotkey, handler){
+        var parts = hotkey.split("|"),
+            i     = 0,
+            l     = parts.length;
+        for (; i < l; ++i)
+            register(parts[i], handler);
     };
 
     this.$exec = function(eInfo) {
@@ -123,6 +133,7 @@ apf.hotkeys = {};
 
         var handler = (_self.$keys[hashId] || {})[(key
             || String.fromCharCode(eInfo.keyCode)).toLowerCase()];
+
         if (handler) {
             handler(eInfo.htmlEvent);
             eInfo.returnValue = false;
@@ -139,7 +150,11 @@ apf.hotkeys = {};
      * @param {String} hotkey the hotkey combination.
      */
     apf.removeHotkey = this.remove = this.unregister = function(hotkey) {
-        _self.register(hotkey, null);
+        var parts = hotkey.split("|"),
+            i     = 0,
+            l     = parts.length;
+        for (; i < l; ++i)
+            register(parts[i], null);
     };
     
     function toMacNotation(hotkey, bHtml) {
