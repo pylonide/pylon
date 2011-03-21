@@ -75,7 +75,7 @@ return keys.onLoad({
             "selectall": "Command-A",
             "removeline": "Command-D",
             "gotoline": "Command-L",
-            "togglecomment": "Command-7",
+            "togglecomment": "Command-/",
             "findnext": "Command-G",
             "findprevious": "Command-Shift-G",
             "find": "Command-F",
