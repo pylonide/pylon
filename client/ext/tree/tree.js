@@ -84,7 +84,13 @@ return ext.register("ext/tree/tree", {
                 fs.beforeRename(args[1], null, args[0].getAttribute("path").replace(/[\/]+$/, "") + "/" + filename);
             });
         });
-        
+       
+        trFiles.addEventListener("beforestoprename", function(e) {
+            if (!ide.onLine) return false;
+
+            return fs.beforeStopRename(e.value);
+        });
+ 
         trFiles.addEventListener("beforerename", function(e){
             if (!ide.onLine) return false;
             

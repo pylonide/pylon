@@ -152,6 +152,12 @@ return ext.register("ext/filesystem/filesystem", {
         }
     },
 
+    beforeStopRename : function(name) {
+        var match = name.match(/^(?:\w|[.])(?:\w|[.-])*$/);
+
+        return match !== null && match[0] == name;
+    },
+
     beforeRename : function(node, name, newPath) {
         var path = node.getAttribute("path"),
             page = tabEditors.getPage(path);
