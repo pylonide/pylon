@@ -141,8 +141,8 @@ apf.hotkeys = {};
     apf.removeHotkey = this.remove = this.unregister = function(hotkey) {
         _self.register(hotkey, null);
     };
-
-    this.toMacNotation = function(hotkey, bHtml) {
+    
+    function toMacNotation(hotkey, bHtml) {
         var t,
             keys = hotkey.splitSafe("\\-"),
             i    = 0,
@@ -154,6 +154,16 @@ apf.hotkeys = {};
                 keys[i] = t;
         }
         return keys.join(" ");
+    }
+
+    this.toMacNotation = function(hotkey, bHtml) {
+        var parts = hotkey.split("|"),
+            i     = 0,
+            l     = parts.length,
+            res   = [];
+        for (; i < l; ++i)
+            res.push(toMacNotation(parts[i], bHtml));
+        return res.join(" | ");
     };
 
     apf.addEventListener("keydown", function(eInfo) {
