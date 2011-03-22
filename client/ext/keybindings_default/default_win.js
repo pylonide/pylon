@@ -35,7 +35,7 @@ return keys.onLoad({
             "gotoline": "Ctrl-G"
         },
         "gotofile": {
-            "gotofile": "Alt-Shift-R"
+            "gotofile": "Alt-Shift-R|Ctrl-T"
         },
         "newresource": {
             "newfile": "Ctrl-N",

@@ -82,9 +82,9 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
             }))
         );
         
-        this.hotitems["closetab"]      = [this.nodes[0]];
-        this.hotitems["closealltabs"]  = [this.nodes[1]];
-        this.hotitems["closeallbutme"] = [this.nodes[2]];
+        this.hotitems["closetab"]      = [this.nodes[1]];
+        this.hotitems["closealltabs"]  = [this.nodes[2]];
+        this.hotitems["closeallbutme"] = [this.nodes[3]];
 
         tabEditors.setAttribute("contextmenu", "mnuTabs");
 
