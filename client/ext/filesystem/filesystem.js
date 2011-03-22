@@ -152,10 +152,24 @@ return ext.register("ext/filesystem/filesystem", {
         }
     },
 
+    beforeStopRename : function(name) {
+        // Returning false from this function will cancel the rename. We do this
+        // when the name to which the file is to be renamed contains invalid
+        // characters
+        var match = name.match(/^(?:\w|[.])(?:\w|[.-])*$/);
+
+        return match !== null && match[0] == name;
+    },
+
     beforeRename : function(node, name, newPath) {
         var path = node.getAttribute("path"),
             page = tabEditors.getPage(path);
 
+        // NOTE: Do not allow /workspace to be renamed because APF renames
+        // folder to their displayed name, and the root node displas a
+        // different name than its actual path
+        if (path == '/workspace')
+            return;
         if (name)
             newPath = path.replace(/^(.*\/)[^\/]+$/, "$1" + name);
         else
@@ -166,6 +180,16 @@ return ext.register("ext/filesystem/filesystem", {
         if (page)
             page.setAttribute("id", newPath);
         
+        var childNodes = node.childNodes;
+        var length = childNodes.length;
+        
+        for (var i = 0; i < length; ++i) {
+            var childNode = childNodes[i];
+            var name = childNode.getAttribute("name");
+            
+            this.beforeRename(childNode, null,
+                              node.getAttribute("path") + "/" + name);
+        }
         ide.dispatchEvent("updatefile", {
             path: path,
             name: name,
@@ -181,6 +205,12 @@ return ext.register("ext/filesystem/filesystem", {
         node.setAttribute("path", newpath);
         if (page)
             page.setAttribute("id", newpath);
+            
+        var childNodes = node.childNodes;
+        var length = childNodes.length;
+        
+        for (var i = 0; i < length; ++i)
+            this.beforeMove(node, childNodes[i]);
         
         ide.dispatchEvent("updatefile", {
             path: path,
