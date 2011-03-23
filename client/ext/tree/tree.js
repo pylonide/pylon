@@ -47,7 +47,7 @@ return ext.register("ext/tree/tree", {
                 if (value) 
                     return;
             }
-            
+
             panels.initPanel(_self);
             _self.enable(true);
         });
@@ -312,6 +312,7 @@ return ext.register("ext/tree/tree", {
 
     enable : function(noButton){
         winFilesViewer.show();
+        colLeft.show();
         if (!noButton) {
             this.button.setValue(true);
             if(navbar.current && (navbar.current != this))
