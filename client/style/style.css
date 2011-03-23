@@ -75,3 +75,11 @@ BODY {
     -moz-box-shadow: 1px 0 0 rgba(255, 255, 255, 0.8) inset;
     -webkit-box-shadow: 1px 0 0 rgba(255, 255, 255, 0.8) inset;
 }
+
+.unselectable {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}

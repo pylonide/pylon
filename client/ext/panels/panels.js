@@ -25,8 +25,9 @@ return ext.register("ext/panels/panels", {
     showingAll : true,
     
     initPanel : function(panelExt){
-        if (panelExt.panel)
+        if (panelExt.panel) {
             return;
+        }
         
         ext.initExtension(panelExt);
         this.$setEvents(panelExt);
