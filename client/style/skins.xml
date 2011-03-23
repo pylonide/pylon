@@ -38,7 +38,7 @@
             height        : 36px;
             background    : url(images/c9-menu-backg.png) repeat-x 0 0;
             border-bottom : 1px solid #000000;
-            z-index       : 1000000;
+            z-index       : 10000;
         }
         
         .c9-menu-bar .c9-mbar-logo {
@@ -1823,25 +1823,25 @@
        .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
           background-image: url("icons/debugger/brkp_obj.png");
           background-repeat: no-repeat;
-          background-position: 2px center;
+          background-position: 4px center;
        }
 
        .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.ace_arrow {
           background-image: url("icons/debugger/brkp_obj_current_line.png");
           background-repeat: no-repeat;
-          background-position: 2px center;
+          background-position: 4px center;
        }
 
        .ace_gutter-layer .ace_gutter-cell.ace_arrow {
           background-image: url("icons/debugger/current_line.png");
           background-repeat: no-repeat;
-          background-position: 2px center;
+          background-position: 4px center;
        }
 
        .ace_gutter-layer .ace_gutter-cell.ace_stack {
           background-image: url("icons/debugger/stack_co.png");
           background-repeat: no-repeat;
-          background-position: 2px center;
+          background-position: 4px center;
        }
     ]]></a:style>
     <a:presentation>
