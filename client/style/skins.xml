@@ -6610,6 +6610,7 @@
             background : url(images/tree_selected.png) repeat 0 0;
         }
         
+        .filemgr-dragtree,
         .filemgr-treeFocus .item-fix.selected {
             border-top:1px solid #3a9bec;
             border-bottom:1px solid #185f97;
@@ -6619,6 +6620,7 @@
             background : -moz-linear-gradient(center bottom, #1f82d2 0%, #2890e5 100%) repeat scroll 0 0 transparent;
         }
         
+        .filemgr-dragtree,
         .filemgr-treeFocus .item-fix.selected .item LABEL .caption {
             color:white;
         }
@@ -6705,14 +6707,7 @@
             -moz-box-shadow    : 0px 3px 5px 0px rgba(0, 0, 0, 0.5);
             -webkit-box-shadow : 0px 3px 5px 0px rgba(0, 0, 0, 0.5);
             box-shadow         : 0px 3px 5px 0px rgba(0, 0, 0, 0.5);
-        }
-        
-        .filemgr-dragtree .item {
-            height:22px;
-            padding:0;
-            position:relative;
-            overflow:hidden;
-            background:url(images/drag-tree-item-backg.png) repeat-x 0 0;
+            opacity: .4;
         }
         
         .filemgr-dragtree .item SPAN {

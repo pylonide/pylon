@@ -168,7 +168,7 @@ return ext.register("ext/watcher/watcher", {
                 });
         });
         
-        ide.addEventListener("afterfilesave", function(e) {
+        ide.addEventListener("beforefilesave", function(e) {
             if (_self.disabled) return;
             
             var path = e.node.getAttribute("path");

@@ -7,12 +7,23 @@
 var fs      = require("fs"),
     sys     = require("sys"),
     Plugin  = require("cloud9/plugin");
-
+    
 function cloud9WatcherPlugin(ide) {
+    var that = this;
+    
+    ide.davServer.plugins['watcher'] = function (handler) {
+        handler.addEventListener('beforeWriteContent', function (e, uri) {
+            var path = ide.davServer.tree.basePath + '/' + uri;
+            
+            that.ignoredPaths[path] = path;
+        });
+    };
+
     this.ide = ide;
     this.hooks = ["disconnect", "command"];
     this.name = "watcher";
     this.filenames = {};
+    this.ignoredPaths = {};
 }
 
 sys.inherits(cloud9WatcherPlugin, Plugin);
@@ -47,9 +58,13 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                 if (this.filenames[filename]) 
                     ; // console.log("Already watching file " + filename);
                 else {
-                    // console.log("Watching file " + filename);
+                    console.log("Watching file " + filename);
                     that = this;
                     fs.watchFile(filename, function (curr, prev) {
+                        if (that.ignoredPaths[filename]) {
+                            delete that.ignoredPaths[filename];
+                            return;   
+                        }
                         if (curr.nlink == 1 && prev.nlink == 0)
                             subtype = "create";
                         else if (curr.nlink == 0 && prev.nlink == 1)
@@ -64,10 +79,12 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                             fs.readdirSync(filename).forEach(function (file) {
                                 var stat = fs.statSync(filename + "/" + file);
 
-                                files[file] = {
-                                    type : stat.isDirectory() ? "folder" : "file",
-                                    name : file
-                                };
+                                if (file.charAt(0) != '.') {
+                                    files[file] = {
+                                        type : stat.isDirectory() ? "folder" : "file",
+                                        name : file
+                                    };
+                                }
                             });
                         }
                         that.ide.broadcast(JSON.stringify({
