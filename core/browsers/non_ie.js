@@ -371,15 +371,30 @@ apf.runNonIe = function (){
     apf.xmlParseError = function(xml){
         //if (xml.documentElement.tagName == "parsererror") {
         if (xml.getElementsByTagName("parsererror").length) { 
-            var str     = xml.documentElement.firstChild.nodeValue.split("\n"),
-                linenr  = str[2].match(/\w+ (\d+)/)[1],
-                message = str[0].replace(/\w+ \w+ \w+: (.*)/, "$1"),
-            
-                srcText = xml.documentElement.lastChild.firstChild.nodeValue;//.split("\n")[0];
-            
+            var nodeValue = xml.documentElement.firstChild.nodeValue;
+
+            if (nodeValue != null) {
+                var str     = nodeValue.split("\n"),
+                    linenr  = str[2].match(/\w+ (\d+)/)[1],
+                    message = str[0].replace(/\w+ \w+ \w+: (.*)/, "$1");
+            } else {
+                if(nodeValue = xml.documentElement.firstChild.getElementsByTagName('div')[0].firstChild.nodeValue) {
+                    var linenr  = nodeValue.match(/line\s(\d*)/)[1] || "N/A",
+                        message = nodeValue.match(/column\s\d*:(.*)/)[1] || "N/A";
+                }
+                else {
+                    var linenr  = "N/A",
+                        message = "N/A";
+                }
+            }
+
+            var srcText = xml.documentElement.lastChild.firstChild,//.split("\n")[0];
+                srcMsg  = "";
+            if(srcText && srcText.nodeValue) {
+                srcMsg = "\nSource Text : " + srcText.nodeValue.replace(/\t/gi, " ")
+            }
             throw new Error(apf.formatErrorString(1050, null, 
-                "XML Parse Error on line " +  linenr, message + 
-                "\nSource Text : " + srcText.replace(/\t/gi, " ")));
+                "XML Parse Error on line " +  linenr, message + srcMsg));
         }
         
         return xml;

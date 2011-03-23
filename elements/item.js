@@ -410,7 +410,7 @@ apf.item  = function(struct, tagName){
 
         clearTimeout(timer);
         if (!this.submenu || this.$submenu(true)) {
-            apf.setStyleClass(this.$ext, '', ['hover']);
+            apf.setStyleClass(this.$ext, "", ['hover']);
 
             var sel = this.parentNode.$selected;
             if (sel && sel != this)
@@ -421,7 +421,7 @@ apf.item  = function(struct, tagName){
     };
 
     this.$over = function(e, force){
-        if (this.parentNode.$selected == this)
+        if (this.parentNode.$selected == this && e)
             return;
 
         if (this.parentNode.$selected)
@@ -435,8 +435,12 @@ apf.item  = function(struct, tagName){
             return;
 
         var _self = this, ps = this.parentNode.$showingSubMenu;
-        if (ps && ps.name == this.submenu)
+        if (ps && ps.name == this.submenu) {
+            this.parentNode.$selected = null;
+            this.parentNode.$showingSubMenu = null;
+            _self.$submenu();
             return;
+        }
             
         clearTimeout(timer);
         
