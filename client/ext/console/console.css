@@ -38,7 +38,7 @@
     display: block;
 }
 
-.barConsoleHints a:hover {
+.barConsoleHints a.selected {
     padding: 2px 4px;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
