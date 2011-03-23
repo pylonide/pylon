@@ -148,7 +148,6 @@ return ext.register("ext/tree/tree", {
         });*/
         
         /**** Support for state preservation ****/
-        
         trFiles.addEventListener("expand", function(e){
             _self.expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = e.xmlNode;
 
