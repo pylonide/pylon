@@ -119,7 +119,7 @@ return ext.register("ext/console/console", {
                 .replace(/\s/g, "&nbsp;")
                 .replace(wsrRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>$1$2$3</a>")
                 .replace(wsRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>"+workspaceDir+"/$1$2$3</a>")
-                .replace(/(((http:\/\/)|(www\.))[\w\d\.]*(:\d+)?(\/[\w\d]+)?)/, "<a href='$1' target='_blank'>$1</a>")
+                .replace(/(((http:\/\/)|(www\.))[\w\d\.-]*(:\d+)?(\/[\w\d]+)?)/, "<a href='$1' target='_blank'>$1</a>")
                 .replace(/\033\[(?:(\d+);)?(\d+)m/g, function(m, extra, color) {
                     style = "color:" + (colors[color] || "#eee");
                     if (extra == 1) {
