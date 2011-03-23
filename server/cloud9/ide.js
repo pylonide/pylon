@@ -93,7 +93,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/console/console",
     "ext/tabbehaviors/tabbehaviors",
     "ext/keybindings/keybindings",
-    "ext/watcher/watcher"
+    "ext/watcher/watcher",
+    "ext/dragdrop/dragdrop"
 ];
 
 (function () {
