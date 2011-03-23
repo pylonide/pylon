@@ -54,6 +54,8 @@ return ext.register("ext/tree/tree", {
     },
 
     init : function() {
+        var _self = this;
+        
         this.panel = winFilesViewer;
         
         colLeft.addEventListener("hide", function(){
@@ -65,6 +67,21 @@ return ext.register("ext/tree/tree", {
         });
         
         colLeft.appendChild(winFilesViewer);
+        
+        mnuView.appendChild(new apf.divider()),
+        mnuView.appendChild(new apf.item({
+            id      : "mnuitemHiddenFiles",
+            type    : "check",
+            caption : "Show Hidden Files",
+            check   : "{[davProject.showhidden]}",
+            onclick : function(){
+                _self.changed = true;
+                davProject.setProperty("showhidden", !davProject.getProperty("showhidden"));
+                require('ext/tree/tree').refresh();
+            }
+        }));
+        mnuView.appendChild(new apf.divider()),
+        
         trFiles.setAttribute("model", fs.model);
         
         trFiles.addEventListener("afterchoose", this.$afterselect = function(e) {
@@ -132,8 +149,6 @@ return ext.register("ext/tree/tree", {
         
         /**** Support for state preservation ****/
         
-        var _self = this;
-        
         trFiles.addEventListener("expand", function(e){
             _self.expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = e.xmlNode;
 
@@ -152,7 +167,12 @@ return ext.register("ext/tree/tree", {
         });
 
         ide.addEventListener("loadsettings", function(e){
-            var strSettings = e.model.queryValue("auto/tree");
+            var model = e.model;
+            var strSettings = model.queryValue("auto/tree");
+            var checked = !!model.queryValue("auto/tree/@showhidden");
+            davProject.setProperty("showhidden", checked);
+            mnuitemHiddenFiles.setProperty("checked", checked);
+            
             if (strSettings) {
                 _self.loading = true;
                 _self.currentSettings = apf.unserialize(strSettings);
@@ -174,7 +194,7 @@ return ext.register("ext/tree/tree", {
                         });
                     }
                 }catch(e){
-                    e.model.setQueryValue("auto/tree/text()", "");
+                    model.setQueryValue("auto/tree/text()", "");
                 }
             }
         });
@@ -182,9 +202,8 @@ return ext.register("ext/tree/tree", {
         ide.addEventListener("savesettings", function(e){
             if (!_self.changed)
                 return;
-            
-            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/tree/text()");
 
+            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/tree");
             _self.currentSettings = [];
 
             var path, id, lut = {};
@@ -213,7 +232,8 @@ return ext.register("ext/tree/tree", {
                 if (!parts.length)
                     _self.currentSettings.push(path);
             }
-            
+
+            xmlSettings.setAttribute("showhidden", davProject.getProperty("showhidden"));
             xmlSettings.nodeValue = apf.serialize(_self.currentSettings);
             return true;
         });

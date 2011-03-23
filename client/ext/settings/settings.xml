@@ -5,6 +5,7 @@
 
     <a:window id="winSettings"
       skin      = "fm-window"
+	  class		= "unselectable"
       title     = "Preferences"
       visible   = "true"
       flex      = "1"
