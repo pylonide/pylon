@@ -34,8 +34,9 @@ return ext.register("ext/openfiles/openfiles", {
             var value = this.value;
             if (navbar.current && (navbar.current != _self || value)) {
                 navbar.current.disable(navbar.current == _self);
-                if (value)
+                if (value) {
                     return;
+                }
             }
 
             panels.initPanel(_self);
@@ -135,6 +136,7 @@ return ext.register("ext/openfiles/openfiles", {
 
     enable : function(noButton){
         winOpenFiles.show();
+        colLeft.show();
         if (!noButton) {
             this.button.setValue(true);
             if(navbar.current && (navbar.current != this))
