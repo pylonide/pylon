@@ -17,10 +17,9 @@ var Trie = require("ext/console/trie");
 var css = require("text!ext/console/console.css");
 var markup = require("text!ext/console/console.xml");
 
-var trieCommands,
+var trieCommands, hintNodes, hintsTimer,
     selectedHint = null,
     commands     = {},
-    hintNodes    = {},
     cmdTries     = {},
     cmdFetched   = false,
     cmdHistory   = [],
@@ -230,14 +229,14 @@ return ext.register("ext/console/console", {
 
     keyupHandler: function(e) {
         var code = e.keyCode;
-        if (code != 9 && code != 13 && code != 38 && code != 40) {
+        if (code != 9 && code != 13 && code != 38 && code != 40 && code != 27) {
             return this.commandTextHandler(e);
         }
     },
 
     keydownHandler: function(e) {
         var code = e.keyCode;
-        if (code == 9 || code == 13 || code == 38 || code == 40) {
+        if (code == 9 || code == 13 || code == 38 || code == 40 || code == 27) {
             return this.commandTextHandler(e);
         }
     },
@@ -246,12 +245,13 @@ return ext.register("ext/console/console", {
         var line      = e.currentTarget.getValue(),
             //idx       = cmdHistory.indexOf(line),
             hisLength = cmdHistory.length,
-            newVal    = "";
+            newVal    = "",
+            code      = e.keyCode;
         if (cmdBuffer === null || (this.commandHistoryIndex == 0 && cmdBuffer !== line))
             cmdBuffer = line;
         parser.parseLine(line);
 
-        if (e.keyCode == 38) { //UP
+        if (code == 38) { //UP
             if (this.$winHints.visible) {
                 this.selectHintUp();
             }
@@ -266,7 +266,7 @@ return ext.register("ext/console/console", {
             }
             return false;
         }
-        else if (e.keyCode == 40) { //DOWN
+        else if (code == 40) { //DOWN
             if (this.$winHints.visible) {
                 this.selectHintDown();
             }
@@ -280,7 +280,10 @@ return ext.register("ext/console/console", {
             }
             return false;
         }
-        else if (e.keyCode != 13 && e.keyCode != 9) {
+        else if (code == 27 && this.$winHints.visible) {
+            return this.hideHints();
+        }
+        else if (code != 13 && code != 9) {
             this.autoComplete(e, parser, 2);
             return;
         }
@@ -304,7 +307,7 @@ return ext.register("ext/console/console", {
             var s,
                 cmd = parser.argv[parser.argc++];
 
-            if (e.keyCode == 9) {
+            if (code == 9) {
                 this.autoComplete(e, parser, 1);
                 return false;
             }
@@ -796,11 +799,15 @@ return ext.register("ext/console/console", {
     },
     
     hintsMouseHandler: function(e) {
+        clearTimeout(hintsTimer);
         var el = e.target || e.srcElement;
         while (el && el.nodeType == 3 && el.tagName != "A" && el != this.$winHints)
             el = el.parentNode;
         if (el.tagName != "A") return;
-        this.selectHint(el);
+        var _self = this;
+        hintsTimer = setTimeout(function() {
+            _self.selectHint(el);
+        }, 5);
     },
 
     selectHintUp: function() {
@@ -816,6 +823,7 @@ return ext.register("ext/console/console", {
     },
     
     selectHint: function(hint) {
+        clearTimeout(hintsTimer);
         if (!hintNodes)
             hintNodes = this.$winHints.getElementsByTagName("a");
 
