@@ -17,14 +17,15 @@ var Trie = require("ext/console/trie");
 var css = require("text!ext/console/console.css");
 var markup = require("text!ext/console/console.xml");
 
-var trieCommands,
-    commands   = {},
-    cmdTries   = {},
-    cmdFetched = false,
-    cmdHistory = [],
-    cmdBuffer  = "",
-    lastSearch = null,
-    parser     = new Parser();
+var trieCommands, hintNodes, hintsTimer,
+    selectedHint = null,
+    commands     = {},
+    cmdTries     = {},
+    cmdFetched   = false,
+    cmdHistory   = [],
+    cmdBuffer    = "",
+    lastSearch   = null,
+    parser       = new Parser();
 
 return ext.register("ext/console/console", {
     name   : "Console",
@@ -130,7 +131,7 @@ return ext.register("ext/console/console", {
                     return "</span><span style='" + style + "'>"
                 }) + "</span></div>");
         }
-		
+
         (useOutput ? txtOutput : txtConsole).addValue(log.join(""));
     },
 
@@ -227,13 +228,15 @@ return ext.register("ext/console/console", {
     },
 
     keyupHandler: function(e) {
-        if (e.keyCode != 9 && e.keyCode != 13) {
+        var code = e.keyCode;
+        if (code != 9 && code != 13 && code != 38 && code != 40 && code != 27) {
             return this.commandTextHandler(e);
         }
     },
 
     keydownHandler: function(e) {
-        if (e.keyCode == 9 || e.keyCode == 13) {
+        var code = e.keyCode;
+        if (code == 9 || code == 13 || code == 38 || code == 40 || code == 27) {
             return this.commandTextHandler(e);
         }
     },
@@ -242,34 +245,51 @@ return ext.register("ext/console/console", {
         var line      = e.currentTarget.getValue(),
             //idx       = cmdHistory.indexOf(line),
             hisLength = cmdHistory.length,
-            newVal    = "";
+            newVal    = "",
+            code      = e.keyCode;
         if (cmdBuffer === null || (this.commandHistoryIndex == 0 && cmdBuffer !== line))
             cmdBuffer = line;
         parser.parseLine(line);
 
-        if (e.keyCode == 38) { //UP
-            if (!hisLength)
-                return;
-            newVal = cmdHistory[--this.commandHistoryIndex];
-            if (this.commandHistoryIndex < 0)
-                this.commandHistoryIndex = 0;
-            if (newVal)
+        if (code == 38) { //UP
+            if (this.$winHints.visible) {
+                this.selectHintUp();
+            }
+            else {
+                if (!hisLength)
+                    return;
+                newVal = cmdHistory[--this.commandHistoryIndex];
+                if (this.commandHistoryIndex < 0)
+                    this.commandHistoryIndex = 0;
+                if (newVal)
+                    e.currentTarget.setValue(newVal);
+            }
+            return false;
+        }
+        else if (code == 40) { //DOWN
+            if (this.$winHints.visible) {
+                this.selectHintDown();
+            }
+            else {
+                if (!hisLength)
+                    return;
+                newVal = cmdHistory[++this.commandHistoryIndex] || "";//(++idx > hisLength - 1 || idx === 0) ? (cmdBuffer || "") : 
+                if (this.commandHistoryIndex >= cmdHistory.length)
+                    this.commandHistoryIndex = cmdHistory.length;
                 e.currentTarget.setValue(newVal);
+            }
             return false;
         }
-        else if (e.keyCode == 40) { //DOWN
-            if (!hisLength)
-                return;
-            newVal = cmdHistory[++this.commandHistoryIndex] || "";//(++idx > hisLength - 1 || idx === 0) ? (cmdBuffer || "") : 
-            if (this.commandHistoryIndex >= cmdHistory.length)
-                this.commandHistoryIndex = cmdHistory.length;
-            e.currentTarget.setValue(newVal);
-            return false;
+        else if (code == 27 && this.$winHints.visible) {
+            return this.hideHints();
         }
-        else if (e.keyCode != 13 && e.keyCode != 9) {
+        else if (code != 13 && code != 9) {
             this.autoComplete(e, parser, 2);
             return;
         }
+        
+        if (this.$winHints.visible && selectedHint && hintNodes)
+            return this.hintClick(hintNodes[selectedHint]);
 
         if (parser.argv.length === 0) {
             // no commmand line input
@@ -287,7 +307,7 @@ return ext.register("ext/console/console", {
             var s,
                 cmd = parser.argv[parser.argc++];
 
-            if (e.keyCode == 9) {
+            if (code == 9) {
                 this.autoComplete(e, parser, 1);
                 return false;
             }
@@ -438,10 +458,16 @@ return ext.register("ext/console/console", {
                 break;
             case "internal-autocomplete":
                 res = message.body;
+                var base = res.base || "",
+                    blen = base.length;
                 lastSearch = res;
                 lastSearch.trie = new Trie();
-                for (var i = 0, l = res.matches.length; i < l; ++i)
-                    lastSearch.trie.add(res.matches[i]);
+                for (var m, i = 0, l = res.matches.length; i < l; ++i) {
+                    m = res.matches[i];
+                    lastSearch.trie.add(m);
+                    if (base && m.indexOf(base) === 0)
+                        res.matches[i] = m.substr(blen - 1);
+                }
                 this.showHints(res.textbox, res.base || "", res.matches, null, res.cursor);
                 break;
             case "cd":
@@ -580,9 +606,9 @@ return ext.register("ext/console/console", {
                 --needle
 
             if (cmdTrie) {
-                //console.log("needle we're left with: ", needle, len);
-                root = cmdTrie.trie.find(parser.argv[needle]);
+                //console.log("needle we're left with: ", needle, len, parser.argv[needle]);
                 base = parser.argv[needle];
+                root = cmdTrie.trie.find(base);
                 if (root) {
                     list = root.getWords();
                 }
@@ -662,6 +688,12 @@ return ext.register("ext/console/console", {
             this.hideHints();
         }
     },
+    
+    initHints: function() {
+        if (this.$winHints) return;
+        this.$winHints = document.getElementById("barConsoleHints");
+        apf.addListener(this.$winHints, "mousemove", this.hintsMouseHandler.bind(this));
+    },
 
     showHints: function(textbox, base, hints, cmdsLut, cursorPos) {
         var name = "console_hints";
@@ -683,8 +715,8 @@ return ext.register("ext/console/console", {
             //console.log("isn't this OK? ", cmdName, base);
             cmd = (cmdsLut || commands)[cmdName];
             isCmd = !!cmd;
-            content.push('<a href="javascript:void(0);" onclick="require(\'ext/console/console\').hintClick(\'' 
-                + base + '\', \'' + cmdName + '\', \'' + textbox.id + '\', ' + cursorPos + ', ' + isCmd + ')">'
+            content.push('<a href="javascript:void(0);" onclick="require(\'ext/console/console\').hintClick(this);" ' 
+                + 'data-hint="'+ base + ',' + cmdName + ',' + textbox.id + ',' + cursorPos + ',' + isCmd + '">'
                 + cmdName + ( cmd
                 ? '<span>' + cmd.hint + (cmd.hotkey
                     ? '<span class="hints_hotkey">' + (apf.isMac
@@ -695,14 +727,16 @@ return ext.register("ext/console/console", {
                 + '</a>');
         }
 
-        if (!this.$winHints)
-            this.$winHints = document.getElementById("barConsoleHints");
+        this.initHints();
+        hintNodes = null;
+        selectedHint = null;
 
         this.$winHints.innerHTML = content.join("");
 
         if (apf.getStyle(this.$winHints, "display") == "none") {
             //this.$winHints.style.top = "-30px";
             this.$winHints.style.display = "block";
+            this.$winHints.visible = true;
             //txtConsoleInput.focus();
 
             //Animate
@@ -718,18 +752,26 @@ return ext.register("ext/console/console", {
         }
 
         var pos = apf.getAbsolutePosition(textbox.$ext, this.$winHints.parentNode);
-        this.$winHints.style.left = Math.max(cursorPos * 5, 5) + "px";
+        this.$winHints.style.left = Math.max(cursorPos * 5.5, 5) + "px";
         //this.$winHints.style.top = (pos[1] - this.$winHints.offsetHeight) + "px";
     },
 
     hideHints: function() {
-        if (!this.$winHints)
-            this.$winHints = document.getElementById("barConsoleHints");
+        this.initHints();
         this.$winHints.style.display = "none";
+        this.$winHints.visible = false;
+        selectedHint = null;
         //@todo: animation
     },
 
-    hintClick: function(base, cmdName, txtId, insertPoint, isCmd) {
+    hintClick: function(node) {
+        var parts       = node.getAttribute("data-hint").split(","),
+            base        = parts[0],
+            cmdName     = parts[1],
+            txtId       = parts[2],
+            insertPoint = parseInt(parts[3]),
+            isCmd       = (parts[4] == "true");
+
         if (isCmd)
             cmdName += " "; // for commands we suffix with whitespace
         var textbox = self[txtId],
@@ -754,6 +796,49 @@ return ext.register("ext/console/console", {
         }
 
         this.hideHints();
+    },
+    
+    hintsMouseHandler: function(e) {
+        clearTimeout(hintsTimer);
+        var el = e.target || e.srcElement;
+        while (el && el.nodeType == 3 && el.tagName != "A" && el != this.$winHints)
+            el = el.parentNode;
+        if (el.tagName != "A") return;
+        var _self = this;
+        hintsTimer = setTimeout(function() {
+            _self.selectHint(el);
+        }, 5);
+    },
+
+    selectHintUp: function() {
+        if (!hintNodes)
+            hintNodes = this.$winHints.getElementsByTagName("a");
+        return this.selectHint(selectedHint - 1 < 0 ? hintNodes.length - 1 : --selectedHint);
+    },
+
+    selectHintDown: function() {
+        if (!hintNodes)
+            hintNodes = this.$winHints.getElementsByTagName("a");
+        return this.selectHint(selectedHint + 1 > hintNodes.length - 1 ? 0 : ++selectedHint);
+    },
+    
+    selectHint: function(hint) {
+        clearTimeout(hintsTimer);
+        if (!hintNodes)
+            hintNodes = this.$winHints.getElementsByTagName("a");
+
+        if (typeof hint == "number")
+            hint = hintNodes[hint];
+
+        for (var i = 0, l = hintNodes.length; i < l; ++i) {
+            if (hintNodes[i] === hint) {
+                selectedHint = i;
+                continue;
+            }
+            hintNodes[i].className = "";
+        }
+        if (hint)
+            hint.className = "selected";
     },
 
     consoleTextHandler: function(e) {
