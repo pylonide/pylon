@@ -26,7 +26,7 @@ return ext.register("ext/dockpanel/dockpanel", {
      */
     init : function(amlNode){
         this.expandCol = colRight;
-        this.expandCol.$ext.className = "dockcol"
+        this.expandCol.$ext.className = "dockcol unselectable"
         this.splitter = splitterPanelRight;
         this.splitter.hide();
     },

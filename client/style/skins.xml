@@ -1732,6 +1732,11 @@
           overflow-x: scroll;
           overflow-y: hidden;
           height: 100%;
+	      -moz-user-select: -moz-none;
+	      -khtml-user-select: none;
+	      -webkit-user-select: none;
+	      -o-user-select: none;
+	      user-select: none;
         }
 
         .ace_editor .ace_sb {
@@ -5230,6 +5235,11 @@
     .tab_console .btncontainer .btntab .tab_console_title {
         overflow : hidden;
         padding  : 0 0 0 0;
+		-moz-user-select: -moz-none;
+	    -khtml-user-select: none;
+	    -webkit-user-select: none;
+	    -o-user-select: none;
+	    user-select: none;
     }
 
     .tab_console .btncontainer .btntab.btnclose .tab_console_title {
@@ -5430,6 +5440,11 @@
     .editor_tab .btnsesssioncontainer .session_btn .tab_middle .sessiontab_title {
         overflow : hidden;
         padding  : 0 0 0 0;
+		-moz-user-select: -moz-none;
+	    -khtml-user-select: none;
+	    -webkit-user-select: none;
+	    -o-user-select: none;
+	    user-select: none;
     }
 
     .editor_tab .btnsesssioncontainer .session_btn.btnclose .tab_middle .sessiontab_title {
