@@ -4991,7 +4991,6 @@
     <a:style><![CDATA[
         .splitter {
             position : relative;
-            z-index  : 1000000;
         }
         
         .splitterFocus {
