@@ -190,6 +190,8 @@ apf.splitter = function(struct, tagName){
         this.$ext.onmousedown = function(e){
             if (!e)
                 e = event;
+                
+            apf.window.zManager.set("drag", _self.$ext);
             
             _self.$setSiblings();
 
@@ -284,6 +286,8 @@ apf.splitter = function(struct, tagName){
             //@todo convert to proper way
             document.onmouseup = function(e){
                 if(!e) e = event;
+                
+                apf.window.zManager.clear(_self.$ext);
                 
                 with (_self.$info) {
                     var newPos;
