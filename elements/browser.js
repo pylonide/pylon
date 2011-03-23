@@ -161,8 +161,10 @@ apf.browser = function(struct, tagName){
         //Build Main Skin
         if (apf.cannotSizeIframe) {
             //parentNode.appendChild(document.createElement("iframe"));//
+            var _iframe = document.createElement("iframe");
+                _iframe.setAttribute("frameborder","0");
             this.$ext = parentNode.appendChild(document.createElement("DIV"))
-                .appendChild(document.createElement("<iframe frameborder='0'></iframe>")).parentNode;
+                .appendChild(_iframe).parentNode;
             this.$ext.style.width  = "100px";
             this.$ext.style.height = "100px";
             this.$browser = this.$ext.firstChild;
