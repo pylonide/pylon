@@ -562,7 +562,7 @@ apf.http = function(){
             if (apf.isIE && isLocal) { //When local IE calls onreadystate immediately
                 var oldWinOnerror = window.onerror;
                 window.onerror = function(){
-                    if (arguments.caller.callee == send) {
+                    if (arguments.caller && arguments.caller.callee == send) {
                         window.onerror = oldWinOnerror;
                         //_self.receive(id);
                         //setTimeout(function(){handleError();});
