@@ -832,18 +832,27 @@
             width              : 22px;
         }
 
-        .dim14-14 {
+        .dim22-22.btn_icon_only {
+            width: 22px;
+            height: 22px;
+        }
+
+        .dim14-14.btn_icon_only {
             width: 14px;
             height: 14px;
         }
         
-        .dim8x8 {
+        .dim8x8.btn_icon_only {
             width: 8px;
             height: 8px;
         }
 
         .btn_icon_onlyOver {
             background-position: 0 -23px;
+        }
+
+        .dim22-22.btn_icon_onlyOver {
+            background-position: 0 -22px;
         }
 
         .dim14-14.btn_icon_onlyOver {
@@ -858,6 +867,10 @@
             background-position: 0 -46px;
         }
 
+        .dim22-22.btn_icon_onlyDown {
+            background-position: 0 -44px;
+        }
+        
         .dim14-14.btn_icon_onlyDown {
             background-position: 0 -28px;
         }
