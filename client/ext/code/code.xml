@@ -3,7 +3,7 @@
       flex              = "1"
       anchors           = "6 0 4 0"
       visible           = "false"
-      syntax            = "{require('ext/code/code').getSyntax([@contenttype])}"
+      syntax            = "{require('ext/code/code').getSyntax(%[.])}"
       theme             = "[{require('ext/settings/settings').model}::editors/code/@theme]"
       overwrite         = "[{require('ext/settings/settings').model}::editors/code/@overwrite]"
       selectstyle       = "[{require('ext/settings/settings').model}::editors/code/@selectstyle]"
@@ -46,6 +46,8 @@
     </a:menu>
     
     <a:menu id="mnuSyntax">
+        <a:item type="radio" value="auto">Auto Select</a:item>
+        <a:divider />
         <a:item type="radio" value="text/plain">Plain Text</a:item>
         <a:item type="radio" value="application/javascript">JavaScript</a:item>
         <a:item type="radio" value="text/x-script.coffeescript">CoffeeScript</a:item>

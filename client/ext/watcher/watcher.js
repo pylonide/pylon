@@ -25,7 +25,6 @@ return ext.register("ext/watcher/watcher", {
             removedPathCount    = 0,
             changedPaths        = {},
             changedPathCount    = 0,
-            ignoredPaths        = {},
             expandedPaths       = {},
             _self               = this;
             
@@ -168,14 +167,6 @@ return ext.register("ext/watcher/watcher", {
                 });
         });
         
-        ide.addEventListener("beforefilesave", function(e) {
-            if (_self.disabled) return;
-            
-            var path = e.node.getAttribute("path");
-            // console.log("Adding " + path + " to ignore list");
-            ignoredPaths[path] = path;
-        });
-                
         ide.addEventListener("socketMessage", function(e) {
             if (_self.disabled) return;
             
@@ -208,10 +199,7 @@ return ext.register("ext/watcher/watcher", {
                     }
                     break;
                 case "change":
-                    if (ignoredPaths[path]) {
-                        // console.log("Ignoring change notification for file " + path);
-                        delete ignoredPaths[path];
-                    } else if (!changedPaths[path]) {
+                    if (!changedPaths[path]) {
                         changedPaths[path] = path;
                         ++changedPathCount;
                         checkPage();
