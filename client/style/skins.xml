@@ -836,6 +836,11 @@
             width: 14px;
             height: 14px;
         }
+        
+        .dim8x8 {
+            width: 8px;
+            height: 8px;
+        }
 
         .btn_icon_onlyOver {
             background-position: 0 -23px;
@@ -844,7 +849,10 @@
         .dim14-14.btn_icon_onlyOver {
             background-position: 0 -14px;
         }
-
+        
+        .dim8x8.btn_icon_onlyOver {
+            background-position: 0 -8px;
+        }
 
         .btn_icon_onlyDown {
             background-position: 0 -46px;
@@ -852,6 +860,10 @@
 
         .dim14-14.btn_icon_onlyDown {
             background-position: 0 -28px;
+        }
+        
+        .dim8x8.btn_icon_onlyDown {
+            background-position: 0 -16px;
         }
 
         .btn_icon_only.btnDisabled {
@@ -864,6 +876,7 @@
         </a:main>
     </a:presentation>
 </a:button>
+
 <a:button name="dockButton">
     <a:style><![CDATA[
         .dockButton {
@@ -2816,6 +2829,28 @@
         </a:main>
     </a:presentation>
 </a:divider>
+<a:divider name="divider_console">
+    <a:style><![CDATA[
+        .divider_console {
+            width : 0;
+            height:23px;
+            border-left:1px solid black;
+            border-right:1px solid #333333;
+            cursor : default;
+        }
+        
+        .tab_console .btncontainer > .divider_console {
+            height:23px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="." caption="." minheight="2" minwidth="0">
+            <div class="divider_console"> </div>
+        </a:main>
+    </a:presentation>
+</a:divider>
+
 <a:divider name="divider-debugpanel">
     <a:style><![CDATA[
         .divider-debugpanel {
