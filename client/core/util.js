@@ -98,13 +98,13 @@ var contentTypes = {
 };
     
 exports.getFileIcon = function(xmlNode) {
-    var ctype = xmlNode.getAttribute('contenttype');
+    var name = xmlNode.getAttribute('name');
     var icon  = "page_white_text";
-    var mime;
+    var ext;
     
-    if (ctype) {
-        mime = ctype.split(";")[0];
-        icon = SupportedIcons[mime] || SupportedIcons[mime.split("/")[0]] || "page_white_text";
+    if (name) {
+        ext = name.split(".").pop();
+        icon = SupportedIcons[contentTypes[ext]] || "page_white_text";
     }
     return icon + ".png";
 };
