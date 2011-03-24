@@ -90,7 +90,7 @@
 
             <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
             <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-            <a:rename set="{davProject.rename([@name], [@path])}"/>
+            <a:rename match="[file|folder[not(@path='/workspace')]]" set="{davProject.rename([@name], [@path])}"/>
             <a:copy match="[file|folder]" set="{copy([@path], [../@path])}"/>
             <a:move set="{move([@path], [../@path])}"/>
             <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
@@ -106,7 +106,7 @@
             ">Edit</a:item>
             <a:divider />
             <a:item onclick="require('ext/tree/tree').refresh()">Refresh</a:item>
-            <a:item onclick="apf.activeElement.startRename()">Rename</a:item>
+            <a:item match="[file|folder[not(@path='/workspace')]]" onclick="apf.activeElement.startRename()">Rename</a:item>
             <a:item match="[file|folder]" onclick="apf.activeElement.remove()">Delete</a:item>
             <a:divider />
             <a:item match="[file|folder]" onclick="
