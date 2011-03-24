@@ -72,6 +72,7 @@
             top:23px;
             right:-30px;
             display:none;
+            z-index: 100000;
         }
         
         .c9-menu-bar.offline .c9-mbar-logo .c9-mbar-bcont .c9-offline {
