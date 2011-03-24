@@ -165,11 +165,6 @@ return ext.register("ext/filesystem/filesystem", {
         var path = node.getAttribute("path"),
             page = tabEditors.getPage(path);
 
-        // NOTE: Do not allow /workspace to be renamed because APF renames
-        // folder to their displayed name, and the root node displas a
-        // different name than its actual path
-        if (path == '/workspace')
-            return;
         if (name)
             newPath = path.replace(/^(.*\/)[^\/]+$/, "$1" + name);
         else
