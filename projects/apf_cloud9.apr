@@ -434,6 +434,7 @@
         <p:define name="__WITH_AUTH" value="1" />
         <p:define name="__AMLSTATEGROUP" value="1" />
         <p:define name="__WITH_HISTORY" value="1" />
+        <p:define name="__TP_RPC_REST" value="1" />
 
         <!-- NOT USED DEFINES -->
 
@@ -546,7 +547,6 @@
         <p:define name="__TP_XMPP_ROSTER" value="1" />
         <p:define name="__TP_RPC_HEADER" value="1" />
         <p:define name="__TP_RPC_JPHP" value="1" />
-        <p:define name="__TP_RPC_REST" value="1" />
         <p:define name="__TP_RPC_XMLRPC" value="1" />
         <p:define name="__TP_RPC_SOAP" value="1" />
         <p:define name="__WITH_MEDIA" value="1" />
