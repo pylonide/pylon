@@ -56,6 +56,40 @@ var SupportedModes = {
     "text/x-web-textile": "textile"
 };
 
+var contentTypes = {
+    "js": "application/javascript",
+    "json": "application/json",
+    "css": "text/css",
+    
+    "xml": "application/xml",
+    "rdf": "application/rdf+xml",
+    "rss": "application/rss+xml",
+    "svg": "image/svg+xml",
+    "wsdl": "application/wsdl+xml",
+    "xslt": "application/xslt+xml",
+    "atom": "application/atom+xml",
+    "mathml": "application/mathml+xml",
+    "mml": "application/mathml+xml",
+    
+    "php": "application/x-httpd-php",
+    "html": "text/html",
+    "xhtml": "application/xhtml+xml",
+    "coffee": "text/x-script.coffeescript",
+    "py": "text/x-script.python",
+    
+    "ru": "text/x-script.ruby",
+    "gemspec": "text/x-script.ruby",
+    "rake": "text/x-script.ruby",
+    "rb": "text/x-script.ruby",
+    
+    "c": "text/x-c",
+    "cc": "text/x-c",
+    "cpp": "text/x-c",
+    "cxx": "text/x-c",
+    "h": "text/x-c",
+    "hh": "text/x-c"
+};
+
 return ext.register("ext/code/code", {
     name    : "Code Editor",
     dev     : "Ajax.org",
@@ -65,9 +99,20 @@ return ext.register("ext/code/code", {
 
     nodes : [],
 
-    getSyntax : function(type) {
-        var mime = type.split(";")[0];
-        return (SupportedModes[mime] || "text");
+    getSyntax : function(node) {
+        if(!node) return "";
+        var customType = node.getAttribute("customtype");
+        if (!customType)
+            customType = contentTypes[node.getAttribute("name").split(".").pop()];
+
+        if (customType) {
+            var mime = customType.split(";")[0];
+
+            return (SupportedModes[mime] || "text");
+        }
+        else {
+            return "text";
+        }
     },
     
     getSelection : function(){
@@ -229,8 +274,13 @@ return ext.register("ext/code/code", {
 
         mnuSyntax.onitemclick = function(e) {
             var file = ide.getActivePageModel();
-            if (file)
-                apf.xmldb.setAttribute(file, "contenttype", e.relatedNode.value);
+            if (file) {
+                var value = e.relatedNode.value;
+                if (value == "auto")
+                    apf.xmldb.removeAttribute(file, "customtype", "");
+                else
+                    apf.xmldb.setAttribute(file, "customtype", value);
+            }
         };
 
         /*ide.addEventListener("clearfilecache", function(e){
