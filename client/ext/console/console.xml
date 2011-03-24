@@ -33,6 +33,8 @@
                     else if (tabConsole.activepagenr == 1)    
                         txtOutput.clear();
                   "/>
+                <a:divider skin="divider_console" top="2" right="26"></a:divider>
+                <a:button skin="btn_icon_only" icon="console_close_btn.png" class="dim8x8" top="9" right="9" onclick  = ""/>
                 <a:page caption="Console" name="console">
                     <a:hbox anchors="0 0 0 0">
                         <a:text id="txtConsole"
