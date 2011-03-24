@@ -804,8 +804,13 @@
         }
 
         .btn_console_openDown {
+
+        }
+
+        .btn_console_openOpen {
             background-position: 0 -38px;
         }
+
         .btn_console_openDown:hover {
         }
 
