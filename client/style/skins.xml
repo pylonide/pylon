@@ -38,7 +38,6 @@
             height        : 36px;
             background    : url(images/c9-menu-backg.png) repeat-x 0 0;
             border-bottom : 1px solid #000000;
-            z-index       : 10000;
         }
         
         .c9-menu-bar .c9-mbar-logo {
@@ -1258,11 +1257,11 @@
             height           : 3px;
             position         : absolute;
             display          : block;
-            bottom           : 0px;
+            bottom           : -1px;
             left             : 1px;
             right            : 1px;
             background-color : #1c1c1c;
-            z-index          : 2000101;
+            z-index          : 20000101;
         }
         
         .hbox > DIV > .c9-menu-btn {
@@ -3492,6 +3491,7 @@
             padding: 0;
             z-index: 10000;
             position: absolute;
+            overflow:visible;
             
             font-family   : Tahoma;
             font-size     : 11px;
@@ -3524,6 +3524,7 @@
             padding: 3px 16px 5px 23px;
             white-space: nowrap;
             cursor : default;
+            z-index:1100000;
         }
         .menu>div{
             height: 13px;
