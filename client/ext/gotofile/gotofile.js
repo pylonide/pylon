@@ -56,6 +56,10 @@ return ext.register("ext/gotofile/gotofile", {
 
     init : function() {
         txtGoToFile.addEventListener("keydown", function(e){
+            if (txtGoToFile.value == "") {
+                return;
+            }
+            
             if (e.keyCode == 13){
                 var node = trFiles.xmlRoot.selectSingleNode("folder[1]");
                 mdlGoToFile.load("{davProject.report('" + node.getAttribute("path")
