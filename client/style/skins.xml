@@ -2103,15 +2103,28 @@
             display : inline-block;
         }*/
 
-        .datagrid .loading, .datagrid .empty, .datagrid .offline{
+        .datagrid .loading, 
+        .datagrid .empty, 
+        .datagrid .offline{
             padding : 5px;
             margin : 0;
             white-space : normal;
         }
 
-        .datagrid .loading span, .datagrid .empty span, .datagrid .offline span{
+        .datagrid .loading span, 
+        .datagrid .empty span, 
+        .datagrid .offline span{
             background : white;
             display : inline;
+        }
+        
+        .datagrid .empty {
+            position:absolute;
+            top:18px;
+            left:0;
+            right:0;
+            height:15px;
+            line-height:12px;
         }
 
         .datagrid .root .message{
