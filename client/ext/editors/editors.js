@@ -289,6 +289,7 @@ return ext.register("ext/editors/editors", {
         var at   = page.$at;
         var mdl  = page.$model;
         
+        mdl.setQueryValue("@changed", 0);
         page.$doc.dispatchEvent("close");
 
         mdl.removeXml("data");

@@ -88,8 +88,8 @@ return ext.register("ext/save/save", {
             
             saveItem = ide.mnuFile.insertBefore(new apf.item({
                 caption : "Save",
-                disabled : "{!!!tabEditors.activepage}",
-                onclick : this.quicksave.bind(this)
+                onclick : this.quicksave.bind(this),
+                disabled : "{!!!tabEditors.activepage}"
             }), ide.mnuFile.firstChild)
         );
 
@@ -126,8 +126,8 @@ return ext.register("ext/save/save", {
         var pages = tabEditors.getPages();        
         for (var i = 0; i < pages.length; i++) {
             var at = pages[i].$at;
-            if (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr)
-                this.quicksave(pages[i]);
+            // if (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr)
+            this.quicksave(pages[i]);
         }
     },
     
