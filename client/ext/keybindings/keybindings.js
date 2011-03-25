@@ -78,12 +78,12 @@ return ext.register("ext/keybindings/keybindings", {
                         item.setAttribute("hotkey", bindings[command]);
                     }
                 }
-                if (typeof oExt[command] != "function" && !oExt.hotitems) {
+                else if (typeof oExt[command] == "function") {
+                    apf.hotkeys.register(bindings[command], oExt[command].bind(oExt));
+                }
+                else {
                     apf.console.error("Please implement the '" + command
                         + "' function on plugin '" + oExt.name + "' for the keybindings to work");
-                }
-                else if (!oExt.hotitems) {
-                    apf.hotkeys.register(bindings[command], oExt[command].bind(oExt));
                 }
             }
         }

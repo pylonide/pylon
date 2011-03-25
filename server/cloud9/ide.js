@@ -54,6 +54,9 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
 
     this.nodeCmd = process.argv[0];
 
+    this.davServer = jsDAV.mount(this.options.mountDir, this.options.davPrefix, this.httpServer, false);
+    this.davInited = false;
+    
     this.registerExts(exts);
 };
 
@@ -90,7 +93,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/console/console",
     "ext/tabbehaviors/tabbehaviors",
     "ext/keybindings/keybindings",
-    "ext/watcher/watcher"
+    "ext/watcher/watcher",
+    "ext/dragdrop/dragdrop"
 ];
 
 (function () {
@@ -107,14 +111,13 @@ Ide.DEFAULT_PLUGINS = [
             this.$serveIndex(req, res, next);
         }
         else if (path.match(this.workspaceRe)) {
-            if (!this.davServer) {
-                this.davServer = jsDAV.mount(this.options.mountDir, this.options.davPrefix, this.httpServer, false);
-
+            if (!this.davInited) {
                 if(process.platform == "sunos"){
                     this.davServer.plugins["codesearch"].GREP_CMD = __dirname+"/../../support/gnu-builds/grep-sunos";
                     this.davServer.plugins["filesearch"].FIND_CMD = __dirname+"/../../support/gnu-builds/find-sunos";
                 }
                 this.davServer.plugins["permission"] = DavPermission;
+                this.davInited = true;
                 this.emit("configureDav", this.davServer);
             }
             this.davServer.permissions = this.getPermissions(req);
@@ -271,8 +274,9 @@ Ide.DEFAULT_PLUGINS = [
     this.registerExts = function(exts) {
         this.exts = {}
 
-        for (var ext in exts)
+        for (var ext in exts) {
             this.exts[ext] = new exts[ext](this);
+        }
         for (ext in this.exts) {
             if (this.exts[ext].init)
                 this.exts[ext].init();

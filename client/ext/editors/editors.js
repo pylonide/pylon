@@ -233,6 +233,10 @@ return ext.register("ext/editors/editors", {
         if (init)
             tabEditors.setAttribute("buttons", "close,scale");
 
+        doc.addEventListener("setnode", function(e){
+            fake.$model.load(e.node);
+        });
+
         fake.$at.addEventListener("afterchange", function(e){
             if (e.action == "reset") {
                 delete this.undo_ptr;
@@ -275,7 +279,7 @@ return ext.register("ext/editors/editors", {
         this.currentEditor = editor;
     },
 
-    close : function(page){
+    close : function(page) {
         page.addEventListener("afterclose", this.$close);
     },
 
@@ -410,18 +414,30 @@ return ext.register("ext/editors/editors", {
 
         this.$settings = {}, _self = this;
         ide.addEventListener("loadsettings", function(e){
+            function checkExpand(path, doc) {
+                var parent_path = apf.getDirname(path).replace(/\/$/, "");
+                trFiles.addEventListener("expand", function(e){
+                    if (e.xmlNode.getAttribute("path") == parent_path) {
+                        doc.setNode(e.xmlNode.selectSingleNode("node()[@path='" + path + "']"));
+                    }
+                });
+            }
+            
             var model = e.model;
             ide.addEventListener("extload", function(){
                 var active = model.queryValue("auto/files/@active");
                 var nodes  = model.queryNodes("auto/files/file");
-                for (var i = 0, l = nodes.length; i < l; i++) {
+                for (var doc, i = 0, l = nodes.length; i < l; i++) {
+                    doc = ide.createDocument(nodes[i]);
                     ide.dispatchEvent("openfile", {
-                        doc    : ide.createDocument(nodes[i]),
+                        doc    : doc,
                         init   : true,
                         active : active 
                             ? active == nodes[i].getAttribute("path")
                             : i == l - 1
                     });
+                    
+                    checkExpand(nodes[i].getAttribute("path"), doc);
                 }
             });
         });

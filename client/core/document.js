@@ -15,6 +15,7 @@ var Document = function(node, docValue){
     };
     
     this.setNode = function(newNode) {
+        this.dispatchEvent("setnode", {node: newNode});
         return (node = newNode);
     };
     
