@@ -93,14 +93,17 @@ apf.hotkeys = {};
         }
 
         //#ifdef __DEBUG
-        if (!key) {
+        if (!hashId)
+            console.warn("missing modifier keys for hotkey: " + hotkey);
+        if (!key)
             throw new Error("missing key for hotkey: " + hotkey);
-        }
         /*#else
         if (!key) return;
         #endif*/
 
-        (_self.$keys[hashId] || (_self.$keys[hashId] = {}))[key] = handler;
+        if (!_self.$keys[hashId])
+            _self.$keys[hashId] = {};
+        _self.$keys[hashId][key] = handler;
     }
 
     /**
@@ -125,16 +128,15 @@ apf.hotkeys = {};
 
     this.$exec = function(eInfo) {
         var hashId = 0 | (eInfo.ctrlKey ? 1 : 0) | (eInfo.altKey ? 2 : 0)
-            | (eInfo.shiftKey ? 4 : 0) | (eInfo.metaKey ? 8 : 0);
+            | (eInfo.shiftKey ? 4 : 0) | (eInfo.metaKey ? 8 : 0),
+            code   = eInfo.keyCode;
 
-        var key = _self.keyNames[eInfo.keyCode];
-        if (!hashId && !key) //Hotkeys should always have one of the modifiers
+        var key = _self.keyNames[code] 
+            || (code && code > 46 && code != 91 ? String.fromCharCode(code) : null);
+        if (!hashId || !key) //Hotkeys should always have one of the modifiers
             return;
 
-        var handler = (_self.$keys[hashId] || {})[(key
-            || String.fromCharCode(eInfo.keyCode)).toLowerCase()];
-
-        if (handler) {
+        if (_self.$keys[hashId] && (handler = _self.$keys[hashId][key.toLowerCase()])) {
             handler(eInfo.htmlEvent);
             eInfo.returnValue = false;
             // #ifdef __WITH_QUEUE
