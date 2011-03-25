@@ -201,7 +201,7 @@ return ext.register("ext/filesystem/filesystem", {
         }
         ide.dispatchEvent("updatefile", {
             path: path,
-            name: name,
+            name: name.input,
             xmlNode: node
         });
     },
