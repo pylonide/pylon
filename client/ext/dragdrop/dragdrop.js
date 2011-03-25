@@ -42,58 +42,59 @@ return ext.register("ext/dragdrop/dragdrop", {
     },
     
     onDrop: function(e) {
-        var file   = e.dataTransfer.files[0],
-            reader = new FileReader();
-        reader.onload = function(e) {
-            console.log(e.target.result);
-
-            var node = trFiles.selected;
-            if (!node)
-                node = trFiles.xmlRoot.selectSingleNode("folder");
-            if (node.getAttribute("type") != "folder")
-                node = node.parentNode;
-            var path     = node.getAttribute("path"),
-                filename = file.name,
-                index    = 0;
-
-            var test = function(exists) {
-                if (exists) {
-                    filename = file.name + "." + index++;
-                    fs.exists(path + "/" + filename, test);
-                }
-                else {
-                    fs.saveFile(path + "/" + file.name, e.target.result, function(data, state, extra){
-                        if (state != apf.SUCCESS) {
-                            util.alert(
-                                "Could not save document",
-                                "An error occurred while saving this document",
-                                "Please see if your internet connection is available and try again. "
-                                    + (state == apf.TIMEOUT
-                                        ? "The connection timed out."
-                                        : "The error reported was " + extra.message));
-                        }
-                        
-                        fs.webdav.exec("readdir", [path], function(data) {
-                            // @todo: in case of error, show nice alert dialog
-                            if (data instanceof Error)
-                                throw Error;
+        apf.asyncForEach(e.dataTransfer.files, function(file, nextFile) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var node = trFiles.selected;
+                if (!node)
+                    node = trFiles.xmlRoot.selectSingleNode("folder");
+                if (node.getAttribute("type") != "folder")
+                    node = node.parentNode;
+                var path     = node.getAttribute("path"),
+                    filename = file.name,
+                    index    = 0;
+    
+                var test = function(exists) {
+                    if (exists) {
+                        filename = file.name + "." + index++;
+                        fs.exists(path + "/" + filename, test);
+                    }
+                    else {
+                        fs.saveFile(path + "/" + file.name, e.target.result, function(data, state, extra){
+                            if (state != apf.SUCCESS) {
+                                util.alert(
+                                    "Could not save document",
+                                    "An error occurred while saving this document",
+                                    "Please see if your internet connection is available and try again. "
+                                        + (state == apf.TIMEOUT
+                                            ? "The connection timed out."
+                                            : "The error reported was " + extra.message));
+                                return nextFile();
+                            }
                             
-                            var strXml = data.match(new RegExp(("(<file path='" + path +
-                                "/" + filename + "'.*?>)").replace(/\//g, "\\/")))[1];
-        
-                            var file = apf.xmldb.appendChild(node, apf.getXml(strXml));
-                            
-                            trFiles.select(file);
-                            ide.dispatchEvent("openfile", {doc: ide.createDocument(file)});
-                        });
-                    });
-                }
-            };
+                            fs.webdav.exec("readdir", [path], function(data) {
+                                // @todo: in case of error, show nice alert dialog
+                                if (data instanceof Error)
+                                    return nextFile();
+                                
+                                var strXml = data.match(new RegExp(("(<file path='" + path +
+                                    "/" + filename + "'.*?>)").replace(/\//g, "\\/")))[1];
             
-            fs.exists(path + "/" + file.name, test);
-        };
-        reader.readAsText(file);
-        
+                                var file = apf.xmldb.appendChild(node, apf.getXml(strXml));
+                                
+                                trFiles.select(file);
+                                ide.dispatchEvent("openfile", {doc: ide.createDocument(file)});
+                                return nextFile();
+                            });
+                        });
+                    }
+                };
+                
+                fs.exists(path + "/" + file.name, test);
+            };
+            reader.readAsText(file);
+        });
+
         return false;
     },
     
