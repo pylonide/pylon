@@ -402,6 +402,11 @@ apf.page = function(struct, tagName){
     /**** Init ****/
 
     this.$canLeechSkin = true;
+    
+    this.addEventListener("prop.class", function(e){
+        apf.setStyleClass(this.$button, e.value, this.$lastClassValueBtn ? [this.$lastClassValueBtn] : null);
+        this.$lastClassValueBtn = e.value;
+    });
 
     this.$draw = function(isSkinSwitch){
         this.skinName = this.parentNode.skinName;
@@ -438,10 +443,12 @@ apf.page = function(struct, tagName){
                   var page = apf.lookup(' + this.$uniqueId + ');\
                   page.canHaveChildren = true;');
 
-            var cssClass = this.getAttribute("class");
-            if (cssClass)
-                apf.setStyleClass(elBtn, cssClass);
-            
+            //var cssClass = this.getAttribute("class");
+            //if (cssClass) {
+            //    apf.setStyleClass(elBtn, cssClass);
+            //    this.$lastClassValueBtn = cssClass;
+            //}
+
             //#ifdef __ENABLE_TAB_CLOSEBTN
             var closebtn = this.getAttribute("closebtn");
             if ((apf.isTrue(closebtn) || ((this.parentNode.buttons || "").indexOf("close") > -1 && !apf.isFalse(closebtn)))) {
