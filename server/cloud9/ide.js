@@ -93,7 +93,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/console/console",
     "ext/tabbehaviors/tabbehaviors",
     "ext/keybindings/keybindings",
-    "ext/watcher/watcher"
+    "ext/watcher/watcher",
+    "ext/dragdrop/dragdrop"
 ];
 
 (function () {
@@ -242,7 +243,7 @@ Ide.DEFAULT_PLUGINS = [
     this.addClientConnection = function(username, client, message) {
         var user = this.$users[username];
         if (!user)
-            return this.error("No session for user " + username, 99, message, client);
+            return this.error("No session for user " + username, 401, message, client);
 
         user.addClientConnection(client, message);
     };

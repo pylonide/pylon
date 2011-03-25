@@ -38,7 +38,6 @@
             height        : 36px;
             background    : url(images/c9-menu-backg.png) repeat-x 0 0;
             border-bottom : 1px solid #000000;
-            z-index       : 10000;
         }
         
         .c9-menu-bar .c9-mbar-logo {
@@ -73,6 +72,7 @@
             top:23px;
             right:-30px;
             display:none;
+            z-index: 100000;
         }
         
         .c9-menu-bar.offline .c9-mbar-logo .c9-mbar-bcont .c9-offline {
@@ -805,8 +805,13 @@
         }
 
         .btn_console_openDown {
+
+        }
+
+        .btn_console_openOpen {
             background-position: 0 -38px;
         }
+
         .btn_console_openDown:hover {
         }
 
@@ -833,26 +838,51 @@
             width              : 22px;
         }
 
-        .dim14-14 {
+        .dim22-22.btn_icon_only {
+            width: 22px;
+            height: 22px;
+        }
+
+        .dim14-14.btn_icon_only {
             width: 14px;
             height: 14px;
+        }
+        
+        .dim8x8.btn_icon_only {
+            width: 8px;
+            height: 8px;
         }
 
         .btn_icon_onlyOver {
             background-position: 0 -23px;
         }
 
+        .dim22-22.btn_icon_onlyOver {
+            background-position: 0 -22px;
+        }
+
         .dim14-14.btn_icon_onlyOver {
             background-position: 0 -14px;
         }
-
+        
+        .dim8x8.btn_icon_onlyOver {
+            background-position: 0 -8px;
+        }
 
         .btn_icon_onlyDown {
             background-position: 0 -46px;
         }
 
+        .dim22-22.btn_icon_onlyDown {
+            background-position: 0 -44px;
+        }
+        
         .dim14-14.btn_icon_onlyDown {
             background-position: 0 -28px;
+        }
+        
+        .dim8x8.btn_icon_onlyDown {
+            background-position: 0 -16px;
         }
 
         .btn_icon_only.btnDisabled {
@@ -865,6 +895,7 @@
         </a:main>
     </a:presentation>
 </a:button>
+
 <a:button name="dockButton">
     <a:style><![CDATA[
         .dockButton {
@@ -1258,11 +1289,11 @@
             height           : 3px;
             position         : absolute;
             display          : block;
-            bottom           : 0px;
+            bottom           : -1px;
             left             : 1px;
             right            : 1px;
             background-color : #1c1c1c;
-            z-index          : 2000101;
+            z-index          : 20000101;
         }
         
         .hbox > DIV > .c9-menu-btn {
@@ -2817,6 +2848,28 @@
         </a:main>
     </a:presentation>
 </a:divider>
+<a:divider name="divider_console">
+    <a:style><![CDATA[
+        .divider_console {
+            width : 0;
+            height:23px;
+            border-left:1px solid black;
+            border-right:1px solid #333333;
+            cursor : default;
+        }
+        
+        .tab_console .btncontainer > .divider_console {
+            height:23px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="." caption="." minheight="2" minwidth="0">
+            <div class="divider_console"> </div>
+        </a:main>
+    </a:presentation>
+</a:divider>
+
 <a:divider name="divider-debugpanel">
     <a:style><![CDATA[
         .divider-debugpanel {
@@ -3492,6 +3545,7 @@
             padding: 0;
             z-index: 10000;
             position: absolute;
+            overflow:visible;
             
             font-family   : Tahoma;
             font-size     : 11px;
@@ -3524,6 +3578,7 @@
             padding: 3px 16px 5px 23px;
             white-space: nowrap;
             cursor : default;
+            z-index:1100000;
         }
         .menu>div{
             height: 13px;
@@ -4991,6 +5046,7 @@
     <a:style><![CDATA[
         .splitter {
             position : relative;
+            z-index  : 90000;
         }
         
         .splitterFocus {

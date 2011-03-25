@@ -129,6 +129,20 @@ return ext.register("ext/filesystem/filesystem", {
                     filename = prefix + "." + index++;
                     _self.exists(path + "/" + filename, test);    
                 } else {
+                    var file, both = 0;
+                    function done(){
+                        if (both == 2) {
+                            file = apf.xmldb.appendChild(node, file);
+                            trFiles.select(file);
+                            trFiles.startRename();
+                        }
+                    }
+                    
+                    trFiles.slideOpen(null, node, true, function(){
+                        both++;
+                        done(); 
+                    });
+                    
                     _self.webdav.exec("create", [path, filename], function(data) {
                         _self.webdav.exec("readdir", [path], function(data) {
                             // @todo: in case of error, show nice alert dialog
@@ -137,11 +151,10 @@ return ext.register("ext/filesystem/filesystem", {
                             
                             var strXml = data.match(new RegExp(("(<file path='" + path +
                                 "/" + filename + "'.*?>)").replace(/\//g, "\\/")))[1];
-        
-                            var file = apf.xmldb.appendChild(node, apf.getXml(strXml));
+                            file = apf.getXml(strXml);
                             
-                            trFiles.select(file);
-                            trFiles.startRename();
+                            both++;
+                            done();
                         });
                     });
                 }
@@ -163,13 +176,9 @@ return ext.register("ext/filesystem/filesystem", {
 
     beforeRename : function(node, name, newPath) {
         var path = node.getAttribute("path"),
-            page = tabEditors.getPage(path);
+            page = tabEditors.getPage(path),
+            match;
 
-        // NOTE: Do not allow /workspace to be renamed because APF renames
-        // folder to their displayed name, and the root node displas a
-        // different name than its actual path
-        if (path == '/workspace')
-            return;
         if (name)
             newPath = path.replace(/^(.*\/)[^\/]+$/, "$1" + name);
         else

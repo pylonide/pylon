@@ -1689,6 +1689,7 @@ return ext.register("ext/save/save", {
         var _self = this, panel = sbMain.firstChild;
         panel.setAttribute("caption", "Saving file " + path);
         
+        ide.dispatchEvent("beforefilesave", {node: node, doc: doc, value: value});
         fs.saveFile(path, value, function(data, state, extra){
             if (state != apf.SUCCESS) {
                 util.alert(

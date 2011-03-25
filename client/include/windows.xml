@@ -1,90 +1,92 @@
-<a:window
-  id        = "winAlert"
-  title     = ""
-  icon      = ""
-  center    = "true"
-  render    = "runtime"
-  kbclose   = "true"
-  width     = "512" skin="change_photo">
-    <a:vbox width="100%">
-        <a:hbox edge="15 10 20 10" padding="10">
-            <div class="alertWarn" margin="0 10 0 10"/>
-            <a:vbox flex="1" padding="5">
-                <h3 id="winAlertHeader"></h3>
-                <div id="winAlertMsg" class="alertMsg">An unexpected error occurred. Please refresh your browser window.</div>
-            </a:vbox>
-        </a:hbox>
-        <a:divider skin="hordivider" />
-        <a:hbox edge="10 10 5 10" pack="end">
-            <a:button id="winAlertButton" default="3" onclick="winAlert.hide();">OK</a:button>
-        </a:hbox>
-    </a:vbox>
-</a:window>
-
-<a:window
-  id        = "winReconnect"
-  title     = "Connection Lost"
-  icon      = ""
-  center    = "true"
-  render    = "runtime"
-  kbclose   = "false"
-  width     = "512" skin="change_photo">
-    <a:vbox width="100%">
-        <a:hbox edge="15 10 20 10" padding="10">
-            <div class="alertWarn" margin="0 10 0 10"/>
-            <a:vbox flex="1" padding="5">
-                <h3 id="winAlertHeader">Lost server connection</h3>
-                <div id="winAlertMsg" class="alertMsg">Trying to reconnect ...</div>
-            </a:vbox>
-        </a:hbox>
-    </a:vbox>
-</a:window>
-
-<a:window
-  id        = "winConfirm"
-  title     = "Confirm"
-  icon      = ""
-  center    = "true"
-  render    = "runtime"
-  kbclose   = "true"
-  width     = "512"
-  skin      = "change_photo">
-    <a:vbox padding="10" edge="15 20 20 20">
-        <h3 id="winConfirmHeader"></h3>
-        <div id="winConfirmMsg" class="alertMsg">An unexpected error occurred. Please refresh your browser window.</div>
-    </a:vbox>
-
-    <a:vbox edge="0 0 4 0" padding="8">
-        <a:divider skin="hordivider" />
-        <a:hbox pack="end" padding="7" edge="0 10 0 10">
-            <a:button id="btnConfirmOk" default="3" class="ui-btn-green" onclick="winConfirm.hide()">Ok</a:button>
-            <a:button id="btnConfirmCancel" onclick="winConfirm.hide()">Cancel</a:button>
-        </a:hbox>
-    </a:vbox>
-</a:window>
-
-<a:window
-  id        = "winQuestion"
-  title     = "Question"
-  icon      = ""
-  center    = "true"
-  render    = "runtime"
-  kbclose   = "true"
-  width     = "512"
-  skin      = "change_photo">
-    <a:vbox padding="10" edge="15 20 20 20">
-        <h3 id="winQuestionHeader"></h3>
-        <div id="winQuestionMsg" class="alertMsg">An unexpected error occurred. Please refresh your browser window.</div>
-    </a:vbox>
-
-    <a:vbox edge="0 0 4 0" padding="8">
-        <a:divider skin="hordivider" />
-        <a:hbox pack="end" padding="7" edge="0 10 0 10">
-            <a:button id="btnQuestionYesToAll" class="ui-btn-green" visible="false">Yes to all</a:button>
-            <a:button id="btnQuestionNoToAll" class="ui-btn-red" visible="false">No to all</a:button>
-            <a:filler/>
-            <a:button id="btnQuestionYes" default="3" class="ui-btn-green">Yes</a:button>
-            <a:button id="btnQuestionNo" class="ui-btn-red">No</a:button>
-        </a:hbox>
-    </a:vbox>
-</a:window>
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window
+      id        = "winAlert"
+      title     = ""
+      icon      = ""
+      center    = "true"
+      render    = "runtime"
+      kbclose   = "true"
+      width     = "512" skin="change_photo">
+        <a:vbox width="100%">
+            <a:hbox edge="15 10 20 10" padding="10">
+                <div class="alertWarn" margin="0 10 0 10"/>
+                <a:vbox flex="1" padding="5">
+                    <h3 id="winAlertHeader"></h3>
+                    <div id="winAlertMsg" class="alertMsg">An unexpected error occurred. Please refresh your browser window.</div>
+                </a:vbox>
+            </a:hbox>
+            <a:divider skin="hordivider" />
+            <a:hbox edge="10 10 5 10" pack="end">
+                <a:button id="winAlertButton" default="3" onclick="winAlert.hide();">OK</a:button>
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+    
+    <a:window
+      id        = "winReconnect"
+      title     = "Connection Lost"
+      icon      = ""
+      center    = "true"
+      render    = "runtime"
+      kbclose   = "false"
+      width     = "512" skin="change_photo">
+        <a:vbox width="100%">
+            <a:hbox edge="15 10 20 10" padding="10">
+                <div class="alertWarn" margin="0 10 0 10"/>
+                <a:vbox flex="1" padding="5">
+                    <h3 id="winAlertHeader">Lost server connection</h3>
+                    <div id="winAlertMsg" class="alertMsg">Trying to reconnect ...</div>
+                </a:vbox>
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+    
+    <a:window
+      id        = "winConfirm"
+      title     = "Confirm"
+      icon      = ""
+      center    = "true"
+      render    = "runtime"
+      kbclose   = "true"
+      width     = "512"
+      skin      = "change_photo">
+        <a:vbox padding="10" edge="15 20 20 20">
+            <h3 id="winConfirmHeader"></h3>
+            <div id="winConfirmMsg" class="alertMsg">An unexpected error occurred. Please refresh your browser window.</div>
+        </a:vbox>
+    
+        <a:vbox edge="0 0 4 0" padding="8">
+            <a:divider skin="hordivider" />
+            <a:hbox pack="end" padding="7" edge="0 10 0 10">
+                <a:button id="btnConfirmOk" default="3" class="ui-btn-green" onclick="winConfirm.hide()">Ok</a:button>
+                <a:button id="btnConfirmCancel" onclick="winConfirm.hide()">Cancel</a:button>
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+    
+    <a:window
+      id        = "winQuestion"
+      title     = "Question"
+      icon      = ""
+      center    = "true"
+      render    = "runtime"
+      kbclose   = "true"
+      width     = "512"
+      skin      = "change_photo">
+        <a:vbox padding="10" edge="15 20 20 20">
+            <h3 id="winQuestionHeader"></h3>
+            <div id="winQuestionMsg" class="alertMsg">An unexpected error occurred. Please refresh your browser window.</div>
+        </a:vbox>
+    
+        <a:vbox edge="0 0 4 0" padding="8">
+            <a:divider skin="hordivider" />
+            <a:hbox pack="end" padding="7" edge="0 10 0 10">
+                <a:button id="btnQuestionYesToAll" class="ui-btn-green" visible="false">Yes to all</a:button>
+                <a:button id="btnQuestionNoToAll" class="ui-btn-red" visible="false">No to all</a:button>
+                <a:filler/>
+                <a:button id="btnQuestionYes" default="3" class="ui-btn-green">Yes</a:button>
+                <a:button id="btnQuestionNo" class="ui-btn-red">No</a:button>
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+</a:application>

@@ -3,6 +3,7 @@
     <a:style><![CDATA[
         .splitter {
             position : relative;
+            z-index  : 90000;
         }
         
         .splitterFocus {
