@@ -60,16 +60,18 @@
           padding   = "5">
             <a:hbox padding="5">
                 <a:button
+                  width    = "29"
                   icon     = "folder_up.png"
                   class    = "btnIconOnly"
                   onclick  = "gotoParent()"
                   tooltip  = "Go to parent" />
                 <a:button
+                  width    = "29"
                   icon     = "folder_new.png"
                   class    = "btnIconOnly"
                   onclick  = "require('ext/filesystem/filesystem').createFolder()"
                   tooltip  = "Create folder" />
-	        </a:hbox>
+            </a:hbox>
             <a:hbox
               flex      = "1"
               padding   = "5"
@@ -120,8 +122,10 @@
                           value     = "[@name]"
                           width     = "60%" 
                           icon      = "{
-                            if (#[self::folder]) 'folder.png';
-                            else getIcon(%[.]);
+                            if (#[self::folder])
+                                'folder.png';
+                            else
+                                require('core/util').getFileIcon(%[.]);
                           }" />
                         <a:column
                           caption   = "Size"
@@ -132,7 +136,7 @@
                           caption   = "Type"
                           value     = "[@type]"
                           width     = "20%" />
-	    		    </a:each>
+                    </a:each>
                     <a:actions /> 
                 </a:datagrid>
             </a:hbox>
@@ -140,11 +144,11 @@
               align     = "center"
               padding   = "5">
                 <a:label flex="1">File name:</a:label>
-	            <a:textbox
-	              id           = "txtSaveAs"
-	              flex         = "7"
-	              onkeydown    = "if (event.keyCode == 13) require('ext/save/save').choosePath(this.getValue())" />
-            </a:hbox>
+                <a:textbox
+                  id           = "txtSaveAs"
+                  flex         = "7"
+                  onkeydown    = "if (event.keyCode == 13) require('ext/save/save').choosePath(this.getValue())" />
+        </a:hbox>
             <a:hbox
               pack    = "end"
               padding = "5">

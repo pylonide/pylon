@@ -280,8 +280,11 @@ return ext.register("ext/tree/tree", {
             var path    = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
                                 .replace(/\[@name="workspace"\]/, "")
                                 .replace(/\//, ""),
-                parent  = trFiles.getModel().data.selectSingleNode(path),
-                nodes   = parent.childNodes,
+                parent  = trFiles.getModel().data.selectSingleNode(path);
+            if (!parent)
+                return;
+                
+            var nodes   = parent.childNodes,
                 files   = e.files,
                 removed = [];
             
