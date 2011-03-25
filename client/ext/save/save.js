@@ -16,6 +16,7 @@ return ext.register("ext/save/save", {
     type        : ext.GENERAL,
     markup      : markup,
     deps        : [fs],
+    offline     : false,
     commands     : {
         "quicksave": {hint: "save the currently active file to disk"},
         "saveas": {hint: "save the file to disk with a different filename"}
@@ -60,7 +61,7 @@ return ext.register("ext/save/save", {
             //icon     : "save_btn_ico{this.disabled ? '_disabled' : ''}.png",
             caption  : "Save",
             skin     : "c9-toolbarbutton",
-            disabled : "{!tabEditors.activepage}",
+            disabled : "{!!!tabEditors.activepage}",
             onclick  : this.quicksave
         })));
 
@@ -73,7 +74,7 @@ return ext.register("ext/save/save", {
                 onclick : function(){
                     _self.saveall();
                 },
-                disabled : "{!tabEditors.activepage}"
+                disabled : "{!!!tabEditors.activepage}"
             }), ide.mnuFile.firstChild),
                 
             saveAsItem = ide.mnuFile.insertBefore(new apf.item({
@@ -81,13 +82,13 @@ return ext.register("ext/save/save", {
                 onclick : function () {
                     _self.saveas();
                 },
-                disabled : "{!tabEditors.activepage}"
+                disabled : "{!!!tabEditors.activepage}"
             }), ide.mnuFile.firstChild),
             
             saveItem = ide.mnuFile.insertBefore(new apf.item({
                 caption : "Save",
                 onclick : this.quicksave,
-                disabled : "{!tabEditors.activepage}"
+                disabled : "{!!!tabEditors.activepage}"
             }), ide.mnuFile.firstChild)
         );
 

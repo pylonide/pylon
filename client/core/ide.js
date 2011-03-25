@@ -44,8 +44,7 @@ require.def("core/ide", deps,
             //Catch all unhandled errors
             var loc = location.href;
             if (
-                false 
-                && location.protocol != "file:"
+                location.protocol != "file:"
                 && loc.indexOf("dev") == -1
                 && loc.indexOf("cloud9ide.com") > -1) 
             {
@@ -57,12 +56,9 @@ require.def("core/ide", deps,
                         contentType : "application/json",
                         data        : apf.serialize({
                             agent : navigator.userAgent,
-                            uid   : ide.userId,
-                            loc   : ide.loc,
-                            creds : self.auth && auth.getCredentials()[0],
                             type  : "General Javascript Error",
-                            e     : [m, u, l],
-                            log   : apf.console.debugInfo.join("\n")
+                            e     : [m, u, l]
+//                            log   : apf.console.debugInfo.join("\n")
                         })
                     });
                     return true;
@@ -75,16 +71,13 @@ require.def("core/ide", deps,
                         contentType : "application/json",
                         data        : apf.serialize({
                             agent   : navigator.userAgent,
-                            uid     : ide.userId,
-                            creds   : self.auth && auth.getCredentials()[0],
-                            loc     : ide.loc,
                             type    : "APF Error",
                             message : e.message,
                             tgt     : e.currentTarget && e.currentTarget.serialize(),
                             url     : e.url,
                             state   : e.state,
-                            e       : e.error,
-                            log     : apf.console.debugInfo.join("\n")
+                            e       : e.error
+//                            log     : apf.console.debugInfo.join("\n")
                         })
                     });
                 });
