@@ -73,13 +73,15 @@ return ext.register("ext/tree/tree", {
             id      : "mnuitemHiddenFiles",
             type    : "check",
             caption : "Show Hidden Files",
-            check   : "{[davProject.showhidden]}",
+            checked : "[{require('ext/settings/settings').model}::auto/tree/@showhidden]",
             onclick : function(){
                 _self.changed = true;
-                davProject.setProperty("showhidden", !davProject.getProperty("showhidden"));
                 require('ext/tree/tree').refresh();
+                require("ext/settings/settings").save();
             }
         }));
+        davProject.setAttribute("showhidden", "[{require('ext/settings/settings').model}::auto/tree/@showhidden]")
+        
         mnuView.appendChild(new apf.divider()),
         
         trFiles.setAttribute("model", fs.model);
@@ -168,10 +170,6 @@ return ext.register("ext/tree/tree", {
         ide.addEventListener("loadsettings", function(e){
             var model = e.model;
             var strSettings = model.queryValue("auto/tree");
-            var checked = !!model.queryValue("auto/tree/@showhidden");
-            davProject.setProperty("showhidden", checked);
-            mnuitemHiddenFiles.setProperty("checked", checked);
-            
             if (strSettings) {
                 _self.loading = true;
                 _self.currentSettings = apf.unserialize(strSettings);
@@ -202,7 +200,7 @@ return ext.register("ext/tree/tree", {
             if (!_self.changed)
                 return;
 
-            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/tree");
+            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/tree/text()");
             _self.currentSettings = [];
 
             var path, id, lut = {};
@@ -232,7 +230,6 @@ return ext.register("ext/tree/tree", {
                     _self.currentSettings.push(path);
             }
 
-            xmlSettings.setAttribute("showhidden", davProject.getProperty("showhidden"));
             xmlSettings.nodeValue = apf.serialize(_self.currentSettings);
             return true;
         });
@@ -280,8 +277,11 @@ return ext.register("ext/tree/tree", {
             var path    = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
                                 .replace(/\[@name="workspace"\]/, "")
                                 .replace(/\//, ""),
-                parent  = trFiles.getModel().data.selectSingleNode(path),
-                nodes   = parent.childNodes,
+                parent  = trFiles.getModel().data.selectSingleNode(path);
+            if (!parent)
+                return;
+                
+            var nodes   = parent.childNodes,
                 files   = e.files,
                 removed = [];
             

@@ -16,12 +16,14 @@ return ext.register("ext/save/save", {
     type        : ext.GENERAL,
     markup      : markup,
     deps        : [fs],
+    offline     : false,
     commands     : {
         "quicksave": {hint: "save the currently active file to disk"},
         "saveas": {hint: "save the file to disk with a different filename"}
     },
     hotitems    : {},
     nodes       : [],
+    saveBuffer  : {},
 
     hook : function(){
         if (!self.tabEditors) return;
@@ -60,8 +62,8 @@ return ext.register("ext/save/save", {
             //icon     : "save_btn_ico{this.disabled ? '_disabled' : ''}.png",
             caption  : "Save",
             skin     : "c9-toolbarbutton",
-            disabled : "{!tabEditors.activepage}",
-            onclick  : this.quicksave
+            disabled : "{!!!tabEditors.activepage}",
+            onclick  : this.quicksave.bind(this)
         })));
 
         var saveItem, saveAsItem;
@@ -73,7 +75,7 @@ return ext.register("ext/save/save", {
                 onclick : function(){
                     _self.saveall();
                 },
-                disabled : "{!tabEditors.activepage}"
+                disabled : "{!!!tabEditors.activepage}"
             }), ide.mnuFile.firstChild),
                 
             saveAsItem = ide.mnuFile.insertBefore(new apf.item({
@@ -81,13 +83,13 @@ return ext.register("ext/save/save", {
                 onclick : function () {
                     _self.saveas();
                 },
-                disabled : "{!tabEditors.activepage}"
+                disabled : "{!!!tabEditors.activepage}"
             }), ide.mnuFile.firstChild),
             
             saveItem = ide.mnuFile.insertBefore(new apf.item({
                 caption : "Save",
-                onclick : this.quicksave,
-                disabled : "{!tabEditors.activepage}"
+                onclick : this.quicksave.bind(this),
+                disabled : "{!!!tabEditors.activepage}"
             }), ide.mnuFile.firstChild)
         );
 
@@ -124,8 +126,8 @@ return ext.register("ext/save/save", {
         var pages = tabEditors.getPages();        
         for (var i = 0; i < pages.length; i++) {
             var at = pages[i].$at;
-            if (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr)
-                this.quicksave(pages[i]);
+            // if (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr)
+            this.quicksave(pages[i]);
         }
     },
     
@@ -185,6 +187,14 @@ return ext.register("ext/save/save", {
         var path = node.getAttribute("path");
         var value = doc.getValue();
         
+        // check if we're already saving!
+        var saving = parseInt(node.getAttribute("saving"));
+        if (saving) {
+            this.saveBuffer[path] = page;
+            return;
+        }
+        apf.b(node).attr("saving", "1");
+        
         var _self = this, panel = sbMain.firstChild;
         panel.setAttribute("caption", "Saving file " + path);
         
@@ -202,11 +212,16 @@ return ext.register("ext/save/save", {
             
             panel.setAttribute("caption", "Saved file " + path);
             ide.dispatchEvent("afterfilesave", {node: node, doc: doc, value: value});
-            
-            setTimeout(function(){
-                if (panel.caption == "Saved file " + path)
-                    panel.removeAttribute("caption");
-            }, 2500);
+            apf.b(node).attr("saving", "0");
+            if (_self.saveBuffer[path]) {
+                delete _self.saveBuffer[path];
+                _self.quicksave(page);
+            }
+
+            //setTimeout(function(){
+            //    if (panel.caption == "Saved file " + path)
+            //        panel.removeAttribute("caption");
+            //}, 2500);
         });
         var at = page.$at
         at.undo_ptr = at.$undostack[at.$undostack.length-1];
@@ -242,11 +257,19 @@ return ext.register("ext/save/save", {
         winSaveAs.show();
     },
     
-    saveFileAs : function () {
-        var page    = tabEditors.getPage(),
+    saveFileAs : function(page) {
+        var page    = page || tabEditors.getPage(),
             file    = page.$model.data,
             path    = file.getAttribute("path"),
             newPath = txtSaveAs.getValue();
+            
+        // check if we're already saving!
+        var saving = parseInt(file.getAttribute("saving"));
+        if (saving) {
+            this.saveBuffer[path] = page;
+            return;
+        }
+        apf.b(file).attr("saving", "1");
             
         function onconfirm() {
             var panel   = sbMain.firstChild,
@@ -258,10 +281,11 @@ return ext.register("ext/save/save", {
             
             panel.setAttribute("caption", "Saving file " + newPath);
             fs.saveFile(newPath, value, function(value, state, extra) {
-                if (state != apf.SUCCESS)
+                if (state != apf.SUCCESS) {
                    util.alert("Could not save document",
                               "An error occurred while saving this document",
-                              "Please see if your internet connection is available and try again.");            
+                              "Please see if your internet connection is available and try again.");
+                }
                 panel.setAttribute("caption", "Saved file " + newPath);
                 if (path != newPath) {
                     var model = page.$model,
@@ -272,29 +296,37 @@ return ext.register("ext/save/save", {
                     fs.beforeRename(file, null, newPath);
                     page.$doc.setNode(file);
                 }
-	            setTimeout(function () {
-	               if (panel.caption == "Saved file " + newPath)
-	                   panel.removeAttribute("caption");
-	            }, 2500);
+                
+                apf.b(node).attr("saving", "0");
+                if (_self.saveBuffer[path]) {
+                    delete _self.saveBuffer[path];
+                    _self.saveFileAs(page);
+                }
+                //setTimeout(function () {
+                //  if (panel.caption == "Saved file " + newPath)
+                //       panel.removeAttribute("caption");
+                //}, 2500);
             });
         };
     
-        if (path != newPath)
+        if (path != newPath) {
             fs.exists(newPath, function (exists) {
                 if (exists) {
                     var name    = newPath.match(/\/([^/]*)$/)[1],
                         folder  = newPath.match(/\/([^/]*)\/[^/]*$/)[1];
                     
-	                util.confirm(
-	                    "Are you sure?",
-	                    "\"" + name + "\" already exists, do you want to replace it?",
-	                    "A file or folder with the same name already exists in the folder "
-	                    + folder + ". "
-	                    + "Replacing it will overwrite it's current contents.",
-	                    onconfirm);
-                } else
+                    util.confirm(
+                        "Are you sure?",
+                        "\"" + name + "\" already exists, do you want to replace it?",
+                        "A file or folder with the same name already exists in the folder "
+                        + folder + ". "
+                        + "Replacing it will overwrite it's current contents.",
+                        onconfirm);
+                }
+                else
                     onconfirm();
             });
+        }
         else
             onconfirm();
     },

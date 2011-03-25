@@ -85,12 +85,30 @@ return ext.register("ext/noderunner/noderunner", {
                 break;
 
             case "error":
+                /*
+                    6:
+                    401: Authorization Required
+                */
                 if (message.code !== 6 && message.code != 401) {
-                    util.alert("Server Error", "Server Error " 
-                        + (message.code || ""), message.message);
+                    //util.alert("Server Error", "Server Error " 
+                    //    + (message.code || ""), message.message);
                     
-                    console.log(message)
+                    txtConsole.addValue("<div class='item console_log' style='font-weight:bold;color:#ff0000'>[C9 Server Exception " 
+                        + (message.code || "") + "] " + message.message + "</div>");
+                    
+                    apf.ajax("/debug", {
+                        method      : "POST",
+                        contentType : "application/json",
+                        data        : apf.serialize({
+                            agent   : navigator.userAgent,
+                            type    : "C9 SERVER EXCEPTION",
+                            code    : e.code,
+                            message : e.message
+//                            log     : apf.console.debugInfo.join("\n")
+                        })
+                    });
                 }
+                
                 ide.socket.send('{"command": "state"}');
                 break;
                 

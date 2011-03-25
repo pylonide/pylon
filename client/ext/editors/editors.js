@@ -225,6 +225,7 @@ return ext.register("ext/editors/editors", {
                 page.$doc    = doc;
                 page.$editor = editor;
                 page.setAttribute("tooltip", "[@path]");
+                page.setAttribute("class", "{(parseInt([@saving]) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : '')}");
                 
                 page.setAttribute("model", page.$model = model);
                 page.$model.load(xmlNode);
@@ -288,6 +289,7 @@ return ext.register("ext/editors/editors", {
         var at   = page.$at;
         var mdl  = page.$model;
         
+        mdl.setQueryValue("@changed", 0);
         page.$doc.dispatchEvent("close");
 
         mdl.removeXml("data");
@@ -460,7 +462,7 @@ return ext.register("ext/editors/editors", {
                 pNode = apf.createNodeFromXpath(e.model.data, "auto/files");
                 for (var i = 0, l = pages.length; i < l; i++) {
                     var file = pages[i].$model.data;
-                    if (file.getAttribute("debug"))
+                    if (!file || file.getAttribute("debug"))
                         continue;
 
                     var copy = apf.xmldb.cleanNode(file.cloneNode(false));
