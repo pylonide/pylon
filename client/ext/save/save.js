@@ -88,8 +88,8 @@ return ext.register("ext/save/save", {
             
             saveItem = ide.mnuFile.insertBefore(new apf.item({
                 caption : "Save",
-                disabled : "{!!!tabEditors.activepage}"
-                onclick : this.quicksave.bind(this),
+                disabled : "{!!!tabEditors.activepage}",
+                onclick : this.quicksave.bind(this)
             }), ide.mnuFile.firstChild)
         );
 
