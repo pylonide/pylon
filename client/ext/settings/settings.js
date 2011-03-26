@@ -148,16 +148,7 @@ return ext.register("ext/settings/settings", {
             _self.enable(true);
         });
         
-        /*btn.addEventListener("mousedown", function() {
-            panels.initPanel(_self);
-            if(_self.panel.visible)
-                _self.disable(true);
-            
-            else
-                _self.enable(true);
-        });*/
-        
-        this.hotitems["showsettings"] = [this.button];
+        this.hotitems["showsettings"] = [this.showsettings];
 
         this.model = new apf.model();
 
@@ -188,18 +179,16 @@ return ext.register("ext/settings/settings", {
     },
 
     showsettings: function(e){
-        //ext.initExtension(this);
-        //winSettings.show();
-        //return false;
         var value = this.button.value;
         if (navbar.current && (navbar.current != this || value)) {
-            navbar.current.disable(navbar.current == this);
-            if (value) 
+            navbar.current.disable(navbar.current != this);
+            if (value) {
                 return false;
+            }
         }
         
         panels.initPanel(this);
-        this.enable(true);
+        this.enable(false);
         
         navbar.current = this;
         
