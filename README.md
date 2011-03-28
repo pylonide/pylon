@@ -1,7 +1,6 @@
 # Cloud9 IDE
 
-The Cloud9 IDE is an open source project started by Fabian Jakobs ([fjakobs]), Ruben Daniels ([javruben]), Mike de Boer ([mikedeboer]) and 
-Rik Arends ([rikarends]) from [ajax.org], built on top of [Node.JS].
+The Cloud9 IDE is an open source project started by [ajax.org], built on top of [Node.JS].
 
 This Integrated Development Environment aims to bring all great features from other existing IDE's and source code editors like Eclipse, Netbeans, Textmate, and many others together, bundled as plugins.
 Cloud9's main focus is on Javascript development, it is able to set a new standard for client and server development integration.
