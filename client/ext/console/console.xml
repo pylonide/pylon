@@ -4,7 +4,7 @@
     <a:bar id="winDbgConsole" skin="basic" height="41">
         <a:vbox height="{winDbgConsole.height}">
             <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false">
-                <a:button skin="btn_icon_only" icon="console_max.png" top="4" right="5" state="true"
+                <a:button skin="btn_icon_only" icon="console_max.png" top="4" right="5" state="true" visible="false"
                   onprop.value = "
                     if (event.value) {
                         document.body.appendChild(winDbgConsole.$ext);
@@ -33,6 +33,13 @@
                     else if (tabConsole.activepagenr == 1)    
                         txtOutput.clear();
                   "/>
+                <a:divider skin="divider_console" top="2" right="26"></a:divider>
+                <a:button 
+                  skin="btn_icon_only"
+                  icon="console_close_btn.png"
+                  class="dim22-22"
+                  top="3" right="3"
+                  onclick  = "require('ext/console/console').disable()"/>
                 <a:page caption="Console" name="console">
                     <a:hbox anchors="0 0 0 0">
                         <a:text id="txtConsole"
@@ -45,7 +52,7 @@
                         <a:scrollbar
                           for       = "txtConsole"
                           margin    = "0"
-                          skin      = "wnscrollbar"
+                          skin      = "console_scrollbar"
                           width     = "17" />
                     </a:hbox>
                 </a:page>
@@ -61,20 +68,20 @@
                         <a:scrollbar
                           for       = "txtOutput"
                           margin    = "0"
-                          skin      = "wnscrollbar"
+                          skin      = "console_scrollbar"
                           width     = "17" />
                     </a:hbox>
                 </a:page>
             </a:tab>
 
-            <a:hbox class="consoleInputBox" edge="1" padding="8">
+            <a:hbox class="consoleInputBox" edge="1" padding="4">
                 <a:textbox id="txtConsoleInput"
                   margin    = "4 0 0"
                   skin      = "tb_console"
                   flex      = "1"
                   onkeydown = "return require('ext/console/console').keydownHandler(event)"
                   onkeyup   = "return require('ext/console/console').keyupHandler(event)" />
-                <a:button id="btnCollapseConsole" skin="btn_console_open" icon="console_collapse.png" state="true" height="38"
+                <a:button id="btnCollapseConsole" skin="btn_console_open" icon="console-btn.png" state="true" height="38"
                     value = "{tabConsole.visible}"
                     onprop.value="
                         try {

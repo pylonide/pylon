@@ -5,30 +5,46 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var fs      = require("fs"),
-    plugin  = require("cloud9/plugin");
-
+    sys     = require("sys"),
+    Plugin  = require("cloud9/plugin");
+    
 function cloud9WatcherPlugin(ide) {
+    var that = this;
+    
+    ide.davServer.plugins['watcher'] = function (handler) {
+        handler.addEventListener('beforeWriteContent', function (e, uri) {
+            var path = ide.davServer.tree.basePath + '/' + uri;
+            
+            that.ignoredPaths[path] = path;
+        });
+    };
+
     this.ide = ide;
-    this.hooks  = ["disconnect", "command"];
+    this.hooks = ["disconnect", "command"];
+    this.name = "watcher";
+    this.filenames = {};
+    this.ignoredPaths = {};
 }
 
+sys.inherits(cloud9WatcherPlugin, Plugin);
+
 (function() {
-    var filenames = {};
-
-    function unwatchFile(filename) {
+    this.unwatchFile = function(filename) {
         // console.log("No longer watching file " + filename);
-        delete filenames[filename];
+        delete this.filenames[filename];
         fs.unwatchFile(filename);
-        return true;
-    }
-
-    this.disconnect = function() {
-        for (var filename in filenames) 
-            unwatchFile(filename);
         return true;
     };
 
-    this.command = function(message) {
+    // TODO: this does not look correct. There could be more than one client be
+    // attached. There needs to be a per client list with ref counting
+    this.disconnect = function() {
+        for (var filename in this.filenames) 
+            this.unwatchFile(filename);
+        return true;
+    };
+
+    this.command = function(user, message, client) {
         var filename, that, subtype, files;
 
         if (!message || message.command != "watcher") 
@@ -39,12 +55,16 @@ function cloud9WatcherPlugin(ide) {
             filename = path.replace(/\/workspace/, this.ide.workspaceDir);
             switch (type) {
             case "watchFile":
-                if (filenames[filename]) 
+                if (this.filenames[filename]) 
                     ; // console.log("Already watching file " + filename);
                 else {
-                    // console.log("Watching file " + filename);
+                    console.log("Watching file " + filename);
                     that = this;
                     fs.watchFile(filename, function (curr, prev) {
+                        if (that.ignoredPaths[filename]) {
+                            delete that.ignoredPaths[filename];
+                            return;   
+                        }
                         if (curr.nlink == 1 && prev.nlink == 0)
                             subtype = "create";
                         else if (curr.nlink == 0 && prev.nlink == 1)
@@ -59,10 +79,12 @@ function cloud9WatcherPlugin(ide) {
                             fs.readdirSync(filename).forEach(function (file) {
                                 var stat = fs.statSync(filename + "/" + file);
 
-                                files[file] = {
-                                    type : stat.isDirectory() ? "folder" : "file",
-                                    name : file
-                                };
+                                if (file.charAt(0) != '.') {
+                                    files[file] = {
+                                        type : stat.isDirectory() ? "folder" : "file",
+                                        name : file
+                                    };
+                                }
                             });
                         }
                         that.ide.broadcast(JSON.stringify({
@@ -73,16 +95,23 @@ function cloud9WatcherPlugin(ide) {
                         }));
                         // console.log("Sent " + subtype + " notification for file " + filename);
                     });
-                    filenames[filename] = filename;
+                    this.filenames[filename] = filename;
                 }
                 return true;
             case "unwatchFile":
-                return unwatchFile(filename);
+                return this.unwatchFile(filename);
             default:
                 return false;
             }
         }
     };
-}).call(cloud9WatcherPlugin.prototype = new plugin());
+    
+    this.dispose = function(callback) {
+        for (filename in this.filenames)
+            this.unwatchFile(this.filenames[filename]);
+        callback();
+    };
+    
+}).call(cloud9WatcherPlugin.prototype);
 
 module.exports = cloud9WatcherPlugin;

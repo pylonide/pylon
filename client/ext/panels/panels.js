@@ -25,8 +25,9 @@ return ext.register("ext/panels/panels", {
     showingAll : true,
     
     initPanel : function(panelExt){
-        if (panelExt.panel)
+        if (panelExt.panel) {
             return;
+        }
         
         ext.initExtension(panelExt);
         this.$setEvents(panelExt);
@@ -40,17 +41,20 @@ return ext.register("ext/panels/panels", {
     
     register : function(panelExt){
         var _self = this;
-        panelExt.mnuItem = mnuPanels.appendChild(new apf.item({
-            caption : panelExt.name,
-            type    : "check",
-            checked : panelExt.visible || false,
-            onclick : function(){
-                _self.initPanel(panelExt);
-                this.checked ? panelExt.enable() : panelExt.disable();
-            }
-        }));
+        if (!panelExt.alwayson) {
+            panelExt.mnuItem = mnuPanels.appendChild(new apf.item({
+                caption : panelExt.name,
+                type    : "check",
+                //checked : panelExt.visible || false,
+                checked : "{panelExt.visible}",
+                onclick : function(){
+                    _self.initPanel(panelExt);
+                    this.checked ? panelExt.enable() : panelExt.disable();
+                }
+            }));
+        }
         
-        if (this.$settings && this.$settings[panelExt.path]) {
+        if (false && this.$settings && this.$settings[panelExt.path]) {
             this.setPanelSettings(panelExt, _self.$settings[panelExt.path]);
         }
         else if (panelExt.visible) {
@@ -80,6 +84,7 @@ return ext.register("ext/panels/panels", {
         });
         panelExt.panel.addEventListener("hide", function(){
             panelExt.mnuItem.uncheck();
+
             if (!this.parentNode.selectSingleNode("node()[not(@visible='false')]"))
                 this.parentNode.hide();
             
@@ -118,9 +123,10 @@ return ext.register("ext/panels/panels", {
             }
             else {
                 if (panel[prop] != set[prop]) {
-                    if (prop == "visible")
-                        panel[set[prop] ? "enable" : "disable"]();
-                    if (prop == "height" || !panelExt.excludeParent)
+                    if (prop == "visible") {
+                        //panelExt[set[prop] ? "enable" : "disable"]();
+                    }
+                    else if (prop == "height" || !panelExt.excludeParent)
                         panel.setAttribute(prop, set[prop]);
                 }
             }
@@ -131,7 +137,8 @@ return ext.register("ext/panels/panels", {
         this.nodes.push(
             barMenu.appendChild(new apf.button({
                 submenu : "mnuPanels",
-                caption : "Windows"
+                caption : "Windows",
+                skin    : "c9-menu-btn"
             })),
             mnuPanels
         );

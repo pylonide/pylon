@@ -20,13 +20,15 @@ return ext.register("ext/extmgr/extmgr", {
     hook : function(){
         var _self = this;
         this.nodes.push(
-            ide.mnuFile.insertBefore(new apf.item({
+            mnuPanels.insertBefore(new apf.divider(), mnuPanels.firstChild),
+            
+            mnuPanels.insertBefore(new apf.item({
                 caption : "Extension Manager...",
                 onclick : function(){
                     ext.initExtension(_self);
                     winExt.show();
                 }
-            }), ide.mnuFile.childNodes[ide.mnuFile.childNodes.length - 2])
+            }), mnuPanels.firstChild)
         );
     },
     
@@ -35,15 +37,21 @@ return ext.register("ext/extmgr/extmgr", {
     },
     
     enable : function(){
+        if (!this.disabled) return;
+        
         this.nodes.each(function(item){
             item.enable();
         });
+        this.disabled = false;
     },
     
     disable : function(){
+        if (this.disabled) return;
+        
         this.nodes.each(function(item){
             item.disable();
         });
+        this.disabled = true;
     },
     
     destroy : function(){

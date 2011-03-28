@@ -53,6 +53,8 @@ return ext.register("ext/quicksearch/quicksearch", {
                 break;
                 case 27: //ESCAPE
                     _self.toggleDialog(-1);
+                    if (e.stop)
+                        e.stop();
                     return false;
                 break;
                 case 38: //UP
@@ -198,7 +200,7 @@ return ext.register("ext/quicksearch/quicksearch", {
             ace.find(txt, options);
         }
         else {
-            ace.findNext(options);
+            ace.find(txt, options);
         }
         
         var settings = require("ext/settings/settings");

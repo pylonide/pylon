@@ -18,6 +18,7 @@ return ext.register("ext/gotofile/gotofile", {
     name    : "Filter Tree",
     dev     : "Ajax.org",
     alone   : true,
+    offline : false,
     type    : ext.GENERAL,
     markup  : markup,
     offline : 0,
@@ -43,6 +44,7 @@ return ext.register("ext/gotofile/gotofile", {
                 id      : "btnOpen",
                 //icon    : "save_btn_ico{this.disabled ? '_disabled' : ''}.png",
                 caption : "Open...",
+                skin    : "c9-toolbarbutton",
                 onclick : function() {
                     _self.toggleDialog(true);
                 }
@@ -58,6 +60,7 @@ return ext.register("ext/gotofile/gotofile", {
                 var node = trFiles.xmlRoot.selectSingleNode("folder[1]");
                 mdlGoToFile.load("{davProject.report('" + node.getAttribute("path")
                     + "', 'filesearch', {query: '" + txtGoToFile.value + "'})}");
+                ide.dispatchEvent("track_action", {type: "gotofile"});
             }
             else if (e.keyCode == 40 && dgGoToFile.length) {
                 var first = dgGoToFile.getFirstTraverseNode();
@@ -81,10 +84,12 @@ return ext.register("ext/gotofile/gotofile", {
 
         dgGoToFile.addEventListener("afterchoose", function(e) {
             winGoToFile.hide();
-            var root = trFiles.xmlRoot.selectSingleNode("folder[1]"),
-                path   = root.getAttribute("path") + apf.getTextNode(e.xmlNode).nodeValue;
+            var path = ide.davPrefix + "/" + apf.getTextNode(e.xmlNode).nodeValue;
             editors.showFile(path, 0, 0);
+            ide.dispatchEvent("track_action", {type: "fileopen"});
         });
+        
+        this.nodes.push(winGoToFile);
     },
     
     gotofile : function(){

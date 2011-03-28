@@ -10,7 +10,10 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var EditSession = require("ace/edit_session").EditSession;
+var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
 var Document = require("ace/document").Document;
+var ProxyDocument = require("ext/code/proxydocument");
 var markup = require("text!ext/code/code.xml");
 var settings = require("text!ext/code/settings.xml");
 
@@ -28,26 +31,90 @@ apf.actiontracker.actions.aceupdate = function(undoObj, undo){
         q[1].redoChanges(q[0]);
 };
 
+var SupportedModes = {
+    "application/javascript": "javascript",
+    "application/json": "javascript",
+    "text/css": "css",
+    "text/html": "html",
+    "application/xhtml+xml": "html",
+    "application/xml": "xml",
+    "application/rdf+xml": "xml",
+    "application/rss+xml": "xml",
+    "image/svg+xml": "svg",
+    "application/wsdl+xml": "xml",
+    "application/xslt+xml": "xml",
+    "application/atom+xml": "xml",
+    "application/mathml+xml": "xml",
+    "application/x-httpd-php": "php",
+    "text/x-script.python": "python",
+    "text/x-script.ruby": "ruby",
+    "text/x-script.perl": "perl",
+    "text/x-c": "c_cpp",
+    "text/x-java-source": "java",
+    "text/x-csharp": "csharp",
+    "text/x-script.coffeescript": "coffee",
+    "text/x-web-textile": "textile"
+};
+
+var contentTypes = {
+    "js": "application/javascript",
+    "json": "application/json",
+    "css": "text/css",
+    
+    "xml": "application/xml",
+    "rdf": "application/rdf+xml",
+    "rss": "application/rss+xml",
+    "svg": "image/svg+xml",
+    "wsdl": "application/wsdl+xml",
+    "xslt": "application/xslt+xml",
+    "atom": "application/atom+xml",
+    "mathml": "application/mathml+xml",
+    "mml": "application/mathml+xml",
+    
+    "php": "application/x-httpd-php",
+    "html": "text/html",
+    "xhtml": "application/xhtml+xml",
+    "coffee": "text/x-script.coffeescript",
+    "py": "text/x-script.python",
+    
+    "ru": "text/x-script.ruby",
+    "gemspec": "text/x-script.ruby",
+    "rake": "text/x-script.ruby",
+    "rb": "text/x-script.ruby",
+    
+    "c": "text/x-c",
+    "cc": "text/x-c",
+    "cpp": "text/x-c",
+    "cxx": "text/x-c",
+    "h": "text/x-c",
+    "hh": "text/x-c"
+};
+
 return ext.register("ext/code/code", {
     name    : "Code Editor",
     dev     : "Ajax.org",
     type    : ext.EDITOR,
-    contentTypes : [
-        "application/javascript",
-        "application/json",
-        "text/css",
-        "application/xml",
-        "text/plain",
-        "application/x-httpd-php",
-        "text/html",
-        "application/xhtml+xml",
-        "text/x-script.python",
-        "text/x-script.coffeescript"
-    ],
+    contentTypes : Object.keys(SupportedModes),
     markup  : markup,
 
     nodes : [],
 
+    getSyntax : function(node) {
+        if(!node) return "";
+        var customType = node.getAttribute("customtype");
+        if (!customType)
+            customType = contentTypes[node.getAttribute("name").split(".").pop()];
+
+        if (customType) {
+            var mime = customType.split(";")[0];
+
+            return (SupportedModes[mime] || "text");
+        }
+        else {
+            return "text";
+        }
+    },
+    
     getSelection : function(){
         if (typeof ceEditor == "undefined")
             return null;
@@ -57,33 +124,39 @@ return ext.register("ext/code/code", {
     getDocument : function(){
         if (typeof ceEditor == "undefined")
             return null;
-        return ceEditor.getDocument();
+        return ceEditor.getSession();
     },
     
     setDocument : function(doc, actiontracker){
-        if (!doc.acedoc) {
+        if (!doc.acesession) {
             var _self = this;
 
             doc.isInited = doc.hasValue();
-            doc.acedoc = new Document(doc.getValue() || "");
-            doc.acedoc.setUndoManager(actiontracker);
+            doc.acedoc = doc.acedoc || new ProxyDocument(new Document(doc.getValue() || ""));
+            doc.acesession = new EditSession(doc.acedoc);
+            doc.acedoc = doc.acesession.getDocument();
             
-            doc.addEventListener("prop.value", function(e){
-                doc.acedoc.setValue(e.value || "");
+            doc.acesession.setUndoManager(actiontracker);
+            
+            doc.addEventListener("prop.value", function(e) {
+                doc.acesession.setValue(e.value || "");
+                ceEditor.$editor.moveCursorTo(0, 0);
                 doc.isInited = true;
             });
             
-            doc.addEventListener("retrievevalue", function(e){
-                if (!doc.isInited) return e.value;
-                else return doc.acedoc.toString();
+            doc.addEventListener("retrievevalue", function(e) {
+                if (!doc.isInited) 
+                    return e.value;
+                else 
+                    return doc.acesession.getValue();
             });
             
             doc.addEventListener("close", function(){
-                //??? destroy doc.acedoc
+                //??? destroy doc.acesession
             });
         }
 
-        ceEditor.setProperty("value", doc.acedoc);
+        ceEditor.setProperty("value", doc.acesession);
     },
 
     hook : function() {
@@ -92,8 +165,8 @@ return ext.register("ext/code/code", {
         
         //Settings Support
         ide.addEventListener("init.ext/settings/settings", function(e){
-            var page = e.ext.addSection("code", name, "editors", commitFunc);
-            page.insertMarkup(settings);
+            e.ext.addSection("code", name, "editors", commitFunc);
+            barSettings.insertMarkup(settings);
         });
         
         ide.addEventListener("loadsettings", function(e) {
@@ -108,22 +181,24 @@ return ext.register("ext/code/code", {
     },
 
     init : function(amlPage) {
-        var def = ceEditor.getDefaults();
+        /*var def = ceEditor.getDefaults();
         
-        //check default settings...
-        var settings = require("ext/settings/settings"),
-            model    = settings.model,
-            base     = model.data.selectSingleNode("editors/code");
-        if (!base)
-            base = model.appendXml('<code name="' + this.name +'" page="' + settings.getSectionId(this.name) + '" />', "editors");
-        
-        // go through all default settings and append them to the XML if they're not there yet
-        for (var prop in def) {
-            if (!prop) continue;
-            if (!base.getAttribute(prop))
-                base.setAttribute(prop, def[prop]);
-        }
-        apf.xmldb.applyChanges("synchronize", base);
+        ide.addEventListener("loadsettings", function() {
+            //check default settings...
+            var settings = require("ext/settings/settings"),
+                model    = settings.model,
+                base     = model.data.selectSingleNode("editors/code");
+            if (!base)
+                base = model.appendXml('<code name="' + this.name +'" />', "editors");
+                
+            // go through all default settings and append them to the XML if they're not there yet
+            for (var prop in def) {
+                if (!prop) continue;
+                if (!base.getAttribute(prop))
+                    base.setAttribute(prop, def[prop]);
+            }
+            apf.xmldb.applyChanges("synchronize", base);
+        });*/
 
         amlPage.appendChild(ceEditor);
         ceEditor.show();
@@ -156,12 +231,12 @@ return ext.register("ext/code/code", {
 
             mnuView.appendChild(new apf.divider()),
 
-            mnuView.appendChild(new apf.item({
+            /*mnuView.appendChild(new apf.item({
                 type    : "check",
                 caption : "Select Full Line",
                 values  : "line|text",
                 value   : "[{require('ext/settings/settings').model}::editors/code/@selectstyle]",
-            })),
+            })),*/
 
             /*mnuView.appendChild(new apf.item({
                 type    : "check",
@@ -169,13 +244,13 @@ return ext.register("ext/code/code", {
                 checked : "{ceEditor.readonly}"
             })),*/
 
-            mnuView.appendChild(new apf.item({
+            /*mnuView.appendChild(new apf.item({
                 type    : "check",
                 caption : "Highlight Active Line",
                 checked : "[{require('ext/settings/settings').model}::editors/code/@activeline]"
             })),
 
-            mnuView.appendChild(new apf.divider()),
+            mnuView.appendChild(new apf.divider()),*/
 
             mnuView.appendChild(new apf.item({
                 type    : "check",
@@ -185,8 +260,8 @@ return ext.register("ext/code/code", {
 
             mnuView.appendChild(new apf.item({
                 type    : "check",
-                caption : "Show Print Margin",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@showprintmargin]"
+                caption : "Wrap Lines",
+                checked : "[ceEditor.wrapmode]"
             }))
             // Wrap Lines (none),
             // Overwrite mode (overwrite),
@@ -199,8 +274,13 @@ return ext.register("ext/code/code", {
 
         mnuSyntax.onitemclick = function(e) {
             var file = ide.getActivePageModel();
-            if (file)
-                apf.xmldb.setAttribute(file, "contenttype", e.relatedNode.value);
+            if (file) {
+                var value = e.relatedNode.value;
+                if (value == "auto")
+                    apf.xmldb.removeAttribute(file, "customtype", "");
+                else
+                    apf.xmldb.setAttribute(file, "customtype", value);
+            }
         };
 
         /*ide.addEventListener("clearfilecache", function(e){
@@ -210,8 +290,9 @@ return ext.register("ext/code/code", {
         ide.addEventListener("keybindingschange", function(e){
             if (typeof ceEditor == "undefined")
                 return;
+                
             var bindings = e.keybindings.code;
-            ceEditor.$editor.keyBinding.setConfig(bindings);
+            ceEditor.$editor.setKeyboardHandler(new HashHandler(bindings));
         });
     },
 

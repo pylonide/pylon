@@ -10,28 +10,32 @@ var sys = require("sys");
 var cloud9StatePlugin = module.exports = function(ide) {
     this.ide = ide;
     this.hooks = ["connect", "command"];
-}
+    this.name = "state";
+};
 
 sys.inherits(cloud9StatePlugin, Plugin);
 
 (function() {
-    this.command =
-    this.connect = function(message) {
-        if (message && message.command != "state")
+    this.connect = function(user, message, client) {
+        this.publishState();
+    };
+    
+    this.command = function(user, message, client) {
+        if (message && message.command !== "state")
             return false;
 
-        this.publishState();
         return true;
     };
     
     this.publishState = function() {
-		var state = {
-		    "type": "state",
-		    "workspaceDir": this.ide.workspaceDir,
-		    "davPrefix": this.ide.davPrefix
-		};
-		this.emit("statechange", state);
-		
+        var state = {
+            "type": "state",
+            "workspaceDir": this.ide.workspaceDir,
+            "davPrefix": this.ide.davPrefix
+        };
+        this.emit("statechange", state);
+
+        console.log("publish state" + JSON.stringify(state))
         this.ide.broadcast(JSON.stringify(state));
     };
     

@@ -4,7 +4,11 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
+var deps = ["core/document"];
+if (!window.cloud9config.standalone)
+    deps.push("/socket.io/socket.io.js");
+
+require.def("core/ide", deps,
     function(Document) {
         var ide = new apf.Class().$init();
 
@@ -16,19 +20,22 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
             var last = "";
 
             //Set references to global elements - aka extension points
-            this.tbMain       = tbMain;
+            //this.tbMain       = tbMain;
             this.mnuFile      = mnuFile;
             this.mnuEdit      = mnuEdit;
-            this.barMenu      = barMenu;
+            //this.barMenu      = barMenu;
             this.barTools     = barTools;
             this.sbMain       = sbMain;
             this.vbMain       = vbMain;
 
             this.workspaceDir = window.cloud9config.workspaceDir.replace(/\/+$/, "");
             this.davPrefix = window.cloud9config.davPrefix.replace(/\/+$/, "");
-            this.settingsUrl = window.cloud9config.settingsUrl;
             this.sessionId = window.cloud9config.sessionId;
             this.workspaceId = window.cloud9config.workspaceId;
+            this.readonly = window.cloud9config.readonly;
+            this.projectName = window.cloud9config.projectName;
+
+            this.loggedIn = true;
 
             this.loggedIn = true;
 
@@ -38,12 +45,15 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
 
             //Catch all unhandled errors
             var loc = location.href;
-            if (false && location.protocol != "file:"
-              && loc.indexOf("dev") == -1
-              && loc.indexOf("cloud9ide.com") > -1) {
+            if (
+                false 
+                && location.protocol != "file:"
+                && loc.indexOf("dev") == -1
+                && loc.indexOf("cloud9ide.com") > -1) 
+            {
                 window.onerror = function(m, u, l) {
                     if (self.console)
-                        console.log("An error occurred, the Cloud9 system admin has been notified.")
+                        console.log("An error occurred, the Cloud9 system admin has been notified.");
                     apf.ajax("/debug", {
                         method      : "POST",
                         contentType : "application/json",
@@ -96,21 +106,21 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
             // fire up the socket connection:
             var options = {
                 rememberTransport: false,
-                transports: ["websocket", "htmlfile", "xhr-polling", "jsonp-polling"],
+                transports:  ["websocket", "htmlfile", "xhr-multipart", "flashsocket", "xhr-polling", "jsonp-polling"],
                 connectTimeout: 5000,
                 transportOptions: {
                     "xhr-polling": {
-                        timeout: 30000
+                        timeout: 60000
                     },
                     "jsonp-polling": {
-                        timeout: 30000
+                        timeout: 60000
                     }
                 }
             };
 
             ide.socketConnect = function() {
                 clearTimeout(ide.$retryTimer);
-                
+
                 ide.socket.send(JSON.stringify({
                     command: "attach",
                     sessionId: ide.sessionId,
@@ -123,10 +133,8 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
                 
                 var retries = 0;
                 ide.$retryTimer = setInterval(function() {
-                    if (++retries == 1) {
-                        stServerConnected.deactivate();
+                    if (++retries == 3)
                         ide.dispatchEvent("socketDisconnect");
-                    }
                     
                     if (!ide.socket.connecting && !ide.testOffline && ide.loggedIn)
                         ide.socket.connect();
@@ -140,10 +148,8 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
                     return;
                 }
 
-                if (message.type == "attached") {
-                    stServerConnected.activate();
+                if (message.type == "attached")
                     ide.dispatchEvent("socketConnect");
-                }
 
                 ide.dispatchEvent("socketMessage", {
                     message: message

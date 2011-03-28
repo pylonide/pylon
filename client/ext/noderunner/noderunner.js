@@ -13,11 +13,12 @@ var util = require("core/util");
 var markup = require("text!ext/noderunner/noderunner.xml");
 
 return ext.register("ext/noderunner/noderunner", {
-    name   : "Node Runner",
-    dev    : "Ajax.org",
-    type   : ext.GENERAL,
-    alone  : true,
-    markup : markup,
+    name    : "Node Runner",
+    dev     : "Ajax.org",
+    type    : ext.GENERAL,
+    alone   : true,
+    offline : false,
+    markup  : markup,
     commands: {
         "run": {
             "hint": "run a node program on the server",
@@ -84,8 +85,12 @@ return ext.register("ext/noderunner/noderunner", {
                 break;
 
             case "error":
-                if (message.code !== 6)
-                    util.alert("Server Error", "Server Error", message.message);
+                if (message.code !== 6 && message.code != 401) {
+                    util.alert("Server Error", "Server Error " 
+                        + (message.code || ""), message.message);
+                    
+                    console.log(message)
+                }
                 ide.socket.send('{"command": "state"}');
                 break;
                 
@@ -108,8 +113,8 @@ return ext.register("ext/noderunner/noderunner", {
         this.$run(true);
     },
 
-    run : function(path, args, debug) {
-        if (stProcessRunning.active || !stServerConnected.active || !path)
+    run : function(path, args, debug) {        
+        if (stProcessRunning.active || !stServerConnected.active || !path || typeof path != "string")
             return false;
 
         var page = ide.getActivePageModel();

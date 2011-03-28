@@ -13,14 +13,16 @@ var util = require("core/util");
 var fs = require("ext/filesystem/filesystem");
 var markup = require("text!ext/settings/settings.xml");
 var template = require("text!ext/settings/template.xml");
-  
+var panels = require("ext/panels/panels");
+var skin = require("text!ext/settings/skin.xml");
+
 return ext.register("ext/settings/settings", {
-    name    : "Settings",
+    name    : "Preferences",
     dev     : "Ajax.org",
     alone   : true,
     type    : ext.GENERAL,
     markup  : markup,
-    file    : ide.settingsUrl,
+    skin    : skin,
     commands : {
         "showsettings": {hint: "open the settings window"}
     },
@@ -39,8 +41,11 @@ return ext.register("ext/settings/settings", {
     },
 
     saveToFile : function(){
-        //apf.console.log("SAVING SETTINGS");
-        fs.saveFile(this.file, this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || "");
+        ide.socket.send(JSON.stringify({
+            command: "settings",
+            action: "set",
+            settings: this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || ""
+        }));
     },
 
     saveSettingsPanel: function() {
@@ -61,57 +66,42 @@ return ext.register("ext/settings/settings", {
             this.saveToFile();
     },
 
-    getSectionId: function(part) {
-        return "pgSettings" + part.replace(/ /g, "_");
-    },
-
     addSection : function(tagName, name, xpath, cbCommit){
-        var id = this.getSectionId(name),
-            page = pgSettings.getPage(id);
-        if (page)
-            return page;
-		var node = this.model.queryNode(xpath + "/" + tagName);
-        if (!node) {
-            this.model.appendXml('<' + tagName + ' name="' + name +'" page="' + id + '" />', xpath);
-		} else
-			node.setAttribute("page", id);
-        page = pgSettings.add(name, id);
-        page.$at = new apf.actiontracker();
-        page.$commit = cbCommit || apf.K;
-        return page;
+        var node = this.model.queryNode(xpath + "/" + tagName);
+        if (!node)
+            this.model.appendXml('<' + tagName + ' name="' + name +'" />', xpath);
     },
 
-    hook : function(){
-        var _self = this;
-        this.nodes.push(
-            ide.mnuFile.insertBefore(new apf.item({
-                caption : "Settings...",
-                onclick : this.showsettings.bind(this)
-            }), ide.mnuFile.childNodes[ide.mnuFile.childNodes.length - 2])
-        );
-        this.hotitems["showsettings"] = [this.nodes[0]];
-
-        this.model = new apf.model();
-        /*fs.readFile(_self.file, function(data, state, extra){
-            if (state != apf.SUCCESS)
-                _self.model.load(template);
-            else
-                _self.model.load(data);
-
-            ide.dispatchEvent("loadsettings", {
-                model : _self.model
-            });
-        });*/
-
-        ide.addEventListener("afteronline", function(){
-            _self.load();
-            ide.removeEventListener("afteronline", arguments.callee);
-        });
-    },
-    
     load : function(){
         var _self = this;
-        this.model.load(this.convertOrBackup() ? template : ide.settings);
+        
+        //@todo this should actually be an identifier to know that it was rights that prevented loading it
+        ide.settings = ide.settings == "defaults" ? template : ide.settings;
+        
+        if (!ide.settings){
+            ide.addEventListener("socketMessage", function(e){
+                if (e.message.type == "settings") {
+                    var settings = e.message.settings;
+                    if (!settings || settings == "defaults")
+                        settings = template;
+                    ide.settings =  settings;
+                    _self.load();
+                    
+                    ide.removeEventListener("socketMessage", arguments.callee);
+                }
+            });
+            
+            if (ide.onLine !== true) {
+                ide.addEventListener("socketConnect", function(){
+                    ide.socket.send(JSON.stringify({command: "settings", action: "get"}));
+                });
+            }
+            else 
+                ide.socket.send(JSON.stringify({command: "settings", action: "get"}));
+            return;
+        }
+        
+        this.model.load(ide.settings);
 
         ide.dispatchEvent("loadsettings", {
             model : _self.model
@@ -125,54 +115,94 @@ return ext.register("ext/settings/settings", {
         };
         this.$timer = setInterval(checkSave, 60000);
 
-        // apf.addEventListener("exit", checkSave);
+        apf.addEventListener("exit", checkSave);
 
         ide.addEventListener("$event.loadsettings", function(callback) {
             callback({model: _self.model});
         });
+        
+        ide.removeEventListener("afteronline", this.$handleOnline);
     },
+    
+    hook : function(){
+        panels.register(this);
+        
+        var btn = this.button = navbar.insertBefore(new apf.button({
+            skin    : "mnubtn",
+            state   : true,
+            "class" : "preferences",
+            caption : "Preferences"
+        }), navbar.firstChild);
+        
+        var _self = this;
 
-    convertOrBackup: function() {
-        if (!ide.settings || ide.settings.indexOf("d:error") > -1)
-            return true;
-        // <section> elements are from version < 0.0.3 (deprecated)...
-        if (ide.settings.indexOf("<section") > -1) {
-            // move file to /workspace/.settings.xml.old
-            var moved = false,
-                _self = this;
-            apf.asyncWhile(function() {
-                return !moved;
-            },
-            function(iter, next) {
-                //move = function(sFrom, sTo, bOverwrite, bLock, callback)
-                var newfile = _self.file + ".old" + (iter === 0 ? "" : iter);
-                fs.webdav.move(_self.file, newfile, false, null, function(data, state, extra) {
-                    var iStatus = parseInt(extra.status);
-                    if (iStatus != 403 && iStatus != 409 && iStatus != 412
-                      && iStatus != 423 && iStatus != 424 && iStatus != 502 && iStatus != 500) {
-                        moved = true;
-                    }
-                    next();
-                });
-            });
-            return true;
-        }
+        btn.addEventListener("mousedown", function(e){
+            var value = this.value;
+            if (navbar.current && (navbar.current != _self || value)) {
+                navbar.current.disable(navbar.current == _self);
+                if (value) 
+                    return;
+            }
 
-        return false;
+            panels.initPanel(_self);
+            _self.enable(true);
+        });
+        
+        /*btn.addEventListener("mousedown", function() {
+            panels.initPanel(_self);
+            if(_self.panel.visible)
+                _self.disable(true);
+            
+            else
+                _self.enable(true);
+        });*/
+        
+        this.hotitems["showsettings"] = [this.button];
+
+        this.model = new apf.model();
+
+        ide.addEventListener("afteronline", this.$handleOnline = function(){
+            _self.load();
+        });
     },
 
     init : function(amlNode){
-        this.btnOK = winSettings.selectSingleNode("a:vbox/a:hbox[2]/a:button[1]");
+        /*this.btnOK = winSettings.selectSingleNode("a:vbox/a:hbox[2]/a:button[1]");
         this.btnOK.onclick = this.saveSettings.bind(this);
         this.btnCancel = winSettings.selectSingleNode("a:vbox/a:hbox[2]/a:button[2]");
         this.btnCancel.onclick = this.cancelSettings;
         this.btnApply = winSettings.selectSingleNode("a:vbox/a:hbox[2]/a:button[3]");
-        this.btnApply.onclick = this.applySettings.bind(this);
+        this.btnApply.onclick = this.applySettings.bind(this);*/
+        
+        this.panel = winSettings;
+        
+        winSettings.addEventListener("hide", function(){
+            colLeft.$ext.style.minWidth = "0px"; //hack
+        });
+        
+        winSettings.addEventListener("show", function() {
+            colLeft.$ext.style.minWidth = "215px"; //hack
+        });
+        
+        colLeft.appendChild(winSettings);
     },
 
-    showsettings: function() {
-        ext.initExtension(this);
-        winSettings.show();
+    showsettings: function(e){
+        //ext.initExtension(this);
+        //winSettings.show();
+        //return false;
+        var value = this.button.value;
+        if (navbar.current && (navbar.current != this || value)) {
+            navbar.current.disable(navbar.current == this);
+            if (value) 
+                return false;
+        }
+        
+        panels.initPanel(this);
+        this.enable(true);
+        
+        navbar.current = this;
+        
         return false;
     },
 
@@ -195,17 +225,24 @@ return ext.register("ext/settings/settings", {
             pages[i].$at.undo(-1);
         }
     },
-
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
+    
+    enable : function(noButton){
+        winSettings.show();
+        colLeft.show();
+        if (!noButton) {
+            this.button.setValue(true);
+            if(navbar.current && (navbar.current != this))
+                navbar.current.disable(false);
+        }
+        
+        navbar.current = this;
     },
 
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
+    disable : function(noButton){
+        if (self.winSettings)
+            winSettings.hide();
+        if (!noButton)
+            this.button.setValue(false);
     },
 
     destroy : function(){

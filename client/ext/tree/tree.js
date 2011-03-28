@@ -11,7 +11,7 @@ require.def("ext/tree/tree",
     function(ide, ext, fs, settings, panels, markup) {
 
 return ext.register("ext/tree/tree", {
-    name            : "Tree",
+    name            : "Project Files",
     dev             : "Ajax.org",
     alone           : true,
     type            : ext.GENERAL,
@@ -29,28 +29,96 @@ return ext.register("ext/tree/tree", {
     
     hook : function(){
         panels.register(this);
+
+        var btn = this.button = navbar.insertBefore(new apf.button({
+            skin    : "mnubtn",
+            state   : "true",
+            value   : "true",
+            "class" : "project_files",
+            caption : "Project Files"
+        }), navbar.firstChild);
+        navbar.current = this;
+        
+        var _self = this;
+        btn.addEventListener("mousedown", function(e){
+            var value = this.value;
+            if (navbar.current && (navbar.current != _self || value)) {
+                navbar.current.disable(navbar.current == _self);
+                if (value) 
+                    return;
+            }
+
+            panels.initPanel(_self);
+            _self.enable(true);
+        });
     },
 
     init : function() {
+        var _self = this;
+        
         this.panel = winFilesViewer;
+        
+        colLeft.addEventListener("hide", function(){
+            splitterPanelLeft.hide();
+        });
+        
+        colLeft.addEventListener("show", function() {
+           splitterPanelLeft.show(); 
+        });
+        
         colLeft.appendChild(winFilesViewer);
+        
+        mnuView.appendChild(new apf.divider()),
+        mnuView.appendChild(new apf.item({
+            id      : "mnuitemHiddenFiles",
+            type    : "check",
+            caption : "Show Hidden Files",
+            check   : "{[davProject.showhidden]}",
+            onclick : function(){
+                _self.changed = true;
+                davProject.setProperty("showhidden", !davProject.getProperty("showhidden"));
+                require('ext/tree/tree').refresh();
+            }
+        }));
+        mnuView.appendChild(new apf.divider()),
+        
         trFiles.setAttribute("model", fs.model);
         
         trFiles.addEventListener("afterchoose", this.$afterselect = function(e) {
             var node = this.selected;
-            if (!node || node.tagName != "file" || this.selection.length > 1)
+            if (!node || node.tagName != "file" || this.selection.length > 1 || !ide.onLine) //ide.onLine can be removed after update apf
                 return;
 
             ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
         });
         
+        trFiles.addEventListener("beforecopy", function(e) {
+            if (!ide.onLine) return false;
+            
+            setTimeout(function () {
+                var args     = e.args[0].args,
+                    filename = args[1].getAttribute("name");
+                fs.beforeRename(args[1], null, args[0].getAttribute("path").replace(/[\/]+$/, "") + "/" + filename);
+            });
+        });
+       
+        trFiles.addEventListener("beforestoprename", function(e) {
+            if (!ide.onLine) return false;
+
+            return fs.beforeStopRename(e.value);
+        });
+ 
         trFiles.addEventListener("beforerename", function(e){
+            if (!ide.onLine) return false;
+            
             setTimeout(function(){
                 fs.beforeRename(e.args[0], e.args[1]);
             });
         });
         
         trFiles.addEventListener("beforemove", function(e){
+            if (!ide.onLine) return false;
+            
             setTimeout(function(){
                 var changes = e.args;
                 for (var i = 0; i < changes.length; i++) {
@@ -58,11 +126,28 @@ return ext.register("ext/tree/tree", {
                 }
             });
         });
-
+        
+        var cancelWhenOffline = function(){
+            if (!ide.onLine) return false;
+        };
+        
+        trFiles.addEventListener("beforeadd", cancelWhenOffline);
+        trFiles.addEventListener("renamestart", cancelWhenOffline);
+        trFiles.addEventListener("beforeremove", cancelWhenOffline);
+        trFiles.addEventListener("dragstart", cancelWhenOffline);
+        trFiles.addEventListener("dragdrop", cancelWhenOffline);
+        
+        /*ide.addEventListener("afteroffline", function(e){
+            //trFiles.setAttribute("contextmenu", "");
+            mnuCtxTree.disable();
+        });
+        
+        ide.addEventListener("afteronline", function(e){
+            //trFiles.setAttribute("contextmenu", "mnuCtxTree");
+            mnuCtxTree.enable();
+        });*/
+        
         /**** Support for state preservation ****/
-        
-        var _self = this;
-        
         trFiles.addEventListener("expand", function(e){
             _self.expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = e.xmlNode;
 
@@ -81,18 +166,34 @@ return ext.register("ext/tree/tree", {
         });
 
         ide.addEventListener("loadsettings", function(e){
-            var strSettings = e.model.queryValue("auto/tree");
+            var model = e.model;
+            var strSettings = model.queryValue("auto/tree");
+            var checked = !!model.queryValue("auto/tree/@showhidden");
+            davProject.setProperty("showhidden", checked);
+            mnuitemHiddenFiles.setProperty("checked", checked);
+            
             if (strSettings) {
                 _self.loading = true;
                 _self.currentSettings = apf.unserialize(strSettings);
                 
                 //Unstable - temporary fix
                 try{
-                    trFiles.expandList(_self.currentSettings, function(){
-                        _self.loading = false;
-                    });
+                    if (!trFiles.xmlRoot) {
+                        trFiles.addEventListener("afterload", function(){
+                            trFiles.expandList(_self.currentSettings, function(){
+                                _self.loading = false;
+                            });
+                            
+                            trFiles.removeEventListener("load", arguments.callee);
+                        });
+                    }
+                    else {
+                        trFiles.expandList(_self.currentSettings, function(){
+                            _self.loading = false;
+                        });
+                    }
                 }catch(e){
-                    e.model.setQueryValue("auto/tree/text()", "");
+                    model.setQueryValue("auto/tree/text()", "");
                 }
             }
         });
@@ -100,9 +201,8 @@ return ext.register("ext/tree/tree", {
         ide.addEventListener("savesettings", function(e){
             if (!_self.changed)
                 return;
-            
-            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/tree/text()");
 
+            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/tree");
             _self.currentSettings = [];
 
             var path, id, lut = {};
@@ -131,7 +231,8 @@ return ext.register("ext/tree/tree", {
                 if (!parts.length)
                     _self.currentSettings.push(path);
             }
-            
+
+            xmlSettings.setAttribute("showhidden", davProject.getProperty("showhidden"));
             xmlSettings.nodeValue = apf.serialize(_self.currentSettings);
             return true;
         });
@@ -213,9 +314,10 @@ return ext.register("ext/tree/tree", {
     },
 
     refresh : function(){
-        trFiles.getModel().load("<data><folder type='folder' name='" + "Project" + "' path='" + ide.davPrefix + "' root='1'/></data>");
+        trFiles.getModel().load("<data><folder type='folder' name='" + ide.projectName + "' path='" + ide.davPrefix + "' root='1'/></data>");
         this.expandedList = {};
         this.loading = true;
+        ide.dispatchEvent("track_action", {type: "reloadtree"});
         try {
             var _self = this;
                     
@@ -227,12 +329,23 @@ return ext.register("ext/tree/tree", {
         }
     },
 
-    enable : function(){
+    enable : function(noButton){
         winFilesViewer.show();
+        colLeft.show();
+        if (!noButton) {
+            this.button.setValue(true);
+            if(navbar.current && (navbar.current != this))
+                navbar.current.disable(false);
+        }
+        
+        navbar.current = this;
     },
 
-    disable : function(){
-        winFilesViewer.hide();
+    disable : function(noButton){
+        if (self.winFilesViewer)
+            winFilesViewer.hide();
+        if (!noButton)
+            this.button.setValue(false);
     },
 
     destroy : function(){

@@ -21,6 +21,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
     dev      : "Ajax.org",
     type     : ext.GENERAL,
     alone    : true,
+    offline  : false,
     markup   : markup,
     skin     : skin,
     commands  : {
@@ -38,7 +39,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
         this.nodes.push(
             mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
-                caption : "Search in Files",
+                caption : "Search in Files...",
                 onclick : function() {
                     _self.toggleDialog(false);
                 }
@@ -78,6 +79,8 @@ return ext.register("ext/searchinfiles/searchinfiles", {
                 node = trSFResult.selected,
                 line = 0,
                 text = "";
+            if (node.tagName == "d:maxreached")
+                return;
             if (node.tagName == "d:excerpt") {
                 path = node.parentNode.getAttribute("path");
                 line = node.getAttribute("line");
@@ -176,6 +179,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
         trSFResult.setAttribute("empty-message", "No results found for '" + txtSFFind.value.trim() + "'");
         this.$model.load("{davProject.report('" + node.getAttribute("path")
             + "', 'codesearch', " + JSON.stringify(this.getOptions()) + ")}");
+        ide.dispatchEvent("track_action", {type: "searchinfiles"});
     },
 
     replaceAll: function() {
@@ -187,6 +191,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
         this.$crtSearch = null;
         var options = this.getOptions();
         this.$editor.replaceAll(this.txtReplace.getValue() || "", options);
+        ide.dispatchEvent("track_action", {type: "replace"});
     },
 
     enable : function(){

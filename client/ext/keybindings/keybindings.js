@@ -8,6 +8,10 @@ require.def("ext/keybindings/keybindings",
     ["core/ide", "core/ext", "core/util", "text!ext/keybindings/settings.xml"],
     function(ide, ext, util, settings) {
 
+//var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
+//var default_mac = require("ace/keyboard/keybinding/default_mac").bindings;
+//editor.setKeyboardHandler(new HashHandler(default_mac));
+
 return ext.register("ext/keybindings/keybindings", {
     name   : "Keybindings Manager",
     dev    : "Ajax.org",
@@ -19,27 +23,40 @@ return ext.register("ext/keybindings/keybindings", {
 
     init : function(amlNode){
         //Settings Support
-        ide.addEventListener("init.ext/settings/settings", function(e){
-            var page = e.ext.addSection("keybindings", "Keybindings", "general");
-            page.insertMarkup(settings);
-        });
+        /*ide.addEventListener("init.ext/settings/settings", function(e){
+            e.ext.addSection("code", "", "general", function(){});
+            barSettings.insertMarkup(settings);
+            ddKeyBind.setValue("default_" + (apf.isMac ? "mac" : "win"));
+            ddKeyBind.addEventListener("afterchange", function(e){
+                require(["ext/keybindings_default/" + this.value]);
+                ide.addEventListener("$event.keybindingschange", function(callback){
+                    if (_self.current)
+                        callback({keybindings: _self.current});
+                });
+            });
+        });*/
 
         // fetch the default keybindings:
-        // @todo fetch latest config from localStorage
         var _self = this;
-        require(["ext/keybindings_default/default_" + (apf.isMac ? "mac" : "win")]);
-        ide.addEventListener("$event.keybindingschange", function(callback){
-            if (_self.current)
-                callback({keybindings: _self.current});
+        ide.addEventListener("loadsettings", function(e){
+            var value = e.model.queryValue("general/keybindings/@preset") 
+                || "default_" + (apf.isMac ? "mac" : "win");
+                
+            require(["ext/keybindings_default/" + value]);
+            ide.addEventListener("$event.keybindingschange", function(callback){
+                if (_self.current)
+                    callback({keybindings: _self.current});
+            });
         });
     },
 
     onLoad : function(def) {
-        // parse keybindings definition
-        this.current = def;
-
         // update keybindings for extensions:
         def = def.ext;
+        
+        // parse keybindings definition
+        this.current = def;
+        
         var i, j, l, name, oExt, command, bindings, items, item, val;
         for (i in ext.extLut) {
             name     = i.substr(i.lastIndexOf("/") + 1).toLowerCase();
@@ -61,12 +78,12 @@ return ext.register("ext/keybindings/keybindings", {
                         item.setAttribute("hotkey", bindings[command]);
                     }
                 }
-                if (typeof oExt[command] != "function" && !oExt.hotitems) {
+                else if (typeof oExt[command] == "function") {
+                    apf.hotkeys.register(bindings[command], oExt[command].bind(oExt));
+                }
+                else {
                     apf.console.error("Please implement the '" + command
                         + "' function on plugin '" + oExt.name + "' for the keybindings to work");
-                }
-                else if (!oExt.hotitems) {
-                    apf.hotkeys.register(bindings[command], oExt[command].bind(oExt));
                 }
             }
         }

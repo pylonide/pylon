@@ -12,6 +12,7 @@ return ext.register("ext/newresource/newresource", {
     dev     : "Ajax.org",
     name    : "Newresource",
     alone   : true,
+    offline : false,
     type    : ext.GENERAL,
     markup  : markup,
     deps    : [fs],
@@ -54,15 +55,21 @@ return ext.register("ext/newresource/newresource", {
     },
 
     enable : function(){
+        if (!this.disabled) return;
+        
         this.nodes.each(function(item){
             item.enable();
         });
+        this.disabled = false;
     },
-
+    
     disable : function(){
+        if (this.disabled) return;
+        
         this.nodes.each(function(item){
             item.disable();
         });
+        this.disabled = true;
     },
 
     destroy : function(){

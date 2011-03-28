@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html manifest_disabled="static/offline.manifest" xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+<html [%offlineManifest%] xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
     <head profile="http://www.w3.org/2005/10/profile">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <title>Cloud9 - Your code, anywhere anytime.</title>
@@ -10,17 +10,20 @@
 
         <link rel="stylesheet" type="text/css" href="[%staticUrl%]/style/style.css" />
 
-        <script type="text/javascript" src="[%staticUrl%]/require.js"></script>
+        <script type="text/javascript" src="/static/require.js"></script>
+        [%scripts%]
         <script type="text/javascript">//<!--
 
             window.cloud9config = {
                 davPrefix: <%davPrefix%>,
                 workspaceDir: <%workspaceDir%>,
-                settingsUrl: <%settingsUrl%>,
                 debug: <%debug%>,
                 sessionId: <%sessionId%>,
                 workspaceId: <%workspaceId%>,                
-                name: <%name%>
+                name: <%name%>,
+                readonly: <%readonly%>,
+                projectName: <%projectName%>,
+                version: <%version%>
             };
             
             // prevent console messages crash our app!
@@ -39,15 +42,7 @@
                 ? "[%staticUrl%]/support/apf/apf.js"
                 : "[%staticUrl%]/js/apf_" + VERSION + ".js";
 
-            var config = {
-                paths: {
-                    "pilot": "[%staticUrl%]/support/ace/support/cockpit/support/pilot/lib/pilot",
-                    "ace": VERSION == FILES ? "[%staticUrl%]/support/ace/lib/ace" : "[%staticUrl%]/support/ace/lib/ace",
-                    "debug": "[%staticUrl%]/support/lib-v8debug/lib/v8debug",
-                    "apf": "[%staticUrl%]/support/apf"
-                },
-                waitSeconds: 30
-            }
+            var config = <%requirejsConfig%>;
             require(config, [apfLoc], function(){
                 apf.onstart = function(){
                     var list = ["core/ide", "core/ext", "core/util"];
@@ -62,6 +57,9 @@
                             //Load extensions
                             require(plugins, function(){
                                 ide.dispatchEvent("extload", {modules: plugins});
+                                ide.addEventListener("$event.extload", function(cb){
+                                    cb();
+                                });
                             });
                         });
                     });
@@ -115,7 +113,7 @@
         </div>
 
         <a:skin
-          src        = "[%staticUrl%]/style/skins.xml"
+          src        = "/static/style/skins.xml"
           media-path = "[%staticUrl%]/style/images/"
           icon-path  = "[%staticUrl%]/style/icons/" />
 
@@ -140,30 +138,45 @@
         <a:state id="stServerConnected" active="false" />
         <a:state id="stProcessRunning" active="false" />
 
-        <a:include src="[%staticUrl%]/include/models.xml" />
-        <a:include src="[%staticUrl%]/include/menus.xml" />
-        <a:include src="[%staticUrl%]/include/windows.xml" />
+        <a:include src="/static/include/models.xml" />
+        <a:include src="/static/include/menus.xml" />
+        <a:include src="/static/include/windows.xml" />
 
         <a:vbox anchors="0 0 0 0" id="vbMain">
-            <a:bar skin="headerbar">
-                <a id="logo" href="#" title="cloud9 ide">cloud9</a>
+            <a:bar skin="c9-menu-bar" id="logobar">
+                <a:hbox>
+                    <a:hbox id="barMenu" edge="9 5 0 5" padding="3" align="center">
+                        <a:button skin="c9-menu-btn" submenu="mnuFile" margin="1 0 0 0">File</a:button>
+                        <a:button skin="c9-menu-btn" submenu="mnuEdit" margin="1 0 0 0">Edit</a:button>
+                        <a:button skin="c9-menu-btn" submenu="mnuView" margin="1 0 0 0">View</a:button>
+                    </a:hbox>
+                    <a:hbox id="barTools" edge="8 0 0 0" padding="3" align="center">
+                        <a:divider skin="c9-divider-double" />
+                    </a:hbox>
+                </a:hbox>
             </a:bar>
-            <a:toolbar id="tbMain">
-                <a:menubar id="barMenu" class="headerMenuBar">
-                    <a:button submenu="mnuFile">File</a:button>
-                    <a:button submenu="mnuEdit">Edit</a:button>
-                    <a:button submenu="mnuView">View</a:button>
-                </a:menubar>
-                <a:bar id="barTools">
 
-                </a:bar>
-            </a:toolbar>
-
-            <a:vbox id="mainRow" padding="8" splitters="true" flex="1">
-                <a:hbox padding="8" edge="8 8 0 8" flex="1" splitters="true">
-                    <a:vbox id="colLeft" padding="8" width="200" splitters="true" />
-                    <a:vbox id="colMiddle" flex="1" padding="8" splitters="true" />
-                    <a:vbox id="colRight" padding="8" width="300" visible="false" splitters="true" />
+            <a:vbox id="mainRow" padding="0" flex="1" splitters="true">
+                <a:hbox id="hboxMain" padding="0" edge="0" flex="1">
+                    <a:vbox id="navbar" class="black-menu-bar unselectable">
+                        <a:filler />
+                        <a:bar skin="basic">
+                            <div class="c9menulogo">
+                                <span></span>
+                            </div>
+                            <div id="c9version" class="c9version">Version [%version%]</div>
+                        </a:bar>
+                    </a:vbox>
+                    <a:vbox id="colLeft" padding="3" width="200" />
+                    <a:splitter width="0" id="splitterPanelLeft" />
+                    <a:vbox id="colMiddle" flex="1" padding="3" />
+                    <a:bar id="dockPanelRight" skin="debug-panel">
+                        <a:button skin="dockheader" onclick="require('ext/dockpanel/dockpanel').expand()" />
+                    </a:bar>
+                    <a:splitter width="0" id="splitterPanelRight" visible="false" />
+                    <a:vbox id="colRight" padding="3" width="260" visible="false" splitters="true">
+                        <a:button skin="dockheader" class="expanded" nosplitter="true" height="11" margin="0 0 -3 0" onclick="require('ext/dockpanel/dockpanel').collapse()" />
+                    </a:vbox>
                 </a:hbox>
             </a:vbox>
             

@@ -12,26 +12,27 @@ var Document = function(node, docValue){
     
     this.getNode = function(){
         return node;
-    }
+    };
     
     this.setNode = function(newNode) {
-        return node = newNode;    
-    }
+        this.dispatchEvent("setnode", {node: newNode});
+        return (node = newNode);
+    };
     
     this.hasValue = function(){
-        return docValue !== undefined;
-    }
+        return this.getValue() !== undefined;
+    };
     
     this.setValue = function(value){
         this.setProperty("value", value);
         docValue = value;
-    }
+    };
 
     this.getValue = function(){
         return (this.hasEventListener("retrievevalue") 
             ? this.dispatchEvent("retrievevalue", {value: docValue})
             : docValue);
-    }
+    };
 };
 Document.prototype = new apf.Class();
 

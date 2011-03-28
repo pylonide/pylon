@@ -21,7 +21,9 @@ return ext.register("ext/html/html", {
         var _self = this;
         tabEditors.addEventListener("afterswitch", function(e){
             var mime = e.nextPage.contentType;
-            if (mime == "text/html" || mime == "application/xhtml+xml") {
+            if (mime == "text/html" || mime == "application/xhtml+xml"
+              || mime == "text/javascript" || mime == "text/plain"
+              || mime == "application/xml") {
                 ext.initExtension(_self);
                 _self.page = e.nextPage;
                 _self.enable();
@@ -35,8 +37,10 @@ return ext.register("ext/html/html", {
     init : function() {
         //Append the button bar to the main toolbar
         var nodes = barHtmlMode.childNodes;
-        for (var i = nodes.length - 1; i >= 0; i--) {
-            this.nodes.push(ide.barTools.appendChild(nodes[0]));
+        for (var node, i = nodes.length - 1; i >= 0; i--) {
+            node = ide.barTools.appendChild(nodes[0]);
+            if (node.nodeType != 1) continue;
+            this.nodes.push(node);
         }
 
         btnHtmlOpen.onclick = this.onOpenPage.bind(this);
@@ -64,13 +68,13 @@ return ext.register("ext/html/html", {
         this.enabled = false;
 
         this.nodes.each(function(item){
-            item.hide();
+            item.hide && item.hide();
         });
     },
 
     destroy : function(){
         this.nodes.each(function(item){
-            item.destroy(true, true);
+            item.destroy && item.destroy(true, true);
         });
         this.nodes = [];
     }

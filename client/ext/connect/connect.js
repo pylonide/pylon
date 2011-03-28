@@ -17,18 +17,25 @@ return ext.register("ext/connect/connect", {
     deps        : [],
     
     init : function(){
+        ide.onLine = -1;
         ide.addEventListener("socketConnect", function(e){
             ide.dispatchEvent("beforeonline");
             ide.dispatchEvent("afteronline");
             
+            stServerConnected.activate();
             winReconnect.hide();
+            
+            ide.onLine = true;
         });
         
         ide.addEventListener("socketDisconnect", function(e){
             ide.dispatchEvent("beforeoffline");
             ide.dispatchEvent("afteroffline");
             
+            stServerConnected.deactivate();
             winReconnect.show();
+            
+            ide.onLine = false;
         });
     },
     

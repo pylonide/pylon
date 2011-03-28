@@ -1,0 +1,70 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+<a:splitter name="splitter">
+    <a:style><![CDATA[
+        .splitter {
+            position : relative;
+            z-index  : 90000;
+        }
+        
+        .splitterFocus {
+        }
+
+        .w-resize {
+            cursor : ew-resize;
+        }
+
+        .n-resize {
+            cursor : ns-resize;
+        }
+
+        .splitterMoving {
+            background-color : gray;
+        }
+
+        .splitterRealtime{
+            background : url(images/spacer.gif);
+        }
+        
+        .splitter.vertical{
+            display  : -moz-box;
+            display  : -webkit-box;
+            display  : -ms-box;
+        }
+        
+        .splitter.vertical div{
+            width : 5px;
+            margin-left : -3px;
+            background : url(images/spacer.gif);
+        }
+        
+        .splitter.horizontal{
+            margin : -2px 0 0 0;
+        }
+        
+        .splitter.horizontal div{
+            height : 5px;
+            margin-top : -2px;
+            background : url(images/spacer.gif);
+            position : absolute;
+            width : 100%;
+        }
+        
+        .dockcol .splitter.horizontal{
+            height : 3px;
+            background : #333;
+        }
+        .dockcol .splitter.horizontal div{
+            height : 3px;
+            margin-top : 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main handle=".">
+            <div class="splitter">
+                <div> </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:splitter>
+</a:skin>

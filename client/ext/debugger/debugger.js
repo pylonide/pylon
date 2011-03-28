@@ -5,7 +5,6 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
  
-
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
@@ -13,17 +12,20 @@ var ext = require("core/ext");
 var console = require("ext/console/console");
 var editors = require("ext/editors/editors");
 var panels = require("ext/panels/panels");
+var dock   = require("ext/dockpanel/dockpanel");
 var fs = require("ext/filesystem/filesystem");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/debugger/debugger.xml");
 
 return ext.register("ext/debugger/debugger", {
-    name   : "Debug",
-    dev    : "Ajax.org",
-    type   : ext.GENERAL,
-    alone  : true,
-    markup : markup,
-    deps   : [fs, noderunner],
+    name    : "Debug",
+    dev     : "Ajax.org",
+    type    : ext.GENERAL,
+    alone   : true,
+    //offline : false,
+    markup  : markup,
+    buttonClassName : "debug1",
+    deps    : [fs, noderunner],
     commands: {
         "debug": {
             "hint": "run and debug a node program on the server",
@@ -36,11 +38,6 @@ return ext.register("ext/debugger/debugger", {
     nodes : [],
 
     hook : function(){
-        this.$layoutItem = mnuModes.appendChild(new apf.item({
-            value   : "ext/debugger/debugger",
-            caption : this.name
-        }));
-
         ide.addEventListener("consolecommand.debug", function(e) {
             ide.socket.send(JSON.stringify({
                 command: "internal-isfile",
@@ -59,16 +56,67 @@ return ext.register("ext/debugger/debugger", {
             _self.disable();
         });
         
-        panels.register(this);
+        ide.addEventListener("afteropenfile", function(e) {
+            var doc = e.doc;
+            var node = e.node;
+            var path = node.getAttribute("path");
+            
+            node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
+        });
+        
+        var sectionStack = dock.getSection("debugger-stack");
+        var sectionRest = dock.getSection("debugger-rest");
+        
+        dock.registerPage(sectionStack, null, function(){
+            ext.initExtension(_self);
+            return dbgCallStack;
+        }, {
+            primary : {
+                backgroundImage: "/static/style/images/debugicons.png",
+                defaultState: { x: -6, y: -217 /*-46*/ },
+                activeState: { x: -6, y: -217 }
+            },
+        });
+        
+        dock.registerPage(sectionRest, null, function(){
+            ext.initExtension(_self);
+            return dbInteractive;
+        }, {
+            primary : {
+                backgroundImage: "/static/style/images/debugicons.png",
+                defaultState: { x: -7, y: -310 /*-130*/ },
+                activeState: { x: -7, y: -310 }
+            },
+        });
+        
+        dock.registerPage(sectionRest, null, function(){
+            ext.initExtension(_self);
+            return dbgVariable;
+        }, {
+            primary : {
+                backgroundImage: "/static/style/images/debugicons.png",
+                defaultState: { x: -6, y: -261 /*-174*/ },
+                activeState: { x: -6, y: -261 }
+            },
+        });
+        
+        dock.registerPage(sectionRest, null, function(){
+            ext.initExtension(_self);
+            return dbgBreakpoints;
+        }, {
+            primary : {
+                backgroundImage: "/static/style/images/debugicons.png",
+                defaultState: { x: -6, y: -360 /*-88*/ },
+                activeState: { x: -6, y: -360 }
+            },
+        });
     },
 
     init : function(amlNode){
-        this.panel = winDbgStack;
-        this.rightPane = colRight;
-        this.nodes.push(this.rightPane.appendChild(winDbgStack));
+        var _self = this;
 
         this.paths = {};
-        var _self = this;
+        
         mdlDbgSources.addEventListener("afterload", function() {
             _self.$syncTree();
         });
@@ -84,6 +132,7 @@ return ext.register("ext/debugger/debugger", {
             // TODO: optimize this!
             _self.$syncTree();
         });
+        
         //@todo move this to noderunner...
         dbg.addEventListener("changeframe", function(e) {
             e.data && _self.showDebugFile(e.data.getAttribute("scriptid"));
@@ -93,6 +142,10 @@ return ext.register("ext/debugger/debugger", {
             if (e.selected && e.selected.getAttribute("scriptid"))
                 _self.showDebugFile(e.selected.getAttribute("scriptid"), parseInt(e.selected.getAttribute("line")) + 1);
             // TODO sometimes we don't have a scriptID
+        });
+        
+        lstScripts.addEventListener("afterselect", function(e) {
+            e.selected && require("ext/debugger/debugger").showDebugFile(e.selected.getAttribute("scriptid"));
         });
 
         ide.addEventListener("afterfilesave", function(e) {
@@ -196,45 +249,32 @@ return ext.register("ext/debugger/debugger", {
     },
 
     enable : function(){
-        panels.initPanel(this);
+        ext.initExtension(this);
         
         this.nodes.each(function(item){
             if (item.show)
                 item.show();
         });
-        this.rightPane.setProperty("visible", true);
-
-        //Quick Fix
-        if (apf.isGecko)
-            apf.layout.forceResize(ide.vbMain.$ext);
     },
 
     disable : function(){
-        if (!this.panel)
-            return;
-        
         this.nodes.each(function(item){
             if (item.hide)
                 item.hide();
         });
-        this.rightPane.setProperty("visible", false);
         //log.disable(true);
-
-        //Quick Fix
-        if (apf.isGecko)
-            apf.layout.forceResize(ide.vbMain.$ext);
     },
 
     destroy : function(){
         this.nodes.each(function(item){
             item.destroy(true, true);
+            dock.unregisterPage(item);
         });
-        winV8.destroy(true, true);
+        
+        tabDebug.destroy(true, true);
         this.$layoutItem.destroy(true, true);
 
         this.nodes = [];
-        
-        panels.unregister(this);
     }
 });
 

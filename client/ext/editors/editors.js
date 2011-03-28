@@ -19,6 +19,7 @@ return ext.register("ext/editors/editors", {
     type    : ext.GENERAL,
     nodes   : [],
     visible : true,
+    alwayson : true,
 
     contentTypes  : {},
 
@@ -102,6 +103,9 @@ return ext.register("ext/editors/editors", {
                         _self.afterswitch(e);
                     },
                     onclose : function(e){
+                        if (!ide.onLine) //For now prevent tabs from being closed
+                            return false;
+                            
                         _self.close(e.page);
                     }
                 })/*,
@@ -120,10 +124,10 @@ return ext.register("ext/editors/editors", {
         tabPlaceholder.addEventListener("resize", function(e){
             var ext = tab.$ext, ph;
             var pos = apf.getAbsolutePosition(ph = tabPlaceholder.$ext);
-            ext.style.left = pos[0] + "px";
+            ext.style.left = (pos[0] - 2) + "px";
             ext.style.top  = pos[1] + "px";
             var d = apf.getDiff(ext);
-            ext.style.width = (ph.offsetWidth - d[0]) + "px";
+            ext.style.width = (ph.offsetWidth + 2 + (apf.isGecko && colRight.visible ? 2 : 0) - d[0]) + "px";
             ext.style.height = (ph.offsetHeight - d[1]) + "px";
         });
 
@@ -220,6 +224,7 @@ return ext.register("ext/editors/editors", {
                 page.$at     = new apf.actiontracker();
                 page.$doc    = doc;
                 page.$editor = editor;
+                page.setAttribute("tooltip", "[@path]");
                 
                 page.setAttribute("model", page.$model = model);
                 page.$model.load(xmlNode);
@@ -228,15 +233,26 @@ return ext.register("ext/editors/editors", {
         if (init)
             tabEditors.setAttribute("buttons", "close,scale");
 
-        fake.$at.addEventListener("afterchange", function(){
-            var val;
+        doc.addEventListener("setnode", function(e){
+            fake.$model.load(e.node);
+        });
+
+        fake.$at.addEventListener("afterchange", function(e){
+            if (e.action == "reset") {
+                delete this.undo_ptr;
+                return;
+            }            
             
+            var val;
             if (fake.$at.ignoreChange) {
                 val = undefined;
                 fake.$at.ignoreChange = false;
-            } else
-                val = this.undolength ? 1 : undefined;
-            if (fake.changed != val) {
+            } else if(this.undolength === 0 && !this.undo_ptr)
+                val = undefined;
+            else
+                val = (this.$undostack[this.$undostack.length-1] !== this.undo_ptr) ? 1 : undefined;
+                
+            if (fake.changed !== val) {
                 fake.changed = val;
                 model.setQueryValue("@changed", (val ? "1" : "0"));
             }
@@ -263,7 +279,7 @@ return ext.register("ext/editors/editors", {
         this.currentEditor = editor;
     },
 
-    close : function(page){
+    close : function(page) {
         page.addEventListener("afterclose", this.$close);
     },
 
@@ -282,7 +298,19 @@ return ext.register("ext/editors/editors", {
 
         at.reset();
         at.destroy();
-
+        
+        //If there are no more pages left, reset location
+        if (!tabEditors.getPage()) {
+            /*if (window.history.pushState) {
+                var p = location.pathname.split("/");
+                window.history.pushState(path, path, "/" + (p[1] || "") + "/" + (p[2] || ""));
+            }
+            else {
+                apf.history.setHash("");
+            }*/
+            apf.history.setHash("");
+        }
+        
         //Destroy the app page if it has no application instance
         //if (!tabEditors.selectNodes("page[@type='" + page.type + "']").length && editorPage)
             //editorPage.destroy(true, true);
@@ -317,7 +345,17 @@ return ext.register("ext/editors/editors", {
                 fromHandler.disable();
             toHandler.enable();
         }
-
+        
+        var path = page.$model.data.getAttribute("path").replace(/^\/workspace/, "");
+        /*if (window.history.pushState) {
+            var p = location.pathname.split("/");
+            window.history.pushState(path, path, "/" + (p[1] || "name") + "/" + (p[2] || "project") + path);
+        }
+        else {
+            apf.history.setHash("!" + path);
+        }*/
+        apf.history.setHash("!" + path);
+        
         //toHandler.$itmEditor.select();
         //toHandler.$rbEditor.select();
 
@@ -333,6 +371,18 @@ return ext.register("ext/editors/editors", {
 
     hook : function(){
         panels.register(this);
+        
+        window.onpopstate  = function(e){
+            var page = "/workspace" + e.state;
+            if (tabEditors.activepage != page && tabEditors.getPage(page))
+                tabEditors.set(page);
+        }
+        
+        apf.addEventListener("hashchange", function(e){
+            var page = "/workspace" + e.page;
+            if (tabEditors.activepage != page && tabEditors.getPage(page))
+                tabEditors.set(page);
+        });
     },
 
     init : function(){
@@ -364,18 +414,30 @@ return ext.register("ext/editors/editors", {
 
         this.$settings = {}, _self = this;
         ide.addEventListener("loadsettings", function(e){
+            function checkExpand(path, doc) {
+                var parent_path = apf.getDirname(path).replace(/\/$/, "");
+                trFiles.addEventListener("expand", function(e){
+                    if (e.xmlNode.getAttribute("path") == parent_path) {
+                        doc.setNode(e.xmlNode.selectSingleNode("node()[@path='" + path + "']"));
+                    }
+                });
+            }
+            
             var model = e.model;
             ide.addEventListener("extload", function(){
                 var active = model.queryValue("auto/files/@active");
                 var nodes  = model.queryNodes("auto/files/file");
-                for (var i = 0, l = nodes.length; i < l; i++) {
+                for (var doc, i = 0, l = nodes.length; i < l; i++) {
+                    doc = ide.createDocument(nodes[i]);
                     ide.dispatchEvent("openfile", {
-                        doc    : ide.createDocument(nodes[i]),
+                        doc    : doc,
                         init   : true,
                         active : active 
                             ? active == nodes[i].getAttribute("path")
                             : i == l - 1
                     });
+                    
+                    checkExpand(nodes[i].getAttribute("path"), doc);
                 }
             });
         });
@@ -402,7 +464,7 @@ return ext.register("ext/editors/editors", {
                         continue;
 
                     var copy = apf.xmldb.cleanNode(file.cloneNode(false));
-                    copy.removeAttribute("changed");
+                    //copy.removeAttribute("changed");
                     pNode.appendChild(copy);
                 }
             }
@@ -412,40 +474,22 @@ return ext.register("ext/editors/editors", {
         });
         
         ide.addEventListener("afterreload", function(e) {
-            var doc     = e.doc,
-                acedoc  = doc.acedoc,
-                sel     = acedoc.getSelection();
+            var doc         = e.doc,
+                acesession  = doc.acesession,
+                sel         = acesession.getSelection();
             
             sel.selectAll();
-            acedoc.getUndoManager().ignoreChange = true;
-            acedoc.replace(sel.getRange(), e.data);
+            acesession.getUndoManager().ignoreChange = true;
+            acesession.replace(sel.getRange(), e.data);
             sel.clearSelection();
         });
     },
 
-    contentTypes : {
-        "js" : "application/javascript",
-        "json" : "application/json",
-        "css" : "text/css",
-        "xml" : "application/xml",
-        "php" : "application/x-httpd-php",
-        "html" : "text/html",
-        "xhtml" : "application/xhtml+xml",
-        "coffee" : "text/x-script.coffeescript",
-        "py" : "text/x-script.python",
-        "php" : "application/x-httpd-php"
-    },
-    
-    getContentType : function(file) {
-        var type = file.split(".").pop() || "";
-        return this.contentTypes[type] || "text/plain";
-    },
-    
     showFile : function(path, row, column, text) {
         var name = path.split("/").pop();
         var node = apf.n("<file />")
             .attr("name", name)
-            .attr("contenttype", this.getContentType(name))
+            .attr("contenttype", util.getContentType(name))
             .attr("path", path)
             .node();
     

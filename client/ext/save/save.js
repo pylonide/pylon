@@ -24,10 +24,15 @@ return ext.register("ext/save/save", {
     nodes       : [],
 
     hook : function(){
+        if (!self.tabEditors) return;
+        
         var _self = this;
         
-        tabEditors.addEventListener("close", this.$close = function(e){
-            if (e.page.$at.undolength) {
+        tabEditors.addEventListener("close", this.$close = function(e) {
+            var at = e.page.$at;
+            if (!at.undo_ptr)
+                at.undo_ptr = at.$undostack[0];
+            if (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr) {
                 ext.initExtension(_self);
                 
                 winCloseConfirm.page = e.page;
@@ -51,10 +56,12 @@ return ext.register("ext/save/save", {
         });
 
         this.nodes.push(ide.barTools.appendChild(new apf.button({
-            id      : "btnSave",
-            icon    : "save_btn_ico{this.disabled ? '_disabled' : ''}.png",
-            caption : "Save",
-            onclick : this.quicksave
+            id       : "btnSave",
+            //icon     : "save_btn_ico{this.disabled ? '_disabled' : ''}.png",
+            caption  : "Save",
+            skin     : "c9-toolbarbutton",
+            disabled : "{!tabEditors.activepage}",
+            onclick  : this.quicksave
         })));
 
         var saveItem, saveAsItem;
@@ -114,9 +121,10 @@ return ext.register("ext/save/save", {
     },
     
     saveall : function(){
-        var pages = tabEditors.getPages();
+        var pages = tabEditors.getPages();        
         for (var i = 0; i < pages.length; i++) {
-            if (pages[i].$at.undolength)
+            var at = pages[i].$at;
+            if (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr)
                 this.quicksave(pages[i]);
         }
     },
@@ -127,8 +135,9 @@ return ext.register("ext/save/save", {
         winCloseConfirm.all = 0;
                 
         var _self = this;
-        apf.asyncForEach(pages, function(item, next){
-            if (item.$at.undolength) {
+        apf.asyncForEach(pages, function(item, next) {
+            var at = item.$at;
+            if (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr) {
                 if (winCloseConfirm.all == 1)
                     _self.quicksave(item);
                 //else if (winCloseConfirm.all == -1)
@@ -156,7 +165,7 @@ return ext.register("ext/save/save", {
             else
                 next();
         },
-        function(){
+        function() {
             callback(winCloseConfirm.all);
         });
     },
@@ -179,6 +188,7 @@ return ext.register("ext/save/save", {
         var _self = this, panel = sbMain.firstChild;
         panel.setAttribute("caption", "Saving file " + path);
         
+        ide.dispatchEvent("beforefilesave", {node: node, doc: doc, value: value});
         fs.saveFile(path, value, function(data, state, extra){
             if (state != apf.SUCCESS) {
                 util.alert(
@@ -198,8 +208,9 @@ return ext.register("ext/save/save", {
                     panel.removeAttribute("caption");
             }, 2500);
         });
-        
-        page.$at.reset(); //@todo this sucks... please fix
+        var at = page.$at
+        at.undo_ptr = at.$undostack[at.$undostack.length-1];
+        page.$at.dispatchEvent("afterchange");
         return false;
     },
     

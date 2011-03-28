@@ -89,6 +89,14 @@ If you get an error about unable to load o3-xml or an architecture error, you wi
 
 after this you can start cloud9 manually using node bin/cloud9.js
 
+## How to compile a custom node.js binary
+
+There is a known V8 bug in the 0.2.x banch of node, which prevents the debugger from working under Linux. To work around this bug the node binary has to be compiled with gcc 4.4:
+
+    $ export GCC_VERSION=44
+    $ configure
+    $ make
+
 ## Documentation
 
 Documentation is in the making. 

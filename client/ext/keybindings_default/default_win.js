@@ -35,7 +35,7 @@ return keys.onLoad({
             "gotoline": "Ctrl-G"
         },
         "gotofile": {
-            "gotofile": "Alt-Shift-R"
+            "gotofile": "Alt-Shift-R|Ctrl-T"
         },
         "newresource": {
             "newfile": "Ctrl-N",
@@ -94,7 +94,7 @@ return keys.onLoad({
             "selecttoend": "Ctrl-Shift-Down",
             "gotoend": "Ctrl-End",
             "selectdown": "Shift-Down",
-            "godown": "Down",
+            "golinedown": "Down",
             "selectwordleft": "Ctrl-Shift-Left",
             "gotowordleft": "Ctrl-Left",
             "selecttolinestart": "Alt-Shift-Left",
