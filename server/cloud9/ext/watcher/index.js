@@ -7,15 +7,18 @@
 var fs      = require("fs"),
     sys     = require("sys"),
     Plugin  = require("cloud9/plugin");
-    
+   
+var ignoredPaths = {};
+ 
 function cloud9WatcherPlugin(ide) {
     var that = this;
     
     ide.davServer.plugins['watcher'] = function (handler) {
         handler.addEventListener('beforeWriteContent', function (e, uri) {
-            var path = ide.davServer.tree.basePath + '/' + uri;
-            
-            that.ignoredPaths[path] = path;
+            var path = handler.server.tree.basePath + '/' + uri;
+
+            // console.log('Detected save', path);
+            ignoredPaths[path] = path;
         });
     };
 
@@ -23,7 +26,6 @@ function cloud9WatcherPlugin(ide) {
     this.hooks = ["disconnect", "command"];
     this.name = "watcher";
     this.filenames = {};
-    this.ignoredPaths = {};
 }
 
 sys.inherits(cloud9WatcherPlugin, Plugin);
@@ -52,17 +54,19 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
         with (message) {
             if (command != "watcher")
                 return false;
-            filename = path.replace(/\/workspace/, this.ide.workspaceDir);
+
             switch (type) {
             case "watchFile":
-                if (this.filenames[filename]) 
-                    ; // console.log("Already watching file " + filename);
+                if (this.filenames[path]) 
+                    ; // console.log("Already watching file " + path);
                 else {
-                    console.log("Watching file " + filename);
+                    // console.log("Watching file " + path);
                     that = this;
-                    fs.watchFile(filename, function (curr, prev) {
-                        if (that.ignoredPaths[filename]) {
-                            delete that.ignoredPaths[filename];
+                    fs.watchFile(path, function (curr, prev) {
+                        // console.log('Detected event', path);
+                        if (ignoredPaths[path]) {
+                            console.log('Ignored');
+                            delete ignoredPaths[path];
                             return;   
                         }
                         if (curr.nlink == 1 && prev.nlink == 0)
@@ -76,8 +80,9 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                         if (curr.isDirectory()) {
                             files = {};
                             
-                            fs.readdirSync(filename).forEach(function (file) {
-                                var stat = fs.statSync(filename + "/" + file);
+                            // TODO don't use sync calls
+                            fs.readdirSync(path).forEach(function (file) {
+                                var stat = fs.statSync(path + "/" + file);
 
                                 if (file.charAt(0) != '.') {
                                     files[file] = {
@@ -93,13 +98,13 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                             "path"      : path,
                             "files"     : files
                         }));
-                        // console.log("Sent " + subtype + " notification for file " + filename);
+                        console.log("Sent " + subtype + " notification for file " + path);
                     });
-                    this.filenames[filename] = filename;
+                    this.filenames[path] = path;
                 }
                 return true;
             case "unwatchFile":
-                return this.unwatchFile(filename);
+                return this.unwatchFile(path);
             default:
                 return false;
             }
