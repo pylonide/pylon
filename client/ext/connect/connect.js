@@ -18,7 +18,6 @@ return ext.register("ext/connect/connect", {
     
     init : function(){
         ide.onLine = -1;
-        
         ide.addEventListener("socketConnect", function(e){
             ide.dispatchEvent("beforeonline");
             ide.dispatchEvent("afteronline");

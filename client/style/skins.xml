@@ -7091,4 +7091,31 @@
             </a:main>
         </a:presentation>
     </a:errorbox>
+
+	<a:img name="img">
+        <a:style><![CDATA[
+            .img {
+                overflow         : hidden;
+                position         : relative;
+                
+                -moz-border-radius    : 3px;
+                -webkit-border-radius : 3px;
+            }
+            
+            .img IMG {
+                margin   : 4px;
+                position : relative;
+                overflow : hidden;
+                display  : block;
+            }
+        ]]></a:style>
+
+        <a:presentation>
+            <a:main image="img/@src">
+                <div class="img">
+                    <img src="" />
+                </div>
+            </a:main>
+        </a:presentation>
+    </a:img>
 </a:skin>

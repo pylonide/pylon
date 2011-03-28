@@ -189,7 +189,7 @@ return ext.register("ext/quicksearch/quicksearch", {
         var options = {
             backwards: backwards || false, 
             wrap: true, 
-            caseSensitive: true, 
+            caseSensitive: false, 
             wholeWord: false, 
             regExp: false, 
             scope: Search.ALL 

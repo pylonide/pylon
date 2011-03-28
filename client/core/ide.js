@@ -37,6 +37,8 @@ require.def("core/ide", deps,
 
             this.loggedIn = true;
 
+            this.loggedIn = true;
+
             this.dispatchEvent("load");
 
             /**** Error Handling ****/

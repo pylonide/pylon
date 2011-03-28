@@ -86,6 +86,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/html/html",
     "ext/browser/browser",
     "ext/code/code",
+    "ext/imgview/imgview",
     "ext/extmgr/extmgr",
     "ext/run/run", //Add location rule
     "ext/debugger/debugger", //Add location rule
