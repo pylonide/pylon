@@ -94,7 +94,27 @@ var contentTypes = {
     "cpp": "text/x-c",
     "cxx": "text/x-c",
     "h": "text/x-c",
-    "hh": "text/x-c"
+    "hh": "text/x-c",
+    
+    "bmp": "image",
+    "djv": "image",
+    "djvu": "image",
+    "gif": "image",
+    "ico": "image",
+    "jpeg": "image",
+    "jpg": "image",
+    "pbm": "image",
+    "pgm": "image",
+    "png": "image",
+    "pnm": "image",
+    "ppm": "image",
+    "psd": "image",
+    "svg": "image",
+    "svgz": "image",
+    "tif": "image",
+    "tiff": "image",
+    "xbm": "image",
+    "xpm": "image"
 };
     
 exports.getFileIcon = function(xmlNode) {
