@@ -167,13 +167,13 @@ return ext.register("ext/settings/settings", {
         
         this.panel = winSettings;
         
-        winSettings.addEventListener("hide", function(){
+        /*winSettings.addEventListener("hide", function(){
             colLeft.$ext.style.minWidth = "0px"; //hack
         });
         
         winSettings.addEventListener("show", function() {
             colLeft.$ext.style.minWidth = "215px"; //hack
-        });
+        });*/
         
         colLeft.appendChild(winSettings);
     },
