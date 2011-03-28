@@ -9,6 +9,7 @@
     <a:include src="dropdown.xml" />
     <a:include src="checkbox.xml" />
     <a:include src="frame.xml" />
+    <a:include src="img.xml" />
     <a:include src="label.xml" />
     <a:include src="list.xml" />
     <a:include src="menu.xml" />
