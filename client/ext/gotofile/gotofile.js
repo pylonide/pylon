@@ -38,7 +38,7 @@ return ext.register("ext/gotofile/gotofile", {
                 onclick : function() {
                     _self.toggleDialog(true);
                 }
-            }), mnuFile.firstChild),
+            }), mnuFile.firstChild)/*,
             
             ide.barTools.appendChild(new apf.button({
                 id      : "btnOpen",
@@ -48,7 +48,7 @@ return ext.register("ext/gotofile/gotofile", {
                 onclick : function() {
                     _self.toggleDialog(true);
                 }
-            }))
+            }))*/
         );
         
         this.hotitems["gotofile"] = [this.nodes[0]];
