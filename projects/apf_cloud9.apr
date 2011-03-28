@@ -520,8 +520,8 @@
         <p:define name="__SUPPORT_IE5" value="1" />
         <p:define name="__SUPPORT_SAFARI2" value="1" />
         <p:define name="__SUPPORT_IPHONE" value="1" /-->
-        <!--p:define name="__AMLIMG" value="1" />
-        <p:define name="__PARSER_XSD" value="1" />
+        <p:define name="__AMLIMG" value="1" />
+        <!--p:define name="__PARSER_XSD" value="1" />
         <p:define name="__WITH_XSDUNION" value="1" />
         <p:define name="__WITH_XSDTOTALDIGITS" value="1" />
         <p:define name="__WITH_XSDSIMPLETYPE" value="1" />
