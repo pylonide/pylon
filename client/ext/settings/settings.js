@@ -147,17 +147,6 @@ return ext.register("ext/settings/settings", {
             panels.initPanel(_self);
             _self.enable(true);
         });
-        
-        /*btn.addEventListener("mousedown", function() {
-            panels.initPanel(_self);
-            if(_self.panel.visible)
-                _self.disable(true);
-            
-            else
-                _self.enable(true);
-        });*/
-        
-        this.hotitems["showsettings"] = [this.button];
 
         this.model = new apf.model();
 
@@ -167,13 +156,6 @@ return ext.register("ext/settings/settings", {
     },
 
     init : function(amlNode){
-        /*this.btnOK = winSettings.selectSingleNode("a:vbox/a:hbox[2]/a:button[1]");
-        this.btnOK.onclick = this.saveSettings.bind(this);
-        this.btnCancel = winSettings.selectSingleNode("a:vbox/a:hbox[2]/a:button[2]");
-        this.btnCancel.onclick = this.cancelSettings;
-        this.btnApply = winSettings.selectSingleNode("a:vbox/a:hbox[2]/a:button[3]");
-        this.btnApply.onclick = this.applySettings.bind(this);*/
-        
         this.panel = winSettings;
         
         winSettings.addEventListener("hide", function(){
@@ -188,20 +170,8 @@ return ext.register("ext/settings/settings", {
     },
 
     showsettings: function(e){
-        //ext.initExtension(this);
-        //winSettings.show();
-        //return false;
-        var value = this.button.value;
-        if (navbar.current && (navbar.current != this || value)) {
-            navbar.current.disable(navbar.current == this);
-            if (value) 
-                return false;
-        }
-        
         panels.initPanel(this);
-        this.enable(true);
-        
-        navbar.current = this;
+        this.enable();
         
         return false;
     },
