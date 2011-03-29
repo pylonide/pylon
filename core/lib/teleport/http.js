@@ -275,7 +275,8 @@ apf.http = function(){
         }
         //#endif
 
-        var async = options.async = (options.async
+        var binary = apf.hasXhrBinary && options.binary;
+        var async = options.async = (options.async || binary 
             || typeof options.async == "undefined" || apf.isOpera || false);
 
         //#ifdef __SUPPORT_WEBKIT
@@ -443,6 +444,13 @@ apf.http = function(){
                 setRequestHeader("X-Proxy-Request", url);
                 setRequestHeader("X-Compress-Response", "gzip");
             }
+            
+            if (binary) {
+                setRequestHeader("Cache-Control", "no-cache");
+                setRequestHeader("X-File-Name", binary.filename);
+                setRequestHeader("X-File-Size", binary.filesize);
+                setRequestHeader("Content-Type", "application/octet-stream");
+            }
         }
         catch (e) {
             errorFound = e.message;
@@ -553,7 +561,8 @@ apf.http = function(){
                 id       : id,
                 message  : msg
             }) : false;
-            if(!noClear) _self.clearQueueItem(id);
+            if (!noClear)
+                _self.clearQueueItem(id);
         }
 
         function send(isLocal){
@@ -579,8 +588,13 @@ apf.http = function(){
                 window.onerror = oldWinOnerror;
             }
             else {
-                try{
-                    http.send(data);
+                try {
+                    if (binary && http.sendAsBinary) {
+                        binary.blob = getBinaryBlob(data, http, binary);
+                        http.sendAsBinary(binary.blob.data);
+                    }
+                    else
+                        http.send(data);
                 }
                 catch(e){
                     hasError = true;
@@ -590,6 +604,15 @@ apf.http = function(){
             if (hasError) {
                 handleError();
                 return;
+            }
+            else if (binary && http.upload) {
+                http.upload.onprogress = function(e) {
+                    apf.dispatchEvent("http.uploadprogress", {
+                        loaded  : e.loaded - binary.blob.size,
+                        extra   : e,
+                        bubbles : true
+                    });
+                };
             }
         }
 
@@ -637,6 +660,37 @@ apf.http = function(){
         }
     }
     // #endif
+    
+    /**
+     * Sends the binary blob to server and multipart encodes it if needed this code 
+     * will only be executed on Gecko since it's currently the only browser that 
+     * supports direct file access
+     * @private
+     */
+    function getBinaryBlob(data, http, binary) {
+        var boundary      = "----apfbound".appendRandomNumber(5),
+            dashdash      = "--",
+            crlf          = "\r\n",
+            multipartBlob = "",
+            multipartSize = 0;
+
+        // Build multipart request
+        if (binary.multipart) {
+            http.setRequestHeader("Content-Type", "multipart/form-data; boundary=" + boundary);
+            // Build RFC2388 blob
+            multipartBlob += dashdash + boundary + crlf +
+                'Content-Disposition: form-data; name="' + binary.filename
+                    + '"; filename="' + binary.filename + '"' + crlf +
+                'Content-Type: application/octet-stream' + crlf + crlf +
+                data + crlf +
+                dashdash + boundary + dashdash + crlf;
+
+            multipartSize = multipartBlob.length - data.length;
+            data = multipartBlob;
+        }
+        // Send blob or multipart blob depending on config
+        return {size: multipartSize, data: data};
+    }
 
     /**
      * @private
