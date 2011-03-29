@@ -66,7 +66,6 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                     fs.watchFile(path, function (curr, prev) {
                         // console.log('Detected event', path);
                         if (ignoredPaths[path]) {
-                            console.log('Ignored');
                             delete ignoredPaths[path];
                             return;   
                         }
