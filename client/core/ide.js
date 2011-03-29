@@ -5,8 +5,6 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var deps = ["core/document"];
-if (!window.cloud9config.standalone)
-    deps.push("/socket.io/socket.io.js");
 
 require.def("core/ide", deps,
     function(Document) {
