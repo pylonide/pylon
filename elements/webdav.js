@@ -184,10 +184,11 @@ apf.webdav = function(struct, tagName){
      * @param {sBody}     [sBody]      Optional body text (used for PUTs, for example)
      * @param {Object}    [oHeaders]   Additional headers in key: value format
      * @param {Boolean}   [bUseXml]    Tells the function whether to return XML. Defaults to FALSE
+     * @param {Object}    [oBinary]    Object with properties for binary upload in modern browsers
      * @param {Function}  [fCallback2] Optional second callback, passed to fCallback as arguments. Used mainly by the data instructions
      * @type  {void}
      */
-    this.doRequest = function(fCallback, sPath, sBody, oHeaders, bUseXml, fCallback2) {
+    this.doRequest = function(fCallback, sPath, sBody, oHeaders, bUseXml, oBinary, fCallback2) {
         if (!this.$getVar("authenticated")) {
             return onAuth.call(this, {
                 method : this.doRequest,
@@ -210,9 +211,8 @@ apf.webdav = function(struct, tagName){
 
                     oError = WebDAVError.call(_self, "Url: " + extra.url + "\nInfo: " + extra.message);
 
-                    if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
-                        return true;
-
+                    //if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
+                    //    return true;
                     if (fCallback)
                         return fCallback.call(_self, data, state, extra);
                     else
@@ -254,6 +254,7 @@ apf.webdav = function(struct, tagName){
             useXML        : false,//true,
             ignoreOffline : true,
             data          : sBody || "",
+            binary        : oBinary || false,
             headers       : oHeaders,
             username      : this.$getVar("auth-username") || null,
             password      : this.$getVar("auth-password") || null
@@ -528,19 +529,24 @@ apf.webdav = function(struct, tagName){
      * Write new contents (plaintext) to a file resource on the server, with or
      * without an existing lock on the resource.
      * 
-     * @param {String}   sPath    Path to the file on the WebDAV server
-     * @param {String}   sContent New content-body of the file
-     * @param {Boolean}  [bLock]  Whether to require a lock before write
-     * @param {String}   [sLock]  Lock token that MAY be omitted in preference of a lock refresh
-     * @param {Function} callback Function to execute when the request was successful
+     * @param {String}   sPath     Path to the file on the WebDAV server
+     * @param {String}   sContent  New content-body of the file
+     * @param {Boolean}  [bLock]   Whether to require a lock before write
+     * @param {Object}   [oBinary] Object with properties for binary upload in modern browsers
+     * @param {Function} callback  Function to execute when the request was successful
      * @type  {void}
      */
     this.writeFile =
-    this.write = function(sPath, sContent, bLock, callback) {
+    this.write = function(sPath, sContent, bLock, oBinary, callback) {
         if (bLock) {
             var oLock = this.lock(sPath);
             if (!oLock.token)
                 return updateLockedStack.call(this, oLock, "write", arguments);
+        }
+        // binary option has been added later, keep fallback possible
+        if (typeof callback == "undefined" && typeof oBinary == "function") {
+            callback = oBinary;
+            oBinary  = null;
         }
 
         this.method = "PUT";
@@ -562,7 +568,7 @@ apf.webdav = function(struct, tagName){
             }
         }, sPath, sContent, bLock && oLock.token
             ? {"If": "<" + oLock.token + ">"}
-            : null);
+            : null, null, oBinary);
     };
 
     /**
@@ -780,7 +786,7 @@ apf.webdav = function(struct, tagName){
                 +      document.location.toString().escapeHTML() +
                 +     '</D:href></D:owner>'
                 + '</D:lockinfo>';
-        this.doRequest(registerLock, sPath, xml, oHeaders, true, callback);
+        this.doRequest(registerLock, sPath, xml, oHeaders, true, null, callback);
         return newLock.call(this, sPath);
     };
 
@@ -935,7 +941,7 @@ apf.webdav = function(struct, tagName){
                 + '</D:propfind>';
         oHeaders = oHeaders || {};
         oHeaders["Depth"] = typeof iDepth != "undefined" ? iDepth : 1
-        this.doRequest(parsePropertyPackets, sPath, xml, oHeaders, true, callback);
+        this.doRequest(parsePropertyPackets, sPath, xml, oHeaders, true, null, callback);
     };
 
     /**
