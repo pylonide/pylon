@@ -48,7 +48,7 @@ require.def("core/ide", deps,
             if (
                 location.protocol != "file:"
                 && loc.indexOf("dev") == -1
-                && loc.indexOf("cloud9ide.com") > -1) 
+                && (loc.indexOf("cloud9ide.com") > -1 || loc.indexOf("c9.io") > -1))
             {
                 window.onerror = function(m, u, l) {
                     if (self.console)
@@ -82,6 +82,14 @@ require.def("core/ide", deps,
 //                            log     : apf.console.debugInfo.join("\n")
                         })
                     });
+                });
+            }
+            else {
+                window.onerror = function(m, u, l) {
+                    self.console && console.error("An error occurred", m, u, l);
+                }
+                apf.addEventListener("error", function(e){
+                    self.console && console.error("An APF error occurred", e);
                 });
             }
         };
