@@ -679,7 +679,7 @@ apf.http = function(){
             http.setRequestHeader("Content-Type", "multipart/form-data; boundary=" + boundary);
             // Build RFC2388 blob
             multipartBlob += dashdash + boundary + crlf +
-                'Content-Disposition: form-data; name="' + binary.filename
+                'Content-Disposition: form-data; name="' + (binary.filedataname || binary.filename)
                     + '"; filename="' + binary.filename + '"' + crlf +
                 'Content-Type: application/octet-stream' + crlf + crlf +
                 data + crlf +
