@@ -146,26 +146,6 @@ apf.datagrid = function(struct, tagName){
             this.$headings[i].setAttribute("options", value);
         }
     };
-
-    /**
-     * This method imports a stylesheet defined in a multidimensional array 
-     * @param {Array}    def Required Multidimensional array specifying 
-     * @param {Object}    win Optional Reference to a window
-     * @method
-     * @deprecated
-     */    
-    function importStylesheet(def, win){
-        for (var i = 0; i < def.length; i++) {
-            if (!def[i][1]) continue;
-            
-            if (apf.isIE)
-                (win || window).document.styleSheets[0].addRule(def[i][0],
-                    def[i][1]);
-            else
-                (win || window).document.styleSheets[0].insertRule(def[i][0]
-                    + " {" + def[i][1] + "}", 0);
-        }
-    }
     
     function scrollIntoView(){
         var Q = (this.current || this.$selected),
@@ -561,10 +541,10 @@ apf.datagrid = function(struct, tagName){
         this.$withContainer = e.bindings.description ? true : false;
 
         //Activate CSS Rules
-        importStylesheet(this.$cssRules, window);
+        apf.importStylesheet(this.$cssRules, window);
         
         if (this.$useiframe)
-            importStylesheet(this.$cssRules, this.oWin);
+            apf.importStylesheet(this.$cssRules, this.oWin);
     });
     
     this.$initNode = function(xmlNode, state, Lid, depth){
