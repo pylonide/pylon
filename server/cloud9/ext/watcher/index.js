@@ -19,6 +19,7 @@ function cloud9WatcherPlugin(ide) {
 
             // console.log('Detected save', path);
             ignoredPaths[path] = path;
+            e.next();
         });
     };
 
