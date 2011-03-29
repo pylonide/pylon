@@ -55,9 +55,10 @@ require.def("core/ide", deps,
                         method      : "POST",
                         contentType : "application/json",
                         data        : apf.serialize({
-                            agent : navigator.userAgent,
-                            type  : "General Javascript Error",
-                            e     : [m, u, l]
+                            agent       : navigator.userAgent,
+                            type        : "General Javascript Error",
+                            e           : [m, u, l],
+                            workspaceId : ide.workspaceId
 //                            log   : apf.console.debugInfo.join("\n")
                         })
                     });
@@ -70,13 +71,14 @@ require.def("core/ide", deps,
                         method      : "POST",
                         contentType : "application/json",
                         data        : apf.serialize({
-                            agent   : navigator.userAgent,
-                            type    : "APF Error",
-                            message : e.message,
-                            tgt     : e.currentTarget && e.currentTarget.serialize(),
-                            url     : e.url,
-                            state   : e.state,
-                            e       : e.error
+                            agent       : navigator.userAgent,
+                            type        : "APF Error",
+                            message     : e.message,
+                            tgt         : e.currentTarget && e.currentTarget.serialize(),
+                            url         : e.url,
+                            state       : e.state,
+                            e           : e.error,
+                            workspaceId : ide.workspaceId
 //                            log     : apf.console.debugInfo.join("\n")
                         })
                     });
