@@ -38,17 +38,18 @@ return ext.register("ext/gotofile/gotofile", {
                 onclick : function() {
                     _self.toggleDialog(true);
                 }
-            }), mnuFile.firstChild)/*,
+            }), mnuFile.firstChild),
             
             ide.barTools.appendChild(new apf.button({
                 id      : "btnOpen",
-                //icon    : "save_btn_ico{this.disabled ? '_disabled' : ''}.png",
-                caption : "Open...",
+                icon    : "open.png",
+                width   : 27,
+                tooltip : "Open...",
                 skin    : "c9-toolbarbutton",
                 onclick : function() {
                     _self.toggleDialog(true);
                 }
-            }))*/
+            }))
         );
         
         this.hotitems["gotofile"] = [this.nodes[0]];

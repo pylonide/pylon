@@ -85,7 +85,7 @@
     </a:window>
         
     <a:bar id="tbRun">
-        <!--a:divider skin="c9-divider" /-->
+        <a:divider skin="c9-divider" />
         <!--a:button
           icon="chromium_16.png"
           caption="Debug Chrome"
