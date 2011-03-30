@@ -43,7 +43,7 @@ return ext.register("ext/gotofile/gotofile", {
             ide.barTools.appendChild(new apf.button({
                 id      : "btnOpen",
                 icon    : "open.png",
-                width   : 27,
+                width   : 29,
                 tooltip : "Open...",
                 skin    : "c9-toolbarbutton",
                 onclick : function() {

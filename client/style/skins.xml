@@ -1337,11 +1337,11 @@
         
         .c9-toolbarbutton .c9-icon {
             display: none;
-            width:22px;
+            width:23px;
             height:19px;
             position:absolute;
             top:1px;
-            left:1px;
+            left:2px;
             background-position : 0 0;
             background-repeat   : no-repeat;
         }
