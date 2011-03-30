@@ -205,7 +205,7 @@ apf.importStylesheet = function (def, win) {
     if (!def.length)
         return;
         
-    var re = new RegExp(document.domain, 'g');
+    var re = new RegExp("^" + document.domain, 'g');
     var doc = (win || window).document;
     for (var index=0; index < document.styleSheets.length; index++) {
         if (!doc.styleSheets[index].href || doc.styleSheets[index].href.match(re)) {
@@ -215,7 +215,6 @@ apf.importStylesheet = function (def, win) {
     var styleSheet = doc.styleSheets[index];
     
     if (!styleSheet) {
-        console.log("create")
         if (doc.createStyleSheet)
             styleSheet = doc.createStyleSheet();
         else {
