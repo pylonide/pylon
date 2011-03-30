@@ -141,6 +141,9 @@ Parser.prototype = {
                the return value is added to the current argument
             */
             // convert hex values to chars (e.g. %20 => <SPACE>)
+            if(!this.lineBuffer)
+                return null;
+
             if (this.lineBuffer.length > charindex+2) {
                 // get next 2 chars
                 var hi = this.lineBuffer.charAt(charindex+1);
