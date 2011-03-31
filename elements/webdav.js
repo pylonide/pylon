@@ -497,7 +497,7 @@ apf.webdav = function(struct, tagName){
             if (iStatus == 201) { //Created
                 _self.readdir(sPath.substr(0, sPath.lastIndexOf("/")), callback);
             }
-            else if (iStatus == 403 || iStatus == 405 || iStatus == 409
+            else if (iStatus == 400 || iStatus == 403 || iStatus == 405 || iStatus == 409
               || iStatus == 415 || iStatus == 507) {
                 var oError = WebDAVError.call(this, "Unable to create directory '" + sPath
                              + "'. Server says: "
@@ -605,7 +605,7 @@ apf.webdav = function(struct, tagName){
         this.doRequest(function(data, state, extra) {
             bLock && unregisterLock.call(this, sFrom);
             var iStatus = parseInt(extra.status);
-            if (iStatus == 403 || iStatus == 409 || iStatus == 412 
+            if (iStatus == 400 || iStatus == 403 || iStatus == 409 || iStatus == 412 
               || iStatus == 423 || iStatus == 424 || iStatus == 502
               || iStatus == 507) {
                 var oError = WebDAVError.call(this, "Unable to copy file '" + sFrom
@@ -660,7 +660,7 @@ apf.webdav = function(struct, tagName){
         this.doRequest(function(data, state, extra) {
             bLock && unregisterLock.call(this, sFrom);
             var iStatus = parseInt(extra.status);
-            if (iStatus == 403 || iStatus == 409 || iStatus == 412
+            if (iStatus == 400 || iStatus == 403 || iStatus == 409 || iStatus == 412
               || iStatus == 423 || iStatus == 424 || iStatus == 502 || iStatus == 500) {
                 var oError = WebDAVError.call(this, "Unable to move file '" + sFrom
                              + "' to '" + sTo + "'. Server says: "
@@ -701,7 +701,7 @@ apf.webdav = function(struct, tagName){
         this.doRequest(function(data, state, extra) {
             bLock && unregisterLock.call(this, sPath);
             var iStatus = parseInt(extra.status);
-            if (iStatus == 423 || iStatus == 424) { //Failed dependency (collections only)
+            if (iStatus == 400 || iStatus == 423 || iStatus == 424) { //Failed dependency (collections only)
                 var oError = WebDAVError.call(this, "Unable to remove file '" + sPath
                              + "'. Server says: "
                              + apf.webdav.STATUS_CODES[String(iStatus)]);
@@ -842,7 +842,7 @@ apf.webdav = function(struct, tagName){
         var iStatus = parseInt(extra.status),
             sPath   = extra.url.replace(this.$server, ''),
             oLock   = this.$locks[sPath] || newLock.call(this, sPath);
-        if (iStatus == 409 || iStatus == 423 || iStatus == 412) {
+        if (iStatus == 400 || iStatus == 409 || iStatus == 423 || iStatus == 412) {
             // lock failed, so unregister it immediately
             unregisterLock.call(this, extra.url.replace(this.$server, ''));
             var oError = WebDAVError.call(this, "Unable to apply lock to '" + sPath
