@@ -214,7 +214,7 @@ apf.webdav = function(struct, tagName){
                     //if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
                     //    return true;
                     if (fCallback)
-                        return fCallback.call(_self, data, state, extra);
+                        return fCallback.call(_self, data, state, extra, fCallback2);
                     else
                         throw oError;
                 }
@@ -241,7 +241,7 @@ apf.webdav = function(struct, tagName){
                     }
                     catch(e) {
                         if (fCallback)
-                            return fCallback.call(_self, data, state, extra);
+                            return fCallback.call(_self, data, state, extra, fCallback2);
                         else
                             throw WebDAVError.call(_self, "Received invalid XML\n\n" + e.message);
                     }
@@ -1040,7 +1040,7 @@ apf.webdav = function(struct, tagName){
         if (status == 403 || status == 401 || !oXml)
             return callback ? callback.call(this, null, state, extra) : notAuth.call(this);
 
-        if(typeof oXml == 'string')
+        if (typeof oXml == "string")
             oXml = apf.getXml(oXml);
         
         var aResp = $xmlns(oXml, "response", apf.webdav.NS.D),
