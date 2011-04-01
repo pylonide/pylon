@@ -427,6 +427,20 @@ apf.webdav = function(struct, tagName){
     };
 
     //------------ Filesystem operations ----------------//
+    
+    /**
+     * Check whether a file or directory  exists on the remote filesystem and pass 
+     * that information to a callback function
+     * 
+     * @param {String}   sPath    Path to the file or directory on the WebDAV server
+     * @param {Function} callback Function to execute when the request was successful
+     * @type  {void}
+     */
+    this.exists = function(sPath, callback) {
+        this.getProperties(sPath, 0, function(data, state, extra) {
+            callback(state === apf.SUCCESS);
+        });
+    };
 
     /**
      * Read the content of a file as plaintext and pass the data to a callback
@@ -1110,6 +1124,9 @@ apf.webdav = function(struct, tagName){
                 break;
             case "logout":
                 this.reset();
+                break;
+            case "exists":
+                this.exists(args[0], cb);
                 break;
             case "read":
                 this.readFile(args[0], cb);
