@@ -7469,11 +7469,11 @@ delete this.$serverVars[arguments[i]];}}}this.$getVar=function(name){return this
 };this.doRequest=function(fCallback,sPath,sBody,oHeaders,bUseXml,oBinary,fCallback2){if(!this.$getVar("authenticated")){return onAuth.call(this,{method:this.doRequest,context:this,args:arguments});
 }if(bUseXml){if(!oHeaders){oHeaders={};}oHeaders["Content-type"]="text/xml; charset=utf-8";
 }var _self=this;return this.get(sPath||this.$server,{callback:function(data,state,extra){if(state!=apf.SUCCESS){var oError;
-oError=WebDAVError.call(_self,"Url: "+extra.url+"\nInfo: "+extra.message);if(fCallback){return fCallback.call(_self,data,state,extra);
+oError=WebDAVError.call(_self,"Url: "+extra.url+"\nInfo: "+extra.message);if(fCallback){return fCallback.call(_self,data,state,extra,fCallback2);
 }else{throw oError;}}extra.headers=oHeaders;var iStatus=parseInt(extra.status);
 if(iStatus==401){return;}var sResponse=(extra.http.responseText||"");if(sResponse.replace(/^[\s\n\r]+|[\s\n\r]+$/g,"")!=""&&sResponse.indexOf("<?xml version=")==0){try{data=(extra.http.responseXML&&extra.http.responseXML.documentElement)?apf.xmlParseError(extra.http.responseXML):apf.getXmlDom(extra.http.responseText);
 if(!apf.supportNamespaces){data.setProperty("SelectionLanguage","XPath");}data=data.documentElement;
-extra.data=data;}catch(e){if(fCallback){return fCallback.call(_self,data,state,extra);
+extra.data=data;}catch(e){if(fCallback){return fCallback.call(_self,data,state,extra,fCallback2);
 }else{throw WebDAVError.call(_self,"Received invalid XML\n\n"+e.message);}}}if(typeof fCallback=="function"){fCallback.call(_self,data,state,extra,fCallback2);
 }},nocache:false,useXML:false,ignoreOffline:true,data:sBody||"",binary:oBinary||false,headers:oHeaders,username:this.$getVar("auth-username")||null,password:this.$getVar("auth-password")||null});
 };function notAuth(msg){unregister.call(this,"auth-password");var extra={username:this.$getVar("auth-username"),server:this.$server,message:msg||"Access denied. Please check you username or password."};
@@ -7584,9 +7584,10 @@ return oItem.xml="<"+sType+" path='"+sPath+"'  type='"+sType+"' size='"+oItem.si
 }this.exec=function(method,args,callback){var cb=function(data,state,extra){extra.originalArgs=args;
 if(typeof args[args.length-1]=="function"){args[args.length-1](data,state,extra);
 }callback&&callback(data,state,extra);};switch(method){case"login":case"authenticate":this.authenticate(args[0],args[1],cb);
-break;case"logout":this.reset();break;case"read":this.readFile(args[0],cb);break;
-case"create":var path=args[0]?args[0]:"";if(path.charAt(path.length-1)!="/"){path=path+"/";
-}this.writeFile(path+args[1],args[2],args[3]||false,cb);break;case"write":case"store":case"save":this.writeFile(args[0],args[1],args[2]||false,cb);
+break;case"logout":this.reset();break;case"exists":this.exists(args[0],cb);break;
+case"read":this.readFile(args[0],cb);break;case"create":var path=args[0]?args[0]:"";
+if(path.charAt(path.length-1)!="/"){path=path+"/";}this.writeFile(path+args[1],args[2],args[3]||false,cb);
+break;case"write":case"store":case"save":this.writeFile(args[0],args[1],args[2]||false,cb);
 break;case"copy":case"cp":this.copy(args[0],args[1],args[2]||true,args[3]||false,cb);
 break;case"rename":var sBasepath=args[1].substr(0,args[1].lastIndexOf("/")+1);this.rename(args[1],sBasepath+args[0],args[2]||false,args[3]||false,cb);
 break;case"move":case"mv":path=args[1];if(path.charAt(path.length-1)!="/"){path=path+"/";
