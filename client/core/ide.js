@@ -107,7 +107,7 @@ require.def("core/ide", deps,
             // fire up the socket connection:
             var options = {
                 rememberTransport: false,
-                transports:  ["websocket", "htmlfile", "xhr-multipart", "flashsocket", "xhr-polling", "jsonp-polling"],
+                transports:  ["htmlfile", "xhr-multipart", "flashsocket", "xhr-polling", "jsonp-polling"],
                 connectTimeout: 5000,
                 transportOptions: {
                     "xhr-polling": {
