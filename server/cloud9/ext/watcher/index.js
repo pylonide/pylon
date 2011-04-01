@@ -19,6 +19,7 @@ function cloud9WatcherPlugin(ide) {
 
             // console.log('Detected save', path);
             ignoredPaths[path] = path;
+            e.next();
         });
     };
 
@@ -65,7 +66,6 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                     fs.watchFile(path, function (curr, prev) {
                         // console.log('Detected event', path);
                         if (ignoredPaths[path]) {
-                            console.log('Ignored');
                             delete ignoredPaths[path];
                             return;   
                         }

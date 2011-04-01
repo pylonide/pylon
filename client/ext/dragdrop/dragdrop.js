@@ -6,9 +6,10 @@
 
 define(function(require, exports, module) {
 
-var ide = require("core/ide");
-var ext = require("core/ext");
-var fs  = require("ext/filesystem/filesystem");
+var ide  = require("core/ide");
+var ext  = require("core/ext");
+var util = require("core/util");
+var fs   = require("ext/filesystem/filesystem");
 
 return ext.register("ext/dragdrop/dragdrop", {
     dev         : "Ajax.org",
@@ -42,6 +43,17 @@ return ext.register("ext/dragdrop/dragdrop", {
     },
     
     onDrop: function(e) {
+        // check total filesize of dropped files
+        for (var size = 0, i = 0, l = e.dataTransfer.files.length; i < l; ++i)
+            size += e.dataTransfer.files[i].size;
+
+        var m50 = 52428800,
+            m2  = 2097152;
+        if (size > m50) {
+            return util.alert("Could not save document", "An error occurred while saving this document",
+                "The file(s) you dropped exceeds the maximum of 50MB and could therefore not be uploaded.");
+        }
+
         apf.asyncForEach(e.dataTransfer.files, function(file, nextFile) {
             var reader = new FileReader();
             reader.onload = function(e) {
@@ -60,7 +72,13 @@ return ext.register("ext/dragdrop/dragdrop", {
                         fs.exists(path + "/" + filename, test);
                     }
                     else {
-                        fs.saveFile(path + "/" + file.name, e.target.result, function(data, state, extra){
+                        // lock == false, binary = [object]
+                        fs.webdav.write(path + "/" + file.name, e.target.result, false, {
+                            filename    : file.name,
+                            filedataname: file.name,
+                            filesize    : file.size,
+                            multipart   : true
+                        }, function(data, state, extra){
                             if (state != apf.SUCCESS) {
                                 util.alert(
                                     "Could not save document",
@@ -79,11 +97,12 @@ return ext.register("ext/dragdrop/dragdrop", {
                                 
                                 var strXml = data.match(new RegExp(("(<file path='" + path +
                                     "/" + filename + "'.*?>)").replace(/\//g, "\\/")))[1];
-            
-                                var file = apf.xmldb.appendChild(node, apf.getXml(strXml));
-                                
-                                trFiles.select(file);
-                                ide.dispatchEvent("openfile", {doc: ide.createDocument(file)});
+
+                                var oXml = apf.xmldb.appendChild(node, apf.getXml(strXml));
+
+                                trFiles.select(oXml);
+                                if (file.size < m2)
+                                    ide.dispatchEvent("openfile", {doc: ide.createDocument(oXml)});
                                 return nextFile();
                             });
                         });
@@ -92,8 +111,8 @@ return ext.register("ext/dragdrop/dragdrop", {
                 
                 fs.exists(path + "/" + file.name, test);
             };
-            reader.readAsText(file);
-        });
+            reader.readAsBinaryString(file);
+        }, function() {});
 
         return false;
     },
