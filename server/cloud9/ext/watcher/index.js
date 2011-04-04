@@ -34,13 +34,13 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
 (function() {
     this.unwatchFile = function(filename) {
         // console.log("No longer watching file " + filename);
-        delete this.filenames[filename];
-        fs.unwatchFile(filename);
+        if (--this.filenames[filename] == 0) {
+            delete this.filenames[filename];
+            fs.unwatchFile(filename);
+        }
         return true;
     };
 
-    // TODO: this does not look correct. There could be more than one client be
-    // attached. There needs to be a per client list with ref counting
     this.disconnect = function() {
         for (var filename in this.filenames) 
             this.unwatchFile(filename);
@@ -59,7 +59,7 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
             switch (type) {
             case "watchFile":
                 if (this.filenames[path]) 
-                    ; // console.log("Already watching file " + path);
+                    ++this.filenames[path]; // console.log("Already watching file " + path);
                 else {
                     // console.log("Watching file " + path);
                     that = this;
@@ -100,7 +100,7 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                         }));
                         console.log("Sent " + subtype + " notification for file " + path);
                     });
-                    this.filenames[path] = path;
+                    this.filenames[path] = 0;
                 }
                 return true;
             case "unwatchFile":
