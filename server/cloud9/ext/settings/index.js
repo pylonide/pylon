@@ -30,7 +30,7 @@ sys.inherits(SettingsPlugin, Plugin);
             this.loadSettings(user, function(err, settings) {
                 client.send(JSON.stringify({
                     "type": "settings",
-                    "settings": err ? "defaults" : settings,
+                    "settings": err ? "defaults" : settings
                 }));
             });
         }

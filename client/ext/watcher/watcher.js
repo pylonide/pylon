@@ -172,11 +172,11 @@ return ext.register("ext/watcher/watcher", {
             
             var pages = tabEditors.getPages();
             var message = e.message;
-            if (message.type && message.type != "watcher")
+            if ((message.type && message.type != "watcher") || !message.path)
                 return;
                 
             var path = ide.davPrefix + message.path.slice(ide.workspaceDir.length);
-                
+
             if (expandedPaths[path])
                 return ide.dispatchEvent("treechange", {
                     path    : path,
