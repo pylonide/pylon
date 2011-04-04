@@ -29,7 +29,6 @@ return ext.register("ext/watcher/watcher", {
             _self               = this;
             
         function sendWatchFile(path) {
-            // console.log("Sending watchFile message for file " + path);
             ide.socket.send(JSON.stringify({
                 "command"     : "watcher",
                 "type"        : "watchFile",
@@ -38,7 +37,6 @@ return ext.register("ext/watcher/watcher", {
         }
         
         function sendUnwatchFile(path) {
-            // console.log("Sending unwatchFile message for file " + path);
             ide.socket.send(JSON.stringify({
                 "command"     : "watcher",
                 "type"        : "unwatchFile",

@@ -74,11 +74,11 @@ return ext.register("ext/settings/settings", {
 
     load : function(){
         var _self = this;
-        
+
         //@todo this should actually be an identifier to know that it was rights that prevented loading it
         ide.settings = ide.settings == "defaults" ? template : ide.settings;
-        
-        if (!ide.settings){
+
+        if (!ide.settings) {
             ide.addEventListener("socketMessage", function(e){
                 if (e.message.type == "settings") {
                     var settings = e.message.settings;
@@ -90,17 +90,12 @@ return ext.register("ext/settings/settings", {
                     ide.removeEventListener("socketMessage", arguments.callee);
                 }
             });
-            
-            if (ide.onLine !== true) {
-                ide.addEventListener("socketConnect", function(){
-                    ide.socket.send(JSON.stringify({command: "settings", action: "get"}));
-                });
-            }
-            else 
+
+            if (ide.onLine === true)
                 ide.socket.send(JSON.stringify({command: "settings", action: "get"}));
             return;
         }
-        
+
         this.model.load(ide.settings);
 
         ide.dispatchEvent("loadsettings", {

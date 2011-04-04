@@ -8,7 +8,9 @@ var fs      = require("fs"),
     sys     = require("sys"),
     Plugin  = require("cloud9/plugin");
    
-var ignoredPaths = {};
+var IGNORE_TIMEOUT = 50,
+    ignoredPaths = {},
+    ignoreTimers = {};
  
 function cloud9WatcherPlugin(ide) {
     var that = this;
@@ -18,7 +20,7 @@ function cloud9WatcherPlugin(ide) {
             var path = handler.server.tree.basePath + '/' + uri;
 
             // console.log('Detected save', path);
-            ignoredPaths[path] = path;
+            ignoredPaths[path] = 1;
             e.next();
         });
     };
@@ -34,13 +36,13 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
 (function() {
     this.unwatchFile = function(filename) {
         // console.log("No longer watching file " + filename);
-        delete this.filenames[filename];
-        fs.unwatchFile(filename);
+        if (--this.filenames[filename] == 0) {
+            delete this.filenames[filename];
+            fs.unwatchFile(filename);
+        }
         return true;
     };
 
-    // TODO: this does not look correct. There could be more than one client be
-    // attached. There needs to be a per client list with ref counting
     this.disconnect = function() {
         for (var filename in this.filenames) 
             this.unwatchFile(filename);
@@ -59,15 +61,19 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
             switch (type) {
             case "watchFile":
                 if (this.filenames[path]) 
-                    ; // console.log("Already watching file " + path);
+                    ++this.filenames[path]; // console.log("Already watching file " + path);
                 else {
                     // console.log("Watching file " + path);
                     that = this;
                     fs.watchFile(path, function (curr, prev) {
-                        // console.log('Detected event', path);
+                        //console.log('Detected event', path, ignoredPaths);
                         if (ignoredPaths[path]) {
-                            delete ignoredPaths[path];
-                            return;   
+                            clearTimeout(ignoreTimers[path]);
+                            ignoreTimers[path] = setTimeout(function() {
+                                delete ignoreTimers[path]
+                                delete ignoredPaths[path];
+                            }, IGNORE_TIMEOUT);
+                            return;
                         }
                         if (curr.nlink == 1 && prev.nlink == 0)
                             subtype = "create";
@@ -98,9 +104,9 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                             "path"      : path,
                             "files"     : files
                         }));
-                        console.log("Sent " + subtype + " notification for file " + path);
+                        //console.log("Sent " + subtype + " notification for file " + path);
                     });
-                    this.filenames[path] = path;
+                    this.filenames[path] = 0;
                 }
                 return true;
             case "unwatchFile":
