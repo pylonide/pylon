@@ -4,10 +4,12 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var deps = ["core/document"];
+ 
+define(function(require, exports, module) {
 
-require.def("core/ide", deps,
-    function(Document) {
+        var Document = require("core/document");
+        var util = require("core/util");
+        
         var ide = new apf.Class().$init();
 
         ide.createDocument = function(node, value){
@@ -59,7 +61,6 @@ require.def("core/ide", deps,
                             type        : "General Javascript Error",
                             e           : [m, u, l],
                             workspaceId : ide.workspaceId
-//                            log   : apf.console.debugInfo.join("\n")
                         })
                     });
                     return true;
@@ -79,7 +80,6 @@ require.def("core/ide", deps,
                             state       : e.state,
                             e           : e.error,
                             workspaceId : ide.workspaceId
-//                            log     : apf.console.debugInfo.join("\n")
                         })
                     });
                 });
@@ -163,7 +163,47 @@ require.def("core/ide", deps,
                     stProcessRunning.setProperty("active", e.message.processRunning);
             });
 
-            ide.socket = new io.Socket(null, options);
+            // for unknown reasons io is sometimes undefined
+            try {
+                ide.socket = new io.Socket(null, options);
+            } catch (e) {
+                util.alert(
+                    "Error starting up",
+                    "Error starting up the IDE", "There was an error starting up the IDE.<br>Please clear your browser cache and reload the page.",
+                    function() {
+                        window.location.reload();
+                    }
+                );
+                
+                var socketIoScriptEl = Array.prototype.slice.call(document.getElementsByTagName("script"))
+                    .filter(function(script) {
+                        return script.src && script.src.indexOf("socket.io.js") >= 0;
+                    })[0];
+                
+                if (socketIoScriptEl) {
+                    apf.ajax(socketIoScriptEl.src, {
+                        callback: function(data, state, extra) {
+                            try{var status = parseInt(extra.http.status);}catch(ex){}
+                            apf.dispatchEvent("error", {
+                                message: "socket.io client lib not loaded",
+                                error: {
+                                    status: status,
+                                    state: state,
+                                    data: data,
+                                    extra: extra
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    apf.dispatchEvent("error", {
+                        message: "socket.io client lib not loaded",
+                        error: e
+                    });
+                }
+                return;
+            }
+            
             ide.socket.on("message",    ide.socketMessage);
             ide.socket.on("connect",    ide.socketConnect);
             ide.socket.on("disconnect", ide.socketDisconnect);
