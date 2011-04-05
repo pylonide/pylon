@@ -35,7 +35,7 @@ require.def("core/ide", deps,
 
             this.loggedIn = true;
 
-            this.loggedIn = true;
+            this.onLine = false;
 
             this.dispatchEvent("load");
 
