@@ -9,7 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var console = require("ext/console/console");
 var editors = require("ext/editors/editors");
 var panels = require("ext/panels/panels");
 var dock   = require("ext/dockpanel/dockpanel");
