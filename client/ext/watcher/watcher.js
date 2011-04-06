@@ -46,9 +46,11 @@ return ext.register("ext/watcher/watcher", {
        
         function checkPage() {
             var page = tabEditors.getPage(),
-                data = page.$model.data,
-                path = data.getAttribute("path");
-            
+                data = page.$model.data;
+            if (!data || !data.getAttribute)
+                return;
+
+            var path = data.getAttribute("path");
             if (removedPaths[path]) {
                 util.question(
                     "File removed, keep tab open?",
