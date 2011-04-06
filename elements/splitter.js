@@ -190,7 +190,7 @@ apf.splitter = function(struct, tagName){
         this.$ext.onmousedown = function(e){
             if (!e)
                 e = event;
-            
+                
             _self.$setSiblings();
 
             var changedPosition, pHtml = _self.parentNode.$int;

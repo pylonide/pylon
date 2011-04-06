@@ -812,14 +812,14 @@ apf.DragServer = {
         });
     },
 
-    start : function(amlNode, srcEl, e){
+    start : function(amlNode, srcEl, e, customNode){
         if (document.elementFromPointReset)
             document.elementFromPointReset();
         
         amlNode.dragging = 1;
 
         var d = window.document;
-        d = (!d.compatMode || d.compatMode == 'CSS1Compat') 
+        d = (!d.compatMode || d.compatMode == "CSS1Compat")
             ? d.html || d.documentElement
             : d.body
 
@@ -835,14 +835,19 @@ apf.DragServer = {
 
         //The coordinates need to be relative to the html element that 
         //represents the xml data node.
-        var loopEl = srcEl, lastId;
-        while (loopEl && loopEl.nodeType == 1 
-          && !(lastId = loopEl.getAttribute(apf.xmldb.htmlIdTag))) {
-            loopEl = loopEl.parentNode;
+        if (!srcEl && customNode) {
+            pos = [0, 0];
         }
-        if (!lastId)
-            return;
-        pos = apf.getAbsolutePosition(loopEl);
+        else {
+            var loopEl = srcEl, lastId;
+            while (loopEl && loopEl.nodeType == 1 
+              && !(lastId = loopEl.getAttribute(apf.xmldb.htmlIdTag))) {
+                loopEl = loopEl.parentNode;
+            }
+            if (!lastId)
+                return;
+            pos = apf.getAbsolutePosition(loopEl);
+        }
 
         //Set coordinates object
         apf.DragServer.coordinates = {
@@ -850,14 +855,14 @@ apf.DragServer = {
             doc        : d,
             scrollX    : scrollX,
             scrollY    : scrollY,
-            offsetX    : e.clientX - pos[0], 
-            offsetY    : e.clientY - pos[1], 
+            offsetX    : e.clientX - pos[0],
+            offsetY    : e.clientY - pos[1],
             clientX    : e.pageX ? e.pageX - window.pageXOffset : e.clientX,
             clientY    : e.pageY ? e.pageY - window.pageYOffset : e.clientY
         };
         
         //Create Drag Data Object
-        var selection = amlNode.hasFeature(apf.__MULTISELECT__) 
+        var selection = customNode || amlNode.hasFeature(apf.__MULTISELECT__) 
                 ? amlNode.getSelection()
                 : [amlNode.xmlRoot],
             data      = [],

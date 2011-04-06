@@ -76,21 +76,9 @@ apf.hotkeys = {};
     // hash to store the hotkeys in
     this.$keys = {};
 
-    var _self = this;
-
-    /**
-     * Registers a hotkey handler to a key combination.
-     * Example:
-     * <code>
-     *   apf.registerHotkey('Ctrl-Z', undoHandler);
-     * </code>
-     * @param {String}   hotkey  the key combination to user. This is a
-     * combination of Ctrl, Alt, Shift and a normal key to press. Use + to
-     * seperate the keys.
-     * @param {Function} handler the code to be executed when the key
-     * combination is pressed.
-     */
-    apf.registerHotkey = this.register = function(hotkey, handler){
+    var _self = this, trace = 0;
+    
+    function register(hotkey, handler) {
         var key,
             hashId = 0,
             keys   = hotkey.splitSafe("\\-", null, true),
@@ -105,25 +93,50 @@ apf.hotkeys = {};
         }
 
         //#ifdef __DEBUG
-        if (!key) {
+        if (!hashId)
+            console.warn("missing modifier keys for hotkey: " + hotkey);
+        if (!key)
             throw new Error("missing key for hotkey: " + hotkey);
-        }
-        //#endif
+        /*#else
+        if (!key) return;
+        #endif*/
 
-        (_self.$keys[hashId] || (_self.$keys[hashId] = {}))[key] = handler;
+        if (!_self.$keys[hashId])
+            _self.$keys[hashId] = {};
+        _self.$keys[hashId][key] = handler;
+    }
+
+    /**
+     * Registers a hotkey handler to a key combination.
+     * Example:
+     * <code>
+     *   apf.registerHotkey('Ctrl-Z', undoHandler);
+     * </code>
+     * @param {String}   hotkey  the key combination to user. This is a
+     * combination of Ctrl, Alt, Shift and a normal key to press. Use + to
+     * seperate the keys.
+     * @param {Function} handler the code to be executed when the key
+     * combination is pressed.
+     */
+    apf.registerHotkey = this.register = function(hotkey, handler){
+        var parts = hotkey.split("|"),
+            i     = 0,
+            l     = parts.length;
+        for (; i < l; ++i)
+            register(parts[i], handler);
     };
 
     this.$exec = function(eInfo) {
         var hashId = 0 | (eInfo.ctrlKey ? 1 : 0) | (eInfo.altKey ? 2 : 0)
-            | (eInfo.shiftKey ? 4 : 0) | (eInfo.metaKey ? 8 : 0);
+            | (eInfo.shiftKey ? 4 : 0) | (eInfo.metaKey ? 8 : 0),
+            code   = eInfo.keyCode;
 
-        var key = _self.keyNames[eInfo.keyCode];
-        if (!hashId && !key) //Hotkeys should always have one of the modifiers
+        var key = _self.keyNames[code] 
+            || (code && code > 46 && code != 91 ? String.fromCharCode(code) : null);
+        if (!hashId || !key) //Hotkeys should always have one of the modifiers
             return;
 
-        var handler = (_self.$keys[hashId] || {})[(key
-            || String.fromCharCode(eInfo.keyCode)).toLowerCase()];
-        if (handler) {
+        if (_self.$keys[hashId] && (handler = _self.$keys[hashId][key.toLowerCase()])) {
             handler(eInfo.htmlEvent);
             eInfo.returnValue = false;
             // #ifdef __WITH_QUEUE
@@ -139,10 +152,14 @@ apf.hotkeys = {};
      * @param {String} hotkey the hotkey combination.
      */
     apf.removeHotkey = this.remove = this.unregister = function(hotkey) {
-        _self.register(hotkey, null);
+        var parts = hotkey.split("|"),
+            i     = 0,
+            l     = parts.length;
+        for (; i < l; ++i)
+            register(parts[i], null);
     };
-
-    this.toMacNotation = function(hotkey, bHtml) {
+    
+    function toMacNotation(hotkey, bHtml) {
         var t,
             keys = hotkey.splitSafe("\\-"),
             i    = 0,
@@ -154,6 +171,16 @@ apf.hotkeys = {};
                 keys[i] = t;
         }
         return keys.join(" ");
+    }
+
+    this.toMacNotation = function(hotkey, bHtml) {
+        var parts = hotkey.split("|"),
+            i     = 0,
+            l     = parts.length,
+            res   = [];
+        for (; i < l; ++i)
+            res.push(toMacNotation(parts[i], bHtml));
+        return res.join(" | ");
     };
 
     apf.addEventListener("keydown", function(eInfo) {

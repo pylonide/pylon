@@ -184,10 +184,11 @@ apf.webdav = function(struct, tagName){
      * @param {sBody}     [sBody]      Optional body text (used for PUTs, for example)
      * @param {Object}    [oHeaders]   Additional headers in key: value format
      * @param {Boolean}   [bUseXml]    Tells the function whether to return XML. Defaults to FALSE
+     * @param {Object}    [oBinary]    Object with properties for binary upload in modern browsers
      * @param {Function}  [fCallback2] Optional second callback, passed to fCallback as arguments. Used mainly by the data instructions
      * @type  {void}
      */
-    this.doRequest = function(fCallback, sPath, sBody, oHeaders, bUseXml, fCallback2) {
+    this.doRequest = function(fCallback, sPath, sBody, oHeaders, bUseXml, oBinary, fCallback2) {
         if (!this.$getVar("authenticated")) {
             return onAuth.call(this, {
                 method : this.doRequest,
@@ -210,11 +211,10 @@ apf.webdav = function(struct, tagName){
 
                     oError = WebDAVError.call(_self, "Url: " + extra.url + "\nInfo: " + extra.message);
 
-                    if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
-                        return true;
-
+                    //if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
+                    //    return true;
                     if (fCallback)
-                        return fCallback.call(_self, data, state, extra);
+                        return fCallback.call(_self, data, state, extra, fCallback2);
                     else
                         throw oError;
                 }
@@ -241,7 +241,7 @@ apf.webdav = function(struct, tagName){
                     }
                     catch(e) {
                         if (fCallback)
-                            return fCallback.call(_self, data, state, extra);
+                            return fCallback.call(_self, data, state, extra, fCallback2);
                         else
                             throw WebDAVError.call(_self, "Received invalid XML\n\n" + e.message);
                     }
@@ -254,6 +254,7 @@ apf.webdav = function(struct, tagName){
             useXML        : false,//true,
             ignoreOffline : true,
             data          : sBody || "",
+            binary        : oBinary || false,
             headers       : oHeaders,
             username      : this.$getVar("auth-username") || null,
             password      : this.$getVar("auth-password") || null
@@ -426,6 +427,20 @@ apf.webdav = function(struct, tagName){
     };
 
     //------------ Filesystem operations ----------------//
+    
+    /**
+     * Check whether a file or directory  exists on the remote filesystem and pass 
+     * that information to a callback function
+     * 
+     * @param {String}   sPath    Path to the file or directory on the WebDAV server
+     * @param {Function} callback Function to execute when the request was successful
+     * @type  {void}
+     */
+    this.exists = function(sPath, callback) {
+        this.getProperties(sPath, 0, function(data, state, extra) {
+            callback(state === apf.SUCCESS);
+        });
+    };
 
     /**
      * Read the content of a file as plaintext and pass the data to a callback
@@ -496,7 +511,7 @@ apf.webdav = function(struct, tagName){
             if (iStatus == 201) { //Created
                 _self.readdir(sPath.substr(0, sPath.lastIndexOf("/")), callback);
             }
-            else if (iStatus == 403 || iStatus == 405 || iStatus == 409
+            else if (iStatus == 400 || iStatus == 403 || iStatus == 405 || iStatus == 409
               || iStatus == 415 || iStatus == 507) {
                 var oError = WebDAVError.call(this, "Unable to create directory '" + sPath
                              + "'. Server says: "
@@ -528,19 +543,24 @@ apf.webdav = function(struct, tagName){
      * Write new contents (plaintext) to a file resource on the server, with or
      * without an existing lock on the resource.
      * 
-     * @param {String}   sPath    Path to the file on the WebDAV server
-     * @param {String}   sContent New content-body of the file
-     * @param {Boolean}  [bLock]  Whether to require a lock before write
-     * @param {String}   [sLock]  Lock token that MAY be omitted in preference of a lock refresh
-     * @param {Function} callback Function to execute when the request was successful
+     * @param {String}   sPath     Path to the file on the WebDAV server
+     * @param {String}   sContent  New content-body of the file
+     * @param {Boolean}  [bLock]   Whether to require a lock before write
+     * @param {Object}   [oBinary] Object with properties for binary upload in modern browsers
+     * @param {Function} callback  Function to execute when the request was successful
      * @type  {void}
      */
     this.writeFile =
-    this.write = function(sPath, sContent, bLock, callback) {
+    this.write = function(sPath, sContent, bLock, oBinary, callback) {
         if (bLock) {
             var oLock = this.lock(sPath);
             if (!oLock.token)
                 return updateLockedStack.call(this, oLock, "write", arguments);
+        }
+        // binary option has been added later, keep fallback possible
+        if (typeof callback == "undefined" && typeof oBinary == "function") {
+            callback = oBinary;
+            oBinary  = null;
         }
 
         this.method = "PUT";
@@ -562,7 +582,7 @@ apf.webdav = function(struct, tagName){
             }
         }, sPath, sContent, bLock && oLock.token
             ? {"If": "<" + oLock.token + ">"}
-            : null);
+            : null, null, oBinary);
     };
 
     /**
@@ -599,7 +619,7 @@ apf.webdav = function(struct, tagName){
         this.doRequest(function(data, state, extra) {
             bLock && unregisterLock.call(this, sFrom);
             var iStatus = parseInt(extra.status);
-            if (iStatus == 403 || iStatus == 409 || iStatus == 412 
+            if (iStatus == 400 || iStatus == 403 || iStatus == 409 || iStatus == 412 
               || iStatus == 423 || iStatus == 424 || iStatus == 502
               || iStatus == 507) {
                 var oError = WebDAVError.call(this, "Unable to copy file '" + sFrom
@@ -654,7 +674,7 @@ apf.webdav = function(struct, tagName){
         this.doRequest(function(data, state, extra) {
             bLock && unregisterLock.call(this, sFrom);
             var iStatus = parseInt(extra.status);
-            if (iStatus == 403 || iStatus == 409 || iStatus == 412
+            if (iStatus == 400 || iStatus == 403 || iStatus == 409 || iStatus == 412
               || iStatus == 423 || iStatus == 424 || iStatus == 502 || iStatus == 500) {
                 var oError = WebDAVError.call(this, "Unable to move file '" + sFrom
                              + "' to '" + sTo + "'. Server says: "
@@ -695,7 +715,7 @@ apf.webdav = function(struct, tagName){
         this.doRequest(function(data, state, extra) {
             bLock && unregisterLock.call(this, sPath);
             var iStatus = parseInt(extra.status);
-            if (iStatus == 423 || iStatus == 424) { //Failed dependency (collections only)
+            if (iStatus == 400 || iStatus == 423 || iStatus == 424) { //Failed dependency (collections only)
                 var oError = WebDAVError.call(this, "Unable to remove file '" + sPath
                              + "'. Server says: "
                              + apf.webdav.STATUS_CODES[String(iStatus)]);
@@ -780,7 +800,7 @@ apf.webdav = function(struct, tagName){
                 +      document.location.toString().escapeHTML() +
                 +     '</D:href></D:owner>'
                 + '</D:lockinfo>';
-        this.doRequest(registerLock, sPath, xml, oHeaders, true, callback);
+        this.doRequest(registerLock, sPath, xml, oHeaders, true, null, callback);
         return newLock.call(this, sPath);
     };
 
@@ -836,7 +856,7 @@ apf.webdav = function(struct, tagName){
         var iStatus = parseInt(extra.status),
             sPath   = extra.url.replace(this.$server, ''),
             oLock   = this.$locks[sPath] || newLock.call(this, sPath);
-        if (iStatus == 409 || iStatus == 423 || iStatus == 412) {
+        if (iStatus == 400 || iStatus == 409 || iStatus == 423 || iStatus == 412) {
             // lock failed, so unregister it immediately
             unregisterLock.call(this, extra.url.replace(this.$server, ''));
             var oError = WebDAVError.call(this, "Unable to apply lock to '" + sPath
@@ -935,7 +955,7 @@ apf.webdav = function(struct, tagName){
                 + '</D:propfind>';
         oHeaders = oHeaders || {};
         oHeaders["Depth"] = typeof iDepth != "undefined" ? iDepth : 1
-        this.doRequest(parsePropertyPackets, sPath, xml, oHeaders, true, callback);
+        this.doRequest(parsePropertyPackets, sPath, xml, oHeaders, true, null, callback);
     };
 
     /**
@@ -1020,7 +1040,7 @@ apf.webdav = function(struct, tagName){
         if (status == 403 || status == 401 || !oXml)
             return callback ? callback.call(this, null, state, extra) : notAuth.call(this);
 
-        if(typeof oXml == 'string')
+        if (typeof oXml == "string")
             oXml = apf.getXml(oXml);
         
         var aResp = $xmlns(oXml, "response", apf.webdav.NS.D),
@@ -1104,6 +1124,9 @@ apf.webdav = function(struct, tagName){
                 break;
             case "logout":
                 this.reset();
+                break;
+            case "exists":
+                this.exists(args[0], cb);
                 break;
             case "read":
                 this.readFile(args[0], cb);

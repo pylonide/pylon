@@ -201,16 +201,37 @@ apf.getStyleRecur = function(el, prop) {
  * @method
  * @deprecated
  */    
-apf.importStylesheet = function (def, win){
+apf.importStylesheet = function (def, win) {
+    if (!def.length)
+        return;
+        
+    var re = new RegExp("^" + document.domain, 'g');
+    var doc = (win || window).document;
+    for (var index=0; index < document.styleSheets.length; index++) {
+        if (!doc.styleSheets[index].href || doc.styleSheets[index].href.match(re)) {
+            break;
+        }
+    }
+    var styleSheet = doc.styleSheets[index];
+    
+    if (!styleSheet) {
+        if (doc.createStyleSheet)
+            styleSheet = doc.createStyleSheet();
+        else {
+            var elem = doc.createElement("style");
+            elem.type = "text/css";
+            doc.getElementsByTagName("head")[0].appendChild(elem);
+            styleSheet = elem.sheet;
+        }
+    }    
+    
     for (var i = 0; i < def.length; i++) {
         if (!def[i][1]) continue;
         
         if (apf.isIE)
-            (win || window).document.styleSheets[0].addRule(def[i][0],
-                def[i][1]);
+            styleSheet.addRule(def[i][0], def[i][1]);
         else
-            (win || window).document.styleSheets[0].insertRule(def[i][0]
-                + " {" + def[i][1] + "}", 0);
+            styleSheet.insertRule(def[i][0] + " {" + def[i][1] + "}", 0);
     }
 }
 
