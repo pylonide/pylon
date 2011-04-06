@@ -442,7 +442,7 @@ var apf = {
         this.canUseInnerHtmlWithTables = !apf.isIE;
         this.hasSingleResizeEvent      = !apf.isIE;
         this.hasStyleFilters           = apf.isIE;
-        this.supportOpacity            = !apf.isIE;
+        this.supportOpacity            = !apf.isIE || apf.isIE >= 9;
         this.supportPng24              = !apf.isIE6 && !apf.isIE5;
         this.cantParseXmlDefinition    = apf.isIE50;
         this.hasDynamicItemList        = !apf.isIE || apf.isIE >= 7;

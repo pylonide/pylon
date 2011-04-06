@@ -412,6 +412,9 @@ apf.XPath = {
                 arg1 = nodelist;
             }
         }
+        else {
+            arg1 = nodelist;
+        }
         
         switch(type){
             case "position":
