@@ -203,6 +203,11 @@ apf.BindingEachRule = function(struct, tagName){
             }
             search.push(words.join(" or "));
         }
+        
+        if (this["filter-groups"]) {
+            search.push(" or (self::" + this["filter-groups"].split("|").join("|self::") + ")");
+        }
+        
         var filter = "(" + search.join(") and (") + ")";
         
         each = each.split("|");
