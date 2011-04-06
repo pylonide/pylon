@@ -204,15 +204,17 @@ apf.BindingEachRule = function(struct, tagName){
             search.push(words.join(" or "));
         }
         
-        var filter = "(" + search.join(") and (");
-        if (this["filter-groups"])
-            filter += " or (self::" + this["filter-groups"].split("|").join("|self::") + ")";
-        filter += ")";
+        var filter = "(" + search.join(") and (") + ")";
+        var groups = this["filter-groups"].split("|");
         
         each = each.split("|");
         var newEach = [];
         for (i = 0, l = each.length; i < l; i++) {
-            newEach.push("(" + each[i] + ")[" + filter + "]");
+            if (!groups || !groups.contains(each[i]))
+                newEach.push("(" + each[i] + ")[" + filter + "]");
+        }
+        for (i = 0; i < groups.length; i++) {
+            newEach.push(groups[i]);
         }
         
         return newEach.join("|");
