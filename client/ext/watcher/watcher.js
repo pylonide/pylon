@@ -221,7 +221,7 @@ return ext.register("ext/watcher/watcher", {
             if (_self.disabled) return;
             
             var node = e.xmlNode;
-            if (node.getAttribute("type") == "folder") {
+            if (node && node.getAttribute("type") == "folder") {
                 var path = node.getAttribute("path");
                 
                 expandedPaths[path] = path;
@@ -233,7 +233,7 @@ return ext.register("ext/watcher/watcher", {
             if (_self.disabled) return;
 
             var node = e.xmlNode;
-            if (node.getAttribute("type") == "folder") {
+            if (node && node.getAttribute("type") == "folder") {
                 var path = node.getAttribute("path");
                 
                 delete expandedPaths[path];
