@@ -205,12 +205,12 @@ apf.BindingEachRule = function(struct, tagName){
         }
         
         var filter = "(" + search.join(") and (") + ")";
-        var groups = this["filter-groups"] ? this["filter-groups"].split("|") : null;
+        var groups = (this["filter-groups"] || "").split("|");
         
         each = each.split("|");
         var newEach = [];
         for (i = 0, l = each.length; i < l; i++) {
-            if (!groups || !groups.contains(each[i]))
+            if (!groups.contains(each[i]))
                 newEach.push("(" + each[i] + ")[" + filter + "]");
         }
         for (i = 0; i < groups.length; i++) {
