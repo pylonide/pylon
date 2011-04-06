@@ -420,7 +420,7 @@ return ext.register("ext/editors/editors", {
             function checkExpand(path, doc) {
                 var parent_path = apf.getDirname(path).replace(/\/$/, "");
                 trFiles.addEventListener("expand", function(e){
-                    if (e.xmlNode.getAttribute("path") == parent_path) {
+                    if (e.xmlNode && e.xmlNode.getAttribute("path") == parent_path) {
                         doc.setNode(e.xmlNode.selectSingleNode("node()[@path='" + path + "']"));
                     }
                 });

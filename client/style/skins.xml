@@ -6417,6 +6417,11 @@
             background-color : transparent;
             width: 100%;
         }
+        
+        .searchbox_textbox.small_font .sbtb_middle,
+            .searchbox_textbox.small_font .sbtb_middle INPUT {
+            font-size: 11px;
+        }
 
         .searchbox_textboxInitial .sbtb_middle INPUT {
             color : #777777;
