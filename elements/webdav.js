@@ -461,13 +461,13 @@ apf.webdav = function(struct, tagName){
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
-                  }) === false)
+                  }) === false && !callback)
                     throw oError;
             }
             else {
                 callback
                     ? callback.call(this, extra.http.responseText, state, extra)
-                    : this.dispatchEvent('onfilecontents', {data: extra.http.responseTex});
+                    : this.dispatchEvent("onfilecontents", {data: extra.http.responseTex});
             }
         }, sPath);
     };
@@ -573,7 +573,7 @@ apf.webdav = function(struct, tagName){
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
-                  }) === false)
+                  }) === false && !callback)
                     throw oError;
                 callback && callback.call(this, data, apf.ERROR, extra);
             }
@@ -628,8 +628,9 @@ apf.webdav = function(struct, tagName){
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
-                  }) === false)
+                  }) === false && !callback)
                     throw oError;
+                callback && callback.call(this, data, state, extra);
             }
             else {
                 // nodes needs to be added to the cache, callback passed through
@@ -682,7 +683,7 @@ apf.webdav = function(struct, tagName){
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
-                  }) === false)
+                  }) === false && !callback)
                     throw oError;
             }
             else { //success!!
@@ -722,7 +723,7 @@ apf.webdav = function(struct, tagName){
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
-                  }) === false)
+                  }) === false && !callback)
                     throw oError;
             }
             callback && callback.call(this, data, state, extra);
@@ -753,7 +754,7 @@ apf.webdav = function(struct, tagName){
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
-                  }) === false)
+                  }) === false && !callback)
                     throw oError;
             }
             callback && callback.call(this, data, state, extra);
