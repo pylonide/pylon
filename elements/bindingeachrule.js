@@ -205,7 +205,7 @@ apf.BindingEachRule = function(struct, tagName){
         }
         
         var filter = "(" + search.join(") and (") + ")";
-        var groups = this["filter-groups"].split("|");
+        var groups = this["filter-groups"] ? this["filter-groups"].split("|") : null;
         
         each = each.split("|");
         var newEach = [];
