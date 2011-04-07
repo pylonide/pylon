@@ -6544,6 +6544,7 @@
         
         .toolbar .subbar.no_border {
             border-bottom: none;
+            padding-top: 1px;
         }
 
         .toolbar>.subbar>*{
