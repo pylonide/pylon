@@ -6052,7 +6052,7 @@
             /*cursor              : pointer;*/
             background-image    : url(images/close_tab_btn.png);
             background-repeat   : no-repeat;
-            background-position : 0 -14px;
+            background-position : 0 0;
         }
 
         .docktab .btncontainer .btnclose strong:hover {
