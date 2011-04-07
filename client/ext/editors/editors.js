@@ -234,11 +234,12 @@ return ext.register("ext/editors/editors", {
         if (init)
             tabEditors.setAttribute("buttons", "close,scale");
 
-        doc.addEventListener("setnode", function(e){
+        doc.addEventListener("setnode", function(e) {
             fake.$model.load(e.node);
+            ide.dispatchEvent("afteropenfile", {doc: doc, node: e.node});
         });
 
-        fake.$at.addEventListener("afterchange", function(e){
+        fake.$at.addEventListener("afterchange", function(e) {
             if (e.action == "reset") {
                 delete this.undo_ptr;
                 return;

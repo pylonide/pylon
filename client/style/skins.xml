@@ -6538,6 +6538,10 @@
             overflow : hidden;
             height : 27px;
         }
+        
+        .toolbar .subbar.no_border {
+            border-bottom: none;
+        }
 
         .toolbar>.subbar>*{
             display : inline-block;
