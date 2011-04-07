@@ -724,7 +724,7 @@
 
         .docktab .btncontainer .btntab .tab_title {
             overflow : hidden;
-            padding  : 1px 0 0 0;
+            padding  : 1px 0 0 2px;
             color    : #202020;
 
             text-shadow : rgba(255,255,255,0.7) 0px 1px 0px;
