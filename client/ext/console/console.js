@@ -482,8 +482,12 @@ return ext.register("ext/console/console", {
             case "ls":
                 res = message.body;
                 //this.getPrompt() + " " + res.argv.join(" ") + "\n" + 
-                this.logNodeStream(res.out || res.err);
-                this.log("", "divider");
+                if (res.out)
+                    this.logNodeStream(res.out);
+                if (res.err)
+                    this.logNodeStream(res.err);
+                if (res.code) // End of command
+                    this.log("", "divider");
                 break;
             case "mkdir":
                 res = message.body;
