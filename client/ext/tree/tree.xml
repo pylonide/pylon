@@ -113,7 +113,7 @@
                 margin   = "0"
                 skin     = "sbios"
                 width    = "9"
-                overflow = "hidden"
+                overflow = "auto"
             />
         </a:hbox>
         <a:menu id="mnuCtxTree" disabled="{!stServerConnected.active}">
