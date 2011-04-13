@@ -4,12 +4,12 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var deps = ["core/document"];
-if (!window.cloud9config.standalone)
-    deps.push("/socket.io/socket.io.js");
+ 
+define(function(require, exports, module) {
 
-require.def("core/ide", deps,
-    function(Document) {
+        var Document = require("core/document");
+        var util = require("core/util");
+        
         var ide = new apf.Class().$init();
 
         ide.createDocument = function(node, value){
@@ -37,7 +37,7 @@ require.def("core/ide", deps,
 
             this.loggedIn = true;
 
-            this.loggedIn = true;
+            this.onLine = false;
 
             this.dispatchEvent("load");
 
@@ -48,7 +48,7 @@ require.def("core/ide", deps,
             if (
                 location.protocol != "file:"
                 && loc.indexOf("dev") == -1
-                && loc.indexOf("cloud9ide.com") > -1) 
+                && (loc.indexOf("cloud9ide.com") > -1 || loc.indexOf("c9.io") > -1))
             {
                 window.onerror = function(m, u, l) {
                     if (self.console)
@@ -57,10 +57,10 @@ require.def("core/ide", deps,
                         method      : "POST",
                         contentType : "application/json",
                         data        : apf.serialize({
-                            agent : navigator.userAgent,
-                            type  : "General Javascript Error",
-                            e     : [m, u, l]
-//                            log   : apf.console.debugInfo.join("\n")
+                            agent       : navigator.userAgent,
+                            type        : "General Javascript Error",
+                            e           : [m, u, l],
+                            workspaceId : ide.workspaceId
                         })
                     });
                     return true;
@@ -72,16 +72,24 @@ require.def("core/ide", deps,
                         method      : "POST",
                         contentType : "application/json",
                         data        : apf.serialize({
-                            agent   : navigator.userAgent,
-                            type    : "APF Error",
-                            message : e.message,
-                            tgt     : e.currentTarget && e.currentTarget.serialize(),
-                            url     : e.url,
-                            state   : e.state,
-                            e       : e.error
-//                            log     : apf.console.debugInfo.join("\n")
+                            agent       : navigator.userAgent,
+                            type        : "APF Error",
+                            message     : e.message,
+                            tgt         : e.currentTarget && e.currentTarget.serialize(),
+                            url         : e.url,
+                            state       : e.state,
+                            e           : e.error,
+                            workspaceId : ide.workspaceId
                         })
                     });
+                });
+            }
+            else {
+                window.onerror = function(m, u, l) {
+                    self.console && console.error("An error occurred", m, u, l);
+                }
+                apf.addEventListener("error", function(e){
+                    self.console && console.error("An APF error occurred", e);
                 });
             }
         };
@@ -99,7 +107,7 @@ require.def("core/ide", deps,
             // fire up the socket connection:
             var options = {
                 rememberTransport: false,
-                transports:  ["websocket", "htmlfile", "xhr-multipart", "flashsocket", "xhr-polling", "jsonp-polling"],
+                transports:  ["htmlfile", "xhr-multipart", "flashsocket", "xhr-polling", "jsonp-polling"],
                 connectTimeout: 5000,
                 transportOptions: {
                     "xhr-polling": {
@@ -155,7 +163,47 @@ require.def("core/ide", deps,
                     stProcessRunning.setProperty("active", e.message.processRunning);
             });
 
-            ide.socket = new io.Socket(null, options);
+            // for unknown reasons io is sometimes undefined
+            try {
+                ide.socket = new io.Socket(null, options);
+            } catch (e) {
+                util.alert(
+                    "Error starting up",
+                    "Error starting up the IDE", "There was an error starting up the IDE.<br>Please clear your browser cache and reload the page.",
+                    function() {
+                        window.location.reload();
+                    }
+                );
+                
+                var socketIoScriptEl = Array.prototype.slice.call(document.getElementsByTagName("script"))
+                    .filter(function(script) {
+                        return script.src && script.src.indexOf("socket.io.js") >= 0;
+                    })[0];
+                
+                if (socketIoScriptEl) {
+                    apf.ajax(socketIoScriptEl.src, {
+                        callback: function(data, state, extra) {
+                            try{var status = parseInt(extra.http.status);}catch(ex){}
+                            apf.dispatchEvent("error", {
+                                message: "socket.io client lib not loaded",
+                                error: {
+                                    status: status,
+                                    state: state,
+                                    data: data,
+                                    extra: extra
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    apf.dispatchEvent("error", {
+                        message: "socket.io client lib not loaded",
+                        error: e
+                    });
+                }
+                return;
+            }
+            
             ide.socket.on("message",    ide.socketMessage);
             ide.socket.on("connect",    ide.socketConnect);
             ide.socket.on("disconnect", ide.socketDisconnect);

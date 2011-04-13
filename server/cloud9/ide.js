@@ -4,7 +4,7 @@
  */
 var jsDAV = require("jsdav"),
     DavPermission = require("./dav/permission"),
-    Async = require("async"),
+    Async = require("asyncjs"),
     User = require("./user"),
     fs = require("fs"),
     sys = require("sys"),

@@ -48,9 +48,8 @@ return ext.register("ext/filesystem/filesystem", {
     },
     
     exists : function(path, callback) {
-        this.readFile(path, function (data, state, extra) {
-            callback(state == apf.SUCCESS);
-        });
+        if (this.webdav)
+            this.webdav.exists(path, callback);
     },
 
     createFolder: function(name, tree) {

@@ -77,29 +77,45 @@
           icon="refresh.png"
           onclick="require('ext/tree/tree').refresh()" />
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
-          
-        <a:tree id="trFiles" canrename="true" anchors="0 0 0 0" border="0"
-          contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
-          onbeforeremove="return remove()" disabled="{!stServerConnected.active}">
-            <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
-                <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
-                <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
-                <a:icon match="[folder|project]" value="folder.png" />
-                <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
-            </a:each>
 
-            <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
-            <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-            <a:rename match="[file|folder[not(@path='/workspace')]]" set="{davProject.rename([@name], [@path])}"/>
-            <a:copy match="[file|folder]" set="{copy([@path], [../@path])}"/>
-            <a:move set="{move([@path], [../@path])}"/>
-            <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
+        <a:hbox
+          anchors  = "0 0 0 0"
+          overflow = "hidden"
+          id       = "hboxTrFiles"
+          class    = "hboxTrFiles"
+        >
+            <a:tree id="trFiles" canrename="true" border="0"
+              contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
+              onbeforeremove="return remove()" disabled="{!stServerConnected.active}"
+              flex="1"
+            >
+                <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
+                    <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
+                    <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
+                    <a:icon match="[folder|project]" value="folder.png" />
+                    <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
+                </a:each>
 
-            <a:drag match="[folder|file]" />
-            <a:drop match="[folder|file]" target="[folder]"
-                action="tree-append" copy="{event.ctrlKey}" />
-        </a:tree>
-        
+                <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
+                <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
+                <a:rename match="[file|folder[not(@path='/workspace')]]" set="{davProject.rename([@name], [@path])}"/>
+                <a:copy match="[file|folder]" set="{copy([@path], [../@path])}"/>
+                <a:move set="{move([@path], [../@path])}"/>
+                <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
+
+                <a:drag match="[folder|file]" />
+                <a:drop match="[folder|file]" target="[folder]"
+                    action="tree-append" copy="{event.ctrlKey}" />
+            </a:tree>
+            <a:scrollbar
+                for      = "trFiles"
+                id       = "sbTrFiles"
+                margin   = "0"
+                skin     = "sbios"
+                width    = "9"
+                overflow = "auto"
+            />
+        </a:hbox>
         <a:menu id="mnuCtxTree" disabled="{!stServerConnected.active}">
             <a:item match="[file]" class="strong" onclick="
                 require('core/ide').dispatchEvent('openfile', {doc: require('core/ide').createDocument(apf.activeElement.selected)})

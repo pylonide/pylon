@@ -29,7 +29,6 @@ return ext.register("ext/watcher/watcher", {
             _self               = this;
             
         function sendWatchFile(path) {
-            // console.log("Sending watchFile message for file " + path);
             ide.socket.send(JSON.stringify({
                 "command"     : "watcher",
                 "type"        : "watchFile",
@@ -38,7 +37,6 @@ return ext.register("ext/watcher/watcher", {
         }
         
         function sendUnwatchFile(path) {
-            // console.log("Sending unwatchFile message for file " + path);
             ide.socket.send(JSON.stringify({
                 "command"     : "watcher",
                 "type"        : "unwatchFile",
@@ -48,9 +46,11 @@ return ext.register("ext/watcher/watcher", {
        
         function checkPage() {
             var page = tabEditors.getPage(),
-                data = page.$model.data,
-                path = data.getAttribute("path");
-            
+                data = page.$model.data;
+            if (!data || !data.getAttribute)
+                return;
+
+            var path = data.getAttribute("path");
             if (removedPaths[path]) {
                 util.question(
                     "File removed, keep tab open?",
@@ -172,11 +172,11 @@ return ext.register("ext/watcher/watcher", {
             
             var pages = tabEditors.getPages();
             var message = e.message;
-            if (message.type && message.type != "watcher")
+            if ((message.type && message.type != "watcher") || !message.path)
                 return;
                 
             var path = ide.davPrefix + message.path.slice(ide.workspaceDir.length);
-                
+
             if (expandedPaths[path])
                 return ide.dispatchEvent("treechange", {
                     path    : path,
@@ -221,7 +221,7 @@ return ext.register("ext/watcher/watcher", {
             if (_self.disabled) return;
             
             var node = e.xmlNode;
-            if (node.getAttribute("type") == "folder") {
+            if (node && node.getAttribute("type") == "folder") {
                 var path = node.getAttribute("path");
                 
                 expandedPaths[path] = path;
@@ -233,7 +233,7 @@ return ext.register("ext/watcher/watcher", {
             if (_self.disabled) return;
 
             var node = e.xmlNode;
-            if (node.getAttribute("type") == "folder") {
+            if (node && node.getAttribute("type") == "folder") {
                 var path = node.getAttribute("path");
                 
                 delete expandedPaths[path];
