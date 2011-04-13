@@ -7,7 +7,7 @@
 var Plugin = require("cloud9/plugin"),
     Fs     = require("fs"),
     Path   = require("path"),
-    Async  = require("async"),
+    Async  = require("asyncjs"),
     sys    = require("sys");
 
 var ShellPlugin = module.exports = function(ide) {
