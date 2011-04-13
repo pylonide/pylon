@@ -478,6 +478,7 @@ return ext.register("ext/console/console", {
                 }
                 break;
             case "git":
+            case "npm":
             case "pwd":
             case "ls":
                 res = message.body;
