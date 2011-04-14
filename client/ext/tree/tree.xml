@@ -4,80 +4,53 @@
             return (xmlNode.tagName == "folder" ? 0 : 1) + value.toLowerCase();
         }
         
-        SupportedIcons = {
-           "application/xhtml+xml":'html',
-           "text/css": "css",
-           "text/html":'html',
-            "application/pdf":'page_white_acrobat',
-            "image":'image',
-            //"application/x-shockwave-flash":'swf',
-            "application/xml":'page_white_code_red',
-            //"video":'movie',
-            //"audio": 'audio',
-            "text/plain": 'page_white_text',
-            "application/javascript": 'page_white_code',
-            "text/x-script.python": 'script_code',
-            "application/x-httpd-php": 'page_white_php',
-            "text/x-script.coffeescript": 'script_code'
-        };
-        
-        function getIcon(xmlNode){
-            var ctype = xmlNode.getAttribute('contenttype'),
-                icon  = "page_white_text";
-            if (ctype) {
-                var mime = ctype.split(";")[0];
-                var icon = SupportedIcons[mime] || SupportedIcons[mime.split("/")[0]] || "page_white_text";
-            }
-            return icon + ".png";
-        }
-        
         var confirmed = false;
         
         function remove() {
             if (!confirmed) {
-	            var files = trFiles.getSelection();
-	            
-	            function confirm(file) {
-	                var name = file.getAttribute("name");
-	                
-		            require("core/util").question(
-		                "Remove file?",
-		                "You are about to remove the file " + name,
-		                "Do you want continue? (This change cannot be undone)",
-		                function () { // Yes
-		                    confirmed = true;
-		                    trFiles.remove(file);
-		                    confirmed = false;
-		                    if (files.length > 0)
-		                        confirm(files.shift());
-		                    else
-		                        winQuestion.hide();
-		                },
-		                function () { // Yes to all
-		                    confirmed = true;
-		                    trFiles.remove(file);
-		                    files.forEach(function (file) {
-		                        trFiles.remove(file);
-		                    });
-		                    confirmed = false;
-		                    winQuestion.hide();
-		                },
-		                function () { // No
-		                    if (files.length > 0)
-		                        confirm(files.shift());
-		                    else
-		                        winQuestion.hide();
-		                },
-		                function () { // No to all
-		                    winQuestion.hide();
-		                }
-		            );
-		            btnQuestionYesToAll.setAttribute("visible", files.length > 0);
-		            btnQuestionNoToAll.setAttribute("visible", files.length > 0);
-		        }
-		        confirm(files.shift());
-		        return false;
-		    } else
+                var files = trFiles.getSelection();
+                
+                function confirm(file) {
+                    var name = file.getAttribute("name");
+                    
+                    require("core/util").question(
+                        "Remove file?",
+                        "You are about to remove the file " + name,
+                        "Do you want continue? (This change cannot be undone)",
+                        function () { // Yes
+                            confirmed = true;
+                            trFiles.remove(file);
+                            confirmed = false;
+                            if (files.length > 0)
+                                confirm(files.shift());
+                            else
+                                winQuestion.hide();
+                        },
+                        function () { // Yes to all
+                            confirmed = true;
+                            trFiles.remove(file);
+                            files.forEach(function (file) {
+                                trFiles.remove(file);
+                            });
+                            confirmed = false;
+                            winQuestion.hide();
+                        },
+                        function () { // No
+                            if (files.length > 0)
+                                confirm(files.shift());
+                            else
+                                winQuestion.hide();
+                        },
+                        function () { // No to all
+                            winQuestion.hide();
+                        }
+                    );
+                    btnQuestionYesToAll.setAttribute("visible", files.length > 0);
+                    btnQuestionNoToAll.setAttribute("visible", files.length > 0);
+                }
+                confirm(files.shift());
+                return false;
+            } else
                 return true;
         };
         
@@ -89,7 +62,14 @@
             davProject.move(a, b + /\/[^\/]*$/.exec(a));
         };
     ]]></a:script>
-    <a:window id="winFilesViewer" flex="3" skin="fm-window" title="File Manager" modal="false" visible="true" buttons="close" optimize="true">
+    <a:window id="winFilesViewer" 
+      flex     = "1" 
+      skin     = "fm-window" 
+      title    = "Project Files" 
+      modal    = "false" 
+      visible  = "true" 
+      buttons  = "close" 
+      optimize = "true">
         <a:button
           top="-22"
           skin="header-btn"
@@ -97,36 +77,52 @@
           icon="refresh.png"
           onclick="require('ext/tree/tree').refresh()" />
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
-          
-        <a:tree id="trFiles" canrename="true" anchors="0 0 0 0" border="0"
-          contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
-          onbeforeremove="return remove()" disabled="{!stServerConnected.active}">
-            <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
-                <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
-                <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
-                <a:icon match="[folder|project]" value="folder.png" />
-                <a:icon match="[file]" value="{getIcon(%[.])}" />
-            </a:each>
 
-            <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
-            <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-            <a:rename set="{davProject.rename([@name], [@path])}"/>
-            <a:copy match="[file|folder]" set="{copy([@path], [../@path])}"/>
-            <a:move set="{move([@path], [../@path])}"/>
-            <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
+        <a:hbox
+          anchors  = "0 0 0 0"
+          overflow = "hidden"
+          id       = "hboxTrFiles"
+          class    = "hboxTrFiles"
+        >
+            <a:tree id="trFiles" canrename="true" border="0"
+              contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
+              onbeforeremove="return remove()" disabled="{!stServerConnected.active}"
+              flex="1"
+            >
+                <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
+                    <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
+                    <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
+                    <a:icon match="[folder|project]" value="folder.png" />
+                    <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
+                </a:each>
 
-            <a:drag match="[folder|file]" />
-            <a:drop match="[folder|file]" target="[folder]"
-                action="tree-append" copy="{event.ctrlKey}" />
-        </a:tree>
-        
+                <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
+                <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
+                <a:rename match="[file|folder[not(@path='/workspace')]]" set="{davProject.rename([@name], [@path])}"/>
+                <a:copy match="[file|folder]" set="{copy([@path], [../@path])}"/>
+                <a:move set="{move([@path], [../@path])}"/>
+                <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
+
+                <a:drag match="[folder|file]" />
+                <a:drop match="[folder|file]" target="[folder]"
+                    action="tree-append" copy="{event.ctrlKey}" />
+            </a:tree>
+            <a:scrollbar
+                for      = "trFiles"
+                id       = "sbTrFiles"
+                margin   = "0"
+                skin     = "sbios"
+                width    = "9"
+                overflow = "auto"
+            />
+        </a:hbox>
         <a:menu id="mnuCtxTree" disabled="{!stServerConnected.active}">
             <a:item match="[file]" class="strong" onclick="
-                require('core/ide').dispatchEvent('openfile', {node: apf.activeElement.selected});
+                require('core/ide').dispatchEvent('openfile', {doc: require('core/ide').createDocument(apf.activeElement.selected)})
             ">Edit</a:item>
             <a:divider />
             <a:item onclick="require('ext/tree/tree').refresh()">Refresh</a:item>
-            <a:item onclick="apf.activeElement.startRename()">Rename</a:item>
+            <a:item match="[file|folder[not(@path='/workspace')]]" onclick="apf.activeElement.startRename()">Rename</a:item>
             <a:item match="[file|folder]" onclick="apf.activeElement.remove()">Delete</a:item>
             <a:divider />
             <a:item match="[file|folder]" onclick="

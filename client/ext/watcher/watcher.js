@@ -6,8 +6,8 @@
  */
 
 require.def("ext/watcher/watcher",
-    ["core/ext", "core/ide", "core/util"],
-    function(ext, ide, util) {
+    ["core/ext", "core/ide", "core/util", "ext/tree/tree"],
+    function(ext, ide, util, tree) {
 
 return ext.register("ext/watcher/watcher", {
     name    : "Watcher",
@@ -25,33 +25,32 @@ return ext.register("ext/watcher/watcher", {
             removedPathCount    = 0,
             changedPaths        = {},
             changedPathCount    = 0,
-            ignoredPaths        = {},
             expandedPaths       = {},
             _self               = this;
             
         function sendWatchFile(path) {
-            // console.log("Sending watchFile message for file " + path);
             ide.socket.send(JSON.stringify({
                 "command"     : "watcher",
                 "type"        : "watchFile",
-                "path"        : path
+                "path"        : ide.workspaceDir + path.slice(ide.davPrefix.length)
             }));
         }
         
         function sendUnwatchFile(path) {
-            // console.log("Sending unwatchFile message for file " + path);
             ide.socket.send(JSON.stringify({
                 "command"     : "watcher",
                 "type"        : "unwatchFile",
-                "path"        : path
+                "path"        : ide.workspaceDir + path.slice(ide.davPrefix.length)
             }));
         }           
        
         function checkPage() {
             var page = tabEditors.getPage(),
-                data = page.$model.data,
-                path = data.getAttribute("path");
-            
+                data = page.$model.data;
+            if (!data || !data.getAttribute)
+                return;
+
+            var path = data.getAttribute("path");
             if (removedPaths[path]) {
                 util.question(
                     "File removed, keep tab open?",
@@ -168,56 +167,47 @@ return ext.register("ext/watcher/watcher", {
                 });
         });
         
-        ide.addEventListener("afterfilesave", function(e) {
-            if (_self.disabled) return;
-            
-            var path = e.node.getAttribute("path");
-            // console.log("Adding " + path + " to ignore list");
-            ignoredPaths[path] = path;
-        });
-                
         ide.addEventListener("socketMessage", function(e) {
             if (_self.disabled) return;
             
             var pages = tabEditors.getPages();
-            with (e.message) {
-                if (type != "watcher")
-                    return;
-                if (expandedPaths[path])
-                    return ide.dispatchEvent("treechange", {
-                        path    : path,
-                        files   : files
+            var message = e.message;
+            if ((message.type && message.type != "watcher") || !message.path)
+                return;
+                
+            var path = ide.davPrefix + message.path.slice(ide.workspaceDir.length);
+
+            if (expandedPaths[path])
+                return ide.dispatchEvent("treechange", {
+                    path    : path,
+                    files   : message.files
+                });
+            if (!pages.some(function (page) {
+                return page.$model.data.getAttribute("path") == path;
+            }))
+                return;
+            switch (message.subtype) {
+            case "create":
+                break;
+            case "remove":
+                if (!removedPaths[path]) {
+                    removedPaths[path] = path;
+                    ++removedPathCount;
+                    checkPage();
+                    /*
+                    ide.dispatchEvent("treeremove", {
+                        path : path
                     });
-                if (!pages.some(function (page) {
-                    return page.$model.data.getAttribute("path") == path;
-                }))
-                    return;
-                switch (subtype) {
-                case "create":
-                    break;
-                case "remove":
-                    if (!removedPaths[path]) {
-                        removedPaths[path] = path;
-                        ++removedPathCount;
-                        checkPage();
-                        /*
-                        ide.dispatchEvent("treeremove", {
-                            path : path
-                        });
-                        */
-                    }
-                    break;
-                case "change":
-                    if (ignoredPaths[path]) {
-                        // console.log("Ignoring change notification for file " + path);
-                        delete ignoredPaths[path];
-                    } else if (!changedPaths[path]) {
-                        changedPaths[path] = path;
-                        ++changedPathCount;
-                        checkPage();
-                    }
-                    break;
+                    */
                 }
+                break;
+            case "change":
+                if (!changedPaths[path]) {
+                    changedPaths[path] = path;
+                    ++changedPathCount;
+                    checkPage();
+                }
+                break;
             }
         });
         
@@ -231,7 +221,7 @@ return ext.register("ext/watcher/watcher", {
             if (_self.disabled) return;
             
             var node = e.xmlNode;
-            if (node.getAttribute("type") == "folder") {
+            if (node && node.getAttribute("type") == "folder") {
                 var path = node.getAttribute("path");
                 
                 expandedPaths[path] = path;
@@ -243,7 +233,7 @@ return ext.register("ext/watcher/watcher", {
             if (_self.disabled) return;
 
             var node = e.xmlNode;
-            if (node.getAttribute("type") == "folder") {
+            if (node && node.getAttribute("type") == "folder") {
                 var path = node.getAttribute("path");
                 
                 delete expandedPaths[path];

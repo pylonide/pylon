@@ -37,6 +37,7 @@
             height        : 36px;
             background    : url(images/c9-menu-backg.png) repeat-x 0 0;
             border-bottom : 1px solid #000000;
+            z-index       : 10000;
         }
         
         .c9-menu-bar .c9-mbar-logo {
@@ -69,8 +70,9 @@
             position:absolute;
             background:url(images/offline.png) no-repeat 0 0;
             top:23px;
-            right:-66px;
+            right:-30px;
             display:none;
+            z-index: 100000;
         }
         
         .c9-menu-bar.offline .c9-mbar-logo .c9-mbar-bcont .c9-offline {
@@ -107,7 +109,7 @@
             width            : 65px;
             overflow         : hidden;
             position         : relative;
-            background-image : url(images/gitui_menu_backg.png);
+            background-image : url(images/dockLeftBackground.png);
         }
         
         .black-menu-bar .c9menulogo {
@@ -152,7 +154,7 @@
             position         : relative;
             overflow         : hidden;
             width            : 43px;
-            border-left      : 1px solid #2e2e2e;
+            border-left      : 1px solid #333;
             background-color : #e7e7e7;
             filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5');
             -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5')";
@@ -190,7 +192,7 @@
             position         : relative;
             overflow         : hidden;
             width            : 65px;
-            border-right     : 1px solid #2e2e2e;
+            border-right     : 1px solid #333;
             background       : url(images/dock_cloud9_bg.gif);
         }
 

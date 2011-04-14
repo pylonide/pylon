@@ -51,10 +51,14 @@
         .divider-debugpanel DIV {
             border-bottom : 1px dotted #bebebe;
             border-top    : 1px dotted #f3f3f3;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isGecko">
+        .divider-debugpanel DIV {
             position : relative;
             left : -1px;
         }
-    ]]></a:style>
+    </a:style>
 
     <a:presentation>
         <a:main container="div" caption="div">

@@ -4,7 +4,7 @@
  */
 var jsDAV = require("jsdav"),
     DavPermission = require("./dav/permission"),
-    Async = require("async"),
+    Async = require("asyncjs"),
     User = require("./user"),
     fs = require("fs"),
     sys = require("sys"),
@@ -54,6 +54,9 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
 
     this.nodeCmd = process.argv[0];
 
+    this.davServer = jsDAV.mount(this.options.mountDir, this.options.davPrefix, this.httpServer, false);
+    this.davInited = false;
+    
     this.registerExts(exts);
 };
 
@@ -68,6 +71,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/themes_default/themes_default",
     "ext/panels/panels",
     "ext/dockpanel/dockpanel",
+    "ext/openfiles/openfiles",
     "ext/tree/tree",
     "ext/save/save",
     "ext/gotofile/gotofile",
@@ -82,6 +86,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/html/html",
     "ext/browser/browser",
     "ext/code/code",
+    "ext/imgview/imgview",
     "ext/extmgr/extmgr",
     "ext/run/run", //Add location rule
     "ext/debugger/debugger", //Add location rule
@@ -89,7 +94,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/console/console",
     "ext/tabbehaviors/tabbehaviors",
     "ext/keybindings/keybindings",
-    "ext/watcher/watcher"
+    "ext/watcher/watcher",
+    "ext/dragdrop/dragdrop"
 ];
 
 (function () {
@@ -106,14 +112,13 @@ Ide.DEFAULT_PLUGINS = [
             this.$serveIndex(req, res, next);
         }
         else if (path.match(this.workspaceRe)) {
-            if (!this.davServer) {
-                this.davServer = jsDAV.mount(this.options.mountDir, this.options.davPrefix, this.httpServer, false);
-
+            if (!this.davInited) {
                 if(process.platform == "sunos"){
                     this.davServer.plugins["codesearch"].GREP_CMD = __dirname+"/../../support/gnu-builds/grep-sunos";
                     this.davServer.plugins["filesearch"].FIND_CMD = __dirname+"/../../support/gnu-builds/find-sunos";
                 }
                 this.davServer.plugins["permission"] = DavPermission;
+                this.davInited = true;
                 this.emit("configureDav", this.davServer);
             }
             this.davServer.permissions = this.getPermissions(req);
@@ -160,9 +165,7 @@ Ide.DEFAULT_PLUGINS = [
                 requirejsConfig: _self.options.requirejsConfig,
                 settingsXml: "",
                 offlineManifest: _self.options.offlineManifest,
-                // TODO fix text plugin loading!!
-                //scripts: _self.options.debug ? "" : aceScripts
-                scripts: "",
+                scripts: _self.options.debug ? "" : aceScripts,
                 projectName: _self.options.projectName,
                 version: _self.options.version
             };
@@ -241,7 +244,7 @@ Ide.DEFAULT_PLUGINS = [
     this.addClientConnection = function(username, client, message) {
         var user = this.$users[username];
         if (!user)
-            return this.error("No session for user " + username, 99, message, client);
+            return this.error("No session for user " + username, 401, message, client);
 
         user.addClientConnection(client, message);
     };
@@ -272,8 +275,9 @@ Ide.DEFAULT_PLUGINS = [
     this.registerExts = function(exts) {
         this.exts = {}
 
-        for (var ext in exts)
+        for (var ext in exts) {
             this.exts[ext] = new exts[ext](this);
+        }
         for (ext in this.exts) {
             if (this.exts[ext].init)
                 this.exts[ext].init();

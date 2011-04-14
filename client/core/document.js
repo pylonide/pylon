@@ -15,11 +15,12 @@ var Document = function(node, docValue){
     };
     
     this.setNode = function(newNode) {
+        this.dispatchEvent("setnode", {node: newNode});
         return (node = newNode);
     };
     
     this.hasValue = function(){
-        return !!this.getValue();
+        return this.getValue() !== undefined;
     };
     
     this.setValue = function(value){

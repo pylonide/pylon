@@ -42,8 +42,9 @@ return ext.register("ext/gotofile/gotofile", {
             
             ide.barTools.appendChild(new apf.button({
                 id      : "btnOpen",
-                //icon    : "save_btn_ico{this.disabled ? '_disabled' : ''}.png",
-                caption : "Open...",
+                icon    : "open.png",
+                width   : 29,
+                tooltip : "Open...",
                 skin    : "c9-toolbarbutton",
                 onclick : function() {
                     _self.toggleDialog(true);
@@ -56,6 +57,10 @@ return ext.register("ext/gotofile/gotofile", {
 
     init : function() {
         txtGoToFile.addEventListener("keydown", function(e){
+            if (txtGoToFile.value == "") {
+                return;
+            }
+            
             if (e.keyCode == 13){
                 var node = trFiles.xmlRoot.selectSingleNode("folder[1]");
                 mdlGoToFile.load("{davProject.report('" + node.getAttribute("path")

@@ -11,7 +11,7 @@ require.def("ext/tree/tree",
     function(ide, ext, fs, settings, panels, markup) {
 
 return ext.register("ext/tree/tree", {
-    name            : "Tree",
+    name            : "Project Files",
     dev             : "Ajax.org",
     alone           : true,
     type            : ext.GENERAL,
@@ -29,20 +29,61 @@ return ext.register("ext/tree/tree", {
     
     hook : function(){
         panels.register(this);
+
+        var btn = this.button = navbar.insertBefore(new apf.button({
+            skin    : "mnubtn",
+            state   : "true",
+            value   : "true",
+            "class" : "project_files",
+            caption : "Project Files"
+        }), navbar.firstChild);
+        navbar.current = this;
+        
+        var _self = this;
+        btn.addEventListener("mousedown", function(e){
+            var value = this.value;
+            if (navbar.current && (navbar.current != _self || value)) {
+                navbar.current.disable(navbar.current == _self);
+                if (value) 
+                    return;
+            }
+
+            panels.initPanel(_self);
+            _self.enable(true);
+        });
     },
 
     init : function() {
+        var _self = this;
+        
         this.panel = winFilesViewer;
         
-        winFilesViewer.addEventListener("hide", function(){
+        colLeft.addEventListener("hide", function(){
             splitterPanelLeft.hide();
         });
         
-        winFilesViewer.addEventListener("show", function() {
+        colLeft.addEventListener("show", function() {
            splitterPanelLeft.show(); 
         });
         
         colLeft.appendChild(winFilesViewer);
+        
+        mnuView.appendChild(new apf.divider()),
+        mnuView.appendChild(new apf.item({
+            id      : "mnuitemHiddenFiles",
+            type    : "check",
+            caption : "Show Hidden Files",
+            checked : "[{require('ext/settings/settings').model}::auto/tree/@showhidden]",
+            onclick : function(){
+                _self.changed = true;
+                require('ext/tree/tree').refresh();
+                require("ext/settings/settings").save();
+            }
+        }));
+        davProject.setAttribute("showhidden", "[{require('ext/settings/settings').model}::auto/tree/@showhidden]")
+        
+        mnuView.appendChild(new apf.divider()),
+        
         trFiles.setAttribute("model", fs.model);
         
         trFiles.addEventListener("afterchoose", this.$afterselect = function(e) {
@@ -62,7 +103,13 @@ return ext.register("ext/tree/tree", {
                 fs.beforeRename(args[1], null, args[0].getAttribute("path").replace(/[\/]+$/, "") + "/" + filename);
             });
         });
-        
+       
+        trFiles.addEventListener("beforestoprename", function(e) {
+            if (!ide.onLine) return false;
+
+            return fs.beforeStopRename(e.value);
+        });
+ 
         trFiles.addEventListener("beforerename", function(e){
             if (!ide.onLine) return false;
             
@@ -103,10 +150,9 @@ return ext.register("ext/tree/tree", {
         });*/
         
         /**** Support for state preservation ****/
-        
-        var _self = this;
-        
         trFiles.addEventListener("expand", function(e){
+            if (!e.xmlNode)
+                return;
             _self.expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = e.xmlNode;
 
             if (!_self.loading) {
@@ -124,7 +170,8 @@ return ext.register("ext/tree/tree", {
         });
 
         ide.addEventListener("loadsettings", function(e){
-            var strSettings = e.model.queryValue("auto/tree");
+            var model = e.model;
+            var strSettings = model.queryValue("auto/tree");
             if (strSettings) {
                 _self.loading = true;
                 _self.currentSettings = apf.unserialize(strSettings);
@@ -146,7 +193,7 @@ return ext.register("ext/tree/tree", {
                         });
                     }
                 }catch(e){
-                    e.model.setQueryValue("auto/tree/text()", "");
+                    model.setQueryValue("auto/tree/text()", "");
                 }
             }
         });
@@ -154,9 +201,8 @@ return ext.register("ext/tree/tree", {
         ide.addEventListener("savesettings", function(e){
             if (!_self.changed)
                 return;
-            
-            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/tree/text()");
 
+            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/tree/text()");
             _self.currentSettings = [];
 
             var path, id, lut = {};
@@ -185,7 +231,7 @@ return ext.register("ext/tree/tree", {
                 if (!parts.length)
                     _self.currentSettings.push(path);
             }
-            
+
             xmlSettings.nodeValue = apf.serialize(_self.currentSettings);
             return true;
         });
@@ -233,8 +279,11 @@ return ext.register("ext/tree/tree", {
             var path    = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
                                 .replace(/\[@name="workspace"\]/, "")
                                 .replace(/\//, ""),
-                parent  = trFiles.getModel().data.selectSingleNode(path),
-                nodes   = parent.childNodes,
+                parent  = trFiles.getModel().data.selectSingleNode(path);
+            if (!parent)
+                return;
+                
+            var nodes   = parent.childNodes,
                 files   = e.files,
                 removed = [];
             
@@ -267,7 +316,7 @@ return ext.register("ext/tree/tree", {
     },
 
     refresh : function(){
-        trFiles.getModel().load("<data><folder type='folder' name='" + "Project" + "' path='" + ide.projectName + "' root='1'/></data>");
+        trFiles.getModel().load("<data><folder type='folder' name='" + ide.projectName + "' path='" + ide.davPrefix + "' root='1'/></data>");
         this.expandedList = {};
         this.loading = true;
         ide.dispatchEvent("track_action", {type: "reloadtree"});
@@ -282,12 +331,23 @@ return ext.register("ext/tree/tree", {
         }
     },
 
-    enable : function(){
+    enable : function(noButton){
         winFilesViewer.show();
+        colLeft.show();
+        if (!noButton) {
+            this.button.setValue(true);
+            if(navbar.current && (navbar.current != this))
+                navbar.current.disable(false);
+        }
+        
+        navbar.current = this;
     },
 
-    disable : function(){
-        winFilesViewer.hide();
+    disable : function(noButton){
+        if (self.winFilesViewer)
+            winFilesViewer.hide();
+        if (!noButton)
+            this.button.setValue(false);
     },
 
     destroy : function(){

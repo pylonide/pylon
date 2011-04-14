@@ -7,7 +7,7 @@
 
         .tb_console .sbtb_middle {
             height           : 16px;
-            padding          : 7px 10px 7px;
+            padding          : 6px 10px 8px;
             -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 1) inset;
             -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 1) inset;
             box-shadow         : 0px 1px 0px rgba(255, 255, 255, 1) inset;
@@ -37,6 +37,7 @@
             font-weight      : bold;
             background-color : transparent;
             width: 100%;
+            padding : 0;
         }
 
         .tb_consoleInitial .sbtb_middle INPUT {

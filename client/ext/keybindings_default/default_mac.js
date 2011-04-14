@@ -23,7 +23,7 @@ return keys.onLoad({
             "paste": "Command-V"
         },
         "quickwatch": {
-            "quickwatch": "Command-Q"
+            "quickwatch": "Option-Q"
         },
         "run": {
             "resume": "F8",
@@ -35,7 +35,7 @@ return keys.onLoad({
             "gotoline": "Command-L"
         },
         "gotofile": {
-            "gotofile": "Alt-Shift-R"
+            "gotofile": "Alt-Shift-R|Command-T"
         },
         "newresource": {
             "newfile": "Command-N",
@@ -75,7 +75,7 @@ return keys.onLoad({
             "selectall": "Command-A",
             "removeline": "Command-D",
             "gotoline": "Command-L",
-            "togglecomment": "Command-7",
+            "togglecomment": "Command-/",
             "findnext": "Command-G",
             "findprevious": "Command-Shift-G",
             "find": "Command-F",

@@ -139,7 +139,7 @@ return ext.register("ext/searchreplace/searchreplace", {
         return {
             backwards: chkSearchBackwards.checked,
             wrap: chkWrapAround.checked,
-            caseSensitive: !chkMatchCase.checked,
+            caseSensitive: chkMatchCase.checked,
             wholeWord: chkWholeWords.checked,
             regExp: chkRegEx.checked,
             scope: chkSearchSelection.checked ? search.Search.SELECTION : search.Search.ALL

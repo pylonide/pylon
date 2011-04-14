@@ -48,9 +48,8 @@ return ext.register("ext/filesystem/filesystem", {
     },
     
     exists : function(path, callback) {
-        this.readFile(path, function (data, state, extra) {
-            callback(state == apf.SUCCESS);
-        });
+        if (this.webdav)
+            this.webdav.exists(path, callback);
     },
 
     createFolder: function(name, tree) {
@@ -129,6 +128,20 @@ return ext.register("ext/filesystem/filesystem", {
                     filename = prefix + "." + index++;
                     _self.exists(path + "/" + filename, test);    
                 } else {
+                    var file, both = 0;
+                    function done(){
+                        if (both == 2) {
+                            file = apf.xmldb.appendChild(node, file);
+                            trFiles.select(file);
+                            trFiles.startRename();
+                        }
+                    }
+                    
+                    trFiles.slideOpen(null, node, true, function(){
+                        both++;
+                        done(); 
+                    });
+                    
                     _self.webdav.exec("create", [path, filename], function(data) {
                         _self.webdav.exec("readdir", [path], function(data) {
                             // @todo: in case of error, show nice alert dialog
@@ -137,11 +150,10 @@ return ext.register("ext/filesystem/filesystem", {
                             
                             var strXml = data.match(new RegExp(("(<file path='" + path +
                                 "/" + filename + "'.*?>)").replace(/\//g, "\\/")))[1];
-        
-                            var file = apf.xmldb.appendChild(node, apf.getXml(strXml));
+                            file = apf.getXml(strXml);
                             
-                            trFiles.select(file);
-                            trFiles.startRename();
+                            both++;
+                            done();
                         });
                     });
                 }
@@ -152,9 +164,19 @@ return ext.register("ext/filesystem/filesystem", {
         }
     },
 
+    beforeStopRename : function(name) {
+        // Returning false from this function will cancel the rename. We do this
+        // when the name to which the file is to be renamed contains invalid
+        // characters
+        var match = name.match(/^(?:\w|[.])(?:\w|[.-])*$/);
+
+        return match !== null && match[0] == name;
+    },
+
     beforeRename : function(node, name, newPath) {
         var path = node.getAttribute("path"),
-            page = tabEditors.getPage(path);
+            page = tabEditors.getPage(path),
+            match;
 
         if (name)
             newPath = path.replace(/^(.*\/)[^\/]+$/, "$1" + name);
@@ -165,6 +187,22 @@ return ext.register("ext/filesystem/filesystem", {
         apf.xmldb.setAttribute(node, "name", name);
         if (page)
             page.setAttribute("id", newPath);
+        
+        var childNodes = node.childNodes;
+        var length = childNodes.length;
+        
+        for (var i = 0; i < length; ++i) {
+            var childNode = childNodes[i];
+            var name = childNode.getAttribute("name");
+            
+            this.beforeRename(childNode, null,
+                              node.getAttribute("path") + "/" + name);
+        }
+        ide.dispatchEvent("updatefile", {
+            path: path,
+            name: name.input,
+            xmlNode: node
+        });
     },
 
     beforeMove: function(parent, node) {
@@ -175,6 +213,17 @@ return ext.register("ext/filesystem/filesystem", {
         node.setAttribute("path", newpath);
         if (page)
             page.setAttribute("id", newpath);
+            
+        var childNodes = node.childNodes;
+        var length = childNodes.length;
+        
+        for (var i = 0; i < length; ++i)
+            this.beforeMove(node, childNodes[i]);
+        
+        ide.dispatchEvent("updatefile", {
+            path: path,
+            xmlNode: node
+        });
     },
 
     remove: function(path) {

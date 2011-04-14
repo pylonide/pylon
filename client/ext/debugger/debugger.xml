@@ -37,6 +37,18 @@
                           onclick  = "
                             txtCode.clear();
                           " />
+                        <a:divider skin2="c9-divider"/>
+                        <a:dropdown id="lstScripts"
+                          skin2       = "black_dropdown"
+                    	  margin     = "3 0 0 4"
+                          width      = "120"
+                    	  maxitems   = "10"
+                          model      = "mdlDbgSources"
+                          disabled   = "{!stDebugProcessRunning.active and 1}" 
+                          each       = "[file]"
+                          caption    = "[@text]"
+                          autoselect = "false"
+                          icon       = "debugger/file_obj.gif" />
                     </a:bar>
                 </a:toolbar>
                 <a:codeeditor id="txtCode" 

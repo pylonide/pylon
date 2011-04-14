@@ -9,7 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var console = require("ext/console/console");
 var editors = require("ext/editors/editors");
 var panels = require("ext/panels/panels");
 var dock   = require("ext/dockpanel/dockpanel");
@@ -38,11 +37,6 @@ return ext.register("ext/debugger/debugger", {
     nodes : [],
 
     hook : function(){
-        this.$layoutItem = mnuModes.appendChild(new apf.item({
-            value   : "ext/debugger/debugger",
-            caption : this.name
-        }));
-
         ide.addEventListener("consolecommand.debug", function(e) {
             ide.socket.send(JSON.stringify({
                 command: "internal-isfile",
@@ -78,7 +72,7 @@ return ext.register("ext/debugger/debugger", {
         }, {
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
-                defaultState: { x: -6, y: -46 },
+                defaultState: { x: -6, y: -217 /*-46*/ },
                 activeState: { x: -6, y: -217 }
             },
         });
@@ -89,7 +83,7 @@ return ext.register("ext/debugger/debugger", {
         }, {
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
-                defaultState: { x: -7, y: -130 },
+                defaultState: { x: -7, y: -310 /*-130*/ },
                 activeState: { x: -7, y: -310 }
             },
         });
@@ -100,8 +94,8 @@ return ext.register("ext/debugger/debugger", {
         }, {
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
-                defaultState: { x: -6, y: -174 },
-                activeState: { x: -6, y: -262 }
+                defaultState: { x: -6, y: -261 /*-174*/ },
+                activeState: { x: -6, y: -261 }
             },
         });
         
@@ -111,7 +105,7 @@ return ext.register("ext/debugger/debugger", {
         }, {
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
-                defaultState: { x: -6, y: -88 },
+                defaultState: { x: -6, y: -360 /*-88*/ },
                 activeState: { x: -6, y: -360 }
             },
         });
@@ -147,6 +141,10 @@ return ext.register("ext/debugger/debugger", {
             if (e.selected && e.selected.getAttribute("scriptid"))
                 _self.showDebugFile(e.selected.getAttribute("scriptid"), parseInt(e.selected.getAttribute("line")) + 1);
             // TODO sometimes we don't have a scriptID
+        });
+        
+        lstScripts.addEventListener("afterselect", function(e) {
+            e.selected && require("ext/debugger/debugger").showDebugFile(e.selected.getAttribute("scriptid"));
         });
 
         ide.addEventListener("afterfilesave", function(e) {

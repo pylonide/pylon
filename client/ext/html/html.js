@@ -37,9 +37,10 @@ return ext.register("ext/html/html", {
     init : function() {
         //Append the button bar to the main toolbar
         var nodes = barHtmlMode.childNodes;
-        for (var i = nodes.length - 1; i >= 0; i--) {
-            if (nodes[i].nodeType != 1) continue;
-            this.nodes.push(ide.barTools.appendChild(nodes[0]));
+        for (var node, i = nodes.length - 1; i >= 0; i--) {
+            node = ide.barTools.appendChild(nodes[0]);
+            if (node.nodeType != 1) continue;
+            this.nodes.push(node);
         }
 
         btnHtmlOpen.onclick = this.onOpenPage.bind(this);

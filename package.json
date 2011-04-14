@@ -1,9 +1,9 @@
 {
     "name": "cloud9",
     "description": "Ajax.org Cloud9 IDE",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "homepage" : "http://github.com/ajaxorg/cloud9",
-    "engines": {"node": ">= 0.2.0"},
+    "engines": {"node": ">= 0.4.0"},
     "author": "Ajax.org B.V. <info@ajax.org>",
     "main": "bin/cloud9",
     "repository" : {

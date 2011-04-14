@@ -1689,6 +1689,7 @@ return ext.register("ext/save/save", {
         var _self = this, panel = sbMain.firstChild;
         panel.setAttribute("caption", "Saving file " + path);
         
+        ide.dispatchEvent("beforefilesave", {node: node, doc: doc, value: value});
         fs.saveFile(path, value, function(data, state, extra){
             if (state != apf.SUCCESS) {
                 util.alert(
@@ -4299,8 +4300,10 @@ return ext.register("ext/noderunner/noderunner", {
                 break;
                 
             case "error":
-                if (message.code !== 6)
-                    util.alert("Server Error", "Server Error", message.message);
+                if (message.code !== 6) {
+                    //util.alert("Server Error", "Server Error", message.message);
+                    
+                }
                 ide.socket.send('{"command": "state"}');
                 break;
                 

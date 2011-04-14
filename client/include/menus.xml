@@ -1,15 +1,10 @@
-<a:menu id="mnuFile">
-    <a:divider />
-    <a:item>Exit</a:item>
-</a:menu>
-
-<a:menu id="mnuEdit">
-</a:menu>
-
-<a:menu id="mnuView">
-</a:menu>
-
-<a:menu id="mnuModes"
-  onitemclick = "require('core/ext').setLayoutMode(event.value);">
-    <a:item value="default" caption="Default" />
-</a:menu>
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:menu id="mnuFile">
+    </a:menu>
+    
+    <a:menu id="mnuEdit">
+    </a:menu>
+    
+    <a:menu id="mnuView">
+    </a:menu>
+</a:application>

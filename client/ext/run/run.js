@@ -67,10 +67,6 @@ return ext.register("ext/run/run", {
         winRunCfgNew.addEventListener("hide", function() {
             mdlRunConfigurations.data.setAttribute("debug", "0");
         });
-        
-        lstScripts.addEventListener("afterselect", function(e) {
-            e.selected && require("ext/debugger/debugger").showDebugFile(e.selected.getAttribute("scriptid"));
-        });
     },
 
     duplicate : function() {
