@@ -282,8 +282,10 @@ apf.scrollbar = function(struct, tagName){
     
     //@todo this function is called way too many times
     this.$update = function(){
-        if (this.animating || !this.$visible) 
-            return;
+        // Commented this out because otherwise a tree expansion wouldn't
+        // show the scrollbar again
+        //if (this.animating || !this.$visible)
+        //    return;
 
         var oHtml = this.$getHtmlHost();
         if (!oHtml || !oHtml.offsetHeight) //@todo generalize this to resize for non-ie
@@ -294,7 +296,7 @@ apf.scrollbar = function(struct, tagName){
         //Disable scrollbar
         var vp = this.$getViewPort(oHtml);
         var sz = this.$getScrollHeight(oHtml);//this.$getScrollHeight(oHtml);
-        
+
         if (vp >= sz) {
             if (this.overflow == "scroll") {
                 this.$caret.style.display = "none";
