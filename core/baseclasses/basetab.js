@@ -546,7 +546,7 @@ apf.BaseTab = function(){
         var _self = this;
         
         if (!this.$transInfo) {
-            this.$int.style.overflow = "hidden";
+            this.$int.style.overflow = apf.getStyle(this.$int, 'overflow') || "hidden";
             
             this.$transInfo = {
                 start : function(){
