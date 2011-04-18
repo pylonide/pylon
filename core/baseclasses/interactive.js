@@ -789,8 +789,8 @@ apf.Interactive = function(){
             : originalCursor || "default";
     };
 
-    //#ifdef __WITH_OUTLINE
     var oOutline;
+    //#ifdef __WITH_OUTLINE
     function initOutline(e){
         var doc = this.$pHtmlDoc || document;
         oOutline = doc.getElementById("apf_outline");
