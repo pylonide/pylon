@@ -3787,6 +3787,110 @@
         </a:button>
     </a:presentation>
 </a:modalwindow>
+<a:scrollbar name="sbios">
+    <a:style><![CDATA[
+        .sbios {
+            position            : relative;
+            width               : 6px;
+            overflow            : hidden;
+            padding             : 6px 3px 3px 0;
+        }
+
+        .sbios SPAN {
+            width               : 6px;
+            bottom              : 0;
+            height              : 3px;
+            position            : absolute;
+        }
+
+        .sbios .filler {
+            height              : 100%;
+            width               : 6px;
+            position            : absolute;
+            top                 : 0;
+            bottom              : 0;
+            z-index             : 1;
+        }
+        .sbios .mainrail {
+            height              : 100%;
+            width               : 6px;
+            position            : relative;
+        }
+
+        .sbios .indicator {
+            height   : 6px;
+            display  : none;
+            position : absolute;
+            overflow : hidden;
+            width    : 7px;
+            margin   : 0 0 0 0;
+            min-height: 20px;
+            background: #aaadaf;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+        }
+
+        .sbios .indicator .indi_left {
+            height              : 3px;
+            width               : 7px;
+            position            : absolute;
+            top                 : 0;
+            left                : 0;
+        }
+
+        .sbios .indicator .indi_middle {
+            position            : absolute;
+            top                 : 3px;
+            bottom              : 3px;
+            left                : 0;
+            width               : 7px;
+        }
+
+        .sbios .indicator .indi_right {
+            height              : 3px;
+            width               : 7px;
+            position            : absolute;
+            bottom              : 0;
+            left                : 0;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isWebkit">
+        .sbios{
+            display : -webkit-box;
+        }
+
+        .sbios span{
+            left : 0;
+        }
+
+        .sbios .mainrail {
+            height : auto;
+        }
+
+        .sbios .filler{
+            left : 0;
+            height : auto;
+            top : 0;
+            bottom : 0;
+        }
+    </a:style>
+
+    <a:presentation>
+        <a:main indicator="div/div">
+            <div class='sbios'>
+                <div class="filler">
+                    <div class='indicator'>
+                        <div class="indi_left"></div>
+                        <div class="indi_middle"></div>
+                        <div class="indi_right"></div>
+                    </div>
+                </div>
+                <div class="mainrail"></div>
+                <span> </span>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:scrollbar>
 <a:modalwindow name="dockwin">
     <a:alias>panel</a:alias>
 
@@ -6594,8 +6698,11 @@
             cursor           : default;
             position         : relative;
             padding          : 0;
-            overflow         : auto;
+            overflow         : hidden;
             border-right     : 1px solid #f5f5f5;
+        }
+
+        .hboxTrFiles {
             background :url(images/tree-shadow-left.png) repeat-y left 0, url(images/tree-shadow-right.png) repeat-y right 0, url(images/tree_backg.png) repeat 0 0;
         }
         

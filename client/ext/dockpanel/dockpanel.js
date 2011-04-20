@@ -128,6 +128,7 @@ return ext.register("ext/dockpanel/dockpanel", {
             ref        : section,
             pinned     : true,
             animate    : false,
+            resizable  : true,
             skin       : "dockwindowbasic",
             "onprop.visible" : function(e){
                 if (e.value) {
@@ -139,7 +140,9 @@ return ext.register("ext/dockpanel/dockpanel", {
                     var menu = this;
                     setTimeout(function(){
                         menu.$ext.style.right = "42px";
+                        //menu.$ext.style.minHeight = "350px";
                         menu.$ext.style.left = "";
+                        menu.$ext.style.zIndex = "9999";
                     });
                 }
             },
@@ -151,10 +154,17 @@ return ext.register("ext/dockpanel/dockpanel", {
                 })
             ]
         }));
+
+        section.menu.addEventListener("afterresize", function() {
+            var menu = this;
+            setTimeout(function() {
+                menu.$ext.style.right = "42px";
+                menu.$ext.style.left  = "";
+            });
+        });
+
         section.menu.$ext.style.display = "none";
-        
         section.tab = section.menu.firstChild;
-        
         return section;
     },
     

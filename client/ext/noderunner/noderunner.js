@@ -92,9 +92,9 @@ return ext.register("ext/noderunner/noderunner", {
                 if (message.code !== 6 && message.code != 401) {
                     //util.alert("Server Error", "Server Error " 
                     //    + (message.code || ""), message.message);
-                    
+
                     txtConsole.addValue("<div class='item console_log' style='font-weight:bold;color:#ff0000'>[C9 Server Exception " 
-                        + (message.code || "") + "] " + message.message + "</div>");
+                        + (message.code || "") + "] " + message.message.message + "</div>");
                     
                     apf.ajax("/debug", {
                         method      : "POST",
