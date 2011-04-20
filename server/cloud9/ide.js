@@ -47,7 +47,8 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
         requirejsConfig: requirejsConfig,
         offlineManifest: options.offlineManifest || "",
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
-        version: options.version
+        version: options.version,
+        extra: options.extra
     };
 
     this.$users = {};
