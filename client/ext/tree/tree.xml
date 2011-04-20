@@ -110,9 +110,9 @@
             <a:scrollbar
                 for      = "trFiles"
                 id       = "sbTrFiles"
-                margin   = "0"
+                margin   = "2"
                 skin     = "sbios"
-                width    = "9"
+                width    = "7"
                 overflow = "auto"
             />
         </a:hbox>
