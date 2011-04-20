@@ -155,6 +155,14 @@ return ext.register("ext/dockpanel/dockpanel", {
             ]
         }));
 
+        section.menu.addEventListener("afterresize", function() {
+            var menu = this;
+            setTimeout(function() {
+                menu.$ext.style.right = "42px";
+                menu.$ext.style.left  = "";
+            });
+        });
+
         section.menu.$ext.style.display = "none";
         section.tab = section.menu.firstChild;
         return section;
