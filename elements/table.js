@@ -152,10 +152,12 @@ apf.table = function(struct, tagName){
         for (var i = cells.length - 1; i >= 0; i--)
             cells[i].parentNode.removeChild(cells[i]);
         
-        for (var c, i = 0; i < colsize.length; i++) {
+        for (var sz, c, i = 0; i < colsize.length; i++) {
             c = this.$tbody.firstChild.appendChild(document.createElement("td"));
-            if (colsize[i].indexOf("%") > -1)
-                c.appendChild(document.createElement("div")).style.width = "50px";
+            c.style.width = (sz = colsize[i]).indexOf("%") > -1 ? sz : sz + "px";
+            
+            /*if (colsize[i].indexOf("%") > -1)
+                c.appendChild(document.createElement("div")).style.width = "50px";*/
         }
         
         if (start && this.$amlLoaded)
