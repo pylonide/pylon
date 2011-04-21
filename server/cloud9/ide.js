@@ -20,8 +20,6 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
     
     this.httpServer = httpServer;
     this.socket = socket;
-    
-    this.workspace = new Workspace(this);
 
     this.workspaceDir = Async.abspath(options.workspaceDir).replace(/\/+$/, "");
     var baseUrl = (options.baseUrl || "").replace(/\/+$/, "");
@@ -56,12 +54,19 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
 
     this.$users = {};
 
-    this.nodeCmd = process.argv[0];
-
     this.davServer = jsDAV.mount(this.options.mountDir, this.options.davPrefix, this.httpServer, false);
     this.davInited = false;
     
+    this.workspace = new Workspace(this);
+    
     this.workspace.createPlugins(exts);
+    var statePlugin = this.workspace.getExt("state");
+    if (statePlugin) {
+        statePlugin.on("statechange", function(state) {
+            state.workspaceDir = this.workspace.workspaceDir;
+            state.davPrefix =  this.ide.davPrefix;
+        });
+    }
 };
 
 sys.inherits(Ide, EventEmitter);

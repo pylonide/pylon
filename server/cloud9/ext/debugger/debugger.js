@@ -16,6 +16,7 @@ var DebuggerPlugin = module.exports = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
     this.name = "debugger";
+    this.nodeCmd = process.argv[0];
 };
 
 sys.inherits(DebuggerPlugin, Plugin);
@@ -120,20 +121,20 @@ sys.inherits(DebuggerPlugin, Plugin);
         if (this.child)
             return _self.error("Child process already running!", 1, message);
 
-        var file = _self.ide.workspaceDir + "/" + message.file;
+        var file = _self.workspace.workspaceDir + "/" + message.file;
 
         Path.exists(file, function(exists) {
            if (!exists)
                return _self.error("File does not exist: " + message.file, 2, message);
 
-           var cwd = _self.ide.workspaceDir + "/" + (message.cwd || "");
+           var cwd = _self.workspace.workspaceDir + "/" + (message.cwd || "");
            Path.exists(cwd, function(exists) {
                if (!exists)
                    return _self.error("cwd does not exist: " + message.cwd, 3, message);
                 // lets check what we need to run
                 if(file.match(/\.js$/)){
                    var args = (message.preArgs || []).concat(file).concat(message.args || []);
-                   _self.$runProc(_self.ide.nodeCmd, args, cwd, message.env || {}, message.debug || false);
+                   _self.$runProc(_self.nodeCmd, args, cwd, message.env || {}, message.debug || false);
                 } else {
                    _self.$runProc(file, message.args||[], cwd, message.env || {}, false);
                 }

@@ -2,6 +2,8 @@ var lang = require("pilot/lang");
     
 var Workspace = module.exports = function(ide) {
     this.ide = ide;
+    this.workspaceId  = ide.options.workspaceId;
+    this.workspaceDir = ide.options.workspaceDir;
 };
 
 (function() {

@@ -29,9 +29,7 @@ sys.inherits(cloud9StatePlugin, Plugin);
 
     this.publishState = function() {
         var state = {
-            "type": "state",
-            "workspaceDir": this.ide.workspaceDir,
-            "davPrefix": this.ide.davPrefix
+            "type": "state"
         };
         this.emit("statechange", state);
 
