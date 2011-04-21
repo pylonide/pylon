@@ -226,7 +226,7 @@ apf.Interactive = function(){
         }
         //#endif
 
-        var ext = (reparent || oOutline.self) && dragOutline //little dirty hack to detect outline set by visualselect
+        var ext = (reparent || (oOutline && oOutline.self)) && dragOutline //little dirty hack to detect outline set by visualselect
             ? oOutline 
             : _self.$ext;
         var pos = posAbs
@@ -245,7 +245,7 @@ apf.Interactive = function(){
         //if (_self.hasFeature && _self.hasFeature(apf.__ANCHORING__))
             //_self.$disableAnchoring();
 
-        if (!(reparent || oOutline.self)) {
+        if (!(reparent || (oOutline && oOutline.self))) {
             //#ifdef __WITH_OUTLINE
             if (posAbs && dragOutline) {
                 oOutline.className     = "drag";
@@ -594,7 +594,7 @@ apf.Interactive = function(){
         var hasTop    = _self.top || _self.top === 0;
 
         if (posAbs) {
-            var htmlNode = oOutline.style.display == "block"
+            var htmlNode = (oOutline && oOutline.style.display == "block")
                 ? oOutline
                 : _self.$ext;
 
