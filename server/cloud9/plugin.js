@@ -1,28 +1,25 @@
 /**
- * @copyright 2010, Ajax.org Services B.V.
+ * @copyright 2011, Ajax.org Services B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var Spawn = require("child_process").spawn;
-var sys = require("sys");
 
-function cloud9Plugin() {}
+var events = require("events");
+var Spawn  = require("child_process").spawn;
+var sys    = require("sys");
 
-sys.inherits(cloud9Plugin, process.EventEmitter);
+var Plugin  = function(ide, workspace) {
+    this.ide = ide;
+    this.workspace = workspace;
+};
+
+sys.inherits(Plugin, events.EventEmitter);
 
 (function() {
     this.getHooks = function() {
         return this.hooks || [];
     };
 
-    this.extend = function(dest, src) {
-        for (var prop in src) {
-            dest[prop] = src[prop];
-        }
-        return dest;
-    };
-
     this.sendResult = function(sid, type, msg) {
-        //console.log("sending result to client: ", type, JSON.stringify(msg));
         this.ide.broadcast(JSON.stringify({
             type   : "result",
             subtype: type || "error",
@@ -31,6 +28,14 @@ sys.inherits(cloud9Plugin, process.EventEmitter);
         }), this.name);
     };
 
+    this.error = function(description, code, message, client) {
+        return this.workspace.error(description, code, message, client);
+    };
+
+    this.send = function(msg, replyTo, scope) {
+        this.workspace.send(msg, replyTo, scope);
+    };
+    
     this.spawnCommand = function(cmd, args, cwd, onerror, ondata, onexit) {
         var child = this.activePs = Spawn(cmd, args || [], {cwd: cwd || this.server.workspaceDir}),
             out   = "",
@@ -60,11 +65,11 @@ sys.inherits(cloud9Plugin, process.EventEmitter);
 
         return child;
     };
-    
+
     this.dispose = function(callback) {
         callback();
     };
-    
-}).call(cloud9Plugin.prototype);
 
-module.exports = cloud9Plugin;
+}).call(Plugin.prototype);
+
+module.exports = Plugin;

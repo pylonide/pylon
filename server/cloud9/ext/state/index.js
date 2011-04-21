@@ -7,8 +7,8 @@
 var Plugin = require("cloud9/plugin");
 var sys = require("sys");
 
-var cloud9StatePlugin = module.exports = function(ide) {
-    this.ide = ide;
+var cloud9StatePlugin = module.exports = function(ide, workspace) {
+    Plugin.call(this, ide, workspace);
     this.hooks = ["connect", "command"];
     this.name = "state";
 };
@@ -19,14 +19,14 @@ sys.inherits(cloud9StatePlugin, Plugin);
     this.connect = function(user, message, client) {
         this.publishState();
     };
-    
+
     this.command = function(user, message, client) {
         if (message && message.command !== "state")
             return false;
 
         return true;
     };
-    
+
     this.publishState = function() {
         var state = {
             "type": "state",
@@ -35,8 +35,8 @@ sys.inherits(cloud9StatePlugin, Plugin);
         };
         this.emit("statechange", state);
 
-        console.log("publish state" + JSON.stringify(state))
-        this.ide.broadcast(JSON.stringify(state));
+        console.log("publish state" + JSON.stringify(state));
+        this.send(state, null, this.name);
     };
-    
+
 }).call(cloud9StatePlugin.prototype);

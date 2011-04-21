@@ -7,8 +7,8 @@
 var Plugin = require("cloud9/plugin");
 var sys = require("sys");
 
-var AuthPlugin = module.exports = function(ide) {
-    this.ide = ide;
+var AuthPlugin = module.exports = function(ide, workspace) {
+    Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
     this.name = "auth";
 };
@@ -22,12 +22,12 @@ sys.inherits(AuthPlugin, Plugin);
             return false;
 
         if (message.workspaceId != this.ide.options.workspaceId) {
-            this.ide.error("Unable to attach web socket!", 10, message, client)
+            this.error("Unable to attach web socket!", 10, message, client)
             return true;
         }
 
         client.send('{"type": "attached"}');
-        this.ide.execHook("connect", user, client);
+        this.workspace.execHook("connect", user, client);
         return true;
     };
       

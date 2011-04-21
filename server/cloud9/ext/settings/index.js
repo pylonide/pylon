@@ -9,8 +9,8 @@ var Path = require("path");
 var fs = require("fs");
 var sys = require("sys");
 
-var SettingsPlugin = module.exports = function(ide) {
-    this.ide = ide;
+var SettingsPlugin = module.exports = function(ide, workspace) {
+    Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
     this.name = "settings";
     
@@ -37,7 +37,7 @@ sys.inherits(SettingsPlugin, Plugin);
         else if (message.action == "set") {
             this.storeSettings(user, message.settings, function(err) {
                 if (err)
-                    _self.ide.error(err, 500, message, client);
+                    _self.error(err, 500, message, client);
             });
         }
         return true;
