@@ -507,7 +507,17 @@ apf.Interactive = function(){
         //#endif
         {
             if (ext.style.right) {
-                ext.style.left = myPos[0] + "px";
+                iStyleRight = ext.style.right.slice(0, -2);
+                if (iStyleRight) {
+                    myPos[0] = myPos[0] + parseInt(iStyleRight);
+                    ext.style.left  = myPos[0] + "px";
+                }
+
+                else {
+                    ext.style.left  = myPos[0] + "px";
+                }
+
+                //console.log(myPos[0]);
                 //ext.style.right = "";
             }
             if (ext.style.bottom) {
@@ -577,7 +587,7 @@ apf.Interactive = function(){
         
         //if (apf.isIE)
             //apf.window.$mousedown(e);
-        
+
         return false;
     }
     
@@ -789,8 +799,8 @@ apf.Interactive = function(){
             : originalCursor || "default";
     };
 
-    //#ifdef __WITH_OUTLINE
     var oOutline;
+    //#ifdef __WITH_OUTLINE
     function initOutline(e){
         var doc = this.$pHtmlDoc || document;
         oOutline = doc.getElementById("apf_outline");
