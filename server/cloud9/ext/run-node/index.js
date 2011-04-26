@@ -33,6 +33,9 @@ sys.inherits(DebuggerPlugin, Plugin);
     this.CHROME_DEBUG_PORT = 9222;
 
     this.command = function(user, message, client) {
+		if (!(/js/.test(message.runner)))
+			return false;
+	
         var _self = this;
 
         var cmd = (message.command || "").toLowerCase(),

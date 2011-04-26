@@ -6,7 +6,6 @@
  */
 var Path             = require("path"),
     Spawn            = require("child_process").spawn,
-    //NodeDebugProxy   = require("./pythondebugproxy"),
     Plugin           = require("cloud9/plugin"),
     sys              = require("sys"),
     netutil          = require("cloud9/netutil");
@@ -23,7 +22,6 @@ sys.inherits(DebuggerPlugin, Plugin);
     this.init = function() {
         var _self = this;
         this.ide.getExt("state").on("statechange", function(state) {
-            state.debugClient    = !!_self.debugClient;
             state.processRunning = !!_self.child;
         });
     };
@@ -31,6 +29,9 @@ sys.inherits(DebuggerPlugin, Plugin);
     this.PYTHON_DEBUG_PORT = 7984;
 
     this.command = function(user, message, client) {
+		if (!(/py/.test(message.runner)))
+			return false;
+		
         var _self = this;
 
         var cmd = (message.command || "").toLowerCase(),
