@@ -36,27 +36,9 @@ sys.inherits(DebuggerPlugin, Plugin);
         var cmd = (message.command || "").toLowerCase(),
             res = true;
         switch (cmd) {
-            case "run":
+            case "run": case "rundebug": // We don't debug python just yet.
                 this.$run(message, client);
                 break;
-            case "rundebug":
-                netutil.findFreePort(this.PYTHON_DEBUG_PORT, "localhost", function(port) {
-                    _self.PYTHON_DEBUG_PORT = port;
-                    message.preArgs = ["--debug=" + _self.PYTHON_DEBUG_PORT];
-                    message.debug = true;
-                    _self.$run(message, client);
-    
-                    /*setTimeout(function() {
-                        _self.$startDebug();
-                    }, 100);*/
-                });
-                break;
-            /*case "debugnode":
-                 if (!this.nodeDebugProxy)
-                     this.ide.error("No debug session running!", 6, message);
-                 else
-                     this.nodeDebugProxy.send(message.body);
-                 break;*/
             case "kill":
                 this.$kill();
                 break;
@@ -145,42 +127,10 @@ sys.inherits(DebuggerPlugin, Plugin);
 
             _self.debugClient = false;
             delete _self.child;
-            //delete _self.nodeDebugProxy;
         });
 
         return child;
     };
-
-    /*this.$startDebug = function(message) {
-        var _self = this;
-
-        if (!this.debugClient)
-            return this.ide.error("No debuggable application running", 4, message);
-
-        if (this.nodeDebugProxy)
-            return this.ide.error("Debug session already running", 5, message);
-
-        this.nodeDebugProxy = new NodeDebugProxy(this.PYTHON_DEBUG_PORT);
-        this.nodeDebugProxy.on("message", function(body) {
-            var msg = {
-                "type": "node-debug",
-                "body": body
-            };
-            _self.ide.broadcast(JSON.stringify(msg), _self.name);
-        });
-
-        this.nodeDebugProxy.on("connection", function() {
-            _self.ide.broadcast('{"type": "node-debug-ready"}', _self.name);
-        });
-
-        this.nodeDebugProxy.on("end", function() {
-            if (_self.nodeDebugProxy == this) {
-                delete _self.nodeDebugProxy;
-            }
-        });
-
-        this.nodeDebugProxy.connect();
-    };*/
     
     this.dispose = function(callback) {
         this.$kill();
