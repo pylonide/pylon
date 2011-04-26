@@ -82,12 +82,8 @@ sys.inherits(DebuggerPlugin, Plugin);
                if (!exists)
                    return _self.ide.error("cwd does not exist: " + message.cwd, 3, message);
                 // lets check what we need to run
-                if(file.match(/\.py$/)){
-                   var args = [].concat(file).concat(message.args || []);
-                   _self.$runProc('python', args, cwd, message.env || {}, message.debug || false);
-                } else {
-                   _self.$runProc(file, message.args||[], cwd, message.env || {}, false);
-                }
+                var args = [].concat(file).concat(message.args || []);
+                _self.$runProc('python', args, cwd, message.env || {}, message.debug || false);
            });
         });
     };

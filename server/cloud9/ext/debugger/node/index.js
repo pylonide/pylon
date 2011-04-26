@@ -131,12 +131,8 @@ sys.inherits(DebuggerPlugin, Plugin);
                if (!exists)
                    return _self.ide.error("cwd does not exist: " + message.cwd, 3, message);
                 // lets check what we need to run
-                if(file.match(/\.js$/)){
-                   var args = (message.preArgs || []).concat(file).concat(message.args || []);
-                   _self.$runProc(_self.ide.nodeCmd, args, cwd, message.env || {}, message.debug || false);
-                } else {
-                   _self.$runProc(file, message.args||[], cwd, message.env || {}, false);
-                }
+                var args = (message.preArgs || []).concat(file).concat(message.args || []);
+                _self.$runProc(_self.ide.nodeCmd, args, cwd, message.env || {}, message.debug || false);
            });
         });
     };
