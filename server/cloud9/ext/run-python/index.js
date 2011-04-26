@@ -10,13 +10,13 @@ var Path             = require("path"),
     sys              = require("sys"),
     netutil          = require("cloud9/netutil");
 
-var DebuggerPlugin = module.exports = function(ide) {
+var PythonRuntimePlugin = module.exports = function(ide) {
     this.ide = ide;
     this.hooks = ["command"];
     this.name = "debugger";
 };
 
-sys.inherits(DebuggerPlugin, Plugin);
+sys.inherits(PythonRuntimePlugin, Plugin);
 
 (function() {
     this.init = function() {
@@ -29,15 +29,15 @@ sys.inherits(DebuggerPlugin, Plugin);
     this.PYTHON_DEBUG_PORT = 7984;
 
     this.command = function(user, message, client) {
-		if (!(/py/.test(message.runner)))
-			return false;
-		
+        if (!(/py/.test(message.runner)))
+        return false;
+
         var _self = this;
 
         var cmd = (message.command || "").toLowerCase(),
             res = true;
         switch (cmd) {
-            case "run": case "rundebug": // We don't debug python just yet.
+            case "run": case "rundebug": case "rundebugbrk": // We don't debug python just yet.
                 this.$run(message, client);
                 break;
             case "kill":
@@ -134,4 +134,4 @@ sys.inherits(DebuggerPlugin, Plugin);
         callback();
     };
     
-}).call(DebuggerPlugin.prototype);
+}).call(PythonRuntimePlugin.prototype);
