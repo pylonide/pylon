@@ -3018,7 +3018,7 @@
 
 <a:dropdown name="black_dropdown">
     <a:style><![CDATA[
-        .c9-dropdown {
+        .black_dropdown {
             position : relative;
             overflow : hidden;
             height   : 21px;
@@ -3039,7 +3039,7 @@
             background         :-moz-linear-gradient(center bottom, #323232 0%, #383838 100%) repeat scroll 0 0 transparent;
          }
          
-         .c9-dropdown .label {
+         .black_dropdown .label {
             position:relative;
             overflow:hidden;
             height:17px;
@@ -3052,7 +3052,7 @@
             border-right:1px solid #1c1c1c;
          }
          
-         .c9-dropdown .button {
+         .black_dropdown .button {
             width:14px;
             border-left:1px solid #4d4c4d;
             height:21px;
@@ -3062,7 +3062,7 @@
             background:url(images/btn-arrow.png) no-repeat 4px 9px;
          }
          
-         .c9-dropdownDown {
+         .black_dropdownDown {
             background         : #2d2d2d;
             filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#272727', endColorstr='#2d2d2d');
             -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#272727', endColorstr='#2d2d2d')";
@@ -3110,7 +3110,7 @@
 
     <a:presentation>
         <a:main label="div[1]/text()" button="." width-diff="-1" item-height="21" minheight="23" maxheight="23">
-            <div class="c9-dropdown">
+            <div class="black_dropdown">
                 <div class="label">-</div>
                 <div class="button"> </div>
             </div>
