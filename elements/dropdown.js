@@ -189,16 +189,17 @@ apf.dropdown = function(struct, tagName){
         this.oSlider.style.width  = (this.$ext.offsetWidth - 2 - this.widthdiff) + "px";
 
         var _self = this;
-
+        var _popupCurEl = apf.popup.getCurrentElement();
         apf.popup.show(this.$uniqueId, {
-            x       : 0,
-            y       : this.$ext.offsetHeight,
-            animate : true,
-            container : this.$getLayoutNode("container", "contents", this.oSlider),
-            ref     : this.$ext,
-            width   : this.$ext.offsetWidth - this.widthdiff,
-            height  : this.containerHeight,
-            callback: function(container){
+            x             : 0,
+            y             : this.$ext.offsetHeight,
+            animate       : true,
+            container     : this.$getLayoutNode("container", "contents", this.oSlider),
+            ref           : this.$ext,
+            width         : this.$ext.offsetWidth - this.widthdiff,
+            height        : this.containerHeight,
+            allowTogether : (_popupCurEl && apf.isChildOf(_popupCurEl.$ext, _self.$ext)),
+            callback      : function(container){
                 if (!_self.ignoreOverflow) {
                     _self.$container.style.overflowY = "auto";
                 }
