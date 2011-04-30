@@ -97,7 +97,8 @@ User.VISITOR_PERMISSIONS = {
     
     this.onClientMessage = function(message, client) {
         try {
-            message = JSON.parse(message);
+            if (typeof message == "string")
+                message = JSON.parse(message);
         } catch (e) {
             return this.error("Error parsing message: " + e + "\nmessage: " + message, 8);
         }
