@@ -96,7 +96,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/tabbehaviors/tabbehaviors",
     "ext/keybindings/keybindings",
     "ext/watcher/watcher",
-    "ext/dragdrop/dragdrop"
+    "ext/dragdrop/dragdrop",
+    "ext/beautify/beautify"
 ];
 
 (function () {
