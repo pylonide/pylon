@@ -1,8 +1,9 @@
 /**
- * JS Beautify for the Cloud9 IDE client
+ * Beautify extension for the Cloud9 IDE client
  * 
- * Inserts a context menu item under the "Edit" menu, which, upon being
- * clicked beautifies the selected code in the current tab
+ * Reformats the selected code in the current document
+ * 
+ * Processing/formatting code from https://github.com/einars/js-beautify
  * 
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -12,10 +13,13 @@ define(function(require, exports, module) {
 
     var ext = require("core/ext");
     var ide = require("core/ide");
+    var util = require("core/util");
     var canon = require("pilot/canon");
     var editors = require("ext/editors/editors");
     var Range = require("ace/range").Range;
     var jsbeautify = require("ext/beautify/res/jsbeautify/jsbeautify");
+    var settings = require("text!ext/beautify/settings.xml");
+    var extSettings = require("ext/settings/settings");
 
     return ext.register("ext/beautify/beautify", {
         name: "JS Beautify",
@@ -39,9 +43,26 @@ define(function(require, exports, module) {
             var doc = editor.getDocument();
             var range = sel.getRange();
             var value = doc.getTextRange(range);
+
+            // Load up current settings data
+            var preserveEmpty = extSettings.model.queryValue("beautify/jsbeautify/@preserveempty") == "true" ? true : false;
+            var keepIndentation = extSettings.model.queryValue("beautify/jsbeautify/@keeparrayindentation") == "true" ? true : false;
+            var braces = extSettings.model.queryValue("beautify/jsbeautify/@braces") || "end-expand";
+            var indentSize = extSettings.model.queryValue("editors/code/@tabsize") || "4";
+            var indentTab = extSettings.model.queryValue("editors/code/@softtabs") == "true" ? " " : "\t";
+
+            if (indentTab == "\t") indentSize = 1;
+
             try {
-                value = jsbeautify.js_beautify(value);
-            } catch (e) {
+                value = jsbeautify.js_beautify(value, {
+                    indent_size: indentSize,
+                    indent_char: indentTab,
+                    preserve_newlines: preserveEmpty,
+                    keep_array_indentation: keepIndentation,
+                    brace_style: braces
+                });
+            }
+            catch (e) {
                 util.alert("Error", "This code could not be beautified", "Please correct any JavaScript errors and try again");
                 return;
             }
@@ -50,7 +71,9 @@ define(function(require, exports, module) {
             sel.setSelectionRange(Range.fromPoints(range.start, end));
         },
 
-        init: function() {},
+        init: function() {
+
+        },
 
         hook: function() {
             var _self = this;
@@ -69,6 +92,11 @@ define(function(require, exports, module) {
                 exec: function(env, args, request) {
                     _self.beautify();
                 }
+            });
+
+            ide.addEventListener("init.ext/settings/settings", function(e) {
+                e.ext.addSection("jsbeautify", _self.name, "beautify", function() {});
+                barSettings.insertMarkup(settings);
             });
         },
 
