@@ -20,12 +20,20 @@ sys.inherits(Plugin, events.EventEmitter);
     };
 
     this.sendResult = function(sid, type, msg) {
-        this.ide.broadcast(JSON.stringify({
+        var error = {
             type   : "result",
             subtype: type || "error",
             sid    : sid  || 0,
             body   : msg  || "Access denied."
-        }), this.name);
+        };
+
+        // We check for the ide variable in order to know if we are in a cloud9
+        // plugin or in a infra plugin. Pretty nasty, but it will hopefully go
+        // away soon.
+        if (this.ide)
+            this.ide.broadcast(JSON.stringify(error), this.name);
+        else
+            this.send(error);
     };
 
     this.error = function(description, code, message, client) {
@@ -35,12 +43,16 @@ sys.inherits(Plugin, events.EventEmitter);
     this.send = function(msg, replyTo, scope) {
         this.workspace.send(msg, replyTo, scope);
     };
-    
+
     this.spawnCommand = function(cmd, args, cwd, onerror, ondata, onexit) {
-        var child = this.activePs = Spawn(cmd, args || [], {cwd: cwd || this.server.workspaceDir}),
-            out   = "",
-            err   = "",
-            _self = this;
+        var child = this.activePs = Spawn(cmd, args || [], {
+            cwd: cwd || this.server.workspaceDir
+        });
+
+        var out   = "";
+        var err   = "";
+        var _self = this;
+
         child.stdout.on("data", sender("stdout"));
         child.stderr.on("data", sender("stderr"));
 
@@ -50,8 +62,7 @@ sys.inherits(Plugin, events.EventEmitter);
                 if (stream == "stderr") {
                     err += s;
                     onerror && onerror(s);
-                }
-                else {
+                } else {
                     out += s;
                     ondata && ondata(s);
                 }
