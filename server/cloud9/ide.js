@@ -46,6 +46,7 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
         plugins: options.plugins || Ide.DEFAULT_PLUGINS,
         requirejsConfig: requirejsConfig,
         offlineManifest: options.offlineManifest || "",
+        gaeLocalPath: options.gaeLocalPath,
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version,
         extra: options.extra
@@ -62,6 +63,8 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
 };
 
 sys.inherits(Ide, EventEmitter);
+
+Ide.GAE_LOCAL_PATH = null;
 
 Ide.DEFAULT_PLUGINS = [
     "ext/filesystem/filesystem",
@@ -265,7 +268,7 @@ Ide.DEFAULT_PLUGINS = [
     this.broadcast = function(msg, scope) {
         // TODO check permissions
         for (var username in this.$users) {
-            var user = this.$users[username];            
+            var user = this.$users[username];
             user.broadcast(msg, scope);
         }
     };
