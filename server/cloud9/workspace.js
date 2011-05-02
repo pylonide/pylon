@@ -24,7 +24,7 @@ var Workspace = module.exports = function(config) {
         }
     };
 
-    this.getServerExclude = function() {
+    this.getServerExclude = function(user) {
         return lang.arrayToMap(user.getPermissions().server_exclude.split("|"));
     };
 
@@ -33,7 +33,7 @@ var Workspace = module.exports = function(config) {
         var args = Array.prototype.slice.call(arguments, 1);
         var hook = hook.toLowerCase().trim();
 
-        var server_exclude = this.getServerExclude();
+        var server_exclude = this.getServerExclude(user);
 
         for (var name in this.plugins) {
             if (server_exclude[name]) continue;
