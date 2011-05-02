@@ -57,7 +57,7 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
     this.davServer = jsDAV.mount(this.options.mountDir, this.options.davPrefix, this.httpServer, false);
     this.davInited = false;
     
-    this.workspace = new Workspace(this);
+    this.workspace = new Workspace({ ide: this });
     
     this.workspace.createPlugins(exts);
     var statePlugin = this.workspace.getExt("state");
@@ -279,7 +279,7 @@ Ide.DEFAULT_PLUGINS = [
     
     this.sendToUser = function(username, msg) {
         this.$users[username] && this.$users[username].broadcast(msg);
-    }
+    };
     
     this.dispose = function(callback) {
         this.workspace.dispose(callback);

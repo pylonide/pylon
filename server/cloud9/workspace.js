@@ -1,52 +1,66 @@
 var lang = require("pilot/lang");
-    
-var Workspace = module.exports = function(ide) {
-    this.ide = ide;
-    this.workspaceId  = ide.options.workspaceId;
-    this.workspaceDir = ide.options.workspaceDir;
+
+var Workspace = module.exports = function(config) {
+    if (config)
+        for (var prop in config)
+            this[prop] = config[prop];
+    else
+        throw new Error("No parameters were passed to Workspace.");
+
+    this.init();
 };
 
 (function() {
+    this.init = function() {
+        this.workspaceId  = this.ide.options.workspaceId;
+        this.workspaceDir = this.ide.options.workspaceDir;
+    };
+
     this.createPlugins = function (plugins) {
-        var exts = this.exts = {};
+        this.plugins = {};
 
         for (var name in plugins) {
-            exts[name] = new plugins[name](this.ide, this);
-        }
-        for (name in exts) {
-            if (exts[name].init)
-                exts[name].init();
+            this.plugins[name] = new plugins[name](this.ide, this);
         }
     };
 
+    this.getServerExclude = function() {
+        return lang.arrayToMap(user.getPermissions().server_exclude.split("|"));
+    };
+
     this.execHook = function(hook, user /* varargs */) {
-        var ext, hooks,
-            args = Array.prototype.slice.call(arguments, 1),
-            hook = hook.toLowerCase().replace(/^[\s]+/, "").replace(/[\s]+$/, "");
+        var plugin, hooks;
+        var args = Array.prototype.slice.call(arguments, 1);
+        var hook = hook.toLowerCase().trim();
 
-        var server_exclude = lang.arrayToMap(user.getPermissions().server_exclude.split("|"));
+        var server_exclude = this.getServerExclude();
 
-        for (var name in this.exts) {
-            if (server_exclude[name]) {
-                continue;
-            }
+        for (var name in this.plugins) {
+            if (server_exclude[name]) continue;
 
-            ext   = this.exts[name];
-            hooks = ext.getHooks();
-            if (hooks.indexOf(hook) > -1 && ext[hook].apply(ext, args) === true) {
+            plugin = this.plugins[name];
+            hooks  = plugin.getHooks();
+            if (hooks.indexOf(hook) > -1 && plugin[hook].apply(plugin, args) === true) {
                 return;
             }
         }
     };
 
     this.getExt = function(name) {
-        return this.exts[name] || null;
+        return this.plugins[name] || null;
     };
 
     this.send = function(msg, replyTo, scope) {
         if (replyTo)
             msg.sid = replyTo.sid;
         this.ide.broadcast(JSON.stringify(msg), scope);
+    };
+
+    this.sendError = function(error, client) {
+        if (client)
+            client.send(JSON.stringify(error));
+        else
+            this.broadcast(error);
     };
 
     this.error = function(description, code, message, client) {
@@ -57,20 +71,17 @@ var Workspace = module.exports = function(ide) {
             "code": code,
             "message": description
         };
-        
-        if (client)
-            client.send(JSON.stringify(error));
-        else
-            this.broadcast(error);
+
+        this.sendError(error, client || null);
     };
 
     this.dispose = function(callback) {
         var count;
-        for (var name in this.exts) {
-            count++;
-            var ext = this.exts[name];
-            ext.dispose(function() {
-                count--;
+        for (var name in this.plugins) {
+            count += 1;
+            var plugin = this.plugins[name];
+            plugin.dispose(function() {
+                count -= 1;
                 if (count == 0)
                     callback();
             });
