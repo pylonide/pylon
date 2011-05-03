@@ -5789,7 +5789,7 @@ this.containerHeight=value?(Math.min(this.maxitems||100,value)*this.itemHeight):
 this.oSlider.style.display="block";if(!this.ignoreOverflow){this.oSlider.style[apf.supportOverflowComponent?"overflowY":"overflow"]="visible";
 this.$container.style.overflowY="hidden";}this.oSlider.style.display="";this.$setStyleClass(this.$ext,this.$baseCSSname+"Down");
 this.oSlider.style.height=(this.sliderHeight-1)+"px";this.oSlider.style.width=(this.$ext.offsetWidth-2-this.widthdiff)+"px";
-var _self=this;apf.popup.show(this.$uniqueId,{x:0,y:this.$ext.offsetHeight,animate:true,container:this.$getLayoutNode("container","contents",this.oSlider),ref:this.$ext,width:this.$ext.offsetWidth-this.widthdiff,height:this.containerHeight,callback:function(container){if(!_self.ignoreOverflow){_self.$container.style.overflowY="auto";
+var _self=this;var _popupCurEl=apf.popup.getCurrentElement();apf.popup.show(this.$uniqueId,{x:0,y:this.$ext.offsetHeight,animate:true,container:this.$getLayoutNode("container","contents",this.oSlider),ref:this.$ext,width:this.$ext.offsetWidth-this.widthdiff,height:this.containerHeight,allowTogether:(_popupCurEl&&apf.isChildOf(_popupCurEl.$ext,_self.$ext)),callback:function(container){if(!_self.ignoreOverflow){_self.$container.style.overflowY="auto";
 }}});};this.slideUp=function(){if(this.isOpen==2){return false;}if(this.dispatchEvent("slideup")===false){return false;
 }this.isOpen=false;if(this.selected){var htmlNode=apf.xmldb.findHtmlNode(this.selected,this);
 if(htmlNode){this.$setStyleClass(htmlNode,"",["hover"]);}}this.$setStyleClass(this.$ext,"",[this.$baseCSSname+"Down"]);
