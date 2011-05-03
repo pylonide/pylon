@@ -17,6 +17,9 @@
             <a:button margin="0 0 0 5" skin="btnsearchicon" icon="rounded_plus.png" onclick="
               require('ext/searchreplace/searchreplace').toggleDialog(false, true);
             " />
+            <a:button margin="0 0 0 5" skin="btnsearchicon" icon="rounded_close.png" onclick="
+              require('ext/quicksearch/quicksearch').toggleDialog(-1);
+            " />
         </a:hbox>
     </a:bar>
 </a:application>
