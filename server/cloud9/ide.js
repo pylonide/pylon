@@ -307,6 +307,7 @@ Ide.DEFAULT_PLUGINS = [
 
             ext   = this.exts[name];
             hooks = ext.getHooks();
+            
             if (hooks.indexOf(hook) > -1 && ext[hook].apply(ext, args) === true) {
                 return;
             }
