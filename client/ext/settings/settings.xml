@@ -23,7 +23,6 @@
             </a:bar>
             <a:scrollbar
                 for      = "barSettings"
-                id       = "sbTrFiles"
                 margin   = "2"
                 skin     = "sbios"
                 width    = "7"
