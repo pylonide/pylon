@@ -123,9 +123,17 @@
             overflow         : hidden;
             position         : relative;
             background-image : url(images/dockLeftBackground.png);
-             border-right    : 1px solid #2E2E2E;
+            border-right    : 1px solid #2E2E2E;
         }
         
+        .deploy.mnubtn, .preferences.mnubtn {
+            border-bottom : none;
+        }
+
+        .deploy.mnubtn.mnubtnDown, .preferences.mnubtn.mnubtnDown {
+            border-bottom: 1px solid #3F3F41;
+        }
+
         .black-menu-bar .c9menulogo {
             width    : 65px;
             height   : 32px;
@@ -1527,10 +1535,6 @@
             position            : relative;
             cursor              : default;
             overflow            : hidden;
-        }
-
-        .deploy.mnubtn {
-            border-bottom : none;
         }
         
         .mnubtnOver,
