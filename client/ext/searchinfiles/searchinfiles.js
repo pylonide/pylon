@@ -162,7 +162,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
         console.enable();
         if (!this.$panel) {
             this.$panel = tabConsole.add(this.pageTitle, this.pageID);
-            this.$panel.appendChild(trSFResult);
+            this.$panel.appendChild(trSFHbox);
             trSFResult.setProperty("visible", true);
             this.$model = trSFResult.getModel();
             var _self = this;
