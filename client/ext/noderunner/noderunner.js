@@ -131,15 +131,15 @@ return ext.register("ext/noderunner/noderunner", {
         this.$run(true);
     },
 
-    run : function(path, args, debug) {        
-        if (stProcessRunning.active || !stServerConnected.active || !path || typeof path != "string")
+    run : function(path, args, debug) {      
+        if (stProcessRunning.active || !stServerConnected.active || (ddRunnerSelector.value=='gae' ? '' : !path) || typeof path != "string")
             return false;
 
         var page = ide.getActivePageModel();
         var command = {
             "command" : debug ? "RunDebugBrk" : "Run",
             "file"    : path.replace(/^\/+/, ""),
-			"runner"  : ddRunnerSelector.value, // Explicit addition; trying to affect as less logic as possible for now...
+            "runner"  : ddRunnerSelector.value, // Explicit addition; trying to affect as less logic as possible for now...
             "args"    : args || "",
             "env"     : {
                 "C9_SELECTED_FILE": page ? page.getAttribute("path").slice(ide.davPrefix.length) : ""

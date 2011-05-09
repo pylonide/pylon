@@ -62,18 +62,17 @@
                   disabled="{!lstRunCfg.selected}"/>
             </a:hbox>
             <a:divider />
-            <a:hbox align="center" margin="5 10" padding="10" visible="{ddRunnerSelector.value != 'gae'}">
+            <a:hbox align="center" id="hbRunCfg" margin="5 10" padding="10">
                 <a:label width="130" textalign="right">File path</a:label>
                 <a:textbox id="txtRunCfgName" flex="1" value="[@path]" disabled="{!lstRunCfg.selected}"/>
                 <a:button icon="folder.png" disabled="true" tooltip="Browse ..."></a:button>
             </a:hbox>
-            <a:divider visible="{ddRunnerSelector.value != 'gae'}" />
+            <a:divider id="divRunCfg" />
             <a:hbox align="center" margin="5 10" padding="10">
                 <a:model id="mdlRunnerSelector">
                     <data>
                         <element caption="JavaScript" value="js" />
                         <element caption="Python" value="py" />
-                        <element caption="AppEngine" value="gae" />
                     </data>
                 </a:model>
                 <a:label width="130" textalign="right">Runner</a:label>
@@ -88,7 +87,7 @@
                     </a:each>
                 </a:dropdown>
             </a:hbox>
-            <a:hbox align="center" margin="5 10" padding="10" visible="{ddRunnerSelector.value != 'gae'}">
+            <a:hbox id="hbRunCmd" align="center" margin="5 10" padding="10">
                 <a:label width="130" textalign="right">Command line arguments</a:label>
                 <a:textbox id="txtRunCfgName" flex="1" value="[@args]" disabled="{!lstRunCfg.selected}" />
             </a:hbox>

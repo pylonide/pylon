@@ -46,7 +46,7 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
         plugins: options.plugins || Ide.DEFAULT_PLUGINS,
         requirejsConfig: requirejsConfig,
         offlineManifest: options.offlineManifest || "",
-        gaeLocalPath: options.gaeLocalPath,
+        //gaeLocalPath: options.gaeLocalPath,
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version,
         extra: options.extra
@@ -63,8 +63,6 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
 };
 
 sys.inherits(Ide, EventEmitter);
-
-Ide.GAE_LOCAL_PATH = null;
 
 Ide.DEFAULT_PLUGINS = [
     "ext/filesystem/filesystem",
