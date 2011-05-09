@@ -33,6 +33,9 @@ sys.inherits(DebuggerPlugin, Plugin);
     this.CHROME_DEBUG_PORT = 9222;
 
     this.command = function(user, message, client) {
+        if (!(/js/.test(message.runner)))
+        return false;
+
         var _self = this;
 
         var cmd = (message.command || "").toLowerCase(),
@@ -47,7 +50,7 @@ sys.inherits(DebuggerPlugin, Plugin);
                     message.preArgs = ["--debug=" + _self.NODE_DEBUG_PORT];
                     message.debug = true;
                     _self.$run(message, client);
-    
+
                     setTimeout(function() {
                         _self.$startDebug();
                     }, 100);
@@ -56,11 +59,11 @@ sys.inherits(DebuggerPlugin, Plugin);
             case "rundebugbrk":
                 netutil.findFreePort(this.NODE_DEBUG_PORT, "localhost", function(port) {
                     _self.NODE_DEBUG_PORT = port;
-                    
+
                     message.preArgs = ["--debug-brk=" + _self.NODE_DEBUG_PORT];
                     message.debug = true;
                     _self.$run(message, client);
-    
+
                     setTimeout(function() {
                         _self.$startDebug();
                     }, 100);
@@ -121,22 +124,18 @@ sys.inherits(DebuggerPlugin, Plugin);
             return _self.ide.error("Child process already running!", 1, message);
 
         var file = _self.ide.workspaceDir + "/" + message.file;
-        
+
         Path.exists(file, function(exists) {
            if (!exists)
                return _self.ide.error("File does not exist: " + message.file, 2, message);
-            
+
            var cwd = _self.ide.workspaceDir + "/" + (message.cwd || "");
            Path.exists(cwd, function(exists) {
                if (!exists)
                    return _self.ide.error("cwd does not exist: " + message.cwd, 3, message);
                 // lets check what we need to run
-                if(file.match(/\.js$/)){
-                   var args = (message.preArgs || []).concat(file).concat(message.args || []);
-                   _self.$runProc(_self.ide.nodeCmd, args, cwd, message.env || {}, message.debug || false);
-                } else {
-                   _self.$runProc(file, message.args||[], cwd, message.env || {}, false);
-                }
+                var args = (message.preArgs || []).concat(file).concat(message.args || []);
+                _self.$runProc(_self.ide.nodeCmd, args, cwd, message.env || {}, message.debug || false);
            });
         });
     };
@@ -150,7 +149,7 @@ sys.inherits(DebuggerPlugin, Plugin);
                 env[key] = process.env[key];
         }
 
-        console.log("Executing node "+proc+" "+args.join(" ")+" "+cwd); 
+        console.log("Executing node "+proc+" "+args.join(" ")+" "+cwd);
 
         var child = _self.child = Spawn(proc, args, {cwd: cwd, env: env});
         _self.debugClient = args.join(" ").search(/(?:^|\b)\-\-debug\b/) != -1;
@@ -212,10 +211,10 @@ sys.inherits(DebuggerPlugin, Plugin);
 
         this.nodeDebugProxy.connect();
     };
-    
+
     this.dispose = function(callback) {
         this.$kill();
         callback();
     };
-    
+
 }).call(DebuggerPlugin.prototype);
