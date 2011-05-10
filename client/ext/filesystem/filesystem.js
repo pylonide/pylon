@@ -86,7 +86,7 @@ return ext.register("ext/filesystem/filesystem", {
                         // @todo: in case of error, show nice alert dialog
                         if (data instanceof Error)
                             throw Error;
-                        
+
                         var strXml = data.match(new RegExp(("(<folder path='" + path 
                                 + "/" + name + "'.*?>)").replace(/\//g, "\\/")))[1];
         
@@ -291,8 +291,15 @@ return ext.register("ext/filesystem/filesystem", {
                 return;
 
             var path = node.getAttribute("path");
-            fs.readFile(path, function(data, state, extra) {
-                if (state != apf.SUCCESS) {
+            
+            var callback = function(data, state, extra) {
+                if (state == apf.OFFLINE) {
+                    ide.addEventListener("afteronline", function(e) {
+                        fs.readFile(path, callback);
+                        ide.removeEventListener("afteronline", arguments.callee);
+                    });
+                }
+                else if (state != apf.SUCCESS) {
                     if (extra.status == 404) {
                         ide.dispatchEvent("filenotfound", {
                             node : node,
@@ -303,9 +310,11 @@ return ext.register("ext/filesystem/filesystem", {
                 }
                 else {
                     doc.setValue(data);
-                    ide.dispatchEvent("afteropenfile", {doc: doc, node: node});	                
+                    ide.dispatchEvent("afteropenfile", {doc: doc, node: node});                    
                 }
-            });
+            };
+            
+            fs.readFile(path, callback);
         });
         
         ide.addEventListener("reload", function(e) {

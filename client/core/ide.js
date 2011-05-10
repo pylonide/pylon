@@ -120,7 +120,7 @@ define(function(require, exports, module) {
             };
 
             ide.socketConnect = function() {
-                clearTimeout(ide.$retryTimer);
+                clearInterval(ide.$retryTimer);
 
                 ide.socket.send(JSON.stringify({
                     command: "attach",
@@ -130,15 +130,20 @@ define(function(require, exports, module) {
             };
 
             ide.socketDisconnect = function() {
-                clearTimeout(ide.$retryTimer);
+                clearInterval(ide.$retryTimer);
                 
                 var retries = 0;
                 ide.$retryTimer = setInterval(function() {
-                    if (++retries == 3)
-                        ide.dispatchEvent("socketDisconnect");
-                    
-                    if (!ide.socket.connecting && !ide.testOffline && ide.loggedIn)
-                        ide.socket.connect();
+                    if (!ide.socket.connecting && ide.loggedIn) {
+                        
+                        if (++retries == 3) {
+                            ide.dispatchEvent("socketDisconnect");
+                            if (ide.testOffline == 1)
+                                clearInterval(ide.$retryTimer);
+                        }
+                        if (ide.testOffline == 2)
+                            ide.socket.connect();
+                    }
                 }, 500);
             };
 
@@ -148,7 +153,7 @@ define(function(require, exports, module) {
                 } catch(e) {
                     return;
                 }
-
+                
                 if (message.type == "attached")
                     ide.dispatchEvent("socketConnect");
 

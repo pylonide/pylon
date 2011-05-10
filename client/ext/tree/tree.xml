@@ -3,16 +3,16 @@
         function filesort(value, args, xmlNode) {
             return (xmlNode.tagName == "folder" ? 0 : 1) + value.toLowerCase();
         }
-        
+
         var confirmed = false;
-        
+
         function remove() {
             if (!confirmed) {
                 var files = trFiles.getSelection();
-                
+
                 function confirm(file) {
                     var name = file.getAttribute("name");
-                    
+
                     require("core/util").question(
                         "Remove file?",
                         "You are about to remove the file " + name,
@@ -53,7 +53,7 @@
             } else
                 return true;
         };
-        
+
         function copy(a, b) {
             davProject.copy(a, b + /\/[^\/]*$/.exec(a));
         };
@@ -62,13 +62,13 @@
             davProject.move(a, b + /\/[^\/]*$/.exec(a));
         };
     ]]></a:script>
-    <a:window id="winFilesViewer" 
-      flex     = "1" 
-      skin     = "fm-window" 
-      title    = "Project Files" 
-      modal    = "false" 
-      visible  = "true" 
-      buttons  = "close" 
+    <a:window id="winFilesViewer"
+      flex     = "1"
+      skin     = "fm-window"
+      title    = "Project Files"
+      modal    = "false"
+      visible  = "true"
+      buttons  = "close"
       optimize = "true">
         <a:button
           top="-22"
@@ -78,45 +78,29 @@
           onclick="require('ext/tree/tree').refresh()" />
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
 
-        <a:hbox
-          anchors  = "0 0 0 0"
-          overflow = "hidden"
-          id       = "hboxTrFiles"
-          class    = "hboxTrFiles"
-        >
-            <a:tree id="trFiles" canrename="true" border="0"
-              contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
-              onbeforeremove="return remove()" disabled="{!stServerConnected.active}"
-              flex="1"
-            >
-                <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
-                    <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
-                    <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
-                    <a:icon match="[folder|project]" value="folder.png" />
-                    <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
-                </a:each>
+        <a:tree id="trFiles" canrename="true" anchors="0 0 0 0" border="0"
+          contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
+          onbeforeremove="return remove()">
+            <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
+                <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
+                <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
+                <a:icon match="[folder|project]" value="folder.png" />
+                <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
+            </a:each>
 
-                <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
-                <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-                <a:rename match="[file|folder[not(@path='/workspace')]]" set="{davProject.rename([@name], [@path])}"/>
-                <a:copy match="[file|folder]" set="{copy([@path], [../@path])}"/>
-                <a:move set="{move([@path], [../@path])}"/>
-                <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
+            <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
+            <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
+            <a:rename match="[file|folder[not(@path='/workspace')]]" set="{davProject.rename([@name], [@path])}"/>
+            <a:copy match="[file|folder]" set="{copy([@path], [../@path])}"/>
+            <a:move set="{move([@path], [../@path])}"/>
+            <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
 
-                <a:drag match="[folder|file]" />
-                <a:drop match="[folder|file]" target="[folder]"
-                    action="tree-append" copy="{event.ctrlKey}" />
-            </a:tree>
-            <a:scrollbar
-                for      = "trFiles"
-                id       = "sbTrFiles"
-                margin   = "2"
-                skin     = "sbios"
-                width    = "7"
-                overflow = "auto"
-            />
-        </a:hbox>
-        <a:menu id="mnuCtxTree" disabled="{!stServerConnected.active}">
+            <a:drag match="[folder|file]" />
+            <a:drop match="[folder|file]" target="[folder]"
+                action="tree-append" copy="{event.ctrlKey}" />
+        </a:tree>
+
+        <a:menu id="mnuCtxTree">
             <a:item match="[file]" class="strong" onclick="
                 require('core/ide').dispatchEvent('openfile', {doc: require('core/ide').createDocument(apf.activeElement.selected)})
             ">Edit</a:item>
@@ -139,3 +123,4 @@
         </a:menu>
     </a:window>
 </a:application>
+

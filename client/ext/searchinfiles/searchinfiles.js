@@ -177,6 +177,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
             ? trFiles.xmlRoot.selectSingleNode("folder[1]")
             : this.getSelectedTreeNode();
         trSFResult.setAttribute("empty-message", "No results found for '" + txtSFFind.value.trim() + "'");
+        debugger;
         this.$model.load("{davProject.report('" + node.getAttribute("path")
             + "', 'codesearch', " + JSON.stringify(this.getOptions()) + ")}");
         ide.dispatchEvent("track_action", {type: "searchinfiles"});

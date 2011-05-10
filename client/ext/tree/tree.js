@@ -88,14 +88,15 @@ return ext.register("ext/tree/tree", {
         
         trFiles.addEventListener("afterchoose", this.$afterselect = function(e) {
             var node = this.selected;
-            if (!node || node.tagName != "file" || this.selection.length > 1 || !ide.onLine) //ide.onLine can be removed after update apf
+            if (!node || node.tagName != "file" || this.selection.length > 1 
+              || !ide.onLine && !ide.hasFilesystemSupport) //ide.onLine can be removed after update apf
                 return;
 
             ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
         });
         
         trFiles.addEventListener("beforecopy", function(e) {
-            if (!ide.onLine) return false;
+            if (!ide.onLine && !ide.hasFilesystemSupport) return false;
             
             setTimeout(function () {
                 var args     = e.args[0].args,
@@ -105,13 +106,13 @@ return ext.register("ext/tree/tree", {
         });
        
         trFiles.addEventListener("beforestoprename", function(e) {
-            if (!ide.onLine) return false;
+            if (!ide.onLine && !ide.hasFilesystemSupport) return false;
 
             return fs.beforeStopRename(e.value);
         });
  
         trFiles.addEventListener("beforerename", function(e){
-            if (!ide.onLine) return false;
+            if (!ide.onLine && !ide.hasFilesystemSupport) return false;
             
             setTimeout(function(){
                 fs.beforeRename(e.args[0], e.args[1]);
@@ -119,7 +120,7 @@ return ext.register("ext/tree/tree", {
         });
         
         trFiles.addEventListener("beforemove", function(e){
-            if (!ide.onLine) return false;
+            if (!ide.onLine && !ide.hasFilesystemSupport) return false;
             
             setTimeout(function(){
                 var changes = e.args;
@@ -130,7 +131,7 @@ return ext.register("ext/tree/tree", {
         });
         
         var cancelWhenOffline = function(){
-            if (!ide.onLine) return false;
+            if (!ide.onLine && !ide.hasFilesystemSupport) return false;
         };
         
         trFiles.addEventListener("beforeadd", cancelWhenOffline);
@@ -139,15 +140,17 @@ return ext.register("ext/tree/tree", {
         trFiles.addEventListener("dragstart", cancelWhenOffline);
         trFiles.addEventListener("dragdrop", cancelWhenOffline);
         
-        /*ide.addEventListener("afteroffline", function(e){
-            //trFiles.setAttribute("contextmenu", "");
-            mnuCtxTree.disable();
+        ide.addEventListener("afteroffline", function(e){
+            if (!ide.hasFilesystemSupport) {
+                trFiles.disable();
+                mnuCtxTree.disable();
+            }
         });
         
         ide.addEventListener("afteronline", function(e){
-            //trFiles.setAttribute("contextmenu", "mnuCtxTree");
+            trFiles.enable();
             mnuCtxTree.enable();
-        });*/
+        });
         
         /**** Support for state preservation ****/
         trFiles.addEventListener("expand", function(e){
@@ -161,6 +164,8 @@ return ext.register("ext/tree/tree", {
             }
         });
         trFiles.addEventListener("collapse", function(e){
+            if (!e.xmlNode)
+                return;
             delete _self.expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)];
             
             if (!_self.loading) {

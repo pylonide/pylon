@@ -135,7 +135,8 @@ return ext.register("ext/openfiles/openfiles", {
     },
 
     enable : function(noButton){
-        winOpenFiles.show();
+        if (self.winOpenFiles)
+            winOpenFiles.show();
         colLeft.show();
         if (!noButton) {
             this.button.setValue(true);

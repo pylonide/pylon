@@ -1,5 +1,30 @@
 <?xml version='1.0'?>
 <a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+<a:checkbox name="cboffline">
+    <a:style><![CDATA[
+        .cboffline {
+            width: 55px;
+            height: 21px;
+            background: url(images/sync.png) no-repeat 0 -21px;
+        }
+
+        .cbofflineDown {
+            background-position : 0 0px;
+        }
+
+        .cbofflineChecked {
+            background-position : 0 0px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main>
+            <div class='cboffline'>
+            
+            </div>
+        </a:main>
+    </a:presentation>
+</a:checkbox>
 <a:bar name="bar">
     <a:style><![CDATA[
         .bar{
