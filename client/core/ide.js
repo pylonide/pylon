@@ -160,7 +160,7 @@ define(function(require, exports, module) {
             //@todo see if this can be moved to noderunner
             ide.addEventListener("socketMessage", function(e){
                 if (e.message.type && e.message.type == "state")
-                    stProcessRunning.setProperty("active", e.message.processRunning);
+                    stProcessRunning.setProperty("active", e.message.processRunning || e.message.deployRunning);
             });
 
             // for unknown reasons io is sometimes undefined
