@@ -5,7 +5,11 @@
 apf.runO3 = function(){
     //apf.importClass(runNonIe, true, self);
     // 
-	var XMLParser = require('node-o3-xml');
+    if (process.version.split(".")[1] > 2)
+        var XMLParser = require('o3-xml');
+    else
+        var XMLParser = require('node-o3-xml');
+    
     //var XMLParser = require('o3').xml;
     //var XMLDocument = XMLParser.parseFromString("<root />", "text/xml");
     //var Element = XMLDocument.documentElement;
