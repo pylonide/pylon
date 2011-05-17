@@ -6,8 +6,8 @@
  */
 require.def("ext/save/save",
     ["core/ide", "core/ext", "core/util", "ext/filesystem/filesystem",
-     "text!ext/save/save.xml"],
-    function(ide, ext, util, fs, markup) {
+     "text!ext/save/save.css", "text!ext/save/save.xml"],
+    function(ide, ext, util, fs, css, markup) {
 
 return ext.register("ext/save/save", {
     dev         : "Ajax.org",
@@ -15,6 +15,7 @@ return ext.register("ext/save/save", {
     alone       : true,
     type        : ext.GENERAL,
     markup      : markup,
+    css         : css,
     deps        : [fs],
     offline     : false,
     commands     : {
@@ -99,6 +100,8 @@ return ext.register("ext/save/save", {
 
     init : function(amlNode){
         var _self = this;
+        
+        apf.importCssString((this.css || ""));
         winCloseConfirm.onafterrender = function(){
             btnYesAll.addEventListener("click", function(){
                 winCloseConfirm.all = 1;
@@ -249,19 +252,28 @@ return ext.register("ext/save/save", {
     },
     
     saveas : function(){
-        var path = tabEditors.getPage().$model.data.getAttribute("path");
+        var tabPage = tabEditors.getPage(),
+            path    = tabPage ? tabPage.$model.data.getAttribute("path") : false;
+        
+        if(!path)
+            return;
+        
         
         ext.initExtension(this);
-        txtSaveAs.setValue(path);
+        
+        var fooPath = path.split('/');
+        txtSaveAs.setValue(fooPath.pop());
+        lblPath.setProperty('caption', fooPath.join('/') + '/');
         this.choosePath(path.match(/(.*)\/[^/]/)[1]);
         winSaveAs.show();
     },
     
     saveFileAs : function(page) {
-        var page    = page || tabEditors.getPage(),
+        var _self   = this,
+            page    = page || tabEditors.getPage(),
             file    = page.$model.data,
             path    = file.getAttribute("path"),
-            newPath = txtSaveAs.getValue();
+            newPath = lblPath.getProperty('caption') + txtSaveAs.getValue();
             
         // check if we're already saving!
         var saving = parseInt(file.getAttribute("saving"));

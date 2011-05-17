@@ -265,8 +265,8 @@
         }
 
         .btn .lbl {
-            height              : 23px;
-            padding             : 4px 8px 0 8px;
+            height              : 22px;
+            padding             : 5px 8px 0 8px;
             margin              : 0 4px;
             white-space         : nowrap;
             overflow            : hidden;
@@ -333,7 +333,14 @@
         }
 
         .btnIconOnly .lbl SPAN {
-            background-position: 1px 2px;
+            background-position: 1px 3px;
+        }
+        
+        .smallCaption.btnIconOnly .lbl {
+            color: #323232;
+            font-weight: normal;
+            font-size: 12px;
+            padding-left: 25px;
         }
 
         .btnIcon.iconOnTheRight .lbl {
@@ -1747,7 +1754,77 @@
         </a:main>
     </a:presentation>
 </a:checkbox>
+<a:checkbox name="db-checkbox">
+    <a:style><![CDATA[
+        .db-checkbox {
+            overflow    : hidden;
+            position    : relative;
+            cursor      : default;
+            height      : 14px;
+            padding     : 2px 0 0 22px;
+            font-family : Arial;
+            font-size   : 12px;
+            color       : #404040;
+        }
 
+        .db-checkbox.bluecheck {
+            height      : 17px;
+        }
+
+        .db-checkbox .check {
+            width      : 16px;
+            height     : 16px;
+            position   : absolute;
+            top        : 0;
+            left       : 0;
+            background : url(images/checkbox.png) no-repeat 0 0;
+        }
+
+        .db-checkbox.bluecheck .check {
+            width      : 17px;
+            height     : 17px;
+            background : url(images/checkbox-blue.png) no-repeat -1px 2px;
+        }
+
+        .db-checkboxChecked {}
+
+        .db-checkboxChecked .check{
+            background-position: 0 -16px;
+        }
+        .bluecheck.db-checkboxChecked .check{
+            background-position: 0 -17px;
+        }
+
+        .db-checkboxOver {
+
+        }
+
+        .db-checkbox.bold {
+            font-weight : bold;
+            color       : #202020;
+        }
+
+        .vbox > DIV > .db-checkbox {
+            height  : 14px;
+            overflow: visible;
+        }
+
+        .db-checkboxDisabled {
+            color: #ababab;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
+        .vbox > .db-checkbox {
+            height  : 16px;
+            overflow: visible;
+        }
+    ]]></a:style>
+    <a:presentation>
+        <a:main label="text()">
+            <div class="db-checkbox">-<div class="check"></div></div>
+        </a:main>
+    </a:presentation>
+</a:checkbox>
 <a:codeeditor name="codeeditor">
     <a:style><![CDATA[
         .ace_editor {
