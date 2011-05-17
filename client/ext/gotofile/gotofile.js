@@ -89,7 +89,7 @@ return ext.register("ext/gotofile/gotofile", {
 
         dgGoToFile.addEventListener("afterchoose", function(e) {
             winGoToFile.hide();
-            var path = ide.davPrefix + "/" + apf.getTextNode(e.xmlNode).nodeValue;
+            var path = ide.davPrefix + apf.getTextNode(e.xmlNode).nodeValue;
             editors.showFile(path, 0, 0);
             ide.dispatchEvent("track_action", {type: "fileopen"});
         });

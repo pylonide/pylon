@@ -7,8 +7,6 @@
           overflow: hidden;
           cursor : default;
           position : relative;
-          overflow: auto;
-          
           color: #EEE;
           font-family : Trebuchet MS;
           font-size : 12px;

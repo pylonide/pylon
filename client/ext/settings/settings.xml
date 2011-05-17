@@ -11,12 +11,23 @@
       flex      = "1"
       modal     = "false"
       model     = "{require('ext/settings/settings').model}">
-        <a:bar id="barSettings" skinset="prefs" skin="bar-preferences" anchors="0 0 0 0">
-            <div class="header">
-                <span></span><div>General</div>
-            </div>
-            <a:checkbox class="underlined first" value="[general/@openfiles]">On Load Restore Previous State</a:checkbox>
-            <a:checkbox value="[general/@saveallbeforerun]">Save all files before Running</a:checkbox>
-        </a:bar>
+        <a:hbox
+          anchors  = "0 0 0 0"
+          overflow = "hidden">
+            <a:bar id="barSettings" skinset="prefs" skin="bar-preferences" flex="1">
+                <div class="header">
+                    <span></span><div>General</div>
+                </div>
+                <a:checkbox class="underlined first" value="[general/@openfiles]">On Load Restore Previous State</a:checkbox>
+                <a:checkbox value="[general/@saveallbeforerun]">Save all files before Running</a:checkbox>
+            </a:bar>
+            <a:scrollbar
+                for      = "barSettings"
+                margin   = "2"
+                skin     = "sbios"
+                width    = "7"
+                overflow = "auto"
+            />
+        </a:hbox>
     </a:window>
 </a:application>

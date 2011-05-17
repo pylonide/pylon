@@ -23,6 +23,7 @@ exports.main = function(options) {
         throw new Error("Workspace directory does not exist: " + projectDir);
         
     var ideProvider = function(projectDir, server) {
+        var uid = "owner" + Math.random().toString().slice(2);
         // load plugins:
         var exts = {};
         Fs.readdirSync(Path.normalize(__dirname + "/ext")).forEach(function(name){
@@ -35,7 +36,7 @@ exports.main = function(options) {
         };
         var socketIo = IO.listen(server, socketOptions);
         socketIo.on("connection", function(client) {
-            ide.addClientConnection("owner", client, null);
+            ide.addClientConnection(uid, client, null);
         });
         
         var name = projectDir.split("/").pop();
@@ -52,8 +53,8 @@ exports.main = function(options) {
         var ide = new IdeServer(serverOptions, server, exts);
         
         return function(req, res, next) {
-            req.session.uid = "owner";
-            ide.addUser("owner", User.OWNER_PERMISSIONS);
+            req.session.uid = uid;
+            ide.addUser(uid, User.OWNER_PERMISSIONS);
             ide.handle(req, res, next);
         };
     };

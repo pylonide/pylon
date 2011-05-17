@@ -269,6 +269,9 @@
             margin-left : -42px;
             margin-top : 10px;
             border-top : 3px solid #333;
+            -webkit-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
+            -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
         }
         
         .dockwindowbasic .page {

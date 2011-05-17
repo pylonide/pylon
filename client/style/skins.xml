@@ -123,8 +123,17 @@
             overflow         : hidden;
             position         : relative;
             background-image : url(images/dockLeftBackground.png);
+            border-right    : 1px solid #2E2E2E;
         }
         
+        .deploy.mnubtn, .preferences.mnubtn {
+            border-bottom : none;
+        }
+
+        .deploy.mnubtn.mnubtnDown, .preferences.mnubtn.mnubtnDown {
+            border-bottom: 1px solid #3F3F41;
+        }
+
         .black-menu-bar .c9menulogo {
             width    : 65px;
             height   : 32px;
@@ -2395,118 +2404,146 @@
 </a:datagrid>
 <a:datagrid name="dgcheck">
     <a:style><![CDATA[
-        .dgcheck{
-            position: relative;
-            border: 1px solid #c3c3c3;
-            background-color: white;
-            cursor: default;
-
-            font-family: Tahoma;
-            font-size: 8pt;
-
-            padding: 21px 0 0 0;
-            color : #333;
+        .dgcheck {
+            position         : relative;
+            background-color : white;
+            cursor           : default;
+            font-family      : Tahoma;
+            font-size        : 12px;
+            padding          : 16px 0 0 0;
+            color            : #333;
         }
 
-        .dgcheck .headings{
-            position : relative;
-            top : 0;
-            left : 0;
-            height : 17px;
-            z-index : 10;
-            /*padding-left : 5px;*/
-            background-color : #e6e6e6;
-            margin : -21px 25px 0 0;
-            border : 1px solid white;
-            border-left : 0;
-            border-right : 0px solid white;
-            white-space : nowrap;
+        .dgcheck .headings {
+            position         : relative;
+            top              : 0;
+            left             : 0;
+            height           : 15px;
+            z-index          : 10;
+            margin           : -16px 16px 0 0;
+            border           : 1px solid #d6d6d6;
+            border-left      : 0;
+            border-right     : 0;
+            white-space      : nowrap;
+
+            background    : #e6e6e6 no-repeat 0 50%;
+            filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#fefefe', endColorstr='#ebebeb');
+            -ms-filter: "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#fefefe', endColorstr='#ebebeb')";
+
+            background: -webkit-gradient(linear, left top, left bottom, from(#fefefe), color-stop(1, #ebebeb));
+            -webkit-background-origin: padding-box;
+            -webkit-background-clip: content-box;
+
+            background:-moz-linear-gradient(center bottom, #ebebeb 0%, #fefefe 100%) repeat scroll 0 0 transparent;
         }
+
         .noscrollbar .headings {
-		    margin : -21px 1px 0 0;
-		}
-		.noscrollbar .dgcheck{
-		    background : transparant;
-		}
+            margin : -21px 1px 0 0;
+        }
 
-        .dgcheck .headings div{
-            display : inline-block;
-            height : 17px;
+        .noscrollbar .dgcheck{
+            background : transparant;
+        }
 
-            /*margin-right : -3px;
-            margin-left : -5px;*/
-
-            background : #e6e6e6 no-repeat 0 50%;
-            overflow : hidden;
+        .dgcheck .headings div {
+            display       : inline-block;
+            height        : 15px;
+            overflow      : hidden;
             text-overflow : ellipsis;
+            color         : #202020;
+            text-shadow   : rgba(255, 255, 255, 1) 0px 1px 0px;
+
+            background    : #e6e6e6 no-repeat 0 50%;
+            filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#fefefe', endColorstr='#ebebeb');
+            -ms-filter: "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#fefefe', endColorstr='#ebebeb')";
+
+            background: -webkit-gradient(linear, left top, left bottom, from(#fefefe), color-stop(1, #ebebeb));
+            -webkit-background-origin: padding-box;
+            -webkit-background-clip: content-box;
+
+            background:-moz-linear-gradient(center bottom, #ebebeb 0%, #fefefe 100%) repeat scroll 0 0 transparent;
         }
-        .dgcheck .headings div u{
-            padding : 1px 4px 1px 3px;
-            display : inline-block;
-            height : 15px;
+
+        .dgcheck .headings div u {
+            padding         : 1px 4px 3px 5px;
+            display         : inline-block;
+            height          : 12px;
             text-decoration : none;
-            border-left : 1px solid white;
+            border-left     : 1px solid #d6d6d6;
+            font-size       : 11px;
+            position        : relative;
         }
 
-        .dgcheck .headings div.hover{
-            background-color: #DDD;
+        .dgcheck .headings div.hover {
+
         }
 
-        .dgcheck .headings div.down, .dgcheck .headings div.drag{
-            color: white;
-            background-color: #25a8e7;
+        .dgcheck .headings div.down,
+        .dgcheck .headings div.drag {
+
         }
 
-        .dgcheck .headings div.drag{
-            border : 1px solid white;
+        .dgcheck .headings div.drag {
+
         }
 
-        .dgcheck .headings div.ascending{
-            background-image : url(images/sort_asc.gif);
-            background-repeat : no-repeat;
-            background-position : right 6px;
+        .dgcheck .headings div.ascending,
+        .dgcheck .headings div.descending {
+            filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#d2d2d2', endColorstr='#e2e2e2');
+            -ms-filter: "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#d2d2d2', endColorstr='#e2e2e2')";
+
+            background: -webkit-gradient(linear, left top, left bottom, from(#d2d2d2), color-stop(1, #e2e2e2));
+            -webkit-background-origin: padding-box;
+            -webkit-background-clip: content-box;
+
+            background:-moz-linear-gradient(center bottom, #d2d2d2 0%, #e2e2e2 100%) repeat scroll 0 0 transparent;
         }
 
-        .dgcheck .headings div.descending{
-            background-image : url(images/sort_desc.gif);
-            background-repeat : no-repeat;
-            background-position : right 6px;
+        .dgcheck .records {
+            overflow-x   : hidden;
+            overflow-y   : scroll;
+            height       : 100%;
+            margin-top   : -17px;
+            padding      : 17px 25px 0 0;
+            position     : relative;
+            top          : 0;
+            white-space  : nowrap;
         }
 
-        .dgcheck .records{
-            overflow-x: hidden;
-            overflow-y: hidden;
-            height : 100%;
-            padding : 18px 25px 0 0;
-            position : relative;
-            top : -19px;
-            border : 1px solid white;
-            border-width : 1px 1px 0 0;
-            white-space : nowrap;
-        }
-
-        .noscrollbar .records{
+        .noscrollbar .records {
             overflow-y : hidden;
         }
 
-        .dgcheck .records .row span{
-            display : inline-block;
-
-            /*padding : 1px 0 1px 0;*/
-            height : 18px;
-            background : white no-repeat 0 50%;
-            border-bottom : 1px solid #eee;
+        .dgcheck .records DIV:nth-of-type(2n) SPAN {
+            background-color : white;
+            border-bottom    : 1px solid white;
         }
 
-        .dgcheck .records .row span u{
-            padding : 2px 3px 2px 4px;
-            height : 15px;
-            display : inline-block;
+        .dgcheck .records DIV:nth-of-type(2n+1) SPAN {
+            background-color : #ecf0f4;
+            border-bottom    : 1px solid #ecf0f4;
+        }
+
+        .dgcheck .records .row span {
+            display       : inline-block;
+            height        : 18px;
+            background    : white no-repeat 0 50%;
+        }
+
+        .dgcheck .records .row span u {
+            padding         : 2px 3px 2px 4px;
+            height          : 15px;
+            display         : inline-block;
             text-decoration : none;
-            border-left : 1px solid #eee;
-            text-overflow : ellipsis;
-            white-space : nowrap;
-            overflow : hidden;
+            border-left     : 1px solid #d2d2d2;
+
+            text-overflow   : ellipsis;
+            white-space     : nowrap;
+            overflow        : hidden;
+        }
+
+        .dgcheck .records .row SPAN:nth-of-type(1) U {
+            border-left : 1px solid #f4f4f4;
         }
 
         .noscrollbar .dgcheck .records .row span{
@@ -2514,8 +2551,9 @@
         }
 
         .dgcheck .records .row{
-            height : 19px;
+            height       : 19px;
             padding-left : 0;
+            border-top:0;
         }
 
         .dgcheck .records .highlight span{
@@ -2539,15 +2577,25 @@
         .dgcheckFocus .records .row span{
         }
 
-        .dgcheck .records .selected, .dgcheck .records .selected span{
-            background-color: #f0f0f0;
-            color : #333;
+        .dgcheck .records DIV.selected,
+        .dgcheck .records DIV.selected span{
+            background-color : #6e7e8d;
+            color            : white;
         }
-        .dgcheckFocus .records .selected, .dgcheckFocus .records .selected span{
-            color: white;
-            background-color: #25a8e7;
+
+        .dgcheckFocus .records DIV.selected,
+        .dgcheckFocus .records DIV.selected span{
+            color            : white;
+            background-color : #6e7e8d;
         }
-        .dgcheck .records .editing, .dgcheck .records .editing span{
+
+        .dgcheck .records DIV.selected span,
+        .dgcheckFocus .records DIV.selected span {
+            border-bottom : 1px solid #6e7e8d;
+        }
+
+        .dgcheck .records DIV.editing,
+        .dgcheck .records DIV.editing span{
             background-color : white;
             color : #333;
         }
@@ -2727,7 +2775,23 @@
             margin-left : -31px;
         }
 
-        .dgcheck .checkcell{
+        .dgcheck .checkcell {
+            position    : relative;
+        }
+
+        .dgcheck .checkcell B {
+            float:none;
+            margin: 0;
+            position:absolute;
+            top:3px;
+            left:50%;
+            margin-left:-6px;
+        }
+
+        .dgcheck .records .row .checkcell U {
+            border-left:1px solid #f4f4f4;
+            width:0;
+            padding:2px 0;
         }
 
         .dgcheck .checked b {
@@ -2963,7 +3027,7 @@
 
 <a:dropdown name="black_dropdown">
     <a:style><![CDATA[
-        .c9-dropdown {
+        .black_dropdown {
             position : relative;
             overflow : hidden;
             height   : 21px;
@@ -2984,7 +3048,7 @@
             background         :-moz-linear-gradient(center bottom, #323232 0%, #383838 100%) repeat scroll 0 0 transparent;
          }
          
-         .c9-dropdown .label {
+         .black_dropdown .label {
             position:relative;
             overflow:hidden;
             height:17px;
@@ -2997,7 +3061,7 @@
             border-right:1px solid #1c1c1c;
          }
          
-         .c9-dropdown .button {
+         .black_dropdown .button {
             width:14px;
             border-left:1px solid #4d4c4d;
             height:21px;
@@ -3007,7 +3071,7 @@
             background:url(images/btn-arrow.png) no-repeat 4px 9px;
          }
          
-         .c9-dropdownDown {
+         .black_dropdownDown {
             background         : #2d2d2d;
             filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#272727', endColorstr='#2d2d2d');
             -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#272727', endColorstr='#2d2d2d')";
@@ -3055,7 +3119,7 @@
 
     <a:presentation>
         <a:main label="div[1]/text()" button="." width-diff="-1" item-height="21" minheight="23" maxheight="23">
-            <div class="c9-dropdown">
+            <div class="black_dropdown">
                 <div class="label">-</div>
                 <div class="button"> </div>
             </div>
@@ -3695,6 +3759,9 @@
             margin-left : -42px;
             margin-top : 10px;
             border-top : 3px solid #333;
+            -webkit-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
+            -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
         }
         
         .dockwindowbasic .page {
@@ -3711,79 +3778,79 @@
 </a:menu>
 
 <a:modalwindow name="fm-window">
-    <a:style><![CDATA[
-        .fm-window {
-            position : relative;
-            overflow : hidden;
-    		z-index	 : 10000;
-            padding  : 30px 0 0 0;
-        }
-        
-        .fm-window .fm-header {
-            position : relative;
-            overflow : hidden;
-            height   : 30px;
-            top      : -30px;
-        }
-        
-        .fm-window .fm-header .hcontent {
-            background    : url(images/header_backg.png)  repeat-x 0 0;
-            margin-right  : 6px;
-            position      : relative;
-            overflow      : hidden;
-            height        : 24px;
-            padding       : 6px 0 0 6px;
-            font-family : Tahoma;
-            font-size   : 12px;
-            line-height:16px;
-            font-weight : bold;
-            color       : #1d4566;
-            text-shadow   : rgba(255, 255, 255, 0.25) 0px 1px 0px;
-        }
-        
-        .fm-window .fm-header .right {
-            width:6px;
-            height:30px;
-            position:absolute;
-            top:0;
-            right:0;
-            background:url(images/header_right.png) no-repeat 0 0;
-        }
-
-        .fm-window .fm-content {
-            position:absolute;
-            overflow:visible;
-            border-right:1px solid #7b7b7b;
-            left : 0;
-            top  : 30px;
-            right : 0;
-            bottom : 0;
-        }
-    ]]></a:style>
+        <a:style><![CDATA[
+            .fm-window {
+                position : relative;
+                overflow : hidden;
+                z-index  : 10000;
+                padding  : 30px 0 0 0;
+            }
+            
+            .fm-window .fm-header {
+                position : relative;
+                overflow : hidden;
+                height   : 30px;
+                top      : -30px;
+            }
+            
+            .fm-window .fm-header .hcontent {
+                background    : url(images/header_backg.png)  repeat-x 0 0;
+                margin-right  : 6px;
+                position      : relative;
+                overflow      : hidden;
+                height        : 22px;
+                padding       : 8px 0 0 7px;
+                font-family   : Arial;
+                font-size     : 12px;
+                line-height   : 16px;
+                font-weight   : bold;
+                color         : #194e7d;
+                text-shadow   : #4a9be2 0px 1px 0px;
+            }
+            
+            .fm-window .fm-header .right {
+                width:6px;
+                height:30px;
+                position:absolute;
+                top:0;
+                right:0;
+                background:url(images/header_right.png) no-repeat 0 0;
+            }
     
-    <a:presentation>
-        <a:main 
-          collapsed-height = "30"
-          minheight        = "30"
-          minwidth         = "60"
-          container        = "div[2]" 
-          drag             = "div[2]" 
-          title            = "div[1]/div[1]/text()" 
-          icon             = "div[1]/div[1]/div[1]"
-          buttons          = "div[1]/div[1]/div[2]">
-            <div class="fm-window">
-                <div class="fm-header">
-                    <div class="hcontent">-<div class="icon"></div><div class="buttons"></div></div>
-                    <div class="right"></div>
+            .fm-window .fm-content {
+                position:absolute;
+                overflow:visible;
+                border-right:1px solid #7b7b7b;
+                left : 0;
+                top  : 30px;
+                right : 0;
+                bottom : 0;
+            }
+        ]]></a:style>
+        
+        <a:presentation>
+            <a:main 
+              collapsed-height = "30"
+              minheight        = "30"
+              minwidth         = "60"
+              container        = "div[2]" 
+              drag             = "div[2]" 
+              title            = "div[1]/div[1]/text()" 
+              icon             = "div[1]/div[1]/div[1]"
+              buttons          = "div[1]/div[1]/div[2]">
+                <div class="fm-window">
+                    <div class="fm-header">
+                        <div class="hcontent">-<div class="icon"></div><div class="buttons"></div></div>
+                        <div class="right"></div>
+                    </div>
+                    <div class="fm-content"> </div>
                 </div>
-                <div class="fm-content"> </div>
-            </div>
-        </a:main>
-        <a:button>
-            <div> </div>
-        </a:button>
-    </a:presentation>
-</a:modalwindow>
+            </a:main>
+            <a:button>
+                <div> </div>
+            </a:button>
+        </a:presentation>
+    </a:modalwindow>
 <a:scrollbar name="sbios">
     <a:style><![CDATA[
         .sbios {
@@ -6098,7 +6165,7 @@
 
         .docktab .btncontainer .btntab .tab_title {
             overflow : hidden;
-            padding  : 1px 0 0 0;
+            padding  : 1px 0 0 2px;
             color    : #202020;
 
             text-shadow : rgba(255,255,255,0.7) 0px 1px 0px;
@@ -6153,7 +6220,7 @@
             /*cursor              : pointer;*/
             background-image    : url(images/close_tab_btn.png);
             background-repeat   : no-repeat;
-            background-position : 0 -14px;
+            background-position : 0 0;
         }
 
         .docktab .btncontainer .btnclose strong:hover {
@@ -6641,6 +6708,11 @@
             width : 100%;
             overflow : hidden;
             height : 27px;
+        }
+        
+        .toolbar .subbar.no_border {
+            border-bottom: none;
+            padding-top: 1px;
         }
 
         .toolbar>.subbar>*{

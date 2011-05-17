@@ -75,5 +75,5 @@ if (options.action) {
     require("child_process").spawn(options.action[0], options.action.slice(1));
 }
 else {
-    Sys.puts("Point you browser to " + url);
+    Sys.puts("Point your browser to " + url);
 }
