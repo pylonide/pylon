@@ -60,6 +60,15 @@
       kbclose   = "true"
       resizable = "true"
       title     = "Save As"
+      onshow    = "
+        var tabPage = tabEditors.getPage(),
+            path    = tabPage ? tabPage.$model.data.getAttribute('path') : false,
+            isNew   = tabPage.$model.data.getAttribute('newfile');
+        if(!isNew)
+            require('ext/save/save').choosePath(path);
+        else
+            trSaveAs.slideOpen(null, trSaveAs.getModel().data.selectSingleNode('//folder'));
+      "
       width     = "480">
         <a:vbox
           anchors   = "10 10 0 10"

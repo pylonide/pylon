@@ -184,6 +184,10 @@ return ext.register("ext/save/save", {
 
         var doc  = page.$doc;
         var node = doc.getNode();
+        if(node.getAttribute('newfile')){
+            this.saveas();
+        }
+            
         if (node.getAttribute("debug"))
             return;
 
@@ -237,8 +241,9 @@ return ext.register("ext/save/save", {
         
         fs.list(path.match(/(.*)\/[^/]*/)[1], function (data, state, extra) {
             if (new RegExp("<folder.*" + path + ".*>").test(data)) {
-                path  = path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                            .replace(/\[@name="workspace"\]/, "")
+                path  = path.replace(new RegExp('\/' + cloud9config.davPrefix.split('/')[1]), '')
+                            .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
+                            .replace(/\/node\(\)\[@name="workspace"\]/, "")
                             .replace(/\//, "");
                 // console.log(path);
                 trSaveAs.expandList([path], function() {
@@ -258,13 +263,11 @@ return ext.register("ext/save/save", {
         if(!path)
             return;
         
-        
         ext.initExtension(this);
         
         var fooPath = path.split('/');
         txtSaveAs.setValue(fooPath.pop());
         lblPath.setProperty('caption', fooPath.join('/') + '/');
-        this.choosePath(path.match(/(.*)\/[^/]/)[1]);
         winSaveAs.show();
     },
     
@@ -313,6 +316,19 @@ return ext.register("ext/save/save", {
                 if (_self.saveBuffer[path]) {
                     delete _self.saveBuffer[path];
                     _self.saveFileAs(page);
+                }
+            
+                if(file.getAttribute("newfile")) {
+                    file.removeAttribute("newfile");
+                    apf.xmldb.setAttribute(file, "changed", "0");
+                    var _xpath = newPath.replace(new RegExp('\/' + cloud9config.davPrefix.split('/')[1]), '')
+                                        .replace(new RegExp('\/' + file.getAttribute('name')), '')
+                                        .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
+                                        .replace(/\/node\(\)\[@name="workspace"\]/, "")
+                                        .replace(/\//, ""),
+                        _node  = trFiles.getModel().data.selectSingleNode(_xpath);
+                    if(_node)
+                        apf.xmldb.appendChild(_node, file);
                 }
                 //setTimeout(function () {
                 //  if (panel.caption == "Saved file " + newPath)
