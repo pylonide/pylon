@@ -44,9 +44,13 @@ return ext.register("ext/save/save", {
                 
                 winCloseConfirm.addEventListener("hide", function(){
                     if (winCloseConfirm.all != -100) {
-                        tabEditors.remove(winCloseConfirm.page, true);
-                        winCloseConfirm.page.$at.undo(-1);
-                        delete winCloseConfirm.page;
+                        if(!tabEditors.getPage().$model.data.getAttribute('newfile')) {
+                            tabEditors.remove(winCloseConfirm.page, true);
+                            winCloseConfirm.page.$at.undo(-1);
+                            delete winCloseConfirm.page;
+                        }
+                        else
+                            winSaveAs.page = winCloseConfirm.page;
                     }
                     winCloseConfirm.removeEventListener("hide", arguments.callee);
                 });
@@ -123,6 +127,14 @@ return ext.register("ext/save/save", {
                 winCloseConfirm.hide();
             });
         }
+        
+        winSaveAs.addEventListener("hide", function(){
+            if(winSaveAs.page) {
+                tabEditors.remove(winSaveAs.page, true);
+                winSaveAs.page.$at.undo(-1);
+                delete winSaveAs.page;
+            }
+        });
     },
     
     saveall : function(){
@@ -358,7 +370,20 @@ return ext.register("ext/save/save", {
         else
             onconfirm();
     },
-
+    
+    expandTree : function(){
+        var _self = this;
+        setTimeout(function(){
+            var tabPage = tabEditors.getPage(),
+                path    = tabPage ? tabPage.$model.data.getAttribute('path') : false,
+                isNew   = tabPage.$model.data.getAttribute('newfile');
+            if(!isNew)
+                _self.choosePath(path);
+            else
+                trSaveAs.slideOpen(null, trSaveAs.getModel().data.selectSingleNode('//folder'));
+        });
+    },
+    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
