@@ -24,7 +24,7 @@
 // Only add setZeroTimeout to the window object, and hide everything
 // else in a closure.
 apf.setZeroTimeout = !window.postMessage
-  ? setTimeout
+  ? function() { setTimeout.apply(null, arguments); }
   : (function() {
         var timeouts = [];
         var messageName = "zero-timeout-message";
