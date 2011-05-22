@@ -4,30 +4,43 @@ var bar = addBar();
 var section = addSection(bar);
 var menu1 = createMenu(section);
 var div1 = section.firstChild;
-var page1 = menu1.firstChild.add("Test4", "test4");
-var btn1 = addButton(section, menu1, page1);
+addButton(section, menu1, addPage(menu1, "Test4", "test4"));
 
 var section = addSection(bar);
 var menu2 = createMenu(section);
 var div1 = section.firstChild;
-var page1 = menu2.firstChild.add("Test3", "test3");
-var btn1 = addButton(section, menu2, page1);
+addButton(section, menu2, addPage(menu2, "Test3", "test3"));
 
 var section = addSection(bar);
 var menu = createMenu(section);
 var div1 = section.firstChild;
-var page1 = menu.firstChild.add("Test", "test");
-var page2 = menu.firstChild.add("Test2", "test2");
-var btn1 = addButton(section, menu, page1);
-var btn2 = addButton(section, menu, page2);
+addButton(section, menu, addPage(menu, "Test1", "test1"));
+addButton(section, menu, addPage(menu, "Test2", "test2"));
 
-page1.oDrag = page1.$button;
-page2.oDrag = page2.$button;
-page1.setAttribute("draggable", true);
-page2.setAttribute("draggable", true);
-//@todo when cloning id shouldn't be set
-page1.addEventListener("beforedragstart", dragPage);
-page2.addEventListener("beforedragstart", dragPage);
+function addPage(menu, caption, name){
+    var page = menu.firstChild.add(caption, name);
+    page.oDrag = page.$button;
+    page.setAttribute("draggable", true);
+    page.addEventListener("beforedragstart", dragPage);
+    page.addEventListener("afterclose", closePage);
+    return page;
+}
+
+function closePage(e){
+    var button = this.$dockbutton;
+    var pNode = this.lastParent;
+    var btnPNode = button.parentNode;
+
+    button.destroy(true, true);
+    
+    if (!pNode.getPages().length) {
+        var barParent = btnPNode.parentNode;
+        pNode.parentNode.destroy(true, true);
+        btnPNode.destroy(true, true);
+        if (!barParent.selectNodes("vbox").length)
+            barParent.destroy(true, true);
+    }
+}
 
 function dragPage(e){ //change this to beforedrag and recompile apf
     var menu = this.parentNode.parentNode.cloneNode(false);
@@ -234,7 +247,7 @@ function stopDrag(e){
 
             moveTo(submenu, dragAml, aml, info.position == "in_section" 
                 ? aml 
-                : aml.nextSibling, info.position);
+                : aml.nextSibling, aml.parentNode, info.position);
             break;
         case "before_section":
             aml = aml.selectNodes("button")[0];
@@ -247,25 +260,8 @@ function stopDrag(e){
             //reconstruct menu
             var submenu = createMenu(section);
             var dragAml = whiledrag.original;
-            
-            moveTo(submenu, dragAml, aml, null, info.position);
-            
-//            if (dragAml.localName == "page") {
-//                var pNode = dragAml.parentNode;
-//                submenu.firstChild.appendChild(dragAml);
-//                var button = dragAml.$dockbutton;
-//                if (!pNode.getPages().length) {
-//                    var barParent = button.parentNode.parentNode;
-//                    pNode.parentNode.destroy(true, true);
-//                    button.parentNode.destroy(true, true);
-//                    if (!barParent.selectNodes("vbox").length)
-//                        barParent.destroy(true, true);
-//                }
-//            }
-//            button.setAttribute("submenu", submenu.id);
-//            
-//            //add button to section
-//            section.appendChild(button);
+
+            moveTo(submenu, dragAml, aml, null, section, info.position);
             break;
         case "before_tab":
             break;
@@ -273,50 +269,19 @@ function stopDrag(e){
             var submenu = aml.parentNode;
             var dragAml = whiledrag.original;
             
-            if (dragAml.localName == "page") {
-                var pNode = dragAml.parentNode;
-                aml.insertBefore(dragAml, info.position == "in_tab" ? null : aml);
-                var button = dragAml.$dockbutton;
-                if (!pNode.getPages().length) {
-                    var barParent = button.parentNode.parentNode;
-                    pNode.parentNode.destroy(true, true);
-                    button.parentNode.destroy(true, true);
-                    if (!barParent.selectNodes("vbox").length)
-                        barParent.destroy(true, true);
-                }
-            }
-            button.setAttribute("submenu", submenu.id);
-            
-            //add button to section
-            submenu.ref.insertBefore(button, info.position == "in_tab" 
+            moveTo(submenu, dragAml, aml, info.position == "in_tab" 
                 ? null
-                : aml.$dockbutton);
+                : aml.$dockbutton, submenu.ref, info.position);
             break;
         case "left_of_column":
             var bar = addBar(aml);
             //Single Tab Case
             //create new section
             var section = addSection(bar);
+            var submenu = createMenu(section);
             var dragAml = whiledrag.original;
             
-            //reconstruct menu
-            var submenu = createMenu(section);
-            if (dragAml.localName == "page") {
-                var pNode = dragAml.parentNode;
-                submenu.firstChild.appendChild(dragAml);
-                var button = dragAml.$dockbutton;
-                if (!pNode.getPages().length) {
-                    var barParent = button.parentNode.parentNode;
-                    pNode.parentNode.destroy(true, true);
-                    button.parentNode.destroy(true, true);
-                    if (!barParent.selectNodes("vbox").length)
-                        barParent.destroy(true, true);
-                }
-            }
-            button.setAttribute("submenu", submenu.id);
-            
-            //add button to section
-            section.appendChild(button);
+            moveTo(submenu, dragAml, aml, null, section, info.position);
             break;
         case "right_of_column":
             var bar = addBar();
@@ -328,55 +293,41 @@ function stopDrag(e){
             var submenu = createMenu(section);
             var dragAml = whiledrag.original;
             
-            if (dragAml.localName == "page") {
-                var pNode = dragAml.parentNode;
-                submenu.firstChild.appendChild(dragAml);
-                var button = dragAml.$dockbutton;
-                if (!pNode.getPages().length) {
-                    var barParent = button.parentNode.parentNode;
-                    pNode.parentNode.destroy(true, true);
-                    button.parentNode.destroy(true, true);
-                    if (!barParent.selectNodes("vbox").length)
-                        barParent.destroy(true, true);
-                }
-            }
-            button.setAttribute("submenu", submenu.id);
-            
-            //add button to section
-            section.appendChild(button);//addButton(section, submenu);
+            moveTo(submenu, dragAml, aml, null, section, info.position);
             break;
         default:
             break;
     }
 }
 
-function moveTo(submenu, dragAml, aml, beforeButton, position){
+function moveTo(submenu, dragAml, aml, beforeButton, parentNode, position){
     var beforePage = beforeButton && beforeButton.$dockpage;
-    
+
     if (dragAml.localName == "page" || dragAml.localName == "button") {
         if (dragAml.localName == "page") {
             var page = dragAml;
-            var pNode = page.parentNode;
             var button = dragAml.$dockbutton;
         }
         else if (dragAml.localName == "button") {
             var page = dragAml.$dockpage;
-            var pNode = page.parentNode;
             var button = dragAml;
         }
+        var pNode = page.parentNode;
+        var btnPNode = button.parentNode;
         
-        submenu.firstChild.insertBefore(dragAml, beforePage);
-        if (!pNode.getPages().length) {
-            var barParent = button.parentNode.parentNode;
-            pNode.parentNode.destroy(true, true);
-            button.parentNode.destroy(true, true);
-            if (!barParent.selectNodes("vbox").length)
-                barParent.destroy(true, true);
-        }
+        submenu.firstChild.insertBefore(page, beforePage);
         button.setAttribute("submenu", submenu.id);
         
         //add button to section
-        aml.parentNode.insertBefore(button, beforeButton);
+        parentNode.insertBefore(button, beforeButton);
+        
+        if (!pNode.getPages().length) {
+            var barParent = btnPNode.parentNode;
+            pNode.parentNode.destroy(true, true);
+            btnPNode.destroy(true, true);
+            if (!barParent.selectNodes("vbox").length)
+                barParent.destroy(true, true);
+        }
     }
     else if (dragAml.localName == "divider") {
         var buttons = dragAml.parentNode.selectNodes("button");
@@ -390,7 +341,7 @@ function moveTo(submenu, dragAml, aml, beforeButton, position){
             button.setAttribute("submenu", submenu.id);
             
             //add button to section
-            aml.parentNode.insertBefore(button, beforeButton);
+            parentNode.insertBefore(button, beforeButton);
         }
         
         //Test is not needed;
@@ -417,7 +368,12 @@ function createMenu(section){
             new apf.tab({
                 anchors : "0 0 0 0", 
                 skin : "docktab",
-                buttons : "scale"
+                buttons : "scale,close",
+                onclose : function(e){
+                    var page = e.page;
+                    page.lastParent = this;
+                }
+
             })
         ]
     });
@@ -515,6 +471,8 @@ function addButton(section, submenu, page){
     }));
     
     button.addEventListener("beforedrag", function(e){ //change this to beforedrag and recompile apf
+        this.hideMenu();
+    
         var btn = this.cloneNode(true);
         btn.removeAttribute("id");
         apf.document.body.appendChild(btn);
