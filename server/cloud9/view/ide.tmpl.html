@@ -13,7 +13,8 @@
         <script type="text/javascript" src="/socket.io/socket.io.js"></script>
         <script type="text/javascript" src="/static/require.js"></script>
         [%scripts%]
-        <script type="text/javascript">//<!--
+        <script type="text/javascript">
+        //<![CDATA[
 
             window.cloud9config = {
                 davPrefix: <%davPrefix%>,
@@ -68,7 +69,8 @@
                 if (apf.started)
                     apf.onstart();
             });
-        //--></script>
+        //]]>
+        </script>
     </head>
     <body>
         <div id="noscript">

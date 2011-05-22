@@ -15,15 +15,27 @@
       optimize = "true">
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
 
-        <a:list id="lstOpenFiles" canrename="true" anchors="0 0 0 0" border="0"
-          multiselect="true" skin="tree">
-            <a:each match="[file]" sort="[@name]" sort-method="filesort">
-                <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
-                <a:icon match="[folder|project]" value="folder.png" />
-                <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
-            </a:each>
-
-            <a:remove match="[file|folder]" />
-        </a:list>
+        <a:hbox
+          anchors  = "0 0 0 0"
+          overflow = "hidden"
+        >
+            <a:list id="lstOpenFiles" canrename="true" flex="1" border="0"
+              multiselect="true" skin="tree">
+                <a:each match="[file]" sort="[@name]" sort-method="filesort">
+                    <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.] + ' - ' + [../@path].split('/').slice(-2).join('/')}" />
+                    <a:icon match="[folder|project]" value="folder.png" />
+                    <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
+                </a:each>
+    
+                <a:remove match="[file|folder]" />
+            </a:list>
+            <a:scrollbar
+                for      = "lstOpenFiles"
+                margin   = "2"
+                skin     = "sbios"
+                width    = "7"
+                overflow = "auto"
+            />
+        </a:hbox>
     </a:window>
 </a:application>

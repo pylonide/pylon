@@ -1,0 +1,19 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <div class="header">
+        <span></span><div>JS Beautify</div>
+    </div>
+    <a:checkbox class="underlined" label="Preserve empty lines"
+        checked="{[beautify/jsbeautify/@preserveempty] != '' ? [beautify/jsbeautify/@preserveempty] : 'true'}"
+        value="[beautify/jsbeautify/@preserveempty]" />
+    <a:checkbox class="underlined" label="Keep array indentation"
+        checked="{[beautify/jsbeautify/@keeparrayindentation] != '' ? [beautify/jsbeautify/@keeparrayindentation] : 'true'}"
+        value="[beautify/jsbeautify/@keeparrayindentation]" />
+    <a:hbox edge="5 5 2 5" align="center">
+        <a:label flex="1">Braces</a:label>
+        <a:dropdown default="end-expand" value="[{require('ext/settings/settings').model}::beautify/jsbeautify/@braces]" width="185" height="21">
+            <a:item value="collapse">Braces with control statement</a:item>
+            <a:item value="expand">Braces on own line</a:item>
+            <a:item value="end-expand">End braces on own line</a:item>
+        </a:dropdown>
+    </a:hbox>
+</a:application>

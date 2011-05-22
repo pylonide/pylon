@@ -6,8 +6,8 @@
  */
 require.def("ext/save/save",
     ["core/ide", "core/ext", "core/util", "ext/filesystem/filesystem",
-     "text!ext/save/save.xml"],
-    function(ide, ext, util, fs, markup) {
+     "text!ext/save/save.css", "text!ext/save/save.xml"],
+    function(ide, ext, util, fs, css, markup) {
 
 return ext.register("ext/save/save", {
     dev         : "Ajax.org",
@@ -15,6 +15,7 @@ return ext.register("ext/save/save", {
     alone       : true,
     type        : ext.GENERAL,
     markup      : markup,
+    css         : css,
     deps        : [fs],
     offline     : false,
     commands     : {
@@ -43,9 +44,13 @@ return ext.register("ext/save/save", {
                 
                 winCloseConfirm.addEventListener("hide", function(){
                     if (winCloseConfirm.all != -100) {
-                        tabEditors.remove(winCloseConfirm.page, true);
-                        winCloseConfirm.page.$at.undo(-1);
-                        delete winCloseConfirm.page;
+                        if(!tabEditors.getPage().$model.data.getAttribute('newfile')) {
+                            tabEditors.remove(winCloseConfirm.page, true);
+                            winCloseConfirm.page.$at.undo(-1);
+                            delete winCloseConfirm.page;
+                        }
+                        else
+                            winSaveAs.page = winCloseConfirm.page;
                     }
                     winCloseConfirm.removeEventListener("hide", arguments.callee);
                 });
@@ -99,6 +104,8 @@ return ext.register("ext/save/save", {
 
     init : function(amlNode){
         var _self = this;
+        
+        apf.importCssString((this.css || ""));
         winCloseConfirm.onafterrender = function(){
             btnYesAll.addEventListener("click", function(){
                 winCloseConfirm.all = 1;
@@ -120,6 +127,14 @@ return ext.register("ext/save/save", {
                 winCloseConfirm.hide();
             });
         }
+        
+        winSaveAs.addEventListener("hide", function(){
+            if(winSaveAs.page) {
+                tabEditors.remove(winSaveAs.page, true);
+                winSaveAs.page.$at.undo(-1);
+                delete winSaveAs.page;
+            }
+        });
     },
     
     saveall : function(){
@@ -181,6 +196,10 @@ return ext.register("ext/save/save", {
 
         var doc  = page.$doc;
         var node = doc.getNode();
+        if(node.getAttribute('newfile')){
+            this.saveas();
+        }
+            
         if (node.getAttribute("debug"))
             return;
 
@@ -234,8 +253,9 @@ return ext.register("ext/save/save", {
         
         fs.list(path.match(/(.*)\/[^/]*/)[1], function (data, state, extra) {
             if (new RegExp("<folder.*" + path + ".*>").test(data)) {
-                path  = path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                            .replace(/\[@name="workspace"\]/, "")
+                path  = path.replace(new RegExp('\/' + cloud9config.davPrefix.split('/')[1]), '')
+                            .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
+                            .replace(/\/node\(\)\[@name="workspace"\]/, "")
                             .replace(/\//, "");
                 // console.log(path);
                 trSaveAs.expandList([path], function() {
@@ -249,19 +269,26 @@ return ext.register("ext/save/save", {
     },
     
     saveas : function(){
-        var path = tabEditors.getPage().$model.data.getAttribute("path");
+        var tabPage = tabEditors.getPage(),
+            path    = tabPage ? tabPage.$model.data.getAttribute("path") : false;
+        
+        if(!path)
+            return;
         
         ext.initExtension(this);
-        txtSaveAs.setValue(path);
-        this.choosePath(path.match(/(.*)\/[^/]/)[1]);
+        
+        var fooPath = path.split('/');
+        txtSaveAs.setValue(fooPath.pop());
+        lblPath.setProperty('caption', fooPath.join('/') + '/');
         winSaveAs.show();
     },
     
     saveFileAs : function(page) {
-        var page    = page || tabEditors.getPage(),
+        var _self   = this,
+            page    = page || tabEditors.getPage(),
             file    = page.$model.data,
             path    = file.getAttribute("path"),
-            newPath = txtSaveAs.getValue();
+            newPath = lblPath.getProperty('caption') + txtSaveAs.getValue();
             
         // check if we're already saving!
         var saving = parseInt(file.getAttribute("saving"));
@@ -302,6 +329,19 @@ return ext.register("ext/save/save", {
                     delete _self.saveBuffer[path];
                     _self.saveFileAs(page);
                 }
+            
+                if(file.getAttribute("newfile")) {
+                    file.removeAttribute("newfile");
+                    apf.xmldb.setAttribute(file, "changed", "0");
+                    var _xpath = newPath.replace(new RegExp('\/' + cloud9config.davPrefix.split('/')[1]), '')
+                                        .replace(new RegExp('\/' + file.getAttribute('name')), '')
+                                        .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
+                                        .replace(/\/node\(\)\[@name="workspace"\]/, "")
+                                        .replace(/\//, ""),
+                        _node  = trFiles.getModel().data.selectSingleNode(_xpath);
+                    if(_node)
+                        apf.xmldb.appendChild(_node, file);
+                }
                 //setTimeout(function () {
                 //  if (panel.caption == "Saved file " + newPath)
                 //       panel.removeAttribute("caption");
@@ -330,7 +370,20 @@ return ext.register("ext/save/save", {
         else
             onconfirm();
     },
-
+    
+    expandTree : function(){
+        var _self = this;
+        setTimeout(function(){
+            var tabPage = tabEditors.getPage(),
+                path    = tabPage ? tabPage.$model.data.getAttribute('path') : false,
+                isNew   = tabPage.$model.data.getAttribute('newfile');
+            if(!isNew)
+                _self.choosePath(path);
+            else
+                trSaveAs.slideOpen(null, trSaveAs.getModel().data.selectSingleNode('//folder'));
+        });
+    },
+    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();

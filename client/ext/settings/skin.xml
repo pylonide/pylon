@@ -4,7 +4,7 @@
         <a:style><![CDATA[
             .bar-preferences {
                 position         : relative;
-                overflow-y       : auto;
+                overflow-y       : hidden;
                 overflow-x       : hidden;
                 background-image : url(images/panelbg.png);
                 color            : #202020;
