@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head profile="http://www.w3.org/2005/10/profile">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="description" content=""/>
+        <meta name="keywords" content=""/>
+        <style>
+            HTML{overflow:hidden}
+        </style>
+        <script type="text/javascript" src="js/apf_release.js"></script>
+    </head>
+    <body>
+        <a:skin
+          src        = "style/skins.xml"
+          media-path = "style/images/"
+          icon-path  = "style/icons/" />
+
+        <a:appsettings name="ide" debug="false"
+          disable-space       = "true"
+          auto-hide-loading   = "true"
+          allow-select        = "false"
+          allow-blur          = "true"
+          initdelay           = "false"
+          storage             = "cookie"
+          baseurl             = "{apf.host ? apf.host : ''}" />
+    
+        <a:hbox id="hboxMain" padding="0" anchors="0 0 0 0">
+            <a:bar skin="basic" flex="1">
+            </a:bar>
+            <!--a:bar id="dockPanelRight" skin="debug-panel">
+                <a:button skin="dockheader" onclick="require('ext/dockpanel/dockpanel').expand()" />
+                <a:vbox id="section" padding="0" edge="0 0 3 0" class="docksection">
+                    <a:divider id="div1" skin="divider-debugpanel" margin="3 5 2 5" draggable="true" />
+                    <a:button id="btn1" class="dockButtonID" skin="dockButton" submenu="submenu1" draggable="true" />
+                    <a:button id="btn2" class="dockButtonID" skin="dockButton" submenu="submenu1" draggable="true" />
+                </a:vbox>
+            </a:bar-->
+            <a:splitter width="0" id="splitterPanelRight" visible="false" />
+            <a:vbox id="colRight" padding="3" width="260" visible="false" splitters="true">
+                <a:button skin="dockheader" class="expanded" nosplitter="true" height="11" margin="0 0 -3 0" onclick="require('ext/dockpanel/dockpanel').collapse()" />
+            </a:vbox>
+        </a:hbox>
+        
+        <!--a:menu id="submenu1" width="200" height="200"
+            ref        = "{section}"
+            pinned     = "true"
+            animate    = "false"
+            skin       = "dockwindowbasic">
+            <a:tab anchors="0 0 0 0" skin="docktab" buttons="scale">
+                <a:page id="page1" caption="Test">
+                    <a:button margin="10" onclick="addBar()">Test</a:button>
+                </a:page>
+                <a:page id="page2" caption="Test Again">
+                    <a:button right="10" bottom="10" width="50">Test</a:button>
+                </a:page>
+            </a:tab>
+        </a:menu-->
+        
+        <!--a:menu id="submenu2" width="200" height="200"
+            ref        = "{section}"
+            pinned     = "true"
+            animate    = "false"
+            skin       = "dockwindowbasic">
+            <a:tab anchors="0 0 0 0" skin="docktab" buttons="scale">
+                <a:page caption="Test" />
+            </a:tab>
+        </a:menu>
+        
+        <a:menu id="submenu3" width="200" height="200"
+            ref        = "{section}"
+            pinned     = "true"
+            animate    = "false"
+            skin       = "dockwindowbasic">
+            <a:tab anchors="0 0 0 0" skin="docktab" buttons="scale">
+                <a:page caption="Test 1" />
+                <a:page caption="Test 2" />
+                <a:page caption="Test 3" />
+            </a:tab>
+        </a:menu-->
+        
+        <a:script src="dock.js" />
+    </body>
+</html>
