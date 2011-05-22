@@ -1,19 +1,37 @@
+/*
+    TODO:
+    - before_section
+    - after_section
+    - origin - self detection for tab dragging
+    - expanded state tab dragging
+    - mark items as dockable
+    - place menus to the left of the bar (instead of fixed dist from right)
+    - make sure menus are hidden on creation
+    - tweak tab animations
+    - tweak design of hover states (esp tab)
+    - add tab reordering
+    
+    INTEGRATION
+    - closing a window should set the state in the windows menu
+    - debugger plugin doesnt need to be visible at the start anymore
+    - add right click menu to buttons
+    - 
+
+*/
+
 var menuCounter = 100;
 
 var bar = addBar();
 var section = addSection(bar);
 var menu1 = createMenu(section);
-var div1 = section.firstChild;
 addButton(section, menu1, addPage(menu1, "Test4", "test4"));
 
 var section = addSection(bar);
 var menu2 = createMenu(section);
-var div1 = section.firstChild;
 addButton(section, menu2, addPage(menu2, "Test3", "test3"));
 
 var section = addSection(bar);
 var menu = createMenu(section);
-var div1 = section.firstChild;
 addButton(section, menu, addPage(menu, "Test1", "test1"));
 addButton(section, menu, addPage(menu, "Test2", "test2"));
 
@@ -105,9 +123,6 @@ function startDrag(dragged, original){
         if (!aml) return;
         
         //if (!aml.dock) return;
-        /*if (aml == original) { //@todo Checks needs to include different representations
-            return;
-        }*/
         
         var pos = apf.getAbsolutePosition(aml.$ext);
         indicator.style.left = pos[0] + "px";
@@ -115,9 +130,34 @@ function startDrag(dragged, original){
         indicator.style.display = "block";
         indicator.innerHTML = "";
         
+        var width = aml.$ext.offsetWidth;
+        var height = aml.$ext.offsetHeight;
+        
         switch(info.position) {
             case "after_button":
-                indicator.style.borderWidth = "0 0 3px 0";
+                indicator.innerHTML = "<div style='position:absolute'></div>";
+                indicator.style.borderWidth = "6px 1px 3px 1px";
+                
+                var pos2 = apf.getAbsolutePosition(aml.parentNode.$ext);
+                indicator.style.left = pos2[0] + "px";
+                indicator.style.top  = pos2[1] + "px";
+                width = aml.parentNode.$ext.offsetWidth;
+                height = aml.parentNode.$ext.offsetHeight;
+                
+                var div = indicator.firstChild;
+                if (aml == original) { //@todo Checks needs to include different representations
+                    div.style.top = (pos[1] - pos2[1] - 8) + "px";
+                    div.style.left = "2px";
+                    div.style.right = "2px";
+                    div.style.height = (aml.$ext.offsetHeight - 4) + "px";
+                    div.style.border = "2px solid blue";                    
+                }
+                else {
+                    div.style.top = (pos[1] - pos2[1] + aml.$ext.offsetHeight - 8) + "px";
+                    div.style.width = "100%";
+                    div.style.borderBottom = "3px solid blue";
+                }
+                
                 break;
             case "before_tab":
                 break;
@@ -125,7 +165,22 @@ function startDrag(dragged, original){
                 indicator.style.borderWidth = "20px 3px 3px 3px";
                 break;
             case "in_section":
-                indicator.style.borderWidth = "6px 1px 3px 1px";
+                var buttons = aml.selectNodes("button");
+                if (original == buttons[0]) {
+                    //same as after_button
+                    indicator.innerHTML = "<div style='position:absolute'></div>";
+                    indicator.style.borderWidth = "6px 1px 3px 1px";
+                    
+                    var pos2 = apf.getAbsolutePosition(buttons[0].$ext);
+                    var div = indicator.firstChild;
+                    div.style.top = (pos[1] - pos2[1] + 10) + "px";
+                    div.style.left = "2px";
+                    div.style.right = "2px";
+                    div.style.height = (buttons[0].$ext.offsetHeight - 4) + "px";
+                    div.style.border = "2px solid blue";                    
+                }
+                else
+                    indicator.style.borderWidth = "9px 1px 3px 1px";
                 break;
             case "after_section":
                 
@@ -146,7 +201,19 @@ function startDrag(dragged, original){
                 
                 break;
             case "left_of_column":
-                indicator.style.borderWidth = "0 0 0 3px";
+                if (aml.previousSibling && aml.previousSibling.localName == "bar")
+                    indicator.style.borderWidth = "0 0 0 3px";
+                else {
+                    indicator.innerHTML = "<div style='position:absolute'></div>";
+                    indicator.style.borderWidth = "0 0 0 0";
+                    
+                    var div = indicator.firstChild;
+                    div.style.left = "0";
+                    div.style.marginLeft = "-15px";
+                    div.style.borderLeft = "15px solid gray";
+                    div.style.height = "100%";
+                    apf.setOpacity(div, 0.5);
+                }
                 break;
             case "right_of_column":
                 indicator.style.borderWidth = "0 3px 0 0";
@@ -157,8 +224,8 @@ function startDrag(dragged, original){
         }
         
         var diff = apf.getDiff(indicator);
-        indicator.style.width  = (aml.$ext.offsetWidth - diff[0]) + "px";
-        indicator.style.height = (aml.$ext.offsetHeight - diff[1]) + "px";
+        indicator.style.width  = (width - diff[0]) + "px";
+        indicator.style.height = (height - diff[1]) + "px";
     });
     
     whiledrag.dragged  = dragged;
