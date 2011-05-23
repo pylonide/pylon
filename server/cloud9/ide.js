@@ -13,7 +13,8 @@ var jsDAV = require("jsdav"),
     Url = require("url"),
     template = require("./template"),
     Workspace = require("cloud9/workspace"),
-    EventEmitter = require("events").EventEmitter;
+    EventEmitter = require("events").EventEmitter,
+    util = require("./util");
 
 module.exports = Ide = function(options, httpServer, exts, socket) {
     EventEmitter.call(this);
@@ -49,12 +50,23 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
         offlineManifest: options.offlineManifest || "",
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version,
-        extra: options.extra
+        extra: options.extra,
+        remote: options.remote
     };
 
     this.$users = {};
 
-    this.davServer = jsDAV.mount(this.options.mountDir, this.options.davPrefix, this.httpServer, false);
+    var davOptions = {
+        mount: this.options.davPrefix,
+        server: this.httpServer,
+        standalone: false
+    };
+    if (options.remote)
+        util.extend(davOptions, options.remote);
+    else
+        davOptions.path = this.options.mountDir;
+    
+    this.davServer = jsDAV.mount(davOptions);
     this.davInited = false;
     
     this.workspace = new Workspace({ ide: this });
