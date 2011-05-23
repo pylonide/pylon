@@ -1,8 +1,6 @@
 /*
     TODO:
-    - before_section
-    - after_section
-    - origin - self detection for tab dragging
+    - larger context dragging
     - expanded state tab dragging
     - mark items as dockable
     - place menus to the left of the bar (instead of fixed dist from right)
@@ -41,7 +39,7 @@ function addPage(menu, caption, name){
     var page = menu.firstChild.add(caption, name);
     page.oDrag = page.$button;
     page.setAttribute("draggable", true);
-    page.addEventListener("beforedragstart", dragPage);
+    page.addEventListener("beforedrag", dragPage);
     page.addEventListener("afterclose", closePage);
     return page;
 }
@@ -119,7 +117,7 @@ function startDrag(dragged, original){
         indicator.style.top = "-2000px";
         apf.plane.hide();
         
-        var info = lastInfo = calcAction(e);
+        var info = lastInfo = calcAction(e, original);
         var aml  = last = info.aml;
 
         if (!aml) return;
@@ -130,6 +128,7 @@ function startDrag(dragged, original){
         indicator.style.left = pos[0] + "px";
         indicator.style.top  = pos[1] + "px";
         indicator.style.display = "block";
+        indicator.style.backgroundColor = "";
         indicator.innerHTML = "";
         
         var width = aml.$ext.offsetWidth;
@@ -164,7 +163,7 @@ function startDrag(dragged, original){
             case "before_tab":
                 break;
             case "in_tab":
-                indicator.style.borderWidth = "20px 3px 3px 3px";
+                indicator.style.borderWidth = "3px 3px 3px 3px";
                 break;
             case "in_section":
                 var buttons = aml.selectNodes("button");
@@ -181,15 +180,23 @@ function startDrag(dragged, original){
                     div.style.height = (buttons[0].$ext.offsetHeight - 4) + "px";
                     div.style.border = "2px solid blue";                    
                 }
+                else if (original.parentNode == aml.$dockfor)
+                    indicator.style.borderWidth = "1px 1px 1px 1px";
                 else
                     indicator.style.borderWidth = "9px 1px 3px 1px";
                 break;
-            case "after_section":
-                
-                break;
             case "before_section":
-            
-                break;
+                height = 0;
+            case "after_section":
+                indicator.style.left = pos[0] + "px";
+                indicator.style.top  = (pos[1] + height - 3) + "px";
+                indicator.style.height = "5px";
+                indicator.style.width = "100%";
+                indicator.style.borderWidth = "0 0 0 0";
+                indicator.innerHTML = "<div style='margin:2px 0 2px 0'></div>";
+                indicator.firstChild.style.backgroundColor = "blue";
+                indicator.style.backgroundColor = "rgba(0,0,255,0.5)";
+                return;
             case "in_column":
                 indicator.innerHTML = "<div style='position:absolute'></div>";
                 indicator.style.borderWidth = "0 0 0 0";
@@ -241,7 +248,7 @@ indicator.style.border = "3px solid blue";
 indicator.style.zIndex = 1000000;
 
 var diffPixel = 3;
-function calcAction(e){
+function calcAction(e, original){
     var position = "none";
     
     var el = document.elementFromPoint(e.clientX, e.clientY);
@@ -254,6 +261,12 @@ function calcAction(e){
             position = "in_tab";
             if (aml.localName == "page")
                 aml = aml.parentNode;
+            else if (aml.localName == "menu")
+                aml = aml.firstChild;
+            var pos = apf.getAbsolutePosition(aml.$ext);
+            var t = e.clientY - pos[1];
+            if (t > 23)
+                return {};
         }
         else {
             var bar = aml;
@@ -276,6 +289,16 @@ function calcAction(e){
             }
             else if (aml.localName == "button") {
                 position = "after_button";
+                var pos = apf.getAbsolutePosition(aml.$ext);
+                var t = e.clientY - pos[1];
+                if (t < aml.$ext.offsetHeight/2) {
+                    if (aml.previousSibling && aml.previousSibling.localName == "button")
+                        aml = aml.previousSibling
+                    else {
+                        position = "in_section"
+                        aml = aml.parentNode;
+                    }
+                }
             }
             else if (aml.localName == "bar") {
                 position = "in_column";
@@ -286,6 +309,24 @@ function calcAction(e){
                 position = "in_section";
                 if (aml.localName == "divider")
                     aml = aml.parentNode;
+                
+                var pos = apf.getAbsolutePosition(aml.$ext);
+                var t = e.clientY - pos[1];
+                var b = aml.$ext.offsetHeight - t;
+
+                if (t < diffPixel) {
+                    if (original.localName != "divider" 
+                      || original.parentNode != (aml.previousSibling 
+                      && aml.previousSibling.$dockfor)) {
+                        position = "before_section";
+                    }
+                }
+                else if (b < diffPixel && aml.nextSibling) {
+                    if (original.localName != "divider" 
+                      || original.parentNode != aml.$dockfor) {
+                        position = "after_section";
+                    }
+                }
             }
         }
     }    
@@ -307,9 +348,15 @@ function stopDrag(e){
 
     if (!aml) return;
     
+    var original = whiledrag.dragged;
+    
     switch(info.position) {
         case "in_section":
             aml = aml.selectNodes("button")[0];
+            if (!aml) {
+                
+                return;
+            }
         case "after_button":
             var submenu = self[aml.submenu];
             var dragAml = whiledrag.original;
@@ -480,12 +527,15 @@ function addSection(bar, before){
     }), before);
     
     var div = section.firstChild;
-    div.addEventListener("beforedragstart", function(e){ //change this to beforedrag and recompile apf
+    div.addEventListener("beforedrag", function(e){ //change this to beforedrag and recompile apf
         var section = this.parentNode;
+        
+        //this.hideMenu();
     
         var pNode = section.parentNode;
         var placeHolder = section.cloneNode(false);
         placeHolder.removeAttribute("id");
+        placeHolder.$dockfor = section;
     
         var diff = apf.getDiff(section.$ext);
         var height = section.$ext.offsetHeight;
@@ -508,7 +558,7 @@ function addSection(bar, before){
                 section.removeAttribute("left");
                 section.removeAttribute("top");
                 section.removeAttribute("width");
-                //section.$ext.style.position = "relative";
+                section.$ext.style.position = "relative";
             });
             
             stopDrag(e.htmlEvent);
@@ -516,10 +566,13 @@ function addSection(bar, before){
         });
     
         section.setAttribute("draggable", true);
+        
+        var clientX = e.htmlEvent.clientX;
+        var clientY = e.htmlEvent.clientY;
         setTimeout(function(){
             //@todo Collapse menu
             
-            section.$dragStart({});
+            section.$dragStart({clientX:clientX,clientY:clientY});
             section.$ext.style.zIndex = 1000000;
         });
         
@@ -539,9 +592,15 @@ function addButton(section, submenu, page){
         draggable : "true"
     }));
     
-    button.addEventListener("beforedragstart", function(e){ //change this to beforedrag and recompile apf
+    button.addEventListener("beforedrag", function(e){ //change this to beforedrag and recompile apf
         this.hideMenu();
-    
+        
+        //Upgrade to container if only 1 element
+        if (this.parentNode.selectNodes("button").length == 1) {
+            this.parentNode.firstChild.dispatchEvent("beforedrag", e);
+            return false;
+        }
+        
         var btn = this.cloneNode(true);
         btn.removeAttribute("id");
         apf.document.body.appendChild(btn);
