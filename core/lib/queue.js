@@ -23,12 +23,12 @@
 
 // Only add setZeroTimeout to the window object, and hide everything
 // else in a closure.
-apf.setZeroTimeout = (apf.isIE && apf.isIE < 9) || apf.isO3 || apf.isAIR
-  ? setTimeout
+apf.setZeroTimeout = !window.postMessage
+  ? function() { setTimeout.apply(null, arguments); }
   : (function() {
         var timeouts = [];
         var messageName = "zero-timeout-message";
-    
+
         // Like setTimeout, but only takes a function argument.  There's
         // no time argument (always zero) and no arguments (you have to
         // use a closure).
@@ -36,20 +36,18 @@ apf.setZeroTimeout = (apf.isIE && apf.isIE < 9) || apf.isO3 || apf.isAIR
             timeouts.push(fn);
             window.postMessage(messageName, "*");
         }
-    
+
         function handleMessage(e) {
             if (!e) e = event;
             if (e.source == window && e.data == messageName) {
                 apf.stopPropagation(e);
-                if (timeouts.length> 0) {
-                    var fn = timeouts.shift();
-                    fn();
-                }
+                if (timeouts.length > 0)
+                    timeouts.shift()();
             }
         }
-    
+
         apf.addListener(window, "message", handleMessage, true);
-    
+
         // Add the one thing we want added to the window object.
         return setZeroTimeout;
     })();
@@ -65,7 +63,7 @@ apf.setZeroTimeout = setTimeout;
 apf.queue = {
     //@todo apf3.0
     q : {},
-    
+
     timer : null,
     add : function(id, f){
         this.q[id] = f;
@@ -74,15 +72,15 @@ apf.queue = {
                 apf.queue.empty();
             });
     },
-    
+
     remove : function(id){
         delete this.q[id];
     },
-    
+
     empty : function(prop){
         clearTimeout(this.timer);
         this.timer = null;
-        
+
         //#ifdef __WITH_LAYOUT
         if (apf.layout && apf.layout.$hasQueue)
             apf.layout.processQueue();
@@ -91,7 +89,7 @@ apf.queue = {
         if (apf.xmldb && apf.xmldb.$hasQueue)
             apf.xmldb.notifyQueued();
         //#endif
-        
+
         var q  = this.q;
         this.q = {};
         for (var prop in q){
