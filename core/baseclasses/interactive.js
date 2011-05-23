@@ -299,7 +299,10 @@ apf.Interactive = function(){
                     ext.style.height = startGeo[5];
                     
                     if (_self.dispatchEvent)
-                        _self.dispatchEvent("dragcancel");
+                        _self.dispatchEvent("dragcancel", {
+                            htmlNode  : htmlNode,
+                            htmlEvent : e
+                        });
                 }
                 else
                 //#endif
@@ -328,7 +331,8 @@ apf.Interactive = function(){
 
             if (!cancel && _self.dispatchEvent && overThreshold)
                 _self.dispatchEvent("afterdrag", {
-                    htmlNode : htmlNode
+                    htmlNode  : htmlNode,
+                    htmlEvent : e
                 });
         };
         
@@ -364,7 +368,7 @@ apf.Interactive = function(){
               && oOutline.style.display != "block")
                 oOutline.style.display = "block";
 
-            if (_self.dispatchEvent && _self.dispatchEvent("beforedrag") === false) {
+            if (_self.dispatchEvent && _self.dispatchEvent("beforedrag", {htmlEvent: e}) === false) {
                 document.onmouseup();
                 return;
             }
