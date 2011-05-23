@@ -10,13 +10,15 @@
     - tweak tab animations
     - tweak design of hover states (esp tab)
     - add tab reordering
+    - state serialization / deserialization
+    - floating sections or menus
     
     INTEGRATION
     - closing a window should set the state in the windows menu
     - debugger plugin doesnt need to be visible at the start anymore
-    - add right click menu to buttons
-    - 
-
+    - add right click menu to buttons/sections
+    - maintain state of sections/buttons even when closed
+    - save serialized state in settings.xml
 */
 
 var menuCounter = 100;
@@ -242,7 +244,7 @@ var diffPixel = 3;
 function calcAction(e){
     var position = "none";
     
-    var el = document.elementFromPoint(e.x, e.y);
+    var el = document.elementFromPoint(e.clientX, e.clientY);
     if (el != document.body) {
         var aml = apf.findHost(el);
         if (!aml) return {};
@@ -260,7 +262,7 @@ function calcAction(e){
             
             if (bar) {
                 var pos = apf.getAbsolutePosition(e.target, bar.$ext);
-                var l = pos[0] + event.offsetX;
+                var l = pos[0] + e.offsetX;
                 var r = bar.$ext.offsetWidth - l;
             }
             
@@ -537,7 +539,7 @@ function addButton(section, submenu, page){
         draggable : "true"
     }));
     
-    button.addEventListener("beforedrag", function(e){ //change this to beforedrag and recompile apf
+    button.addEventListener("beforedragstart", function(e){ //change this to beforedrag and recompile apf
         this.hideMenu();
     
         var btn = this.cloneNode(true);
@@ -554,10 +556,12 @@ function addButton(section, submenu, page){
         });
         
         //document instead?
+        var clientX = e.htmlEvent.clientX;
+        var clientY = e.htmlEvent.clientY;
         btn.addEventListener("mouseover", function(e){
             //@todo Collapse menu
             
-            btn.$dragStart();
+            btn.$dragStart({clientX:clientX,clientY:clientY});
             btn.$ext.style.zIndex = 1000000;
             this.removeEventListener("mouseover", arguments.callee);
         });
