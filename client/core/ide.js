@@ -38,6 +38,7 @@ define(function(require, exports, module) {
             this.loggedIn = true;
 
             this.onLine = false;
+            this.hasFilesystemSupport = false;
 
             this.dispatchEvent("load");
 
