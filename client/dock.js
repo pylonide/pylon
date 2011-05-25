@@ -1,14 +1,14 @@
 /*
     TODO:
-    - larger context dragging
     - expanded state tab dragging
-    - mark items as dockable
-    - place menus to the left of the bar (instead of fixed dist from right)
-    - make sure menus are hidden on creation
-    - tweak tab animations
-    - tweak design of hover states (esp tab)
-    - add tab reordering
+    
+    - if dropped on self - don't perform an action, just cleanup
+    - animate add column / add section
     - state serialization / deserialization
+    
+    - tab page button while dragged isn't displayed correctly
+    - tweak tab animations
+    - menu should appear onmouseup not down
     - floating sections or menus
     
     INTEGRATION
@@ -38,6 +38,7 @@ addButton(section, menu, addPage(menu, "Test2", "test2"));
 function addPage(menu, caption, name){
     var page = menu.firstChild.add(caption, name);
     page.oDrag = page.$button;
+    page.dock  = 1;
     page.setAttribute("draggable", true);
     page.addEventListener("beforedrag", dragPage);
     page.addEventListener("afterclose", closePage);
@@ -67,14 +68,13 @@ function dragPage(e){ //change this to beforedrag and recompile apf
     
     var tab = this.parentNode.cloneNode(false);
     tab.removeAttribute("id");
+    tab.setAttribute("buttons", "close"); //@todo bug in scale that doesnt resize 
     menu.appendChild(tab);
     
     var page = this.cloneNode(true);
     page.removeAttribute("id");
     tab.appendChild(page);
     
-    apf.setOpacity(menu.$ext, 0.8);
-
     var pos = apf.getAbsolutePosition(this.parentNode.parentNode.$ext);
     menu.setLeft(pos[0]);
     menu.setTop(pos[1]);
@@ -103,7 +103,9 @@ function dragPage(e){ //change this to beforedrag and recompile apf
 
 var whiledrag, lastInfo;
 function startDrag(dragged, original){
-    var last;
+    var last, state = 0;
+    
+    apf.setOpacity(dragged.$ext, 0.3);
     
     apf.addListener(document, "mousemove", whiledrag = function(e){
         if (last) {
@@ -120,9 +122,22 @@ function startDrag(dragged, original){
         var info = lastInfo = calcAction(e, original);
         var aml  = last = info.aml;
 
-        if (!aml) return;
-        
-        //if (!aml.dock) return;
+        if (!aml || !aml.dock) {
+            //apf.setOpacity(dragged.$ext, 1);
+            if (!state) {
+                state = 1;
+                apf.tween.single(dragged.$ext, {
+                    type: "fade",
+                    from: 0.3,
+                    to  : 1,
+                    steps : 20,
+                    onfinish : function(){
+                        state = 1;
+                    }
+                });
+            }
+            return;
+        }
         
         var pos = apf.getAbsolutePosition(aml.$ext);
         indicator.style.left = pos[0] + "px";
@@ -130,11 +145,25 @@ function startDrag(dragged, original){
         indicator.style.display = "block";
         indicator.style.backgroundColor = "";
         indicator.innerHTML = "";
+        //apf.setOpacity(dragged.$ext, 0.3);
+        if (state) {
+            state = 0;
+            apf.tween.single(dragged.$ext, {
+                type: "fade",
+                from: 1,
+                to  : 0.3,
+                steps : 20,
+                onfinish : function(){
+                    state = 0;
+                }
+            });
+        }
         
         var width = aml.$ext.offsetWidth;
         var height = aml.$ext.offsetHeight;
         
         switch(info.position) {
+            case "before_button":
             case "after_button":
                 indicator.innerHTML = "<div style='position:absolute'></div>";
                 indicator.style.borderWidth = "6px 1px 3px 1px";
@@ -146,44 +175,84 @@ function startDrag(dragged, original){
                 height = aml.parentNode.$ext.offsetHeight;
                 
                 var div = indicator.firstChild;
-                if (aml == original) { //@todo Checks needs to include different representations
-                    div.style.top = (pos[1] - pos2[1] - 8) + "px";
+                if (aml == getOriginal("button", original)) { //@todo Checks needs to include different representations
+                    div.style.top = (pos[1] - pos2[1] - 2) + "px";
                     div.style.left = "2px";
-                    div.style.right = "2px";
-                    div.style.height = (aml.$ext.offsetHeight - 4) + "px";
-                    div.style.border = "2px solid blue";                    
+                    div.style.right = "3px";
+                    div.style.height = (aml.$ext.offsetHeight - 9) + "px";
+                    div.style.border = "2px solid #7ac7f4";
+                    div.style.webkitBorderRadius = "6px";
                 }
                 else {
-                    div.style.top = (pos[1] - pos2[1] + aml.$ext.offsetHeight - 8) + "px";
+                    div.style.top = (pos[1] - pos2[1]
+                        + (info.position == "before_button" ? 0 : aml.$ext.offsetHeight) 
+                        - 8) + "px";
                     div.style.width = "100%";
-                    div.style.borderBottom = "3px solid blue";
+                    div.style.borderBottom = "3px solid #7ac7f4";
                 }
                 
                 break;
-            case "before_tab":
-                break;
-            case "in_tab":
-                indicator.style.borderWidth = "3px 3px 3px 3px";
-                break;
             case "in_section":
-                var buttons = aml.selectNodes("button");
-                if (original == buttons[0]) {
-                    //same as after_button
-                    indicator.innerHTML = "<div style='position:absolute'></div>";
-                    indicator.style.borderWidth = "6px 1px 3px 1px";
-                    
-                    var pos2 = apf.getAbsolutePosition(buttons[0].$ext);
-                    var div = indicator.firstChild;
-                    div.style.top = (pos[1] - pos2[1] + 10) + "px";
-                    div.style.left = "2px";
-                    div.style.right = "2px";
-                    div.style.height = (buttons[0].$ext.offsetHeight - 4) + "px";
-                    div.style.border = "2px solid blue";                    
-                }
-                else if (original.parentNode == aml.$dockfor)
+                if (getOriginal("section", original) == aml.$dockfor) {//@todo move this
                     indicator.style.borderWidth = "1px 1px 1px 1px";
-                else
-                    indicator.style.borderWidth = "9px 1px 3px 1px";
+                    height--;
+                }
+                break;
+            case "after_tab":
+            case "before_tab":
+                var pNode = aml.parentNode;
+                var pos2 = apf.getAbsolutePosition(pNode.$ext);
+                indicator.style.left = pos2[0] + "px";
+                indicator.style.top  = pos2[1] + "px";
+                width = pNode.$ext.offsetWidth;
+                height = pNode.$ext.offsetWidth - 2;
+                
+                indicator.style.borderWidth = "3px 3px 3px 3px";
+                var diff = apf.getAbsolutePosition(aml.$button, pNode.$ext);
+                if (getOriginal("page", original) == aml) {
+                    indicator.innerHTML = "<div style='position:absolute;'></div><div style='position:absolute;'></div><div style='position:absolute;'></div>";
+                    var div1 = indicator.firstChild;
+                    var div2 = indicator.childNodes[1];
+                    var div3 = indicator.childNodes[2];
+                    div1.style.left = diff[0] + "px";
+                    div1.style.width = (aml.$button.offsetWidth - 5) + "px";
+                    div1.style.height = "18px";
+                    div1.style.margin = "-18px 0 0 -3px";
+                    div1.style.border = "3px solid #7ac7f4";
+                    div1.style.borderWidth = "3px 3px 0 3px";
+                    
+                    div2.style.left = (diff[0] + aml.$button.offsetWidth - 3) + "px";
+                    div2.style.right = "0px";
+                    div3.style.borderBottom =
+                    div2.style.borderBottom = "3px solid #7ac7f4";
+                    
+                    div3.style.left = "0px";
+                    div3.style.right = (width - diff[0] - 3) + "px";
+                    
+                    indicator.style.borderTop = "0px solid #7ac7f4";
+                    indicator.style.top = (pos2[1] + 18) + "px";
+                    height -= 18;
+                }
+                else {
+                    indicator.innerHTML = "<div style='position:absolute;'><div></div></div>";
+                    indicator.firstChild.style.height = "16px";
+                    indicator.firstChild.style.width = "5px";
+                    indicator.firstChild.style.background = "rgba(122,199,244,0.5)";
+                    indicator.firstChild.style.top = "0px";
+                    indicator.firstChild.firstChild.style.background = "#7ac7f4";
+                    indicator.firstChild.firstChild.style.height = "100%";
+                    indicator.firstChild.firstChild.style.margin="0 2px 0 2px";
+                    
+                    var left = (diff[0] + 
+                        (info.position == "before_tab" ? 0 : aml.$button.offsetWidth));
+                    if (left)
+                        left -= 5;
+                    else {
+                        indicator.firstChild.style.width = "2px";
+                        indicator.firstChild.firstChild.style.marginLeft = "0px";
+                    }
+                    indicator.firstChild.style.left = left + "px";
+                }
                 break;
             case "before_section":
                 height = 0;
@@ -194,8 +263,8 @@ function startDrag(dragged, original){
                 indicator.style.width = "100%";
                 indicator.style.borderWidth = "0 0 0 0";
                 indicator.innerHTML = "<div style='margin:2px 0 2px 0'></div>";
-                indicator.firstChild.style.backgroundColor = "blue";
-                indicator.style.backgroundColor = "rgba(0,0,255,0.5)";
+                indicator.firstChild.style.backgroundColor = "#7ac7f4";
+                indicator.style.backgroundColor = "rgba(122,199,244,0.5)";
                 return;
             case "in_column":
                 indicator.innerHTML = "<div style='position:absolute'></div>";
@@ -229,6 +298,7 @@ function startDrag(dragged, original){
                 break;
             default:
                 indicator.style.display = "none";
+                apf.setOpacity(dragged.$ext, 1);
                 break;
         }
         
@@ -241,31 +311,75 @@ function startDrag(dragged, original){
     whiledrag.original = original;
 }
 
+function getOriginal(type, aml) {
+    if (type == "button") {
+        if (aml.localName == "page")
+            return aml.$dockbutton;
+        if (aml.localName == "divider") {
+            var buttons = aml.parentNode.selectNodes("button");
+            if (buttons.length == 1)
+                return buttons[0];
+        }
+        return aml;
+    }
+    else if (type == "page") {
+        if (aml.localName == "button")
+            return aml.$dockpage;
+        if (aml.localName == "divider") {
+            var buttons = aml.parentNode.selectNodes("button");
+            if (buttons.length == 1)
+                return buttons[0].$dockpage;
+        }
+        return aml;
+    }
+    else if (type == "section") {
+        if (aml.localName == "page" && aml.parentNode.getPages().length == 1)
+            return aml.$dockbutton.parentNode;
+        if (aml.localName == "divider")
+            return aml.parentNode;
+        return aml;
+    }
+}
+
 var indicator = document.body.appendChild(document.createElement("div"));
 indicator.style.position = "absolute";
 indicator.style.display = "none";
-indicator.style.border = "3px solid blue";
+indicator.style.border = "3px solid #7ac7f4";
 indicator.style.zIndex = 1000000;
 
 var diffPixel = 3;
 function calcAction(e, original){
     var position = "none";
-    
+
     var el = document.elementFromPoint(e.clientX, e.clientY);
     if (el != document.body) {
         var aml = apf.findHost(el);
         if (!aml) return {};
-        //if (!aml.dock) return {};
+        if (!aml.dock) return {};
         
         if (aml.localName == "page" || aml.localName == "tab" || aml.localName == "menu") {
-            position = "in_tab";
-            if (aml.localName == "page")
-                aml = aml.parentNode;
-            else if (aml.localName == "menu")
-                aml = aml.firstChild;
-            var pos = apf.getAbsolutePosition(aml.$ext);
-            var t = e.clientY - pos[1];
-            if (t > 23)
+            position = "before_tab";
+            if (aml.localName == "page") {
+                var pos = apf.getAbsolutePosition(aml.$button);
+                var l = e.clientX - pos[0];
+    
+                if (l > aml.$button.offsetWidth/2)
+                    position = "after_tab";
+            }
+            else if (aml.localName == "menu") {
+                var pages = aml.firstChild.getPages();
+                aml = pages[pages.length - 1];
+                position = "after_tab";
+            }
+            else if (aml.localName == "tab") {
+                pages = aml.getPages();
+                aml = pages[pages.length - 1];
+                position = "after_tab";
+            }
+
+            var pos2 = apf.getAbsolutePosition(aml.parentNode.$ext);
+            var t = e.clientY - pos2[1];
+            if (t > 18)
                 return {};
         }
         else {
@@ -287,6 +401,17 @@ function calcAction(e, original){
                 position = "right_of_column";
                 aml = bar;
             }
+            else if (aml.localName == "bar" || aml.skin == "dockheader") {
+                if (aml.skin == "dockheader") {
+                    aml = aml.parentNode.selectNodes("vbox")[0];
+                    position = "before_section";
+                }
+                else {
+                    position = "in_column";
+                    var vboxs = aml.selectNodes("vbox");
+                    aml = vboxs[vboxs.length - 1];
+                }
+            }
             else if (aml.localName == "button") {
                 position = "after_button";
                 var pos = apf.getAbsolutePosition(aml.$ext);
@@ -295,20 +420,18 @@ function calcAction(e, original){
                     if (aml.previousSibling && aml.previousSibling.localName == "button")
                         aml = aml.previousSibling
                     else {
-                        position = "in_section"
-                        aml = aml.parentNode;
+                        position = "before_button";
+                        //aml = aml.parentNode;
                     }
                 }
             }
-            else if (aml.localName == "bar") {
-                position = "in_column";
-                var vboxs = aml.selectNodes("vbox");
-                aml = vboxs[vboxs.length - 1];
-            }
             else if (aml.localName == "divider" || aml.localName == "vbox") {
-                position = "in_section";
                 if (aml.localName == "divider")
                     aml = aml.parentNode;
+                
+                var buttons = aml.selectNodes("button");
+                if (!buttons.length)
+                    return {position: "in_section", aml: aml};
                 
                 var pos = apf.getAbsolutePosition(aml.$ext);
                 var t = e.clientY - pos[1];
@@ -324,13 +447,26 @@ function calcAction(e, original){
                 else if (b < diffPixel && aml.nextSibling) {
                     if (original.localName != "divider" 
                       || original.parentNode != aml.$dockfor) {
-                        position = "after_section";
+                        if (!aml.nextSibling
+                          || aml.nextSibling.$dockfor != getOriginal("section", original))
+                            position = "after_section";
+                    }
+                }
+                
+                if (position == "none") {
+                    if (t < aml.$ext.offsetHeight/2) {
+                        position = "before_button";
+                        aml = buttons[0];
+                    }
+                    else {
+                        position = "after_button";
+                        aml = buttons[buttons.length - 1];
                     }
                 }
             }
         }
     }    
-    
+
     return {
         position : position,
         aml      : aml
@@ -344,29 +480,25 @@ function stopDrag(e){
     indicator.style.display = "none";
     
     var info = lastInfo;//calcAction(e);
-    var aml  = info.aml;
+    var aml  = info && info.aml;
+    
+    var original = whiledrag.dragged;
+    apf.setOpacity(original.$ext, 1);
 
     if (!aml) return;
     
-    var original = whiledrag.dragged;
     
     switch(info.position) {
-        case "in_section":
-            aml = aml.selectNodes("button")[0];
-            if (!aml) {
-                
-                return;
-            }
+        case "before_button":
         case "after_button":
             var submenu = self[aml.submenu];
             var dragAml = whiledrag.original;
 
-            moveTo(submenu, dragAml, aml, info.position == "in_section" 
+            moveTo(submenu, dragAml, aml, info.position == "before_button" 
                 ? aml 
                 : aml.nextSibling, aml.parentNode, info.position);
             break;
         case "before_section":
-            aml = aml.selectNodes("button")[0];
         case "in_column":
         case "after_section":
             var section = addSection(aml.parentNode, info.position == "before_section"
@@ -380,14 +512,13 @@ function stopDrag(e){
             moveTo(submenu, dragAml, aml, null, section, info.position);
             break;
         case "before_tab":
-            break;
-        case "in_tab":
-            var submenu = aml.parentNode;
+        case "after_tab":
+            var submenu = aml.parentNode.parentNode;
             var dragAml = whiledrag.original;
             
-            moveTo(submenu, dragAml, aml, info.position == "in_tab" 
-                ? null
-                : aml.$dockbutton, submenu.ref, info.position);
+            moveTo(submenu, dragAml, aml.parentNode, info.position == "before_tab" 
+                ? aml.$dockbutton
+                : aml.nextSibling && aml.nextSibling.$dockbutton, submenu.ref, info.position);
             break;
         case "left_of_column":
             var bar = addBar(aml);
@@ -480,11 +611,19 @@ function createMenu(section){
         pinned     : "true",
         animate    : "false",
         skin       : "dockwindowbasic",
+        dock       : 1,
+        ondisplay  : function(){
+            var pos = apf.getAbsolutePosition(this.opener.$ext);
+            var width = apf.getWindowWidth();
+            this.$ext.style.marginLeft = 
+                (-1 * Math.ceil((width - pos[0])/42.5) * 42.5) + "px";
+        },
         childNodes : [
             new apf.tab({
                 anchors : "0 0 0 0", 
                 skin : "docktab",
                 buttons : "scale,close",
+                dock    : 1,
                 onclose : function(e){
                     var page = e.page;
                     page.lastParent = this;
@@ -495,6 +634,8 @@ function createMenu(section){
     });
     
     apf.document.body.appendChild(menu);
+    menu.show();
+    menu.hide();
     
     return menu;
 }
@@ -502,8 +643,10 @@ function createMenu(section){
 function addBar(before){
     var bar = hboxMain.insertBefore(new apf.bar({
         skin : "debug-panel",
+        dock : 1,
         childNodes : [
             new apf.button({
+                dock : 1,
                 skin : "dockheader"
             })
         ]
@@ -517,10 +660,12 @@ function addSection(bar, before){
         padding : 0,
         edge : "0 0 3 0",
         "class" : "docksection",
+        dock    : 1,
         childNodes : [
             new apf.divider({
                 skin : "divider-debugpanel",
                 margin : "3 5 2 5",
+                dock    : 1,
                 draggable : "true"
             })
         ]
@@ -542,7 +687,7 @@ function addSection(bar, before){
         var pos = apf.getAbsolutePosition(section.$ext);
         
         pNode.insertBefore(placeHolder, section);
-        placeHolder.$ext.style.background = "gray";
+        placeHolder.$ext.style.background = "#acacac";
         placeHolder.$ext.style.height = (height - diff[1]) + "px";
         
         section.setWidth(section.$ext.offsetWidth);
@@ -560,6 +705,8 @@ function addSection(bar, before){
                 section.removeAttribute("width");
                 section.$ext.style.position = "relative";
             });
+            
+            this.selectNodes("button")[0].setValue(false);
             
             stopDrag(e.htmlEvent);
             placeHolder.destroy(true, true);
@@ -589,11 +736,14 @@ function addButton(section, submenu, page){
         "class" : "dockButtonID",
         skin    : "dockButton",
         submenu : submenu.id,
+        dock    : 1,
         draggable : "true"
     }));
     
     button.addEventListener("beforedrag", function(e){ //change this to beforedrag and recompile apf
+        var _self = this;
         this.hideMenu();
+        this.setValue(true);
         
         //Upgrade to container if only 1 element
         if (this.parentNode.selectNodes("button").length == 1) {
@@ -611,15 +761,14 @@ function addButton(section, submenu, page){
         btn.setTop(pos[1]);
         btn.addEventListener("afterdrag", function(e){
             btn.destroy(true, true);
+            _self.setValue(false);
             stopDrag(e.htmlEvent);
         });
         
         //document instead?
         var clientX = e.htmlEvent.clientX;
         var clientY = e.htmlEvent.clientY;
-        btn.addEventListener("mouseover", function(e){
-            //@todo Collapse menu
-            
+        setTimeout(function(){
             btn.$dragStart({clientX:clientX,clientY:clientY});
             btn.$ext.style.zIndex = 1000000;
             this.removeEventListener("mouseover", arguments.callee);
