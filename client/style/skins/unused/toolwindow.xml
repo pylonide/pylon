@@ -752,7 +752,7 @@
             Tahoma=tahoma,arial,helvetica,sans-serif;
             Terminal=terminal,monaco;
             Times New Roman=times new roman,times;
-            Trebuchet MS=trebuchet ms,geneva;
+            Arial=Arial,geneva;
             Verdana=verdana,geneva;
             Webdings=webdings;
             Wingdings=wingdings,zapf dingbats

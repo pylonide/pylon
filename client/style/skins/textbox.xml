@@ -110,7 +110,7 @@
             height           : 17px;
             font-size        : 12px;
             color            : #333333;
-            font-family      : Trebuchet MS;
+            font-family      : Arial;
             outline          : none;
             background-color : transparent;
             width: 100%;
@@ -172,7 +172,7 @@
             height           : 17px;
             font-size        : 12px;
             color            : #333333;
-            font-family      : Trebuchet MS;
+            font-family      : Arial;
             outline          : none;
             background-color : transparent;
             width: 100%;

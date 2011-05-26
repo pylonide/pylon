@@ -12,7 +12,7 @@
         .toolbar .subbar {
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(222,224,227)),color-stop(1, rgb(239,241,244)));
             background: -moz-linear-gradient(center bottom,rgb(222,224,227) 0%,rgb(239,241,244) 100%);
-            font-family: Trebuchet MS;
+            font-family: Arial;
             font-size: 12px;
             border-bottom: 1px solid #b2b2b2;
             position: relative;

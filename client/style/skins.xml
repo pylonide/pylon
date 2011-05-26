@@ -278,7 +278,7 @@
             text-align          : center;
             color               : #474747;
             text-shadow         : rgba(255, 255, 255, .71) 0px 1px 0px;
-            font-family         : Trebuchet MS;
+            font-family         : Arial;
             font-size           : 14px;
             font-weight         : bold;
         }
@@ -4037,7 +4037,7 @@
 
     <a:style><![CDATA[
         .dockwin {
-            font-family : "Trebuchet MS";
+            font-family : "Arial";
             font-size   : 11px;
             padding     : 19px 0 1px 0;
             position    : relative;
@@ -4312,7 +4312,7 @@
             font-size   : 15px;
             color       : #747475;
             font-weight : bold;
-            font-family : Trebuchet MS;
+            font-family : Arial;
             text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
             height      : 28px;
             padding     : 14px 0 0 6px;
@@ -4366,13 +4366,13 @@
             background-color    : #eff1f4;
             color               : #222222;
             font-size           : 13px;
-            font-family         : Trebuchet MS;
+            font-family         : Arial;
         }
 
         .winadv .wn_cp_content > H3 {
             font-size   : 18px;
             color       : #333333;
-            font-family : Trebuchet MS;
+            font-family : Arial;
             font-weight : bold;
             margin      : 0;
             display:block;
@@ -4383,7 +4383,7 @@
         .winadv .wn_cp_content H3.wheader {
             font-size   : 18px;
             color       : #333333;
-            font-family : Trebuchet MS;
+            font-family : Arial;
             font-weight : bold;
             margin      : 0;
             display:block;
@@ -4394,7 +4394,7 @@
         .winadv .wn_cp_content > H4 {
             font-size   : 13px;
             color       : #222222;
-            font-family : Trebuchet MS;
+            font-family : Arial;
             font-weight : bold;
             margin      : 0;
         }
@@ -4544,7 +4544,7 @@
             border: 1px solid #8C8C8C;
             color: #f5f5f5;
             cursor: pointer;
-            font-family: "Trebuchet MS";
+            font-family: "Arial";
             font-size:11px;
             position:relative;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
@@ -5511,7 +5511,7 @@
         white-space: nowrap;
         color: #aaaaaa;
         text-shadow : rgba(0, 0, 0, 1) 0px 1px 0px;
-        font-family : Trebuchet MS;
+        font-family : Arial;
         font-size : 12px;
 
         border-top: 1px solid #404040;
@@ -5641,7 +5641,7 @@
 
         overflow: hidden;
         clear: both;
-        font-family : Trebuchet MS;
+        font-family : Arial;
         font-family: 12px;
         color: #eeeeee;
 
@@ -5705,7 +5705,7 @@
         overflow: visible;
         white-space: nowrap;
         color: #f5f5f5;
-        font-family : Trebuchet MS;
+        font-family : Arial;
         font-size : 12px;
         border-bottom : 1px solid white;
         background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #262829),color-stop(1, #2f3031));
@@ -6153,7 +6153,7 @@
             border-bottom: 1px solid #8c8c8c;*/
             overflow: hidden;
             clear: both;
-            font-family : Trebuchet MS;
+            font-family : Arial;
             font-family: 12px;
         }
 
@@ -6246,7 +6246,7 @@
             color    : #202020;
 
             text-shadow : rgba(255,255,255,0.7) 0px 1px 0px;
-            font-family : "Trebuchet MS", Tahoma;
+            font-family : "Arial", Tahoma;
             font-size : 11px;
         }
 
@@ -6292,7 +6292,7 @@
             height              : 14px;
             display             : block;
             position            : absolute;
-            right               : 0;
+            right               : 1px;
             top                 : 3px;
             /*cursor              : pointer;*/
             background-image    : url(images/close_tab_btn.png);
@@ -6598,7 +6598,7 @@
             height           : 17px;
             font-size        : 12px;
             color            : #333333;
-            font-family      : Trebuchet MS;
+            font-family      : Arial;
             outline          : none;
             background-color : transparent;
             width: 100%;
@@ -6660,7 +6660,7 @@
             height           : 17px;
             font-size        : 12px;
             color            : #333333;
-            font-family      : Trebuchet MS;
+            font-family      : Arial;
             outline          : none;
             background-color : transparent;
             width: 100%;
@@ -6777,7 +6777,7 @@
         .toolbar .subbar {
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(222,224,227)),color-stop(1, rgb(239,241,244)));
             background: -moz-linear-gradient(center bottom,rgb(222,224,227) 0%,rgb(239,241,244) 100%);
-            font-family: Trebuchet MS;
+            font-family: Arial;
             font-size: 12px;
             border-bottom: 1px solid #b2b2b2;
             position: relative;

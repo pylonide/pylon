@@ -8,7 +8,7 @@
           cursor : default;
           position : relative;
           color: #EEE;
-          font-family : Trebuchet MS;
+          font-family : Arial;
           font-size : 12px;
       }
   
