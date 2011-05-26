@@ -22,7 +22,7 @@
             overflow      : hidden;
             height        : 24px;
             padding       : 6px 0 0 6px;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 12px;
             line-height:16px;
             font-weight : bold;

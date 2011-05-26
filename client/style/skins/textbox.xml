@@ -93,7 +93,7 @@
             color: #333333;
             margin: 0;
             outline: none;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 12px;
             text-overflow: ellipsis;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
@@ -159,7 +159,7 @@
             border: 1px solid #afafaf;
             margin: 0;
             outline: none;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 12px;
             text-overflow: ellipsis;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
@@ -238,7 +238,7 @@
             /*background-attachment: fixed !important; background-attachment: scroll; */
             color: #333;
             padding: 6px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             overflow: auto;
             outline: none;

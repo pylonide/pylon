@@ -4,7 +4,7 @@
             background: url(images/menubar_row.png) repeat-x top left;
             height: 22px;
             z-index: 1;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 12px;
             position: relative;
         }

@@ -2,7 +2,7 @@
     <a:style><![CDATA[
         .label{
             font-size: 8pt;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             overflow: hidden;
             cursor: default;
             color : #333;

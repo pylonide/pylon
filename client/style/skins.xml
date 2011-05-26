@@ -153,7 +153,7 @@
         
         .black-menu-bar .c9version {
             color       : #696969;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 10px;
             text-align  : center;
             padding     : 0 0 3px 0;
@@ -1262,7 +1262,7 @@
         }
         
         .c9-menu-btn .c9-label {
-            font-family   : Tahoma;
+            font-family   : Tahoma, Arial;
             font-size     : 12px;
             line-height   : 14px;
             color         : #e8e8e8;
@@ -1572,7 +1572,7 @@
         }
         
         .mnubtn SPAN {
-            font-family         : Tahoma;
+            font-family         : Tahoma, Arial;
             font-size           : 10px;
             color               : #aaaaaa;
             text-align          : center;
@@ -1686,7 +1686,7 @@
         }
 
         .cbcontainer span {
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 11px;
             cursor      : default;
             padding     : 1px 3px 2px 3px;
@@ -1977,7 +1977,7 @@
             cursor: default;
             overflow : hidden;
 
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
 
             padding: 19px 0 0 0;
@@ -2389,7 +2389,7 @@
             background-color: white;
             cursor: default;
             overflow : hidden;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             padding: 0;
             color : #333;
@@ -2485,7 +2485,7 @@
             position         : relative;
             background-color : white;
             cursor           : default;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             font-size        : 12px;
             padding          : 16px 0 0 0;
             color            : #333;
@@ -3182,7 +3182,7 @@
             padding:3px 6px 0 6px;
             position:relative;
             overflow:hidden;
-            font-family   : Tahoma;
+            font-family   : Tahoma, Arial;
             font-size     : 11px;
             line-height   : 14px;
             color         : white;
@@ -3240,7 +3240,7 @@
             padding : 2px 21px 2px 0;
 
             color: #333;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 11px;
         }
 
@@ -3345,7 +3345,7 @@
             background: #ffffff;
             z-index: 1000;
             color: #333333;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 11px;
             display : none;
             overflow : auto;
@@ -3434,7 +3434,7 @@
             padding: 0 7px 7px 7px;
             border: 1px solid #dcd8d8;
             color: #333;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             position: relative;
             cursor : default;
@@ -3495,7 +3495,7 @@
     <a:style><![CDATA[
         .label{
             font-size: 8pt;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             overflow: hidden;
             cursor: default;
             color : #333;
@@ -3536,7 +3536,7 @@
             border: 1px solid #afafaf;
             margin: 0;
             outline: none;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 12px;
             text-overflow: ellipsis;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
@@ -3599,7 +3599,7 @@
         }
 
         .list, .draglist{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
         }
 
@@ -3644,7 +3644,7 @@
         .list #txt_rename{
             border: 1px solid #bbb;
             padding: 1px 15px 1px 1px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             color: black;
             word-break: keep-all;
@@ -3701,7 +3701,7 @@
             position: absolute;
             overflow:visible;
             
-            font-family   : Tahoma;
+            font-family   : Tahoma, Arial;
             font-size     : 11px;
             line-height   : 14px;
             color         : #f1f1f1;
@@ -4490,7 +4490,7 @@
         }
 
         .rbclassic span {
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 11px;
             padding     : 0 2px 0px 2px;
             height      : 15px;
@@ -4870,7 +4870,7 @@
             height: 8px;
             position: relative;
 
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 9px;
             text-align : center;
         }
@@ -4992,7 +4992,7 @@
             background-position : 0 0;
             background-image    : url(images/spinner_body2.png);
             color               : black;
-            font-family         : Tahoma;
+            font-family         : Tahoma, Arial;
             font-size           : 11px;
             width               : 100%;
             margin              : 0;
@@ -5390,7 +5390,7 @@
             padding: 1px 5px 0 5px;
 
             font-size: 11px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             background: no-repeat 3px 1px;
             height: 15px;
             float: left;
@@ -6011,7 +6011,7 @@
             white-space: nowrap;
             color: #404040;
             text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 11px;
             border-bottom : 1px solid #8c8c8c;
             
@@ -6581,7 +6581,7 @@
             color: #333333;
             margin: 0;
             outline: none;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 12px;
             text-overflow: ellipsis;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
@@ -6647,7 +6647,7 @@
             border: 1px solid #afafaf;
             margin: 0;
             outline: none;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 12px;
             text-overflow: ellipsis;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
@@ -6731,7 +6731,7 @@
             /*background-attachment: fixed !important; background-attachment: scroll; */
             color: #333;
             padding: 6px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             overflow: auto;
             outline: none;
@@ -6769,7 +6769,7 @@
             background: url(images/menubar_row.png) repeat-x top left;
             height: 22px;
             z-index: 1;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 12px;
             position: relative;
         }
@@ -7009,7 +7009,7 @@
         }
         
         .filemgr-tree .item LABEL .caption {
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 11px;
             color       : #101010;
             display:block;
@@ -7033,7 +7033,7 @@
             padding-left:4px;
             margin-top:1px;
             
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 11px;
             color       : #101010;
             position:relative;
@@ -7072,7 +7072,7 @@
         }
         
         .filemgr-dragtree .item LABEL .caption {
-            font-family     : Tahoma;
+            font-family     : Tahoma, Arial;
             font-size       : 11px;
             color           : white;
             display         : block;
@@ -7275,7 +7275,7 @@
                 padding         : 6px 8px 6px 2px;
                 display         : block;
                 background-color: #bf0202;
-                font-family     : Tahoma;
+                font-family     : Tahoma, Arial;
                 font-size       : 8pt;
                 color           : #ffffff;
             }

@@ -1,7 +1,7 @@
 <a:skin xmlns:a="http://ajax.org/2005/aml"><a:toolwindow name="toolwindow">
     <a:style><![CDATA[
         .toolwindow {
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
             padding : 0;
             background : #dbd8d1;
@@ -290,7 +290,7 @@
             background: #ffffff repeat-y top left;
             z-index: 1000;
             color: #0d5381;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 11px;
             text-align: left;
             cursor: default;

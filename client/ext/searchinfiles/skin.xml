@@ -46,7 +46,7 @@
           padding-left: 15px;
           overflow : hidden;
   
-          font-family: Tahoma, Arial;
+          font-family: Tahoma, Arial, Arial;
           font-size: 11px;
       }
   

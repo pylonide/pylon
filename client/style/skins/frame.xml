@@ -5,7 +5,7 @@
             padding: 0 7px 7px 7px;
             border: 1px solid #dcd8d8;
             color: #333;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             position: relative;
             cursor : default;
