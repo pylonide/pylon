@@ -168,6 +168,8 @@ apf.codeeditor = function(struct, tagName) {
             });
             doc.setTabSize(parseInt(_self.tabsize));
             doc.setUseSoftTabs(_self.softtabs);
+            doc.setUseWrapMode(_self.wrapmode);
+            doc.setWrapLimitRange(_self.wraplimitmin, _self.wraplimitmax);
             
             _self.$removeDocListeners && _self.$removeDocListeners();
             _self.$removeDocListeners = _self.$addDocListeners(doc);
