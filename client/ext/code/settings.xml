@@ -27,7 +27,7 @@
         <a:checkbox label="Soft tabs" value="[editors/code/@softtabs]"  flex="1" />
         <a:spinner value="[editors/code/@tabsize]" realtime="true" min="1" max="64" width="50" />
     </a:hbox>
-    <a:hbox edge="0 5 2 0" align="center" class="underlined">
+    <a:hbox edge="5 5 2 5" align="center">
         <a:label flex="1">Mouse Scroll speed</a:label>
         <a:spinner value="[editors/code/@scrollspeed]" realtime="true" min="1" max="8" width="50" />
     </a:hbox>

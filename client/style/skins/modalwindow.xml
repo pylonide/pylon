@@ -22,7 +22,7 @@
             overflow      : hidden;
             height        : 24px;
             padding       : 6px 0 0 6px;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 12px;
             line-height:16px;
             font-weight : bold;
@@ -78,7 +78,7 @@
 
     <a:style><![CDATA[
         .dockwin {
-            font-family : "Trebuchet MS";
+            font-family : "Arial";
             font-size   : 11px;
             padding     : 19px 0 1px 0;
             position    : relative;
@@ -353,7 +353,7 @@
             font-size   : 15px;
             color       : #747475;
             font-weight : bold;
-            font-family : Trebuchet MS;
+            font-family : Arial;
             text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
             height      : 28px;
             padding     : 14px 0 0 6px;
@@ -407,13 +407,13 @@
             background-color    : #eff1f4;
             color               : #222222;
             font-size           : 13px;
-            font-family         : Trebuchet MS;
+            font-family         : Arial;
         }
 
         .winadv .wn_cp_content > H3 {
             font-size   : 18px;
             color       : #333333;
-            font-family : Trebuchet MS;
+            font-family : Arial;
             font-weight : bold;
             margin      : 0;
             display:block;
@@ -424,7 +424,7 @@
         .winadv .wn_cp_content H3.wheader {
             font-size   : 18px;
             color       : #333333;
-            font-family : Trebuchet MS;
+            font-family : Arial;
             font-weight : bold;
             margin      : 0;
             display:block;
@@ -435,7 +435,7 @@
         .winadv .wn_cp_content > H4 {
             font-size   : 13px;
             color       : #222222;
-            font-family : Trebuchet MS;
+            font-family : Arial;
             font-weight : bold;
             margin      : 0;
         }

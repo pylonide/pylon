@@ -18,7 +18,7 @@ define(function(require, exports, module) {
 var ext = require("core/ext");
 var ide = require("core/ide");
 var markup = require("text!ext/extension_template/extension_template.xml");
-        
+
 return ext.register("ext/extension_template/extension_template", {
     name     : "Extension Template",
     dev      : "Ajax.org",

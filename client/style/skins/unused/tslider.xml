@@ -57,7 +57,7 @@
             margin        : 0 0 0 -1px;
             padding       : 2px 0 0 0;
             outline       : none;
-            font-family   : Tahoma;
+            font-family   : Tahoma, Arial;
             font-size     : 11px;
             text-overflow : ellipsis;
             text-align    : right;
@@ -110,7 +110,7 @@
             width       : 150px;
             height      : 8px;
             position    : absolute;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 9px;
             text-align  : center;
             overflow    : visible;

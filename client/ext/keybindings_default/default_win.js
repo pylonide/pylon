@@ -34,6 +34,9 @@ return keys.onLoad({
         "gotoline": {
             "gotoline": "Ctrl-G"
         },
+        "beautify": {
+            "beautify": "Ctrl-Shift-B"
+        },
         "gotofile": {
             "gotofile": "Alt-Shift-R|Ctrl-T"
         },

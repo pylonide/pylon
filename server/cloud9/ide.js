@@ -47,7 +47,8 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
         requirejsConfig: requirejsConfig,
         offlineManifest: options.offlineManifest || "",
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
-        version: options.version
+        version: options.version,
+        extra: options.extra
     };
 
     this.$users = {};
@@ -95,7 +96,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/tabbehaviors/tabbehaviors",
     "ext/keybindings/keybindings",
     "ext/watcher/watcher",
-    "ext/dragdrop/dragdrop"
+    "ext/dragdrop/dragdrop",
+    "ext/beautify/beautify"
 ];
 
 (function () {

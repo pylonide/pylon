@@ -75,7 +75,7 @@
             border: 1px solid #8C8C8C;
             color: #f5f5f5;
             cursor: pointer;
-            font-family: "Trebuchet MS";
+            font-family: "Arial";
             font-size:11px;
             position:relative;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
