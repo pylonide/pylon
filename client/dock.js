@@ -1,8 +1,13 @@
 /*
     TODO:
     - expanded state tab dragging
+        - insertbefore tab reorder doesnt create a new splitter bar
+        - multiple columns: splitter bars don't function as expected: should be non-symmetrical
     
+    - single page should drag whole tab like button to section does
     - state serialization / deserialization
+    - anim should wait x00ms before playing
+    - in tab dropping
     
     - fix same column detection
     - tab page button while dragged isn't displayed correctly
@@ -55,49 +60,70 @@ function closePage(e){
     
     if (!pNode.getPages().length) {
         var barParent = btnPNode.parentNode;
-        pNode.parentNode.destroy(true, true);
+        if (pNode.parentNode.localName == "menu")
+            pNode.parentNode.destroy(true, true);
+        else {
+            var menu = self[button.submenu];
+            menu.destroy(true, true);
+            pNode.destroy(true, true);
+        }
         btnPNode.destroy(true, true);
-        if (!barParent.selectNodes("vbox").length)
+        if (!barParent.selectNodes("vbox").length) {
             barParent.destroy(true, true);
+            barParent.vbox.destroy(true, true);
+            barParent.splitter.destroy(true, true);
+        }
     }
 }
 
 function dragPage(e){ //change this to beforedrag and recompile apf
-    var menu = this.parentNode.parentNode.cloneNode(false);
+    var origMenu = self[this.$dockbutton.submenu];
+    /*var menu = origMenu.cloneNode(false);
     menu.removeAttribute("id");
-    apf.document.body.appendChild(menu);
+    apf.document.body.appendChild(menu);*/
     
     var tab = this.parentNode.cloneNode(false);
     tab.removeAttribute("id");
     tab.setAttribute("buttons", "close"); //@todo bug in scale that doesnt resize 
-    menu.appendChild(tab);
+    tab.removeAttribute("anchors");
+    apf.document.body.appendChild(tab);
+    tab.setWidth(this.parentNode.$ext.offsetWidth);
+    tab.setHeight(this.parentNode.$ext.offsetHeight);
     
     var page = this.cloneNode(true);
     page.removeAttribute("id");
     tab.appendChild(page);
     
-    var pos = apf.getAbsolutePosition(this.parentNode.parentNode.$ext);
-    menu.setLeft(pos[0]);
-    menu.setTop(pos[1]);
-    menu.$ext.style.margin = "0 0 0 0"
-    menu.addEventListener("afterdrag", function(e){
-        menu.id = menu.name = ""; //@todo fix this bug in apf
-        menu.destroy(true, true);
+    if (origMenu.$ext.offsetHeight) {
+        var pos = apf.getAbsolutePosition(origMenu.$ext);
+        tab.setLeft(pos[0]);
+        tab.setTop(pos[1]);
+    }
+    else {
+        var pos = apf.getAbsolutePosition(this.parentNode.$ext);
+        tab.setLeft(pos[0] - 1);
+        tab.setTop(pos[1] - 2);
+    }
+    tab.$ext.style.border = "1px solid #333";
+    //menu.$ext.style.margin = "0 0 0 0"
+    tab.addEventListener("afterdrag", function(e){
+        tab.id = tab.name = ""; //@todo fix this bug in apf
+        tab.destroy(true, true);
         stopDrag(e.htmlEvent);
     });
     
     //document instead?
     var clientX = e.htmlEvent.clientX;
     var clientY = e.htmlEvent.clientY;
-    menu.setAttribute("draggable", true);
+    tab.setAttribute("draggable", true);
     setTimeout(function(){
         //@todo Collapse menu
         
-        menu.$dragStart({clientX:clientX,clientY:clientY});
-        menu.$ext.style.zIndex = 1000000;
+        tab.$dragStart({clientX:clientX,clientY:clientY});
+        tab.$ext.style.zIndex = 1000000;
     });
 
-    startDrag(menu, this);
+    startDrag(tab, this);
 
     return false;
 };
@@ -107,6 +133,18 @@ function startDrag(dragged, original){
     var last, state = 0;
     
     apf.setOpacity(dragged.$ext, 0.3);
+    
+    function getLastBar(){
+        var lastBar = hboxMain.lastChild;
+        while (lastBar && lastBar.previousSibling 
+          && (lastBar.previousSibling.localName == "bar"
+          || lastBar.previousSibling.bar))
+            lastBar = lastBar.previousSibling;
+        if (lastBar.localName != "bar")
+            lastBar = lastBar.bar;
+            
+        return lastBar;
+    }
     
     apf.addListener(document, "mousemove", whiledrag = function(e){
         if (last) {
@@ -124,21 +162,15 @@ function startDrag(dragged, original){
         //Adding a column
         if (e.clientX > apf.getWindowWidth() - ((columnCounter+1) * 40)
           && e.clientX < apf.getWindowWidth() - ((columnCounter) * 40)) {
-            var lastBar = hboxMain.lastChild;
-            while (lastBar && lastBar.previousSibling && lastBar.previousSibling.localName == "bar")
-                lastBar = lastBar.previousSibling;
-
             info = {
                 position : "left_of_column",
-                aml : aml = last = lastBar
+                aml : aml = last = getLastBar()
             }
         }
         //Rest
         else {
             var info = calcAction(e, original);
             var aml  = last = info.aml;
-            
-            
         }
         
         if (lastInfo && lastInfo.position == info.position && lastInfo.aml == aml) {
@@ -224,18 +256,18 @@ function startDrag(dragged, original){
                     height--;
                 }
                 break;
-            case "after_tab":
-            case "before_tab":
+            case "after_page":
+            case "before_page":
                 var pNode = aml.parentNode;
                 var pos2 = apf.getAbsolutePosition(pNode.$ext);
                 indicator.style.left = pos2[0] + "px";
                 indicator.style.top  = pos2[1] + "px";
                 width = pNode.$ext.offsetWidth;
-                height = pNode.$ext.offsetWidth - 2;
+                height = pNode.$ext.offsetHeight;
                 
                 indicator.style.borderWidth = "3px 3px 3px 3px";
                 
-                var compareAml = info.position == "before_tab" 
+                var compareAml = info.position == "before_page" 
                     ? aml.previousSibling 
                     : aml.nextSibling;
                 var originalAml = getOriginal("page", original);
@@ -278,7 +310,7 @@ function startDrag(dragged, original){
                     indicator.firstChild.firstChild.style.margin="0 2px 0 2px";
                     
                     var left = (diff[0] + 
-                        (info.position == "before_tab" ? 0 : aml.$button.offsetWidth));
+                        (info.position == "before_page" ? 0 : aml.$button.offsetWidth));
                     if (left)
                         left -= 5;
                     else {
@@ -288,6 +320,16 @@ function startDrag(dragged, original){
                     indicator.firstChild.style.left = left + "px";
                 }
                 break;
+            case "before_tab":
+                height = 0;
+            case "after_tab":
+                indicator.style.left = pos[0] + "px";
+                indicator.style.top  = (pos[1] + height) + "px";
+                indicator.style.height = "3px";
+                indicator.style.width = "100%";
+                indicator.style.borderWidth = "0 0 0 0";
+                indicator.style.backgroundColor = "rgba(122,199,244,0.8)";
+                return;
             case "before_section":
                 height = 0;
             case "after_section":
@@ -298,6 +340,7 @@ function startDrag(dragged, original){
                 indicator.style.borderWidth = "0 0 0 0";
                 indicator.innerHTML = "<div style='margin:2px 0 2px 0'></div>";
                 indicator.firstChild.style.backgroundColor = "#7ac7f4";
+                indicator.firstChild.style.height = "1px";
                 indicator.style.backgroundColor = "rgba(122,199,244,0.5)";
                 return;
             case "in_column":
@@ -322,7 +365,7 @@ function startDrag(dragged, original){
                 
                 break;
             case "left_of_column":
-                if (aml.previousSibling && aml.previousSibling.localName == "bar") {
+                if (aml != getLastBar()) {
                     indicator.style.borderWidth = "0 0 0 3px";
                     indicator.style.marginLeft = "-1px";
                 }
@@ -403,6 +446,11 @@ indicator.style.border = "3px solid #7ac7f4";
 indicator.style.zIndex = 1000000;
 
 var diffPixel = 3;
+
+function matchTab(pos, y) {
+    return y > pos - diffPixel && y < pos + diffPixel;
+}
+
 function calcAction(e, original){
     var position = "none";
 
@@ -410,26 +458,48 @@ function calcAction(e, original){
     if (el != document.body) {
         var aml = apf.findHost(el);
         if (!aml) return {};
-        if (!aml.dock) return {};
+        
+        if (!aml.dock || aml.localName == "page" || aml.localName == "tab") {
+            var node = aml;
+            while (node && !node.vdock)
+                node = node.parentNode;
+            if (node && node.localName == "vbox") {
+                var tabs = node.selectNodes("tab");
+                var pos = apf.getAbsolutePosition(node.$ext)[1];
+                var doTest = original.parentNode.getPages().length == 1;
+                if (matchTab(tabs[0].$ext.offsetTop + pos, e.clientY))
+                    return doTest && original.parentNode == tabs[0] 
+                        ? {} : {position: "before_tab", aml: tabs[0]};
+                for (var i = 0; i < tabs.length; i++) {
+                    if (matchTab(tabs[i].$ext.offsetHeight + 1 
+                      + tabs[i].$ext.offsetTop + pos, e.clientY))
+                        return doTest && (original.parentNode == tabs[i] || original.parentNode == tabs[i+1])
+                            ? {} : {position: "after_tab", aml: tabs[i]};
+                }
+            }
+        }
+        
+        if (!aml.dock)
+            return {};
         
         if (aml.localName == "page" || aml.localName == "tab" || aml.localName == "menu") {
-            position = "before_tab";
+            position = "before_page";
             if (aml.localName == "page") {
                 var pos = apf.getAbsolutePosition(aml.$button);
                 var l = e.clientX - pos[0];
     
                 if (l > aml.$button.offsetWidth/2)
-                    position = "after_tab";
+                    position = "after_page";
             }
             else if (aml.localName == "menu") {
                 var pages = aml.firstChild.getPages();
                 aml = pages[pages.length - 1];
-                position = "after_tab";
+                position = "after_page";
             }
             else if (aml.localName == "tab") {
                 pages = aml.getPages();
                 aml = pages[pages.length - 1];
-                position = "after_tab";
+                position = "after_page";
             }
 
             var pos2 = apf.getAbsolutePosition(aml.parentNode.$ext);
@@ -552,6 +622,27 @@ function stopDrag(e){
                 ? aml 
                 : aml.nextSibling, aml.parentNode, info.position);
             break;
+        case "before_tab":
+        case "after_tab":
+            var bar      = aml.parentNode.bar;
+            var childNr  = apf.getChildNumber(aml);
+            var sections = bar.selectNodes("vbox");
+            var section = addSection(bar, info.position == "before_tab"
+                ? sections[0]
+                : sections[childNr + 1]);
+            
+            //reconstruct menu
+            var submenu = createMenu(section);
+            var dragAml = whiledrag.original;
+            var pNode = dragAml.parentNode;
+            submenu.firstChild.appendChild(dragAml);
+            submenu.firstChild.setAttribute("flex", 1);
+            aml.parentNode.insertBefore(submenu.firstChild, info.position == "before_tab"
+                ? aml
+                : aml.nextSibling);
+
+            moveTo(submenu, dragAml, aml, null, section, info.position, null, pNode);
+            break;
         case "before_section":
         case "in_column":
         case "after_section":
@@ -567,14 +658,15 @@ function stopDrag(e){
 
             moveTo(submenu, dragAml, aml, null, section, info.position);
             break;
-        case "before_tab":
-        case "after_tab":
-            var submenu = aml.parentNode.parentNode;
+        case "before_page":
+        case "after_page":
+            var submenu = self[aml.$dockbutton.submenu];//aml.parentNode.parentNode;
             var dragAml = whiledrag.original;
             
-            moveTo(submenu, dragAml, aml.parentNode, info.position == "before_tab" 
+            moveTo(submenu, dragAml, aml.parentNode, info.position == "before_page" 
                 ? aml.$dockbutton
-                : aml.nextSibling && aml.nextSibling.$dockbutton, submenu.ref, info.position);
+                : aml.nextSibling && aml.nextSibling.$dockbutton, submenu.ref, 
+                    info.position, aml.parentNode);
             break;
         case "left_of_column":
             var bar = addBar(aml);
@@ -603,7 +695,7 @@ function stopDrag(e){
     }
 }
 
-function moveTo(submenu, dragAml, aml, beforeButton, parentNode, position){
+function moveTo(submenu, dragAml, aml, beforeButton, parentNode, position, tab, pNode){
     var beforePage = beforeButton && beforeButton.$dockpage;
     
     if (dragAml.localName == "page" || dragAml.localName == "button") {
@@ -615,25 +707,34 @@ function moveTo(submenu, dragAml, aml, beforeButton, parentNode, position){
             var page = dragAml.$dockpage;
             var button = dragAml;
         }
-        var pNode = page.parentNode;
+        if (!pNode)
+            pNode = page.parentNode;
         var btnPNode = button.parentNode;
+        
+        var oldMenu = self[page.$dockbutton.submenu];
         
         if (beforeButton && beforeButton.previousSibling == button || beforeButton == button
           || !beforeButton && !button.nextSibling && button.parentNode == parentNode)
             return;
-            
-        submenu.firstChild.insertBefore(page, beforePage);
+
+        if (tab || submenu.firstChild)
+            (tab || submenu.firstChild).insertBefore(page, beforePage);
         button.setAttribute("submenu", submenu.id);
-        
+
         //add button to section
         parentNode.insertBefore(button, beforeButton);
-        
+
         if (!pNode.getPages().length) {
             var barParent = btnPNode.parentNode;
-            pNode.parentNode.destroy(true, true);
+            oldMenu.destroy(true, true);
+            if (pNode.parentNode)
+                pNode.destroy(true, true);
             btnPNode.destroy(true, true);
-            if (!barParent.selectNodes("vbox").length)
+            if (!barParent.selectNodes("vbox").length) {
                 barParent.destroy(true, true);
+                barParent.vbox.destroy(true, true);
+                barParent.splitter.destroy(true, true);
+            }
         }
     }
     else if (dragAml.localName == "divider") {
@@ -656,8 +757,11 @@ function moveTo(submenu, dragAml, aml, beforeButton, parentNode, position){
             var barParent = btnPNode.parentNode;
             pNode.parentNode.destroy(true, true);
             btnPNode.destroy(true, true);
-            if (!barParent.selectNodes("vbox").length)
+            if (!barParent.selectNodes("vbox").length) {
                 barParent.destroy(true, true);
+                barParent.vbox.destroy(true, true);
+                barParent.splitter.destroy(true, true);
+            }
         }
     }
 }
@@ -675,8 +779,7 @@ function createMenu(section){
         ondisplay  : function(){
             var pos = apf.getAbsolutePosition(this.opener.$ext);
             var width = apf.getWindowWidth();
-            this.$ext.style.marginLeft = 
-                ((-1 * Math.round((width - pos[0])/43) * 43) + 1) + "px";
+            this.$ext.style.marginLeft = (-1 * Math.min((width - pos[0]), this.$ext.offsetWidth)) + "px";
         },
         childNodes : [
             new apf.tab({
@@ -725,25 +828,26 @@ function addBar(before){
 
 function expandBar(bar){
     if (!bar.vbox) {
-        bar.vbox = bar.parentNode.appendChild(new apf.vbox({
-            padding : 3,
-            width : 260,
+        bar.vbox = bar.parentNode.insertBefore(new apf.vbox({
+            padding   : 3,
+            width     : 260,
             splitters : true,
-            "class" : "dockcol unselectable",
+            vdock     : 1,
+            "class"   : "dockcol unselectable",
             childNodes : [
                 new apf.button({
-                    dock : 1,
-                    skin : "dockheader",
-                    "class" : "expanded",
+                    dock       : 1,
+                    skin       : "dockheader",
+                    "class"    : "expanded",
                     nosplitter : true,
-                    height : 11,
-                    margin : "0 0 -3 0",
-                    onclick : function(){
+                    height     : 11,
+                    margin     : "0 0 -3 0",
+                    onclick    : function(){
                         collapseBar(bar);
                     }
                 })
             ]
-        }));
+        }), bar);
         
         //style hack
         bar.vbox.$ext.style.borderLeft = "1px solid #333";
@@ -751,11 +855,20 @@ function expandBar(bar){
         bar.splitter = bar.parentNode.insertBefore(new apf.splitter({
             width : "0"
         }), bar.vbox);
+        
+        bar.splitter.bar = 
+        bar.vbox.bar     = bar;
+    }
+    else {
+        bar.parentNode.insertBefore(bar.vbox, bar);
+        bar.parentNode.insertBefore(bar.splitter, bar.vbox);
     }
     
     var vbox = bar.selectNodes("vbox");
     for (var i = 0; i < vbox.length; i++) {
-        var tab = self[vbox[i].selectSingleNode("button").submenu].firstChild;
+        var menu = self[vbox[i].selectSingleNode("button").submenu]
+        menu.hide();
+        var tab = menu.firstChild;
         bar.vbox.appendChild(tab);
         if (!tab.flex)
             tab.setAttribute("flex", 1);
