@@ -51,7 +51,7 @@
             left : 10px;
             top : 10px;
             font-size : 8pt;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
         }
         .portal>br{
         }
@@ -83,7 +83,7 @@
     <a:alias>panel</a:alias>
     <a:style><![CDATA[
         .docklet {
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
             padding : 32px 0 0 0;
             margin : 0 10px 10px 0;
@@ -253,7 +253,7 @@
 <a:modalwindow name="dockblank">
     <a:style><![CDATA[
         .dockblank {
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
             padding : 10px;
             margin : 0 10px 10px 0;
@@ -361,7 +361,7 @@
             padding          : 0;
             background-image : url(images/grid.png);
             position         : absolute;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             font-size        : 8pt;
             text-align       : center;
             border-width     : 0 1px 1px 0;
@@ -426,7 +426,7 @@
         .flowchart #txt_rename {
             border           : 1px solid silver;
             padding          : 1px;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             font-size        : 11px;
             color            : black;
             word-break       : keep-all;
@@ -463,7 +463,7 @@
             display     : block;
             position    : absolute;
             font-size   : 11px;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             margin      : 0;
             padding     : 0;
             text-align  : left;
@@ -649,7 +649,7 @@
         .accordion_apf_ver .panel {
             padding          : 0;
             font-size        : 11px;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             background-color : white;
             height           : auto;
             margin           : 0;
@@ -756,7 +756,7 @@
         .accordion_apf_hor .panel {
             padding          : 0;
             font-size        : 11px;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             background-color : white;
             height           : 100%;
             margin           : 0;
@@ -996,7 +996,7 @@
         .accordion_menu .panel {
             padding          : 0;
             font-size        : 11px;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             background-color : white;
             height           : 100%;
             margin           : 0;
@@ -1125,7 +1125,7 @@
         .accordionHor .panel {
             padding          : 0;
             font-size        : 11px;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             background-color : white;
             height           : 100%;
             margin           : 0;
@@ -1240,7 +1240,7 @@
         .accordionVer .panel {
             padding          : 0;
             font-size        : 11px;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             background-color : white;
             height           : auto;
             margin           : 0;
@@ -1327,7 +1327,7 @@
         .same{cursor: not-allowed;}
 
         .window {
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
             padding : 26px 0 5px 0;
         }
@@ -1565,7 +1565,7 @@
 <a:toolwindow name="toolwindow">
     <a:style><![CDATA[
         .toolwindow {
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
             padding : 0;
             background : #dbd8d1;
@@ -1854,7 +1854,7 @@
             background: #ffffff repeat-y top left;
             z-index: 1000;
             color: #0d5381;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 11px;
             text-align: left;
             cursor: default;
@@ -2316,7 +2316,7 @@
             Tahoma=tahoma,arial,helvetica,sans-serif;
             Terminal=terminal,monaco;
             Times New Roman=times new roman,times;
-            Trebuchet MS=trebuchet ms,geneva;
+            Arial=Arial,geneva;
             Verdana=verdana,geneva;
             Webdings=webdings;
             Wingdings=wingdings,zapf dingbats
@@ -2354,7 +2354,7 @@
         .same{cursor: not-allowed;}
 
         .winround {
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
             padding : 26px 0 23px 0;
         }
@@ -2587,7 +2587,7 @@
         .same{cursor: not-allowed;}
 
         .winbigedge {
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
             padding : 26px 0 23px 0;
         }
@@ -2803,7 +2803,7 @@
 <a:modalwindow name="alert">
     <a:style><![CDATA[
         .alert{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
             padding : 27px 0 10px 0;
             text-align : left;
@@ -2949,7 +2949,7 @@
 <a:bar name="bardown">
     <a:style><![CDATA[
         .bardown{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
             padding : 0 0 10px 0;
             text-align : left;
@@ -3050,7 +3050,7 @@
 <a:bar name="searchbar">
     <a:style><![CDATA[
         .searchbar{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
             padding : 0 0 10px 0;
             text-align : left;
@@ -3160,7 +3160,7 @@
     <a:style><![CDATA[
         .apf_btn{
             color: #4b4b4b;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             height: 25px;
             width : 100px;
@@ -3291,7 +3291,7 @@
     <a:style><![CDATA[
         .label{
             font-size: 8pt;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             overflow: hidden;
             cursor: default;
             line-height : 1.5em;
@@ -3335,7 +3335,7 @@
             margin: 0;
             padding: 2px 0 0 2px;
             outline: none;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
             text-overflow: ellipsis;
         }
@@ -3377,7 +3377,7 @@
             cursor: default;
             margin: 0px;
             color: black;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
         }
 
@@ -3411,7 +3411,7 @@
             /*background-attachment: fixed !important; background-attachment: scroll; */
             color: #4b4b4b;
             padding: 6px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             overflow: auto;
             outline: none;
@@ -3450,7 +3450,7 @@
     <a:style><![CDATA[
         .tab {
             color: #4b4b4b;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 8pt;
             padding : 23px 0 26px 0;
             overflow: hidden;
@@ -3667,7 +3667,7 @@
         }
 
         .cbcontainer span{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
             cursor: default;
             padding: 1px 3px 2px 3px;
@@ -3755,7 +3755,7 @@
         }
 
         .rbcontainer span{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
             padding: 1px 3px 2px 3px;
             margin : -1px 0 0 0;
@@ -3888,7 +3888,7 @@
             padding: 0;
             z-index: 10000;
             position: absolute;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
             color : #4b4b4b;
             border : 1px solid #c3c3c3;
@@ -4279,7 +4279,7 @@
         }
 
         .list, .draglist{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
         }
 
@@ -4324,7 +4324,7 @@
         .list #txt_rename{
             border: 1px solid #bbb;
             padding: 1px 15px 1px 1px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             color: black;
             word-break: keep-all;
@@ -4392,7 +4392,7 @@
         }
         
         .thumbs_caption, .dragthumb_caption{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
             text-align: center;
             line-height : 11px;
@@ -4461,7 +4461,7 @@
             float: none;
             margin-top : -2px;
             padding: 2px 2px 2px 3px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
             color: #4b4b4b;
             word-break: keep-all;
@@ -4541,7 +4541,7 @@
         }
 
         .thumbs, .dragthumb{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
             text-align: center;
             line-height : 11px;
@@ -4627,7 +4627,7 @@
             float: none;
             margin-top : -2px;
             padding: 2px 2px 2px 3px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
             color: #4b4b4b;
             word-break: keep-all;
@@ -4690,7 +4690,7 @@
         }
 
         .radiolist, .draglist{
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 8pt;
         }
 
@@ -4755,7 +4755,7 @@
         .radiolist #txt_rename{
             border : 1px solid #bbb;
             padding : 1px 1px 1px 1px;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 8pt;
             color : black;
             word-break : keep-all;
@@ -4835,7 +4835,7 @@
         }
 
         .checklist, .draglist{
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 8pt;
         }
 
@@ -4899,7 +4899,7 @@
         .checklist #txt_rename{
             border : 1px solid #bbb;
             padding : 1px 1px 1px 1px;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 8pt;
             color : black;
             word-break : keep-all;
@@ -4983,7 +4983,7 @@
         }
 
         .mnulist, .draglist{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
         }
 
@@ -5010,7 +5010,7 @@
         .mnulist #txt_rename{
             border: 1px solid #bbb;
             padding: 1px 15px 1px 1px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             color: black;
             word-break: keep-all;
@@ -5077,7 +5077,7 @@
             padding: 1px 5px 0 5px;
 
             font-size: 11px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             background: no-repeat 3px 1px;
             height: 15px;
             float: left;
@@ -5155,7 +5155,7 @@
             height: 18px;
             padding-left:29px;
 
-            font-family: Tahoma, Arial;
+            font-family: Tahoma, Arial, Arial;
             font-size: 8.5pt;
             position : relative;
         }
@@ -5211,7 +5211,7 @@
         .checktree #txt_rename{
             border: 1px solid black;
             padding: 1px 15px 1px 1px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             color: black;
             word-break: keep-all;
@@ -5337,7 +5337,7 @@
             height: 18px;
             padding-left: 15px;
 
-            font-family: Tahoma, Arial;
+            font-family: Tahoma, Arial, Arial;
             font-size: 8.5pt;
         }
 
@@ -5407,7 +5407,7 @@
         .tree #txt_rename{
             border: 1px solid black;
             padding: 1px 15px 1px 1px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             color: black;
             word-break: keep-all;
@@ -5551,7 +5551,7 @@
             padding : 2px 18px 0 0;
 
             color: #4b4b4b;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 11px;
         }
 
@@ -5645,7 +5645,7 @@
             background: #ffffff url("images/dropdown_background.png") repeat-y top left;
             z-index: 1000;
             color: #0d5381;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 11px;
             display : none;
             overflow : auto;
@@ -5718,7 +5718,7 @@
         .progressbar .lbl {
             position: relative;
             background: url("images/bar_right.png") no-repeat top left;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 9px;
             float : right;
             height : 8px;
@@ -5834,7 +5834,7 @@
 			height : 5px;
 			padding : 5px 2px 4px 2px;
 			width : 100px;
-			font-family : Tahoma;
+			font-family : Tahoma, Arial;
 			font-size : 8px;
 		}
 		.rangeMask.disabled{
@@ -5912,7 +5912,7 @@
             height: 8px;
             position: relative;
 
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 9px;
             text-align : center;
         }
@@ -6005,7 +6005,7 @@
             height: 150px;
             width: 8px;
             position: relative;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 9px;
             text-align : center;
         }
@@ -6066,7 +6066,7 @@
             margin-bottom : 8px;
             position: relative;
 
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 9px;
             text-align : center;
         }
@@ -6126,7 +6126,7 @@
             margin-left : 8px;
             margin-right : 8px;
             position: relative;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 9px;
             text-align : center;
         }
@@ -6187,7 +6187,7 @@
             position: relative;
             padding-right: 7px;
 
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 9px;
             text-align : center;
         }
@@ -6249,7 +6249,7 @@
             height: 300px;
             width: 16px;
             position: relative;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 9px;
             text-align : center;
             padding-bottom:7px;
@@ -6324,7 +6324,7 @@
             position: relative;
             padding-right: 5px;
 
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 9px;
             text-align : center;
         }
@@ -6379,7 +6379,7 @@
             width: 11px;
             position: relative;
             padding-bottom:10px;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 9px;
             text-align : center;
         }
@@ -6442,7 +6442,7 @@
 <a:errorbox name="errorbox">
     <a:style><![CDATA[
         .errorbox{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             cursor : default;
 
@@ -6541,7 +6541,7 @@
 <!--a:errorbox name="errorbox">
     <a:style><![CDATA[
         .errorbox{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
 
             z-index: 1000000000;
@@ -6707,7 +6707,7 @@
     <a:style><![CDATA[
         .bar{
             color: #4b4b4b;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 8pt;
             padding : 20px 0 26px 0;
             _padding: 20px 0 26px 0;
@@ -6805,7 +6805,7 @@
             padding: 0 7px 7px 7px;
             border: 1px solid #dcd8d8;
             color: #4b4b4b;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             position: relative;
             /*display: block;
@@ -6876,7 +6876,7 @@
             color : #666;
             padding : 3px 2px 3px 2px;
             border : 1px solid #c3c3c3;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 8pt;
             font-weight : bold;
         }
@@ -6941,7 +6941,7 @@
         .upload{
             /*border : 1px solid #dcdcdc;
             padding : 2px;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 11px;
             color: #4b4b4b;
             height : 13px;*/
@@ -7232,7 +7232,7 @@
         .barmedia {
             position: relative;
             color: #4b4b4b;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 10px;
             padding: 10px;
             border : 1px solid #c3c3c3;
@@ -7310,7 +7310,7 @@
     <a:style><![CDATA[
         .labelmedia{
             font-size: 8pt;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             overflow: hidden;
             cursor: default;
             line-height : 1.5em;
@@ -7343,7 +7343,7 @@
             background: url("images/bar_right.png") no-repeat top right;
             height: 8px;
             position: relative;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 9px;
             text-align: center;
             width:150px;
@@ -7397,7 +7397,7 @@
             background: url("images/bar_bottom.png") no-repeat -8px bottom;
             width: 8px;
             position: relative;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 9px;
             text-align: center;
             margin: 0;
@@ -7458,7 +7458,7 @@
             height: 16px;
             position: relative;
             padding-right: 7px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 9px;
             text-align: center;
             margin: 0;
@@ -7526,7 +7526,7 @@
             height: 300px;
             width: 16px;
             position: relative;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 9px;
             text-align: center;
             margin: 0;
@@ -7596,7 +7596,7 @@
     <a:style><![CDATA[
         .buttonmedia {
             color: #4b4b4b;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             height: 21px;
             width: 34px;
@@ -7638,7 +7638,7 @@
     <a:style><![CDATA[
         .buttonvolume {
             color: #4b4b4b;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             height: 16px;
             width: 16px;
@@ -7677,7 +7677,7 @@
             background : #FAFBFC;
             color : white;
             font-size : 8pt;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
         }
 
         .video #qt_event_source{
@@ -7774,7 +7774,7 @@
             background-color: white;
             cursor: default;
 
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
 
             padding: 21px 0 0 0;
@@ -8074,7 +8074,7 @@
             background-color: white;
             cursor: default;
 
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
 
             padding: 0 0 0 0;
@@ -8277,7 +8277,7 @@
         }
 
         .spreadsheet #txt_rename{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             word-break: keep-all;
             overflow: hidden;
@@ -8378,7 +8378,7 @@
             right : 0;
             overflow : hidden;
             line-height : 10px;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 7pt;
             font-weight : bold;
             text-decoration : none;
@@ -8698,7 +8698,7 @@
             width: 98%;
             height: 14px;
             font-size: 8pt;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             cursor: default;
             color: black;
         }
@@ -8726,7 +8726,7 @@
             background-color: white;
 
             font-size: 8pt;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             color: black;
             cursor: default;
         }
@@ -8854,7 +8854,7 @@
     <a:style><![CDATA[
         .lbln{
             font-size: 8pt;
-            font-family: Tahoma, Arial;
+            font-family: Tahoma, Arial, Arial;
             height: 12px;
             padding: 4px;
             overflow: hidden;
@@ -8915,7 +8915,7 @@
         }
 
         .listmenu{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             font-weight: bold;
         }
@@ -8990,7 +8990,7 @@
         }
 
         .layoutlist, .draglayoutlist{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
         }
 
@@ -9044,7 +9044,7 @@
         .layoutlist #txt_rename{
             border: 0;
             padding: 0 0 0 1px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             color: black;
             word-break: keep-all;
@@ -9097,7 +9097,7 @@
             height: 500px;
             overflow: auto;
 
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             position: relative;
             padding: 2px 0 0 2px;
@@ -9147,7 +9147,7 @@
         .joinlist #txt_rename{
             border: 1px solid black;
             padding: 1px 15px 1px 1px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             color: black;
             word-break: keep-all;
@@ -9186,7 +9186,7 @@
             overflow: auto;
         }
         .listicons, .draglisticon{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
         }
 
@@ -9259,7 +9259,7 @@
             border: 1px solid black;
             float: none;
             padding: 1px 5px 1px 1px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             color: black;
             word-break: keep-all;
@@ -9391,7 +9391,7 @@
             border: 1px solid white;
             overflow: auto;
 
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
         }
 
@@ -9531,7 +9531,7 @@
             height: 500px;
             overflow: auto;
 
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             position: relative;
         }
@@ -9575,7 +9575,7 @@
         .listthin #txt_rename{
             border: 1px solid black;
             padding: 1px 15px 1px 1px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             color: black;
             word-break: keep-all;
@@ -9678,7 +9678,7 @@
         .chattabs{
             overflow: auto;
 
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             width: 100px;
             height: 100px;
@@ -9975,7 +9975,7 @@
         .lowtab{
             position: relative;
             color: #4B4B4B;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             padding: 0 0 26px 0;
         }
@@ -10841,7 +10841,7 @@
         }
 
         .fastlist, .dragfastlist{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
         }
 
@@ -10890,7 +10890,7 @@
         .fastlist #txt_rename{
             border: 1px solid black;
             padding: 1px 15px 1px 1px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             color: black;
             word-break: keep-all;
@@ -10997,7 +10997,7 @@
             width            : auto;
             min-height       : 15px;
             padding          : 0 10px 0 12px;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             font-size        : 11px;
             text-align       : left;
             color            : white;
@@ -11129,7 +11129,7 @@
             border-width        : 0 4px 0 4px;
             min-height          : 15px;
             padding             : 0 10px 0 12px;
-            font-family         : Tahoma;
+            font-family         : Tahoma, Arial;
             font-size           : 11px;
             text-align          : left;
             color               : #252525;
@@ -11251,7 +11251,7 @@
             width            : auto;
             min-height       : 15px;
             padding          : 0 10px 0 12px;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             font-size        : 11px;
             text-align       : left;
             color            : white;
@@ -11532,7 +11532,7 @@
             background: #ffffff repeat-y top left;
             z-index: 1000;
             color: #0d5381;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 11px;
             text-align: left;
             cursor: default;
@@ -12039,7 +12039,7 @@
             Tahoma=tahoma,arial,helvetica,sans-serif;
             Terminal=terminal,monaco;
             Times New Roman=times new roman,times;
-            Trebuchet MS=trebuchet ms,geneva;
+            Arial=Arial,geneva;
             Verdana=verdana,geneva;
             Webdings=webdings;
             Wingdings=wingdings,zapf dingbats
@@ -12137,7 +12137,7 @@
             Tahoma=tahoma,arial,helvetica,sans-serif;
             Terminal=terminal,monaco;
             Times New Roman=times new roman,times;
-            Trebuchet MS=trebuchet ms,geneva;
+            Arial=Arial,geneva;
             Verdana=verdana,geneva;
             Webdings=webdings;
             Wingdings=wingdings,zapf dingbats
@@ -12273,7 +12273,7 @@
             width           : 100%;
             min-height      : 31px;
             display         : none;
-            font-family     : Tahoma;
+            font-family     : Tahoma, Arial;
             font-size       : 11px;
             color           : white;
             padding         : 10px;
@@ -12378,7 +12378,7 @@
             top        : 50%;
             z-index    : 99;
             text-align : center;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-weight: bold;
             font-size  : 14px;
             display    : block;
@@ -12528,7 +12528,7 @@
             margin      : 0;
             padding     : 2px 18px 0 0;
             color       : #4b4b4b;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 11px;
         }
 
@@ -12622,7 +12622,7 @@
             background-color : #ffffff;
             z-index          : 1000;
             color            : #0d5381;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             font-size        : 11px;
             display          : none;
             overflow         : auto;
@@ -12722,7 +12722,7 @@
         .calSlider .daysofweek .dayofweek {
             border              : 1px solid #c1c1c1;
             float               : left;
-            font-family         : Tahoma;
+            font-family         : Tahoma, Arial;
             font-size           : 11px;
             color               : #4b4b4b;
             display             : block;
@@ -12829,7 +12829,7 @@
             background-color: white;
             cursor: default;
 
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
 
             padding: 0 1px 0 0;
@@ -13020,7 +13020,7 @@
         }
 
         .propedit #txt_rename{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             word-break: keep-all;
             overflow: hidden;
@@ -13120,7 +13120,7 @@
             right : 0;
             overflow : hidden;
             line-height : 10px;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 7pt;
             font-weight : bold;
             text-decoration : none;
@@ -13530,7 +13530,7 @@
             background-position : 0 0;
             background-image    : url(images/spinner_body2.png);
             color               : black;
-            font-family         : Tahoma;
+            font-family         : Tahoma, Arial;
             font-size           : 11px;
             width               : 100%;
             margin              : 0;
@@ -13642,7 +13642,7 @@
             left             : 0;
             border           : 1px solid #b2b2b2;
             z-index          : 1000;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             background-color : white;
             font-size        : 11px;
             display          : block;
