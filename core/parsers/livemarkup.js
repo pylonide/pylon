@@ -2255,6 +2255,7 @@ apf.lm_exec = new (function(){
     
     function _valed(n, m, x, options, editMode){   // wrap a value with editable div
         var res = (n?__val(n,m):__valm(m,x));
+
         if (options && options.multiline && options.editor != "richtext")
             res = res.replace(/\n/g, "<br />");
         
@@ -2264,7 +2265,9 @@ apf.lm_exec = new (function(){
                 ? ((m.substr(0,1) != "/" 
                     ? apf.xmlToXpath(n, null, false) 
                     : "") + "/" + m).replace(/([\[\{\}\]])/g, "\\$1")
-                : "") + '"' 
+                : (self[m] 
+                    ? (m + ".queryNode('" + x.replace(/'/g, "\\'") + "')").replace(/([\[\{\}\]])/g, "\\$1")
+                    : "")) + '"' 
               + (options
                 ? ' options="' + apf.serialize(options).escapeHTML()
                                   .replace(/"/g, "&quot;")
