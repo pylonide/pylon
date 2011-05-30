@@ -500,7 +500,9 @@ apf.LiveEdit = function() {
         if (!oHtml || oHtml.nodeType != 1) return false;
 
         var xpath   = getXpath(oHtml),
-            xmlNode = this.xmlRoot.ownerDocument.selectSingleNode(xpath),
+            xmlNode = xpath.indexOf("queryNode") > -1
+                ? eval(xpath) 
+                : this.xmlRoot.ownerDocument.selectSingleNode(xpath),
             hasRule = getOptions(oHtml),
             rule    = hasRule && apf.unserialize(hasRule.replace(/&quot;/g, '"').unescapeHTML()) || {};
 
@@ -523,7 +525,10 @@ apf.LiveEdit = function() {
                 // do additional handling, first we check for a change in the data...
                 // @todo this will not always work in IE
                 // @todo this is bullshit, because it tests on unparsed data --> incorrect
-                if (apf.queryValue(this.xmlRoot.ownerDocument, xpath) != oHtml.innerHTML) {
+                var value = xpath.indexOf("queryNode") > -1
+                    ? eval(xpath.replace("queryNode", "queryValue")) 
+                    : apf.queryValue(this.xmlRoot.ownerDocument, xpath);
+                if (value != oHtml.innerHTML) {
                     rule.htmlNode = oHtml;
                     var res = this.getValue(oHtml);
                     
@@ -551,8 +556,12 @@ apf.LiveEdit = function() {
                     //#endif
                     
                     if (valid !== false) {
-                        this.$executeAction("setValueByXpath", 
-                          [this.xmlRoot, res, xpath], "setValueByXpath", xmlNode);
+                        if (xpath.indexOf("queryNode") > -1)
+                            this.$executeAction("setValueByXpath", 
+                                [xmlNode, res, "."], "setValueByXpath", xmlNode);
+                        else 
+                            this.$executeAction("setValueByXpath", 
+                                [this.xmlRoot, res, xpath], "setValueByXpath", xmlNode);
                     }
                 }
             }
@@ -787,7 +796,9 @@ apf.LiveEdit = function() {
                     el.parentNode.removeChild(el);
 
                 delete this.$lastEditor;
-                oHtml.innerHTML = apf.queryValue(this.xmlRoot.ownerDocument, xpath);//this.$lastValue;
+                oHtml.innerHTML = xpath.indexOf("queryNode") > -1
+                    ? eval(xpath.replace("queryNode", "queryValue")) 
+                    : apf.queryValue(this.xmlRoot.ownerDocument, xpath);//this.$lastValue;
                 
                 this.focus();
                 
