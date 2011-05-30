@@ -3,20 +3,12 @@
     - expanded state tab dragging
         - insertbefore tab reorder doesnt create a new splitter bar
         - multiple columns: splitter bars don't function as expected: should be non-symmetrical
-        - cannot add a bar after an expanded bar
-        - add a bar after collapsed bar in set where 1 bar is expanded doesnt work either
-        - cannot drag 'other' widget to expanded bar (js error)
         - dragging forelasttab out of expanded column leaves splitter
         - after_tab/before_tab lacks splitter and tab page doesnt animate
-        - new tabs need to get a better flex rate (same ballpark)
-        - left_of_column detection for expanded state doesnt work
-    - add section as last when dragging last shouldn't animate
     
     - single page should drag whole tab like button to section does
     - anim should wait x00ms before playing
     
-    - fix same column detection
-    - tab page button while dragged isn't displayed correctly
     - tweak tab animations
     - menu should appear onmouseup not down
     - floating sections or menus
@@ -241,8 +233,10 @@ function closePage(e){
         btnPNode.destroy(true, true);
         if (!barParent.selectNodes("vbox").length) {
             barParent.destroy(true, true);
-            barParent.vbox.destroy(true, true);
-            barParent.splitter.destroy(true, true);
+            if (barParent.vbox) {
+                barParent.vbox.destroy(true, true);
+                barParent.splitter.destroy(true, true);
+            }
         }
     }
 }
@@ -299,6 +293,14 @@ function dragPage(e){ //change this to beforedrag and recompile apf
     return false;
 };
 
+function isLastBar(aml) {
+    var last = hboxMain.lastChild;
+    while (last && !last.visible)
+        last = last.previousSibling;
+    
+    return aml == last || aml == last.vbox;
+}
+
 var whiledrag, lastInfo;
 function startDrag(dragged, original){
     var last, state = 0;
@@ -335,8 +337,11 @@ function startDrag(dragged, original){
         
         //Adding a column
         if (e.clientX > leftEdge - 40 && e.clientX < leftEdge) {
+            var isSameColumn = dragged.localName == "vbox" 
+                && dragged.$dockbar == lastBar;
+            
             info = {
-                position : "left_of_column",
+                position : isSameColumn ? "none" : "left_of_column",
                 aml : aml = last = lastBar
             }
         }
@@ -353,7 +358,7 @@ function startDrag(dragged, original){
         
         lastInfo = info;
         
-        if (!aml || !aml.dock) {
+        if (!aml || !aml.dock && !aml.bar) {
             if (!state) {
                 state = 1;
                 apf.tween.single(dragged.$ext, {
@@ -497,11 +502,12 @@ function startDrag(dragged, original){
                 height = 0;
             case "after_tab":
                 indicator.style.left = pos[0] + "px";
-                indicator.style.top  = (pos[1] + height) + "px";
+                indicator.style.top  = (pos[1] + height - (!aml.nextSibling ? 3 : 0)) + "px";
                 indicator.style.height = "3px";
                 indicator.style.width = width + "px";
                 indicator.style.borderWidth = "0 0 0 0";
-                indicator.style.backgroundColor = "rgba(122,199,244,0.8)";
+                indicator.style.backgroundColor = "rgba(122,199,244," 
+                    + (!aml.nextSibling ? 1 : 0.8) + ")";
                 return;
             case "before_section":
                 height = 0;
@@ -565,7 +571,8 @@ function startDrag(dragged, original){
                 break;
             case "right_of_column":
                 indicator.style.borderWidth = "0 3px 0 0";
-                indicator.style.marginLeft = "2px";
+                if (!isLastBar(aml))
+                    indicator.style.marginLeft = "2px";
                 break;
             default:
                 indicator.style.display = "none";
@@ -628,143 +635,175 @@ function calcAction(e, original){
     var position = "none";
 
     var el = document.elementFromPoint(e.clientX, e.clientY);
-    if (el != document.body) {
-        var aml = apf.findHost(el);
-        if (!aml) return {};
+    if (el == document.body)
+        return {};
+    
+    var aml = apf.findHost(el);
+    if (!aml) return {};
+    
+    if (!aml.dock || aml.localName == "page" || aml.localName == "tab") {
+        var node = aml;
+        while (node && !node.vdock)
+            node = node.parentNode;
         
-        if (!aml.dock || aml.localName == "page" || aml.localName == "tab") {
-            var node = aml;
-            while (node && !node.vdock)
-                node = node.parentNode;
-            if (node && node.localName == "vbox") {
-                var tabs = node.selectNodes("tab");
-                var pos = apf.getAbsolutePosition(node.$ext)[1];
-                var doTest = original.parentNode.localName == "tab" 
-                    && original.parentNode.getPages().length == 1;
-                if (matchTab(tabs[0].$ext.offsetTop + pos, e.clientY))
-                    return doTest && original.parentNode == tabs[0] 
-                        ? {} : {position: "before_tab", aml: tabs[0]};
-                for (var i = 0; i < tabs.length; i++) {
-                    if (matchTab(tabs[i].$ext.offsetHeight + 1 
-                      + tabs[i].$ext.offsetTop + pos, e.clientY))
-                        return doTest && (original.parentNode == tabs[i] || original.parentNode == tabs[i+1])
-                            ? {} : {position: "after_tab", aml: tabs[i]};
+        if (node && node.localName == "vbox") {
+            var tabs = node.selectNodes("tab");
+            var pos = apf.getAbsolutePosition(node.$ext)[1];
+            var doTest = original.parentNode.localName == "tab" 
+                && original.parentNode.getPages().length == 1;
+                
+            if (matchTab(tabs[0].$ext.offsetTop + pos, e.clientY)) {
+                return doTest && original.parentNode == tabs[0] 
+                    ? {} : {position: "before_tab", aml: tabs[0]};
+            }
+                    
+            for (var i = 0; i < tabs.length; i++) {
+                if (matchTab(tabs[i].$ext.offsetHeight + 1 
+                  + tabs[i].$ext.offsetTop + pos - (!aml.nextSibling ? 3 : 0), e.clientY)) {
+                    return doTest && (original.parentNode == tabs[i] || original.parentNode == tabs[i+1])
+                        ? {} : {position: "after_tab", aml: tabs[i]};
                 }
             }
         }
-        
-        if (!aml.dock)
-            return {};
-        
-        if (aml.localName == "page" || aml.localName == "tab" || aml.localName == "menu") {
-            position = "before_page";
-            if (aml.localName == "page") {
-                var pos = apf.getAbsolutePosition(aml.$button);
-                var l = e.clientX - pos[0];
+    }
     
-                if (l > aml.$button.offsetWidth/2)
-                    position = "after_page";
-            }
-            else if (aml.localName == "menu") {
-                var pages = aml.firstChild.getPages();
-                aml = pages[pages.length - 1];
-                position = "after_page";
-            }
-            else if (aml.localName == "tab") {
-                pages = aml.getPages();
-                aml = pages[pages.length - 1];
-                position = "after_page";
-            }
+    if (aml.localName == "splitter") {
+        aml.$ext.style.display = "none";
+        aml = apf.findHost(document.elementFromPoint(e.clientX, e.clientY));
+        aml.$ext.style.display = "block";
+    }
 
-            var pos2 = apf.getAbsolutePosition(aml.parentNode.$ext);
-            var t = e.clientY - pos2[1];
-            if (t > 18)
-                return {};
+    if (!aml.dock && !aml.bar)
+        return {};
+
+    var bar = aml;
+    while (bar && bar.localName != "bar" && (bar.localName != "vbox" || bar.dock))
+        bar = bar.parentNode;
+
+    if (bar) {
+        var pos = apf.getAbsolutePosition(e.target, bar.$ext);
+        var l = pos[0] + e.offsetX;
+        var r = bar.$ext.offsetWidth - l;
+    }
+    
+    if (bar && l < diffPixel) {
+        var isSameColumn = original.localName == "divider" 
+            && (original.parentNode.$dockbar == bar
+            || original.parentNode.$dockbar == bar.previousSibling);
+            
+        return {
+            position : isSameColumn ? "none" : "left_of_column",
+            aml : bar
         }
-        else {
-            var bar = aml;
-            while (bar && bar.localName != "bar")
-                bar = bar.parentNode;
+    }
+    else {
+        var df = (isLastBar(bar)
+            ? diffPixel * 2
+            : diffPixel)
+        var isSameColumn = original.localName == "divider" 
+            && (original.parentNode.$dockbar == bar
+            || original.parentNode.$dockbar == bar.nextSibling);
+
+        if (bar && r < df) {
+            return {
+                position : isSameColumn ? "none" : "right_of_column",
+                aml : bar
+            }
+        }
+    }
+    
+    if (aml.localName == "page" || aml.localName == "tab" || aml.localName == "menu") {
+        position = "before_page";
+        if (aml.localName == "page") {
+            var pos = apf.getAbsolutePosition(aml.$button);
+            var l = e.clientX - pos[0];
+
+            if (l > aml.$button.offsetWidth/2)
+                position = "after_page";
+        }
+        else if (aml.localName == "menu") {
+            var pages = aml.firstChild.getPages();
+            aml = pages[pages.length - 1];
+            position = "after_page";
+        }
+        else if (aml.localName == "tab") {
+            pages = aml.getPages();
+            aml = pages[pages.length - 1];
+            position = "after_page";
+        }
+
+        var pos2 = apf.getAbsolutePosition(aml.parentNode.$ext);
+        var t = e.clientY - pos2[1];
+        if (t > 18)
+            return {};
+    }
+    else {
+        if (aml.localName == "bar" || aml.skin == "dockheader") {
+            if (aml.skin == "dockheader") {
+                aml = aml.parentNode.selectNodes("vbox")[0];
+                position = "before_section";
+            }
+            else {
+                position = original.localName == "divider" && original.parentNode.$dockbar == aml
+                    ? "in_section"
+                    : "in_column";
+                aml = aml.lastChild;/*selectNodes("vbox");
+                aml = vboxs[vboxs.length - 1];*/
+            }
+        }
+        else if (aml.localName == "button") {
+            position = "after_button";
+            var pos = apf.getAbsolutePosition(aml.$ext);
+            var t = e.clientY - pos[1];
+            if (t < aml.$ext.offsetHeight/2) {
+                if (aml.previousSibling && aml.previousSibling.localName == "button")
+                    aml = aml.previousSibling
+                else {
+                    position = "before_button";
+                    //aml = aml.parentNode;
+                }
+            }
+        }
+        else if (aml.localName == "divider" || aml.localName == "vbox") {
+            if (aml.localName == "divider")
+                aml = aml.parentNode;
             
-            if (bar) {
-                var pos = apf.getAbsolutePosition(e.target, bar.$ext);
-                var l = pos[0] + e.offsetX;
-                var r = bar.$ext.offsetWidth - l;
-            }
+            var buttons = aml.selectNodes("button");
+            if (!buttons.length)
+                return {position: "in_section", aml: aml};
             
-            if (bar && l < diffPixel) {
-                position = "left_of_column";
-                aml = bar;
-            }
-            else if (bar && r < diffPixel) {
-                position = "right_of_column";
-                aml = bar;
-            }
-            else if (aml.localName == "bar" || aml.skin == "dockheader") {
-                if (aml.skin == "dockheader") {
-                    aml = aml.parentNode.selectNodes("vbox")[0];
+            var pos = apf.getAbsolutePosition(aml.$ext);
+            var t = e.clientY - pos[1];
+            var b = aml.$ext.offsetHeight - t;
+
+            if (t < diffPixel) {
+                if (original.localName != "divider" 
+                  || original.parentNode != (aml.previousSibling 
+                  && aml.previousSibling.$dockfor)) {
                     position = "before_section";
                 }
-                else {
-                    position = "in_column";
-                    var vboxs = aml.selectNodes("vbox");
-                    aml = vboxs[vboxs.length - 1];
+            }
+            else if (b < diffPixel && aml.nextSibling) {
+                if (original.localName != "divider" 
+                  || original.parentNode != aml.$dockfor) {
+                    if (!aml.nextSibling
+                      || aml.nextSibling.$dockfor != getOriginal("section", original))
+                        position = "after_section";
                 }
             }
-            else if (aml.localName == "button") {
-                position = "after_button";
-                var pos = apf.getAbsolutePosition(aml.$ext);
-                var t = e.clientY - pos[1];
+            
+            if (position == "none") {
                 if (t < aml.$ext.offsetHeight/2) {
-                    if (aml.previousSibling && aml.previousSibling.localName == "button")
-                        aml = aml.previousSibling
-                    else {
-                        position = "before_button";
-                        //aml = aml.parentNode;
-                    }
+                    position = "before_button";
+                    aml = buttons[0];
                 }
-            }
-            else if (aml.localName == "divider" || aml.localName == "vbox") {
-                if (aml.localName == "divider")
-                    aml = aml.parentNode;
-                
-                var buttons = aml.selectNodes("button");
-                if (!buttons.length)
-                    return {position: "in_section", aml: aml};
-                
-                var pos = apf.getAbsolutePosition(aml.$ext);
-                var t = e.clientY - pos[1];
-                var b = aml.$ext.offsetHeight - t;
-
-                if (t < diffPixel) {
-                    if (original.localName != "divider" 
-                      || original.parentNode != (aml.previousSibling 
-                      && aml.previousSibling.$dockfor)) {
-                        position = "before_section";
-                    }
-                }
-                else if (b < diffPixel && aml.nextSibling) {
-                    if (original.localName != "divider" 
-                      || original.parentNode != aml.$dockfor) {
-                        if (!aml.nextSibling
-                          || aml.nextSibling.$dockfor != getOriginal("section", original))
-                            position = "after_section";
-                    }
-                }
-                
-                if (position == "none") {
-                    if (t < aml.$ext.offsetHeight/2) {
-                        position = "before_button";
-                        aml = buttons[0];
-                    }
-                    else {
-                        position = "after_button";
-                        aml = buttons[buttons.length - 1];
-                    }
+                else {
+                    position = "after_button";
+                    aml = buttons[buttons.length - 1];
                 }
             }
         }
-    }    
+    }
 
     return {
         position : position,
@@ -854,7 +893,7 @@ function stopDrag(e){
             moveTo(submenu, dragAml, aml, null, section, info.position);
             break;
         case "right_of_column":
-            var bar = addBar();
+            var bar = addBar(aml.nextSibling);
             //Single Tab Case
             //create new section
             var section = addSection(bar);
@@ -862,7 +901,7 @@ function stopDrag(e){
             //reconstruct menu
             var submenu = createMenu(section);
             var dragAml = whiledrag.original;
-            
+
             moveTo(submenu, dragAml, aml, null, section, info.position);
             break;
         default:
@@ -892,8 +931,28 @@ function moveTo(submenu, dragAml, aml, beforeButton, parentNode, position, tab, 
           || !beforeButton && !button.nextSibling && button.parentNode == parentNode)
             return;
 
-        if (tab || submenu.firstChild)
-            (tab || submenu.firstChild).insertBefore(page, beforePage);
+        var newPNode = tab || submenu.firstChild;
+        if (newPNode) {
+            newPNode.insertBefore(page, beforePage);
+            
+            if (newPNode.getPages().length == 1) {
+                var totalFlex = 0, count = 0;
+                if (newPNode.parentNode.localName == "vbox") {
+                    newPNode.parentNode.selectNodes("tab").each(function(tab){ 
+                        totalFlex += tab.flex || 1;
+                        count++;
+                    });
+                }
+                else {
+                    var tabs = parentNode.parentNode.selectNodes("vbox").each(function(vbox){
+                        var button = vbox.selectSingleNode("button");
+                        totalFlex += button && self[button.submenu].firstChild.flex || 1;
+                        count++;
+                    });
+                }
+                newPNode.setAttribute("flex", totalFlex/count);
+            }
+        }
         button.setAttribute("submenu", submenu.id);
 
         //add button to section
@@ -907,8 +966,10 @@ function moveTo(submenu, dragAml, aml, beforeButton, parentNode, position, tab, 
             btnPNode.destroy(true, true);
             if (!barParent.selectNodes("vbox").length) {
                 barParent.destroy(true, true);
-                barParent.vbox.destroy(true, true);
-                barParent.splitter.destroy(true, true);
+                if (barParent.vbox) {
+                    barParent.vbox.destroy(true, true);
+                    barParent.splitter.destroy(true, true);
+                }
             }
         }
     }
@@ -916,29 +977,8 @@ function moveTo(submenu, dragAml, aml, beforeButton, parentNode, position, tab, 
         var buttons = dragAml.parentNode.selectNodes("button");
         for (var i = buttons.length - 1; i >= 0; i--) {
             var button = buttons[i];
-            var page = button.$dockpage;
-            var pNode = page.parentNode;
-            var btnPNode = button.parentNode;
             
-            if (tab || submenu.firstChild)
-                (tab || submenu.firstChild).insertBefore(page, beforePage);
-            button.setAttribute("submenu", submenu.id);
-            
-            //add button to section
-            parentNode.insertBefore(button, beforeButton);
-        }
-        
-        //Test is not needed;
-        if (!pNode.getPages().length) {
-            var barParent = btnPNode.parentNode;
-            if (pNode.parentNode)
-                pNode.parentNode.destroy(true, true);
-            btnPNode.destroy(true, true);
-            if (!barParent.selectNodes("vbox").length) {
-                barParent.destroy(true, true);
-                barParent.vbox.destroy(true, true);
-                barParent.splitter.destroy(true, true);
-            }
+            moveTo(submenu, button, aml, beforeButton, parentNode, position, tab, pNode)
         }
     }
 }
@@ -1071,6 +1111,9 @@ function collapseBar(bar){
     bar.vbox.hide();
     bar.splitter.hide();
     
+    bar.parentNode.removeChild(bar.vbox);
+    bar.parentNode.removeChild(bar.splitter);
+    
     //Hack for button
     bar.firstChild.$ext.onmousemove({});
 }
@@ -1097,7 +1140,7 @@ function addSection(bar, before){
         
         //this.hideMenu();
     
-        var pNode = section.parentNode;
+        var pNode = section.$dockbar = section.parentNode;
         var placeHolder = section.cloneNode(false);
         placeHolder.removeAttribute("id");
         placeHolder.$dockfor = section;
@@ -1127,8 +1170,8 @@ function addSection(bar, before){
             });
             
             var buttons = this.selectNodes("button");
-            if (!buttons.length) debugger;
-            buttons[0].setValue(false);
+            if (buttons.length)
+                buttons[0].setValue(false);
             
             stopDrag(e.htmlEvent);
             placeHolder.destroy(true, true);
