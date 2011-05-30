@@ -1,4 +1,3 @@
-
 var testState = {
     bars : [
         {
@@ -49,7 +48,7 @@ var testState = {
             width : 200,
             sections : [
                 {
-                    flex : 1,
+                    flex : 2,
                     width : 200,
                     height : 200,
                     buttons : [
@@ -75,6 +74,8 @@ var testState = {
     ]
 };
 
-var layout = new DockableLayout(hboxMain, function(){}, function(){});
-layout.loadState(testState);
-layout.loadState(layout.getState());
+require(["libdock.js"], function(DockableLayout){
+    var layout = new DockableLayout(hboxMain, function(){}, function(){}, function(){});
+    layout.loadState(testState);
+    layout.loadState(layout.getState());
+});
