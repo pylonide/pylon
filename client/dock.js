@@ -338,7 +338,8 @@ function startDrag(dragged, original){
         //Adding a column
         if (e.clientX > leftEdge - 40 && e.clientX < leftEdge) {
             var isSameColumn = dragged.localName == "vbox" 
-                && dragged.$dockbar == lastBar;
+                && dragged.$dockbar == lastBar
+                && !dragged.$dockbar.selectNodes("vbox").length;
             
             info = {
                 position : isSameColumn ? "none" : "left_of_column",
@@ -689,7 +690,8 @@ function calcAction(e, original){
     if (bar && l < diffPixel) {
         var isSameColumn = original.localName == "divider" 
             && (original.parentNode.$dockbar == bar
-            || original.parentNode.$dockbar == bar.previousSibling);
+            || original.parentNode.$dockbar == bar.previousSibling)
+            && !original.parentNode.$dockbar.selectNodes("vbox").length;
             
         return {
             position : isSameColumn ? "none" : "left_of_column",
@@ -702,7 +704,8 @@ function calcAction(e, original){
             : diffPixel)
         var isSameColumn = original.localName == "divider" 
             && (original.parentNode.$dockbar == bar
-            || original.parentNode.$dockbar == bar.nextSibling);
+            || original.parentNode.$dockbar == bar.nextSibling)
+            && !original.parentNode.$dockbar.selectNodes("vbox").length;
 
         if (bar && r < df) {
             return {
