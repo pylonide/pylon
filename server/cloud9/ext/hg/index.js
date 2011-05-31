@@ -38,7 +38,7 @@ sys.inherits(ShellHgPlugin, Plugin);
                     "commands": {}
                 }};
 
-                out.replace(/[\s]{3,4}([\w]+)[\s]+(.*)\n/gi, function(m, sub, hint) {
+                out.replace(/([\w]+)[\s]{3,5}([\w].+)\n/gi, function(m, sub, hint) {
                     hghelp.hg.commands[sub] = _self.augmentCommand(sub, {"hint": hint});
                 });
                 onfinish();
