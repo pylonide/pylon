@@ -11,6 +11,7 @@ var ShellHgPlugin = module.exports = function(ide) {
     this.ide = ide;
     this.hooks = ["command"];
     this.name = "hg";
+    this.banned = ["serve"]
 };
 
 sys.inherits(ShellHgPlugin, Plugin);
@@ -39,6 +40,8 @@ sys.inherits(ShellHgPlugin, Plugin);
                 }};
 
                 out.replace(/([\w]+)[\s]{3,5}([\w].+)\n/gi, function(m, sub, hint) {
+                    if (_self.banned.indexOf(sub) > -1)
+                        return;
                     hghelp.hg.commands[sub] = _self.augmentCommand(sub, {"hint": hint});
                 });
                 onfinish();
@@ -62,9 +65,20 @@ sys.inherits(ShellHgPlugin, Plugin);
     this.command = function(user, message, client) {
         if (message.command != "hg")
             return false;
-
+            
         var _self = this;
         var argv = message.argv || [];
+        
+        // Here we want to ban some commands like serve
+        if (argv.slice(1).length > 0 && _self.banned.indexOf(argv.slice(1)[0]) > -1) {    
+            _self.sendResult(0, message.command, {
+                code: 0,
+                argv: message.argv,
+                err: 'Command ' + argv.slice(1)[0] + ' is not available in Cloud9',
+                out: null
+            });
+            return false;
+        }
 
         this.spawnCommand(message.command, argv.slice(1), message.cwd, 
             function(err) { // Error
