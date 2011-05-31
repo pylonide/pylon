@@ -11,7 +11,7 @@ var ShellHgPlugin = module.exports = function(ide) {
     this.ide = ide;
     this.hooks = ["command"];
     this.name = "hg";
-    this.banned = ["serve"]
+    this.banned = ["serve"];
 };
 
 sys.inherits(ShellHgPlugin, Plugin);
