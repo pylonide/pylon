@@ -29,7 +29,7 @@
 define(function(require, exports, module) {
 
 function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbChange) {
-    this.columnCounter = 0;
+    this.columnCounter  = 0;
     this.$parentHBox    = parentHBox;
     this.$cbStorePage   = cbStorePage;
     this.$cbFindPage    = cbFindPage;
@@ -75,7 +75,7 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbCh
                     
                     for (var j = 0; j < buttons.length; j++) {
                         var buttonInfo = {};
-                        buttonInfo.ext     = buttons[j].$dockpage.extension;
+                        buttonInfo.ext     = buttons[j].$dockData.ext;
                         buttonInfo.caption = buttons[j].$dockpage.caption;
                         
                         sectionInfo.buttons.push(buttonInfo);
@@ -319,6 +319,9 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbCh
             lastBar = lastBar.previousSibling;
         if (lastBar.localName != "bar")
             lastBar = lastBar.bar;
+           
+        if (!lastBar.visible)
+        	lastBar = lastBar.vbox;
             
         return lastBar;
     }
@@ -353,7 +356,7 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbCh
                 var isSameColumn = dragged.localName == "vbox" 
                     && dragged.$dockbar == lastBar
                     && !dragged.$dockbar.selectNodes("vbox").length;
-                
+
                 info = {
                     position : isSameColumn ? "none" : "left_of_column",
                     aml : aml = last = lastBar
@@ -411,7 +414,7 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbCh
             
             var width = aml.$ext.offsetWidth;
             var height = aml.$ext.offsetHeight;
-            
+
             switch(info.position) {
                 case "before_button":
                 case "after_button":
@@ -654,8 +657,8 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbCh
         
         var aml = apf.findHost(el);
         if (!aml) return {};
-        
-        if (!aml.dock || aml.localName == "page" || aml.localName == "tab") {
+
+		if (!aml.dock || aml.localName == "page" || aml.localName == "tab") {
             var node = aml;
             while (node && !node.vdock)
                 node = node.parentNode;
@@ -665,15 +668,15 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbCh
                 var pos = apf.getAbsolutePosition(node.$ext)[1];
                 var doTest = original.parentNode.localName == "tab" 
                     && original.parentNode.getPages().length == 1;
-                    
-                if (matchTab(tabs[0].$ext.offsetTop + pos, e.clientY)) {
+
+                if (matchTab(apf.getAbsolutePosition(tabs[0].$ext, node.$ext)[1] + pos, e.clientY)) {
                     return doTest && original.parentNode == tabs[0] 
                         ? {} : {position: "before_tab", aml: tabs[0]};
                 }
                         
                 for (var i = 0; i < tabs.length; i++) {
                     if (matchTab(tabs[i].$ext.offsetHeight + 1 
-                      + tabs[i].$ext.offsetTop + pos - (!aml.nextSibling ? 3 : 0), e.clientY)) {
+                      + apf.getAbsolutePosition(tabs[i].$ext, node.$ext)[1] + pos - (!aml.nextSibling ? 3 : 0), e.clientY)) {
                         return doTest && (original.parentNode == tabs[i] || original.parentNode == tabs[i+1])
                             ? {} : {position: "after_tab", aml: tabs[i]};
                     }
@@ -689,9 +692,9 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbCh
     
         if (!aml.dock && !aml.bar)
             return {};
-    
+
         var bar = aml;
-        while (bar && bar.localName != "bar" && (bar.localName != "vbox" || bar.dock))
+        while (bar && bar.localName != "bar" && (bar.localName != "vbox" || !bar.dock && !bar.bar))
             bar = bar.parentNode;
     
         if (bar) {
@@ -714,7 +717,7 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbCh
         else {
             var df = (this.$isLastBar(bar)
                 ? diffPixel * 2
-                : diffPixel)
+                : diffPixel);
             var isSameColumn = original.localName == "divider" 
                 && (original.parentNode.$dockbar == bar
                 || original.parentNode.$dockbar == bar.nextSibling)
@@ -956,11 +959,17 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbCh
               || !beforeButton && !button.nextSibling && button.parentNode == parentNode)
                 return;
     
+            button.setAttribute("submenu", submenu.id);
+            
             var newPNode = tab || submenu.firstChild;
             if (newPNode) {
                 newPNode.insertBefore(page, beforePage);
                 
                 if (newPNode.getPages().length == 1) {
+                	var mnu = self[page.$dockbutton.submenu];
+                	mnu.setAttribute("width", oldMenu.width);
+                	mnu.setAttribute("height", oldMenu.height);
+                	
                     var totalFlex = 0, count = 0;
                     if (newPNode.parentNode.localName == "vbox") {
                         newPNode.parentNode.selectNodes("tab").each(function(tab){ 
@@ -978,7 +987,6 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbCh
                     newPNode.setAttribute("flex", totalFlex/count);
                 }
             }
-            button.setAttribute("submenu", submenu.id);
     
             //add button to section
             parentNode.insertBefore(button, beforeButton);
@@ -1116,7 +1124,7 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbCh
             page = menu.firstChild.add(caption, name);
         else
             menu.firstChild.appendChild(page);
-            
+
         page.oDrag = page.$button;
         page.dock  = 1;
         page.setAttribute("draggable", true);
