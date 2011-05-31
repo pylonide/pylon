@@ -137,9 +137,9 @@ apf.dropdown = function(struct, tagName){
             this.containerHeight = Math.ceil(this.containerHeight * 0.9);*/
     };
     
-    this.$propHandlers["class"] = function(value){
-        this.$setStyleClass(this.oSlider, value);
-    };
+    this.addEventListener("prop.class", function(e){
+        this.$setStyleClass(this.oSlider, e.value);
+    });
     
     /**** Public methods ****/
     
