@@ -34,8 +34,10 @@ return ext.register("ext/debugger/debugger", {
     },
 
     nodes : [],
-
+    
     hook : function(){
+        var _self = this;
+        
         ide.addEventListener("consolecommand.debug", function(e) {
             ide.socket.send(JSON.stringify({
                 command: "internal-isfile",
@@ -46,7 +48,6 @@ return ext.register("ext/debugger/debugger", {
             return false;
         });
         
-        var _self = this;
         stDebugProcessRunning.addEventListener("activate", function() {            
             _self.enable();
         });
@@ -64,51 +65,70 @@ return ext.register("ext/debugger/debugger", {
             node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
         });
         
-        var sectionStack = dock.getSection("debugger-stack");
-        var sectionRest = dock.getSection("debugger-rest");
-        
-        dock.registerPage(sectionStack, null, function(){
-            ext.initExtension(_self);
-            return dbgCallStack;
-        }, {
+        var name = "ext/debugger/debugger"; //this.name
+        dock.register(name, "dbgCallStack", {
+            menu : "Debugger/Call Stack",
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
                 defaultState: { x: -6, y: -217 /*-46*/ },
                 activeState: { x: -6, y: -217 }
-            },
+            }
+        }, function(type) {
+            ext.initExtension(_self);
+            return dbgCallStack;
         });
         
-        dock.registerPage(sectionRest, null, function(){
-            ext.initExtension(_self);
-            return dbInteractive;
-        }, {
+        dock.register(name, "dbInteractive", {
+            menu : "Debugger/Interactive",
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
                 defaultState: { x: -7, y: -310 /*-130*/ },
                 activeState: { x: -7, y: -310 }
-            },
+            }
+        }, function(type) {
+            ext.initExtension(_self);
+            return dbInteractive;
         });
         
-        dock.registerPage(sectionRest, null, function(){
-            ext.initExtension(_self);
-            return dbgVariable;
-        }, {
+        dock.register(name, "dbgVariable", {
+            menu : "Debugger/Variables",
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
                 defaultState: { x: -6, y: -261 /*-174*/ },
                 activeState: { x: -6, y: -261 }
-            },
+            }
+        }, function(type) {
+            ext.initExtension(_self);
+            return dbgVariable;
         });
         
-        dock.registerPage(sectionRest, null, function(){
-            ext.initExtension(_self);
-            return dbgBreakpoints;
-        }, {
+        dock.register(name, "dbgBreakpoints", {
+            menu : "Debugger/Breakpoints",
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
                 defaultState: { x: -6, y: -360 /*-88*/ },
                 activeState: { x: -6, y: -360 }
-            },
+            }
+        }, function(type) {
+            ext.initExtension(_self);
+            return dbgBreakpoints;
+        });
+        
+        dock.addDockable({
+            sections : [
+                {
+                    buttons : [
+                        { ext : [name, "dbgCallStack"] }
+                    ]
+                },
+                {
+                    buttons : [
+                        { ext : [name, "dbInteractive"] },
+                        { ext : [name, "dbgVariable"] },
+                        { ext : [name, "dbgBreakpoints"] }
+                    ]
+                }
+            ]
         });
     },
 

@@ -23,7 +23,9 @@ return ext.register("ext/dockpanel/dockpanel", {
     },
 
     nodes          : [],
-    dockObjects    : [],
+    dockpanels     : [],
+    
+    loaded : false,
     
     /**
      * Standard Extension functionality
@@ -32,19 +34,29 @@ return ext.register("ext/dockpanel/dockpanel", {
         var _self = this;
         
         this.layout = new DockableLayout(hboxMain, 
-          //Find Page
-          function(strExtension){
-              
-          }, 
-          //Store Page
-          function(amlPage){
-              
-          },
-          //Change State Handler
-          function(){
-              _self.changed = true;
-              settings.save();
-          });
+			//Find Page
+			function(arrExtension){
+				if (!arrExtension || !_self.dockpanels[arrExtension[0]])
+					return false;
+				
+				return _self.dockpanels[arrExtension[0]][arrExtension[1]].getPage();
+			}, 
+			//Store Page
+			function(amlPage){
+				
+			},
+			//Find Button Options
+			function(arrExtension){
+				if (!arrExtension || !_self.dockpanels[arrExtension[0]])
+					return false;
+				
+				return _self.dockpanels[arrExtension[0]][arrExtension[1]].options;
+			},
+			//Change State Handler
+			function(){
+				_self.changed = true;
+				settings.save();
+			});
         
         ide.addEventListener("loadsettings", function(e){
             var model = e.model;
@@ -52,6 +64,8 @@ return ext.register("ext/dockpanel/dockpanel", {
             _self.layout.loadState(strSettings
                 ? apf.unserialize(strSettings)
                 : _self.defaultState);
+            
+            _self.loaded = true;
         });
 
         ide.addEventListener("savesettings", function(e){
@@ -79,7 +93,28 @@ return ext.register("ext/dockpanel/dockpanel", {
         this.layout.clearState();
     },
     
+    register : function(name, type, options, getPage){
+        var panel = this.dockpanels[name] || (this.dockpanels[name] = {});
+        panel[type] = {
+            options : options,
+            getPage : getPage
+        };
+        
+        panel[type].mnuItem = mnuPanels.appendChild(new apf.item({
+            caption : options.menu.split("/").pop(),
+            type    : "check",
+            onclick : function(){
+                //@todo
+            }
+        }));
+    },
+    
     addDockable : function(def){
+        if (this.loaded) {
+            this.layout.addItem(def);
+            return;
+        }
+        
         var state = this.defaultState;
         if (def.sections) {
             state.bars.push(def);
@@ -92,13 +127,14 @@ return ext.register("ext/dockpanel/dockpanel", {
         var bar = state.bars[0];
         if (def.buttons)
             bar.sections.push(def);
-        else
+        else {
             bar.sections.push({
                 flex    : 2,
                 width   : 260,
                 height  : 350,
                 buttons : [def]
             });
+        }
     }, //properties.forceShow ??
     
     //@todo removal of pages

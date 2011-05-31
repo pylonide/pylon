@@ -6,6 +6,8 @@
         - dragging forelasttab out of expanded column leaves splitter
         - after_tab/before_tab lacks splitter and tab page doesnt animate
     
+    - creating a new tab should take the size of the page dragged into it
+    
     - single page should drag whole tab like button to section does
     - anim should wait x00ms before playing
     
@@ -26,12 +28,13 @@
 
 define(function(require, exports, module) {
 
-function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbChange) {
+function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbChange) {
     this.columnCounter = 0;
     this.$parentHBox    = parentHBox;
     this.$cbStorePage   = cbStorePage;
     this.$cbFindPage    = cbFindPage;
     this.$cbChange      = cbChange;
+    this.$cbFindOptions	= cbFindOptions;
     
     var indicator = this.indicator = document.body.appendChild(document.createElement("div"));
     indicator.style.position = "absolute";
@@ -136,8 +139,8 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbChange) {
                 var info = section.$dockData = sections[j];
                 
                 menu.firstChild.setAttribute("flex", info.flex);
-                menu.setAttribute("width", info.width);
-                menu.setAttribute("height", info.height);
+                menu.setAttribute("width", info.width || 260);
+                menu.setAttribute("height", info.height || 300);
                 
                 var buttons = sections[j].buttons
                 for (var k = 0; k < buttons.length; k++) {
@@ -146,8 +149,8 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbChange) {
                             this.$cbFindPage(buttons[k].ext), 
                             menu, 
                             buttons[k].caption, 
-                            buttons[k].caption.toLowerCase()
-                        ), buttons[k]
+                            buttons[k].caption && buttons[k].caption.toLowerCase() || ""
+                        ), apf.extend(buttons[k], this.$cbFindOptions(buttons[k].ext) || {})
                     );
                     button.$dockData = buttons[k];
                 }
@@ -1299,11 +1302,11 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbChange) {
                 
                 if (options && (tmp = options.primary)) {
                     var span = button.$ext.getElementsByTagName("span");
-                    span[0].style.backgroundPosition = 
+                    span[2].style.backgroundPosition = 
                         tmp.activeState.x + 'px ' 
                         + tmp.activeState.y + 'px';
             
-                    if (tmp = properties.secondary) {
+                    if (tmp = options.secondary) {
                         span[1].style.backgroundPosition = 
                             tmp.activeState.x + 'px ' 
                             + tmp.activeState.y + 'px';
@@ -1314,25 +1317,25 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbChange) {
         
         if (options && (tmp = options.primary)) {
             var span = button.$ext.getElementsByTagName("span");
-            span[0].style.background = 'transparant url("' 
+            span[2].style.background = 'url("' 
                 + tmp.backgroundImage + '") '
                 + tmp.defaultState.x + 'px '
                 + tmp.defaultState.y + 'px no-repeat';
             
-            if (tmp = properties.secondary) {
+            if (tmp = options.secondary) {
                 span[1].style.background = 'url("' 
                     + tmp.backgroundImage + '") '
                     + tmp.defaultState.x + 'px '
                     + tmp.defaultState.y + 'px no-repeat'
             }
             
-            if (tmp = properties.tertiary) {
-                span[2].style.background =
+            if (tmp = options.tertiary) {
+                span[0].style.background =
                     tmp.backgroundColor + ' url("'
                     + tmp.backgroundImage + '") '
                     + tmp.defaultState.x + 'px '
                     + tmp.defaultState.y + 'px no-repeat';
-                span[2].style.border = "1px solid #c7c7c7";
+                span[0].style.border = "1px solid #c7c7c7";
             }
         }
         
