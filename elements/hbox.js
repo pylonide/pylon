@@ -597,8 +597,11 @@ apf.vbox = function(struct, tagName){
         
         //Clear css properties and set layout
         if (amlNode.nodeFunc == apf.NODE_VISIBLE) {
-            if (amlNode.flex)
+            if (amlNode.flex) {
+                var flex = amlNode.flex;
                 propHandlers.flex.call(amlNode, 0);
+                amlNode.flex = flex;
+            }
             
             if (apf.hasFlexibleBox) {
                 amlNode.$ext.style[apf.CSSPREFIX + "BoxSizing"] = "";
