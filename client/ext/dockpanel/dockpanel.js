@@ -100,7 +100,7 @@ return ext.register("ext/dockpanel/dockpanel", {
             getPage : getPage
         };
         
-        panel[type].mnuItem = mnuPanels.appendChild(new apf.item({
+        panel[type].mnuItem = mnuWindows.appendChild(new apf.item({
             caption : options.menu.split("/").pop(),
             type    : "check",
             onclick : function(){

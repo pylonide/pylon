@@ -136,11 +136,11 @@ return ext.register("ext/panels/panels", {
     init : function(amlNode){
         this.nodes.push(
             barMenu.appendChild(new apf.button({
-                submenu : "mnuPanels",
+                submenu : "mnuWindows",
                 caption : "Windows",
                 skin    : "c9-menu-btn"
             })),
-            mnuPanels
+            mnuWindows
         );
         
         /**** Support for state preservation ****/

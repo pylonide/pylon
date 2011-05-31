@@ -42,25 +42,25 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
         var _self = this;
         
         this.nodes.push(
-            mnuPanels.appendChild(new apf.divider()),
-            mnuPanels.appendChild(new apf.item({
+            mnuTabs.appendChild(new apf.item({
                 caption : "Close Tab",
                 onclick : function(){
                     _self.closetab();
                 }
             })),
-            mnuPanels.appendChild(new apf.item({
+            mnuTabs.appendChild(new apf.item({
                 caption : "Close All Tabs",
                 onclick : this.closealltabs.bind(this)
             })),
-            mnuPanels.appendChild(new apf.item({
+            mnuTabs.appendChild(new apf.item({
                 caption : "Close All But Current Tab",
                 onclick : function(){
                     _self.closeallbutme();
                 }
             })),
+            //mnuTabs.appendChild(new apf.divider()),
             apf.document.body.appendChild(new apf.menu({
-                id : "mnuTabs",
+                id : "mnuContextTabs",
                 childNodes : [
                     new apf.item({
                         caption : "Close Tab",
@@ -86,7 +86,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
         this.hotitems["closealltabs"]  = [this.nodes[2]];
         this.hotitems["closeallbutme"] = [this.nodes[3]];
 
-        tabEditors.setAttribute("contextmenu", "mnuTabs");
+        tabEditors.setAttribute("contextmenu", "mnuContextTabs");
 
         tabEditors.addEventListener("close", function(e) {
             _self.removeItem(e.page);
@@ -219,7 +219,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
         if (this.more)
             return; // no more items allowed...
         var no = this.nodes.push(
-            mnuPanels.appendChild(new apf.item({
+            mnuTabs.appendChild(new apf.item({
                 caption : page.getAttribute("caption"),
                 model   : page.$model,
                 relPage : page.id,
@@ -256,9 +256,9 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
         }
         else if (!this.sep && (len || force)) {
             if (len)
-                this.sep = mnuPanels.insertBefore(new apf.divider(), this.nodes[3].nextSibling);
+                this.sep = mnuTabs.insertBefore(new apf.divider(), this.nodes[2].nextSibling);
             else
-                this.sep = mnuPanels.appendChild(new apf.divider());
+                this.sep = mnuTabs.appendChild(new apf.divider());
         }
 
         if (len < (force ? 9 : 10)) { // we already have 4 other menu items
@@ -268,7 +268,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
             }
         }
         else if (!this.more) {
-            this.more = mnuPanels.appendChild(new apf.item({
+            this.more = mnuTabs.appendChild(new apf.item({
                 caption : "More...",
                 onclick : function() {
                     alert("To be implemented!")

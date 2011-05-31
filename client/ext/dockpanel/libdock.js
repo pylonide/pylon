@@ -16,12 +16,10 @@
     - floating sections or menus
     
     INTEGRATION
-    - refactor into seperate class
     - closing a window should set the state in the windows menu
     - debugger plugin doesnt need to be visible at the start anymore
     - add right click menu to buttons/sections
     - maintain state of sections/buttons even when closed
-    - save serialized state in settings.xml
     
     - page closing should call cbStorePage
 */
