@@ -388,7 +388,8 @@ apf.BaseTab = function(){
         }
         else if (type == "remove") {
             anim.onfinish = function(){
-                callback();
+            	if (node.dispatchEvent("afterclose") !== false)
+                	callback();
                 
                 if (_self.$waitForMouseOut == 2) {
                     apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
@@ -397,8 +398,6 @@ apf.BaseTab = function(){
                 }
                 else if (isLast)
                     delete _self.$waitForMouseOut;
-                
-                node.dispatchEvent("afterclose");
             }
             anim.onstop = function(){
                 apf.setOpacity(html, 1);
@@ -809,8 +808,8 @@ apf.BaseTab = function(){
         // #endif
         {
             //page.removeNode();
-            page.destroy(true, true);
-            page.dispatchEvent("afterclose");
+            if (page.dispatchEvent("afterclose") !== false)
+            	page.destroy(true, true);
 
             // #ifdef __ENABLE_TABSCROLL
             //@todo this is wrong, we can also use removeChild
