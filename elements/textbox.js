@@ -117,6 +117,7 @@ apf.textbox  = function(struct, tagName){
 
     //this.realtime        = false;
     this.value             = "";
+    this.readonly          = false;
     this.$isTextInput      = true;
     this.multiline         = false;
 
@@ -125,6 +126,7 @@ apf.textbox  = function(struct, tagName){
      * updated as the user types it, or only when this element looses focus or
      * the user presses enter.
      */
+    this.$booleanProperties["readonly"]    = true;
     this.$booleanProperties["focusselect"] = true;
     this.$booleanProperties["realtime"]    = true;
     this.$supportedProperties.push("value", "mask", "initial-message",
@@ -640,7 +642,7 @@ apf.textbox  = function(struct, tagName){
                 $setTimeout("var o = apf.lookup(" + _self.$uniqueId + ");\
                     o.change(o.getValue())");
 
-            if (_self.multiline == "optional" && e.keyCode == 13 && !e.shiftKey
+            if (_self.readonly || _self.multiline == "optional" && e.keyCode == 13 && !e.shiftKey
               || e.ctrlKey && (e.keyCode == 66 || e.keyCode == 73
               || e.keyCode == 85)) {
                 e.returnValue = false;
