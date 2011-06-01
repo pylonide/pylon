@@ -92,6 +92,20 @@ return ext.register("ext/searchinfiles/searchinfiles", {
             }
             editors.showFile(root.getAttribute("path") + "/" + path, line, 0, text);
         });
+        
+        console.enable();
+        if (!this.$panel) {
+            this.$panel = tabConsole.add(this.pageTitle, this.pageID);
+            this.$panel.appendChild(trSFHbox);
+            tabConsole.set(this.pageID);
+            trSFResult.setProperty("visible", true);
+            this.$model = trSFResult.getModel();
+            var _self = this;
+            // make sure the tab is shown when results come in
+            this.$model.addEventListener("afterload", function() {
+                tabConsole.set(_self.pageID);
+            });
+        }
     },
 
     getSelectedTreeNode: function() {
