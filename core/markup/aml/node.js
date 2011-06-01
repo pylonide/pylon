@@ -406,7 +406,7 @@ apf.AmlNode = function(){
             return; //We don't update the tree if this is a doc fragment
 
         //@todo review this...
-        if (initialAppend) {
+        if (initialAppend && !amlNode.render) { // && (nNodes = node.childNodes).length ??
             (this.ownerDocument || this).$domParser.$continueParsing(amlNode, {delay: true});
         }
 
