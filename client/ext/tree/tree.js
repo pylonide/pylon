@@ -21,7 +21,49 @@ return ext.register("ext/tree/tree", {
     expandedList    : {},
     loading         : false,
     changed         : false,
-    
+    sbIsFaded       : false,
+    animControl     : {},
+
+    showScrollbar : function() {
+        if (this.sbTimer)
+            clearTimeout(this.sbTimer);
+
+        if (this.sbIsFaded) {
+            if (this.animControl.state)
+                this.animControl.stop();
+
+            apf.tween.single(sbTrFiles, {
+                type     : "fade",
+                anim     : apf.tween.EASEIN,
+                from     : 0,
+                to       : 100,
+                steps    : 40,
+                control  : this.animControl
+            });
+
+            this.sbIsFaded = false;
+        }
+    },
+
+    hideScrollbar : function() {
+        if (this.sbIsFaded == false) {
+            var _self = this;
+            this.sbTimer = setTimeout(function() {
+                if (_self.animControl.stop)
+                    _self.animControl.stop();
+                apf.tween.single(sbTrFiles, {
+                    type     : "fade",
+                    anim     : apf.tween.EASEOUT,
+                    from     : 100,
+                    to       : 0,
+                    steps    : 40,
+                    control  : _self.animControl
+                });
+                _self.sbIsFaded = true;
+            }, _self.animControl.state ? 20 : 200);
+        }
+    },
+
     //@todo deprecated?
     getSelectedPath: function() {
         return trFiles.selected.getAttribute("path");
