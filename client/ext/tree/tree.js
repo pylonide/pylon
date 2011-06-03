@@ -27,35 +27,39 @@ return ext.register("ext/tree/tree", {
     animControl     : {},
 
     onSBMouseOver : function() {
+        if (this.ignoreSBMouseOut)
+            this.pendingSBFadeOut = false;
         this.showScrollbar();
     },
 
-    onSBMouseOut  : function() {
+    onSBMouseOut : function() {
         if (this.ignoreSBMouseOut)
             this.pendingSBFadeOut = true;
 
         this.hideScrollbar();
     },
-    
+
     onSBMouseDown : function() {
         this.ignoreSBMouseOut = true;
     },
-    
-    onSBMouseUp   : function() {
+
+    onSBMouseUp : function() {
         this.ignoreSBMouseOut = false;
         if (this.pendingSBFadeOut) {
             this.pendingSBFadeOut = false;
             this.hideScrollbar();
         }
     },
-    
+
     onTreeOver : function() {
-        this.showScrollbar();
-    },
-    
-    onTreeOut : function() {
         if (this.ignoreSBMouseOut)
             this.pendingSBFadeOut = false;
+        this.showScrollbar();
+    },
+
+    onTreeOut : function() {
+        if (this.ignoreSBMouseOut)
+            this.pendingSBFadeOut = true;
         this.hideScrollbar();
     },
 
