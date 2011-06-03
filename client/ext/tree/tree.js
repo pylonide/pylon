@@ -22,7 +22,42 @@ return ext.register("ext/tree/tree", {
     loading         : false,
     changed         : false,
     sbIsFaded       : false,
+    ignoreSBMouseOut: false,
+    pendingSBFadeOut: false,
     animControl     : {},
+
+    onSBMouseOver : function() {
+        this.showScrollbar();
+    },
+
+    onSBMouseOut  : function() {
+        if (this.ignoreSBMouseOut)
+            this.pendingSBFadeOut = true;
+
+        this.hideScrollbar();
+    },
+    
+    onSBMouseDown : function() {
+        this.ignoreSBMouseOut = true;
+    },
+    
+    onSBMouseUp   : function() {
+        this.ignoreSBMouseOut = false;
+        if (this.pendingSBFadeOut) {
+            this.pendingSBFadeOut = false;
+            this.hideScrollbar();
+        }
+    },
+    
+    onTreeOver : function() {
+        this.showScrollbar();
+    },
+    
+    onTreeOut : function() {
+        if (this.ignoreSBMouseOut)
+            this.pendingSBFadeOut = false;
+        this.hideScrollbar();
+    },
 
     showScrollbar : function() {
         if (this.sbTimer)
@@ -35,8 +70,8 @@ return ext.register("ext/tree/tree", {
             apf.tween.single(sbTrFiles, {
                 type     : "fade",
                 anim     : apf.tween.EASEIN,
-                from     : 0,
-                to       : 100,
+                from     : 0.4,
+                to       : 1,
                 steps    : 20,
                 control  : this.animControl
             });
@@ -46,6 +81,9 @@ return ext.register("ext/tree/tree", {
     },
 
     hideScrollbar : function() {
+        if (this.ignoreSBMouseOut)
+            return;
+
         if (this.sbIsFaded == false) {
             var _self = this;
             this.sbTimer = setTimeout(function() {
@@ -54,8 +92,8 @@ return ext.register("ext/tree/tree", {
                 apf.tween.single(sbTrFiles, {
                     type     : "fade",
                     anim     : apf.tween.EASEOUT,
-                    from     : 100,
-                    to       : 0,
+                    from     : 1,
+                    to       : 0.4,
                     steps    : 20,
                     control  : _self.animControl
                 });

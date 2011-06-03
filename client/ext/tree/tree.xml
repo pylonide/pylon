@@ -80,8 +80,8 @@
         <a:tree id="trFiles" canrename="true" border="0"
           contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
           onbeforeremove="return remove()" disabled="{!stServerConnected.active}"
-          flex="1" anchors = "0 0 0 0" onmouseover="require('ext/tree/tree').showScrollbar()"
-          onmouseout="require('ext/tree/tree').hideScrollbar()"
+          flex="1" anchors = "0 0 0 0" onmouseover="require('ext/tree/tree').onTreeOver()"
+          onmouseout="require('ext/tree/tree').onTreeOut()"
         >
             <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
                 <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
@@ -111,7 +111,10 @@
             bottom   = "0"
             width    = "7"
             overflow = "auto"
-            onmouseover = "console.log('sbover')"
+            onmouseover = "require('ext/tree/tree').onSBMouseOver()"
+            onmouseout  = "require('ext/tree/tree').onSBMouseOut()"
+            onmousedown = "require('ext/tree/tree').onSBMouseDown()"
+            onmouseup   = "require('ext/tree/tree').onSBMouseUp()"
         />
         <a:menu id="mnuCtxTree" disabled="{!stServerConnected.active}">
             <a:item match="[file]" class="strong" onclick="
