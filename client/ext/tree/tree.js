@@ -29,7 +29,7 @@ return ext.register("ext/tree/tree", {
             clearTimeout(this.sbTimer);
 
         if (this.sbIsFaded) {
-            if (this.animControl.state)
+            if (this.animControl.state != apf.tween.STOPPED && this.animControl.stop)
                 this.animControl.stop();
 
             apf.tween.single(sbTrFiles, {
@@ -37,7 +37,7 @@ return ext.register("ext/tree/tree", {
                 anim     : apf.tween.EASEIN,
                 from     : 0,
                 to       : 100,
-                steps    : 40,
+                steps    : 20,
                 control  : this.animControl
             });
 
@@ -49,18 +49,18 @@ return ext.register("ext/tree/tree", {
         if (this.sbIsFaded == false) {
             var _self = this;
             this.sbTimer = setTimeout(function() {
-                if (_self.animControl.stop)
+                if (_self.animControl.state != apf.tween.STOPPED && _self.animControl.stop)
                     _self.animControl.stop();
                 apf.tween.single(sbTrFiles, {
                     type     : "fade",
                     anim     : apf.tween.EASEOUT,
                     from     : 100,
                     to       : 0,
-                    steps    : 40,
+                    steps    : 20,
                     control  : _self.animControl
                 });
                 _self.sbIsFaded = true;
-            }, _self.animControl.state ? 20 : 200);
+            }, _self.animControl.state != apf.tween.RUNNING ? 20 : 200);
         }
     },
 
