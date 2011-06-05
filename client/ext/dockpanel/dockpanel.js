@@ -24,6 +24,7 @@ return ext.register("ext/dockpanel/dockpanel", {
 
     nodes          : [],
     dockpanels     : [],
+    sections       : [],
     
     loaded : false,
     
@@ -33,17 +34,44 @@ return ext.register("ext/dockpanel/dockpanel", {
     init : function(amlNode){
         var _self = this;
         
+        var vManager = new apf.visibilitymanager();
         this.layout = new DockableLayout(hboxMain, 
 			//Find Page
 			function(arrExtension){
 				if (!arrExtension || !_self.dockpanels[arrExtension[0]])
 					return false;
+
+				var item = _self.dockpanels[arrExtension[0]][arrExtension[1]];
+				if (item.page)
+					return item.page
 				
-				return _self.dockpanels[arrExtension[0]][arrExtension[1]].getPage();
+				var page = item.getPage();
+				page.$arrExtension = arrExtension;
+				
+				vManager.permanent(page, function(e){
+					item.mnuItem.check()
+				}, function(){
+					item.mnuItem.uncheck();
+				});
+				
+				return page;
 			}, 
 			//Store Page
 			function(amlPage){
+				var arrExtension = amlPage.$arrExtension;
+				var item = _self.dockpanels[arrExtension[0]][arrExtension[1]];
+				item.page = amlPage;
 				
+				_self.sections[arrExtension[0]][arrExtension[1]] = {
+                    buttons : [
+                        { ext : [arrExtension[0], arrExtension[1]] }
+                    ]
+				}
+                
+                item.mnuItem.uncheck();
+                
+                _self.changed = true;
+                settings.save();
 			},
 			//Find Button Options
 			function(arrExtension){
@@ -61,9 +89,16 @@ return ext.register("ext/dockpanel/dockpanel", {
         ide.addEventListener("loadsettings", function(e){
             var model = e.model;
             var strSettings = model.queryValue("auto/dockpanel");
-            _self.layout.loadState(strSettings
-                ? apf.unserialize(strSettings)
-                : _self.defaultState);
+            
+            var settings = _self.defaultState;
+            if (strSettings) {
+                var objSettings = apf.unserialize(strSettings);
+                
+                settings = objSettings.state;
+                apf.extend(_self.sections, objSettings.hidden);
+            }
+            
+            _self.layout.loadState(settings || _self.defaultState);
             
             _self.loaded = true;
         });
@@ -73,7 +108,10 @@ return ext.register("ext/dockpanel/dockpanel", {
                 return;
 
             var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/dockpanel/text()");
-            xmlSettings.nodeValue = apf.serialize(_self.layout.getState());
+            xmlSettings.nodeValue = apf.serialize({
+                state  : _self.layout.getState(),
+                hidden : _self.sections
+            });
             
             return true;
         });
@@ -100,11 +138,21 @@ return ext.register("ext/dockpanel/dockpanel", {
             getPage : getPage
         };
         
+        var layout = this.layout, _self = this;
         panel[type].mnuItem = mnuWindows.appendChild(new apf.item({
             caption : options.menu.split("/").pop(),
             type    : "check",
             onclick : function(){
-                //@todo
+                var page = getPage();
+                
+                //Problem state might not be removed from 
+                if (!page.parentNode || !page.parentNode.dock) {
+                    layout.addItem(_self.sections[name][type]);
+                    layout.show(page);
+                }
+                else {
+                    layout.show(page);
+                }
             }
         }));
     },
@@ -121,12 +169,22 @@ return ext.register("ext/dockpanel/dockpanel", {
             return;
         }
         
+        if (def.hidden) {
+            var buttons = def.buttons;
+            for (var i = 0; i < buttons.length; i++) {
+                var ext = buttons[i].ext;
+                (this.sections[ext[0]] || (this.sections[ext[0]] = {}))[ext[1]] = def;
+            }
+            return;
+        }
+        
         if (!state.bars[0])
             state.bars[0] = {expanded: false, width: 200, sections: []};
 
         var bar = state.bars[0];
-        if (def.buttons)
+        if (def.buttons) {
             bar.sections.push(def);
+        }
         else {
             bar.sections.push({
                 flex    : 2,

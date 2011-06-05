@@ -115,19 +115,17 @@ return ext.register("ext/debugger/debugger", {
         });
         
         dock.addDockable({
-            sections : [
-                {
-                    buttons : [
-                        { ext : [name, "dbgCallStack"] }
-                    ]
-                },
-                {
-                    buttons : [
-                        { ext : [name, "dbInteractive"] },
-                        { ext : [name, "dbgVariable"] },
-                        { ext : [name, "dbgBreakpoints"] }
-                    ]
-                }
+            hidden  : true,
+            buttons : [
+                { ext : [name, "dbgCallStack"] }
+            ]
+        });
+        dock.addDockable({
+            hidden  : true,
+            buttons : [
+                { ext : [name, "dbInteractive"] },
+                { ext : [name, "dbgVariable"] },
+                { ext : [name, "dbgBreakpoints"] }
             ]
         });
     },
@@ -157,15 +155,21 @@ return ext.register("ext/debugger/debugger", {
         dbg.addEventListener("changeframe", function(e) {
             e.data && _self.showDebugFile(e.data.getAttribute("scriptid"));
         });
-
-        lstBreakpoints.addEventListener("afterselect", function(e) {
-            if (e.selected && e.selected.getAttribute("scriptid"))
-                _self.showDebugFile(e.selected.getAttribute("scriptid"), parseInt(e.selected.getAttribute("line")) + 1);
-            // TODO sometimes we don't have a scriptID
-        });
         
-        lstScripts.addEventListener("afterselect", function(e) {
-            e.selected && require("ext/debugger/debugger").showDebugFile(e.selected.getAttribute("scriptid"));
+        dbgBreakpoints.addEventListener("afterrender", function(){
+            lstBreakpoints.addEventListener("afterselect", function(e) {
+                if (e.selected && e.selected.getAttribute("scriptid"))
+                    _self.showDebugFile(e.selected.getAttribute("scriptid"), 
+                        parseInt(e.selected.getAttribute("line")) + 1);
+                // TODO sometimes we don't have a scriptID
+            });
+        });
+
+        dbgBreakpoints.addEventListener("dbInteractive", function(){
+            lstScripts.addEventListener("afterselect", function(e) {
+                e.selected && require("ext/debugger/debugger")
+                    .showDebugFile(e.selected.getAttribute("scriptid"));
+            });
         });
 
         ide.addEventListener("afterfilesave", function(e) {

@@ -96,7 +96,11 @@ return ext.register("ext/settings/settings", {
             return;
         }
 
-        this.model.load(ide.settings);
+        try {
+		this.model.load(ide.settings);
+	} catch(e) {
+		this.model.load(template);
+	}
 
         ide.dispatchEvent("loadsettings", {
             model : _self.model

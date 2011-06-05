@@ -7159,12 +7159,6 @@ apf.selectTextHtml = function(oHtml){
  */
 
 
-/**
- * Manages visibility hooks for elements that need to be visible to set their
- * layout.
- *
- * @private
- */
 apf.visibilitymanager = function(){
     var tree  = {};
     var _self  = this;
@@ -7231,9 +7225,9 @@ apf.visibilitymanager = function(){
     }
     
     this.permanent = function(amlNode, show, hide){
-        var state = amlNode.$ext.offsetHeight && amlNode.$ext.offsetWidth;
+        var state = amlNode.$ext.offsetHeight || amlNode.$ext.offsetWidth;
         function check(e){
-            var newState = amlNode.$ext.offsetHeight && amlNode.$ext.offsetWidth;
+            var newState = amlNode.$ext.offsetHeight || amlNode.$ext.offsetWidth;
             if (newState == state)
                 return;
             
@@ -7244,13 +7238,54 @@ apf.visibilitymanager = function(){
         }
 
         //Set events on the parent tree
-        var p = amlNode;
+        /*var p = amlNode;
         while (p) {
             p.addEventListener("prop.visible", check);
             p = p.parentNode || p.$parentNode;
+        }*/
+        
+        function cleanup(setInsertion){
+            var p = amlNode;
+            while (p) {
+                p.removeEventListener("prop.visible", check);
+                p.removeEventListener("DOMNodeRemoved", remove); 
+                p.removeEventListener("DOMNodeRemovedFromDocument", remove); 
+                if (setInsertion)
+                    p.addEventListener("DOMNodeInserted", add);
+                p = p.parentNode || p.$parentNode;
+            }
+            
+            check();
         }
 
+        function remove(e){
+            if (e.currentTarget != this)
+                return;
+            
+            cleanup(e.name == "DOMNodeRemoved");
+        }
+
+        function add(){
+            //Set events on the parent tree
+            var p = amlNode;
+            while (p) {
+                p.addEventListener("prop.visible", check);
+                p.addEventListener("DOMNodeRemoved", remove); 
+                p.addEventListener("DOMNodeRemovedFromDocument", remove); 
+                p.removeEventListener("DOMNodeInserted", add);
+                p = p.parentNode || p.$parentNode;
+            }
+            
+            check();
+        }
+        
+        add();
+
         return state;
+    }
+    
+    this.removePermanent = function(amlNode){
+    	
     }
 };
 
@@ -33022,8 +33057,6 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(56620)TIME(Fri, 15 Apr 2011 12:16:16 GMT)*/
-
 /*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
@@ -33045,7 +33078,7 @@ apf.BaseStateButtons = function(){
  *
  */
 
-
+// #ifdef __AMLBASETAB || __INC_ALL
 
 /**
  * Baseclass of a paged element. 
@@ -33218,19 +33251,28 @@ apf.BaseTab = function(){
                 return;
             }
             
-            
+            //#ifdef __DEBUG
+            apf.console.warn("Setting tab page which doesn't exist, \
+                              referenced by name: '" + next + "'");
+            //#endif
 
             return false;
         }
 
         if (page.parentNode != this) {
-            
+            //#ifdef __DEBUG
+            apf.console.warn("Setting active page on page component which \
+                              isn't a child of this tab component. Cancelling.");
+            //#endif
 
             return false;
         }
 
         if (!page.visible || page.disabled) {
-            
+            //#ifdef __DEBUG
+            apf.console.warn("Setting active page on page component which \
+                              is not visible or disabled. Cancelling.");
+            //#endif
 
             return false;
         }
@@ -33271,16 +33313,16 @@ apf.BaseTab = function(){
 
         page.$activate();
 
-        
+        //#ifdef __ENABLE_PAGE_TRANSITIONS
         if (page["trans-in"] || this.$activepage && this.$activepage["trans-out"])
             this.transition(page, page["trans-in"] || "normal",
                 this.$activepage, this.$activepage && this.$activepage["trans-out"] || "normal");
-        
+        //#endif
 
         this.$activepage = page;
-        
+        //#ifdef __ENABLE_TABSCROLL
         //this.scrollIntoView(page);
-        
+        //#endif
 
         //Loader support
         if (this.hideLoader) {
@@ -33324,7 +33366,7 @@ apf.BaseTab = function(){
         this.$scale = value.indexOf("scale") > -1;
         this.$scroll = !this.$scale;
         
-        
+        //#ifdef __ENABLE_TAB_SCALE
         //@todo skin change
         //@todo buttons on the side
         if (this.$scale) {
@@ -33340,10 +33382,10 @@ apf.BaseTab = function(){
             this.$setStyleClass(this.$buttons, "", ["scale"]);
             this.removeEventListener("resize", scalersz);
         }
-        
+        //#endif
     };
     
-    
+    //#ifdef __ENABLE_TAB_SCALE
     function visCheck(){
         scalersz.call(this)
     }
@@ -33363,7 +33405,7 @@ apf.BaseTab = function(){
         
         if (this.$control && this.$control.type != "remove" && this.$control.stop)
             this.$control.stop();
-
+            
         var _self = this;
         var anim  = {
             steps    : type == "remove" ? 8 : 8,
@@ -33405,7 +33447,8 @@ apf.BaseTab = function(){
         }
         else if (type == "remove") {
             anim.onfinish = function(){
-                callback();
+            	if (node.dispatchEvent("afterclose") !== false)
+                	callback();
                 
                 if (_self.$waitForMouseOut == 2) {
                     apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
@@ -33414,8 +33457,6 @@ apf.BaseTab = function(){
                 }
                 else if (isLast)
                     delete _self.$waitForMouseOut;
-                
-                node.dispatchEvent("afterclose");
             }
             anim.onstop = function(){
                 apf.setOpacity(html, 1);
@@ -33522,7 +33563,7 @@ apf.BaseTab = function(){
     
     var round = [Math.floor, Math.ceil];
     function scalersz(e, excl){
-        if (!this.length || this.$waitForMouseOut 
+        if (!this.length && !this.getPages().length || this.$waitForMouseOut 
           || this.$control && this.$control.state == apf.tween.RUNNING) {
             //@todo queue call here to after anim
             return;
@@ -33554,11 +33595,11 @@ apf.BaseTab = function(){
               - this.$btnMargin 
               - apf.getWidthDiff(pg[l - 1].$button)) + "px";
     }
-    
+    //#endif
 
     /**** Public methods ****/
 
-    
+    //#ifdef __ENABLE_PAGE_TRANSITIONS
     this.transition = function(pageIn, animIn, pageOut, animOut){
         var _self = this;
         
@@ -33739,7 +33780,7 @@ apf.BaseTab = function(){
                 throw new Error("Unknown animation type:" + animType[0]); //@todo make into proper apf3.0 error
         }
     }
-    
+    //#endif
 
     /**
      * Retrieves an array of all the page elements of this element.
@@ -33785,9 +33826,9 @@ apf.BaseTab = function(){
             
         this.insertBefore(page, before);
         
-        
+        // #ifdef __ENABLE_TABSCROLL
         //this.scrollIntoView(page);
-        
+        // #endif
         return page;
     };
 
@@ -33815,7 +33856,7 @@ apf.BaseTab = function(){
         if (!force && this.dispatchEvent("close", e) === false)
             return;
 
-        
+        //#ifdef __ENABLE_TAB_SCALE
         if (this.$scale) {
             this.$scaleinit(page, "remove", function(){
                 //page.removeNode();
@@ -33823,22 +33864,22 @@ apf.BaseTab = function(){
             });
         }
         else 
-        
+        // #endif
         {
             //page.removeNode();
-            page.destroy(true, true);
-            page.dispatchEvent("afterclose");
+            if (page.dispatchEvent("afterclose") !== false)
+            	page.destroy(true, true);
 
-            
+            // #ifdef __ENABLE_TABSCROLL
             //@todo this is wrong, we can also use removeChild
             //this.setScrollerState();
-            
+            // #endif
         }
         
         return page;
     };
 
-    
+    // #ifdef __ENABLE_TABSCROLL
     /*
     var SCROLLANIM = {
             scrollOn  : false,
@@ -34204,7 +34245,7 @@ apf.BaseTab = function(){
             bAnimating = false;
     };
 
-    
+    // #endif
 
     /**** DOM Hooks ****/
 
@@ -34232,9 +34273,9 @@ apf.BaseTab = function(){
             else {
                 amlNode.$deactivate();
                 
-                
+                // #ifdef __ENABLE_TABSCROLL
                 //this.setScrollerState();
-                
+                // #endif
                 this.$activepage  =
                 this.activepage   =
                 this.activepagenr = null;
@@ -34242,19 +34283,19 @@ apf.BaseTab = function(){
             }
         }
         else {
-            
+            // #ifdef __ENABLE_TABSCROLL
             //if (this.$scroll) 
                 //this.setScrollerState();
-            
-            
+            // #endif
+            //#ifdef __ENABLE_TAB_SCALE
             if (this.$scale) 
                 this.$scaleinit();
-            
+            //#endif
         }
         
-        
+        //#ifdef __WITH_PROPERTY_BINDING
         this.setProperty("length", this.childNodes.length);
-        
+        //#endif
     });
 
     this.addEventListener("DOMNodeInserted",function(e){
@@ -34293,18 +34334,18 @@ apf.BaseTab = function(){
         else if (!this.$activepage)
             this.set(amlNode);
         
-        
+        //#ifdef __ENABLE_TAB_SCALE
         if (this.$scale && amlNode.visible) 
             this.$scaleinit(amlNode, "add");
         else 
-        
+        //#endif
         {
             amlNode.dispatchEvent("afteropen");
         }
         
-        
+        //#ifdef __WITH_PROPERTY_BINDING
         this.setProperty("length", this.childNodes.length);
-        
+        //#endif
     });
 
     /**** Private state handling functions ****/
@@ -34355,7 +34396,7 @@ apf.BaseTab = function(){
 
     /**** Keyboard support ****/
 
-    
+    // #ifdef __WITH_KEYBOARD
 
     this.addEventListener("keydown", function(e){
         if (!this.$hasButtons)
@@ -34397,7 +34438,7 @@ apf.BaseTab = function(){
         //return false;
     }, true);
 
-    
+    // #endif
 
     /**** Init ****/
 
@@ -34415,7 +34456,7 @@ apf.BaseTab = function(){
 
         this.oPages = this.$getLayoutNode("main", "pages", this.$ext);
         
-        
+        // #ifdef __ENABLE_TABSCROLL
         // add scroller node(s)
         /*this.oScroller = this.$getLayoutNode("main", "scroller", this.oPages);
         if (this.oScroller) {
@@ -34437,7 +34478,7 @@ apf.BaseTab = function(){
                 setButtonState(SCROLL_BOTH, SCROLL_OFF);
             };
 
-            
+            // #ifdef __WITH_MOUSESCROLL
             /*apf.addEventListener("mousescroll", function(e) {
                 var found = (e.target == _self.$buttons);
                 while (!found && e.target != document.body) {
@@ -34449,7 +34490,7 @@ apf.BaseTab = function(){
                 e.delta = Math.abs(e.delta);
                 _self.scroll(e, dir);
             });* /
-            
+            //#endif
 
             this.oLeftScroll  = apf.getNode(this.oScroller, [0]);
             this.oRightScroll = apf.getNode(this.oScroller, [1]);
@@ -34495,12 +34536,12 @@ apf.BaseTab = function(){
             });
         }
 
-        
+        //#ifdef __WITH_LAYOUT
         apf.layout.setRules(this.$ext, this.$uniqueId + "_tabscroller",
             "var o = apf.all[" + this.$uniqueId + "]; o && o.correctScrollState()");
         apf.layout.queue(this.$ext);*/
-        
-        
+        //#endif
+        // #endif
 
         //Skin changing support
         if (this.$int) {
@@ -34544,16 +34585,16 @@ apf.BaseTab = function(){
             this.isPages = false;
         }
 
-        
+        //#ifdef __WITH_PROPERTY_BINDING
         this.setProperty("length", j);
-        
+        //#endif
 
         this.ready = true;
-        
+        // #ifdef __ENABLE_TABSCROLL
         /*window.setTimeout(function() {
             _self.setScrollerState();
         }, 0);*/
-        
+        // #endif
 
         if (!this.activepage && this.getAttribute("src")) {
             this.src = this.getAttribute("src");
@@ -34564,17 +34605,19 @@ apf.BaseTab = function(){
     this.$destroy = function(bSkinChange) {
         if (bSkinChange || !this.oScroller)
             return;
-        
-        
+        // #ifdef __ENABLE_TABSCROLL
+        //#ifdef __WITH_LAYOUT
         /*apf.layout.removeRule(this.$ext, this.$uniqueId + "_tabscroller");
-        
+        //#endif
         [this.oLeftScroll, this.oRightScroll].forEach(function(oBtn) {
             oBtn.onmousedown = oBtn.ondblclick = oBtn.onmouseover = 
             oBtn.onmouseout  = oBtn.onmouseup  = null;
         });*/
-        
+        // #endif
     };
 }).call(apf.BaseTab.prototype = new apf.Presentation());
+
+// #endif
 
 
 
@@ -35954,9 +35997,9 @@ apf.DelayedRender = function(){
     var f;
     this.addEventListener("prop.visible", f = function(){
         if (arguments[0].value) {
-            
+            // #ifdef __WITH_DELAYEDRENDER
             this.$render();
-            
+            // #endif
             
             this.removeEventListener("prop.visible", f);
         }
@@ -56197,7 +56240,27 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/hbox.js)SIZE(39238)TIME(Mon, 07 Mar 2011 10:08:50 GMT)*/
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+// #ifdef __AMLHBOX || __AMLVBOX || __INC_ALL
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56219,7 +56282,7 @@ apf.aml.setElement("frame", apf.frame);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
+// #ifdef __AMLHBOX || __AMLVBOX || __INC_ALL
 
 /**
  * @define vbox Container that stacks it's children vertically.
@@ -56438,7 +56501,7 @@ apf.vbox = function(struct, tagName){
     };
     
     function visibleHandler(e){
-        
+        //#ifdef __LAYOUT_ENABLE_SPLITTERS
         if (this.parentNode.splitters && !this.$splitter) {
             if (!e.value) {
                 if (this.nextSibling && this.nextSibling.$splitter)
@@ -56463,7 +56526,7 @@ apf.vbox = function(struct, tagName){
                 }
             }
         }
-        
+        //#endif
         
         //@todo this can be more optimized by calcing if it WAS the last vis child.
         //if (isLastVisibleChild(this)) {
@@ -56757,7 +56820,7 @@ apf.vbox = function(struct, tagName){
                 propHandlers.margin.call(amlNode, amlNode.margin);
             if (amlNode.flex)
                 propHandlers.flex.call(amlNode, amlNode.flex);    
-
+                
             //Ie somehow sets the visible flags in between registration
             var isLast = isLastVisibleChild(amlNode); //apf.isIE ? this.lastChild == amlNode : 
             if (isLast || insert) {
@@ -56766,17 +56829,36 @@ apf.vbox = function(struct, tagName){
                 
                 if (!apf.hasFlexibleBox)
                     this.$propHandlers["pack"].call(this, this.pack);
-                
-                if (insert && amlNode.visible !== false) 
+                    
+                if (amlNode.visible !== false) //insert && - removed because for new nodes that are being attached to the tree insert is not set
                     visibleHandler.call(amlNode, {value: true});
+                
+                //@todo this needs more work
+                if (insert && amlNode.previousSibling) {
+                    var prev = amlNode.previousSibling;
+                    while (prev && (prev.nodeType != 1 || prev.localName == "splitter"))
+                        prev = prev.previousSibling;
+                    if (prev)
+                        visibleHandler.call(prev, {value: true});
+                }
             }
-            
+            //#ifdef __LAYOUT_ENABLE_SPLITTERS
             else if (this.splitters && !amlNode.$splitter && amlNode.visible !== false && !amlNode.nosplitter) {
-                this.insertBefore(
-                    this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
-                    amlNode.nextSibling);
+                if (amlNode.$ext.nextSibling != (amlNode.nextSibling && (amlNode.nextSibling.$altExt || amlNode.nextSibling.$ext))) {
+                    var _self = this;
+                    setTimeout(function(){
+                        _self.insertBefore(
+                            _self.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                            amlNode.nextSibling);
+                    });
+                }
+                else {
+                    this.insertBefore(
+                        this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                        amlNode.nextSibling);
+                }
             }
-            
+            //#endif
         
             delete this.$noResize;
             
@@ -56798,8 +56880,11 @@ apf.vbox = function(struct, tagName){
         
         //Clear css properties and set layout
         if (amlNode.nodeFunc == apf.NODE_VISIBLE) {
-            if (amlNode.flex)
+            if (amlNode.flex) {
+                var flex = amlNode.flex;
                 propHandlers.flex.call(amlNode, 0);
+                amlNode.flex = flex;
+            }
             
             if (apf.hasFlexibleBox) {
                 amlNode.$ext.style[apf.CSSPREFIX + "BoxSizing"] = "";
@@ -56836,12 +56921,15 @@ apf.vbox = function(struct, tagName){
             if (amlNode.width)
                 amlNode.$ext.style.width = "";
             
-            
-            if (this.splitters && !amlNode.$splitter 
-              && amlNode.nextSibling && amlNode.nextSibling.$splitter) {
-                amlNode.nextSibling.removeNode();
+            //#ifdef __LAYOUT_ENABLE_SPLITTERS
+            if (this.splitters && !amlNode.$splitter) {
+                if (amlNode.nextSibling && amlNode.nextSibling.$splitter)
+                    amlNode.nextSibling.removeNode();
+                if (isLastVisibleChild(amlNode) && amlNode.previousSibling 
+                  && amlNode.previousSibling.$splitter)
+                    amlNode.previousSibling.removeNode();
             }
-            
+            //#endif
         }
     }
     /*
@@ -57134,6 +57222,7 @@ apf.hbox.prototype = apf.vbox.prototype;
 
 apf.aml.setElement("hbox", apf.hbox);
 apf.aml.setElement("vbox", apf.vbox);
+// #endif
 
 
 
@@ -67371,7 +67460,6 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/splitter.js)SIZE(14439)TIME(Wed, 06 Apr 2011 09:56:34 GMT)*/
-
 /*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
@@ -67393,7 +67481,7 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
  *
  */
 
-
+// #ifdef __WITH_ALIGNMENT
 
 /**
  * @constructor
@@ -67404,6 +67492,8 @@ apf.splitter = function(struct, tagName){
 };
 
 (function() {
+    this.$scale = 0; // 0 both, 1 left/top, 2 right/bottom 
+    
     this.$focussable = false; // This object can get the focus
     this.$splitter   = true;
     
@@ -67412,6 +67502,12 @@ apf.splitter = function(struct, tagName){
     this.$propHandlers["realtime"] = function(value){
         this.$setStyleClass(this.$ext, value && (this.$baseCSSname + "Realtime") || "", 
             [this.$baseCSSname + "Realtime"]);
+    }
+    
+    this.$propHandlers["scale"] = function(value){
+        this.$scale = value == "left" || value == "top"
+            ? 1 : (value == "right" || "bottom " 
+                ? 2 : 0);
     }
     
     this.$propHandlers["type"] = function(value){
@@ -67492,14 +67588,16 @@ apf.splitter = function(struct, tagName){
                     newPos -= this.$ext[offsetSize];
 
                 //var totalFlex = this.$previous.flex + this.$next.flex - (finalPass && !this.realtime ? this.parentNode.padding : 0);
-                this.$previous[method]("flex", newPos);
-                this.$next[method]("flex", this.$totalFlex - newPos);
+                if (!this.$scale || this.$scale == 1)
+                    this.$previous[method]("flex", newPos);
+                if (!this.$scale || this.$scale == 2)
+                    this.$next[method]("flex", this.$totalFlex - newPos);
             }
             //Fixed
             else {
-                if (!this.$next.flex)
+                if (!this.$next.flex && (!this.$scale || this.$scale == 2))
                     this.$next[method](osize, max - newPos);
-                if (!this.$previous.flex)
+                if (!this.$previous.flex && (!this.$scale || this.$scale == 1))
                     this.$previous[method](osize, newPos);
             }
         }
@@ -67572,14 +67670,14 @@ apf.splitter = function(struct, tagName){
                 pHtml.style.position = "relative";
                 changedPosition = true;
             }
-            
+
             _self.$totalFlex = 0;
             with (_self.$info) {
                 var posPrev = apf.getAbsolutePosition(_self.$previous.$ext, _self.parentNode.$int);
-                var min = posPrev[d1] || 0;
+                var min = _self.$scale ? 0 : posPrev[d1] || 0;
                 var posNext = apf.getAbsolutePosition(_self.$next.$ext, _self.parentNode.$int);
                 var max = posNext[d1] + _self.$next.$ext[offsetSize] - this[offsetSize];
-            
+                
                 //Set flex to pixel sizes
                 if ((_self.$previous.flex || _self.$previous.flex === 0) 
                   && (_self.$next.flex || _self.$next.flex === 0)) {
@@ -67645,9 +67743,9 @@ apf.splitter = function(struct, tagName){
             e.returnValue  = false;
             e.cancelBubble = true;
             
-            
+            // #ifdef __WITH_PLANE
             apf.plane.show(this);
-            
+            // #endif
 
             _self.$setStyleClass(this, _self.$baseCSSname + "Moving");
             
@@ -67682,9 +67780,9 @@ apf.splitter = function(struct, tagName){
                 if (newPos)
                     _self.update(newPos, true);
                 
-                
+                // #ifdef __WITH_PLANE
                 apf.plane.hide();
-                
+                // #endif
                 
                 if (!_self.realtime) {
                     _self.$ext.style.left     = "";
@@ -67733,6 +67831,8 @@ apf.splitter = function(struct, tagName){
 }).call(apf.splitter.prototype = new apf.Presentation());
 
 apf.aml.setElement("splitter", apf.splitter);
+// #endif
+
 
 
 
