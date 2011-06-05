@@ -30,6 +30,8 @@ apf.splitter = function(struct, tagName){
 };
 
 (function() {
+    this.$scale = 0; // 0 both, 1 left/top, 2 right/bottom 
+    
     this.$focussable = false; // This object can get the focus
     this.$splitter   = true;
     
@@ -38,6 +40,12 @@ apf.splitter = function(struct, tagName){
     this.$propHandlers["realtime"] = function(value){
         this.$setStyleClass(this.$ext, value && (this.$baseCSSname + "Realtime") || "", 
             [this.$baseCSSname + "Realtime"]);
+    }
+    
+    this.$propHandlers["scale"] = function(value){
+        this.$scale = value == "left" || value == "top"
+            ? 1 : (value == "right" || "bottom " 
+                ? 2 : 0);
     }
     
     this.$propHandlers["type"] = function(value){
@@ -118,14 +126,16 @@ apf.splitter = function(struct, tagName){
                     newPos -= this.$ext[offsetSize];
 
                 //var totalFlex = this.$previous.flex + this.$next.flex - (finalPass && !this.realtime ? this.parentNode.padding : 0);
-                this.$previous[method]("flex", newPos);
-                this.$next[method]("flex", this.$totalFlex - newPos);
+                if (!this.$scale || this.$scale == 1)
+                    this.$previous[method]("flex", newPos);
+                if (!this.$scale || this.$scale == 2)
+                    this.$next[method]("flex", this.$totalFlex - newPos);
             }
             //Fixed
             else {
-                if (!this.$next.flex)
+                if (!this.$next.flex && (!this.$scale || this.$scale == 2))
                     this.$next[method](osize, max - newPos);
-                if (!this.$previous.flex)
+                if (!this.$previous.flex && (!this.$scale || this.$scale == 1))
                     this.$previous[method](osize, newPos);
             }
         }
@@ -198,14 +208,14 @@ apf.splitter = function(struct, tagName){
                 pHtml.style.position = "relative";
                 changedPosition = true;
             }
-            
+
             _self.$totalFlex = 0;
             with (_self.$info) {
                 var posPrev = apf.getAbsolutePosition(_self.$previous.$ext, _self.parentNode.$int);
-                var min = posPrev[d1] || 0;
+                var min = _self.$scale ? 0 : posPrev[d1] || 0;
                 var posNext = apf.getAbsolutePosition(_self.$next.$ext, _self.parentNode.$int);
                 var max = posNext[d1] + _self.$next.$ext[offsetSize] - this[offsetSize];
-            
+                
                 //Set flex to pixel sizes
                 if ((_self.$previous.flex || _self.$previous.flex === 0) 
                   && (_self.$next.flex || _self.$next.flex === 0)) {

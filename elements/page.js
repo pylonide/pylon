@@ -244,15 +244,14 @@ apf.page = function(struct, tagName){
 
     //beforeNode, pNode, withinParent
     this.addEventListener("DOMNodeInserted", function(e){
-        if (e && e.currentTarget != this || !this.$amlLoaded 
-          || !e.$oldParent)
+        if (e && e.currentTarget != this || !this.$amlLoaded) //|| !e.$oldParent
             return;
-
+            
         if (!e.$isMoveWithinParent 
           && this.skinName != this.parentNode.skinName) {
             this.$destroy(); //clean up button
         }
-        else if (this.$button && e.$oldParent.$hasButtons)
+        else if (this.$button && (!e.$oldParent || e.$oldParent.$hasButtons) && this.parentNode.$buttons)
             this.parentNode.$buttons.insertBefore(this.$button,
                 e.$beforeNode && e.$beforeNode.$button || null);
     }, true);

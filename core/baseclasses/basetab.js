@@ -390,6 +390,9 @@ apf.BaseTab = function(){
             anim.onfinish = function(){
             	if (node.dispatchEvent("afterclose") !== false)
                 	callback();
+                    
+                html.style.marginLeft = 0;
+                apf.setOpacity(html, 1);
                 
                 if (_self.$waitForMouseOut == 2) {
                     apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
@@ -504,7 +507,7 @@ apf.BaseTab = function(){
     
     var round = [Math.floor, Math.ceil];
     function scalersz(e, excl){
-        if (!this.getPage() || this.$waitForMouseOut 
+        if (!this.length && !this.getPages().length || this.$waitForMouseOut 
           || this.$control && this.$control.state == apf.tween.RUNNING) {
             //@todo queue call here to after anim
             return;
@@ -1243,7 +1246,7 @@ apf.BaseTab = function(){
 
     this.addEventListener("DOMNodeInserted",function(e){
         var amlNode = e.currentTarget;
-        
+
         if (amlNode.localName != "page" || e.relatedNode != this || amlNode.nodeType != 1)
             return;
 
@@ -1274,10 +1277,8 @@ apf.BaseTab = function(){
                 this.setProperty("activepagenr", info.position);
             }
         }
-        else if (!this.activepage && !this.$activepage) {
-            console.log(this.activepage);
+        else if (!this.activepage && !this.$activepage)
             this.set(amlNode);
-        }
         
         //#ifdef __ENABLE_TAB_SCALE
         if (this.$scale && amlNode.visible) 
