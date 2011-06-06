@@ -93,7 +93,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
             editors.showFile(root.getAttribute("path") + "/" + path, line, 0, text);
         });
         
-        console.enable();
+        ideConsole.enable();
         if (!this.$panel) {
             this.$panel = tabConsole.add(this.pageTitle, this.pageID);
             this.$panel.appendChild(trSFHbox);
