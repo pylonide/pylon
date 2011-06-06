@@ -560,9 +560,10 @@ apf.scrollbar = function(struct, tagName){
 
             if (this.setCapture)
                 this.setCapture();
-    
+
             _self.$setStyleClass(_self.$ext, _self.$baseCSSname + "Down");
-    
+            _self.dispatchEvent("mousedown", {});
+
             document.onmousemove = function(e){
                 if (!e) 
                     e = event;
@@ -596,7 +597,7 @@ apf.scrollbar = function(struct, tagName){
                     this.releaseCapture();
                 
                 _self.$setStyleClass(_self.$ext, "", [_self.$baseCSSname + "Down"]);
-                
+                _self.dispatchEvent("mouseup", {});
                 document.onmouseup   = 
                 document.onmousemove = null;
             };
@@ -661,6 +662,14 @@ apf.scrollbar = function(struct, tagName){
                 _self.setScroll();
             if (_self.$slideFast)
                 _self.$slideFast.style.display = "none";
+        };
+
+        this.$ext.onmouseover = function(e){
+            _self.dispatchEvent("mouseover", {htmlEvent : e || event});
+        };
+
+        this.$ext.onmouseout = function(e){
+            _self.dispatchEvent("mouseout", {htmlEvent : e || event});
         };
     }
     

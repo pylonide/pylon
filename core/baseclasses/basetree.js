@@ -1234,6 +1234,9 @@ apf.BaseTree = function(){
         this.$ext.onmouseover = function(e){
             _self.dispatchEvent("mouseover", {htmlEvent : e || event});
         };
+        this.$ext.onmouseout = function(e){
+            _self.dispatchEvent("mouseout", {htmlEvent : e || event});
+        };
         this.$ext.onmousemove = function(e){
             _self.dispatchEvent("mousemove", {htmlEvent : e || event});
         };
