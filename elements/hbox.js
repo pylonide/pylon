@@ -556,7 +556,7 @@ apf.vbox = function(struct, tagName){
                 propHandlers.margin.call(amlNode, amlNode.margin);
             if (amlNode.flex)
                 propHandlers.flex.call(amlNode, amlNode.flex);    
-
+                
             //Ie somehow sets the visible flags in between registration
             var isLast = isLastVisibleChild(amlNode); //apf.isIE ? this.lastChild == amlNode : 
             if (isLast || insert) {
@@ -565,15 +565,34 @@ apf.vbox = function(struct, tagName){
                 
                 if (!apf.hasFlexibleBox)
                     this.$propHandlers["pack"].call(this, this.pack);
-                
-                if (insert && amlNode.visible !== false) 
+                    
+                if (amlNode.visible !== false) //insert && - removed because for new nodes that are being attached to the tree insert is not set
                     visibleHandler.call(amlNode, {value: true});
+                
+                //@todo this needs more work
+                if (insert && amlNode.previousSibling) {
+                    var prev = amlNode.previousSibling;
+                    while (prev && (prev.nodeType != 1 || prev.localName == "splitter"))
+                        prev = prev.previousSibling;
+                    if (prev)
+                        visibleHandler.call(prev, {value: true});
+                }
             }
             //#ifdef __LAYOUT_ENABLE_SPLITTERS
             else if (this.splitters && !amlNode.$splitter && amlNode.visible !== false && !amlNode.nosplitter) {
-                this.insertBefore(
-                    this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
-                    amlNode.nextSibling);
+                if (amlNode.$ext.nextSibling != (amlNode.nextSibling && (amlNode.nextSibling.$altExt || amlNode.nextSibling.$ext))) {
+                    var _self = this;
+                    setTimeout(function(){
+                        _self.insertBefore(
+                            _self.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                            amlNode.nextSibling);
+                    });
+                }
+                else {
+                    this.insertBefore(
+                        this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                        amlNode.nextSibling);
+                }
             }
             //#endif
         
@@ -597,8 +616,11 @@ apf.vbox = function(struct, tagName){
         
         //Clear css properties and set layout
         if (amlNode.nodeFunc == apf.NODE_VISIBLE) {
-            if (amlNode.flex)
+            if (amlNode.flex) {
+                var flex = amlNode.flex;
                 propHandlers.flex.call(amlNode, 0);
+                amlNode.flex = flex;
+            }
             
             if (apf.hasFlexibleBox) {
                 amlNode.$ext.style[apf.CSSPREFIX + "BoxSizing"] = "";
@@ -634,11 +656,14 @@ apf.vbox = function(struct, tagName){
             
             if (amlNode.width)
                 amlNode.$ext.style.width = "";
-            
+
             //#ifdef __LAYOUT_ENABLE_SPLITTERS
-            if (this.splitters && !amlNode.$splitter 
-              && amlNode.nextSibling && amlNode.nextSibling.$splitter) {
-                amlNode.nextSibling.removeNode();
+            if (this.splitters && !amlNode.$splitter) {
+                if (amlNode.nextSibling && amlNode.nextSibling.$splitter)
+                    amlNode.nextSibling.removeNode();
+                if (isLastVisibleChild(amlNode) && amlNode.previousSibling 
+                  && amlNode.previousSibling.$splitter)
+                    amlNode.previousSibling.removeNode();
             }
             //#endif
         }

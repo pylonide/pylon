@@ -92,9 +92,9 @@ apf.visibilitymanager = function(){
     }
     
     this.permanent = function(amlNode, show, hide){
-        var state = amlNode.$ext.offsetHeight && amlNode.$ext.offsetWidth;
+        var state = amlNode.$ext.offsetHeight || amlNode.$ext.offsetWidth;
         function check(e){
-            var newState = amlNode.$ext.offsetHeight && amlNode.$ext.offsetWidth;
+            var newState = amlNode.$ext.offsetHeight || amlNode.$ext.offsetWidth;
             if (newState == state)
                 return;
             
@@ -105,13 +105,54 @@ apf.visibilitymanager = function(){
         }
 
         //Set events on the parent tree
-        var p = amlNode;
+        /*var p = amlNode;
         while (p) {
             p.addEventListener("prop.visible", check);
             p = p.parentNode || p.$parentNode;
+        }*/
+        
+        function cleanup(setInsertion){
+            var p = amlNode;
+            while (p) {
+                p.removeEventListener("prop.visible", check);
+                p.removeEventListener("DOMNodeRemoved", remove); 
+                p.removeEventListener("DOMNodeRemovedFromDocument", remove); 
+                if (setInsertion)
+                    p.addEventListener("DOMNodeInserted", add);
+                p = p.parentNode || p.$parentNode;
+            }
+            
+            check();
         }
 
+        function remove(e){
+            if (e.currentTarget != this)
+                return;
+            
+            cleanup(e.name == "DOMNodeRemoved");
+        }
+
+        function add(){
+            //Set events on the parent tree
+            var p = amlNode;
+            while (p) {
+                p.addEventListener("prop.visible", check);
+                p.addEventListener("DOMNodeRemoved", remove); 
+                p.addEventListener("DOMNodeRemovedFromDocument", remove); 
+                p.removeEventListener("DOMNodeInserted", add);
+                p = p.parentNode || p.$parentNode;
+            }
+            
+            check();
+        }
+        
+        add();
+
         return state;
+    }
+    
+    this.removePermanent = function(amlNode){
+        
     }
 };
 //#endif

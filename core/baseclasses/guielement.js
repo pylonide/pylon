@@ -410,7 +410,7 @@ apf.GuiElement = function(){
             if (this.maxheight == undefined)
                 this.maxheight  = apf.getCoord(hasPres && parseInt(this.$getOption(type, "maxheight")), 10000);
 
-            //#ifdef __WITH_CONTENTEDITABLE
+            //--#ifdef __WITH_CONTENTEDITABLE
             //@todo slow??
             var diff = apf.getDiff(this.$ext);
             this.$ext.style.minWidth = Math.max(0, this.minwidth - diff[0]) + "px";
@@ -424,7 +424,7 @@ apf.GuiElement = function(){
                 this.$altExt.style.minWidth = this.$ext.style.minWidth;
                 this.$altExt.style.maxWidth = this.$ext.style.maxWidth;
             }
-            //#endif
+            //--#endif
         }
         
         if (this.$loadAml)

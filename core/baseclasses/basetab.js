@@ -130,8 +130,8 @@ apf.BaseTab = function(){
      * </code>
      */
     this.$propHandlers["activepage"]   = function(next, prop, force, callback, noEvent){
-        if (!this.inited || apf.isNot(next)) return;
-
+        if (!this.inited || apf.isNot(next) || next == -1) return;
+        
         if (!callback) {
             callback = this.$lastCallback;
             delete this.$lastCallback;
@@ -388,7 +388,11 @@ apf.BaseTab = function(){
         }
         else if (type == "remove") {
             anim.onfinish = function(){
-                callback();
+            	if (node.dispatchEvent("afterclose") !== false)
+                	callback();
+                    
+                html.style.marginLeft = 0;
+                apf.setOpacity(html, 1);
                 
                 if (_self.$waitForMouseOut == 2) {
                     apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
@@ -397,8 +401,6 @@ apf.BaseTab = function(){
                 }
                 else if (isLast)
                     delete _self.$waitForMouseOut;
-                
-                node.dispatchEvent("afterclose");
             }
             anim.onstop = function(){
                 apf.setOpacity(html, 1);
@@ -505,12 +507,12 @@ apf.BaseTab = function(){
     
     var round = [Math.floor, Math.ceil];
     function scalersz(e, excl){
-        if (!this.length || this.$waitForMouseOut 
+        if (!this.length && !this.getPages().length || this.$waitForMouseOut 
           || this.$control && this.$control.state == apf.tween.RUNNING) {
             //@todo queue call here to after anim
             return;
         }
-
+        
         if (this.$btnMargin == undefined)
             this.$btnMargin = apf.getMargin(this.getPage().$button)[0];
 
@@ -809,8 +811,8 @@ apf.BaseTab = function(){
         // #endif
         {
             //page.removeNode();
-            page.destroy(true, true);
-            page.dispatchEvent("afterclose");
+            if (page.dispatchEvent("afterclose") !== false)
+            	page.destroy(true, true);
 
             // #ifdef __ENABLE_TABSCROLL
             //@todo this is wrong, we can also use removeChild
@@ -1197,42 +1199,44 @@ apf.BaseTab = function(){
           || amlNode.localName != "page")
             return;
         
-        var ln = amlNode.nextSibling;
-        while (ln && (!ln.$first || !ln.visible))
-            ln = ln.nextSibling;
-        var rn = amlNode.previousSibling;
-        while (rn && (!rn.$last || !rn.visible))
-            rn = rn.previousSibling;
-
-        if (this.firstChild == amlNode && ln)
-            ln && ln.$first();
-        if (this.lastChild == amlNode && rn)
-            rn && rn.$last();
-
-        if (this.$activepage == amlNode) {
-            if (ln || rn)
-                this.set(ln || rn);
-            else {
-                amlNode.$deactivate();
-                
-                // #ifdef __ENABLE_TABSCROLL
-                //this.setScrollerState();
-                // #endif
-                this.$activepage  =
-                this.activepage   =
-                this.activepagenr = null;
-                this.setProperty("activepage", null);
+        if (this.activepage && this.activepage != -1) {
+            var ln = amlNode.nextSibling;
+            while (ln && (!ln.$first || !ln.visible))
+                ln = ln.nextSibling;
+            var rn = amlNode.previousSibling;
+            while (rn && (!rn.$last || !rn.visible))
+                rn = rn.previousSibling;
+    
+            if (this.firstChild == amlNode && ln)
+                ln && ln.$first();
+            if (this.lastChild == amlNode && rn)
+                rn && rn.$last();
+    
+            if (this.$activepage == amlNode) {
+                if (ln || rn)
+                    this.set(ln || rn);
+                else {
+                    amlNode.$deactivate();
+                    
+                    // #ifdef __ENABLE_TABSCROLL
+                    //this.setScrollerState();
+                    // #endif
+                    this.$activepage  =
+                    this.activepage   =
+                    this.activepagenr = null;
+                    this.setProperty("activepage", null);
+                }
             }
-        }
-        else {
-            // #ifdef __ENABLE_TABSCROLL
-            //if (this.$scroll) 
-                //this.setScrollerState();
-            // #endif
-            //#ifdef __ENABLE_TAB_SCALE
-            if (this.$scale) 
-                this.$scaleinit();
-            //#endif
+            else {
+                // #ifdef __ENABLE_TABSCROLL
+                //if (this.$scroll) 
+                    //this.setScrollerState();
+                // #endif
+                //#ifdef __ENABLE_TAB_SCALE
+                if (this.$scale) 
+                    this.$scaleinit();
+                //#endif
+            }
         }
         
         //#ifdef __WITH_PROPERTY_BINDING
@@ -1242,7 +1246,7 @@ apf.BaseTab = function(){
 
     this.addEventListener("DOMNodeInserted",function(e){
         var amlNode = e.currentTarget;
-        
+
         if (amlNode.localName != "page" || e.relatedNode != this || amlNode.nodeType != 1)
             return;
 
@@ -1273,7 +1277,7 @@ apf.BaseTab = function(){
                 this.setProperty("activepagenr", info.position);
             }
         }
-        else if (!this.$activepage)
+        else if (!this.activepage && !this.$activepage)
             this.set(amlNode);
         
         //#ifdef __ENABLE_TAB_SCALE
@@ -1520,7 +1524,7 @@ apf.BaseTab = function(){
                 ? this.activepage
                 : this.activepagenr) || 0;
             page = this.getPage(this.activepage);
-            if (page.render != "runtime" || page.$rendered)
+            if (!page.render || page.$rendered)
                 this.$propHandlers.activepage.call(this, this.activepage);
         }
         else {
