@@ -2353,6 +2353,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
     },
 
     execFind: function() {
+        var _self = this;
         winSearchInFiles.hide();
         // show the console (also used by the debugger):
         console.enable();
@@ -2361,7 +2362,6 @@ return ext.register("ext/searchinfiles/searchinfiles", {
             this.$panel.appendChild(trSFResult);
             trSFResult.setProperty("visible", true);
             this.$model = trSFResult.getModel();
-            var _self = this;
             // make sure the tab is shown when results come in
             this.$model.addEventListener("afterload", function() {
                 tabConsole.set(_self.pageID);
@@ -2372,8 +2372,12 @@ return ext.register("ext/searchinfiles/searchinfiles", {
         var node = this.$currentScope = grpSFScope.value == "projects"
             ? trFiles.xmlRoot.selectSingleNode("folder[1]")
             : this.getSelectedTreeNode();
-        this.$model.load("{davProject.report('" + node.getAttribute("path")
-            + "', 'codesearch', " + JSON.stringify(this.getOptions()) + ")}");
+            
+        davProject.report(node.getAttribute("path"), "codesearch", this.getOptions(), function(data, state, extra){
+            if (state != apf.SUCCESS)
+                return;
+            _self.$model.load(data);
+        });
     },
 
     replaceAll: function() {
