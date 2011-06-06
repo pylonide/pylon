@@ -79,7 +79,7 @@
             padding:3px 6px 0 6px;
             position:relative;
             overflow:hidden;
-            font-family   : Tahoma;
+            font-family   : Tahoma, Arial;
             font-size     : 11px;
             line-height   : 14px;
             color         : white;
@@ -137,7 +137,7 @@
             padding : 2px 21px 2px 0;
 
             color: #333;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 11px;
         }
 
@@ -242,7 +242,7 @@
             background: #ffffff;
             z-index: 1000;
             color: #333333;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 11px;
             display : none;
             overflow : auto;

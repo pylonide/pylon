@@ -480,6 +480,7 @@ return ext.register("ext/console/console", {
             case "git":
             case "npm":
             case "pwd":
+            case "hg":
             case "ls":
                 res = message.body;
                 //this.getPrompt() + " " + res.argv.join(" ") + "\n" + 

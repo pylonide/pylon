@@ -148,11 +148,17 @@ return ext.register("ext/searchinfiles/searchinfiles", {
     },
 
     getOptions: function() {
+        var matchCase = '0';
+        if (chkSFMatchCase.checked)
+            matchCase = '1';
+        var regex = '0';
+        if (chkSFRegEx.checked)
+            regex = '1';
         return {
             query: txtSFFind.value,
             pattern: ddSFPatterns.value,
-            casesensitive: chkSFMatchCase.checked,
-            regexp: chkSFRegEx.checked
+            casesensitive: matchCase,
+            regexp: regex
         };
     },
 
@@ -177,8 +183,9 @@ return ext.register("ext/searchinfiles/searchinfiles", {
             ? trFiles.xmlRoot.selectSingleNode("folder[1]")
             : this.getSelectedTreeNode();
         trSFResult.setAttribute("empty-message", "No results found for '" + txtSFFind.value.trim() + "'");
-        this.$model.load("{davProject.report('" + node.getAttribute("path")
-            + "', 'codesearch', " + JSON.stringify(this.getOptions()) + ")}");
+        var mdlStr = "{davProject.report('" + node.getAttribute("path")
+            + "', 'codesearch', " + JSON.stringify(this.getOptions()) + ")}";
+        this.$model.load(mdlStr);
         ide.dispatchEvent("track_action", {type: "searchinfiles"});
     },
 

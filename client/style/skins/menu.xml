@@ -8,7 +8,7 @@
             padding: 0;
             z-index: 10000;
             position: absolute;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
             color : #333;
             border : 1px solid #999999;
@@ -135,7 +135,7 @@
             z-index: 10000;
             position: absolute;
             
-            font-family   : Tahoma;
+            font-family   : Tahoma, Arial;
             font-size     : 11px;
             line-height   : 14px;
             color         : #f1f1f1;

@@ -103,17 +103,26 @@ return ext.register("ext/filesystem/filesystem", {
         }
     },
 
-    createFile: function(filename) {
-        var node = trFiles.selected;
-        if (!node)
-            node = trFiles.xmlRoot.selectSingleNode("folder");
-        if (node.getAttribute("type") != "folder")
-            node = node.parentNode;
-
+    createFile: function(filename, newFile) {
+        var node;
+        
+        if(!newFile) {
+            node = trFiles.selected;
+            if (!node)
+                node = trFiles.xmlRoot.selectSingleNode("folder");
+            if (node.getAttribute("type") != "folder")
+                node = node.parentNode;
+        }
+        else {
+            node = apf.getXml('<file newfile="1" type="file" size="" changed="1" name="Untitled.txt" contenttype="text/plain; charset=utf-8" modifieddate="" creationdate="" lockable="false" hidden="false" executable="false"></file>');
+        }
+        
         if (this.webdav) {
             var prefix = filename ? filename : "Untitled.txt";
-
-            trFiles.focus();
+            
+            if(!newFile)
+                trFiles.focus();
+            
             var _self = this,
                 path  = node.getAttribute("path");
             if (!path) {
@@ -128,34 +137,41 @@ return ext.register("ext/filesystem/filesystem", {
                     filename = prefix + "." + index++;
                     _self.exists(path + "/" + filename, test);    
                 } else {
-                    var file, both = 0;
-                    function done(){
-                        if (both == 2) {
-                            file = apf.xmldb.appendChild(node, file);
-                            trFiles.select(file);
-                            trFiles.startRename();
+                    if(!newFile) {
+                        var file, both = 0;
+                        function done(){
+                            if (both == 2) {
+                                file = apf.xmldb.appendChild(node, file);
+                                trFiles.select(file);
+                                trFiles.startRename();
+                            }
                         }
-                    }
-                    
-                    trFiles.slideOpen(null, node, true, function(){
-                        both++;
-                        done(); 
-                    });
-                    
-                    _self.webdav.exec("create", [path, filename], function(data) {
-                        _self.webdav.exec("readdir", [path], function(data) {
-                            // @todo: in case of error, show nice alert dialog
-                            if (data instanceof Error)
-                                throw Error;
-                            
-                            var strXml = data.match(new RegExp(("(<file path='" + path +
-                                "/" + filename + "'.*?>)").replace(/\//g, "\\/")))[1];
-                            file = apf.getXml(strXml);
-                            
+
+                        trFiles.slideOpen(null, node, true, function(){
                             both++;
-                            done();
+                            done(); 
                         });
-                    });
+
+                        _self.webdav.exec("create", [path, filename], function(data) {
+                            _self.webdav.exec("readdir", [path], function(data) {
+                                // @todo: in case of error, show nice alert dialog
+                                if (data instanceof Error)
+                                    throw Error;
+
+                                var strXml = data.match(new RegExp(("(<file path='" + path +
+                                    "/" + filename + "'.*?>)").replace(/\//g, "\\/")))[1];
+                                file = apf.getXml(strXml);
+                                
+                                both++;
+                                done();
+                            });
+                        });
+                    }
+                    else {
+                        node.setAttribute('name', filename);
+                        node.setAttribute('path', path + '/' + filename);
+                        ide.dispatchEvent("openfile", {doc: ide.createDocument(node), type:'newfile'});
+                    }
                 }
             };
             
@@ -285,27 +301,33 @@ return ext.register("ext/filesystem/filesystem", {
                 ide.dispatchEvent("afteropenfile", {doc: doc, node: node});
                 return;
             }
+            
+            if(!e.type || e.type != 'newfile') {
+                // add a way to hook into loading of files
+                if (ide.dispatchEvent("readfile", {doc: doc, node: node}) == false)
+                    return;
 
-            // add a way to hook into loading of files
-            if (ide.dispatchEvent("readfile", {doc: doc, node: node}) == false)
-                return;
-
-            var path = node.getAttribute("path");
-            fs.readFile(path, function(data, state, extra) {
-                if (state != apf.SUCCESS) {
-                    if (extra.status == 404) {
-                        ide.dispatchEvent("filenotfound", {
-                            node : node,
-                            url  : extra.url,
-                            path : path
-                        });
+                var path = node.getAttribute("path");
+                fs.readFile(path, function(data, state, extra) {
+                    if (state != apf.SUCCESS) {
+                        if (extra.status == 404) {
+                            ide.dispatchEvent("filenotfound", {
+                                node : node,
+                                url  : extra.url,
+                                path : path
+                            });
+                        }
                     }
-                }
-                else {
-                    doc.setValue(data);
-                    ide.dispatchEvent("afteropenfile", {doc: doc, node: node});	                
-                }
-            });
+                    else {
+                        doc.setValue(data);
+                        ide.dispatchEvent("afteropenfile", {doc: doc, node: node});	                
+                    }
+                });
+            }
+            else {
+                doc.setValue('empty file.');
+                ide.dispatchEvent("afteropenfile", {doc: doc, node: node});	                
+            }
         });
         
         ide.addEventListener("reload", function(e) {

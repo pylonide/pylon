@@ -153,7 +153,7 @@
         
         .black-menu-bar .c9version {
             color       : #696969;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 10px;
             text-align  : center;
             padding     : 0 0 3px 0;
@@ -265,8 +265,8 @@
         }
 
         .btn .lbl {
-            height              : 23px;
-            padding             : 4px 8px 0 8px;
+            height              : 22px;
+            padding             : 5px 8px 0 8px;
             margin              : 0 4px;
             white-space         : nowrap;
             overflow            : hidden;
@@ -278,7 +278,7 @@
             text-align          : center;
             color               : #474747;
             text-shadow         : rgba(255, 255, 255, .71) 0px 1px 0px;
-            font-family         : Trebuchet MS;
+            font-family         : Arial;
             font-size           : 14px;
             font-weight         : bold;
         }
@@ -333,7 +333,14 @@
         }
 
         .btnIconOnly .lbl SPAN {
-            background-position: 1px 2px;
+            background-position: 1px 3px;
+        }
+        
+        .smallCaption.btnIconOnly .lbl {
+            color: #323232;
+            font-weight: normal;
+            font-size: 12px;
+            padding-left: 25px;
         }
 
         .btnIcon.iconOnTheRight .lbl {
@@ -1255,7 +1262,7 @@
         }
         
         .c9-menu-btn .c9-label {
-            font-family   : Tahoma;
+            font-family   : Tahoma, Arial;
             font-size     : 12px;
             line-height   : 14px;
             color         : #e8e8e8;
@@ -1565,7 +1572,7 @@
         }
         
         .mnubtn SPAN {
-            font-family         : Tahoma;
+            font-family         : Tahoma, Arial;
             font-size           : 10px;
             color               : #aaaaaa;
             text-align          : center;
@@ -1679,7 +1686,7 @@
         }
 
         .cbcontainer span {
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 11px;
             cursor      : default;
             padding     : 1px 3px 2px 3px;
@@ -1747,7 +1754,77 @@
         </a:main>
     </a:presentation>
 </a:checkbox>
+<a:checkbox name="db-checkbox">
+    <a:style><![CDATA[
+        .db-checkbox {
+            overflow    : hidden;
+            position    : relative;
+            cursor      : default;
+            height      : 14px;
+            padding     : 2px 0 0 22px;
+            font-family : Arial;
+            font-size   : 12px;
+            color       : #404040;
+        }
 
+        .db-checkbox.bluecheck {
+            height      : 17px;
+        }
+
+        .db-checkbox .check {
+            width      : 16px;
+            height     : 16px;
+            position   : absolute;
+            top        : 0;
+            left       : 0;
+            background : url(images/checkbox.png) no-repeat 0 0;
+        }
+
+        .db-checkbox.bluecheck .check {
+            width      : 17px;
+            height     : 17px;
+            background : url(images/checkbox-blue.png) no-repeat -1px 2px;
+        }
+
+        .db-checkboxChecked {}
+
+        .db-checkboxChecked .check{
+            background-position: 0 -16px;
+        }
+        .bluecheck.db-checkboxChecked .check{
+            background-position: 0 -17px;
+        }
+
+        .db-checkboxOver {
+
+        }
+
+        .db-checkbox.bold {
+            font-weight : bold;
+            color       : #202020;
+        }
+
+        .vbox > DIV > .db-checkbox {
+            height  : 14px;
+            overflow: visible;
+        }
+
+        .db-checkboxDisabled {
+            color: #ababab;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
+        .vbox > .db-checkbox {
+            height  : 16px;
+            overflow: visible;
+        }
+    ]]></a:style>
+    <a:presentation>
+        <a:main label="text()">
+            <div class="db-checkbox">-<div class="check"></div></div>
+        </a:main>
+    </a:presentation>
+</a:checkbox>
 <a:codeeditor name="codeeditor">
     <a:style><![CDATA[
         .ace_editor {
@@ -1900,7 +1977,7 @@
             cursor: default;
             overflow : hidden;
 
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
 
             padding: 19px 0 0 0;
@@ -2312,7 +2389,7 @@
             background-color: white;
             cursor: default;
             overflow : hidden;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             padding: 0;
             color : #333;
@@ -2408,7 +2485,7 @@
             position         : relative;
             background-color : white;
             cursor           : default;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             font-size        : 12px;
             padding          : 16px 0 0 0;
             color            : #333;
@@ -3105,7 +3182,7 @@
             padding:3px 6px 0 6px;
             position:relative;
             overflow:hidden;
-            font-family   : Tahoma;
+            font-family   : Tahoma, Arial;
             font-size     : 11px;
             line-height   : 14px;
             color         : white;
@@ -3163,7 +3240,7 @@
             padding : 2px 21px 2px 0;
 
             color: #333;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 11px;
         }
 
@@ -3268,7 +3345,7 @@
             background: #ffffff;
             z-index: 1000;
             color: #333333;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 11px;
             display : none;
             overflow : auto;
@@ -3357,7 +3434,7 @@
             padding: 0 7px 7px 7px;
             border: 1px solid #dcd8d8;
             color: #333;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             position: relative;
             cursor : default;
@@ -3418,7 +3495,7 @@
     <a:style><![CDATA[
         .label{
             font-size: 8pt;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             overflow: hidden;
             cursor: default;
             color : #333;
@@ -3459,7 +3536,7 @@
             border: 1px solid #afafaf;
             margin: 0;
             outline: none;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 12px;
             text-overflow: ellipsis;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
@@ -3522,7 +3599,7 @@
         }
 
         .list, .draglist{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
         }
 
@@ -3567,7 +3644,7 @@
         .list #txt_rename{
             border: 1px solid #bbb;
             padding: 1px 15px 1px 1px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             color: black;
             word-break: keep-all;
@@ -3624,7 +3701,7 @@
             position: absolute;
             overflow:visible;
             
-            font-family   : Tahoma;
+            font-family   : Tahoma, Arial;
             font-size     : 11px;
             line-height   : 14px;
             color         : #f1f1f1;
@@ -3960,7 +4037,7 @@
 
     <a:style><![CDATA[
         .dockwin {
-            font-family : "Trebuchet MS";
+            font-family : "Arial";
             font-size   : 11px;
             padding     : 19px 0 1px 0;
             position    : relative;
@@ -4235,7 +4312,7 @@
             font-size   : 15px;
             color       : #747475;
             font-weight : bold;
-            font-family : Trebuchet MS;
+            font-family : Arial;
             text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
             height      : 28px;
             padding     : 14px 0 0 6px;
@@ -4289,13 +4366,13 @@
             background-color    : #eff1f4;
             color               : #222222;
             font-size           : 13px;
-            font-family         : Trebuchet MS;
+            font-family         : Arial;
         }
 
         .winadv .wn_cp_content > H3 {
             font-size   : 18px;
             color       : #333333;
-            font-family : Trebuchet MS;
+            font-family : Arial;
             font-weight : bold;
             margin      : 0;
             display:block;
@@ -4306,7 +4383,7 @@
         .winadv .wn_cp_content H3.wheader {
             font-size   : 18px;
             color       : #333333;
-            font-family : Trebuchet MS;
+            font-family : Arial;
             font-weight : bold;
             margin      : 0;
             display:block;
@@ -4317,7 +4394,7 @@
         .winadv .wn_cp_content > H4 {
             font-size   : 13px;
             color       : #222222;
-            font-family : Trebuchet MS;
+            font-family : Arial;
             font-weight : bold;
             margin      : 0;
         }
@@ -4413,7 +4490,7 @@
         }
 
         .rbclassic span {
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 11px;
             padding     : 0 2px 0px 2px;
             height      : 15px;
@@ -4467,7 +4544,7 @@
             border: 1px solid #8C8C8C;
             color: #f5f5f5;
             cursor: pointer;
-            font-family: "Trebuchet MS";
+            font-family: "Arial";
             font-size:11px;
             position:relative;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
@@ -4793,7 +4870,7 @@
             height: 8px;
             position: relative;
 
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 9px;
             text-align : center;
         }
@@ -4915,7 +4992,7 @@
             background-position : 0 0;
             background-image    : url(images/spinner_body2.png);
             color               : black;
-            font-family         : Tahoma;
+            font-family         : Tahoma, Arial;
             font-size           : 11px;
             width               : 100%;
             margin              : 0;
@@ -5313,7 +5390,7 @@
             padding: 1px 5px 0 5px;
 
             font-size: 11px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             background: no-repeat 3px 1px;
             height: 15px;
             float: left;
@@ -5434,7 +5511,7 @@
         white-space: nowrap;
         color: #aaaaaa;
         text-shadow : rgba(0, 0, 0, 1) 0px 1px 0px;
-        font-family : Trebuchet MS;
+        font-family : Arial;
         font-size : 12px;
 
         border-top: 1px solid #404040;
@@ -5564,7 +5641,7 @@
 
         overflow: hidden;
         clear: both;
-        font-family : Trebuchet MS;
+        font-family : Arial;
         font-family: 12px;
         color: #eeeeee;
 
@@ -5628,7 +5705,7 @@
         overflow: visible;
         white-space: nowrap;
         color: #f5f5f5;
-        font-family : Trebuchet MS;
+        font-family : Arial;
         font-size : 12px;
         border-bottom : 1px solid white;
         background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #262829),color-stop(1, #2f3031));
@@ -5934,7 +6011,7 @@
             white-space: nowrap;
             color: #404040;
             text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 11px;
             border-bottom : 1px solid #8c8c8c;
             
@@ -6076,7 +6153,7 @@
             border-bottom: 1px solid #8c8c8c;*/
             overflow: hidden;
             clear: both;
-            font-family : Trebuchet MS;
+            font-family : Arial;
             font-family: 12px;
         }
 
@@ -6169,7 +6246,7 @@
             color    : #202020;
 
             text-shadow : rgba(255,255,255,0.7) 0px 1px 0px;
-            font-family : "Trebuchet MS", Tahoma;
+            font-family : "Arial", Tahoma;
             font-size : 11px;
         }
 
@@ -6215,7 +6292,7 @@
             height              : 14px;
             display             : block;
             position            : absolute;
-            right               : 0;
+            right               : 1px;
             top                 : 3px;
             /*cursor              : pointer;*/
             background-image    : url(images/close_tab_btn.png);
@@ -6504,7 +6581,7 @@
             color: #333333;
             margin: 0;
             outline: none;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 12px;
             text-overflow: ellipsis;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
@@ -6521,7 +6598,7 @@
             height           : 17px;
             font-size        : 12px;
             color            : #333333;
-            font-family      : Trebuchet MS;
+            font-family      : Arial;
             outline          : none;
             background-color : transparent;
             width: 100%;
@@ -6570,7 +6647,7 @@
             border: 1px solid #afafaf;
             margin: 0;
             outline: none;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 12px;
             text-overflow: ellipsis;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
@@ -6583,7 +6660,7 @@
             height           : 17px;
             font-size        : 12px;
             color            : #333333;
-            font-family      : Trebuchet MS;
+            font-family      : Arial;
             outline          : none;
             background-color : transparent;
             width: 100%;
@@ -6654,7 +6731,7 @@
             /*background-attachment: fixed !important; background-attachment: scroll; */
             color: #333;
             padding: 6px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             overflow: auto;
             outline: none;
@@ -6692,7 +6769,7 @@
             background: url(images/menubar_row.png) repeat-x top left;
             height: 22px;
             z-index: 1;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 12px;
             position: relative;
         }
@@ -6700,7 +6777,7 @@
         .toolbar .subbar {
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(222,224,227)),color-stop(1, rgb(239,241,244)));
             background: -moz-linear-gradient(center bottom,rgb(222,224,227) 0%,rgb(239,241,244) 100%);
-            font-family: Trebuchet MS;
+            font-family: Arial;
             font-size: 12px;
             border-bottom: 1px solid #b2b2b2;
             position: relative;
@@ -6932,7 +7009,7 @@
         }
         
         .filemgr-tree .item LABEL .caption {
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 11px;
             color       : #101010;
             display:block;
@@ -6956,7 +7033,7 @@
             padding-left:4px;
             margin-top:1px;
             
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 11px;
             color       : #101010;
             position:relative;
@@ -6995,7 +7072,7 @@
         }
         
         .filemgr-dragtree .item LABEL .caption {
-            font-family     : Tahoma;
+            font-family     : Tahoma, Arial;
             font-size       : 11px;
             color           : white;
             display         : block;
@@ -7198,7 +7275,7 @@
                 padding         : 6px 8px 6px 2px;
                 display         : block;
                 background-color: #bf0202;
-                font-family     : Tahoma;
+                font-family     : Tahoma, Arial;
                 font-size       : 8pt;
                 color           : #ffffff;
             }
