@@ -179,7 +179,7 @@
                 <a:button
                   width    = "104"
                   icon     = "folder_new.png"
-                  class    = "btnIconOnly smallCaption"
+                  class    = "btnIconOnly smallCaption newFolder"
                   onclick  = "require('ext/filesystem/filesystem').createFolder('New Folder', trSaveAs)"
                   tooltip  = "Create folder">
                     Create folder

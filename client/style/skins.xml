@@ -336,6 +336,10 @@
             background-position: 1px 3px;
         }
         
+        .btnIconOnly.newFolder .lbl SPAN {
+            background-position: 1px 2px;
+        }
+        
         .smallCaption.btnIconOnly .lbl {
             color: #323232;
             font-weight: normal;
