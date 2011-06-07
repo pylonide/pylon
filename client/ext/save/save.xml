@@ -177,7 +177,7 @@
 
             <a:hbox padding="15" align="center">
                 <a:button
-                  width    = "29"
+                  width    = "104"
                   icon     = "folder_new.png"
                   class    = "btnIconOnly smallCaption"
                   onclick  = "require('ext/filesystem/filesystem').createFolder('New Folder', trSaveAs)"
