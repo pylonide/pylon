@@ -10,7 +10,7 @@
         .progressbar .lbl {
             position: relative;
             background: url("images/bar_right.png") no-repeat top left;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 9px;
             float : right;
             height : 8px;

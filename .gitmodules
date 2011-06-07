@@ -4,9 +4,9 @@
 [submodule "support/connect"]
 	path = support/connect
 	url = http://github.com/senchalabs/connect.git
-[submodule "support/async"]
-	path = support/async
-	url = http://github.com/ajaxorg/async.js.git
+[submodule "support/asyncjs"]
+	path = support/asyncjs
+	url = git://github.com/ajaxorg/async.js.git
 [submodule "support/jsdav"]
 	path = support/jsdav
 	url = http://github.com/ajaxorg/jsDAV.git

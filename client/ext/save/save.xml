@@ -33,8 +33,14 @@
                 trSaveAs.expandAndSelect(node);
         }
         
-        function chooseFolder(folder) {
-            txtSaveAs.setValue(folder.getAttribute("path"));
+        function chooseSaveAsFolder(folder) {
+            var fooPath = folder.getAttribute("path");
+            if(folder.getAttribute("type") != 'folder') {
+                var fooPath = fooPath.split('/');
+                txtSaveAs.setValue(fooPath.pop());
+                fooPath = fooPath.join('/');
+            }
+            lblPath.setProperty('caption', fooPath + '/');
         }
                     
         function chooseFile(file) {
@@ -48,61 +54,90 @@
     <a:window
       id        = "winSaveAs"
       center    = "true"
-      height    = "400"
+      height    = "410"
       icon      = ""
       buttons   = "close"
       kbclose   = "true"
       resizable = "true"
       title     = "Save As"
-      width     = "650">
+      onshow    = "require('ext/save/save').expandTree();"
+      width     = "480">
         <a:vbox
-          anchors   = "5 5 0 5"
+          anchors   = "10 10 0 10"
           padding   = "5">
-            <a:hbox padding="5">
-                <a:button
-                  width    = "29"
-                  icon     = "folder_up.png"
-                  class    = "btnIconOnly"
-                  onclick  = "gotoParent()"
-                  tooltip  = "Go to parent" />
-                <a:button
-                  width    = "29"
-                  icon     = "folder_new.png"
-                  class    = "btnIconOnly"
-                  onclick  = "require('ext/filesystem/filesystem').createFolder()"
-                  tooltip  = "Create folder" />
-            </a:hbox>
             <a:hbox
-              flex      = "1"
-              padding   = "5"
-              splitters = "true">
-                <a:tree
-                  id            = "trSaveAs"
-                  flex          = "2"
-                  model         = "{require('ext/filesystem/filesystem').model}"
-                  contextmenu   = "mnuCtxTree"
-                  onafterchoose = "chooseFolder(this.selected)">
-                    <a:each match="[folder]">
-                       <a:insert
-                         match = "[folder]"
-                         get   = "{location.host and davProject.readdir([@path])}" />
-                       <a:caption match="[@name]" />
-                       <a:icon
-                         match = "[folder]"
-                         value = "folder.png" />
-                    </a:each>
-                    <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
-                    <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-                    <a:rename set="{alert('boe'); davProject.rename([@name], [@path])}"/>
-                    <a:copy match="[file|folder]" set="{davProject.copy([@path], [../@path])}"/>
-                    <a:move set="{davProject.move([@path], [../@path])}"/>
-                    <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
-        
-                    <a:drag match="[folder|file]" />
-                    <a:drop match="[folder|file]" target="[folder]"
-                        action="tree-append" copy="{event.ctrlKey}" />
-                </a:tree>
-                <a:datagrid id="dgTest"
+              align     = "center"
+              padding   = "5">
+                <a:label flex="1" class="lbl_saveas">Save as:</a:label>
+                <a:textbox
+                  id           = "txtSaveAs"
+                  flex         = "7"
+                  onkeydown    = "if (event.keyCode == 13) require('ext/save/save').choosePath(this.getValue())" />
+            </a:hbox>
+            <a:label id="lblPath" class="lbl_filepath" />
+         
+            <div class="dgLikeContaier">
+                <div class="heading">Project folder</div>
+                <a:hbox
+                  anchors  = "20 0 0 0"
+                  overflow = "hidden">
+                    <a:tree
+                      id            = "trSaveAs"
+                      class         = "trDgLike"
+                      flex          = "1"
+                      model         = "{require('ext/filesystem/filesystem').model}"
+                      contextmenu   = "mnuCtxTree"
+                      onafterselect = "chooseSaveAsFolder(this.selected)"
+                      onafterchoose = "chooseSaveAsFolder(this.selected)">
+                        <a:each match="[folder|file]">
+                           <a:insert
+                             match = "[folder]"
+                             get   = "{location.host and davProject.readdir([@path])}" />
+                           <a:caption match="[@name]" />
+                           <a:icon
+                             match = "[folder]"
+                             value = "folder.png" />
+                           <a:icon
+                             match = "[file]"
+                             value = "{require('core/util').getFileIcon(%[.])}" />
+                           <a:css match="[file]" value="file_item"></a:css>
+                        </a:each>
+                        <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
+                        <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
+                        <a:rename set="{alert('boe'); davProject.rename([@name], [@path])}"/>
+                        <a:copy match="[file|folder]" set="{davProject.copy([@path], [../@path])}"/>
+                        <a:move set="{davProject.move([@path], [../@path])}"/>
+                        <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
+
+                        <a:drag match="[folder|file]" />
+                        <a:drop match="[folder|file]" target="[folder]"
+                            action="tree-append" copy="{event.ctrlKey}" />
+                    </a:tree>
+                    
+                    <a:scrollbar
+                        for      = "trSaveAs"
+                        margin   = "2"
+                        skin     = "sbios"
+                        width    = "7"
+                        overflow = "auto"
+                    />
+                </a:hbox>
+            </div>
+<!--            <a:bindings id="bndSaveAdFolder">
+               <a:each match="[folder|file]">
+                   <a:insert
+                     match = "[folder]"
+                     get   = "{location.host and davProject.readdir([@path])}" />
+                   <a:caption match="[@name]" />
+                   <a:icon
+                     match = "[folder]"
+                     value = "folder.png" />
+                   <a:icon
+                     match = "[file]"
+                     value = "{require('core/util').getFileIcon(%[.])}" />
+                </a:each>
+            </a:bindings>-->
+<!--                <a:datagrid id="dgTest"
                   autoselect       = "false"
                   flex             = "3"
                   model            = "{trSaveAs.selected}"
@@ -138,28 +173,41 @@
                           width     = "20%" />
                     </a:each>
                     <a:actions /> 
-                </a:datagrid>
+                </a:datagrid>-->
+
+            <a:hbox padding="15" align="center">
+                <a:button
+                  width    = "29"
+                  icon     = "folder_new.png"
+                  class    = "btnIconOnly smallCaption"
+                  onclick  = "require('ext/filesystem/filesystem').createFolder('New Folder', trSaveAs)"
+                  tooltip  = "Create folder">
+                    Create folder
+                </a:button>
+                <a:checkbox 
+                  skin    = "db-checkbox" 
+                  class   = "bluecheck" 
+                  checked = "true" 
+                  onafterchange="
+                    if(this.checked)
+                        trSaveAs.$ext.className = trSaveAs.$ext.className.replace(/hidefiles/, '');
+                    else
+                        apf.setStyleClass(trSaveAs.$ext, 'hidefiles');
+                  ">Show files in tree</a:checkbox>
             </a:hbox>
+            <a:divider skin="hordivider" />
             <a:hbox
-              align     = "center"
-              padding   = "5">
-                <a:label flex="1">File name:</a:label>
-                <a:textbox
-                  id           = "txtSaveAs"
-                  flex         = "7"
-                  onkeydown    = "if (event.keyCode == 13) require('ext/save/save').choosePath(this.getValue())" />
-        </a:hbox>
-            <a:hbox
+              edge    = "4 0 0"
               pack    = "end"
               padding = "5">
+                <a:button
+                  onclick = "winSaveAs.hide()">
+                    Cancel
+                </a:button>
                 <a:button
                   class    = "ui-btn-green"
                   onclick  = "require('ext/save/save').saveFileAs()">
                     Save
-                </a:button>
-                <a:button
-                  onclick = "winSaveAs.hide()">
-                    Cancel
                 </a:button>
             </a:hbox>
         </a:vbox>

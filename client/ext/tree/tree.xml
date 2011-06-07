@@ -77,10 +77,12 @@
           icon="refresh.png"
           onclick="require('ext/tree/tree').refresh()" />
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
-          
-        <a:tree id="trFiles" canrename="true" anchors="0 0 0 0" border="0"
+        <a:tree id="trFiles" canrename="true" border="0"
           contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
-          onbeforeremove="return remove()" disabled="{!stServerConnected.active}">
+          onbeforeremove="return remove()" disabled="{!stServerConnected.active}"
+          flex="1" anchors = "0 0 0 0" onmouseover="require('ext/tree/tree').onTreeOver()"
+          onmouseout="require('ext/tree/tree').onTreeOut()"
+        >
             <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
                 <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
                 <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
@@ -99,7 +101,21 @@
             <a:drop match="[folder|file]" target="[folder]"
                 action="tree-append" copy="{event.ctrlKey}" />
         </a:tree>
-        
+        <a:scrollbar
+            for      = "trFiles"
+            id       = "sbTrFiles"
+            margin   = "2"
+            skin     = "sbios"
+            top      = "0"
+            right    = "0"
+            bottom   = "0"
+            width    = "7"
+            overflow = "auto"
+            onmouseover = "require('ext/tree/tree').onSBMouseOver()"
+            onmouseout  = "require('ext/tree/tree').onSBMouseOut()"
+            onmousedown = "require('ext/tree/tree').onSBMouseDown()"
+            onmouseup   = "require('ext/tree/tree').onSBMouseUp()"
+        />
         <a:menu id="mnuCtxTree" disabled="{!stServerConnected.active}">
             <a:item match="[file]" class="strong" onclick="
                 require('core/ide').dispatchEvent('openfile', {doc: require('core/ide').createDocument(apf.activeElement.selected)})

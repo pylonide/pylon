@@ -34,6 +34,9 @@ return keys.onLoad({
         "gotoline": {
             "gotoline": "Command-L"
         },
+        "beautify": {
+            "beautify": "Command-Shift-B"
+        },
         "gotofile": {
             "gotofile": "Alt-Shift-R|Command-T"
         },

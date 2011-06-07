@@ -138,6 +138,7 @@ return ext.register("ext/quicksearch/quicksearch", {
             winQuickSearch.$ext.style.top = "-30px";
             winQuickSearch.show();
             txtQuickSearch.focus();
+            txtQuickSearch.select();
 
             //Animate
             apf.tween.single(winQuickSearch, {
@@ -151,6 +152,9 @@ return ext.register("ext/quicksearch/quicksearch", {
             });
         }
         else if (winQuickSearch.visible) {
+            txtQuickSearch.focus();
+            txtQuickSearch.select();
+            
             //Animate
             apf.tween.single(winQuickSearch, {
                 type     : "top",

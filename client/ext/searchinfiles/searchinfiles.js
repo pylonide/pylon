@@ -12,7 +12,7 @@ define(function(require, exports, module) {
  var util = require("core/util");
  var canon = require("pilot/canon");
  var editors = require("ext/editors/editors");
- var console = require("ext/console/console");
+ var ideConsole = require("ext/console/console");
  var skin = require("text!ext/searchinfiles/skin.xml");
  var markup = require("text!ext/searchinfiles/searchinfiles.xml");
   
@@ -92,6 +92,20 @@ return ext.register("ext/searchinfiles/searchinfiles", {
             }
             editors.showFile(root.getAttribute("path") + "/" + path, line, 0, text);
         });
+        
+        ideConsole.enable();
+        if (!this.$panel) {
+            this.$panel = tabConsole.add(this.pageTitle, this.pageID);
+            this.$panel.appendChild(trSFHbox);
+            tabConsole.set(this.pageID);
+            trSFResult.setProperty("visible", true);
+            this.$model = trSFResult.getModel();
+            var _self = this;
+            // make sure the tab is shown when results come in
+            this.$model.addEventListener("afterload", function() {
+                tabConsole.set(_self.pageID);
+            });
+        }
     },
 
     getSelectedTreeNode: function() {
@@ -148,24 +162,30 @@ return ext.register("ext/searchinfiles/searchinfiles", {
     },
 
     getOptions: function() {
+        var matchCase = '0';
+        if (chkSFMatchCase.checked)
+            matchCase = '1';
+        var regex = '0';
+        if (chkSFRegEx.checked)
+            regex = '1';
         return {
             query: txtSFFind.value,
             pattern: ddSFPatterns.value,
-            casesensitive: chkSFMatchCase.checked,
-            regexp: chkSFRegEx.checked
+            casesensitive: matchCase,
+            regexp: regex
         };
     },
 
     execFind: function() {
+        var _self = this;
         winSearchInFiles.hide();
         // show the console (also used by the debugger):
-        console.enable();
+        ideConsole.enable();
         if (!this.$panel) {
             this.$panel = tabConsole.add(this.pageTitle, this.pageID);
-            this.$panel.appendChild(trSFResult);
+            this.$panel.appendChild(trSFHbox);
             trSFResult.setProperty("visible", true);
             this.$model = trSFResult.getModel();
-            var _self = this;
             // make sure the tab is shown when results come in
             this.$model.addEventListener("afterload", function() {
                 tabConsole.set(_self.pageID);
@@ -173,12 +193,16 @@ return ext.register("ext/searchinfiles/searchinfiles", {
         }
         // show the tab
         tabConsole.set(this.pageID);
+        
         var node = this.$currentScope = grpSFScope.value == "projects"
             ? trFiles.xmlRoot.selectSingleNode("folder[1]")
             : this.getSelectedTreeNode();
-        trSFResult.setAttribute("empty-message", "No results found for '" + txtSFFind.value.trim() + "'");
-        this.$model.load("{davProject.report('" + node.getAttribute("path")
-            + "', 'codesearch', " + JSON.stringify(this.getOptions()) + ")}");
+        trSFResult.setAttribute("empty-message", "No results found for '" + txtSFFind.value.trim().replace(/([\[\]\{\}])/g, '\\$1') + "'");
+        davProject.report(node.getAttribute("path"), "codesearch", this.getOptions(), function(data, state, extra){
+            if (state != apf.SUCCESS)
+                return;
+            _self.$model.load(data);
+        });
         ide.dispatchEvent("track_action", {type: "searchinfiles"});
     },
 

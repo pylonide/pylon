@@ -4,13 +4,12 @@
       buttons   = "close" 
       modal     = "false" 
       center    = "true" 
-      width     = "350" 
-      height    = "250"
+      width     = "475" 
+      height    = "300"
       resizable = "true"
       kbclose   = "true"
       onshow    = "
-        txtGoToFile.clear();
-        mdlGoToFile.clear();
+        txtGoToFile.select();
       ">
         <a:hbox edge="5">
             <a:textbox id="txtGoToFile" realtime="true" flex="1" skin="searchbox_textbox" focusselect="true" />

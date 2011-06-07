@@ -9,7 +9,7 @@
             height: 8px;
             position: relative;
 
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 9px;
             text-align : center;
         }

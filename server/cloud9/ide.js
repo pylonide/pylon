@@ -47,14 +47,21 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
         requirejsConfig: requirejsConfig,
         offlineManifest: options.offlineManifest || "",
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
-        version: options.version
+        version: options.version,
+        extra: options.extra
     };
 
     this.$users = {};
 
     this.nodeCmd = process.argv[0];
 
-    this.davServer = jsDAV.mount(this.options.mountDir, this.options.davPrefix, this.httpServer, false);
+    var davOptions = {
+        node: this.options.mountDir,
+        mount: this.options.davPrefix,
+        server: this.httpServer,
+        standalone: false
+    };
+    this.davServer = jsDAV.mount(davOptions);
     this.davInited = false;
     
     this.registerExts(exts);
@@ -95,7 +102,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/tabbehaviors/tabbehaviors",
     "ext/keybindings/keybindings",
     "ext/watcher/watcher",
-    "ext/dragdrop/dragdrop"
+    "ext/dragdrop/dragdrop",
+    "ext/beautify/beautify"
 ];
 
 (function () {

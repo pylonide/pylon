@@ -41,6 +41,10 @@ oop.inherits(ProxyDocument, Document);
         return this.doc.getLength();
     };
 
+    this.getLine = function (row) {
+        return this.doc.getLine(row);
+    };
+
     this.getLines = function (startRow, endRow) {
         return this.doc.getLines(startRow, endRow);
     };

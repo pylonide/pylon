@@ -31,7 +31,7 @@
             left : 10px;
             top : 10px;
             font-size : 8pt;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
         }
         .portal>br{
         }

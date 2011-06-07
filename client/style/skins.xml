@@ -123,8 +123,17 @@
             overflow         : hidden;
             position         : relative;
             background-image : url(images/dockLeftBackground.png);
+            border-right    : 1px solid #2E2E2E;
         }
         
+        .deploy.mnubtn, .preferences.mnubtn {
+            border-bottom : none;
+        }
+
+        .deploy.mnubtn.mnubtnDown, .preferences.mnubtn.mnubtnDown {
+            border-bottom: 1px solid #3F3F41;
+        }
+
         .black-menu-bar .c9menulogo {
             width    : 65px;
             height   : 32px;
@@ -144,7 +153,7 @@
         
         .black-menu-bar .c9version {
             color       : #696969;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 10px;
             text-align  : center;
             padding     : 0 0 3px 0;
@@ -256,8 +265,8 @@
         }
 
         .btn .lbl {
-            height              : 23px;
-            padding             : 4px 8px 0 8px;
+            height              : 22px;
+            padding             : 5px 8px 0 8px;
             margin              : 0 4px;
             white-space         : nowrap;
             overflow            : hidden;
@@ -269,7 +278,7 @@
             text-align          : center;
             color               : #474747;
             text-shadow         : rgba(255, 255, 255, .71) 0px 1px 0px;
-            font-family         : Trebuchet MS;
+            font-family         : Arial;
             font-size           : 14px;
             font-weight         : bold;
         }
@@ -324,7 +333,14 @@
         }
 
         .btnIconOnly .lbl SPAN {
-            background-position: 1px 2px;
+            background-position: 1px 3px;
+        }
+        
+        .smallCaption.btnIconOnly .lbl {
+            color: #323232;
+            font-weight: normal;
+            font-size: 12px;
+            padding-left: 25px;
         }
 
         .btnIcon.iconOnTheRight .lbl {
@@ -1246,7 +1262,7 @@
         }
         
         .c9-menu-btn .c9-label {
-            font-family   : Tahoma;
+            font-family   : Tahoma, Arial;
             font-size     : 12px;
             line-height   : 14px;
             color         : #e8e8e8;
@@ -1556,7 +1572,7 @@
         }
         
         .mnubtn SPAN {
-            font-family         : Tahoma;
+            font-family         : Tahoma, Arial;
             font-size           : 10px;
             color               : #aaaaaa;
             text-align          : center;
@@ -1670,7 +1686,7 @@
         }
 
         .cbcontainer span {
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 11px;
             cursor      : default;
             padding     : 1px 3px 2px 3px;
@@ -1738,7 +1754,77 @@
         </a:main>
     </a:presentation>
 </a:checkbox>
+<a:checkbox name="db-checkbox">
+    <a:style><![CDATA[
+        .db-checkbox {
+            overflow    : hidden;
+            position    : relative;
+            cursor      : default;
+            height      : 14px;
+            padding     : 2px 0 0 22px;
+            font-family : Arial;
+            font-size   : 12px;
+            color       : #404040;
+        }
 
+        .db-checkbox.bluecheck {
+            height      : 17px;
+        }
+
+        .db-checkbox .check {
+            width      : 16px;
+            height     : 16px;
+            position   : absolute;
+            top        : 0;
+            left       : 0;
+            background : url(images/checkbox.png) no-repeat 0 0;
+        }
+
+        .db-checkbox.bluecheck .check {
+            width      : 17px;
+            height     : 17px;
+            background : url(images/checkbox-blue.png) no-repeat -1px 2px;
+        }
+
+        .db-checkboxChecked {}
+
+        .db-checkboxChecked .check{
+            background-position: 0 -16px;
+        }
+        .bluecheck.db-checkboxChecked .check{
+            background-position: 0 -17px;
+        }
+
+        .db-checkboxOver {
+
+        }
+
+        .db-checkbox.bold {
+            font-weight : bold;
+            color       : #202020;
+        }
+
+        .vbox > DIV > .db-checkbox {
+            height  : 14px;
+            overflow: visible;
+        }
+
+        .db-checkboxDisabled {
+            color: #ababab;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
+        .vbox > .db-checkbox {
+            height  : 16px;
+            overflow: visible;
+        }
+    ]]></a:style>
+    <a:presentation>
+        <a:main label="text()">
+            <div class="db-checkbox">-<div class="check"></div></div>
+        </a:main>
+    </a:presentation>
+</a:checkbox>
 <a:codeeditor name="codeeditor">
     <a:style><![CDATA[
         .ace_editor {
@@ -1891,7 +1977,7 @@
             cursor: default;
             overflow : hidden;
 
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
 
             padding: 19px 0 0 0;
@@ -2303,7 +2389,7 @@
             background-color: white;
             cursor: default;
             overflow : hidden;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             padding: 0;
             color : #333;
@@ -2395,118 +2481,146 @@
 </a:datagrid>
 <a:datagrid name="dgcheck">
     <a:style><![CDATA[
-        .dgcheck{
-            position: relative;
-            border: 1px solid #c3c3c3;
-            background-color: white;
-            cursor: default;
-
-            font-family: Tahoma;
-            font-size: 8pt;
-
-            padding: 21px 0 0 0;
-            color : #333;
+        .dgcheck {
+            position         : relative;
+            background-color : white;
+            cursor           : default;
+            font-family      : Tahoma, Arial;
+            font-size        : 12px;
+            padding          : 16px 0 0 0;
+            color            : #333;
         }
 
-        .dgcheck .headings{
-            position : relative;
-            top : 0;
-            left : 0;
-            height : 17px;
-            z-index : 10;
-            /*padding-left : 5px;*/
-            background-color : #e6e6e6;
-            margin : -21px 25px 0 0;
-            border : 1px solid white;
-            border-left : 0;
-            border-right : 0px solid white;
-            white-space : nowrap;
+        .dgcheck .headings {
+            position         : relative;
+            top              : 0;
+            left             : 0;
+            height           : 15px;
+            z-index          : 10;
+            margin           : -16px 16px 0 0;
+            border           : 1px solid #d6d6d6;
+            border-left      : 0;
+            border-right     : 0;
+            white-space      : nowrap;
+
+            background    : #e6e6e6 no-repeat 0 50%;
+            filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#fefefe', endColorstr='#ebebeb');
+            -ms-filter: "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#fefefe', endColorstr='#ebebeb')";
+
+            background: -webkit-gradient(linear, left top, left bottom, from(#fefefe), color-stop(1, #ebebeb));
+            -webkit-background-origin: padding-box;
+            -webkit-background-clip: content-box;
+
+            background:-moz-linear-gradient(center bottom, #ebebeb 0%, #fefefe 100%) repeat scroll 0 0 transparent;
         }
+
         .noscrollbar .headings {
-		    margin : -21px 1px 0 0;
-		}
-		.noscrollbar .dgcheck{
-		    background : transparant;
-		}
+            margin : -21px 1px 0 0;
+        }
 
-        .dgcheck .headings div{
-            display : inline-block;
-            height : 17px;
+        .noscrollbar .dgcheck{
+            background : transparant;
+        }
 
-            /*margin-right : -3px;
-            margin-left : -5px;*/
-
-            background : #e6e6e6 no-repeat 0 50%;
-            overflow : hidden;
+        .dgcheck .headings div {
+            display       : inline-block;
+            height        : 15px;
+            overflow      : hidden;
             text-overflow : ellipsis;
+            color         : #202020;
+            text-shadow   : rgba(255, 255, 255, 1) 0px 1px 0px;
+
+            background    : #e6e6e6 no-repeat 0 50%;
+            filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#fefefe', endColorstr='#ebebeb');
+            -ms-filter: "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#fefefe', endColorstr='#ebebeb')";
+
+            background: -webkit-gradient(linear, left top, left bottom, from(#fefefe), color-stop(1, #ebebeb));
+            -webkit-background-origin: padding-box;
+            -webkit-background-clip: content-box;
+
+            background:-moz-linear-gradient(center bottom, #ebebeb 0%, #fefefe 100%) repeat scroll 0 0 transparent;
         }
-        .dgcheck .headings div u{
-            padding : 1px 4px 1px 3px;
-            display : inline-block;
-            height : 15px;
+
+        .dgcheck .headings div u {
+            padding         : 1px 4px 3px 5px;
+            display         : inline-block;
+            height          : 12px;
             text-decoration : none;
-            border-left : 1px solid white;
+            border-left     : 1px solid #d6d6d6;
+            font-size       : 11px;
+            position        : relative;
         }
 
-        .dgcheck .headings div.hover{
-            background-color: #DDD;
+        .dgcheck .headings div.hover {
+
         }
 
-        .dgcheck .headings div.down, .dgcheck .headings div.drag{
-            color: white;
-            background-color: #25a8e7;
+        .dgcheck .headings div.down,
+        .dgcheck .headings div.drag {
+
         }
 
-        .dgcheck .headings div.drag{
-            border : 1px solid white;
+        .dgcheck .headings div.drag {
+
         }
 
-        .dgcheck .headings div.ascending{
-            background-image : url(images/sort_asc.gif);
-            background-repeat : no-repeat;
-            background-position : right 6px;
+        .dgcheck .headings div.ascending,
+        .dgcheck .headings div.descending {
+            filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#d2d2d2', endColorstr='#e2e2e2');
+            -ms-filter: "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#d2d2d2', endColorstr='#e2e2e2')";
+
+            background: -webkit-gradient(linear, left top, left bottom, from(#d2d2d2), color-stop(1, #e2e2e2));
+            -webkit-background-origin: padding-box;
+            -webkit-background-clip: content-box;
+
+            background:-moz-linear-gradient(center bottom, #d2d2d2 0%, #e2e2e2 100%) repeat scroll 0 0 transparent;
         }
 
-        .dgcheck .headings div.descending{
-            background-image : url(images/sort_desc.gif);
-            background-repeat : no-repeat;
-            background-position : right 6px;
+        .dgcheck .records {
+            overflow-x   : hidden;
+            overflow-y   : scroll;
+            height       : 100%;
+            margin-top   : -17px;
+            padding      : 17px 25px 0 0;
+            position     : relative;
+            top          : 0;
+            white-space  : nowrap;
         }
 
-        .dgcheck .records{
-            overflow-x: hidden;
-            overflow-y: hidden;
-            height : 100%;
-            padding : 18px 25px 0 0;
-            position : relative;
-            top : -19px;
-            border : 1px solid white;
-            border-width : 1px 1px 0 0;
-            white-space : nowrap;
-        }
-
-        .noscrollbar .records{
+        .noscrollbar .records {
             overflow-y : hidden;
         }
 
-        .dgcheck .records .row span{
-            display : inline-block;
-
-            /*padding : 1px 0 1px 0;*/
-            height : 18px;
-            background : white no-repeat 0 50%;
-            border-bottom : 1px solid #eee;
+        .dgcheck .records DIV:nth-of-type(2n) SPAN {
+            background-color : white;
+            border-bottom    : 1px solid white;
         }
 
-        .dgcheck .records .row span u{
-            padding : 2px 3px 2px 4px;
-            height : 15px;
-            display : inline-block;
+        .dgcheck .records DIV:nth-of-type(2n+1) SPAN {
+            background-color : #ecf0f4;
+            border-bottom    : 1px solid #ecf0f4;
+        }
+
+        .dgcheck .records .row span {
+            display       : inline-block;
+            height        : 18px;
+            background    : white no-repeat 0 50%;
+        }
+
+        .dgcheck .records .row span u {
+            padding         : 2px 3px 2px 4px;
+            height          : 15px;
+            display         : inline-block;
             text-decoration : none;
-            border-left : 1px solid #eee;
-            text-overflow : ellipsis;
-            white-space : nowrap;
-            overflow : hidden;
+            border-left     : 1px solid #d2d2d2;
+
+            text-overflow   : ellipsis;
+            white-space     : nowrap;
+            overflow        : hidden;
+        }
+
+        .dgcheck .records .row SPAN:nth-of-type(1) U {
+            border-left : 1px solid #f4f4f4;
         }
 
         .noscrollbar .dgcheck .records .row span{
@@ -2514,8 +2628,9 @@
         }
 
         .dgcheck .records .row{
-            height : 19px;
+            height       : 19px;
             padding-left : 0;
+            border-top:0;
         }
 
         .dgcheck .records .highlight span{
@@ -2539,15 +2654,25 @@
         .dgcheckFocus .records .row span{
         }
 
-        .dgcheck .records .selected, .dgcheck .records .selected span{
-            background-color: #f0f0f0;
-            color : #333;
+        .dgcheck .records DIV.selected,
+        .dgcheck .records DIV.selected span{
+            background-color : #6e7e8d;
+            color            : white;
         }
-        .dgcheckFocus .records .selected, .dgcheckFocus .records .selected span{
-            color: white;
-            background-color: #25a8e7;
+
+        .dgcheckFocus .records DIV.selected,
+        .dgcheckFocus .records DIV.selected span{
+            color            : white;
+            background-color : #6e7e8d;
         }
-        .dgcheck .records .editing, .dgcheck .records .editing span{
+
+        .dgcheck .records DIV.selected span,
+        .dgcheckFocus .records DIV.selected span {
+            border-bottom : 1px solid #6e7e8d;
+        }
+
+        .dgcheck .records DIV.editing,
+        .dgcheck .records DIV.editing span{
             background-color : white;
             color : #333;
         }
@@ -2727,7 +2852,23 @@
             margin-left : -31px;
         }
 
-        .dgcheck .checkcell{
+        .dgcheck .checkcell {
+            position    : relative;
+        }
+
+        .dgcheck .checkcell B {
+            float:none;
+            margin: 0;
+            position:absolute;
+            top:3px;
+            left:50%;
+            margin-left:-6px;
+        }
+
+        .dgcheck .records .row .checkcell U {
+            border-left:1px solid #f4f4f4;
+            width:0;
+            padding:2px 0;
         }
 
         .dgcheck .checked b {
@@ -2963,7 +3104,7 @@
 
 <a:dropdown name="black_dropdown">
     <a:style><![CDATA[
-        .c9-dropdown {
+        .black_dropdown {
             position : relative;
             overflow : hidden;
             height   : 21px;
@@ -2984,7 +3125,7 @@
             background         :-moz-linear-gradient(center bottom, #323232 0%, #383838 100%) repeat scroll 0 0 transparent;
          }
          
-         .c9-dropdown .label {
+         .black_dropdown .label {
             position:relative;
             overflow:hidden;
             height:17px;
@@ -2997,7 +3138,7 @@
             border-right:1px solid #1c1c1c;
          }
          
-         .c9-dropdown .button {
+         .black_dropdown .button {
             width:14px;
             border-left:1px solid #4d4c4d;
             height:21px;
@@ -3007,7 +3148,7 @@
             background:url(images/btn-arrow.png) no-repeat 4px 9px;
          }
          
-         .c9-dropdownDown {
+         .black_dropdownDown {
             background         : #2d2d2d;
             filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#272727', endColorstr='#2d2d2d');
             -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#272727', endColorstr='#2d2d2d')";
@@ -3041,7 +3182,7 @@
             padding:3px 6px 0 6px;
             position:relative;
             overflow:hidden;
-            font-family   : Tahoma;
+            font-family   : Tahoma, Arial;
             font-size     : 11px;
             line-height   : 14px;
             color         : white;
@@ -3055,7 +3196,7 @@
 
     <a:presentation>
         <a:main label="div[1]/text()" button="." width-diff="-1" item-height="21" minheight="23" maxheight="23">
-            <div class="c9-dropdown">
+            <div class="black_dropdown">
                 <div class="label">-</div>
                 <div class="button"> </div>
             </div>
@@ -3099,7 +3240,7 @@
             padding : 2px 21px 2px 0;
 
             color: #333;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 11px;
         }
 
@@ -3204,7 +3345,7 @@
             background: #ffffff;
             z-index: 1000;
             color: #333333;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 11px;
             display : none;
             overflow : auto;
@@ -3293,7 +3434,7 @@
             padding: 0 7px 7px 7px;
             border: 1px solid #dcd8d8;
             color: #333;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             position: relative;
             cursor : default;
@@ -3354,7 +3495,7 @@
     <a:style><![CDATA[
         .label{
             font-size: 8pt;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             overflow: hidden;
             cursor: default;
             color : #333;
@@ -3395,7 +3536,7 @@
             border: 1px solid #afafaf;
             margin: 0;
             outline: none;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 12px;
             text-overflow: ellipsis;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
@@ -3458,7 +3599,7 @@
         }
 
         .list, .draglist{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
         }
 
@@ -3503,7 +3644,7 @@
         .list #txt_rename{
             border: 1px solid #bbb;
             padding: 1px 15px 1px 1px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             color: black;
             word-break: keep-all;
@@ -3560,7 +3701,7 @@
             position: absolute;
             overflow:visible;
             
-            font-family   : Tahoma;
+            font-family   : Tahoma, Arial;
             font-size     : 11px;
             line-height   : 14px;
             color         : #f1f1f1;
@@ -3714,85 +3855,189 @@
 </a:menu>
 
 <a:modalwindow name="fm-window">
+        <a:style><![CDATA[
+            .fm-window {
+                position : relative;
+                overflow : hidden;
+                z-index  : 10000;
+                padding  : 30px 0 0 0;
+            }
+            
+            .fm-window .fm-header {
+                position : relative;
+                overflow : hidden;
+                height   : 30px;
+                top      : -30px;
+            }
+            
+            .fm-window .fm-header .hcontent {
+                background    : url(images/header_backg.png)  repeat-x 0 0;
+                margin-right  : 6px;
+                position      : relative;
+                overflow      : hidden;
+                height        : 22px;
+                padding       : 8px 0 0 7px;
+                font-family   : Arial;
+                font-size     : 12px;
+                line-height   : 16px;
+                font-weight   : bold;
+                color         : #194e7d;
+                text-shadow   : #4a9be2 0px 1px 0px;
+            }
+            
+            .fm-window .fm-header .right {
+                width:6px;
+                height:30px;
+                position:absolute;
+                top:0;
+                right:0;
+                background:url(images/header_right.png) no-repeat 0 0;
+            }
+    
+            .fm-window .fm-content {
+                position:absolute;
+                overflow:visible;
+                border-right:1px solid #7b7b7b;
+                left : 0;
+                top  : 30px;
+                right : 0;
+                bottom : 0;
+            }
+        ]]></a:style>
+        
+        <a:presentation>
+            <a:main 
+              collapsed-height = "30"
+              minheight        = "30"
+              minwidth         = "60"
+              container        = "div[2]" 
+              drag             = "div[2]" 
+              title            = "div[1]/div[1]/text()" 
+              icon             = "div[1]/div[1]/div[1]"
+              buttons          = "div[1]/div[1]/div[2]">
+                <div class="fm-window">
+                    <div class="fm-header">
+                        <div class="hcontent">-<div class="icon"></div><div class="buttons"></div></div>
+                        <div class="right"></div>
+                    </div>
+                    <div class="fm-content"> </div>
+                </div>
+            </a:main>
+            <a:button>
+                <div> </div>
+            </a:button>
+        </a:presentation>
+    </a:modalwindow>
+<a:scrollbar name="sbios">
     <a:style><![CDATA[
-        .fm-window {
-            position : relative;
-            overflow : hidden;
-    		z-index	 : 10000;
-            padding  : 30px 0 0 0;
-        }
-        
-        .fm-window .fm-header {
-            position : relative;
-            overflow : hidden;
-            height   : 30px;
-            top      : -30px;
-        }
-        
-        .fm-window .fm-header .hcontent {
-            background    : url(images/header_backg.png)  repeat-x 0 0;
-            margin-right  : 6px;
-            position      : relative;
-            overflow      : hidden;
-            height        : 24px;
-            padding       : 6px 0 0 6px;
-            font-family : Tahoma;
-            font-size   : 12px;
-            line-height:16px;
-            font-weight : bold;
-            color       : #1d4566;
-            text-shadow   : rgba(255, 255, 255, 0.25) 0px 1px 0px;
-        }
-        
-        .fm-window .fm-header .right {
-            width:6px;
-            height:30px;
-            position:absolute;
-            top:0;
-            right:0;
-            background:url(images/header_right.png) no-repeat 0 0;
+        .sbios {
+            position            : relative;
+            width               : 6px;
+            overflow            : hidden;
+            padding             : 6px 3px 3px 0;
         }
 
-        .fm-window .fm-content {
-            position:absolute;
-            overflow:visible;
-            border-right:1px solid #7b7b7b;
-            left : 0;
-            top  : 30px;
-            right : 0;
-            bottom : 0;
+        .sbios SPAN {
+            width               : 6px;
+            bottom              : 0;
+            height              : 3px;
+            position            : absolute;
+        }
+
+        .sbios .filler {
+            height              : 100%;
+            width               : 6px;
+            position            : absolute;
+            top                 : 0;
+            bottom              : 0;
+            z-index             : 1;
+        }
+        .sbios .mainrail {
+            height              : 100%;
+            width               : 6px;
+            position            : relative;
+        }
+
+        .sbios .indicator {
+            height   : 6px;
+            display  : none;
+            position : absolute;
+            overflow : hidden;
+            width    : 7px;
+            margin   : 0 0 0 0;
+            min-height: 20px;
+            background: #aaadaf;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+        }
+
+        .sbios .indicator .indi_left {
+            height              : 3px;
+            width               : 7px;
+            position            : absolute;
+            top                 : 0;
+            left                : 0;
+        }
+
+        .sbios .indicator .indi_middle {
+            position            : absolute;
+            top                 : 3px;
+            bottom              : 3px;
+            left                : 0;
+            width               : 7px;
+        }
+
+        .sbios .indicator .indi_right {
+            height              : 3px;
+            width               : 7px;
+            position            : absolute;
+            bottom              : 0;
+            left                : 0;
         }
     ]]></a:style>
-    
+    <a:style condition="apf.isWebkit">
+        .sbios{
+            display : -webkit-box;
+        }
+
+        .sbios span{
+            left : 0;
+        }
+
+        .sbios .mainrail {
+            height : auto;
+        }
+
+        .sbios .filler{
+            left : 0;
+            height : auto;
+            top : 0;
+            bottom : 0;
+        }
+    </a:style>
+
     <a:presentation>
-        <a:main 
-          collapsed-height = "30"
-          minheight        = "30"
-          minwidth         = "60"
-          container        = "div[2]" 
-          drag             = "div[2]" 
-          title            = "div[1]/div[1]/text()" 
-          icon             = "div[1]/div[1]/div[1]"
-          buttons          = "div[1]/div[1]/div[2]">
-            <div class="fm-window">
-                <div class="fm-header">
-                    <div class="hcontent">-<div class="icon"></div><div class="buttons"></div></div>
-                    <div class="right"></div>
+        <a:main indicator="div/div">
+            <div class='sbios'>
+                <div class="filler">
+                    <div class='indicator'>
+                        <div class="indi_left"></div>
+                        <div class="indi_middle"></div>
+                        <div class="indi_right"></div>
+                    </div>
                 </div>
-                <div class="fm-content"> </div>
+                <div class="mainrail"></div>
+                <span> </span>
             </div>
         </a:main>
-        <a:button>
-            <div> </div>
-        </a:button>
     </a:presentation>
-</a:modalwindow>
+</a:scrollbar>
 <a:modalwindow name="dockwin">
     <a:alias>panel</a:alias>
 
     <a:style><![CDATA[
         .dockwin {
-            font-family : "Trebuchet MS";
+            font-family : "Arial";
             font-size   : 11px;
             padding     : 19px 0 1px 0;
             position    : relative;
@@ -4067,7 +4312,7 @@
             font-size   : 15px;
             color       : #747475;
             font-weight : bold;
-            font-family : Trebuchet MS;
+            font-family : Arial;
             text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
             height      : 28px;
             padding     : 14px 0 0 6px;
@@ -4121,13 +4366,13 @@
             background-color    : #eff1f4;
             color               : #222222;
             font-size           : 13px;
-            font-family         : Trebuchet MS;
+            font-family         : Arial;
         }
 
         .winadv .wn_cp_content > H3 {
             font-size   : 18px;
             color       : #333333;
-            font-family : Trebuchet MS;
+            font-family : Arial;
             font-weight : bold;
             margin      : 0;
             display:block;
@@ -4138,7 +4383,7 @@
         .winadv .wn_cp_content H3.wheader {
             font-size   : 18px;
             color       : #333333;
-            font-family : Trebuchet MS;
+            font-family : Arial;
             font-weight : bold;
             margin      : 0;
             display:block;
@@ -4149,7 +4394,7 @@
         .winadv .wn_cp_content > H4 {
             font-size   : 13px;
             color       : #222222;
-            font-family : Trebuchet MS;
+            font-family : Arial;
             font-weight : bold;
             margin      : 0;
         }
@@ -4245,7 +4490,7 @@
         }
 
         .rbclassic span {
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 11px;
             padding     : 0 2px 0px 2px;
             height      : 15px;
@@ -4299,7 +4544,7 @@
             border: 1px solid #8C8C8C;
             color: #f5f5f5;
             cursor: pointer;
-            font-family: "Trebuchet MS";
+            font-family: "Arial";
             font-size:11px;
             position:relative;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
@@ -4625,7 +4870,7 @@
             height: 8px;
             position: relative;
 
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 9px;
             text-align : center;
         }
@@ -4747,7 +4992,7 @@
             background-position : 0 0;
             background-image    : url(images/spinner_body2.png);
             color               : black;
-            font-family         : Tahoma;
+            font-family         : Tahoma, Arial;
             font-size           : 11px;
             width               : 100%;
             margin              : 0;
@@ -5145,7 +5390,7 @@
             padding: 1px 5px 0 5px;
 
             font-size: 11px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             background: no-repeat 3px 1px;
             height: 15px;
             float: left;
@@ -5266,7 +5511,7 @@
         white-space: nowrap;
         color: #aaaaaa;
         text-shadow : rgba(0, 0, 0, 1) 0px 1px 0px;
-        font-family : Trebuchet MS;
+        font-family : Arial;
         font-size : 12px;
 
         border-top: 1px solid #404040;
@@ -5396,7 +5641,7 @@
 
         overflow: hidden;
         clear: both;
-        font-family : Trebuchet MS;
+        font-family : Arial;
         font-family: 12px;
         color: #eeeeee;
 
@@ -5460,7 +5705,7 @@
         overflow: visible;
         white-space: nowrap;
         color: #f5f5f5;
-        font-family : Trebuchet MS;
+        font-family : Arial;
         font-size : 12px;
         border-bottom : 1px solid white;
         background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #262829),color-stop(1, #2f3031));
@@ -5766,7 +6011,7 @@
             white-space: nowrap;
             color: #404040;
             text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size : 11px;
             border-bottom : 1px solid #8c8c8c;
             
@@ -5908,7 +6153,7 @@
             border-bottom: 1px solid #8c8c8c;*/
             overflow: hidden;
             clear: both;
-            font-family : Trebuchet MS;
+            font-family : Arial;
             font-family: 12px;
         }
 
@@ -6001,7 +6246,7 @@
             color    : #202020;
 
             text-shadow : rgba(255,255,255,0.7) 0px 1px 0px;
-            font-family : "Trebuchet MS", Tahoma;
+            font-family : "Arial", Tahoma;
             font-size : 11px;
         }
 
@@ -6047,7 +6292,7 @@
             height              : 14px;
             display             : block;
             position            : absolute;
-            right               : 0;
+            right               : 1px;
             top                 : 3px;
             /*cursor              : pointer;*/
             background-image    : url(images/close_tab_btn.png);
@@ -6336,7 +6581,7 @@
             color: #333333;
             margin: 0;
             outline: none;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 12px;
             text-overflow: ellipsis;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
@@ -6353,7 +6598,7 @@
             height           : 17px;
             font-size        : 12px;
             color            : #333333;
-            font-family      : Trebuchet MS;
+            font-family      : Arial;
             outline          : none;
             background-color : transparent;
             width: 100%;
@@ -6402,7 +6647,7 @@
             border: 1px solid #afafaf;
             margin: 0;
             outline: none;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 12px;
             text-overflow: ellipsis;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
@@ -6415,7 +6660,7 @@
             height           : 17px;
             font-size        : 12px;
             color            : #333333;
-            font-family      : Trebuchet MS;
+            font-family      : Arial;
             outline          : none;
             background-color : transparent;
             width: 100%;
@@ -6486,7 +6731,7 @@
             /*background-attachment: fixed !important; background-attachment: scroll; */
             color: #333;
             padding: 6px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             overflow: auto;
             outline: none;
@@ -6524,7 +6769,7 @@
             background: url(images/menubar_row.png) repeat-x top left;
             height: 22px;
             z-index: 1;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 12px;
             position: relative;
         }
@@ -6532,7 +6777,7 @@
         .toolbar .subbar {
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(222,224,227)),color-stop(1, rgb(239,241,244)));
             background: -moz-linear-gradient(center bottom,rgb(222,224,227) 0%,rgb(239,241,244) 100%);
-            font-family: Trebuchet MS;
+            font-family: Arial;
             font-size: 12px;
             border-bottom: 1px solid #b2b2b2;
             position: relative;
@@ -6594,8 +6839,11 @@
             cursor           : default;
             position         : relative;
             padding          : 0;
-            overflow         : auto;
+            overflow         : hidden;
             border-right     : 1px solid #f5f5f5;
+        }
+
+        .hboxTrFiles {
             background :url(images/tree-shadow-left.png) repeat-y left 0, url(images/tree-shadow-right.png) repeat-y right 0, url(images/tree_backg.png) repeat 0 0;
         }
         
@@ -6761,7 +7009,7 @@
         }
         
         .filemgr-tree .item LABEL .caption {
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 11px;
             color       : #101010;
             display:block;
@@ -6785,7 +7033,7 @@
             padding-left:4px;
             margin-top:1px;
             
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 11px;
             color       : #101010;
             position:relative;
@@ -6824,7 +7072,7 @@
         }
         
         .filemgr-dragtree .item LABEL .caption {
-            font-family     : Tahoma;
+            font-family     : Tahoma, Arial;
             font-size       : 11px;
             color           : white;
             display         : block;
@@ -7027,7 +7275,7 @@
                 padding         : 6px 8px 6px 2px;
                 display         : block;
                 background-color: #bf0202;
-                font-family     : Tahoma;
+                font-family     : Tahoma, Arial;
                 font-size       : 8pt;
                 color           : #ffffff;
             }

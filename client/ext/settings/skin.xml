@@ -4,11 +4,11 @@
         <a:style><![CDATA[
             .bar-preferences {
                 position         : relative;
-                overflow-y       : auto;
+                overflow-y       : hidden;
                 overflow-x       : hidden;
                 background-image : url(images/panelbg.png);
                 color            : #202020;
-                font-family      : Tahoma;
+                font-family      : Tahoma, Arial;
                 font-size        : 12px;
                 text-shadow : rgba(255, 255, 255, 0.8) 0px 1px 0px;
             }
@@ -24,7 +24,7 @@
                 position         : relative;
                 overflow         : visible;
                 display          : block;
-                font-family      : Tahoma;
+                font-family      : Tahoma, Arial;
                 font-size        : 13px;
                 color            : #303030;
                 font-weight      : bold;
