@@ -45,6 +45,8 @@ exports.question = function(title, header, msg, onyes, onyestoall, onno, onnotoa
 var SupportedIcons = {
    "application/xhtml+xml":'html',
    "text/css": "css",
+   "text/x-scss": "css",
+   "text/x-sass": "css",
    "text/html":'html',
     "application/pdf":'page_white_acrobat',
     "image":'image',
@@ -53,10 +55,12 @@ var SupportedIcons = {
     "text/plain": 'page_white_text',
     "application/javascript": 'page_white_code',
     "application/json": 'page_white_code',
-    "text/x-script.python": 'script_code',
+    "text/x-script.python": 'page_white_code',
+    "text/x-script.ocaml": 'page_white_code',
+    "text/x-script.clojure": 'page_white_code',
     "application/x-httpd-php": 'page_white_php',
     "text/x-script.ruby": "page_white_ruby",
-    "text/x-script.coffeescript": 'script_code',
+    "text/x-script.coffeescript": 'page_white_cup',
     "text/cpp": 'page_white_cplusplus',
     "text/x-c": 'page_white_c',
     "text/x-csharp": 'page_white_csharp',
@@ -67,6 +71,8 @@ var contentTypes = {
     "js": "application/javascript",
     "json": "application/json",
     "css": "text/css",
+    "scss": "text/x-scss",
+    "sass": "text/x-sass",
     
     "xml": "application/xml",
     "rdf": "application/rdf+xml",
@@ -109,12 +115,15 @@ var contentTypes = {
     "pnm": "image",
     "ppm": "image",
     "psd": "image",
-    "svg": "image",
     "svgz": "image",
     "tif": "image",
     "tiff": "image",
     "xbm": "image",
-    "xpm": "image"
+    "xpm": "image",
+
+    "clj": "text/x-script.clojure",
+    "ml": "text/x-script.ocaml",
+    "mli": "text/x-script.ocaml"
 };
     
 exports.getFileIcon = function(xmlNode) {
