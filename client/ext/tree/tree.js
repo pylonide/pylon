@@ -74,7 +74,7 @@ return ext.register("ext/tree/tree", {
             apf.tween.single(sbTrFiles, {
                 type     : "fade",
                 anim     : apf.tween.EASEIN,
-                from     : 0.4,
+                from     : 0,
                 to       : 1,
                 steps    : 20,
                 control  : this.animControl
@@ -97,7 +97,7 @@ return ext.register("ext/tree/tree", {
                     type     : "fade",
                     anim     : apf.tween.EASEOUT,
                     from     : 1,
-                    to       : 0.4,
+                    to       : 0,
                     steps    : 20,
                     control  : _self.animControl
                 });
