@@ -103,7 +103,7 @@ return ext.register("ext/editors/editors", {
                         _self.afterswitch(e);
                     },
                     onclose : function(e){
-                        if (!ide.onLine) //For now prevent tabs from being closed
+                        if (!ide.onLine && !ide.hasFilesystemSupport) //For now prevent tabs from being closed
                             return false;
                             
                         _self.close(e.page);
