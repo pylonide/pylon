@@ -309,6 +309,10 @@ return ext.register("ext/filesystem/filesystem", {
 
                 var path = node.getAttribute("path");
                 
+                /**
+                 * This callback is executed when the file is read, we need to check
+                 * the current state of online/offline
+                 */
                 var readfileCallback = function(data, state, extra) {
                     if (state == apf.OFFLINE) {
                         ide.addEventListener("afteronline", function(e) {
@@ -343,12 +347,16 @@ return ext.register("ext/filesystem/filesystem", {
                 node = doc.getNode(),
                 path = node.getAttribute("path");
                 
+            /**
+             * This callback is executed when the file is read, we need to check
+             * the current state of online/offline
+             */
             var readfileCallback = function(data, state, extra) {
                 if (state == apf.OFFLINE) {
-                        ide.addEventListener("afteronline", function(e) {
-                            fs.readFile(path, readfileCallback);
-                            ide.removeEventListener("afteronline", arguments.callee);
-                        });
+                    ide.addEventListener("afteronline", function(e) {
+                        fs.readFile(path, readfileCallback);
+                        ide.removeEventListener("afteronline", arguments.callee);
+                    });
                 } else if (state != apf.SUCCESS) {
                     if (extra.status == 404)
                         ide.dispatchEvent("filenotfound", {

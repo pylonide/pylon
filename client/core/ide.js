@@ -121,7 +121,7 @@ define(function(require, exports, module) {
             };
 
             ide.socketConnect = function() {
-                clearTimeout(ide.$retryTimer);
+                clearInterval(ide.$retryTimer);
 
                 ide.socket.send(JSON.stringify({
                     command: "attach",
@@ -131,7 +131,7 @@ define(function(require, exports, module) {
             };
 
             ide.socketDisconnect = function() {
-                clearTimeout(ide.$retryTimer);
+                clearInterval(ide.$retryTimer);
                 
                 var retries = 0;
                 ide.$retryTimer = setInterval(function() {
