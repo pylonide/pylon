@@ -262,27 +262,30 @@ var apf = {
         if((typeof/./)[0]=='f' && parseFloat((sAgent.match(/(?:firefox|minefield)\/([\d\.]+)/i) || {})[1]) <= 2)
             b = 0;
 
-        if (b == 2 && sAgent.indexOf("chrome") == -1) 
+        if (b === 2 && sAgent.indexOf("chrome") == -1) 
+            b = 3;
+        // fix voor https://github.com/ajaxorg/apf/issues/8
+        if (b === 4 && sAgent.indexOf("chrome") > -1)
             b = 3;
 
         /**
          * Specifies whether the application is running in the Opera browser.
          * @type {Boolean}
          */
-        this.isOpera       = b===4 || b===5;//(self.opera && Object.prototype.toString.call(self.opera) == "[object Opera]");
+        this.isOpera       = b === 4 || b === 5;//(self.opera && Object.prototype.toString.call(self.opera) == "[object Opera]");
         //b = 5 for Opera 9
         
         /**
          * Specifies whether the application is running in the Konqueror browser.
          * @type {Boolean}
          */
-        this.isKonqueror   = b===5;//sAgent.indexOf("konqueror") != -1;
+        this.isKonqueror   = b === 5;//sAgent.indexOf("konqueror") != -1;
         
         /**
          * Specifies whether the application is running in the Safari browser.
          * @type {Boolean}
          */
-        this.isSafari      = b===3;//a/.__proto__ == "//";
+        this.isSafari      = b === 3;//a/.__proto__ == "//";
         
         /**
          * Specifies whether the application is running in the Safari browser version 2.4 or below.
@@ -300,7 +303,7 @@ var apf = {
          * Specifies whether the application is running in the Chrome browser.
          * @type {Boolean}
          */
-        this.isChrome      = b===2;//Boolean(/source/.test((/a/.toString + ""))) || sAgent.indexOf("chrome") != -1;
+        this.isChrome      = b === 2;//Boolean(/source/.test((/a/.toString + ""))) || sAgent.indexOf("chrome") != -1;
         
         /**
          * Specifies whether the application is running in a Webkit-based browser
@@ -340,7 +343,7 @@ var apf = {
         this.versionSafari = this.isSafari && !this.isAIR ? parseFloat(sAgent.match(/(?:version)\/([\d\.]+)/i)[1]) : -1;
         this.versionChrome = this.isChrome ? parseFloat(sAgent.match(/(?:chrome)\/([\d\.]+)/i)[1]) : -1;
         this.versionOpera  = this.isOpera 
-            ? parseFloat(sAgent.match(b===4 
+            ? parseFloat(sAgent.match(b === 4 
                 ? /(?:version)\/([\d\.]+)/i 
                 : /(?:opera)\/([\d\.]+)/i)[1]) 
             : -1;
@@ -350,7 +353,7 @@ var apf = {
          * Specifies whether the application is running in the Internet Explorer browser, any version.
          * @type {Boolean}
          */
-        this.isIE         = b===1;//! + "\v1";
+        this.isIE         = b === 1;//! + "\v1";
         if (this.isIE)
             this.isIE = parseFloat(sAgent.match(/msie ([\d\.]*)/)[1]);
         
