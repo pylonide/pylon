@@ -21,23 +21,24 @@ define(function(require, exports, module) {
 
             //Set references to global elements - aka extension points
             //this.tbMain       = tbMain;
-            this.mnuFile      = mnuFile;
-            this.mnuEdit      = mnuEdit;
+            this.mnuFile        = mnuFile;
+            this.mnuEdit        = mnuEdit;
             //this.barMenu      = barMenu;
-            this.barTools     = barTools;
-            this.sbMain       = sbMain;
-            this.vbMain       = vbMain;
+            this.barTools       = barTools;
+            this.sbMain         = sbMain;
+            this.vbMain         = vbMain;
 
-            this.workspaceDir = window.cloud9config.workspaceDir.replace(/\/+$/, "");
-            this.davPrefix = window.cloud9config.davPrefix.replace(/\/+$/, "");
-            this.sessionId = window.cloud9config.sessionId;
-            this.workspaceId = window.cloud9config.workspaceId;
-            this.readonly = window.cloud9config.readonly;
-            this.projectName = window.cloud9config.projectName;
+            this.workspaceDir   = window.cloud9config.workspaceDir.replace(/\/+$/, "");
+            this.davPrefix      = window.cloud9config.davPrefix.replace(/\/+$/, "");
+            this.sessionId      = window.cloud9config.sessionId;
+            this.workspaceId    = window.cloud9config.workspaceId;
+            this.readonly       = window.cloud9config.readonly;
+            this.projectName    = window.cloud9config.projectName;
 
-            this.loggedIn = true;
+            this.loggedIn       = true;
 
-            this.onLine = false;
+            this.onLine         = false;
+            this.hasFilesystemSupport = false;
 
             this.dispatchEvent("load");
 
@@ -134,11 +135,16 @@ define(function(require, exports, module) {
                 
                 var retries = 0;
                 ide.$retryTimer = setInterval(function() {
-                    if (++retries == 3)
-                        ide.dispatchEvent("socketDisconnect");
-                    
-                    if (!ide.socket.connecting && !ide.testOffline && ide.loggedIn)
-                        ide.socket.connect();
+                    if (!ide.socket.connecting && ide.loggedIn) {
+                        
+                        if (++retries == 3) {
+                            ide.dispatchEvent("socketDisconnect");
+                            if (ide.testOffline == 1)
+                                clearInterval(ide.$retryTimer);
+                        }
+                        if (ide.testOffline == 2)
+                            ide.socket.connect();
+                    }
                 }, 500);
             };
 
