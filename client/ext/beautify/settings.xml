@@ -8,6 +8,9 @@
     <a:checkbox class="underlined" label="Keep array indentation"
         checked="{[beautify/jsbeautify/@keeparrayindentation] != '' ? [beautify/jsbeautify/@keeparrayindentation] : 'true'}"
         value="[beautify/jsbeautify/@keeparrayindentation]" />
+    <a:checkbox class="underlined" label="JSLint Stricter Mode"
+        checked="{[beautify/jsbeautify/@jslinthappy] != '' ? [beautify/jsbeautify/@jslinthappy] : 'false'}"
+        value="[beautify/jsbeautify/@jslinthappy]" />
     <a:hbox edge="5 5 2 5" align="center">
         <a:label flex="1">Braces</a:label>
         <a:dropdown default="end-expand" value="[{require('ext/settings/settings').model}::beautify/jsbeautify/@braces]" width="185" height="21">

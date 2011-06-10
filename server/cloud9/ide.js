@@ -216,7 +216,7 @@ Ide.DEFAULT_PLUGINS = [
 
                 setTimeout(function() {
                     var now = new Date().getTime();
-                    if((now - user.last_message_time) > 19000) {
+                    if((now - user.last_message_time) > 10000) {
                         delete _self.$users[user.uid];
                         _self.onUserCountChange(Object.keys(_self.$users).length);
                         _self.emit("userLeave", user);
