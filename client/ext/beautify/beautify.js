@@ -1,10 +1,10 @@
 /**
  * Beautify extension for the Cloud9 IDE client
- * 
+ *
  * Reformats the selected code in the current document
- * 
+ *
  * Processing/formatting code from https://github.com/einars/js-beautify
- * 
+ *
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
@@ -17,7 +17,7 @@ define(function (require, exports, module) {
     var canon = require("pilot/canon");
     var editors = require("ext/editors/editors");
     var Range = require("ace/range").Range;
-    var jsbeautify = require("ext/beautify/res/jsbeautify/jsbeautify");
+    var jsbeautify = require("ext/beautify/res/jsbeautify/jsbeautify-min");
     var settings = require("text!ext/beautify/settings.xml");
     var extSettings = require("ext/settings/settings");
 
