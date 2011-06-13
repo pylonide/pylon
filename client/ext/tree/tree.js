@@ -88,7 +88,7 @@ return ext.register("ext/tree/tree", {
         if (this.ignoreSBMouseOut)
             return;
 
-        if (this.sbIsFaded == false) {
+        if (this.sbIsFaded === false) {
             var _self = this;
             this.sbTimer = setTimeout(function() {
                 if (_self.animControl.state != apf.tween.STOPPED && _self.animControl.stop)
@@ -152,7 +152,7 @@ return ext.register("ext/tree/tree", {
         
         colLeft.appendChild(winFilesViewer);
         
-        mnuView.appendChild(new apf.divider()),
+        mnuView.appendChild(new apf.divider());
         mnuView.appendChild(new apf.item({
             id      : "mnuitemHiddenFiles",
             type    : "check",
@@ -164,9 +164,9 @@ return ext.register("ext/tree/tree", {
                 require("ext/settings/settings").save();
             }
         }));
-        davProject.setAttribute("showhidden", "[{require('ext/settings/settings').model}::auto/tree/@showhidden]")
+        davProject.setAttribute("showhidden", "[{require('ext/settings/settings').model}::auto/tree/@showhidden]");
         
-        mnuView.appendChild(new apf.divider()),
+        mnuView.appendChild(new apf.divider());
         
         trFiles.setAttribute("model", fs.model);
         
@@ -276,7 +276,7 @@ return ext.register("ext/tree/tree", {
                             _self.loading = false;
                         });
                     }
-                }catch(e){
+                }catch(err){
                     model.setQueryValue("auto/tree/text()", "");
                 }
             }
@@ -295,7 +295,7 @@ return ext.register("ext/tree/tree", {
                     path = apf.xmlToXpath(_self.expandedList[id], trFiles.xmlRoot);
                     lut[path] = true;
                 }
-                catch(e){
+                catch(err){
                     //Node is deleted
                     delete _self.expandedList[id];
                 }
