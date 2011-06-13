@@ -146,6 +146,8 @@ return ext.register("ext/debugger/debugger", {
                 activeState: { x: -6, y: -391 }
             }
         });
+        
+        ext.initExtension(this);
     },
 
     init : function(amlNode){
