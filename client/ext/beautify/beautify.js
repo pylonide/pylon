@@ -88,7 +88,7 @@ define(function (require, exports, module) {
                 }
             })));
 
-            this.hotitems["beautify"] = [this.nodes[1]];
+            this.hotitems.beautify = [this.nodes[1]];
             canon.addCommand({
                 name: "beautify",
                 exec: function (env, args, request) {

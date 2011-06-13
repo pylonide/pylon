@@ -8,7 +8,7 @@
     <a:checkbox class="underlined" label="Keep array indentation"
         checked="{[beautify/jsbeautify/@keeparrayindentation] != '' ? [beautify/jsbeautify/@keeparrayindentation] : 'true'}"
         value="[beautify/jsbeautify/@keeparrayindentation]" />
-    <a:checkbox class="underlined" label="JSLint Stricter Mode"
+    <a:checkbox class="underlined" label="JSLint Strict Whitespace"
         checked="{[beautify/jsbeautify/@jslinthappy] != '' ? [beautify/jsbeautify/@jslinthappy] : 'false'}"
         value="[beautify/jsbeautify/@jslinthappy]" />
     <a:hbox edge="5 5 2 5" align="center">
