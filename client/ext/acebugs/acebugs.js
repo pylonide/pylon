@@ -38,8 +38,6 @@ return ext.register("ext/acebugs/acebugs", {
         var _self = this;
         this.annotationWorker = new Worker("/static/ext/acebugs/annotation_worker.js");
         this.annotationWorker.onmessage = function(e) {
-            console.log(e.data.outXml.replace(/&/g, "&amp;"));
-
             if (e.data.errors > 0)
                 dock.increaseNotificationCount("aceAnnotations", e.data.errors);
             mdlAceAnnotations.load(apf.getXml(e.data.outXml.replace(/&/g, "&amp;")));
