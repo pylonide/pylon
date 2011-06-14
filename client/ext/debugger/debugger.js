@@ -37,16 +37,6 @@ return ext.register("ext/debugger/debugger", {
     nodes : [],
 
     hook : function(){
-
-        this.annotationWorker = new Worker("/static/ext/debugger/annotation_worker.js");
-        this.annotationWorker.onmessage = function(e) {
-            if (e.data.errors > 0)
-                dock.increaseNotificationCount("aceAnnotations", e.data.errors);
-            mdlAceAnnotations.load(apf.getXml(e.data.outXml));
-        };
-
-        this.annotationWorker.onerror = function(e) {};
-
         ide.addEventListener("consolecommand.debug", function(e) {
             ide.socket.send(JSON.stringify({
                 command: "internal-isfile",
@@ -73,19 +63,6 @@ return ext.register("ext/debugger/debugger", {
             var path = node.getAttribute("path");
 
             node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
-            _self.updateAnnotations();
-        });
-
-        tabEditors.addEventListener("afterswitch", function(e){
-            var ce = editors.currentEditor;
-            if (ce) {
-                _self.editorSession = ce.ceEditor.getSession();
-                _self.editorSession.on("changeAnnotation", function(e) {
-                    _self.updateAnnotations();
-                });
-
-                _self.updateAnnotations();
-            }
         });
 
         var sectionStack = dock.getSection("debugger-stack");
@@ -134,20 +111,6 @@ return ext.register("ext/debugger/debugger", {
                 activeState: { x: -6, y: -360 }
             }
         });
-        
-        dock.registerPage(sectionRest, null, function(){
-            ext.initExtension(_self);
-            return aceAnnotations;
-        }, {
-            ident   : "aceAnnotations",
-            primary : {
-                backgroundImage: "/static/style/images/debugicons.png",
-                defaultState: { x: -6, y: -391 /*-88*/ },
-                activeState: { x: -6, y: -391 }
-            }
-        });
-        
-        ext.initExtension(this);
     },
 
     init : function(amlNode){
@@ -201,31 +164,6 @@ return ext.register("ext/debugger/debugger", {
                 //console.log("v8 updated", e);
             });
         });
-
-        var currEditor = editors.currentEditor;
-        if (currEditor) {
-            this.editorSession = currEditor.ceEditor.getSession();
-
-            this.editorSession.on("changeAnnotation", function(e) {
-                _self.updateAnnotations();
-            });
-        }
-    },
-
-    updateAnnotations : function() {
-        var ce = editors.currentEditor;
-        if (!ce || typeof mdlAceAnnotations === "undefined")
-            return;
-
-        this.ceEditor = ce.ceEditor;
-        var editorSession = this.ceEditor.getSession();
-        dock.resetNotificationCount("aceAnnotations");
-        this.annotationWorker.postMessage(editorSession.$annotations);
-    },
-
-    goToAnnotation : function() {
-        line_num = dgAceAnnotations.selected.getAttribute("line");
-        this.ceEditor.$editor.gotoLine(line_num);
     },
 
     showDebugFile : function(scriptId, row, column, text) {

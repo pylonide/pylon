@@ -103,7 +103,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/keybindings/keybindings",
     "ext/watcher/watcher",
     "ext/dragdrop/dragdrop",
-    "ext/beautify/beautify"
+    "ext/beautify/beautify",
+    "ext/acebugs/acebugs"
 ];
 
 (function () {
