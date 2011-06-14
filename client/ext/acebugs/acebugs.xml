@@ -12,7 +12,7 @@
               model      = "mdlAceAnnotations"
               loading-message = "Loading..."
               empty-message = "None found">
-                <a:each match="[annotation]" sort="[@line]">
+                <a:each match="[annotation]" sort="[@line]" data-type="number" order="ascending">
                     <a:column type="icon" width="20" icon="debugger/[@type]_obj.gif" />
                     <a:column caption="Line" value="[@line]" width="50" />
                     <a:column caption="Description" value="[@text]" width="100%" />

@@ -37,7 +37,11 @@ return ext.register("ext/acebugs/acebugs", {
     hook: function() {
         var _self = this;
         this.annotationWorker = new Worker("/static/ext/acebugs/annotation_worker.js");
+        this.lastAnnotations = "";
         this.annotationWorker.onmessage = function(e) {
+            if (e.data.outXml == _self.lastAnnotations)
+                return;
+
             if (e.data.errors > 0)
                 dock.increaseNotificationCount("aceAnnotations", e.data.errors);
             mdlAceAnnotations.load(apf.getXml(e.data.outXml.replace(/&/g, "&amp;")));
@@ -62,7 +66,7 @@ return ext.register("ext/acebugs/acebugs", {
                 _self.updateAnnotations();
             }
         });
-        
+
         this.section = dock.getSection(this.name, {
             width  : 260,
             height : 360
@@ -75,7 +79,7 @@ return ext.register("ext/acebugs/acebugs", {
             ident   : "aceAnnotations",
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
-                defaultState: { x: -6, y: -391 /*-88*/ },
+                defaultState: { x: -6, y: -391 },
                 activeState: { x: -6, y: -391 }
             }
         });
