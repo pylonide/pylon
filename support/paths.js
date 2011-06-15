@@ -10,6 +10,7 @@ require.paths.unshift(__dirname + "/connect/lib");
 require.paths.unshift(__dirname + "/asyncjs/lib");
 require.paths.unshift(__dirname + "/jsdav/lib");
 require.paths.unshift(__dirname + "/jsdav/support/node-sftp/lib");
+require.paths.unshift(__dirname + "/jsdav/support/node-ftp/lib");
 require.paths.unshift(__dirname + "/socket.io/lib");
 require.paths.unshift(__dirname + "/ace/lib");
 require.paths.unshift(__dirname + "/ace/support/pilot/lib");
