@@ -54,6 +54,15 @@ define(function (require, exports, module) {
 
             if (indentTab == "\t") indentSize = 1;
 
+            var line = doc.getLine(range.start.row);
+            var indent = line.match(/^\s*/)[0];
+            var trim = false;
+
+            if (range.start.column < indent.length)
+                range.start.column = 0;
+            else
+                trim = true;
+
             try {
                 value = jsbeautify.js_beautify(value, {
                     indent_size: indentSize,
@@ -63,6 +72,8 @@ define(function (require, exports, module) {
                     brace_style: braces,
                     jslint_happy: jsLintHappy
                 });
+                value = value.replace(/^/gm, indent);
+                if (trim) value = value.trim();
             }
             catch (e) {
                 util.alert("Error", "This code could not be beautified", "Please correct any JavaScript errors and try again");
