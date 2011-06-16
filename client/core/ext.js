@@ -205,24 +205,6 @@ return ext = {
 
         module.enable();
         this.currentLayoutMode = module;
-    },
-    
-    bringExtensionsOnline : function(){
-        var exts = this.extensions;
-        for (var i = 0, l = exts.length; i < l; i++) {
-            var _ext = exts[i];
-            if (_ext.offline === false)
-                _ext.enable();
-        }
-    },
-    
-    bringExtensionsOffline : function(){
-        var exts = this.extensions;
-        for (var i = 0, l = exts.length; i < l; i++) {
-            var _ext = exts[i];
-            if (_ext.offline === false)
-                _ext.disable();
-        }
     }
 };
 
