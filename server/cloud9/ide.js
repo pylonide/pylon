@@ -54,6 +54,7 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
     this.$users = {};
 
     this.nodeCmd = process.argv[0];
+    
 
     var davOptions = {
         node: this.options.mountDir,
@@ -61,6 +62,13 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
         server: this.httpServer,
         standalone: false
     };
+    
+    if (options.type == 'ftp') {
+        davOptions.ftp = options.ftp;
+        davOptions.type = 'ftp';
+        davOptions.node = options.ftp.path;
+    }
+    
     this.davServer = jsDAV.mount(davOptions);
     this.davInited = false;
     
