@@ -26,7 +26,7 @@
                         winDbgConsole.$ext.style.zIndex = 1;
                     }
                   "/>
-                <a:button skin="btn_icon_only" icon="console_clear.png" top="4" right="32"
+                <a:button id="btnConsoleClear" skin="btn_icon_only" icon="console_clear.png" top="4" right="32"
                   onclick  = "
                     if (tabConsole.activepagenr == 0)
                         txtConsole.clear();
@@ -40,7 +40,7 @@
                   class="dim22-22"
                   top="3" right="3"
                   onclick  = "require('ext/console/console').disable()"/>
-                <a:page caption="Console" name="console">
+                <a:page id="pgConsole" caption="Console" name="console">
                     <a:hbox anchors="0 0 0 0">
                         <a:text id="txtConsole"
                           margin     = "3 0 0 0"
@@ -56,7 +56,7 @@
                           width     = "17" />
                     </a:hbox>
                 </a:page>
-                <a:page caption="Output" name="output">
+                <a:page id="pgOutput" caption="Output" name="output">
                     <a:hbox anchors="0 0 0 0">
                         <a:text id="txtOutput"
                           margin     = "3 0 0 0"
@@ -74,7 +74,7 @@
                 </a:page>
             </a:tab>
 
-            <a:hbox class="consoleInputBox" edge="1" padding="4">
+            <a:hbox class="consoleInputBox" edge="1" padding="4" pack="end">
                 <a:textbox id="txtConsoleInput"
                   margin    = "4 0 0"
                   skin      = "tb_console"
