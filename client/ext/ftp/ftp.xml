@@ -1,0 +1,16 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:hbox id="ftpConsoleHbox" anchors="0 0 0 0">
+        <a:text id="txtFtpConsole"
+          margin     = "3 0 0 0"
+          flex       = "1"
+          scrolldown = "true"
+          textselect = "true"
+          focussable = "true"
+          class      = "console_text" />
+        <a:scrollbar
+          for       = "txtFtpConsole"
+          margin    = "0"
+          skin      = "console_scrollbar"
+          width     = "17" />
+    </a:hbox>
+</a:application>
