@@ -7,13 +7,13 @@
  
 define(function(require, exports, module) {
  
- var ide = require("core/ide");
- var ext = require("core/ext");
- var util = require("core/util");
- var canon = require("pilot/canon");
- var editors = require("ext/editors/editors");
- var ideConsole = require("ext/console/console");
- var markup = require("text!ext/ftp/ftp.xml");
+var ide = require("core/ide");
+var ext = require("core/ext");
+var util = require("core/util");
+var canon = require("pilot/canon");
+var editors = require("ext/editors/editors");
+var ideConsole = require("ext/console/console");
+var markup = require("text!ext/ftp/ftp.xml");
   
 return ext.register("ext/ftp/ftp", {
     name     : "FTP",
@@ -22,7 +22,7 @@ return ext.register("ext/ftp/ftp", {
     alone    : true,
     offline  : false,
     markup   : markup,
-    pageTitle: "FTP",
+    pageTitle: "Transcript",
     pageID   : "pgFtpConsole",
     hotitems : {},
 
@@ -30,6 +30,7 @@ return ext.register("ext/ftp/ftp", {
 
     hook : function(){
         ext.initExtension(this);
+        ide.addEventListener("socketMessage", this.onMessage.bind(this));
     },
 
     init : function(amlNode){
@@ -45,7 +46,7 @@ return ext.register("ext/ftp/ftp", {
         }
     },
     
-    log : function(msg, type, pre, post, otherOutput){
+    log : function(msg, type, code){
         if (!tabConsole.visible)
             ideConsole.enable();
         
@@ -54,22 +55,22 @@ return ext.register("ext/ftp/ftp", {
         if (!type)
             type = "log";
         else if (type == "command") {
-            msg = "<span style='color:#0066FF'><span style='float:left'>Command:</span><div style='margin:0 0 0 80px'>"
+            msg = "<span style='color:#0066FF'><span style='float:left'>Cmd:</span><div style='margin:0 0 0 80px'>"
                 + msg + "</div></span>"
         }
         else if (type == "response") {
-            msg = "<span style='color:#66FF66'><span style='float:left'>Response:</span><div style='margin:0 0 0 80px'>"
+            msg = "<span style='color:#66FF66'><span style='float:left'>" + code + ":</span><div style='margin:0 0 0 80px'>"
                 + msg + "</div></span>"
         }
         else if (type == "status") {
-            msg = "<span style='color:#FFFFFFactivity'><span style='float:left'>Status:</span><div style='margin:0 0 0 80px'>"
+            msg = "<span style='color:#FFFFFFactivity'><div style='margin:0 0 0 80px'>"
                 + msg + "</div></span>"
         }
         else if (type == "error") {
-            msg = "<span style='color:#FF3300'><span style='float:left'>Error:</span><div style='margin:0 0 0 80px'>"
+            msg = "<span style='color:#FF3300'><span style='float:left'>" + code + ":</span><div style='margin:0 0 0 80px'>"
                 + msg + "</div></span>"
         }
-        (otherOutput || txtFtpConsole).addValue("<div class='item console_" + type + "'>" + (pre || "") + msg + (post || "") + "</div>");
+        txtFtpConsole.addValue("<div class='item console_" + type + "'>" + msg + "</div>");
     },
 
     write: function(aLines) {
@@ -78,6 +79,14 @@ return ext.register("ext/ftp/ftp", {
         for (var i = 0, l = aLines.length; i < l; ++i)
             this.log(aLines[i], "log");
         //this.log("", "divider");
+    },
+    
+    onMessage: function(e) {
+        var message = e.message;
+        if (message.type !== "transcript")
+            return;
+        
+        this.log(message.body, message.subtype, message.code);
     },
     
     enable : function(){
