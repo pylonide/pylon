@@ -262,11 +262,9 @@ var apf = {
         if((typeof/./)[0]=='f' && parseFloat((sAgent.match(/(?:firefox|minefield)\/([\d\.]+)/i) || {})[1]) <= 2)
             b = 0;
 
-        if (b === 2 && sAgent.indexOf("chrome") == -1) 
-            b = 3;
         // fix voor https://github.com/ajaxorg/apf/issues/8
         if (b === 4 && sAgent.indexOf("chrome") > -1)
-            b = 3;
+            b = 2;
 
         /**
          * Specifies whether the application is running in the Opera browser.
@@ -340,7 +338,7 @@ var apf = {
         this.versionGecko  = this.isGecko ? parseFloat(sAgent.match(/(?:gecko)\/([\d\.]+)/i)[1]) : -1;
         var m = sAgent.match(/(?:firefox(-[\d.]+)?|minefield)\/([\d.]+)/i);
         this.versionFF     = this.isGecko && m && m.length ? parseFloat(m[2]) : 4.0;
-        this.versionSafari = this.isSafari && !this.isAIR ? parseFloat(sAgent.match(/(?:version)\/([\d\.]+)/i)[1]) : -1;
+        this.versionSafari = this.isSafari && (!this.isAIR || !this.isChrome) ? parseFloat(sAgent.match(/(?:version)\/([\d\.]+)/i)[1]) : -1;
         this.versionChrome = this.isChrome ? parseFloat(sAgent.match(/(?:chrome)\/([\d\.]+)/i)[1]) : -1;
         this.versionOpera  = this.isOpera 
             ? parseFloat(sAgent.match(b === 4 
