@@ -3879,14 +3879,14 @@
                 margin-right  : 6px;
                 position      : relative;
                 overflow      : hidden;
-                height        : 22px;
-                padding       : 8px 0 0 7px;
+                height        : 23px;
+                padding       : 7px 0 0 7px;
                 font-family   : Arial;
                 font-size     : 12px;
                 line-height   : 16px;
                 font-weight   : bold;
-                color         : #194e7d;
-                text-shadow   : #4a9be2 0px 1px 0px;
+                color         : #e8e8e8;
+                text-shadow   : #2a2c2d 0px 1px 0px;
             }
             
             .fm-window .fm-header .right {
