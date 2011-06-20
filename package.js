@@ -4,7 +4,7 @@ var Sys   = require("sys"),
     Path  = require("path");
 
 if (module === require.main) {
-    if (!Path.existsSync("./support/apf")) {
+    if (!Path.existsSync(__dirname + "/support/apf")) {
         console.log("Setting up path to Ajax.org Platform (apf)");
         require("child_process").exec("ln -s " + Path.normalize(__dirname + "/../apf") + " " + __dirname + "/support/apf", function(err) {
             if (err) {
