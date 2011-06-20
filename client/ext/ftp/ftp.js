@@ -63,7 +63,7 @@ return ext.register("ext/ftp/ftp", {
                 + msg + "</div></span>"
         }
         else if (type == "status") {
-            msg = "<span style='color:#FFFFFFactivity'><div style='margin:0 0 0 80px'>"
+            msg = "<span style='color:#FFFFFF'><div style='margin:0 0 0 80px'>"
                 + msg + "</div></span>"
         }
         else if (type == "error") {
