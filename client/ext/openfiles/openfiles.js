@@ -45,8 +45,10 @@ return ext.register("ext/openfiles/openfiles", {
 
         ide.addEventListener("afteropenfile", function(e){
             var node = e.doc.getNode();
-            if (!model.queryNode("//node()[@path='" + node.getAttribute("path") + "']"))
-                model.appendXml(apf.getCleanCopy(node));
+            if (node) {
+                if (!model.queryNode("//node()[@path='" + node.getAttribute("path") + "']"))
+                    model.appendXml(apf.getCleanCopy(node));
+            }
         });
 
         ide.addEventListener("closefile", function(e){

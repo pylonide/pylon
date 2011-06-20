@@ -1,0 +1,23 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:tab id="tabAceBugs" skin="docktab" visible="false">
+        <a:model id="mdlAceAnnotations"></a:model>
+        <a:page id="aceAnnotations" caption="Bugs">
+            <a:datagrid id="dgAceAnnotations"
+              anchors    = "0 0 0 0" 
+              border     = "0"
+              options    = "size|move"
+              prerender  = "false"
+              caching    = "false"
+              onafterchoose = "require('ext/acebugs/acebugs').goToAnnotation()"
+              model      = "mdlAceAnnotations"
+              loading-message = "Loading..."
+              empty-message = "None found">
+                <a:each match="[annotation]" sort="[@line]" data-type="number" order="ascending">
+                    <a:column type="icon" width="20" icon="debugger/[@type]_obj.gif" />
+                    <a:column caption="Line" value="[@line]" width="50" />
+                    <a:column caption="Description" value="[@text]" width="100%" />
+                </a:each>
+            </a:datagrid>
+        </a:page>
+    </a:tab>
+</a:application>

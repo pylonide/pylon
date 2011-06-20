@@ -56,11 +56,15 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
 
     this.$users = {};
 
+    this.nodeCmd = process.argv[0];
+
     var davOptions = {
+        node: this.options.mountDir,
         mount: this.options.davPrefix,
         server: this.httpServer,
         standalone: false
     };
+
     if (options.remote)
         util.extend(davOptions, options.remote);
     else
@@ -117,7 +121,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/keybindings/keybindings",
     "ext/watcher/watcher",
     "ext/dragdrop/dragdrop",
-    "ext/beautify/beautify"
+    "ext/beautify/beautify",
+    "ext/acebugs/acebugs"
 ];
 
 (function () {
@@ -230,7 +235,7 @@ Ide.DEFAULT_PLUGINS = [
 
                 setTimeout(function() {
                     var now = new Date().getTime();
-                    if((now - user.last_message_time) > 19000) {
+                    if((now - user.last_message_time) > 10000) {
                         delete _self.$users[user.uid];
                         _self.onUserCountChange(Object.keys(_self.$users).length);
                         _self.emit("userLeave", user);

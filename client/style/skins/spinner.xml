@@ -35,7 +35,7 @@
             background-position : 0 0;
             background-image    : url(images/spinner_body2.png);
             color               : black;
-            font-family         : Tahoma;
+            font-family         : Tahoma, Arial;
             font-size           : 11px;
             width               : 100%;
             margin              : 0;

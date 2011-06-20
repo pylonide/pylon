@@ -16,7 +16,7 @@
             padding: 1px 5px 0 5px;
 
             font-size: 11px;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             background: no-repeat 3px 1px;
             height: 15px;
             float: left;

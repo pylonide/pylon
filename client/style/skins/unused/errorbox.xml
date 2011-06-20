@@ -1,7 +1,7 @@
 <a:skin xmlns:a="http://ajax.org/2005/aml"><a:errorbox name="errorbox">
     <a:style><![CDATA[
         .errorbox{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             cursor : default;
 

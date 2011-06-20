@@ -11,17 +11,101 @@ require.def("ext/tree/tree",
     function(ide, ext, fs, settings, panels, markup) {
 
 return ext.register("ext/tree/tree", {
-    name            : "Project Files",
-    dev             : "Ajax.org",
-    alone           : true,
-    type            : ext.GENERAL,
-    markup          : markup,
-    visible         : true,
-    currentSettings : [],
-    expandedList    : {},
-    loading         : false,
-    changed         : false,
-    
+    name             : "Project Files",
+    dev              : "Ajax.org",
+    alone            : true,
+    type             : ext.GENERAL,
+    markup           : markup,
+    visible          : true,
+    currentSettings  : [],
+    expandedList     : {},
+    loading          : false,
+    changed          : false,
+    sbIsFaded        : false,
+    ignoreSBMouseOut : false,
+    pendingSBFadeOut : false,
+    animControl      : {},
+
+    onSBMouseOver : function() {
+        if (this.ignoreSBMouseOut)
+            this.pendingSBFadeOut = false;
+        this.showScrollbar();
+    },
+
+    onSBMouseOut : function() {
+        if (this.ignoreSBMouseOut)
+            this.pendingSBFadeOut = true;
+
+        this.hideScrollbar();
+    },
+
+    onSBMouseDown : function() {
+        this.ignoreSBMouseOut = true;
+    },
+
+    onSBMouseUp : function() {
+        this.ignoreSBMouseOut = false;
+        if (this.pendingSBFadeOut) {
+            this.pendingSBFadeOut = false;
+            this.hideScrollbar();
+        }
+    },
+
+    onTreeOver : function() {
+        if (this.ignoreSBMouseOut)
+            this.pendingSBFadeOut = false;
+        this.showScrollbar();
+    },
+
+    onTreeOut : function() {
+        if (this.ignoreSBMouseOut)
+            this.pendingSBFadeOut = true;
+        this.hideScrollbar();
+    },
+
+    showScrollbar : function() {
+        if (this.sbTimer)
+            clearTimeout(this.sbTimer);
+
+        if (this.sbIsFaded) {
+            if (this.animControl.state != apf.tween.STOPPED && this.animControl.stop)
+                this.animControl.stop();
+
+            apf.tween.single(sbTrFiles, {
+                type     : "fade",
+                anim     : apf.tween.EASEIN,
+                from     : 0,
+                to       : 1,
+                steps    : 20,
+                control  : this.animControl
+            });
+
+            this.sbIsFaded = false;
+        }
+    },
+
+    hideScrollbar : function() {
+        if (this.ignoreSBMouseOut)
+            return;
+
+        if (this.sbIsFaded === false) {
+            var _self = this;
+            this.sbTimer = setTimeout(function() {
+                if (_self.animControl.state != apf.tween.STOPPED && _self.animControl.stop)
+                    _self.animControl.stop();
+                apf.tween.single(sbTrFiles, {
+                    type     : "fade",
+                    anim     : apf.tween.EASEOUT,
+                    from     : 1,
+                    to       : 0,
+                    steps    : 20,
+                    control  : _self.animControl
+                });
+                _self.sbIsFaded = true;
+            }, _self.animControl.state != apf.tween.RUNNING ? 20 : 200);
+        }
+    },
+
     //@todo deprecated?
     getSelectedPath: function() {
         return trFiles.selected.getAttribute("path");
@@ -68,7 +152,7 @@ return ext.register("ext/tree/tree", {
         
         colLeft.appendChild(winFilesViewer);
         
-        mnuView.appendChild(new apf.divider()),
+        mnuView.appendChild(new apf.divider());
         mnuView.appendChild(new apf.item({
             id      : "mnuitemHiddenFiles",
             type    : "check",
@@ -80,9 +164,9 @@ return ext.register("ext/tree/tree", {
                 require("ext/settings/settings").save();
             }
         }));
-        davProject.setAttribute("showhidden", "[{require('ext/settings/settings').model}::auto/tree/@showhidden]")
+        davProject.setAttribute("showhidden", "[{require('ext/settings/settings').model}::auto/tree/@showhidden]");
         
-        mnuView.appendChild(new apf.divider()),
+        mnuView.appendChild(new apf.divider());
         
         trFiles.setAttribute("model", fs.model);
         
@@ -192,7 +276,7 @@ return ext.register("ext/tree/tree", {
                             _self.loading = false;
                         });
                     }
-                }catch(e){
+                }catch(err){
                     model.setQueryValue("auto/tree/text()", "");
                 }
             }
@@ -211,7 +295,7 @@ return ext.register("ext/tree/tree", {
                     path = apf.xmlToXpath(_self.expandedList[id], trFiles.xmlRoot);
                     lut[path] = true;
                 }
-                catch(e){
+                catch(err){
                     //Node is deleted
                     delete _self.expandedList[id];
                 }

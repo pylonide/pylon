@@ -6,7 +6,7 @@
             left             : 0;
             border           : 1px solid #b2b2b2;
             z-index          : 1000;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             background-color : white;
             font-size        : 11px;
             display          : block;

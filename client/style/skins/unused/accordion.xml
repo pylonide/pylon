@@ -14,7 +14,7 @@
         .accordion_apf_ver .panel {
             padding          : 0;
             font-size        : 11px;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             background-color : white;
             height           : auto;
             margin           : 0;
@@ -117,7 +117,7 @@
         .accordion_apf_hor .panel {
             padding          : 0;
             font-size        : 11px;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             background-color : white;
             height           : 100%;
             margin           : 0;
@@ -267,7 +267,7 @@
         .accordion_menu .panel {
             padding          : 0;
             font-size        : 11px;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             background-color : white;
             height           : 100%;
             margin           : 0;
@@ -389,7 +389,7 @@
         .accordionHor .panel {
             padding          : 0;
             font-size        : 11px;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             background-color : white;
             height           : 100%;
             margin           : 0;
@@ -497,7 +497,7 @@
         .accordionVer .panel {
             padding          : 0;
             font-size        : 11px;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             background-color : white;
             height           : auto;
             margin           : 0;

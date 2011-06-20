@@ -292,10 +292,11 @@ return ext.register("ext/editors/editors", {
         
         mdl.setQueryValue("@changed", 0);
         page.$doc.dispatchEvent("close");
-
-        mdl.removeXml("data");
-        ide.dispatchEvent("closefile", {xmlNode: mdl.data});
-
+        
+        if(mdl.data) {
+            mdl.removeXml("data");
+            ide.dispatchEvent("closefile", {xmlNode: mdl.data});
+        }
         //mdl.unshare();
         mdl.destroy();
 
