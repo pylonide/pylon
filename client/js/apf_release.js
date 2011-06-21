@@ -3286,7 +3286,7 @@ for(var wd,html,s,i=0;i<l-1;i++){s=Math.max(this.$minBtnWidth,round[i<re?1:0](bw
 cw-=s;html=pg[i].$button,wd=apf.getWidthDiff(html);anim.tweens.push({oHtml:html,type:"width",from:html.offsetWidth-wd,to:s-wd-this.$btnMargin});
 }html=pg[l-1].$button,wd=apf.getWidthDiff(html);anim.tweens.push({oHtml:html,type:"width",from:html.offsetWidth-wd,to:Math.max(this.$minBtnWidth,Math.min(cw,this.$maxBtnWidth))-this.$btnMargin-wd});
 };var round=[Math.floor,Math.ceil];function scalersz(e,excl){if(!this.length&&!this.getPages().length||this.$waitForMouseOut||this.$control&&this.$control.state==apf.tween.RUNNING){return;
-}if(this.$btnMargin==undefined){this.$btnMargin=apf.getMargin(this.getPage().$button)[0];
+}var page=this.getPage();if(!page){return;}if(this.$btnMargin==undefined){this.$btnMargin=apf.getMargin(page.$button)[0];
 }var pg=this.getPages();if(excl){pg.remove(excl);}if(!pg.length){return;}var cw=this.$buttons.offsetWidth-apf.getWidthDiff(this.$buttons)-(excl?excl.$button.offsetWidth+this.$btnMargin:0);
 var l=pg.length;var bw=Math.min(cw/l,this.$maxBtnWidth);var re=Math.round((bw%1)*10);
 for(var s,i=0;i<l-1;i++){s=Math.max(this.$minBtnWidth,round[i<re?1:0](bw));cw-=s;

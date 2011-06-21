@@ -65,7 +65,7 @@
             <a:hbox align="center" margin="5 10" padding="10">
                 <a:label width="130" textalign="right">JavaScript file</a:label>
                 <a:textbox id="txtRunCfgName" flex="1" value="[@path]" disabled="{!lstRunCfg.selected}"/>
-                <a:button icon="folder.png" disabled="true" tooltip="Browse ..."></a:button>
+                <a:button visible="false" icon="folder.png" disabled="true" tooltip="Browse ..."></a:button>
             </a:hbox>
             <a:hbox align="center" margin="5 10" padding="10">
                 <a:label width="130" textalign="right">Command line arguments</a:label>
