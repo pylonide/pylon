@@ -138,7 +138,8 @@ return ext.register("ext/panels/panels", {
             barMenu.appendChild(new apf.button({
                 submenu : "mnuPanels",
                 caption : "Windows",
-                skin    : "c9-menu-btn"
+                skin    : "c9-menu-btn",
+                margin  : "1 0 0 0"
             })),
             mnuPanels
         );
