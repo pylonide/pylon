@@ -13,8 +13,10 @@ var util = require("core/util");
 var canon = require("pilot/canon");
 var editors = require("ext/editors/editors");
 var ideConsole = require("ext/console/console");
+var filesystem = require("ext/filesystem/filesystem");
 var markup = require("text!ext/ftp/ftp.xml");
-  
+var css = require("text!ext/ftp/ftp.css");
+
 return ext.register("ext/ftp/ftp", {
     name     : "FTP",
     dev      : "Ajax.org",
@@ -25,15 +27,20 @@ return ext.register("ext/ftp/ftp", {
     pageTitle: "Transcript",
     pageID   : "pgFtpConsole",
     hotitems : {},
-
+    css      : css,
     nodes    : [],
-
+    groupList : ["owner", "group", "public"],
+    permissionList : ["read", "write", "execute"],
+    
     hook : function(){
         ext.initExtension(this);
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
     },
 
     init : function(amlNode){
+        apf.importCssString((this.css || ""));
+        
+        // console
         if (!this.$panel) {
             tabConsole.remove("console"); // remove Console tab
             tabConsole.remove("output"); // remove Output tab
@@ -43,7 +50,16 @@ return ext.register("ext/ftp/ftp", {
             this.$panel = tabConsole.add(this.pageTitle, this.pageID);
             this.$panel.appendChild(ftpConsoleHbox);
             tabConsole.set(this.pageID);
-        }
+        };
+        
+        // filetree contextmenu
+        var item = new apf.item({
+            id: "mnuItmFileProperties",
+            caption : "File Properties",
+            onclick : "require('ext/ftp/ftp').showFileProperties(trFiles.selected)"
+        });
+
+        mnuCtxTree.appendChild(item)
     },
     
     log : function(msg, type, code){
@@ -79,6 +95,114 @@ return ext.register("ext/ftp/ftp", {
         for (var i = 0, l = aLines.length; i < l; ++i)
             this.log(aLines[i], "log");
         //this.log("", "divider");
+    },
+    
+    /**
+     * Opens properties window and display properties for selected node
+     */
+    showFileProperties: function(node) {
+//        filesystem.webdav.getProperties(node.getAttribute("path"));
+        
+        var permissions = "755"; // @todo, change to actual permissions of file/folder
+//        var fileRights = this.parseRights(permissions);
+
+        this.parsePermissions(permissions);
+        winFileProperties.show();
+    },
+    
+    /**
+     * set rights in model
+     */
+    parsePermissions: function(permissions, noUpdate) {
+        var fileRights = "";
+        for (var val, groupType, i = -1, l = this.groupList.length; ++i < l;) {
+            groupType = this.groupList[i];
+            val = parseInt(permissions[i]);
+            
+            for (var checked, permissionType, j = -1, jl = this.permissionList.length; ++j < jl;) {
+                permissionType = this.permissionList[j];
+                checked = 0;
+                if (permissionType == "read" && val >= 4) {
+                    checked = 1;
+                    val -= 4;
+                } 
+                else if (permissionType == "write" && val >= 2) {
+                    checked = 1;
+                    val -= 2;
+                }
+                else if (permissionType == "execute" && val >= 1) {
+                    checked = 1;
+                }
+                
+                if (!noUpdate)
+                    apf.xmldb.setAttribute(mdlFilePermissions.queryNode("group[@type=\"" + groupType + "\"]/permission[@type=\"" + permissionType + "\"]"), "checked", checked);
+                
+                fileRights += checked ? permissionType.charAt(0).toLowerCase() : "-";
+            }
+        }
+
+        apf.xmldb.setAttribute(mdlFilePermissions.queryNode("octal"), "value", permissions);
+        apf.xmldb.setAttribute(mdlFilePermissions.queryNode("rights"), "value", fileRights);
+    },
+    
+    /**
+     * get octal permissions from model
+     */
+    getPermissions: function() {
+        var permissions = "";
+        var pValues = {
+            "read": 4,
+            "write": 2,
+            "execute": 1
+        }
+        for (var val, groupType, i = -1, l = this.groupList.length; ++i < l;) {
+            groupType = this.groupList[i];
+            val = 0;
+            
+            for (var node, permissionType, j = -1, jl = this.permissionList.length; ++j < jl;) {
+                permissionType = this.permissionList[j];
+                node = mdlFilePermissions.queryNode("group[@type=\"" + groupType + "\"]/permission[@type=\"" + permissionType + "\"]");
+                if (node.getAttribute("checked") == "1")
+                    val += pValues[permissionType];
+            }
+            permissions += val;
+        }
+        
+        return permissions;
+    },
+    
+    /**
+     * 
+     */
+    updatePermissionCheckbox: function(groupType, permissionType, checked) {
+        apf.xmldb.setAttribute(mdlFilePermissions.queryNode("group[@type=\"" + groupType + "\"]/permission[@type=\"" + permissionType + "\"]"), "checked", checked);
+        
+        var permissions = this.getPermissions();
+        this.parsePermissions(permissions, true);
+    },
+    
+    /** 
+     *
+     */
+    updatePermissionTextbox: function(permissions) {
+        if (permissions.length < 3)
+            return;
+        for (var val, i = -1, l = permissions.length; ++i < l;) {
+            val = parseInt(permissions[i]);
+            if (val < 1 || val > 7)
+                return;
+        }
+        this.parsePermissions(permissions);
+    },
+    
+    setPermissions: function() {
+        var obj = {};
+        obj["http://ajax.org/2005/aml"] = {
+            "permissions": "755"
+        };
+
+        filesystem.webdav.setProperties(node.getAttribute("path"), obj);
+        
     },
     
     onMessage: function(e) {
