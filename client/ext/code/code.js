@@ -33,7 +33,7 @@ apf.actiontracker.actions.aceupdate = function(undoObj, undo){
 
 var SupportedModes = {
     "application/javascript": "javascript",
-    "application/json": "javascript",
+    "application/json": "json",
     "text/css": "css",
     "text/x-scss": "scss",
     "text/html": "html",
