@@ -225,8 +225,10 @@ return ext.register("ext/editors/editors", {
                 page.$doc    = doc;
                 page.$editor = editor;
                 page.setAttribute("tooltip", "[@path]");
-                page.setAttribute("class", "{(parseInt([@saving]) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : '')}");
-                
+                page.setAttribute("class",
+                    "{parseInt([@saving]) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
+                    ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"
+                );
                 page.setAttribute("model", page.$model = model);
                 page.$model.load(xmlNode);
             });
