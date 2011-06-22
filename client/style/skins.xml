@@ -5770,6 +5770,14 @@
     .editor_tab .btnsesssioncontainer .saving .sessiontab_icon {
         background-image: url(images/save-indicator-inactive-tab.gif);
     }
+    
+    .editor_tab .btnsesssioncontainer .loading_active .sessiontab_icon {
+        background-image: url(images/load-indicator-active-tab.gif);
+    }
+    
+    .editor_tab .btnsesssioncontainer .loading .sessiontab_icon {
+        background-image: url(images/load-indicator-inactive-tab.gif);
+    }
 
     .editor_tab .btnsesssioncontainer .session_btn .tab_middle .sessiontab_title {
         overflow : hidden;
