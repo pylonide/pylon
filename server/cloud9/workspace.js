@@ -60,7 +60,7 @@ var Workspace = module.exports = function(config) {
         if (client)
             client.send(JSON.stringify(error));
         else
-            this.broadcast(error);
+            this.ide.broadcast(error);
     };
 
     this.error = function(description, code, message, client) {
