@@ -80,6 +80,7 @@ return ext.register("ext/noderunner/noderunner", {
 
             case "state":
                 stDebugProcessRunning.setProperty("active", message.debugClient);
+                stProcessRunning.setProperty("active", e.message.processRunning);
                 dbgNode.setProperty("strip", message.workspaceDir + "/");
                 ide.dispatchEvent("noderunnerready");
                 break;
