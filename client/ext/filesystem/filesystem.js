@@ -298,10 +298,8 @@ return ext.register("ext/filesystem/filesystem", {
             var node = doc.getNode();
 
             apf.xmldb.setAttribute(node, "loading", "true");
-            console.log('node', node);
             ide.addEventListener("afteropenfile", function(e) {
                 apf.xmldb.setAttribute(e.node, "loading", "");
-                console.log('internal node', e.node);
             });
             
             if (doc.hasValue()) {
