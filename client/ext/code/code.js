@@ -56,7 +56,11 @@ var SupportedModes = {
     "text/x-script.coffeescript": "coffee",
     "text/x-web-textile": "textile",
     "text/x-script.ocaml": "ocaml",
-    "text/x-script.clojure": "clojure"
+    "text/x-script.clojure": "clojure",
+    "text/x-script.java": "java",
+    "text/x-scala-source": "scala",
+    "text/x-script.scala": "scala"
+    
 };
 
 var contentTypes = {
@@ -96,7 +100,11 @@ var contentTypes = {
     
     "clj": "text/x-script.clojure",
     "ml": "text/x-script.ocaml",
-    "mli": "text/x-script.ocaml"
+    "mli": "text/x-script.ocaml",
+    "java": "text/x-script.java",
+    "java": "text/x-java-source",
+    "scala": "text/x-scala-source",
+    "scala": "text/x-script.scala"
 };
 
 return ext.register("ext/code/code", {
