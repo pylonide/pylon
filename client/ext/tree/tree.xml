@@ -117,18 +117,18 @@
             onmouseup   = "require('ext/tree/tree').onSBMouseUp()"
         />
         <a:menu id="mnuCtxTree" disabled="{!stServerConnected.active}">
-            <a:item match="[file]" class="strong" onclick="
+            <a:item match="[file]" class="strong"  onclick="
                 require('core/ide').dispatchEvent('openfile', {doc: require('core/ide').createDocument(apf.activeElement.selected)})
             ">Edit</a:item>
             <a:divider />
             <a:item onclick="require('ext/tree/tree').refresh()">Refresh</a:item>
-            <a:item match="[file|folder[not(@path='/workspace')]]" onclick="apf.activeElement.startRename()">Rename</a:item>
-            <a:item match="[file|folder]" onclick="apf.activeElement.remove()">Delete</a:item>
+            <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.startRename()">Rename</a:item>
+            <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.remove()">Delete</a:item>
             <a:divider />
-            <a:item match="[file|folder]" onclick="
+            <a:item match="[file|folder[not(@root)]]" onclick="
                 apf.clipboard.cutSelection(apf.activeElement);
             ">Cut</a:item>
-            <a:item match="[file|folder]" onclick="
+            <a:item match="[file|folder[not(@root)]]" onclick="
                 apf.clipboard.copySelection(apf.activeElement);
             ">Copy</a:item>
             <a:item match="[folder|project]" disabled="{!apf.clipboard.empty}" onclick="
