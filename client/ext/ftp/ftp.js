@@ -52,14 +52,16 @@ return ext.register("ext/ftp/ftp", {
             tabConsole.set(this.pageID);
         };
         
-        // filetree contextmenu
+        // filetree contextmenu, disabled for now
+        /*
         var item = new apf.item({
             id: "mnuItmFileProperties",
             caption : "File Properties",
             onclick : "require('ext/ftp/ftp').showFileProperties(trFiles.selected)"
         });
-
-        mnuCtxTree.appendChild(item)
+        
+        mnuCtxTree.appendChild(item);
+        */
     },
     
     log : function(msg, type, code){
