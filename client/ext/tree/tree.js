@@ -197,6 +197,9 @@ return ext.register("ext/tree/tree", {
         trFiles.addEventListener("beforerename", function(e){
             if (!ide.onLine) return false;
             
+            if(trFiles.$model.data.firstChild == trFiles.selected)
+                return false;
+            
             setTimeout(function(){
                 fs.beforeRename(e.args[0], e.args[1]);
             });
@@ -269,6 +272,7 @@ return ext.register("ext/tree/tree", {
                             });
                             
                             trFiles.removeEventListener("load", arguments.callee);
+                            
                             if(trFiles.$model.queryNodes('/data//node()').length <= 1) {
                                 trFiles.expandAll();
                             }
@@ -281,6 +285,11 @@ return ext.register("ext/tree/tree", {
                     }
                 }catch(err){
                     model.setQueryValue("auto/tree/text()", "");
+                }
+            }
+            else {
+                if(trFiles.$model.queryNodes('/data//node()').length <= 1) {
+                    trFiles.expandAll();
                 }
             }
         });
