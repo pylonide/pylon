@@ -104,14 +104,13 @@ return ext.register("ext/ftp/ftp", {
 //        filesystem.webdav.getProperties(node.getAttribute("path"));
         
         var permissions = "755"; // @todo, change to actual permissions of file/folder
-//        var fileRights = this.parseRights(permissions);
 
         this.parsePermissions(permissions);
         winFileProperties.show();
     },
     
     /**
-     * set rights in model
+     * set permissions in model
      */
     parsePermissions: function(permissions, noUpdate) {
         var fileRights = "";
@@ -175,7 +174,7 @@ return ext.register("ext/ftp/ftp", {
      * 
      */
     updatePermissionCheckbox: function(groupType, permissionType, checked) {
-        apf.xmldb.setAttribute(mdlFilePermissions.queryNode("group[@type=\"" + groupType + "\"]/permission[@type=\"" + permissionType + "\"]"), "checked", checked);
+        apf.xmldb.setAttribute(mdlFilePermissions.queryNode("group[@type=\"" + groupType + "\"]/permission[@type=\"" + permissionType + "\"]"), "checked", checked ? "1": "0");
         
         var permissions = this.getPermissions();
         this.parsePermissions(permissions, true);
@@ -189,7 +188,7 @@ return ext.register("ext/ftp/ftp", {
             return;
         for (var val, i = -1, l = permissions.length; ++i < l;) {
             val = parseInt(permissions[i]);
-            if (val < 1 || val > 7)
+            if (val < 0 || val > 7)
                 return;
         }
         this.parsePermissions(permissions);
