@@ -269,6 +269,9 @@ return ext.register("ext/tree/tree", {
                             });
                             
                             trFiles.removeEventListener("load", arguments.callee);
+                            if(trFiles.$model.queryNodes('/data//node()').length <= 1) {
+                                trFiles.expandAll();
+                            }
                         });
                     }
                     else {
