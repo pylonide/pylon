@@ -24,7 +24,7 @@ return ext.register("ext/scala/scala", {
     dev      : "btilford",
     alone    : true,
     type     : ext.EDITOR,
-    deps    : [code],
+    //deps    : [code],
     markup  : markup,
     contentTypes : [
         "text/scala"
@@ -32,7 +32,7 @@ return ext.register("ext/scala/scala", {
     nodes : [],
 
     init : function(amlNode){
-        this.scalaWinTemplate = ScalaWinTemplate;
+        this.scalaWindow = ScalaWindow;
     },
 
     hook : function(){
@@ -70,7 +70,7 @@ return ext.register("ext/scala/scala", {
     },
 
      closeScalaWindow : function(){
-        this.scalaWinTemplate.hide();
+        this.scalaWindow.hide();
      }
 });
 

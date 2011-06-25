@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:window
-      id        = "ScalaWinTemplate"
+      id        = "ScalaWindow"
       title     = "Scala Extension Window"
       center    = "true"
       modal     = "false"
@@ -15,9 +15,7 @@
             <a:hbox pack="end" padding="5" edge="10 10 5 10">
                 <a:button 
                   caption="Close" 
-                  onclick = "
-                    require('ext/scala/scala').closeScalaWindow();
-                  "/>
+                  onclick = "require('ext/scala/scala').closeScalaWindow();"/>
             </a:hbox>
         </a:vbox>
     </a:window>
