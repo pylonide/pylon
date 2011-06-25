@@ -18,5 +18,5 @@
             <a:item value="expand">Braces on own line</a:item>
             <a:item value="end-expand">End braces on own line</a:item>
         </a:dropdown>
-    </a:vbox>
+    </a:hbox>
 </a:application>
