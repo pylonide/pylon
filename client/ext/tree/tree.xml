@@ -100,7 +100,9 @@
             <a:drag match="[folder|file]" />
             <a:drop match="[folder|file]" target="[folder]"
                 action="tree-append" copy="{event.ctrlKey}" />
+                
         </a:tree>
+        
         <a:scrollbar
             for      = "trFiles"
             id       = "sbTrFiles"

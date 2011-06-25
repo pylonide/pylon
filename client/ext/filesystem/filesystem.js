@@ -79,21 +79,28 @@ return ext.register("ext/filesystem/filesystem", {
             function test(exists) {
                 if (exists) {
                     name = prefix + "." + index++;
-                    _self.exists(path + "/" + name, test);     
+                    _self.exists(path + "/" + name, test);
                 } else {
                     tree.focus();
                     _self.webdav.exec("mkdir", [path, name], function(data) {
                         // @todo: in case of error, show nice alert dialog
                         if (data instanceof Error)
                             throw Error;
-                        
+                            
                         var strXml = data.match(new RegExp(("(<folder path='" + path 
                                 + "/" + name + "'.*?>)").replace(/\//g, "\\/")))[1];
-        
-                        var folder = apf.xmldb.appendChild(node, apf.getXml(strXml));
-        
-                        tree.select(folder);
-                        tree.startRename();
+                            
+                        tree.slideOpen(null, node, true, function(data, flag, extra){
+                            var folder;
+                            /* empty data means it didn't trigger <insert> binding, therefore the node was expanded already */
+                            if (!data)
+                                folder = tree.add(apf.getXml(strXml), node);
+                            else
+                                folder = apf.queryNode(node, "folder[@path='"+ path +"/"+ name +"']");
+                                
+                            tree.select(folder);
+                            tree.startRename();
+                        });
                     });
                 }
             }
@@ -274,6 +281,12 @@ return ext.register("ext/filesystem/filesystem", {
                 }
             });
             url = "{davProject.getroot()}";
+            
+            this.webdav.addEventListener("error", function(event) {
+                util.alert("Webdav Exception", event.error.type || "", event.error.message, function() {
+                    trFiles.getActionTracker().undo();
+                });
+            });
         }
         else {
             url = "ext/filesystem/files.xml";
