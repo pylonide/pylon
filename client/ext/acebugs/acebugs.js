@@ -95,7 +95,7 @@ return ext.register("ext/acebugs/acebugs", {
         this.ceEditor = ce.ceEditor;
         var editorSession = this.ceEditor.getSession();
         dock.resetNotificationCount("aceAnnotations");
-        this.annotationWorker.postMessage(editorSession.$annotations);
+        this.annotationWorker.postMessage(editorSession.getAnnotations());
     },
 
     goToAnnotation : function() {
