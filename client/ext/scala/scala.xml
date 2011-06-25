@@ -1,7 +1,7 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:window
       id        = "ScalaWindow"
-      title     = "Scala Extension Window"
+      title     = "Scala"
       center    = "true"
       modal     = "false"
       buttons   = "close"
@@ -9,7 +9,7 @@
       width     = "300">
         <a:vbox>
             <a:hbox padding="5" edge="10">
-                Hello World!
+                Scala Plugin
             </a:hbox>
             <a:divider />
             <a:hbox pack="end" padding="5" edge="10 10 5 10">

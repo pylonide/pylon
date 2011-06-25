@@ -20,15 +20,12 @@ var ide = require("core/ide");
 var markup = require("text!ext/scala/scala.xml");
 
 return ext.register("ext/scala/scala", {
-    name     : "Scala Editor",
+    name     : "Scala Extension",
     dev      : "btilford",
     alone    : true,
-    type     : ext.EDITOR,
-    //deps    : [code],
-    markup  : markup,
-    contentTypes : [
-        "text/scala"
-    ],
+    type     : ext.GENERAL,
+    markup   : markup,
+
     nodes : [],
 
     init : function(amlNode){
@@ -37,17 +34,15 @@ return ext.register("ext/scala/scala", {
 
     hook : function(){
         var _self = this;
-        tabEditors.addEventListener("afterswitch", function(e){
-            var mime = e.nextPage.contentType;
-            if (mime == "text/scala") {
-                ext.initExtension(_self);
-                _self.page = e.nextPage;
-                _self.enable();
-            }
-            else {
-                _self.disable();
-            }
-        });
+        this.nodes.push(
+            ide.mnuEdit.appendChild(new apf.item({
+                caption : "Scala Window",
+                onclick : function(){
+                    ext.initExtension(_self);
+                    _self.scalaWindow.show();
+                }
+            }))
+        );
     },
 
     enable : function(){
@@ -69,7 +64,7 @@ return ext.register("ext/scala/scala", {
         this.nodes = [];
     },
 
-     closeScalaWindow : function(){
+     closeExtensionTemplateWindow : function(){
         this.scalaWindow.hide();
      }
 });
