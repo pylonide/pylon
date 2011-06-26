@@ -44,7 +44,7 @@ var BlameJS = (function() {
                 return false;
     
             // Go through each line
-            for (i = 0; i < this.lines.length; i++) {
+            for (var i = 0; i < this.lines.length; i++) {
     
                 // If we detect a tab character we know it's a line of code
                 // So we can reset stateful variables
@@ -147,7 +147,7 @@ var BlameJS = (function() {
                     break;
     
                 case "summary":
-                    this.commit_data[this.currentCommitHash].summary = lineArr[1];
+                    this.commit_data[this.currentCommitHash].summary = lineArr.slice(1).join(" ");
                     break;
     
                 case "filename":
@@ -160,13 +160,13 @@ var BlameJS = (function() {
     
                 default:
                     break;
-            };
+            }
         }
-    }
+    };
 
     return BlameJS;
 })();
 
 return BlameJS;
 
-});;
+});

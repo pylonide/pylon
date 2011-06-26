@@ -117,26 +117,19 @@ return ext.register("ext/gitblame/gitblame", {
     formulateOutput : function(commit_data, line_data) {
         var textHash = {};
         for (var li in line_data) {
-            if (line_data[li].numLines != -1)
-                textHash[li-1] = { text: commit_data[line_data[li].hash].author + " &raquo; " + line_data[li].hash.substr(0, 10) };
+            if (line_data[li].numLines != -1) {
+                var tempTime = new Date(parseInt(commit_data[line_data[li].hash].authorTime, 10) * 1000);
+                textHash[li-1] = { 
+                    text : commit_data[line_data[li].hash].author + 
+                        " &raquo; " + 
+                        line_data[li].hash.substr(0, 10),
+                    title : commit_data[line_data[li].hash].summary + "\n" +
+                        tempTime.toUTCString()
+                };
+            }
         }
         editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr(textHash);
         editors.currentEditor.ceEditor.$editor.renderer.updateFull();
-        
-        /*var outXml = "<data>";
-
-        for (li in line_data) {
-            outXml += '<row commit="';
-            if (line_data[li].numLines != -1)
-                outXml += line_data[li].hash.substr(0, 10) + ' - ' + commit_data[line_data[li].hash].author;
-
-            outXml += '" line="' + line_data[li].finalLine
-                + '" code="' + util.escapeXml(line_data[li].code) + '" />';
-        }
-
-        outXml += "</data>";*/
-        //console.log(apf.getXml(outXml));
-        //mdlGitBlame.load(apf.getXml(outXml));
     },
 
     enable : function(){
