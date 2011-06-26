@@ -30,6 +30,7 @@ sys.inherits(ShellMavenPlugin, Plugin);
         var _self = this;
 
         if (!mvnHelp) {
+            /*
             this.spawnCommand("mvn", null, message.cwd, null, null, function(code, err, out) {
                 if (!out)
                     return callback();
@@ -46,6 +47,7 @@ sys.inherits(ShellMavenPlugin, Plugin);
                 });
                 onfinish();
             });
+            */
         }
         else {
             onfinish();
