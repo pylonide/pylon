@@ -513,8 +513,12 @@ apf.BaseTab = function(){
             return;
         }
         
+        var page = this.getPage();
+        if (!page)
+            return;
+            
         if (this.$btnMargin == undefined)
-            this.$btnMargin = apf.getMargin(this.getPage().$button)[0];
+            this.$btnMargin = apf.getMargin(page.$button)[0];
 
         var pg = this.getPages();
         if (excl)
