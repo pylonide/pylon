@@ -115,9 +115,10 @@ return ext.register("ext/gitblame/gitblame", {
     },
 
     formulateOutput : function(commit_data, line_data) {
-        var textHash = {};
+        var textHash = {}, lastHash = "";
         for (var li in line_data) {
-            if (line_data[li].numLines != -1) {
+            if (line_data[li].numLines != -1 && line_data[li].hash != lastHash) {
+                lastHash = line_data[li].hash;
                 var tempTime = new Date(parseInt(commit_data[line_data[li].hash].authorTime, 10) * 1000);
                 textHash[li-1] = { 
                     text : commit_data[line_data[li].hash].author + 
