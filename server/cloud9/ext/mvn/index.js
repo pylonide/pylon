@@ -34,7 +34,7 @@ sys.inherits(ShellMavenPlugin, Plugin);
                 if (!out)
                     return callback();
 
-                hghelp = {"mvn": {
+                mvnHelp = {"mvn": {
                     "hint": "maven",
                     "commands": {}
                 }};
@@ -42,7 +42,7 @@ sys.inherits(ShellMavenPlugin, Plugin);
                 out.replace(/([\w]+)[\s]{3,5}([\w].+)\n/gi, function(m, sub, hint) {
                     if (_self.banned.indexOf(sub) > -1)
                         return;
-                    mvnHelp.hg.commands[sub] = _self.augmentCommand(sub, {"hint": hint});
+                    mvnHelp.mvn.commands[sub] = _self.augmentCommand(sub, {"hint": hint});
                 });
                 onfinish();
             });
@@ -52,7 +52,7 @@ sys.inherits(ShellMavenPlugin, Plugin);
         }
 
         function onfinish() {
-            _self.extend(commands, hghelp);
+            _self.extend(commands, mvnHelp);
             callback();
         }
     };
