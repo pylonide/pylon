@@ -102,7 +102,7 @@
           style           = "position:absolute;top:0;left:0;bottom:0;right:17px;"
           autoselect      = "false">
             <a:model />
-            <a:caption match="[d:querydetail]">Search results for [@query]</a:caption>
+            <a:caption match="[d:querydetail]">Search results for '[@query]'</a:caption>
             <a:caption match="[d:maxreached]">Your search yielded too many results. The first hits are listed below:</a:caption>
             <a:caption match="[d:response]">[@path] (#[d:excerpt])</a:caption>
             <a:caption match="[d:excerpt]"><div class="linenumber">[@line]</div><pre class="excerpt">{apf.htmlentities([text()])}</pre></a:caption>
