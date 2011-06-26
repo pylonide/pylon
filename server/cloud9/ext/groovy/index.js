@@ -43,7 +43,7 @@ sys.inherits(ShellGroovyPlugin, Plugin);
                 out.replace(/([\w]+)[\s]{3,5}([\w].+)\n/gi, function(m, sub, hint) {
                     if (_self.banned.indexOf(sub) > -1)
                         return;
-                    groovyHelp.scala.commands[sub] = _self.augmentCommand(sub, {"hint": hint});
+                    groovyHelp.groovy.commands[sub] = _self.augmentCommand(sub, {"hint": hint});
                 });
                 onfinish();
             });
