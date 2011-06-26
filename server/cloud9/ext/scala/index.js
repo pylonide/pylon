@@ -30,6 +30,7 @@ sys.inherits(ShellScalaPlugin, Plugin);
         var _self = this;
 
         if (!scalaHelp) {
+            /*
             this.spawnCommand("scala", null, message.cwd, null, null, function(code, err, out) {
                 if (!out)
                     return callback();
@@ -46,6 +47,7 @@ sys.inherits(ShellScalaPlugin, Plugin);
                 });
                 onfinish();
             });
+            */
         }
         else {
             onfinish();
