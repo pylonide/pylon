@@ -99,7 +99,7 @@
     <p:defines defaults="defines.xml">
         <p:define name="__APFVERSION" value="{version}"/>
         <p:define name="__WITH_CDN" value="0" />
-        <p:define name="__DEBUG" value="1" />
+        <p:define name="__DEBUG" value="0" />
         <p:define name="__PACKAGED" value="1"/>
         <p:define name="__PROCESSED" value="1"/>
         <p:define name="__WITH_UNSAFE_XMLHTTP" value="0" />
