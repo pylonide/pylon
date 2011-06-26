@@ -1,0 +1,6 @@
+{
+    "name": "shell-groovy",
+    "description": "Runs groovy.",
+    "version": "0.1",
+    "author": "Ben Tilford <bentilford@gmail.com>"
+}
