@@ -107,6 +107,11 @@ return ext.register("ext/quicksearch/quicksearch", {
             this.position = next;
         }
     },
+    
+    handleQuicksearchEscape : function(e) {
+        if (e.keyCode == 27)
+            this.toggleDialog(-1);
+    },
 
     toggleDialog: function(force) {
         ext.initExtension(this);
