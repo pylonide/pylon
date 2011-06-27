@@ -97,7 +97,7 @@ return ext.register("ext/filesystem/filesystem", {
                                 folder = tree.add(apf.getXml(strXml), node);
                             else
                                 folder = apf.queryNode(node, "folder[@path='"+ path +"/"+ name +"']");
-                                
+                            
                             tree.select(folder);
                             tree.startRename();
                         });
@@ -283,7 +283,7 @@ return ext.register("ext/filesystem/filesystem", {
             url = "{davProject.getroot()}";
             
             this.webdav.addEventListener("error", function(event) {
-                util.alert("Webdav Exception", event.error.type || "", event.error.message, function() {
+                return util.alert("Webdav Exception", event.error.type || "", event.error.message, function() {
                     trFiles.getActionTracker().undo();
                 });
             });
