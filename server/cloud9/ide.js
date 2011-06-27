@@ -218,9 +218,7 @@ Ide.DEFAULT_PLUGINS = [
                 setTimeout(function() {
                     var now = new Date().getTime();
                     if((now - user.last_message_time) > 10000) {
-                        delete _self.$users[user.uid];
-                        _self.onUserCountChange(Object.keys(_self.$users).length);
-                        _self.emit("userLeave", user);
+                        _self.removeUser(user);
                     }
                 }, 20000);
             });
@@ -229,7 +227,7 @@ Ide.DEFAULT_PLUGINS = [
             this.emit("userJoin", user);
         }
     };
-    
+
     this.getUser = function(req) {
         var uid = req.session.uid;
         if (!uid || !this.$users[uid])
@@ -237,7 +235,16 @@ Ide.DEFAULT_PLUGINS = [
         else
             return this.$users[uid];
     };
-    
+
+    this.removeUser = function(user) {
+        if (!this.$users[user.uid])
+            return;
+
+        delete this.$users[user.uid];
+        this.onUserCountChange();
+        this.emit("userLeave", user);
+    };
+
     this.getPermissions = function(req) {
         var user = this.getUser(req);
         if (!user)
