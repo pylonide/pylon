@@ -22,6 +22,11 @@ var Workspace = module.exports = function(config) {
         for (var name in plugins) {
             this.plugins[name] = new plugins[name](this.ide, this);
         }
+        
+        for (var name in plugins) {
+            if (this.plugins[name].init)
+                this.plugins[name].init();            
+        }
     };
 
     this.getServerExclude = function(user) {

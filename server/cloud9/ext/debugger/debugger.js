@@ -17,12 +17,6 @@ var DebuggerPlugin = module.exports = function(ide, workspace) {
     this.hooks = ["command"];
     this.name = "debugger";
     this.nodeCmd = process.argv[0];
-
-    var _self = this;
-    this.workspace.getExt("state").on("statechange", function(state) {
-        state.debugClient    = !!_self.debugClient;
-        state.processRunning = !!_self.child;
-    });
 };
 
 sys.inherits(DebuggerPlugin, Plugin);
@@ -30,6 +24,14 @@ sys.inherits(DebuggerPlugin, Plugin);
 (function() {
     this.NODE_DEBUG_PORT = 5858;
     this.CHROME_DEBUG_PORT = 9222;
+
+    this.init = function() {
+        var _self = this;
+        this.workspace.getExt("state").on("statechange", function(state) {
+            state.debugClient = !!_self.debugClient;
+            state.processRunning = !!_self.child;
+        });
+    };
 
     this.command = function(user, message, client) {
         var _self = this;
