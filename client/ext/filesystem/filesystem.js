@@ -94,9 +94,9 @@ return ext.register("ext/filesystem/filesystem", {
                             var folder;
                             /* empty data means it didn't trigger <insert> binding, therefore the node was expanded already */
                             if (!data)
-                                folder = tree.add(apf.getXml(strXml), node);
-                            else
-                                folder = apf.queryNode(node, "folder[@path='"+ path +"/"+ name +"']");
+                                tree.add(apf.getXml(strXml), node);
+                            
+                            folder = apf.queryNode(node, "folder[@path='"+ path +"/"+ name +"']");
                             
                             tree.select(folder);
                             tree.startRename();
