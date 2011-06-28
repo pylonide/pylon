@@ -57,9 +57,8 @@ var SupportedModes = {
     "text/x-web-textile": "textile",
     "text/x-script.ocaml": "ocaml",
     "text/x-script.clojure": "clojure",
-    "text/x-script.java": "java",
     "text/x-scala-source": "scala",
-    "text/x-script.scala": "scala"
+    "text/x-groovy-source": "groovy"
     
 };
 
@@ -101,10 +100,9 @@ var contentTypes = {
     "clj": "text/x-script.clojure",
     "ml": "text/x-script.ocaml",
     "mli": "text/x-script.ocaml",
-    "java": "text/x-script.java",
     "java": "text/x-java-source",
     "scala": "text/x-scala-source",
-    "scala": "text/x-script.scala"
+    "groovy": "text/x-groovy-source"
 };
 
 return ext.register("ext/code/code", {

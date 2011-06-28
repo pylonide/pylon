@@ -64,9 +64,8 @@ var SupportedIcons = {
     "text/cpp": 'page_white_cplusplus',
     "text/x-c": 'page_white_c',
     "text/x-csharp": 'page_white_csharp',
-    "text/text/x-java-source": 'page_white_cup',
-    "text/x-script.java": 'page_white_cup',
-    "text/x-script.scala": 'page_white_cup',
+    "text/x-java-source": 'page_white_cup',
+    "text/x-groovy-source": 'page_white_cup',
     "text/x-scala-source": 'page_white_cup'
 };
         
@@ -127,10 +126,9 @@ var contentTypes = {
     "clj": "text/x-script.clojure",
     "ml": "text/x-script.ocaml",
     "mli": "text/x-script.ocaml",
-    "java": "text/x-script.java",
     "java": "text/x-java-source",
     "scala": "text/x-scala-source",
-    "scala": "text/x-script.scala"
+    "groovy": "text/x-groovy-source"
     
 };
     
