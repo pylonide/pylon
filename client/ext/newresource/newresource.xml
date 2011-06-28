@@ -22,7 +22,8 @@
         <a:item value="mli" icon="page_white_code.png">OCaml file</a:item>
         <a:item value="clj" icon="page_white_code.png">Clojure file</a:item>        
         <a:item value="java" icon="page_white_cup.png">Java file</a:item>
-        <a:item value="scala" icon="page_white_cup.png">Scala file</a:item><!-- need icon -->
-        <a:item value="groovy" icon="page_white_cup.png">Groovy file</a:item><!-- need icon -->
+        <a:item value="scala" icon="page_white_cup.png">Scala file</a:item>
+        <a:item value="groovy" icon="page_white_cup.png">Groovy file</a:item>
+        
     </a:menu>
 </a:application>

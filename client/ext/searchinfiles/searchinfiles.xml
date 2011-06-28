@@ -65,6 +65,8 @@
                     <a:item value="vim">Vim files</a:item>
                     <a:item value="yaml">Yaml files</a:item>
                     <a:item value="xml">XML files</a:item>
+                    <a:item value="xml">Groovy files</a:item>
+                    
                 </a:dropdown>
             </a:hbox>
             <!--a:hbox id="barReplace" align="center">
