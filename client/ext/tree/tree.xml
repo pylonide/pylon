@@ -70,13 +70,8 @@
 
         function move(a, b) {
             if (overhaulAction()) {
+                trFiles.disable();
                 davProject.move(a, b + /\/[^\/]*$/.exec(a));
-            }
-        };
-        
-        function rename(name, path) {
-            if (overhaulAction()) {
-                davProject.rename(name, path);
             }
         };
         
@@ -104,7 +99,8 @@
           onclick="require('ext/tree/tree').refresh()" />
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
         <a:tree id="trFiles" canrename="true" border="0"
-          contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
+          contextmenu="mnuCtxTree" multiselect="true" reselectable="true" onaftermove="trFiles.enable();" 
+          onafterrename="trFiles.enable();"
           onbeforeremove="return remove()" disabled="{!stServerConnected.active}"
           flex="1" anchors = "0 0 0 0" onmouseover="require('ext/tree/tree').onTreeOver()"
           onmouseout="require('ext/tree/tree').onTreeOut()"
@@ -118,7 +114,7 @@
 
             <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
             <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-            <a:rename match="[file|folder[not(@path='/workspace')]]" set="{rename([@name], [@pàth])}"/>
+            <a:rename match="[file|folder[not(@path='/workspace')]]" set="{if(overhaulAction()) {trFiles.disable();davProject.rename([@name], [@path]);}}" />
             <a:move set="{move([@path], [../@path])}"/>
             <a:remove match="[file|folder]" set="{removeOk([@path])}"/>
             <a:copy match="[file|folder]" set="{copy([@path], [../@path])}"/>
