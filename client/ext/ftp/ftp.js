@@ -46,10 +46,10 @@ return ext.register("ext/ftp/ftp", {
             tabConsole.remove("output"); // remove Output tab
             btnConsoleClear.hide();
             txtConsoleInput.hide();
-            
+
             this.$panel = tabConsole.add(this.pageTitle, this.pageID);
             this.$panel.appendChild(ftpConsoleHbox);
-            tabConsole.set(this.pageID);
+            tabConsole.set(this.$panel);
         };
         
         // filetree contextmenu, disabled for now
