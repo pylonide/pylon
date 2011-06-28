@@ -5534,7 +5534,7 @@
         padding: 0;
         position : relative;
         vertical-align : bottom;
-        height : 18px;
+        height : 19px;
     }
 
     .tab_console .btncontainer .btntab {
@@ -5582,11 +5582,11 @@
         color       : #a2c890;
         cursor      : default;
         z-index     : 1;
-        background:url(images/console-tab-btn-curr.png) repeat-x 0 0;
-        border-top: 1px solid #4f4f4f;
-        z-index:101;
-        padding      : 2px 27px 2px 27px;
-        text-shadow   : rgba(0, 0, 0, 1) 0px 1px 0px;
+        background  : #1d1d1d url(images/console-tab-btn-curr.png) repeat-x 0 0;
+        border-top  : 1px solid #4f4f4f;
+        z-index     : 101;
+        padding     : 2px 27px 2px 27px;
+        text-shadow : rgba(0, 0, 0, 1) 0px 1px 0px;
     }
 
     .tab_console .scale .btntab .tab_console_middle {
