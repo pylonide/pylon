@@ -484,6 +484,7 @@ return ext.register("ext/console/console", {
             case "ls":
             case "java":
             case "scala":
+            case "groovy":
                 res = message.body;
                 //this.getPrompt() + " " + res.argv.join(" ") + "\n" + 
                 if (res.out)
