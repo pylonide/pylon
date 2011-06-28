@@ -228,10 +228,17 @@ return ext.register("ext/filesystem/filesystem", {
         });
     },
 
-    beforeMove: function(parent, node) {
+    beforeMove: function(parent, node, tree) {
         var path = node.getAttribute("path"),
             page = tabEditors.getPage(path),
-            newpath = parent.getAttribute("path") + "/" + node.getAttribute("name");
+            newpath = parent.getAttribute("path") + "/" + node.getAttribute("name"),
+            webdav = this.webdav;
+        
+        // Check the newpath doesn't exists first
+        if (tree.getModel().queryNode("//node()[@path=\""+ newpath +"\"]")) {
+            util.alert("Error", "Unable to move", "Couldn't move to this destination because there's already a node with the same name");
+            return false;
+        }
 
         node.setAttribute("path", newpath);
         if (page)
@@ -247,6 +254,8 @@ return ext.register("ext/filesystem/filesystem", {
             path: path,
             xmlNode: node
         });
+        
+        return true;
     },
 
     remove: function(path) {
@@ -282,9 +291,11 @@ return ext.register("ext/filesystem/filesystem", {
             });
             url = "{davProject.getroot()}";
             
+            this.webdav.$undoFlag = false;
             this.webdav.addEventListener("error", function(event) {
                 return util.alert("Webdav Exception", event.error.type || "", event.error.message, function() {
                     trFiles.getActionTracker().undo();
+                    _self.webdav.$undoFlag = true;
                 });
             });
         }

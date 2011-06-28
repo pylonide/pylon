@@ -7,59 +7,85 @@
         var confirmed = false;
         
         function remove() {
-            if (!confirmed) {
-                var files = trFiles.getSelection();
+            if (overhaulAction()) {
+                if (!confirmed) {
+                    var files = trFiles.getSelection();
                 
-                function confirm(file) {
-                    var name = file.getAttribute("name");
+                    function confirm(file) {
+                        var name = file.getAttribute("name");
                     
-                    require("core/util").question(
-                        "Remove file?",
-                        "You are about to remove the file " + name,
-                        "Do you want continue? (This change cannot be undone)",
-                        function () { // Yes
-                            confirmed = true;
-                            trFiles.remove(file);
-                            confirmed = false;
-                            if (files.length > 0)
-                                confirm(files.shift());
-                            else
-                                winQuestion.hide();
-                        },
-                        function () { // Yes to all
-                            confirmed = true;
-                            trFiles.remove(file);
-                            files.forEach(function (file) {
+                        require("core/util").question(
+                            "Remove file?",
+                            "You are about to remove the file " + name,
+                            "Do you want continue? (This change cannot be undone)",
+                            function () { // Yes
+                                confirmed = true;
                                 trFiles.remove(file);
-                            });
-                            confirmed = false;
-                            winQuestion.hide();
-                        },
-                        function () { // No
-                            if (files.length > 0)
-                                confirm(files.shift());
-                            else
+                                confirmed = false;
+                                if (files.length > 0)
+                                    confirm(files.shift());
+                                else
+                                    winQuestion.hide();
+                            },
+                            function () { // Yes to all
+                                confirmed = true;
+                                trFiles.remove(file);
+                                files.forEach(function (file) {
+                                    trFiles.remove(file);
+                                });
+                                confirmed = false;
                                 winQuestion.hide();
-                        },
-                        function () { // No to all
-                            winQuestion.hide();
-                        }
-                    );
-                    btnQuestionYesToAll.setAttribute("visible", files.length > 0);
-                    btnQuestionNoToAll.setAttribute("visible", files.length > 0);
-                }
-                confirm(files.shift());
-                return false;
-            } else
-                return true;
+                            },
+                            function () { // No
+                                if (files.length > 0)
+                                    confirm(files.shift());
+                                else
+                                    winQuestion.hide();
+                            },
+                            function () { // No to all
+                                winQuestion.hide();
+                            }
+                        );
+                        btnQuestionYesToAll.setAttribute("visible", files.length > 0);
+                        btnQuestionNoToAll.setAttribute("visible", files.length > 0);
+                    }
+                    confirm(files.shift());
+                    return false;
+                } else
+                    return true;
+            }
+        };
+        
+        function removeOk(path) {
+            if (overhaulAction()) {
+                require('ext/filesystem/filesystem').remove(path);
+            }
         };
         
         function copy(a, b) {
-            davProject.copy(a, b + /\/[^\/]*$/.exec(a));
+            if (overhaulAction()) {
+                davProject.copy(a, b + /\/[^\/]*$/.exec(a));
+            }
         };
 
         function move(a, b) {
-            davProject.move(a, b + /\/[^\/]*$/.exec(a));
+            if (overhaulAction()) {
+                davProject.move(a, b + /\/[^\/]*$/.exec(a));
+            }
+        };
+        
+        function rename(name, path) {
+            if (overhaulAction()) {
+                davProject.rename(name, path);
+            }
+        };
+        
+        function overhaulAction() {
+            if (davProject.$undoFlag) {
+                davProject.$undoFlag = false;
+                return false;
+            }
+            return true;
         };
     ]]></a:script>
     <a:window id="winFilesViewer" 
@@ -92,10 +118,10 @@
 
             <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
             <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-            <a:rename match="[file|folder[not(@path='/workspace')]]" set="{davProject.rename([@name], [@path])}"/>
-            <a:copy match="[file|folder]" set="{copy([@path], [../@path])}"/>
+            <a:rename match="[file|folder[not(@path='/workspace')]]" set="{rename([@name], [@pàth])}"/>
             <a:move set="{move([@path], [../@path])}"/>
-            <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
+            <a:remove match="[file|folder]" set="{removeOk([@path])}"/>
+            <a:copy match="[file|folder]" set="{copy([@path], [../@path])}"/>
 
             <a:drag match="[folder|file]" />
             <a:drop match="[folder|file]" target="[folder]"
