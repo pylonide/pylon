@@ -34,6 +34,11 @@ return ext.register("ext/ftp/ftp", {
     
     hook : function(){
         ext.initExtension(this);
+        
+        // hack to hide the dock panel!!
+        if (window.dockPanelRight)
+            dockPanelRight.setAttribute("visible", false)
+            
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
     },
 
