@@ -1204,7 +1204,7 @@ apf.BaseTab = function(){
           || amlNode.localName != "page")
             return;
         
-        if (this.activepage && this.activepage != -1) {
+        if ((this.activepage || this.activepage == 0) && this.activepage != -1) {
             var ln = amlNode.nextSibling;
             while (ln && (!ln.$first || !ln.visible))
                 ln = ln.nextSibling;
