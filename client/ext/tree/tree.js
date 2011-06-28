@@ -206,14 +206,16 @@ return ext.register("ext/tree/tree", {
         });
         
         trFiles.addEventListener("beforemove", function(e){
-            if (!ide.onLine) return false;
+            if (!ide.onLine)
+                return false;
             
-            setTimeout(function(){
-                var changes = e.args;
-                for (var i = 0; i < changes.length; i++) {
-                    fs.beforeMove(changes[i].args[0], changes[i].args[1]);
+            var changes = e.args;
+            for (var i = 0; i < changes.length; i++) {
+                // If any file exists in its future destination, cancel the event.
+                if (!fs.beforeMove(changes[i].args[0], changes[i].args[1], trFiles)) {
+                    return false;
                 }
-            });
+            }
         });
         
         var cancelWhenOffline = function(){
