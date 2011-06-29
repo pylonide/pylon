@@ -78,8 +78,9 @@
           onclick="require('ext/tree/tree').refresh()" />
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
         <a:tree id="trFiles" canrename="true" border="0"
-          contextmenu="mnuCtxTree" multiselect="true" reselectable="true" onaftermove="trFiles.enable();" 
-          onbeforeremove="return remove()" disabled="{!stServerConnected.active}"
+          contextmenu="mnuCtxTree" multiselect="true" reselectable="true" 
+          onbeforemove="this.disable()" onaftermove="this.enable();" 
+          onbeforeremove="return remove()" disabled="{{!stServerConnected.active}}"
           flex="1" anchors = "0 0 0 0" onmouseover="require('ext/tree/tree').onTreeOver()"
           onmouseout="require('ext/tree/tree').onTreeOut()"
         >

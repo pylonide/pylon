@@ -203,7 +203,15 @@ return ext.register("ext/tree/tree", {
             // check for a path with the same name, which is not allowed to rename to:
             var path = e.args[0].getAttribute("path"),
                 newpath = path.replace(/^(.*\/)[^\/]+$/, "$1" + e.args[1]);
-            if (trFiles.getModel().queryNode("//node()[@path=\""+ newpath +"\"]")) {
+            
+            var exists, nodes = trFiles.getModel().queryNodes(".//node()[@path=\""+ newpath +"\"]");
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i] == e.args[0])
+                    continue;
+                exists = true;
+                break;
+            }
+            if (exists) {
                 util.alert("Error", "Unable to move", "Couldn't move to this destination because there's already a node with the same name");
                 trFiles.getActionTracker().undo();
                 return false;
@@ -217,8 +225,8 @@ return ext.register("ext/tree/tree", {
         trFiles.addEventListener("beforemove", function(e){
             if (!ide.onLine)
                 return false;
-            if (ide.dispatchEvent("beforemove") === false)
-                return false;
+            // if (ide.dispatchEvent("beforemove") === false)
+            //               return false;
             
             setTimeout(function(){
                 var changes = e.args;

@@ -231,8 +231,8 @@ return ext.register("ext/filesystem/filesystem", {
     beforeMove: function(parent, node, tree) {
         var path = node.getAttribute("path"),
             page = tabEditors.getPage(path),
-            newpath = parent.getAttribute("path") + "/" + node.getAttribute("name"),
-            webdav = this.webdav;
+            newpath = parent.getAttribute("path") + "/" + node.getAttribute("name");
+            //webdav = this.webdav;
         
         // Check the newpath doesn't exists first
         // if (tree.getModel().queryNode("//node()[@path=\""+ newpath +"\"]")) {
