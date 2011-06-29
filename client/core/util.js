@@ -131,7 +131,7 @@ var contentTypes = {
     "java": "text/x-java-source",
     "scala": "text/x-scala-source",
     "groovy": "text/x-groovy-source",
-    "gosu": "text/x-gosu-source",
+    "gsp": "text/x-gosu-source",
     "fan": "text/x-fantom-source"
     
 };
