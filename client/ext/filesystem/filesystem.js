@@ -297,13 +297,13 @@ return ext.register("ext/filesystem/filesystem", {
             });
             url = "{davProject.getroot()}";
             
-            this.webdav.$undoFlag = false;
+            /*this.webdav.$undoFlag = false;
             this.webdav.addEventListener("error", function(event) {
                 return util.alert("Webdav Exception", event.error.type || "", event.error.message, function() {
                     trFiles.getActionTracker().undo();
                     _self.webdav.$undoFlag = true;
                 });
-            });
+            });*/
         }
         else {
             url = "ext/filesystem/files.xml";
