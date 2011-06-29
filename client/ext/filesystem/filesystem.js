@@ -206,6 +206,7 @@ return ext.register("ext/filesystem/filesystem", {
         else
             name = newPath.match(/[^\/]+$/);
             
+        node.setAttribute("oldpath", node.getAttribute("path"));
         node.setAttribute("path", newPath);
         apf.xmldb.setAttribute(node, "name", name);
         if (page)
