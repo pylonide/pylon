@@ -5,10 +5,10 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/tree/tree",
-    ["core/ide", "core/ext",
+    ["core/ide", "core/ext", "core/util",
      "ext/filesystem/filesystem", "ext/settings/settings", 
      "ext/panels/panels", "text!ext/tree/tree.xml"],
-    function(ide, ext, fs, settings, panels, markup) {
+    function(ide, ext, util, fs, settings, panels, markup) {
 
 return ext.register("ext/tree/tree", {
     name             : "Project Files",
@@ -200,6 +200,15 @@ return ext.register("ext/tree/tree", {
             if(trFiles.$model.data.firstChild == trFiles.selected)
                 return false;
             
+            // check for a path with the same name, which is not allowed to rename to:
+            var path = e.args[0].getAttribute("path"),
+                newpath = path.replace(/^(.*\/)[^\/]+$/, "$1" + e.args[1]);
+            if (trFiles.getModel().queryNode("//node()[@path=\""+ newpath +"\"]")) {
+                util.alert("Error", "Unable to move", "Couldn't move to this destination because there's already a node with the same name");
+                trFiles.getActionTracker().undo();
+                return false;
+            }
+            
             setTimeout(function(){
                 fs.beforeRename(e.args[0], e.args[1]);
             });
@@ -208,14 +217,14 @@ return ext.register("ext/tree/tree", {
         trFiles.addEventListener("beforemove", function(e){
             if (!ide.onLine)
                 return false;
+            if (ide.dispatchEvent("beforemove") === false)
+                return false;
             
             setTimeout(function(){
                 var changes = e.args;
                 for (var i = 0; i < changes.length; i++) {
                     // If any file exists in its future destination, cancel the event.
-                    if (!fs.beforeMove(changes[i].args[0], changes[i].args[1], trFiles)) {
-                        return false;
-                    }
+                    fs.beforeMove(changes[i].args[0], changes[i].args[1], trFiles);
                 }
             });
         });
