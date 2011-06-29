@@ -235,10 +235,15 @@ return ext.register("ext/filesystem/filesystem", {
             webdav = this.webdav;
         
         // Check the newpath doesn't exists first
-        if (tree.getModel().queryNode("//node()[@path=\""+ newpath +"\"]")) {
-            util.alert("Error", "Unable to move", "Couldn't move to this destination because there's already a node with the same name");
-            return false;
-        }
+        // if (tree.getModel().queryNode("//node()[@path=\""+ newpath +"\"]")) {
+        //             webdav.$undoFlag = true;
+        //             util.alert("Error", "Unable to move", "Couldn't move to this destination because there's already a node with the same name", function() {
+        //                 tree.getActionTracker().undo();
+        //                 tree.enable();
+        //             });
+        //             tree.enable();
+        //             return false;
+        //         }
 
         node.setAttribute("path", newpath);
         if (page)
@@ -349,7 +354,7 @@ return ext.register("ext/filesystem/filesystem", {
                     }
                     else {
                         doc.setValue(data);
-                        ide.dispatchEvent("afteropenfile", {doc: doc, node: node});	                
+                        ide.dispatchEvent("afteropenfile", {doc: doc, node: node});                    
                     }
                 });
             }

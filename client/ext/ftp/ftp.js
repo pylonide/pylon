@@ -40,6 +40,9 @@ return ext.register("ext/ftp/ftp", {
             dockPanelRight.setAttribute("visible", false)
             
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
+        ide.addEventListener("beforemove", function(){
+            return false;
+        });
     },
 
     init : function(amlNode){
