@@ -66,7 +66,9 @@ var SupportedIcons = {
     "text/x-csharp": 'page_white_csharp',
     "text/x-java-source": 'page_white_cup',
     "text/x-groovy-source": 'page_white_cup',
-    "text/x-scala-source": 'page_white_cup'
+    "text/x-scala-source": 'page_white_cup',
+    "text/x-gosu-source": 'page_white_cup',
+    "text/x-fantom-source": 'page_white_cup'
 };
         
 var contentTypes = {
@@ -128,7 +130,9 @@ var contentTypes = {
     "mli": "text/x-script.ocaml",
     "java": "text/x-java-source",
     "scala": "text/x-scala-source",
-    "groovy": "text/x-groovy-source"
+    "groovy": "text/x-groovy-source",
+    "gosu": "text/x-gosu-source",
+    "fan": "text/x-fantom-source"
     
 };
     

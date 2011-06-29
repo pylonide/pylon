@@ -24,6 +24,8 @@
         <a:item value="java" icon="page_white_cup.png">Java file</a:item>
         <a:item value="scala" icon="page_white_cup.png">Scala file</a:item>
         <a:item value="groovy" icon="page_white_cup.png">Groovy file</a:item>
+        <a:item value="gosu" icon="page_white_cup.png">Gosu file</a:item>
+        <a:item value="fan" icon="page_white_cup.png">Fantom file</a:item>
         
     </a:menu>
 </a:application>
