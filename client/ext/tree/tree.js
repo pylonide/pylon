@@ -217,9 +217,9 @@ return ext.register("ext/tree/tree", {
                 return false;
             }
             
-            setTimeout(function(){
+            //setTimeout(function(){
                 fs.beforeRename(e.args[0], e.args[1]);
-            });
+            //});
         });
         
         trFiles.addEventListener("beforemove", function(e){
