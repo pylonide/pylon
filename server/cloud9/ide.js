@@ -73,7 +73,7 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
     this.davInited = false;
     
     process.on("exit", function() {
-        davServer.unmount();
+        davServer.unmount(); // End previous FTP connection.
     });
     
     this.registerExts(exts);
