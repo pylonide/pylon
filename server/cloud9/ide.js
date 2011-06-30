@@ -69,8 +69,12 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
         davOptions.node = options.ftp.path;
     }
     
-    this.davServer = jsDAV.mount(davOptions);
+    var davServer = this.davServer = jsDAV.mount(davOptions);
     this.davInited = false;
+    
+    process.on("exit", function() {
+        davServer.unmount(); // End previous FTP connection.
+    });
     
     this.registerExts(exts);
 };
