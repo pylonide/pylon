@@ -46,9 +46,9 @@ return ext.register("ext/debugger/debugger", {
             }));
             return false;
         });
-        
+
         var _self = this;
-        stDebugProcessRunning.addEventListener("activate", function() {            
+        stDebugProcessRunning.addEventListener("activate", function() {
             _self.enable();
         });
         stProcessRunning.addEventListener("deactivate", function() {
@@ -61,10 +61,10 @@ return ext.register("ext/debugger/debugger", {
             if(!node)
                 return;
             var path = node.getAttribute("path");
-            
+
             node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
         });
-        
+
         var sectionStack = dock.getSection("debugger-stack");
         var sectionRest = dock.getSection("debugger-rest");
         
@@ -76,7 +76,7 @@ return ext.register("ext/debugger/debugger", {
                 backgroundImage: "/static/style/images/debugicons.png",
                 defaultState: { x: -6, y: -217 /*-46*/ },
                 activeState: { x: -6, y: -217 }
-            },
+            }
         });
         
         dock.registerPage(sectionRest, null, function(){
@@ -87,7 +87,7 @@ return ext.register("ext/debugger/debugger", {
                 backgroundImage: "/static/style/images/debugicons.png",
                 defaultState: { x: -7, y: -310 /*-130*/ },
                 activeState: { x: -7, y: -310 }
-            },
+            }
         });
         
         dock.registerPage(sectionRest, null, function(){
@@ -98,7 +98,7 @@ return ext.register("ext/debugger/debugger", {
                 backgroundImage: "/static/style/images/debugicons.png",
                 defaultState: { x: -6, y: -261 /*-174*/ },
                 activeState: { x: -6, y: -261 }
-            },
+            }
         });
         
         dock.registerPage(sectionRest, null, function(){
@@ -109,7 +109,7 @@ return ext.register("ext/debugger/debugger", {
                 backgroundImage: "/static/style/images/debugicons.png",
                 defaultState: { x: -6, y: -360 /*-88*/ },
                 activeState: { x: -6, y: -360 }
-            },
+            }
         });
     },
 
@@ -117,7 +117,7 @@ return ext.register("ext/debugger/debugger", {
         var _self = this;
 
         this.paths = {};
-        
+
         mdlDbgSources.addEventListener("afterload", function() {
             _self.$syncTree();
         });
@@ -141,7 +141,7 @@ return ext.register("ext/debugger/debugger", {
 
         lstBreakpoints.addEventListener("afterselect", function(e) {
             if (e.selected && e.selected.getAttribute("scriptid"))
-                _self.showDebugFile(e.selected.getAttribute("scriptid"), parseInt(e.selected.getAttribute("line")) + 1);
+                _self.showDebugFile(e.selected.getAttribute("scriptid"), parseInt(e.selected.getAttribute("line"), 10) + 1);
             // TODO sometimes we don't have a scriptID
         });
         
@@ -152,18 +152,18 @@ return ext.register("ext/debugger/debugger", {
         ide.addEventListener("afterfilesave", function(e) {
             var node = e.node;
             var doc = e.doc;
-            
+
             var scriptId = node.getAttribute("scriptid");
             if (!scriptId)
                 return;
-                
+
             var value = e.value || doc.getValue();
-            var NODE_PREFIX = "(function (exports, require, module, __filename, __dirname) { "
+            var NODE_PREFIX = "(function (exports, require, module, __filename, __dirname) { ";
             var NODE_POSTFIX = "\n});";
             dbg.changeLive(scriptId, NODE_PREFIX + value + NODE_POSTFIX, false, function(e) {
                 //console.log("v8 updated", e);
             });
-        })
+        });
     },
 
     showDebugFile : function(scriptId, row, column, text) {
@@ -179,7 +179,7 @@ return ext.register("ext/debugger/debugger", {
             var name = script.getAttribute("scriptname");
             var value = name.split("/").pop();
 
-            if (name.indexOf(ide.workspaceDir) == 0) {
+            if (name.indexOf(ide.workspaceDir) === 0) {
                 var path = ide.davPrefix + name.slice(ide.workspaceDir.length);
                 // TODO this has to be refactored to support multiple tabs
                 var page = tabEditors.getPage(path);
@@ -229,7 +229,7 @@ return ext.register("ext/debugger/debugger", {
         for (var i=0,l=dbgFiles.length; i<l; i++) {
             var dbgFile = dbgFiles[i];
             var name = dbgFile.getAttribute("scriptname");
-            if (name.indexOf(workspaceDir) != 0)
+            if (name.indexOf(workspaceDir) !== 0)
                 continue;
             this.paths[name] = dbgFile;
         }

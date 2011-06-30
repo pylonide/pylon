@@ -3286,7 +3286,7 @@ for(var wd,html,s,i=0;i<l-1;i++){s=Math.max(this.$minBtnWidth,round[i<re?1:0](bw
 cw-=s;html=pg[i].$button,wd=apf.getWidthDiff(html);anim.tweens.push({oHtml:html,type:"width",from:html.offsetWidth-wd,to:s-wd-this.$btnMargin});
 }html=pg[l-1].$button,wd=apf.getWidthDiff(html);anim.tweens.push({oHtml:html,type:"width",from:html.offsetWidth-wd,to:Math.max(this.$minBtnWidth,Math.min(cw,this.$maxBtnWidth))-this.$btnMargin-wd});
 };var round=[Math.floor,Math.ceil];function scalersz(e,excl){if(!this.length&&!this.getPages().length||this.$waitForMouseOut||this.$control&&this.$control.state==apf.tween.RUNNING){return;
-}if(this.$btnMargin==undefined){this.$btnMargin=apf.getMargin(this.getPage().$button)[0];
+}var page=this.getPage();if(!page){return;}if(this.$btnMargin==undefined){this.$btnMargin=apf.getMargin(page.$button)[0];
 }var pg=this.getPages();if(excl){pg.remove(excl);}if(!pg.length){return;}var cw=this.$buttons.offsetWidth-apf.getWidthDiff(this.$buttons)-(excl?excl.$button.offsetWidth+this.$btnMargin:0);
 var l=pg.length;var bw=Math.min(cw/l,this.$maxBtnWidth);var re=Math.round((bw%1)*10);
 for(var s,i=0;i<l-1;i++){s=Math.max(this.$minBtnWidth,round[i<re?1:0](bw));cw-=s;
@@ -3382,7 +3382,7 @@ setButtonState(SCROLL_LEFT,dir&SCROLL_LEFT?SCROLL_DOWN:SCROLL_OFF);apf.tween.cle
 apf.tween.single(this.$buttons,{steps:SCROLLANIM.steps,interval:SCROLLANIM.interval,from:iCurrentLeft,to:iTargetLeft,type:"left",anim:apf.tween.NORMAL,onstop:SCROLLANIM.stopHandle,onfinish:function(){bAnimating=false;
 setButtonState(SCROLL_RIGHT,SCROLL_OFF);setButtonState(SCROLL_LEFT,SCROLL_OFF);
 }});}else{bAnimating=false;}};this.addEventListener("DOMNodeRemoved",function(e){var amlNode=e.currentTarget;
-if(e.$doOnlyAdmin||e.relatedNode!=this||amlNode.localName!="page"){return;}if(this.activepage&&this.activepage!=-1){var ln=amlNode.nextSibling;
+if(e.$doOnlyAdmin||e.relatedNode!=this||amlNode.localName!="page"){return;}if((this.activepage||this.activepage==0)&&this.activepage!=-1){var ln=amlNode.nextSibling;
 while(ln&&(!ln.$first||!ln.visible)){ln=ln.nextSibling;}var rn=amlNode.previousSibling;
 while(rn&&(!rn.$last||!rn.visible)){rn=rn.previousSibling;}if(this.firstChild==amlNode&&ln){ln&&ln.$first();
 }if(this.lastChild==amlNode&&rn){rn&&rn.$last();}if(this.$activepage==amlNode){if(ln||rn){this.set(ln||rn);
@@ -7553,7 +7553,7 @@ if(this.dispatchEvent("error",{error:oError,bubbles:true})===false&&!callback){t
 }}this.method="MOVE";var oHeaders={Destination:sTo||this.$server};if(typeof bOverwrite=="undefined"){bOverwrite=true;
 }if(!bOverwrite){oHeaders.Overwrite="F";}if(bLock&&oLock.token){oHeaders.If="<"+oLock.token+">";
 }this.doRequest(function(data,state,extra){bLock&&unregisterLock.call(this,sFrom);
-var iStatus=parseInt(extra.status);if(iStatus==400||iStatus==403||iStatus==409||iStatus==412||iStatus==423||iStatus==424||iStatus==502||iStatus==500){var oError=WebDAVError.call(this,"Unable to move file '"+sFrom+"' to '"+sTo+"'. Server says: "+apf.webdav.STATUS_CODES[String(iStatus)]);
+var iStatus=parseInt(extra.status);if(iStatus==400||iStatus==403||iStatus==409||iStatus==412||iStatus==423||iStatus==424||iStatus==501||iStatus==502||iStatus==500){var oError=WebDAVError.call(this,"Unable to move file '"+sFrom+"' to '"+sTo+"'. Server says: "+apf.webdav.STATUS_CODES[String(iStatus)]);
 if(this.dispatchEvent("error",{error:oError,bubbles:true})===false&&!callback){throw oError;
 }}else{if(this.$fsCache[sFrom]){this.$fsCache[sTo]=this.$fsCache[sFrom];this.$fsCache[sTo].path=sTo;
 delete this.$fsCache[sFrom];}}callback&&callback.call(this,data,state,extra);},sFrom,null,oHeaders);

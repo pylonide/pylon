@@ -71,7 +71,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
             var name = _self.getSelectedTreeNode().getAttribute("name");
             if (name.length > 25)
                 name = name.substr(0, 22) + "...";
-            rbSFSelection.setAttribute("label", "Selection ( " + name + " )")
+            rbSFSelection.setAttribute("label", "Selection ( " + name + " )");
         };
         trSFResult.addEventListener("afterselect", function(e) {
             var path,
@@ -79,7 +79,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
                 node = trSFResult.selected,
                 line = 0,
                 text = "";
-            if (node.tagName == "d:maxreached")
+            if (node.tagName == "d:maxreached" || node.tagName == "d:querydetail")
                 return;
             if (node.tagName == "d:excerpt") {
                 path = node.parentNode.getAttribute("path");
@@ -100,7 +100,6 @@ return ext.register("ext/searchinfiles/searchinfiles", {
             tabConsole.set(this.pageID);
             trSFResult.setProperty("visible", true);
             this.$model = trSFResult.getModel();
-            var _self = this;
             // make sure the tab is shown when results come in
             this.$model.addEventListener("afterload", function() {
                 tabConsole.set(_self.pageID);
@@ -197,25 +196,30 @@ return ext.register("ext/searchinfiles/searchinfiles", {
         var node = this.$currentScope = grpSFScope.value == "projects"
             ? trFiles.xmlRoot.selectSingleNode("folder[1]")
             : this.getSelectedTreeNode();
-        trSFResult.setAttribute("empty-message", "No results found for '" + txtSFFind.value.trim().replace(/([\[\]\{\}])/g, '\\$1') + "'");
+        var findValueSanitized = txtSFFind.value.trim().replace(/([\[\]\{\}])/g, '\\$1');
+        _self.$model.clear();
+        trSFResult.setAttribute("empty-message", "Searching for '" + findValueSanitized + "'...");
         davProject.report(node.getAttribute("path"), "codesearch", this.getOptions(), function(data, state, extra){
-            if (state != apf.SUCCESS)
+            if (state !== apf.SUCCESS)
                 return;
-            _self.$model.load(data);
+            if (data.getAttribute("count") == "0")
+                trSFResult.setAttribute("empty-message", "No results found for '" + findValueSanitized + "'");
+            else
+                _self.$model.load(data);
         });
         ide.dispatchEvent("track_action", {type: "searchinfiles"});
     },
 
     replaceAll: function() {
         return;
-        if (!this.editor)
+        /*if (!this.editor)
             this.setEditor();
         if (!this.$editor)
             return;
         this.$crtSearch = null;
         var options = this.getOptions();
         this.$editor.replaceAll(this.txtReplace.getValue() || "", options);
-        ide.dispatchEvent("track_action", {type: "replace"});
+        ide.dispatchEvent("track_action", {type: "replace"});*/
     },
 
     enable : function(){

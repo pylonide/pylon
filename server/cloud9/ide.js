@@ -54,6 +54,7 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
     this.$users = {};
 
     this.nodeCmd = process.argv[0];
+    
 
     var davOptions = {
         node: this.options.mountDir,
@@ -61,8 +62,19 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
         server: this.httpServer,
         standalone: false
     };
-    this.davServer = jsDAV.mount(davOptions);
+    
+    if (options.type == 'ftp') {
+        davOptions.ftp = options.ftp;
+        davOptions.type = 'ftp';
+        davOptions.node = options.ftp.path;
+    }
+    
+    var davServer = this.davServer = jsDAV.mount(davOptions);
     this.davInited = false;
+    
+    process.on("exit", function() {
+        davServer.unmount(); // End previous FTP connection.
+    });
     
     this.registerExts(exts);
 };
@@ -104,6 +116,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/watcher/watcher",
     "ext/dragdrop/dragdrop",
     "ext/beautify/beautify"
+    //"ext/acebugs/acebugs"
 ];
 
 (function () {
@@ -216,10 +229,8 @@ Ide.DEFAULT_PLUGINS = [
 
                 setTimeout(function() {
                     var now = new Date().getTime();
-                    if((now - user.last_message_time) > 19000) {
-                        delete _self.$users[user.uid];
-                        _self.onUserCountChange(Object.keys(_self.$users).length);
-                        _self.emit("userLeave", user);
+                    if((now - user.last_message_time) > 10000) {
+                        _self.removeUser(user);
                     }
                 }, 20000);
             });
@@ -228,7 +239,7 @@ Ide.DEFAULT_PLUGINS = [
             this.emit("userJoin", user);
         }
     };
-    
+
     this.getUser = function(req) {
         var uid = req.session.uid;
         if (!uid || !this.$users[uid])
@@ -236,7 +247,16 @@ Ide.DEFAULT_PLUGINS = [
         else
             return this.$users[uid];
     };
-    
+
+    this.removeUser = function(user) {
+        if (!this.$users[user.uid])
+            return;
+
+        delete this.$users[user.uid];
+        this.onUserCountChange();
+        this.emit("userLeave", user);
+    };
+
     this.getPermissions = function(req) {
         var user = this.getUser(req);
         if (!user)

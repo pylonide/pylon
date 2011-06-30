@@ -107,6 +107,11 @@ return ext.register("ext/quicksearch/quicksearch", {
             this.position = next;
         }
     },
+    
+    handleQuicksearchEscape : function(e) {
+        if (e.keyCode == 27)
+            this.toggleDialog(-1);
+    },
 
     toggleDialog: function(force) {
         ext.initExtension(this);
@@ -130,7 +135,7 @@ return ext.register("ext/quicksearch/quicksearch", {
             var value = doc.getTextRange(range);
             
             if (!value && editor.ceEditor)
-                var value = editor.ceEditor.getLastSearchOptions().needle;
+                value = editor.ceEditor.getLastSearchOptions().needle;
             
             if (value)
                 txtQuickSearch.setValue(value);
@@ -197,7 +202,7 @@ return ext.register("ext/quicksearch/quicksearch", {
             wholeWord: false, 
             regExp: false, 
             scope: Search.ALL 
-        }
+        };
 
         if (this.$crtSearch != txt) {
             this.$crtSearch = txt;

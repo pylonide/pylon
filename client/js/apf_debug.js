@@ -71396,7 +71396,7 @@ apf.webdav = function(struct, tagName){
             bLock && unregisterLock.call(this, sFrom);
             var iStatus = parseInt(extra.status);
             if (iStatus == 400 || iStatus == 403 || iStatus == 409 || iStatus == 412 
-              || iStatus == 423 || iStatus == 424 || iStatus == 502
+              || iStatus == 423 || iStatus == 424 || iStatus == 501 || iStatus == 502
               || iStatus == 507) {
                 var oError = WebDAVError.call(this, "Unable to copy file '" + sFrom
                              + "' to '" + sTo + "'. Server says: "

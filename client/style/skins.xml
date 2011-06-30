@@ -336,6 +336,10 @@
             background-position: 1px 3px;
         }
         
+        .btnIconOnly.newFolder .lbl SPAN {
+            background-position: 1px 2px;
+        }
+        
         .smallCaption.btnIconOnly .lbl {
             color: #323232;
             font-weight: normal;
@@ -3875,14 +3879,14 @@
                 margin-right  : 6px;
                 position      : relative;
                 overflow      : hidden;
-                height        : 22px;
-                padding       : 8px 0 0 7px;
+                height        : 23px;
+                padding       : 7px 0 0 7px;
                 font-family   : Arial;
                 font-size     : 12px;
                 line-height   : 16px;
                 font-weight   : bold;
-                color         : #194e7d;
-                text-shadow   : #4a9be2 0px 1px 0px;
+                color         : #e8e8e8;
+                text-shadow   : #2a2c2d 0px 1px 0px;
             }
             
             .fm-window .fm-header .right {
@@ -5530,7 +5534,7 @@
         padding: 0;
         position : relative;
         vertical-align : bottom;
-        height : 18px;
+        height : 19px;
     }
 
     .tab_console .btncontainer .btntab {
@@ -5578,11 +5582,11 @@
         color       : #a2c890;
         cursor      : default;
         z-index     : 1;
-        background:url(images/console-tab-btn-curr.png) repeat-x 0 0;
-        border-top: 1px solid #4f4f4f;
-        z-index:101;
-        padding      : 2px 27px 2px 27px;
-        text-shadow   : rgba(0, 0, 0, 1) 0px 1px 0px;
+        background  : #1d1d1d url(images/console-tab-btn-curr.png) repeat-x 0 0;
+        border-top  : 1px solid #4f4f4f;
+        z-index     : 101;
+        padding     : 2px 27px 2px 27px;
+        text-shadow : rgba(0, 0, 0, 1) 0px 1px 0px;
     }
 
     .tab_console .scale .btntab .tab_console_middle {
@@ -5765,6 +5769,14 @@
     
     .editor_tab .btnsesssioncontainer .saving .sessiontab_icon {
         background-image: url(images/save-indicator-inactive-tab.gif);
+    }
+    
+    .editor_tab .btnsesssioncontainer .loading_active .sessiontab_icon {
+        background-image: url(images/load-indicator-active-tab.gif);
+    }
+    
+    .editor_tab .btnsesssioncontainer .loading .sessiontab_icon {
+        background-image: url(images/load-indicator-inactive-tab.gif);
     }
 
     .editor_tab .btnsesssioncontainer .session_btn .tab_middle .sessiontab_title {

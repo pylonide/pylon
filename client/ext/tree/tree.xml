@@ -9,10 +9,10 @@
         function remove() {
             if (!confirmed) {
                 var files = trFiles.getSelection();
-                
+            
                 function confirm(file) {
                     var name = file.getAttribute("name");
-                    
+                
                     require("core/util").question(
                         "Remove file?",
                         "You are about to remove the file " + name,
@@ -59,7 +59,10 @@
         };
 
         function move(a, b) {
-            davProject.move(a, b + /\/[^\/]*$/.exec(a));
+            davProject.move(a, b + /\/[^\/]*$/.exec(a), false, false, function() {
+                trFiles.enable();
+                trFiles.focus();
+            });
         };
     ]]></a:script>
     <a:window id="winFilesViewer" 
@@ -78,8 +81,9 @@
           onclick="require('ext/tree/tree').refresh()" />
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
         <a:tree id="trFiles" canrename="true" border="0"
-          contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
-          onbeforeremove="return remove()" disabled="{!stServerConnected.active}"
+          contextmenu="mnuCtxTree" multiselect="false" reselectable="true" 
+          onbeforemove="this.disable();"
+          onbeforeremove="return remove()" disabled="{{!stServerConnected.active}}"
           flex="1" anchors = "0 0 0 0" onmouseover="require('ext/tree/tree').onTreeOver()"
           onmouseout="require('ext/tree/tree').onTreeOut()"
         >
@@ -92,15 +96,17 @@
 
             <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
             <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-            <a:rename match="[file|folder[not(@path='/workspace')]]" set="{davProject.rename([@name], [@path])}"/>
-            <a:copy match="[file|folder]" set="{copy([@path], [../@path])}"/>
+            <a:rename match="[file|folder[not(@path='/workspace')]]" set="{davProject.rename([@name], [@oldpath])}" />
             <a:move set="{move([@path], [../@path])}"/>
             <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
+            <a:copy match="[file|folder]" set="{copy([@path], [../@path])}"/>
 
             <a:drag match="[folder|file]" />
             <a:drop match="[folder|file]" target="[folder]"
                 action="tree-append" copy="{event.ctrlKey}" />
+                
         </a:tree>
+        
         <a:scrollbar
             for      = "trFiles"
             id       = "sbTrFiles"
@@ -117,18 +123,18 @@
             onmouseup   = "require('ext/tree/tree').onSBMouseUp()"
         />
         <a:menu id="mnuCtxTree" disabled="{!stServerConnected.active}">
-            <a:item match="[file]" class="strong" onclick="
+            <a:item match="[file]" class="strong"  onclick="
                 require('core/ide').dispatchEvent('openfile', {doc: require('core/ide').createDocument(apf.activeElement.selected)})
             ">Edit</a:item>
             <a:divider />
             <a:item onclick="require('ext/tree/tree').refresh()">Refresh</a:item>
-            <a:item match="[file|folder[not(@path='/workspace')]]" onclick="apf.activeElement.startRename()">Rename</a:item>
-            <a:item match="[file|folder]" onclick="apf.activeElement.remove()">Delete</a:item>
+            <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.startRename()">Rename</a:item>
+            <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.remove()">Delete</a:item>
             <a:divider />
-            <a:item match="[file|folder]" onclick="
+            <a:item match="[file|folder[not(@root)]]" onclick="
                 apf.clipboard.cutSelection(apf.activeElement);
             ">Cut</a:item>
-            <a:item match="[file|folder]" onclick="
+            <a:item match="[file|folder[not(@root)]]" onclick="
                 apf.clipboard.copySelection(apf.activeElement);
             ">Copy</a:item>
             <a:item match="[folder|project]" disabled="{!apf.clipboard.empty}" onclick="

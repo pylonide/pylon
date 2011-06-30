@@ -49,7 +49,7 @@ return ext.register("ext/newresource/newresource", {
         return false;
         
         var node = apf.getXml('<file path="/giannis/cloud9/workspace" type="file" size="" name="Untitled.txt" contenttype="text/plain; charset=utf-8" modifieddate="" creationdate="" lockable="false" hidden="false" executable="false"></file>');
-        debugger;
+
         if (this.webdav) {
             var filename = "Untitled.txt",
                 prefix   = filename,
