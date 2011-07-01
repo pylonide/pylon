@@ -484,6 +484,7 @@ return ext.register("ext/console/console", {
             case "ls":
             case "java":
             case "scala":
+            case "fsc":
             case "groovy":
             case "mvn":
                 res = message.body;

@@ -65,7 +65,7 @@ sys.inherits(ShellScalaPlugin, Plugin);
     };
 
     this.command = function(user, message, client) {
-        if (message.command != "scala")
+        if (message.command != "scala" && message.command != "fsc")
             return false;
             
         var _self = this;
@@ -91,6 +91,7 @@ sys.inherits(ShellScalaPlugin, Plugin);
                 });
             }, 
             function(code, err, out) {
+		console.log("code: [" + code +"] err: [" + err + "] out: [" + out +"]");
                 _self.sendResult(0, message.command, {
                     code: code,
                     argv: message.argv,
