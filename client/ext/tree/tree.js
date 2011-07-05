@@ -456,7 +456,8 @@ return ext.register("ext/tree/tree", {
             if(navbar.current && (navbar.current != this))
                 navbar.current.disable(false);
         }
-        
+
+        splitterPanelLeft.show();
         navbar.current = this;
     },
 
@@ -465,6 +466,8 @@ return ext.register("ext/tree/tree", {
             winFilesViewer.hide();
         if (!noButton)
             this.button.setValue(false);
+
+        splitterPanelLeft.hide();
     },
 
     destroy : function(){

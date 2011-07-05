@@ -144,7 +144,7 @@ return ext.register("ext/openfiles/openfiles", {
             if(navbar.current && (navbar.current != this))
                 navbar.current.disable(false);
         }
-
+        splitterPanelLeft.show();
         navbar.current = this;
     },
 
@@ -153,6 +153,8 @@ return ext.register("ext/openfiles/openfiles", {
             winOpenFiles.hide();
         if (!noButton)
             this.button.setValue(false);
+
+        splitterPanelLeft.hide();
     },
 
     destroy : function(){
