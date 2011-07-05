@@ -336,12 +336,10 @@ Ide.DEFAULT_PLUGINS = [
         }
         // if we get here, no hook function was successfully delegated to an
         // extension.
-
-        //this.error("Error: no handler found for hook '" + hook + "'. Arguments: "
-        //    + sys.inspect(args), 9, args[0]);
+        if (hook == "command" && args[1].command)
+            this.error("Command not recognized: '" + args[1].command + "'", 9, args[0], args[2]);
     };
 
-    // TODO remove
     this.error = function(description, code, message, client) {
         //console.log("Socket error: " + description, new Error().stack);
         var sid = (message || {}).sid || -1;
