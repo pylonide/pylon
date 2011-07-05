@@ -1475,6 +1475,10 @@
         .header-btnOver {
             background-position : 0 -15px;
         }
+        
+        .header-btnDisabled {
+            background-position : 0 -30px;
+        }
     ]]></a:style>
 
     <a:presentation>
