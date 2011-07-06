@@ -1,6 +1,5 @@
 /*
     TODO:    
-    - tab dragging are at the wrong position while dragging
     - floating sections or menus
     
     - single page should drag whole tab like button to section does
@@ -10,6 +9,7 @@
     - menu should appear onmouseup not down
     
     INTEGRATION
+    - add conditional availability of buttons
     - add right click menu to buttons/sections
 */
 
@@ -1159,17 +1159,18 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbCh
             page.removeAttribute("id");
             page.removeAttribute("render");
             tab.appendChild(page);
-            
-            if (origMenu.$ext.offsetHeight) {
+
+            /*if (origMenu.$ext.offsetHeight) {
                 var pos = apf.getAbsolutePosition(origMenu.$ext);
                 tab.setLeft(pos[0]);
                 tab.setTop(pos[1]);
             }
-            else {
+            else {*/
                 var pos = apf.getAbsolutePosition(this.parentNode.$ext);
                 tab.setLeft(pos[0] - 1);
                 tab.setTop(pos[1] - 2);
-            }
+            //}
+            
             tab.$ext.style.border = "1px solid #333";
             //menu.$ext.style.margin = "0 0 0 0"
             tab.addEventListener("afterdrag", function(e){
