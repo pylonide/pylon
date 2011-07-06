@@ -310,5 +310,6 @@
         <p:define name="__WITH_MD5" value="1" />
         <p:define name="__WITH_HISTORY" value="0" />
         <p:define name="__WITH_JSLT_EVENTS" value="1" />
+        <p:define name="__WITH_MOUSESCROLL" value="1" />
     </p:defines>
 </p:project>
