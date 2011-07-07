@@ -50,10 +50,11 @@ return ext.register("ext/gitblame/gitblame", {
     },
 
     requestBlame : function() {
-        var cmd = "blame";
+        var cmd = "gittools";
 
         var data = {
             command : cmd,
+            subcommand : "blame",
             file    : tabEditors.getPage().$model.data.getAttribute("path")
         };
 
