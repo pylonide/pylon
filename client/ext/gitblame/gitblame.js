@@ -64,8 +64,6 @@ return ext.register("ext/gitblame/gitblame", {
               data: data
             }) !== false) {
                 if (!ide.onLine) {
-                    // @TODO Put in a util.error here
-                    console.log("Cannot execute command. You are currently offline.");
                     util.alert(
                         "Currently Offline",
                         "Currently Offline",

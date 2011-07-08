@@ -113,24 +113,24 @@ sys.inherits(GitToolsPlugin, Plugin);
             function(err) { // Error
                 _self.sendResult(0, message.command, {
                     code: 0,
-                    argv: message.argv,
                     err: err,
+                    gitcommand: "blame",
                     out: null
                 });
             },
             function(out) { // Data
                 _self.sendResult(0, message.command, {
                     code: 0,
-                    argv: message.argv,
                     err: null,
+                    gitcommand: "blame",
                     out: out
                 });
             },
             function(code, err, out) { // Exit
                 _self.sendResult(0, message.command, {
                     code: code,
-                    argv: message.argv,
                     err: null,
+                    gitcommand: "blame",
                     out: null
                 });
             }
