@@ -122,7 +122,7 @@ return ext.register("ext/console/console", {
                 .replace(wsRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>"+workspaceDir+"/$1$2$3</a>")
                 .replace(/(((http:\/\/)|(www\.))[\w\d\.-]*(:\d+)?(\/[\w\d]+)?)/, "<a href='$1' target='_blank'>$1</a>")
                 // tty escape sequences (http://ascii-table.com/ansi-escape-sequences.php)
-                .replace(/\\u00(07|1b)\[(K|2J)/g, "")
+                .replace(/(\u0007|\u001b)\[(K|2J)/g, "")
                 .replace(/\033\[(?:(\d+);)?(\d+)m/g, function(m, extra, color) {
                     style = "color:" + (colors[color] || "#eee");
                     if (extra == 1) {
