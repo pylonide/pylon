@@ -1,4 +1,47 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
+    
+    <a:bar id="tbDebug">
+        <!--a:button
+          icon="chromium_16.png"
+          caption="Debug Chrome"
+          onclick="require('ext/run/run').debugChrome()"
+          disabled="{stConnected.active}" /-->      
+        <a:splitbutton id="btnDebug"
+          icon     = "bug.png"
+          caption  = "debug"
+          onclick  = "require('ext/run/run').run(true)"
+          disabled = "{stProcessRunning.active and 1}"
+          submenu  = "mnuDebugCfg" />
+        <a:divider skin="c9-divider" />
+        <a:button id="btnResume" tooltip="Resume"
+          icon     = "play.png"
+          onclick  = "dbg.continueScript();"
+          skin     = "c9-toolbarbutton"
+          disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+        <a:button  tooltip="Suspend"
+          skin     = "c9-toolbarbutton"
+          icon     = "pause.png"
+          onclick  = "dbg.suspend();"
+          disabled = "{!stDebugProcessRunning.active or !stRunning.active}"/>
+        <a:divider skin="c9-divider" />
+        <a:button id="btnStepInto" tooltip="Step Into"
+          icon     = "stepinto.png" 
+          skin     = "c9-toolbarbutton"
+          onclick  = "dbg.stepInto();" 
+          disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+        <a:button id="btnStepOver" tooltip="Step Over"
+          icon     = "step.png"
+          skin     = "c9-toolbarbutton"
+          onclick  = "dbg.stepNext();"
+          disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+        <a:button id="btnStepOut" tooltip="Step Out"
+          icon     = "stepback.png" 
+          skin     = "c9-toolbarbutton"
+          onclick  = "dbg.stepOut();"
+          disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+    </a:bar>
+
+
     <a:tab id="tabDebug" skin="docktab" visible="false">
         <a:page id="dbgCallStack" caption="Call Stack">
             <a:datagrid

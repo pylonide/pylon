@@ -8,8 +8,8 @@ var Plugin = require("cloud9/plugin");
 var Fs     = require("fs");
 var sys    = require("sys");
 
-var BlamePlugin = module.exports = function(ide) {
-    this.ide   = ide;
+var BlamePlugin = module.exports = function(ide, workspace) {
+    Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
     this.name  = "blame";
 };

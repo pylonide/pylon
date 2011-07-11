@@ -157,12 +157,6 @@ define(function(require, exports, module) {
                 });
             };
             
-            //@todo see if this can be moved to noderunner
-            ide.addEventListener("socketMessage", function(e){
-                if (e.message.type && e.message.type == "state")
-                    stProcessRunning.setProperty("active", e.message.processRunning);
-            });
-
             // for unknown reasons io is sometimes undefined
             try {
                 ide.socket = new io.Socket(null, options);
@@ -175,10 +169,11 @@ define(function(require, exports, module) {
                     }
                 );
                 
-                var socketIoScriptEl = Array.prototype.slice.call(document.getElementsByTagName("script"))
-                    .filter(function(script) {
+                var socketIoScriptEl = Array.prototype.slice.call(
+                    document.getElementsByTagName("script")).filter(function(script) {
                         return script.src && script.src.indexOf("socket.io.js") >= 0;
-                    })[0];
+                    }
+                )[0];
                 
                 if (socketIoScriptEl) {
                     apf.ajax(socketIoScriptEl.src, {

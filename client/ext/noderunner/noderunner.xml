@@ -33,24 +33,24 @@
       height="200" 
       buttons="close"
       visible="false">
-    	<a:list id="lstTabs" 
-    	  model="mdlTabs" 
-    	  anchors="10 10 40 10" 
-    	  multiselect="false" 
-    	  autoselect="false" 
-    	  each="[tab]" 
-    	  caption="[@url]" 
-    	  empty-message="Loading tabs..."
-    	  onafterchoose = "btnTabsOk.dispatchEvent('click');"/>
-    	<a:button id="btnTabsOk"
-    	  right="10"
-    	  bottom="10"
-    	  width="60"
-    	  disabled="{!lstTabs.selected}" 
-    	  default="true"
-    	  onclick="winTab.close();dbg.attach(dbgChrome, {lstTabs.selected})">
-    	    OK
-   		</a:button>
-    </a:window>        
-       	
+        <a:list id="lstTabs" 
+          model="mdlTabs" 
+          anchors="10 10 40 10" 
+          multiselect="false" 
+          autoselect="false" 
+          each="[tab]" 
+          caption="[@url]" 
+          empty-message="Loading tabs..."
+          onafterchoose = "btnTabsOk.dispatchEvent('click');"/>
+        <a:button id="btnTabsOk"
+          right="10"
+          bottom="10"
+          width="60"
+          disabled="{!lstTabs.selected}" 
+          default="true"
+          onclick="winTab.close();dbg.attach(dbgChrome, {lstTabs.selected})">
+            OK
+        </a:button>
+    </a:window>
+
 </a:application>
