@@ -103,9 +103,9 @@ function Parser() {
 
     // chars to be parsed as quotes
     this.quoteChars = {
-        '"': false,
-        "'": false,
-        '`': false
+        '"': true,
+        "'": true,
+        '`': true
     };
 
     // chars to be parsed as escape char
