@@ -1,32 +1,46 @@
 /**
- * Git Blame extension for the Cloud9 IDE client
+ * Git Tools for the Cloud9 IDE client
  * 
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
-var ext     = require("core/ext");
-var ide     = require("core/ide");
+var ext = require("core/ext");
+var ide = require("core/ide");
+var dock = require("ext/dockpanel/dockpanel");
+var markup = require("text!ext/gittools/gittools.xml");
 var editors = require("ext/editors/editors");
 var BlameJS = require("ext/gitblame/blamejs");
-var util    = require("core/util");
 
-return ext.register("ext/gitblame/gitblame", {
-    name     : "Git Blame",
+return ext.register("ext/gittools/gittools", {
+    name     : "Git Tools",
     dev      : "Ajax.org",
     alone    : true,
     type     : ext.GENERAL,
-    nodes    : [],
+    markup   : markup,
 
-    init : function(amlNode){
+    nodes : [],
+
+    init : function(amlNode) {
+        var _self = this;
+
         this.blamejs = new BlameJS();
         this.originalGutterWidth = editors.currentEditor.ceEditor.$editor.renderer.getGutterWidth();
-    },
 
-    hook : function(){
-        var _self = this;
+        this.section = dock.getSection("gittools", {
+            width  : 260,
+            height : 360
+        });
+
+        dock.registerPage(this.section, tabGitTools.firstChild, null, {
+            primary : {
+                backgroundImage: "/static/style/images/debugicons.png",
+                defaultState: { x: -6, y: -217 },
+                activeState: { x: -6, y: -217 }
+            }
+        });
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
@@ -36,26 +50,19 @@ return ext.register("ext/gitblame/gitblame", {
                 editors.currentEditor.ceEditor.$editor.renderer.setGutterWidth(_self.originalGutterWidth + "px");
             }
         });
-
-        this.nodes.push(
-            ide.mnuEdit.appendChild(new apf.item({
-                // @TODO: Support more CVSs? Just "Blame this File"
-                caption : "Git Blame this File",
-                onclick : function(){
-                    ext.initExtension(_self);
-                    _self.requestBlame();
-                }
-            }))
-        );
     },
 
-    requestBlame : function() {
+    getFilePath : function() {
+        return tabEditors.getPage().$model.data.getAttribute("path");
+    },
+
+    gitBlame : function() {
         var cmd = "gittools";
 
         var data = {
             command : cmd,
             subcommand : "blame",
-            file    : tabEditors.getPage().$model.data.getAttribute("path")
+            file : this.getFilePath()
         };
 
         ide.dispatchEvent("track_action", {type: "blame", cmd: cmd});
@@ -81,11 +88,21 @@ return ext.register("ext/gitblame/gitblame", {
 
     onMessage: function(e) {
         var message = e.message;
+        //console.log(message);
 
-        if (message.type != "result" && message.subtype != "blame")
+        if (message.type != "result" && message.subtype != "gittools")
             return;
 
-        //console.log(message);
+        switch(message.body.gitcommand) {
+            case "blame":
+                this.onGitBlameMessage(message);
+                break;
+            default:
+                return;
+        }
+    },
+    
+    onGitBlameMessage: function(message) {
         if (message.body.err) {
             util.alert(
                 "Error", 
@@ -109,11 +126,10 @@ return ext.register("ext/gitblame/gitblame", {
             return false;
         }
 
-        // Now formulate the output
-        this.formulateOutput(this.blamejs.getCommitData(), this.blamejs.getLineData());
+        this.outputGitBlame(this.blamejs.getCommitData(), this.blamejs.getLineData());
     },
 
-    formulateOutput : function(commit_data, line_data) {
+    outputGitBlame : function(commit_data, line_data) {
         var textHash = {}, lastHash = "";
         for (var li in line_data) {
             if (line_data[li].numLines != -1 && line_data[li].hash != lastHash) {
@@ -128,6 +144,7 @@ return ext.register("ext/gitblame/gitblame", {
                 };
             }
         }
+
         editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr(textHash);
         editors.currentEditor.ceEditor.$editor.renderer.updateFull();
     },

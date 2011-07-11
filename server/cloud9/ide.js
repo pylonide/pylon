@@ -226,7 +226,8 @@ Ide.DEFAULT_PLUGINS = [
             });
             user.on("disconnectUser", function(user) {
                 console.log("Running user disconnect timer...");
-
+                _self.davServer.unmount();
+                
                 setTimeout(function() {
                     var now = new Date().getTime();
                     if((now - user.last_message_time) > 10000) {
