@@ -35,6 +35,7 @@ return ext.register("ext/debugger/debugger", {
     },
 
     nodes : [],
+    hotitems: {},
 
     hook : function(){
         ide.addEventListener("consolecommand.debug", function(e) {
@@ -111,10 +112,28 @@ return ext.register("ext/debugger/debugger", {
                 activeState: { x: -6, y: -360 }
             }
         });
+        ext.initExtension(this);
     },
 
     init : function(amlNode){
         var _self = this;
+       
+        while(tbDebug.childNodes.length) {
+            var button = tbDebug.firstChild;
+            
+            if (button.nodeType == 1 && button.getAttribute("id") == "btnDebug")
+                ide.barTools.insertBefore(button, btnRun);
+            else
+                ide.barTools.appendChild(button);
+            if (button.nodeType == 1) {
+                this.nodes.push(button);
+            }
+        }
+
+        this.hotitems["resume"]   = [btnResume];
+        this.hotitems["stepinto"] = [btnStepInto];
+        this.hotitems["stepover"] = [btnStepOver];
+        this.hotitems["stepout"]  = [btnStepOut];
 
         this.paths = {};
 

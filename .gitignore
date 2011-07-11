@@ -1,3 +1,5 @@
+*.swp
+*.un~
 common/packager
 common/apf
 client/icons/Thumbs.db
