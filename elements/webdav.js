@@ -676,7 +676,7 @@ apf.webdav = function(struct, tagName){
             bLock && unregisterLock.call(this, sFrom);
             var iStatus = parseInt(extra.status);
             if (iStatus == 400 || iStatus == 403 || iStatus == 409 || iStatus == 412
-              || iStatus == 423 || iStatus == 424 || iStatus == 502 || iStatus == 500) {
+              || iStatus == 423 || iStatus == 424 || iStatus == 501 || iStatus == 502 || iStatus == 500) {
                 var oError = WebDAVError.call(this, "Unable to move file '" + sFrom
                              + "' to '" + sTo + "'. Server says: "
                              + apf.webdav.STATUS_CODES[String(iStatus)]);

@@ -929,6 +929,7 @@ apf.MultiselectBinding = function(){
         //#ifdef __WITH_CACHE
         var cId, cItem;
         if (this.$isTreeArch && this.caching 
+          && (!this.$bindings || !this.$bindings.each || !this.$bindings.each.filter)
           && (cItem = this.cache[(cId = xmlNode.getAttribute(apf.xmldb.xmlIdTag))])) {
             if (this.$subTreeCacheContext || this.$needsDepth) {
                 //@todo

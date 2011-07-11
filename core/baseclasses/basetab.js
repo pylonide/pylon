@@ -514,9 +514,10 @@ apf.BaseTab = function(){
         }
         
         var page = this.getPage();
+
         if (!page)
             return;
-            
+
         if (this.$btnMargin == undefined)
             this.$btnMargin = apf.getMargin(page.$button)[0];
 
@@ -1203,7 +1204,7 @@ apf.BaseTab = function(){
           || amlNode.localName != "page")
             return;
         
-        if (this.activepage && this.activepage != -1) {
+        if ((this.activepage || this.activepage == 0) && this.activepage != -1) {
             var ln = amlNode.nextSibling;
             while (ln && (!ln.$first || !ln.visible))
                 ln = ln.nextSibling;
