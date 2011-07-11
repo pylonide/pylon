@@ -90,7 +90,12 @@ return ext.register("ext/noderunner/noderunner", {
                     6:
                     401: Authorization Required
                 */
-                if (message.code !== 6 && message.code != 401) {
+                // Command error
+                if (message.code === 9) {
+                    txtConsole.addValue("<div class='item console_log' style='font-weight:bold;color:yellow'>"
+                        + message.message + "</div>");
+                }
+                else if (message.code !== 6 && message.code != 401) {
                     //util.alert("Server Error", "Server Error " 
                     //    + (message.code || ""), message.message);
 
@@ -112,7 +117,6 @@ return ext.register("ext/noderunner/noderunner", {
                 
                 ide.socket.send('{"command": "state"}');
                 break;
-                
         }
     },
 
@@ -155,7 +159,7 @@ return ext.register("ext/noderunner/noderunner", {
 
     stop : function() {
         if (!stProcessRunning.active)
-            return
+            return;
 
         ide.socket.send(JSON.stringify({"command": "kill"}));
     },
