@@ -1465,6 +1465,7 @@
             overflow            : hidden;
             cursor              : pointer;
             position            : relative;
+            cursor              : default;
             -moz-user-select    : none; 
             -khtml-user-select  : none; 
             user-select         : none;
