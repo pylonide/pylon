@@ -125,9 +125,6 @@ return ext.register("ext/debugger/debugger", {
                 ide.barTools.insertBefore(button, btnRun);
             else
                 ide.barTools.appendChild(button);
-            if (button.nodeType == 1) {
-                this.nodes.push(button);
-            }
         }
 
         this.hotitems["resume"]   = [btnResume];
