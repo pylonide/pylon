@@ -413,7 +413,7 @@ apf.BaseTab = function(){
                 from  : html.offsetWidth - apf.getWidthDiff(html),
                 to    : 0
             });
-            var over = apf.getWidthDiff(html) + this.$btnMargin;
+            var over = apf.getWidthDiff(html) + (this.$btnMargin || 0);
             if (over)
                 anim.tweens.push({
                     oHtml : html,
@@ -492,7 +492,7 @@ apf.BaseTab = function(){
                 oHtml : html, 
                 type  : "width", 
                 from  : html.offsetWidth - wd,
-                to    : s - wd - this.$btnMargin
+                to    : s - wd - (this.$btnMargin || 0)
             });
         }
         html = pg[l - 1].$button, wd = apf.getWidthDiff(html);
@@ -501,7 +501,7 @@ apf.BaseTab = function(){
             type  : "width", 
             from  : html.offsetWidth - wd, // - (add ? 3 : 0)
             to    : Math.max(this.$minBtnWidth, 
-                Math.min(cw, this.$maxBtnWidth)) - this.$btnMargin - wd
+                Math.min(cw, this.$maxBtnWidth)) - (this.$btnMargin || 0) - wd
         });
     }
     
