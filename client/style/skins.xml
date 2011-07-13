@@ -5985,7 +5985,7 @@
             <div class="btnsesssioncontainer"> </div>
             <div class="editor_bg">
                 <div class="editor_bg_content">
-                    <div class="editor_bg_message">Open a file or create a new one to get started.</div>
+                    <div class="editor_bg_message">Open a file or create a new one to get started</div>
                 </div>
             </div>
         </div>
@@ -6718,7 +6718,7 @@
 
         .searchbox_textboxFocus .btnclose {
             position : absolute;
-            right : 11px;
+            right : 8px;
             top : 5px;
             width : 14px;
             height : 14px;

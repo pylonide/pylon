@@ -3,7 +3,7 @@
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/apf.js)SIZE(97005)TIME(Thu, 24 Mar 2011 14:09:41 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/apf.js)SIZE(97098)TIME(Mon, 20 Jun 2011 14:37:04 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -264,27 +264,28 @@ VERSION:'3.0beta',
         if((typeof/./)[0]=='f' && parseFloat((sAgent.match(/(?:firefox|minefield)\/([\d\.]+)/i) || {})[1]) <= 2)
             b = 0;
 
-        if (b == 2 && sAgent.indexOf("chrome") == -1) 
-            b = 3;
+        // fix voor https://github.com/ajaxorg/apf/issues/8
+        if (b === 4 && sAgent.indexOf("chrome") > -1)
+            b = 2;
 
         /**
          * Specifies whether the application is running in the Opera browser.
          * @type {Boolean}
          */
-        this.isOpera       = b===4 || b===5;//(self.opera && Object.prototype.toString.call(self.opera) == "[object Opera]");
+        this.isOpera       = b === 4 || b === 5;//(self.opera && Object.prototype.toString.call(self.opera) == "[object Opera]");
         //b = 5 for Opera 9
         
         /**
          * Specifies whether the application is running in the Konqueror browser.
          * @type {Boolean}
          */
-        this.isKonqueror   = b===5;//sAgent.indexOf("konqueror") != -1;
+        this.isKonqueror   = b === 5;//sAgent.indexOf("konqueror") != -1;
         
         /**
          * Specifies whether the application is running in the Safari browser.
          * @type {Boolean}
          */
-        this.isSafari      = b===3;//a/.__proto__ == "//";
+        this.isSafari      = b === 3;//a/.__proto__ == "//";
         
         /**
          * Specifies whether the application is running in the Safari browser version 2.4 or below.
@@ -302,7 +303,7 @@ VERSION:'3.0beta',
          * Specifies whether the application is running in the Chrome browser.
          * @type {Boolean}
          */
-        this.isChrome      = b===2;//Boolean(/source/.test((/a/.toString + ""))) || sAgent.indexOf("chrome") != -1;
+        this.isChrome      = b === 2;//Boolean(/source/.test((/a/.toString + ""))) || sAgent.indexOf("chrome") != -1;
         
         /**
          * Specifies whether the application is running in a Webkit-based browser
@@ -339,10 +340,10 @@ VERSION:'3.0beta',
         this.versionGecko  = this.isGecko ? parseFloat(sAgent.match(/(?:gecko)\/([\d\.]+)/i)[1]) : -1;
         var m = sAgent.match(/(?:firefox(-[\d.]+)?|minefield)\/([\d.]+)/i);
         this.versionFF     = this.isGecko && m && m.length ? parseFloat(m[2]) : 4.0;
-        this.versionSafari = this.isSafari && !this.isAIR ? parseFloat(sAgent.match(/(?:version)\/([\d\.]+)/i)[1]) : -1;
+        this.versionSafari = this.isSafari && (!this.isAIR || !this.isChrome) ? parseFloat(sAgent.match(/(?:version)\/([\d\.]+)/i)[1]) : -1;
         this.versionChrome = this.isChrome ? parseFloat(sAgent.match(/(?:chrome)\/([\d\.]+)/i)[1]) : -1;
         this.versionOpera  = this.isOpera 
-            ? parseFloat(sAgent.match(b===4 
+            ? parseFloat(sAgent.match(b === 4 
                 ? /(?:version)\/([\d\.]+)/i 
                 : /(?:opera)\/([\d\.]+)/i)[1]) 
             : -1;
@@ -352,7 +353,7 @@ VERSION:'3.0beta',
          * Specifies whether the application is running in the Internet Explorer browser, any version.
          * @type {Boolean}
          */
-        this.isIE         = b===1;//! + "\v1";
+        this.isIE         = b === 1;//! + "\v1";
         if (this.isIE)
             this.isIE = parseFloat(sAgent.match(/msie ([\d\.]*)/)[1]);
         
@@ -7135,7 +7136,7 @@ apf.selectTextHtml = function(oHtml){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/visibilitymanager.js)SIZE(3663)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/visibilitymanager.js)SIZE(4929)TIME(Mon, 06 Jun 2011 10:16:32 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7231,9 +7232,9 @@ apf.visibilitymanager = function(){
     }
     
     this.permanent = function(amlNode, show, hide){
-        var state = amlNode.$ext.offsetHeight && amlNode.$ext.offsetWidth;
+        var state = amlNode.$ext.offsetHeight || amlNode.$ext.offsetWidth;
         function check(e){
-            var newState = amlNode.$ext.offsetHeight && amlNode.$ext.offsetWidth;
+            var newState = amlNode.$ext.offsetHeight || amlNode.$ext.offsetWidth;
             if (newState == state)
                 return;
             
@@ -7244,13 +7245,54 @@ apf.visibilitymanager = function(){
         }
 
         //Set events on the parent tree
-        var p = amlNode;
+        /*var p = amlNode;
         while (p) {
             p.addEventListener("prop.visible", check);
             p = p.parentNode || p.$parentNode;
+        }*/
+        
+        function cleanup(setInsertion){
+            var p = amlNode;
+            while (p) {
+                p.removeEventListener("prop.visible", check);
+                p.removeEventListener("DOMNodeRemoved", remove); 
+                p.removeEventListener("DOMNodeRemovedFromDocument", remove); 
+                if (setInsertion)
+                    p.addEventListener("DOMNodeInserted", add);
+                p = p.parentNode || p.$parentNode;
+            }
+            
+            check();
         }
 
+        function remove(e){
+            if (e.currentTarget != this)
+                return;
+            
+            cleanup(e.name == "DOMNodeRemoved");
+        }
+
+        function add(){
+            //Set events on the parent tree
+            var p = amlNode;
+            while (p) {
+                p.addEventListener("prop.visible", check);
+                p.addEventListener("DOMNodeRemoved", remove); 
+                p.addEventListener("DOMNodeRemovedFromDocument", remove); 
+                p.removeEventListener("DOMNodeInserted", add);
+                p = p.parentNode || p.$parentNode;
+            }
+            
+            check();
+        }
+        
+        add();
+
         return state;
+    }
+    
+    this.removePermanent = function(amlNode){
+        
     }
 };
 
@@ -17456,7 +17498,7 @@ apf.aml = new apf.AmlNamespace();
 apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/node.js)SIZE(22071)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/node.js)SIZE(21515)TIME(Mon, 06 Jun 2011 10:16:32 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17818,7 +17860,7 @@ apf.AmlNode = function(){
             return; //We don't update the tree if this is a doc fragment
 
         //@todo review this...
-        if (initialAppend) {
+        if (initialAppend && !amlNode.render) { // && (nNodes = node.childNodes).length ??
             (this.ownerDocument || this).$domParser.$continueParsing(amlNode, {delay: true});
         }
 
@@ -21677,7 +21719,7 @@ apf.aml.setElement("include", apf.XiInclude);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit.js)SIZE(34022)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit.js)SIZE(34637)TIME(Tue, 31 May 2011 13:29:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22853,7 +22895,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/guielement.js)SIZE(33083)TIME(Thu, 17 Feb 2011 14:05:08 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/guielement.js)SIZE(33087)TIME(Mon, 06 Jun 2011 10:16:32 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23260,7 +23302,21 @@ apf.GuiElement = function(){
             if (this.maxheight == undefined)
                 this.maxheight  = apf.getCoord(hasPres && parseInt(this.$getOption(type, "maxheight")), 10000);
 
+            //--#ifdef __WITH_CONTENTEDITABLE
+            //@todo slow??
+            var diff = apf.getDiff(this.$ext);
+            this.$ext.style.minWidth = Math.max(0, this.minwidth - diff[0]) + "px";
+            this.$ext.style.minHeight = Math.max(0, this.minheight - diff[1]) + "px";
+            this.$ext.style.maxWidth = Math.max(0, this.maxwidth - diff[0]) + "px";
+            this.$ext.style.maxHeight = Math.max(0, this.maxheight - diff[1]) + "px";
             
+            if (this.$altExt && apf.isGecko) {
+                this.$altExt.style.minHeight = this.$ext.style.minHeight;
+                this.$altExt.style.maxHeight = this.$ext.style.maxHeight;
+                this.$altExt.style.minWidth = this.$ext.style.minWidth;
+                this.$altExt.style.maxWidth = this.$ext.style.maxWidth;
+            }
+            //--#endif
         }
         
         if (this.$loadAml)
@@ -33022,7 +33078,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(56620)TIME(Fri, 15 Apr 2011 12:16:16 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(57119)TIME(Wed, 13 Jul 2011 13:58:56 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33156,8 +33212,8 @@ apf.BaseTab = function(){
      * </code>
      */
     this.$propHandlers["activepage"]   = function(next, prop, force, callback, noEvent){
-        if (!this.inited || apf.isNot(next)) return;
-
+        if (!this.inited || apf.isNot(next) || next == -1) return;
+        
         if (!callback) {
             callback = this.$lastCallback;
             delete this.$lastCallback;
@@ -33405,7 +33461,11 @@ apf.BaseTab = function(){
         }
         else if (type == "remove") {
             anim.onfinish = function(){
-                callback();
+            	if (node.dispatchEvent("afterclose") !== false)
+                	callback();
+                    
+                html.style.marginLeft = 0;
+                apf.setOpacity(html, 1);
                 
                 if (_self.$waitForMouseOut == 2) {
                     apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
@@ -33414,8 +33474,6 @@ apf.BaseTab = function(){
                 }
                 else if (isLast)
                     delete _self.$waitForMouseOut;
-                
-                node.dispatchEvent("afterclose");
             }
             anim.onstop = function(){
                 apf.setOpacity(html, 1);
@@ -33428,7 +33486,7 @@ apf.BaseTab = function(){
                 from  : html.offsetWidth - apf.getWidthDiff(html),
                 to    : 0
             });
-            var over = apf.getWidthDiff(html) + this.$btnMargin;
+            var over = apf.getWidthDiff(html) + (this.$btnMargin || 0);
             if (over)
                 anim.tweens.push({
                     oHtml : html,
@@ -33507,7 +33565,7 @@ apf.BaseTab = function(){
                 oHtml : html, 
                 type  : "width", 
                 from  : html.offsetWidth - wd,
-                to    : s - wd - this.$btnMargin
+                to    : s - wd - (this.$btnMargin || 0)
             });
         }
         html = pg[l - 1].$button, wd = apf.getWidthDiff(html);
@@ -33516,20 +33574,25 @@ apf.BaseTab = function(){
             type  : "width", 
             from  : html.offsetWidth - wd, // - (add ? 3 : 0)
             to    : Math.max(this.$minBtnWidth, 
-                Math.min(cw, this.$maxBtnWidth)) - this.$btnMargin - wd
+                Math.min(cw, this.$maxBtnWidth)) - (this.$btnMargin || 0) - wd
         });
     }
     
     var round = [Math.floor, Math.ceil];
     function scalersz(e, excl){
-        if (!this.length || this.$waitForMouseOut 
+        if (!this.length && !this.getPages().length || this.$waitForMouseOut 
           || this.$control && this.$control.state == apf.tween.RUNNING) {
             //@todo queue call here to after anim
             return;
         }
+        
+        var page = this.getPage();
+
+        if (!page)
+            return;
 
         if (this.$btnMargin == undefined)
-            this.$btnMargin = apf.getMargin(this.getPage().$button)[0];
+            this.$btnMargin = apf.getMargin(page.$button)[0];
 
         var pg = this.getPages();
         if (excl)
@@ -33826,8 +33889,8 @@ apf.BaseTab = function(){
         
         {
             //page.removeNode();
-            page.destroy(true, true);
-            page.dispatchEvent("afterclose");
+            if (page.dispatchEvent("afterclose") !== false)
+            	page.destroy(true, true);
 
             
             //@todo this is wrong, we can also use removeChild
@@ -34214,42 +34277,44 @@ apf.BaseTab = function(){
           || amlNode.localName != "page")
             return;
         
-        var ln = amlNode.nextSibling;
-        while (ln && (!ln.$first || !ln.visible))
-            ln = ln.nextSibling;
-        var rn = amlNode.previousSibling;
-        while (rn && (!rn.$last || !rn.visible))
-            rn = rn.previousSibling;
-
-        if (this.firstChild == amlNode && ln)
-            ln && ln.$first();
-        if (this.lastChild == amlNode && rn)
-            rn && rn.$last();
-
-        if (this.$activepage == amlNode) {
-            if (ln || rn)
-                this.set(ln || rn);
-            else {
-                amlNode.$deactivate();
-                
-                
-                //this.setScrollerState();
-                
-                this.$activepage  =
-                this.activepage   =
-                this.activepagenr = null;
-                this.setProperty("activepage", null);
+        if ((this.activepage || this.activepage == 0) && this.activepage != -1) {
+            var ln = amlNode.nextSibling;
+            while (ln && (!ln.$first || !ln.visible))
+                ln = ln.nextSibling;
+            var rn = amlNode.previousSibling;
+            while (rn && (!rn.$last || !rn.visible))
+                rn = rn.previousSibling;
+    
+            if (this.firstChild == amlNode && ln)
+                ln && ln.$first();
+            if (this.lastChild == amlNode && rn)
+                rn && rn.$last();
+    
+            if (this.$activepage == amlNode) {
+                if (ln || rn)
+                    this.set(ln || rn);
+                else {
+                    amlNode.$deactivate();
+                    
+                    
+                    //this.setScrollerState();
+                    
+                    this.$activepage  =
+                    this.activepage   =
+                    this.activepagenr = null;
+                    this.setProperty("activepage", null);
+                }
             }
-        }
-        else {
-            
-            //if (this.$scroll) 
-                //this.setScrollerState();
-            
-            
-            if (this.$scale) 
-                this.$scaleinit();
-            
+            else {
+                
+                //if (this.$scroll) 
+                    //this.setScrollerState();
+                
+                
+                if (this.$scale) 
+                    this.$scaleinit();
+                
+            }
         }
         
         
@@ -34259,7 +34324,7 @@ apf.BaseTab = function(){
 
     this.addEventListener("DOMNodeInserted",function(e){
         var amlNode = e.currentTarget;
-        
+
         if (amlNode.localName != "page" || e.relatedNode != this || amlNode.nodeType != 1)
             return;
 
@@ -34290,7 +34355,7 @@ apf.BaseTab = function(){
                 this.setProperty("activepagenr", info.position);
             }
         }
-        else if (!this.$activepage)
+        else if (!this.activepage && !this.$activepage)
             this.set(amlNode);
         
         
@@ -34537,7 +34602,7 @@ apf.BaseTab = function(){
                 ? this.activepage
                 : this.activepagenr) || 0;
             page = this.getPage(this.activepage);
-            if (page.render != "runtime" || page.$rendered)
+            if (!page.render || page.$rendered)
                 this.$propHandlers.activepage.call(this, this.activepage);
         }
         else {
@@ -34579,7 +34644,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(48162)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(48288)TIME(Mon, 06 Jun 2011 10:16:32 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35808,6 +35873,9 @@ apf.BaseTree = function(){
         };
         this.$ext.onmouseover = function(e){
             _self.dispatchEvent("mouseover", {htmlEvent : e || event});
+        };
+        this.$ext.onmouseout = function(e){
+            _self.dispatchEvent("mouseout", {htmlEvent : e || event});
         };
         this.$ext.onmousemove = function(e){
             _self.dispatchEvent("mousemove", {htmlEvent : e || event});
@@ -44575,7 +44643,7 @@ apf.JsParser = new (function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/parsers/livemarkup.js)SIZE(112800)TIME(Thu, 18 Nov 2010 16:23:56 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/parsers/livemarkup.js)SIZE(112942)TIME(Tue, 31 May 2011 13:29:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46813,6 +46881,7 @@ apf.lm_exec = new (function(){
     
     function _valed(n, m, x, options, editMode){   // wrap a value with editable div
         var res = (n?__val(n,m):__valm(m,x));
+
         if (options && options.multiline && options.editor != "richtext")
             res = res.replace(/\n/g, "<br />");
         
@@ -46822,7 +46891,9 @@ apf.lm_exec = new (function(){
                 ? ((m.substr(0,1) != "/" 
                     ? apf.xmlToXpath(n, null, false) 
                     : "") + "/" + m).replace(/([\[\{\}\]])/g, "\\$1")
-                : "") + '"' 
+                : (self[m] 
+                    ? (m + ".queryNode('" + x.replace(/'/g, "\\'") + "')").replace(/([\[\{\}\]])/g, "\\$1")
+                    : "")) + '"' 
               + (options
                 ? ' options="' + apf.serialize(options).escapeHTML()
                                   .replace(/"/g, "&quot;")
@@ -53115,7 +53186,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/codeeditor.js)SIZE(20523)TIME(Mon, 07 Mar 2011 10:08:50 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/codeeditor.js)SIZE(20739)TIME(Mon, 27 Jun 2011 08:36:11 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53137,6 +53208,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
+
 
 
 
@@ -55153,7 +55225,7 @@ apf.aml.setElement("divider", apf.divider);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dropdown.js)SIZE(15380)TIME(Fri, 29 Apr 2011 09:43:22 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dropdown.js)SIZE(15385)TIME(Tue, 31 May 2011 14:56:09 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55294,9 +55366,9 @@ apf.dropdown = function(struct, tagName){
             this.containerHeight = Math.ceil(this.containerHeight * 0.9);*/
     };
     
-    this.$propHandlers["class"] = function(value){
-        this.$setStyleClass(this.oSlider, value);
-    };
+    this.addEventListener("prop.class", function(e){
+        this.$setStyleClass(this.oSlider, e.value);
+    });
     
     /**** Public methods ****/
     
@@ -56197,7 +56269,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/hbox.js)SIZE(39238)TIME(Mon, 07 Mar 2011 10:08:50 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/hbox.js)SIZE(40549)TIME(Mon, 06 Jun 2011 10:16:32 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56757,7 +56829,7 @@ apf.vbox = function(struct, tagName){
                 propHandlers.margin.call(amlNode, amlNode.margin);
             if (amlNode.flex)
                 propHandlers.flex.call(amlNode, amlNode.flex);    
-
+                
             //Ie somehow sets the visible flags in between registration
             var isLast = isLastVisibleChild(amlNode); //apf.isIE ? this.lastChild == amlNode : 
             if (isLast || insert) {
@@ -56766,15 +56838,34 @@ apf.vbox = function(struct, tagName){
                 
                 if (!apf.hasFlexibleBox)
                     this.$propHandlers["pack"].call(this, this.pack);
-                
-                if (insert && amlNode.visible !== false) 
+                    
+                if (amlNode.visible !== false) //insert && - removed because for new nodes that are being attached to the tree insert is not set
                     visibleHandler.call(amlNode, {value: true});
+                
+                //@todo this needs more work
+                if (insert && amlNode.previousSibling) {
+                    var prev = amlNode.previousSibling;
+                    while (prev && (prev.nodeType != 1 || prev.localName == "splitter"))
+                        prev = prev.previousSibling;
+                    if (prev)
+                        visibleHandler.call(prev, {value: true});
+                }
             }
             
             else if (this.splitters && !amlNode.$splitter && amlNode.visible !== false && !amlNode.nosplitter) {
-                this.insertBefore(
-                    this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
-                    amlNode.nextSibling);
+                if (amlNode.$ext.nextSibling != (amlNode.nextSibling && (amlNode.nextSibling.$altExt || amlNode.nextSibling.$ext))) {
+                    var _self = this;
+                    setTimeout(function(){
+                        _self.insertBefore(
+                            _self.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                            amlNode.nextSibling);
+                    });
+                }
+                else {
+                    this.insertBefore(
+                        this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                        amlNode.nextSibling);
+                }
             }
             
         
@@ -56798,8 +56889,11 @@ apf.vbox = function(struct, tagName){
         
         //Clear css properties and set layout
         if (amlNode.nodeFunc == apf.NODE_VISIBLE) {
-            if (amlNode.flex)
+            if (amlNode.flex) {
+                var flex = amlNode.flex;
                 propHandlers.flex.call(amlNode, 0);
+                amlNode.flex = flex;
+            }
             
             if (apf.hasFlexibleBox) {
                 amlNode.$ext.style[apf.CSSPREFIX + "BoxSizing"] = "";
@@ -56835,11 +56929,14 @@ apf.vbox = function(struct, tagName){
             
             if (amlNode.width)
                 amlNode.$ext.style.width = "";
+
             
-            
-            if (this.splitters && !amlNode.$splitter 
-              && amlNode.nextSibling && amlNode.nextSibling.$splitter) {
-                amlNode.nextSibling.removeNode();
+            if (this.splitters && !amlNode.$splitter) {
+                if (amlNode.nextSibling && amlNode.nextSibling.$splitter)
+                    amlNode.nextSibling.removeNode();
+                if (isLastVisibleChild(amlNode) && amlNode.previousSibling 
+                  && amlNode.previousSibling.$splitter)
+                    amlNode.previousSibling.removeNode();
             }
             
         }
@@ -61391,7 +61488,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/page.js)SIZE(18160)TIME(Wed, 06 Apr 2011 09:56:34 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/page.js)SIZE(18211)TIME(Tue, 28 Jun 2011 12:57:05 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61630,15 +61727,14 @@ apf.page = function(struct, tagName){
 
     //beforeNode, pNode, withinParent
     this.addEventListener("DOMNodeInserted", function(e){
-        if (e && e.currentTarget != this || !this.$amlLoaded 
-          || !e.$oldParent)
+        if (e && e.currentTarget != this || !this.$amlLoaded) //|| !e.$oldParent
             return;
-
+            
         if (!e.$isMoveWithinParent 
           && this.skinName != this.parentNode.skinName) {
             this.$destroy(); //clean up button
         }
-        else if (this.$button && e.$oldParent.$hasButtons)
+        else if (this.$button && (!e.$oldParent || e.$oldParent.$hasButtons) && this.parentNode.$buttons)
             this.parentNode.$buttons.insertBefore(this.$button,
                 e.$beforeNode && e.$beforeNode.$button || null);
     }, true);
@@ -61678,7 +61774,7 @@ apf.page = function(struct, tagName){
         //if (this.disabled)
             //return false;
 
-        this.$active = false
+        this.$active = false;
 
         if (this.parentNode.$hasButtons) {
             if (this.$position > 0)
@@ -64753,7 +64849,7 @@ apf.aml.setElement("script", apf.script);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/scrollbar.js)SIZE(24972)TIME(Thu, 21 Apr 2011 09:54:45 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/scrollbar.js)SIZE(25305)TIME(Tue, 21 Jun 2011 14:50:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65315,9 +65411,10 @@ apf.scrollbar = function(struct, tagName){
 
             if (this.setCapture)
                 this.setCapture();
-    
+
             _self.$setStyleClass(_self.$ext, _self.$baseCSSname + "Down");
-    
+            _self.dispatchEvent("mousedown", {});
+
             document.onmousemove = function(e){
                 if (!e) 
                     e = event;
@@ -65351,7 +65448,7 @@ apf.scrollbar = function(struct, tagName){
                     this.releaseCapture();
                 
                 _self.$setStyleClass(_self.$ext, "", [_self.$baseCSSname + "Down"]);
-                
+                _self.dispatchEvent("mouseup", {});
                 document.onmouseup   = 
                 document.onmousemove = null;
             };
@@ -65416,6 +65513,14 @@ apf.scrollbar = function(struct, tagName){
                 _self.setScroll();
             if (_self.$slideFast)
                 _self.$slideFast.style.display = "none";
+        };
+
+        this.$ext.onmouseover = function(e){
+            _self.dispatchEvent("mouseover", {htmlEvent : e || event});
+        };
+
+        this.$ext.onmouseout = function(e){
+            _self.dispatchEvent("mouseout", {htmlEvent : e || event});
         };
     }
     
@@ -67370,7 +67475,7 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/splitter.js)SIZE(14439)TIME(Wed, 06 Apr 2011 09:56:34 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/splitter.js)SIZE(14901)TIME(Mon, 06 Jun 2011 10:16:32 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67404,6 +67509,8 @@ apf.splitter = function(struct, tagName){
 };
 
 (function() {
+    this.$scale = 0; // 0 both, 1 left/top, 2 right/bottom 
+    
     this.$focussable = false; // This object can get the focus
     this.$splitter   = true;
     
@@ -67412,6 +67519,12 @@ apf.splitter = function(struct, tagName){
     this.$propHandlers["realtime"] = function(value){
         this.$setStyleClass(this.$ext, value && (this.$baseCSSname + "Realtime") || "", 
             [this.$baseCSSname + "Realtime"]);
+    }
+    
+    this.$propHandlers["scale"] = function(value){
+        this.$scale = value == "left" || value == "top"
+            ? 1 : (value == "right" || "bottom " 
+                ? 2 : 0);
     }
     
     this.$propHandlers["type"] = function(value){
@@ -67492,14 +67605,16 @@ apf.splitter = function(struct, tagName){
                     newPos -= this.$ext[offsetSize];
 
                 //var totalFlex = this.$previous.flex + this.$next.flex - (finalPass && !this.realtime ? this.parentNode.padding : 0);
-                this.$previous[method]("flex", newPos);
-                this.$next[method]("flex", this.$totalFlex - newPos);
+                if (!this.$scale || this.$scale == 1)
+                    this.$previous[method]("flex", newPos);
+                if (!this.$scale || this.$scale == 2)
+                    this.$next[method]("flex", this.$totalFlex - newPos);
             }
             //Fixed
             else {
-                if (!this.$next.flex)
+                if (!this.$next.flex && (!this.$scale || this.$scale == 2))
                     this.$next[method](osize, max - newPos);
-                if (!this.$previous.flex)
+                if (!this.$previous.flex && (!this.$scale || this.$scale == 1))
                     this.$previous[method](osize, newPos);
             }
         }
@@ -67572,14 +67687,14 @@ apf.splitter = function(struct, tagName){
                 pHtml.style.position = "relative";
                 changedPosition = true;
             }
-            
+
             _self.$totalFlex = 0;
             with (_self.$info) {
                 var posPrev = apf.getAbsolutePosition(_self.$previous.$ext, _self.parentNode.$int);
-                var min = posPrev[d1] || 0;
+                var min = _self.$scale ? 0 : posPrev[d1] || 0;
                 var posNext = apf.getAbsolutePosition(_self.$next.$ext, _self.parentNode.$int);
                 var max = posNext[d1] + _self.$next.$ext[offsetSize] - this[offsetSize];
-            
+                
                 //Set flex to pixel sizes
                 if ((_self.$previous.flex || _self.$previous.flex === 0) 
                   && (_self.$next.flex || _self.$next.flex === 0)) {
@@ -69343,7 +69458,7 @@ apf.aml.setElement("text", apf.text);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/textbox.js)SIZE(27439)TIME(Tue, 15 Mar 2011 14:31:53 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/textbox.js)SIZE(27544)TIME(Mon, 20 Jun 2011 12:38:05 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69462,6 +69577,7 @@ apf.textbox  = function(struct, tagName){
 
     //this.realtime        = false;
     this.value             = "";
+    this.readonly          = false;
     this.$isTextInput      = true;
     this.multiline         = false;
 
@@ -69470,6 +69586,7 @@ apf.textbox  = function(struct, tagName){
      * updated as the user types it, or only when this element looses focus or
      * the user presses enter.
      */
+    this.$booleanProperties["readonly"]    = true;
     this.$booleanProperties["focusselect"] = true;
     this.$booleanProperties["realtime"]    = true;
     this.$supportedProperties.push("value", "mask", "initial-message",
@@ -69980,7 +70097,7 @@ apf.textbox  = function(struct, tagName){
                 $setTimeout("var o = apf.lookup(" + _self.$uniqueId + ");\
                     o.change(o.getValue())");
 
-            if (_self.multiline == "optional" && e.keyCode == 13 && !e.shiftKey
+            if (_self.readonly || _self.multiline == "optional" && e.keyCode == 13 && !e.shiftKey
               || e.ctrlKey && (e.keyCode == 66 || e.keyCode == 73
               || e.keyCode == 85)) {
                 e.returnValue = false;
@@ -70781,7 +70898,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/webdav.js)SIZE(49145)TIME(Fri, 15 Apr 2011 12:18:57 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/webdav.js)SIZE(49163)TIME(Mon, 27 Jun 2011 08:36:11 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71396,7 +71513,7 @@ apf.webdav = function(struct, tagName){
             bLock && unregisterLock.call(this, sFrom);
             var iStatus = parseInt(extra.status);
             if (iStatus == 400 || iStatus == 403 || iStatus == 409 || iStatus == 412 
-              || iStatus == 423 || iStatus == 424 || iStatus == 501 || iStatus == 502
+              || iStatus == 423 || iStatus == 424 || iStatus == 502
               || iStatus == 507) {
                 var oError = WebDAVError.call(this, "Unable to copy file '" + sFrom
                              + "' to '" + sTo + "'. Server says: "
@@ -71452,7 +71569,7 @@ apf.webdav = function(struct, tagName){
             bLock && unregisterLock.call(this, sFrom);
             var iStatus = parseInt(extra.status);
             if (iStatus == 400 || iStatus == 403 || iStatus == 409 || iStatus == 412
-              || iStatus == 423 || iStatus == 424 || iStatus == 502 || iStatus == 500) {
+              || iStatus == 423 || iStatus == 424 || iStatus == 501 || iStatus == 502 || iStatus == 500) {
                 var oError = WebDAVError.call(this, "Unable to move file '" + sFrom
                              + "' to '" + sTo + "'. Server says: "
                              + apf.webdav.STATUS_CODES[String(iStatus)]);

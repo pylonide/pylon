@@ -3270,7 +3270,7 @@ if(pg.length){scalersz.call(this,null,node);this.$buildScaleAnim(anim,pg,null,tr
 }html.style.marginLeft=0;apf.setOpacity(html,1);if(_self.$waitForMouseOut==2){apf.removeListener(_self.$buttons,"mouseout",btnMoHandler);
 delete _self.$waitForMouseOut;_self.$scaleinit(null,"sync");}else{if(isLast){delete _self.$waitForMouseOut;
 }}};anim.onstop=function(){apf.setOpacity(html,1);};var html=node.$button;anim.tweens.push({oHtml:html,type:"width",from:html.offsetWidth-apf.getWidthDiff(html),to:0});
-var over=apf.getWidthDiff(html)+this.$btnMargin;if(over){anim.tweens.push({oHtml:html,type:"marginLeft",from:0,to:-1*over});
+var over=apf.getWidthDiff(html)+(this.$btnMargin||0);if(over){anim.tweens.push({oHtml:html,type:"marginLeft",from:0,to:-1*over});
 }anim.tweens.push({oHtml:html,type:"fade",from:1,to:0});var isLast=pg[pg.length-1]==node;
 if(isLast){this.$buildScaleAnim(anim,pg,node);}if(this.$activepage==node){var ln=node.nextSibling;
 while(ln&&(!ln.$first||!ln.visible)){ln=ln.nextSibling;}var rn=node.previousSibling;
@@ -3283,8 +3283,8 @@ if(_self.$control.state==apf.tween.STOPPED){delete _self.$waitForMouseOut;_self.
 pg.remove(excl);}if(!pg.length){return;}var cw=this.$buttons.offsetWidth-apf.getWidthDiff(this.$buttons);
 var l=pg.length;var bw=Math.min(cw/l,this.$maxBtnWidth);var re=Math.round((bw%1)*10);
 for(var wd,html,s,i=0;i<l-1;i++){s=Math.max(this.$minBtnWidth,round[i<re?1:0](bw));
-cw-=s;html=pg[i].$button,wd=apf.getWidthDiff(html);anim.tweens.push({oHtml:html,type:"width",from:html.offsetWidth-wd,to:s-wd-this.$btnMargin});
-}html=pg[l-1].$button,wd=apf.getWidthDiff(html);anim.tweens.push({oHtml:html,type:"width",from:html.offsetWidth-wd,to:Math.max(this.$minBtnWidth,Math.min(cw,this.$maxBtnWidth))-this.$btnMargin-wd});
+cw-=s;html=pg[i].$button,wd=apf.getWidthDiff(html);anim.tweens.push({oHtml:html,type:"width",from:html.offsetWidth-wd,to:s-wd-(this.$btnMargin||0)});
+}html=pg[l-1].$button,wd=apf.getWidthDiff(html);anim.tweens.push({oHtml:html,type:"width",from:html.offsetWidth-wd,to:Math.max(this.$minBtnWidth,Math.min(cw,this.$maxBtnWidth))-(this.$btnMargin||0)-wd});
 };var round=[Math.floor,Math.ceil];function scalersz(e,excl){if(!this.length&&!this.getPages().length||this.$waitForMouseOut||this.$control&&this.$control.state==apf.tween.RUNNING){return;
 }var page=this.getPage();if(!page){return;}if(this.$btnMargin==undefined){this.$btnMargin=apf.getMargin(page.$button)[0];
 }var pg=this.getPages();if(excl){pg.remove(excl);}if(!pg.length){return;}var cw=this.$buttons.offsetWidth-apf.getWidthDiff(this.$buttons)-(excl?excl.$button.offsetWidth+this.$btnMargin:0);
