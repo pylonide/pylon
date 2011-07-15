@@ -77,19 +77,21 @@ return ext.register("ext/run/run", {
 
     addConfig : function() {
         var file = ide.getActivePageModel();
+		var extension = "";
 
-        if (!file || (file.getAttribute("contenttype") || "").indexOf("application/javascript") != 0) {
+        if (!file || (file.getAttribute("contenttype") || "").indexOf("application/javascript") != 0 && (file.getAttribute("contenttype") || "").indexOf("text/x-script.python") != 0) {
             var path = "";
             var name = "server";
         }
         else {
-            path = file.getAttribute("path").slice(ide.davPrefix.length + 1);
-            name = file.getAttribute("name").replace(/\.js$/, "");
+            path  = file.getAttribute("path").slice(ide.davPrefix.length + 1);
+            name  = file.getAttribute("name").replace(/\.(js|py)$/, function(full, ext){ extension = ext; return ""; });
         }
 
         var cfg = apf.n("<config />")
             .attr("path", path)
             .attr("name", name)
+			.attr("extension", extension)
             .attr("args", "").node();
 
         mdlRunConfigurations.appendXml(cfg);
