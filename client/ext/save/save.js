@@ -17,7 +17,11 @@ return ext.register("ext/save/save", {
     markup      : markup,
     css         : css,
     deps        : [fs],
+<<<<<<< HEAD
     offline     : -1,
+=======
+    offline     : true,
+>>>>>>> feature/offline
     commands     : {
         "quicksave": {hint: "save the currently active file to disk"},
         "saveas": {hint: "save the file to disk with a different filename"}
