@@ -12,7 +12,9 @@ var jsDAV = require("jsdav"),
     lang = require("pilot/lang"),
     Url = require("url"),
     template = require("./template"),
-    EventEmitter = require("events").EventEmitter;
+    Workspace = require("cloud9/workspace"),
+    EventEmitter = require("events").EventEmitter,
+    util = require("./util");
 
 module.exports = Ide = function(options, httpServer, exts, socket) {
     EventEmitter.call(this);
@@ -49,17 +51,38 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
         //gaeLocalPath: options.gaeLocalPath,
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version,
-        extra: options.extra
+        extra: options.extra,
+        remote: options.remote
     };
 
     this.$users = {};
-
     this.nodeCmd = process.argv[0];
 
-    this.davServer = jsDAV.mount(this.options.mountDir, this.options.davPrefix, this.httpServer, false);
+    var davOptions = {
+        node: this.options.mountDir,
+        mount: this.options.davPrefix,
+        server: this.httpServer,
+        standalone: false
+    };
+
+    if (options.remote)
+        util.extend(davOptions, options.remote);
+    else
+        davOptions.path = this.options.mountDir;
+    
+    this.davServer = jsDAV.mount(davOptions);
     this.davInited = false;
     
-    this.registerExts(exts);
+    this.workspace = new Workspace({ ide: this });
+    
+    this.workspace.createPlugins(exts);
+    var statePlugin = this.workspace.getExt("state");
+    if (statePlugin) {
+        statePlugin.on("statechange", function(state) {
+            state.workspaceDir = this.workspace.workspaceDir;
+            state.davPrefix =  this.ide.davPrefix;
+        });
+    }
 };
 
 sys.inherits(Ide, EventEmitter);
@@ -99,6 +122,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/watcher/watcher",
     "ext/dragdrop/dragdrop",
     "ext/beautify/beautify"
+    //"ext/acebugs/acebugs"
 ];
 
 (function () {
@@ -174,7 +198,7 @@ Ide.DEFAULT_PLUGINS = [
                 version: _self.options.version
             };
 
-            var settingsPlugin = _self.getExt("settings");
+            var settingsPlugin = _self.workspace.getExt("settings");
             var user = _self.getUser(req);
             if (!settingsPlugin || !user) {
                 index = template.fill(index, replacements);
@@ -205,17 +229,16 @@ Ide.DEFAULT_PLUGINS = [
                 _self.onUserMessage(msg.user, msg.message, msg.client);
             });
             user.on("disconnectClient", function(msg) {
-                _self.execHook("disconnect", msg.user, msg.client);
+                _self.workspace.execHook("disconnect", msg.user, msg.client);
             });
             user.on("disconnectUser", function(user) {
                 console.log("Running user disconnect timer...");
-
+                _self.davServer.unmount();
+                
                 setTimeout(function() {
                     var now = new Date().getTime();
-                    if((now - user.last_message_time) > 19000) {
-                        delete _self.$users[user.uid];
-                        _self.onUserCountChange(Object.keys(_self.$users).length);
-                        _self.emit("userLeave", user);
+                    if((now - user.last_message_time) > 10000) {
+                        _self.removeUser(user);
                     }
                 }, 20000);
             });
@@ -224,7 +247,7 @@ Ide.DEFAULT_PLUGINS = [
             this.emit("userJoin", user);
         }
     };
-    
+
     this.getUser = function(req) {
         var uid = req.session.uid;
         if (!uid || !this.$users[uid])
@@ -232,7 +255,16 @@ Ide.DEFAULT_PLUGINS = [
         else
             return this.$users[uid];
     };
-    
+
+    this.removeUser = function(user) {
+        if (!this.$users[user.uid])
+            return;
+
+        delete this.$users[user.uid];
+        this.onUserCountChange();
+        this.emit("userLeave", user);
+    };
+
     this.getPermissions = function(req) {
         var user = this.getUser(req);
         if (!user)
@@ -254,7 +286,7 @@ Ide.DEFAULT_PLUGINS = [
     };
     
     this.onUserMessage = function(user, message, client) {
-        this.execHook("command", user, message, client);
+        this.workspace.execHook("command", user, message, client);
     };
     
     this.onUserCountChange = function() {
@@ -274,77 +306,10 @@ Ide.DEFAULT_PLUGINS = [
     
     this.sendToUser = function(username, msg) {
         this.$users[username] && this.$users[username].broadcast(msg);
-    }
-
-    this.registerExts = function(exts) {
-        this.exts = {}
-
-        for (var ext in exts) {
-            this.exts[ext] = new exts[ext](this);
-        }
-        for (ext in this.exts) {
-            if (this.exts[ext].init)
-                this.exts[ext].init();
-        }
-    }
-
-    this.getExt = function(name) {
-       return this.exts[name] || null;
-    };
-
-    this.execHook = function(hook, user /* varargs */) {
-        var ext, hooks,
-            args = Array.prototype.slice.call(arguments, 1),
-            hook = hook.toLowerCase().replace(/^[\s]+/, "").replace(/[\s]+$/, "");
-
-        var server_exclude = lang.arrayToMap(user.getPermissions().server_exclude.split("|"));
-
-        for (var name in this.exts) {
-            if (server_exclude[name]) {
-                continue;
-            }
-
-            ext   = this.exts[name];
-            hooks = ext.getHooks();
-            
-            if (hooks.indexOf(hook) > -1 && ext[hook].apply(ext, args) === true) {
-                return;
-            }
-        }
-        // if we get here, no hook function was successfully delegated to an
-        // extension.
-
-        //this.error("Error: no handler found for hook '" + hook + "'. Arguments: "
-        //    + sys.inspect(args), 9, args[0]);
-    };
-
-    // TODO remove
-    this.error = function(description, code, message, client) {
-        //console.log("Socket error: " + description, new Error().stack);
-        var sid = (message || {}).sid || -1;
-        var error = JSON.stringify({
-            "type": "error",
-            "sid": sid,
-            "code": code,
-            "message": description
-        });
-        if (client)
-            client.send(error)
-        else
-            this.broadcast(error);
     };
     
     this.dispose = function(callback) {
-        var count;
-        for (var name in this.exts) {
-            count++;
-            var ext = this.exts[name];
-            ext.dispose(function() {
-                count--;
-                if (count == 0)
-                    callback();
-            });
-        }
+        this.workspace.dispose(callback);
     };
 }).call(Ide.prototype);
 

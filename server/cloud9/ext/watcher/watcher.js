@@ -12,9 +12,9 @@ var IGNORE_TIMEOUT = 50,
     ignoredPaths = {},
     ignoreTimers = {};
  
-function cloud9WatcherPlugin(ide) {
-    var that = this;
-    
+var cloud9WatcherPlugin = module.exports = function(ide, workspace) {
+    Plugin.call(this, ide, workspace);
+
     ide.davServer.plugins['watcher'] = function (handler) {
         handler.addEventListener('beforeWriteContent', function (e, uri) {
             var path = handler.server.tree.basePath + '/' + uri;
@@ -25,7 +25,6 @@ function cloud9WatcherPlugin(ide) {
         });
     };
 
-    this.ide = ide;
     this.hooks = ["disconnect", "command"];
     this.name = "watcher";
     this.filenames = {};
@@ -98,12 +97,12 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                                 }
                             });
                         }
-                        that.ide.broadcast(JSON.stringify({
+                        that.send({
                             "type"      : "watcher",
                             "subtype"   : subtype,
                             "path"      : path,
                             "files"     : files
-                        }));
+                        });
                         //console.log("Sent " + subtype + " notification for file " + path);
                     });
                     this.filenames[path] = 0;
@@ -124,5 +123,3 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
     };
     
 }).call(cloud9WatcherPlugin.prototype);
-
-module.exports = cloud9WatcherPlugin;

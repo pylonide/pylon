@@ -12,7 +12,7 @@ define(function(require, exports, module) {
  var util = require("core/util");
  var canon = require("pilot/canon");
  var editors = require("ext/editors/editors");
- var console = require("ext/console/console");
+ var ideConsole = require("ext/console/console");
  var skin = require("text!ext/searchinfiles/skin.xml");
  var markup = require("text!ext/searchinfiles/searchinfiles.xml");
   
@@ -71,7 +71,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
             var name = _self.getSelectedTreeNode().getAttribute("name");
             if (name.length > 25)
                 name = name.substr(0, 22) + "...";
-            rbSFSelection.setAttribute("label", "Selection ( " + name + " )")
+            rbSFSelection.setAttribute("label", "Selection ( " + name + " )");
         };
         trSFResult.addEventListener("afterselect", function(e) {
             var path,
@@ -79,7 +79,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
                 node = trSFResult.selected,
                 line = 0,
                 text = "";
-            if (node.tagName == "d:maxreached")
+            if (node.tagName == "d:maxreached" || node.tagName == "d:querydetail")
                 return;
             if (node.tagName == "d:excerpt") {
                 path = node.parentNode.getAttribute("path");
@@ -92,6 +92,19 @@ return ext.register("ext/searchinfiles/searchinfiles", {
             }
             editors.showFile(root.getAttribute("path") + "/" + path, line, 0, text);
         });
+        
+        ideConsole.enable();
+        if (!this.$panel) {
+            this.$panel = tabConsole.add(this.pageTitle, this.pageID);
+            this.$panel.appendChild(trSFHbox);
+            tabConsole.set(this.pageID);
+            trSFResult.setProperty("visible", true);
+            this.$model = trSFResult.getModel();
+            // make sure the tab is shown when results come in
+            this.$model.addEventListener("afterload", function() {
+                tabConsole.set(_self.pageID);
+            });
+        }
     },
 
     getSelectedTreeNode: function() {
@@ -148,24 +161,30 @@ return ext.register("ext/searchinfiles/searchinfiles", {
     },
 
     getOptions: function() {
+        var matchCase = '0';
+        if (chkSFMatchCase.checked)
+            matchCase = '1';
+        var regex = '0';
+        if (chkSFRegEx.checked)
+            regex = '1';
         return {
             query: txtSFFind.value,
             pattern: ddSFPatterns.value,
-            casesensitive: chkSFMatchCase.checked,
-            regexp: chkSFRegEx.checked
+            casesensitive: matchCase,
+            regexp: regex
         };
     },
 
     execFind: function() {
+        var _self = this;
         winSearchInFiles.hide();
         // show the console (also used by the debugger):
-        console.enable();
+        ideConsole.enable();
         if (!this.$panel) {
             this.$panel = tabConsole.add(this.pageTitle, this.pageID);
             this.$panel.appendChild(trSFHbox);
             trSFResult.setProperty("visible", true);
             this.$model = trSFResult.getModel();
-            var _self = this;
             // make sure the tab is shown when results come in
             this.$model.addEventListener("afterload", function() {
                 tabConsole.set(_self.pageID);
@@ -173,26 +192,36 @@ return ext.register("ext/searchinfiles/searchinfiles", {
         }
         // show the tab
         tabConsole.set(this.pageID);
+        
         var node = this.$currentScope = grpSFScope.value == "projects"
             ? trFiles.xmlRoot.selectSingleNode("folder[1]")
             : this.getSelectedTreeNode();
-        trSFResult.setAttribute("empty-message", "No results found for '" + txtSFFind.value.trim() + "'");
 
-        this.$model.load("{davProject.report('" + node.getAttribute("path")
-            + "', 'codesearch', " + JSON.stringify(this.getOptions()) + ")}");
+        var findValueSanitized = txtSFFind.value.trim().replace(/([\[\]\{\}])/g, '\\$1');
+        _self.$model.clear();
+        trSFResult.setAttribute("empty-message", "Searching for '" + findValueSanitized + "'...");
+        davProject.report(node.getAttribute("path"), "codesearch", this.getOptions(), function(data, state, extra){
+            if (state !== apf.SUCCESS)
+                return;
+            if (data.getAttribute("count") == "0")
+                trSFResult.setAttribute("empty-message", "No results found for '" + findValueSanitized + "'");
+            else
+                _self.$model.load(data);
+        });
+
         ide.dispatchEvent("track_action", {type: "searchinfiles"});
     },
 
     replaceAll: function() {
         return;
-        if (!this.editor)
+        /*if (!this.editor)
             this.setEditor();
         if (!this.$editor)
             return;
         this.$crtSearch = null;
         var options = this.getOptions();
         this.$editor.replaceAll(this.txtReplace.getValue() || "", options);
-        ide.dispatchEvent("track_action", {type: "replace"});
+        ide.dispatchEvent("track_action", {type: "replace"});*/
     },
 
     enable : function(){

@@ -143,7 +143,7 @@ return ext = {
         }
     },
 
-    initExtension : function(oExtension, amlParent){
+    initExtension : function(oExtension, amlParent) {
         if (oExtension.inited)
             return;
 

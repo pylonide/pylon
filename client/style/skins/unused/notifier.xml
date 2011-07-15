@@ -66,7 +66,7 @@
             width            : auto;
             min-height       : 15px;
             padding          : 0 10px 0 12px;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             font-size        : 11px;
             text-align       : left;
             color            : white;
@@ -197,7 +197,7 @@
             border-width        : 0 4px 0 4px;
             min-height          : 15px;
             padding             : 0 10px 0 12px;
-            font-family         : Tahoma;
+            font-family         : Tahoma, Arial;
             font-size           : 11px;
             text-align          : left;
             color               : #252525;
@@ -318,7 +318,7 @@
             width            : auto;
             min-height       : 15px;
             padding          : 0 10px 0 12px;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             font-size        : 11px;
             text-align       : left;
             color            : white;

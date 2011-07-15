@@ -6,7 +6,7 @@
             background-color: white;
             cursor: default;
 
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 11px;
 
             padding: 0 1px 0 0;
@@ -197,7 +197,7 @@
         }
 
         .propedit #txt_rename{
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             word-break: keep-all;
             overflow: hidden;

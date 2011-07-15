@@ -45,8 +45,10 @@ return ext.register("ext/openfiles/openfiles", {
 
         ide.addEventListener("afteropenfile", function(e){
             var node = e.doc.getNode();
-            if (!model.queryNode("//node()[@path='" + node.getAttribute("path") + "']"))
-                model.appendXml(apf.getCleanCopy(node));
+            if (node) {
+                if (!model.queryNode("//node()[@path='" + node.getAttribute("path") + "']"))
+                    model.appendXml(apf.getCleanCopy(node));
+            }
         });
 
         ide.addEventListener("closefile", function(e){
@@ -143,7 +145,7 @@ return ext.register("ext/openfiles/openfiles", {
             if(navbar.current && (navbar.current != this))
                 navbar.current.disable(false);
         }
-
+        splitterPanelLeft.show();
         navbar.current = this;
     },
 
@@ -152,6 +154,8 @@ return ext.register("ext/openfiles/openfiles", {
             winOpenFiles.hide();
         if (!noButton)
             this.button.setValue(false);
+
+        splitterPanelLeft.hide();
     },
 
     destroy : function(){

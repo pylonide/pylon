@@ -281,6 +281,8 @@ return ext.register("ext/dockpanel/dockpanel", {
 
         if (properties && properties.forceShow)
             section.tab.set(amlPage);
+            
+        return dockButtonID;
     },
     
     unregisterPage : function(section, ident){

@@ -123,14 +123,15 @@ User.VISITOR_PERMISSIONS = {
     this.error = function(description, code, message, client) {
         //console.log("Socket error: " + description, new Error().stack);
         var sid = (message || {}).sid || -1;
-        var error = JSON.stringify({
+        var error = {
             "type": "error",
             "sid": sid,
             "code": code,
             "message": description
-        });
+        };
+
         if (client)
-            client.send(error);
+            client.send(JSON.stringify(error));
         else
             this.broadcast(error);
     };

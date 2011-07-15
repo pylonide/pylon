@@ -45,7 +45,33 @@ return ext.register("ext/newresource/newresource", {
     },
 
     newfile: function() {
-        fs.createFile();
+        fs.createFile(null, true);
+        return false;
+        
+        var node = apf.getXml('<file path="/giannis/cloud9/workspace" type="file" size="" name="Untitled.txt" contenttype="text/plain; charset=utf-8" modifieddate="" creationdate="" lockable="false" hidden="false" executable="false"></file>');
+
+        if (this.webdav) {
+            var filename = "Untitled.txt",
+                prefix   = filename,
+                _self = this,
+                path  = node.getAttribute("path"),
+                index = 0;
+            
+            var test = function(exists) {
+                if (exists) {
+                    filename = prefix + "." + index++;
+                    _self.exists(path + "/" + filename, test);    
+                } else {
+                    node.setAttribute('name', filename);
+                    console.log(node)
+//                    ide.dispatchEvent("openfile", {doc: ide.createDocument(node), type:'newfile'});
+                }
+            };
+            
+            filename = prefix;
+            this.exists(path + "/" + filename, test);
+        }
+        
         return false;
     },
 

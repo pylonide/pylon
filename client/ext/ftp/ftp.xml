@@ -1,0 +1,84 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:hbox id="ftpConsoleHbox" anchors="0 0 0 0">
+        <a:text id="txtFtpConsole"
+          margin     = "3 0 0 0"
+          flex       = "1"
+          scrolldown = "true"
+          textselect = "true"
+          focussable = "true"
+          class      = "console_text" />
+        <a:scrollbar
+          for       = "txtFtpConsole"
+          margin    = "0"
+          skin      = "console_scrollbar"
+          width     = "17" />
+    </a:hbox>
+    
+    <a:model id="mdlFilePermissions">
+        <data>
+            <group type="owner" caption="Owner">
+                <permission type="read" caption="Read" value="4" checked="0" />
+                <permission type="write" caption="Write" value="2" checked="0" />
+                <permission type="execute" caption="Execute" value="1" checked="0" />
+            </group>
+            <group type="group" caption="Group">
+                <permission type="read" caption="Read" value="4" checked="0" />
+                <permission type="write" caption="Write" value="2" checked="0" />
+                <permission type="execute" caption="Execute" value="1" checked="0" />
+            </group>
+            <group type="public" caption="Public">
+                <permission type="read" caption="Read" value="4" checked="0" />
+                <permission type="write" caption="Write" value="2" checked="0" />
+                <permission type="execute" caption="Execute" value="1" checked="0" />
+            </group>
+            <octal value="" />
+            <rights value="" />
+        </data>
+    </a:model>
+    <a:window id="winFileProperties"
+      title="File Properties"
+      buttons="close" 
+      modal="false" 
+      center="true" 
+      width="350" 
+      kbclose="true">
+      <div class="fileprop_row">
+          <div class="fileprop_header">Kind</div><div class="fileprop_value"><span>Plain text</span></div>
+      </div>
+      <div class="fileprop_row">
+          <div class="fileprop_header">Size</div><div class="fileprop_value"><span>27 B (27 bytes)</span></div>
+      </div>
+      <div class="fileprop_row">
+          <div class="fileprop_header">Where</div><div class="fileprop_value"><span>/</span></div>
+      </div>
+      <div class="fileprop_row">
+          <div class="fileprop_header">Created</div><div class="fileprop_value"><span>n/a</span></div>
+      </div>
+      <div class="fileprop_row">
+          <div class="fileprop_header">Modified</div><div class="fileprop_value"><span>Tue, Jun 21, 2011 9:03 AM</span></div>
+      </div>
+        <div edge="10" padding="5" model="mdlFilePermissions">
+        <?lm
+            each([group]) {
+                <div class="fileprop_row"><div class="fileprop_header">[@caption]</div><div class="fileprop_value"><a:hbox>{
+                each([permission]) {
+                    <a:checkbox checked="{[@checked] == '1'}" onafterchange="require('ext/ftp/ftp').updatePermissionCheckbox([../@type], [@type], this.checked)">[@caption]</a:checkbox>
+                }}</a:hbox></div></div>
+            }
+        ?>
+        </div>
+        <div class="fileprop_row">
+            <div class="fileprop_header">Octal</div>
+            <div class="fileprop_value">
+                <a:hbox pack="start" align="start">
+                    <a:textbox value="[mdlFilePermissions::octal/@value]" width="35" maxlength="3" onkeyup="require('ext/ftp/ftp').updatePermissionTextbox(this.getValue())"/>
+                    <a:filler />
+                    <a:label>[mdlFilePermissions::rights/@value]</a:label>
+                </a:hbox>
+            </div>
+        </div>
+        <a:hbox>
+            
+        </a:hbox>
+    </a:window>
+</a:application>

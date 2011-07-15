@@ -9,7 +9,7 @@
         }
 
         .cbcontainer span {
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 11px;
             cursor      : default;
             padding     : 1px 3px 2px 3px;
