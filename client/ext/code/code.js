@@ -33,8 +33,9 @@ apf.actiontracker.actions.aceupdate = function(undoObj, undo){
 
 var SupportedModes = {
     "application/javascript": "javascript",
-    "application/json": "javascript",
+    "application/json": "json",
     "text/css": "css",
+    "text/x-scss": "scss",
     "text/html": "html",
     "application/xhtml+xml": "html",
     "application/xml": "xml",
@@ -53,13 +54,17 @@ var SupportedModes = {
     "text/x-java-source": "java",
     "text/x-csharp": "csharp",
     "text/x-script.coffeescript": "coffee",
-    "text/x-web-textile": "textile"
+    "text/x-web-textile": "textile",
+    "text/x-script.ocaml": "ocaml",
+    "text/x-script.clojure": "clojure"
 };
 
 var contentTypes = {
     "js": "application/javascript",
     "json": "application/json",
     "css": "text/css",
+    "scss": "text/x-scss",
+    "sass": "text/x-sass",
     
     "xml": "application/xml",
     "rdf": "application/rdf+xml",
@@ -87,7 +92,11 @@ var contentTypes = {
     "cpp": "text/x-c",
     "cxx": "text/x-c",
     "h": "text/x-c",
-    "hh": "text/x-c"
+    "hh": "text/x-c",
+    
+    "clj": "text/x-script.clojure",
+    "ml": "text/x-script.ocaml",
+    "mli": "text/x-script.ocaml"
 };
 
 return ext.register("ext/code/code", {

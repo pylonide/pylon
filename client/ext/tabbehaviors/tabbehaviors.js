@@ -208,7 +208,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
     tab0: function() {return this.showTab(10);},
 
     showTab: function(nr) {
-        var item = this.nodes[nr + this.menuOffset];
+        var item = this.nodes[(nr - 1) + this.menuOffset];
         if (item && item.relPage) {
             tabEditors.set(item.relPage);
             return false;

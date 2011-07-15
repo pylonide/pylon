@@ -39,11 +39,15 @@ return ext.register("ext/undo/undo", {
     },
 
     undo: function() {
-        tabEditors.getPage().$at.undo();
+        var _tabPage;
+        if(_tabPage = tabEditors.getPage())
+            _tabPage.$at.undo();
     },
 
     redo: function() {
-        tabEditors.getPage().$at.redo();
+        var _tabPage;
+        if(_tabPage = tabEditors.getPage())
+            _tabPage.$at.redo();
     },
 
     enable : function(){

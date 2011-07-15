@@ -10,7 +10,7 @@
             padding          : 0;
             background-image : url(images/grid.png);
             position         : absolute;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             font-size        : 8pt;
             text-align       : center;
             border-width     : 0 1px 1px 0;
@@ -75,7 +75,7 @@
         .flowchart #txt_rename {
             border           : 1px solid silver;
             padding          : 1px;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             font-size        : 11px;
             color            : black;
             word-break       : keep-all;
@@ -112,7 +112,7 @@
             display     : block;
             position    : absolute;
             font-size   : 11px;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             margin      : 0;
             padding     : 0;
             text-align  : left;

@@ -5,23 +5,107 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/tree/tree",
-    ["core/ide", "core/ext",
+    ["core/ide", "core/ext", "core/util",
      "ext/filesystem/filesystem", "ext/settings/settings", 
      "ext/panels/panels", "text!ext/tree/tree.xml"],
-    function(ide, ext, fs, settings, panels, markup) {
+    function(ide, ext, util, fs, settings, panels, markup) {
 
 return ext.register("ext/tree/tree", {
-    name            : "Project Files",
-    dev             : "Ajax.org",
-    alone           : true,
-    type            : ext.GENERAL,
-    markup          : markup,
-    visible         : true,
-    currentSettings : [],
-    expandedList    : {},
-    loading         : false,
-    changed         : false,
-    
+    name             : "Project Files",
+    dev              : "Ajax.org",
+    alone            : true,
+    type             : ext.GENERAL,
+    markup           : markup,
+    visible          : true,
+    currentSettings  : [],
+    expandedList     : {},
+    loading          : false,
+    changed          : false,
+    sbIsFaded        : false,
+    ignoreSBMouseOut : false,
+    pendingSBFadeOut : false,
+    animControl      : {},
+
+    onSBMouseOver : function() {
+        if (this.ignoreSBMouseOut)
+            this.pendingSBFadeOut = false;
+        this.showScrollbar();
+    },
+
+    onSBMouseOut : function() {
+        if (this.ignoreSBMouseOut)
+            this.pendingSBFadeOut = true;
+
+        this.hideScrollbar();
+    },
+
+    onSBMouseDown : function() {
+        this.ignoreSBMouseOut = true;
+    },
+
+    onSBMouseUp : function() {
+        this.ignoreSBMouseOut = false;
+        if (this.pendingSBFadeOut) {
+            this.pendingSBFadeOut = false;
+            this.hideScrollbar();
+        }
+    },
+
+    onTreeOver : function() {
+        if (this.ignoreSBMouseOut)
+            this.pendingSBFadeOut = false;
+        this.showScrollbar();
+    },
+
+    onTreeOut : function() {
+        if (this.ignoreSBMouseOut)
+            this.pendingSBFadeOut = true;
+        this.hideScrollbar();
+    },
+
+    showScrollbar : function() {
+        if (this.sbTimer)
+            clearTimeout(this.sbTimer);
+
+        if (this.sbIsFaded) {
+            if (this.animControl.state != apf.tween.STOPPED && this.animControl.stop)
+                this.animControl.stop();
+
+            apf.tween.single(sbTrFiles, {
+                type     : "fade",
+                anim     : apf.tween.EASEIN,
+                from     : 0,
+                to       : 1,
+                steps    : 20,
+                control  : this.animControl
+            });
+
+            this.sbIsFaded = false;
+        }
+    },
+
+    hideScrollbar : function() {
+        if (this.ignoreSBMouseOut)
+            return;
+
+        if (this.sbIsFaded === false) {
+            var _self = this;
+            this.sbTimer = setTimeout(function() {
+                if (_self.animControl.state != apf.tween.STOPPED && _self.animControl.stop)
+                    _self.animControl.stop();
+                apf.tween.single(sbTrFiles, {
+                    type     : "fade",
+                    anim     : apf.tween.EASEOUT,
+                    from     : 1,
+                    to       : 0,
+                    steps    : 20,
+                    control  : _self.animControl
+                });
+                _self.sbIsFaded = true;
+            }, _self.animControl.state != apf.tween.RUNNING ? 20 : 200);
+        }
+    },
+
     //@todo deprecated?
     getSelectedPath: function() {
         return trFiles.selected.getAttribute("path");
@@ -68,7 +152,7 @@ return ext.register("ext/tree/tree", {
         
         colLeft.appendChild(winFilesViewer);
         
-        mnuView.appendChild(new apf.divider()),
+        mnuView.appendChild(new apf.divider());
         mnuView.appendChild(new apf.item({
             id      : "mnuitemHiddenFiles",
             type    : "check",
@@ -80,9 +164,9 @@ return ext.register("ext/tree/tree", {
                 require("ext/settings/settings").save();
             }
         }));
-        davProject.setAttribute("showhidden", "[{require('ext/settings/settings').model}::auto/tree/@showhidden]")
+        davProject.setAttribute("showhidden", "[{require('ext/settings/settings').model}::auto/tree/@showhidden]");
         
-        mnuView.appendChild(new apf.divider()),
+        mnuView.appendChild(new apf.divider());
         
         trFiles.setAttribute("model", fs.model);
         
@@ -113,18 +197,42 @@ return ext.register("ext/tree/tree", {
         trFiles.addEventListener("beforerename", function(e){
             if (!ide.onLine) return false;
             
-            setTimeout(function(){
+            if(trFiles.$model.data.firstChild == trFiles.selected)
+                return false;
+            
+            // check for a path with the same name, which is not allowed to rename to:
+            var path = e.args[0].getAttribute("path"),
+                newpath = path.replace(/^(.*\/)[^\/]+$/, "$1" + e.args[1]);
+            
+            var exists, nodes = trFiles.getModel().queryNodes(".//node()[@path=\""+ newpath +"\"]");
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i] == e.args[0])
+                    continue;
+                exists = true;
+                break;
+            }
+            if (exists) {
+                util.alert("Error", "Unable to move", "Couldn't move to this destination because there's already a node with the same name");
+                trFiles.getActionTracker().undo();
+                return false;
+            }
+            
+            //setTimeout(function(){
                 fs.beforeRename(e.args[0], e.args[1]);
-            });
+            //});
         });
         
         trFiles.addEventListener("beforemove", function(e){
-            if (!ide.onLine) return false;
+            if (!ide.onLine)
+                return false;
+            // if (ide.dispatchEvent("beforemove") === false)
+            //               return false;
             
             setTimeout(function(){
                 var changes = e.args;
                 for (var i = 0; i < changes.length; i++) {
-                    fs.beforeMove(changes[i].args[0], changes[i].args[1]);
+                    // If any file exists in its future destination, cancel the event.
+                    fs.beforeMove(changes[i].args[0], changes[i].args[1], trFiles);
                 }
             });
         });
@@ -185,6 +293,10 @@ return ext.register("ext/tree/tree", {
                             });
                             
                             trFiles.removeEventListener("load", arguments.callee);
+                            
+                            if(trFiles.$model.queryNodes('/data//node()').length <= 1) {
+                                trFiles.expandAll();
+                            }
                         });
                     }
                     else {
@@ -192,8 +304,13 @@ return ext.register("ext/tree/tree", {
                             _self.loading = false;
                         });
                     }
-                }catch(e){
+                }catch(err){
                     model.setQueryValue("auto/tree/text()", "");
+                }
+            }
+            else {
+                if(trFiles.$model.queryNodes('/data//node()').length <= 1) {
+                    trFiles.expandAll();
                 }
             }
         });
@@ -211,7 +328,7 @@ return ext.register("ext/tree/tree", {
                     path = apf.xmlToXpath(_self.expandedList[id], trFiles.xmlRoot);
                     lut[path] = true;
                 }
-                catch(e){
+                catch(err){
                     //Node is deleted
                     delete _self.expandedList[id];
                 }
@@ -339,7 +456,8 @@ return ext.register("ext/tree/tree", {
             if(navbar.current && (navbar.current != this))
                 navbar.current.disable(false);
         }
-        
+
+        splitterPanelLeft.show();
         navbar.current = this;
     },
 
@@ -348,6 +466,8 @@ return ext.register("ext/tree/tree", {
             winFilesViewer.hide();
         if (!noButton)
             this.button.setValue(false);
+
+        splitterPanelLeft.hide();
     },
 
     destroy : function(){

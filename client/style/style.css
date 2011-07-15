@@ -4,7 +4,7 @@ HTML {
 }
 BODY {
     background-color : #fefefe;
-    font-family      : "Trebuchet MS";
+    font-family      : "Arial";
     color            : #222222;
     margin           : 0;
     padding          : 0 ;
@@ -38,7 +38,7 @@ BODY {
 .alertMsg {
     font-size   : 14px;
     color       : #333333;
-    font-family : Trebuchet MS;
+    font-family : Arial;
     line-height : 16px;
 }
 
@@ -82,4 +82,96 @@ BODY {
     -webkit-user-select: none;
     -o-user-select: none;
     user-select: none;
+}
+/**
+ * SERVICE SIGNIN BUTTONS
+ */
+ 
+.signin_options {
+    margin: 15px 16px 0;
+    text-align: right;
+}
+
+.github-signin {
+    width: 26px;
+    height: 24px;
+    background:url(images/signin_github.png) no-repeat 0 0;
+
+    display: inline-block;
+    float: right;
+    height: 24px;
+    margin-left: 6px;
+    margin-top: -5px;
+    width: 26px;
+}
+
+.github-signin.btn-over {
+    background-position:0 -24px;
+}
+
+.bitbucket-signin {
+    width: 26px;
+    height: 24px;
+    background:url(images/signin_bitbucket.png) no-repeat 0 0;
+
+    display: inline-block;
+    float: right;
+    height: 24px;
+    margin-left: 6px;
+    margin-top: -5px;
+    width: 26px;
+}
+
+.bitbucket-signin.btn-over {
+    background-position:0 -24px;
+}
+.facebook-signin {
+    width: 26px;
+    height: 24px;
+    background:url(images/signin_facebook.png) no-repeat 0 0;
+    
+    display: inline-block;
+    float: right;
+    height: 24px;
+    margin-left: 6px;
+    margin-top: -5px;
+    width: 26px;
+}
+
+.facebook-signin.btn-over {
+    background-position:0 -24px;
+}
+
+.google-signin {
+    width: 26px;
+    height: 24px;
+    background:url(images/signin_google.png) no-repeat 0 0;
+    
+    display: inline-block;
+    float: right;
+    height: 24px;
+    margin-left: 6px;
+    margin-top: -5px;
+    width: 26px;
+}
+
+.google-signin.btn-over {
+    background-position:0 -24px;
+}
+
+.twitter-signin {
+    width: 26px;
+    height: 24px;
+    background:url(images/signin_twitter.png) no-repeat 0 0;
+    
+    display: inline-block;
+    float: right;
+    height: 24px;
+    margin-left: 6px;
+    margin-top: -5px;
+    width: 26px;
+}
+
+.twitter-signin.btn-over {
+    background-position:0 -24px;
 }
