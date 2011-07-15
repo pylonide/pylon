@@ -1,5 +1,5 @@
 /**
- * Debugger Module for the Cloud9 IDE
+ * Python Runtime Module for the Cloud9 IDE
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -13,7 +13,7 @@ var Path             = require("path"),
 var PythonRuntimePlugin = module.exports = function(ide) {
     this.ide = ide;
     this.hooks = ["command"];
-    this.name = "debugger";
+    this.name = "python-runtime";
 };
 
 sys.inherits(PythonRuntimePlugin, Plugin);
@@ -98,7 +98,7 @@ sys.inherits(PythonRuntimePlugin, Plugin);
                 env[key] = process.env[key];
         }
 
-        console.log("Executing python "+proc+" "+args.join(" ")+" "+cwd); 
+        console.log("Executing python "+proc+" "+args.join(" ")+" "+cwd);
 
         var child = _self.child = Spawn(proc, args, {cwd: cwd, env: env});
         _self.debugClient = args.join(" ").search(/(?:^|\b)\-\-debug\b/) != -1;

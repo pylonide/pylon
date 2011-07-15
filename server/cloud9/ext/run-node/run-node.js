@@ -1,5 +1,5 @@
 /**
- * Debugger Module for the Cloud9 IDE
+ * Node Runtime Module for the Cloud9 IDE
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -12,18 +12,19 @@ var Path             = require("path"),
     sys              = require("sys"),
     netutil          = require("cloud9/netutil");
 
-var DebuggerPlugin = module.exports = function(ide) {
+var NodeRuntimePlugin = module.exports = function(ide, workspace) {
     this.ide = ide;
+    this.workspace = workspace;
     this.hooks = ["command"];
-    this.name = "debugger";
+    this.name = "node-runtime";
 };
 
-sys.inherits(DebuggerPlugin, Plugin);
+sys.inherits(NodeRuntimePlugin, Plugin);
 
 (function() {
     this.init = function() {
         var _self = this;
-        this.ide.getExt("state").on("statechange", function(state) {
+        this.workspace.getExt("state").on("statechange", function(state) {
             state.debugClient    = !!_self.debugClient;
             state.processRunning = !!_self.child;
         });
@@ -153,7 +154,7 @@ sys.inherits(DebuggerPlugin, Plugin);
 
         var child = _self.child = Spawn(proc, args, {cwd: cwd, env: env});
         _self.debugClient = args.join(" ").search(/(?:^|\b)\-\-debug\b/) != -1;
-        _self.ide.getExt("state").publishState();
+        _self.workspace.getExt("state").publishState();
         _self.ide.broadcast(JSON.stringify({"type": "node-start"}), _self.name);
 
         child.stdout.on("data", sender("stdout"));
@@ -217,4 +218,4 @@ sys.inherits(DebuggerPlugin, Plugin);
         callback();
     };
     
-}).call(DebuggerPlugin.prototype);
+}).call(NodeRuntimePlugin.prototype);

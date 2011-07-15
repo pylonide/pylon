@@ -67,7 +67,7 @@
                 <a:textbox id="txtRunCfgName" flex="1" value="[@path]" disabled="{!lstRunCfg.selected}"/>
                 <a:button visible="false" icon="folder.png" disabled="true" tooltip="Browse ..."></a:button>
             </a:hbox>
-            <a:divider />
+            <!--a:divider />
             <a:hbox align="center" margin="5 10" padding="10">
                 <a:model id="mdlRunnerSelector">
                     <data>
@@ -77,16 +77,16 @@
                 </a:model>
                 <a:label width="130" textalign="right">Runner</a:label>
                 <a:dropdown id="ddRunnerSelector"
-					model="mdlRunnerSelector"
+                    model="mdlRunnerSelector"
                     flex="1"
                     disabled="{!lstRunCfg.selected}"
                     selected="{lstRunCfg.selected.attributes['extension'].value}">
                     <a:each match="[element]">
                         <a:caption match="[@caption]" />
-						<a:value match="[@value]" />
+                        <a:value match="[@value]" />
                     </a:each>
                 </a:dropdown>
-            </a:hbox>
+            </a:hbox-->
             <a:hbox align="center" margin="5 10" padding="10">
                 <a:label width="130" textalign="right">Command line arguments</a:label>
                 <a:textbox id="txtRunCfgName" flex="1" value="[@args]" disabled="{!lstRunCfg.selected}"/>
