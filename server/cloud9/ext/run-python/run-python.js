@@ -10,8 +10,9 @@ var Path             = require("path"),
     sys              = require("sys"),
     netutil          = require("cloud9/netutil");
 
-var PythonRuntimePlugin = module.exports = function(ide) {
+var PythonRuntimePlugin = module.exports = function(ide, workspace) {
     this.ide = ide;
+    this.workspace = workspace;
     this.hooks = ["command"];
     this.name = "python-runtime";
 };
@@ -21,7 +22,7 @@ sys.inherits(PythonRuntimePlugin, Plugin);
 (function() {
     this.init = function() {
         var _self = this;
-        this.ide.getExt("state").on("statechange", function(state) {
+        this.workspace.getExt("state").on("statechange", function(state) {
             state.processRunning = !!_self.child;
         });
     };
@@ -102,7 +103,7 @@ sys.inherits(PythonRuntimePlugin, Plugin);
 
         var child = _self.child = Spawn(proc, args, {cwd: cwd, env: env});
         _self.debugClient = args.join(" ").search(/(?:^|\b)\-\-debug\b/) != -1;
-        _self.ide.getExt("state").publishState();
+        _self.workspace.getExt("state").publishState();
         _self.ide.broadcast(JSON.stringify({"type": "node-start"}), _self.name);
 
         child.stdout.on("data", sender("stdout"));
