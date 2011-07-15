@@ -1,41 +1,58 @@
 /**
- * @copyright 2010, Ajax.org Services B.V.
+ * @copyright 2011, Ajax.org Services B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var Spawn = require("child_process").spawn;
-var sys = require("sys");
 
-function cloud9Plugin() {}
+var events = require("events");
+var Spawn  = require("child_process").spawn;
+var sys    = require("sys");
 
-sys.inherits(cloud9Plugin, process.EventEmitter);
+var Plugin  = function(ide, workspace) {
+    this.ide = ide;
+    this.workspace = workspace;
+};
+
+sys.inherits(Plugin, events.EventEmitter);
 
 (function() {
     this.getHooks = function() {
         return this.hooks || [];
     };
 
-    this.extend = function(dest, src) {
-        for (var prop in src) {
-            dest[prop] = src[prop];
-        }
-        return dest;
-    };
-
     this.sendResult = function(sid, type, msg) {
-        //console.log("sending result to client: ", type, JSON.stringify(msg));
-        this.ide.broadcast(JSON.stringify({
+        var error = {
             type   : "result",
             subtype: type || "error",
             sid    : sid  || 0,
             body   : msg  || "Access denied."
-        }), this.name);
+        };
+
+        // We check for the ide variable in order to know if we are in a cloud9
+        // plugin or in a infra plugin. Pretty nasty, but it will hopefully go
+        // away soon.
+        if (this.ide)
+            this.ide.broadcast(JSON.stringify(error), this.name);
+        else
+            this.send(error);
+    };
+
+    this.error = function(description, code, message, client) {
+        return this.workspace.error(description, code, message, client);
+    };
+
+    this.send = function(msg, replyTo, scope) {
+        this.workspace.send(msg, replyTo, scope);
     };
 
     this.spawnCommand = function(cmd, args, cwd, onerror, ondata, onexit) {
-        var child = this.activePs = Spawn(cmd, args || [], {cwd: cwd || this.server.workspaceDir}),
-            out   = "",
-            err   = "",
-            _self = this;
+        var child = this.activePs = Spawn(cmd, args || [], {
+            cwd: cwd || this.server.workspaceDir
+        });
+
+        var out   = "";
+        var err   = "";
+        var _self = this;
+
         child.stdout.on("data", sender("stdout"));
         child.stderr.on("data", sender("stderr"));
 
@@ -45,8 +62,7 @@ sys.inherits(cloud9Plugin, process.EventEmitter);
                 if (stream == "stderr") {
                     err += s;
                     onerror && onerror(s);
-                }
-                else {
+                } else {
                     out += s;
                     ondata && ondata(s);
                 }
@@ -60,11 +76,11 @@ sys.inherits(cloud9Plugin, process.EventEmitter);
 
         return child;
     };
-    
+
     this.dispose = function(callback) {
         callback();
     };
-    
-}).call(cloud9Plugin.prototype);
 
-module.exports = cloud9Plugin;
+}).call(Plugin.prototype);
+
+module.exports = Plugin;

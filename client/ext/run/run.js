@@ -28,24 +28,19 @@ return ext.register("ext/run/run", {
         "stepover" : {hint: "step over the current expression on the execution stack"},
         "stepout"  : {hint: "step out of the current function scope"}
     },
-    hotitems: {},
 
     nodes : [],
 
     init : function(amlNode){
         while(tbRun.childNodes.length) {
             var button = tbRun.firstChild;
-            ide.barTools.appendChild(button);
             
-            if (button.nodeType == 1)
+            ide.barTools.appendChild(button);
+            if (button.nodeType == 1) {
                 this.nodes.push(button);
+            }
         }
         
-        this.hotitems["resume"]   = [btnResume];
-        this.hotitems["stepinto"] = [btnStepInto];
-        this.hotitems["stepover"] = [btnStepOver];
-        this.hotitems["stepout"]  = [btnStepOut];
-
         var _self = this;
         mdlRunConfigurations.addEventListener("afterload", function(e) {
             _self.$updateMenu();

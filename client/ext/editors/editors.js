@@ -225,8 +225,10 @@ return ext.register("ext/editors/editors", {
                 page.$doc    = doc;
                 page.$editor = editor;
                 page.setAttribute("tooltip", "[@path]");
-                page.setAttribute("class", "{(parseInt([@saving]) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : '')}");
-                
+                page.setAttribute("class",
+                    "{parseInt([@saving]) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
+                    ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"
+                );
                 page.setAttribute("model", page.$model = model);
                 page.$model.load(xmlNode);
             });
@@ -292,10 +294,11 @@ return ext.register("ext/editors/editors", {
         
         mdl.setQueryValue("@changed", 0);
         page.$doc.dispatchEvent("close");
-
-        mdl.removeXml("data");
-        ide.dispatchEvent("closefile", {xmlNode: mdl.data});
-
+        
+        if(mdl.data) {
+            mdl.removeXml("data");
+            ide.dispatchEvent("closefile", {xmlNode: mdl.data});
+        }
         //mdl.unshare();
         mdl.destroy();
 
@@ -375,12 +378,12 @@ return ext.register("ext/editors/editors", {
     hook : function(){
         panels.register(this);
         
-        window.onpopstate  = function(e){
+        window.onpopstate = function(e){
             var page = "/workspace" + e.state;
             if (tabEditors.activepage != page && tabEditors.getPage(page))
                 tabEditors.set(page);
-        }
-        
+        };
+
         apf.addEventListener("hashchange", function(e){
             var page = "/workspace" + e.page;
             if (tabEditors.activepage != page && tabEditors.getPage(page))
@@ -415,7 +418,7 @@ return ext.register("ext/editors/editors", {
 
         /**** Support for state preservation ****/
 
-        this.$settings = {}, _self = this;
+        this.$settings = {};
         ide.addEventListener("loadsettings", function(e){
             function checkExpand(path, doc) {
                 var parent_path = apf.getDirname(path).replace(/\/$/, "");
@@ -495,14 +498,14 @@ return ext.register("ext/editors/editors", {
             .attr("contenttype", util.getContentType(name))
             .attr("path", path)
             .node();
-    
+
         this.jump(node, row, column, text);
     },
-    
+
     jump : function(fileEl, row, column, text, doc, page) {
         var path    = fileEl.getAttribute("path");
         var hasData = page && tabEditors.getPage(path).$doc ? true : false;
-    
+
         if (row !== undefined) {
             var jumpTo = function(){
                 setTimeout(function() {
@@ -512,8 +515,8 @@ return ext.register("ext/editors/editors", {
                         ceEditor.$editor.find(text);
                     ceEditor.focus();
                 }, 100);
-            }
-            
+            };
+
             if (hasData) {
                 tabEditors.set(path);
                 jumpTo();

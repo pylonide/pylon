@@ -8,7 +8,7 @@
             margin      : 0;
             padding     : 2px 18px 0 0;
             color       : #333;
-            font-family : Tahoma;
+            font-family : Tahoma, Arial;
             font-size   : 11px;
         }
 
@@ -102,7 +102,7 @@
             background-color : #ffffff;
             z-index          : 1000;
             color            : #0d5381;
-            font-family      : Tahoma;
+            font-family      : Tahoma, Arial;
             font-size        : 11px;
             display          : none;
             overflow         : auto;
@@ -202,7 +202,7 @@
         .calSlider .daysofweek .dayofweek {
             border              : 1px solid #c1c1c1;
             float               : left;
-            font-family         : Tahoma;
+            font-family         : Tahoma, Arial;
             font-size           : 11px;
             color               : #333;
             display             : block;

@@ -151,7 +151,7 @@
                 height           : 13px;
                 font-size        : 12px;
                 color            : #0471cf;
-                font-family      : Trebuchet MS;
+                font-family      : Arial;
                 outline          : none;
                 background-color : transparent;
                 width: 100%;

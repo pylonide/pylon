@@ -82,21 +82,23 @@ return ext.register("ext/searchreplace/searchreplace", {
             this.setupDialog(isReplace);
 
             var editor = editors.currentEditor;
-            if (editor.ceEditor)
-                var value = editor.ceEditor.getLastSearchOptions().needle;
-    
-            if (!value) {
-                var sel   = editor.getSelection();
-                var doc   = editor.getDocument();
-                var range = sel.getRange();
-                var value = doc.getTextRange(range);
-            }
-            if (value)
-                this.txtFind.setValue(value);
+            if (editor) {
+                if (editor.ceEditor)
+                    var value = editor.ceEditor.getLastSearchOptions().needle;
 
-            winSearchReplace.setAttribute("title", isReplace
-                    ? "Search & Replace" : "Search");            
-            winSearchReplace.show();
+                if (!value) {
+                    var sel   = editor.getSelection();
+                    var doc   = editor.getDocument();
+                    var range = sel.getRange();
+                    var value = doc.getTextRange(range);
+                }
+                if (value)
+                    this.txtFind.setValue(value);
+
+                winSearchReplace.setAttribute("title", isReplace
+                        ? "Search & Replace" : "Search");            
+                winSearchReplace.show();
+            }
         }
         else
             winSearchReplace.hide();

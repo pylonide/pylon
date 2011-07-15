@@ -7,7 +7,7 @@
             cursor: default;
             overflow : hidden;
 
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
 
             padding: 19px 0 0 0;
@@ -406,7 +406,7 @@
             background-color: white;
             cursor: default;
             overflow : hidden;
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
             padding: 0;
             color : #333;
@@ -504,7 +504,7 @@
             background-color: white;
             cursor: default;
 
-            font-family: Tahoma;
+            font-family: Tahoma, Arial;
             font-size: 8pt;
 
             padding: 21px 0 0 0;

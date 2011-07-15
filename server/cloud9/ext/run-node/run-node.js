@@ -1,5 +1,5 @@
 /**
- * Debugger Module for the Cloud9 IDE
+ * Node Runtime Module for the Cloud9 IDE
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -12,18 +12,19 @@ var Path             = require("path"),
     sys              = require("sys"),
     netutil          = require("cloud9/netutil");
 
-var DebuggerPlugin = module.exports = function(ide) {
+var NodeRuntimePlugin = module.exports = function(ide, workspace) {
     this.ide = ide;
+    this.workspace = workspace;
     this.hooks = ["command"];
-    this.name = "debugger";
+    this.name = "node-runtime";
 };
 
-sys.inherits(DebuggerPlugin, Plugin);
+sys.inherits(NodeRuntimePlugin, Plugin);
 
 (function() {
     this.init = function() {
         var _self = this;
-        this.ide.getExt("state").on("statechange", function(state) {
+        this.workspace.getExt("state").on("statechange", function(state) {
             state.debugClient    = !!_self.debugClient;
             state.processRunning = !!_self.child;
         });
@@ -50,7 +51,7 @@ sys.inherits(DebuggerPlugin, Plugin);
                     message.preArgs = ["--debug=" + _self.NODE_DEBUG_PORT];
                     message.debug = true;
                     _self.$run(message, client);
-
+    
                     setTimeout(function() {
                         _self.$startDebug();
                     }, 100);
@@ -59,11 +60,11 @@ sys.inherits(DebuggerPlugin, Plugin);
             case "rundebugbrk":
                 netutil.findFreePort(this.NODE_DEBUG_PORT, "localhost", function(port) {
                     _self.NODE_DEBUG_PORT = port;
-
+                    
                     message.preArgs = ["--debug-brk=" + _self.NODE_DEBUG_PORT];
                     message.debug = true;
                     _self.$run(message, client);
-
+    
                     setTimeout(function() {
                         _self.$startDebug();
                     }, 100);
@@ -124,11 +125,11 @@ sys.inherits(DebuggerPlugin, Plugin);
             return _self.ide.error("Child process already running!", 1, message);
 
         var file = _self.ide.workspaceDir + "/" + message.file;
-
+        
         Path.exists(file, function(exists) {
            if (!exists)
                return _self.ide.error("File does not exist: " + message.file, 2, message);
-
+            
            var cwd = _self.ide.workspaceDir + "/" + (message.cwd || "");
            Path.exists(cwd, function(exists) {
                if (!exists)
@@ -149,11 +150,11 @@ sys.inherits(DebuggerPlugin, Plugin);
                 env[key] = process.env[key];
         }
 
-        console.log("Executing node "+proc+" "+args.join(" ")+" "+cwd);
+        console.log("Executing node "+proc+" "+args.join(" ")+" "+cwd); 
 
         var child = _self.child = Spawn(proc, args, {cwd: cwd, env: env});
         _self.debugClient = args.join(" ").search(/(?:^|\b)\-\-debug\b/) != -1;
-        _self.ide.getExt("state").publishState();
+        _self.workspace.getExt("state").publishState();
         _self.ide.broadcast(JSON.stringify({"type": "node-start"}), _self.name);
 
         child.stdout.on("data", sender("stdout"));
@@ -211,10 +212,10 @@ sys.inherits(DebuggerPlugin, Plugin);
 
         this.nodeDebugProxy.connect();
     };
-
+    
     this.dispose = function(callback) {
         this.$kill();
         callback();
     };
-
-}).call(DebuggerPlugin.prototype);
+    
+}).call(NodeRuntimePlugin.prototype);
