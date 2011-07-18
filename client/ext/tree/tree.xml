@@ -3,13 +3,13 @@
         function filesort(value, args, xmlNode) {
             return (xmlNode.tagName == "folder" ? 0 : 1) + value.toLowerCase();
         }
-        
+
         var confirmed = false;
-        
+
         function remove() {
             if (!confirmed) {
                 var files = trFiles.getSelection();
-            
+
                 function confirm(file) {
                     var name = file.getAttribute("name");
                 
@@ -53,7 +53,7 @@
             } else
                 return true;
         };
-        
+
         function copy(a, b) {
             davProject.copy(a, b + /\/[^\/]*$/.exec(a));
         };
@@ -65,13 +65,13 @@
             });
         };
     ]]></a:script>
-    <a:window id="winFilesViewer" 
-      flex     = "1" 
-      skin     = "fm-window" 
-      title    = "Project Files" 
-      modal    = "false" 
-      visible  = "true" 
-      buttons  = "close" 
+    <a:window id="winFilesViewer"
+      flex     = "1"
+      skin     = "fm-window"
+      title    = "Project Files"
+      modal    = "false"
+      visible  = "true"
+      buttons  = "close"
       optimize = "true">
         <a:button
           top="-22"
@@ -80,6 +80,7 @@
           icon="refresh.png"
           onclick="require('ext/tree/tree').refresh()" />
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
+
         <a:tree id="trFiles" canrename="true" border="0"
           contextmenu="mnuCtxTree" multiselect="false" reselectable="true" 
           onbeforemove="this.disable();"
@@ -145,3 +146,4 @@
         </a:menu>
     </a:window>
 </a:application>
+

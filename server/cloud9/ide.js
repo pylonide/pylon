@@ -48,6 +48,7 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
         plugins: options.plugins || Ide.DEFAULT_PLUGINS,
         requirejsConfig: requirejsConfig,
         offlineManifest: options.offlineManifest || "",
+        //gaeLocalPath: options.gaeLocalPath,
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version,
         extra: options.extra,
@@ -142,6 +143,7 @@ Ide.DEFAULT_PLUGINS = [
                 if(process.platform == "sunos"){
                     this.davServer.plugins["codesearch"].GREP_CMD = __dirname+"/../../support/gnu-builds/grep-sunos";
                     this.davServer.plugins["filesearch"].FIND_CMD = __dirname+"/../../support/gnu-builds/find-sunos";
+                    this.davServer.plugins["filelist"].FIND_CMD = __dirname+"/../../support/gnu-builds/find-sunos";
                 }
                 this.davServer.plugins["permission"] = DavPermission;
                 this.davInited = true;
@@ -297,7 +299,7 @@ Ide.DEFAULT_PLUGINS = [
     this.broadcast = function(msg, scope) {
         // TODO check permissions
         for (var username in this.$users) {
-            var user = this.$users[username];            
+            var user = this.$users[username];
             user.broadcast(msg, scope);
         }
     };

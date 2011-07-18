@@ -172,14 +172,14 @@ return ext.register("ext/tree/tree", {
         
         trFiles.addEventListener("afterchoose", this.$afterselect = function(e) {
             var node = this.selected;
-            if (!node || node.tagName != "file" || this.selection.length > 1 || !ide.onLine) //ide.onLine can be removed after update apf
-                return;
+            if (!node || node.tagName != "file" || this.selection.length > 1 || !ide.onLine && !ide.offlineFileSystemSupport) //ide.onLine can be removed after update apf
+                    return;
 
             ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
         });
         
         trFiles.addEventListener("beforecopy", function(e) {
-            if (!ide.onLine) return false;
+            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
             
             setTimeout(function () {
                 var args     = e.args[0].args,
@@ -189,13 +189,13 @@ return ext.register("ext/tree/tree", {
         });
        
         trFiles.addEventListener("beforestoprename", function(e) {
-            if (!ide.onLine) return false;
+            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
 
             return fs.beforeStopRename(e.value);
         });
  
         trFiles.addEventListener("beforerename", function(e){
-            if (!ide.onLine) return false;
+            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
             
             if(trFiles.$model.data.firstChild == trFiles.selected)
                 return false;
@@ -223,10 +223,7 @@ return ext.register("ext/tree/tree", {
         });
         
         trFiles.addEventListener("beforemove", function(e){
-            if (!ide.onLine)
-                return false;
-            // if (ide.dispatchEvent("beforemove") === false)
-            //               return false;
+            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
             
             setTimeout(function(){
                 var changes = e.args;
@@ -238,7 +235,7 @@ return ext.register("ext/tree/tree", {
         });
         
         var cancelWhenOffline = function(){
-            if (!ide.onLine) return false;
+            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
         };
         
         trFiles.addEventListener("beforeadd", cancelWhenOffline);
@@ -247,15 +244,17 @@ return ext.register("ext/tree/tree", {
         trFiles.addEventListener("dragstart", cancelWhenOffline);
         trFiles.addEventListener("dragdrop", cancelWhenOffline);
         
-        /*ide.addEventListener("afteroffline", function(e){
-            //trFiles.setAttribute("contextmenu", "");
-            mnuCtxTree.disable();
+        ide.addEventListener("afteroffline", function(e){
+            if (!ide.offlineFileSystemSupport) {
+                //trFiles.disable();
+                //mnuCtxTree.disable();
+            }
         });
         
         ide.addEventListener("afteronline", function(e){
-            //trFiles.setAttribute("contextmenu", "mnuCtxTree");
-            mnuCtxTree.enable();
-        });*/
+            //trFiles.enable();
+            //mnuCtxTree.enable();
+        });
         
         /**** Support for state preservation ****/
         trFiles.addEventListener("expand", function(e){
@@ -269,6 +268,8 @@ return ext.register("ext/tree/tree", {
             }
         });
         trFiles.addEventListener("collapse", function(e){
+            if (!e.xmlNode)
+                return;
             delete _self.expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)];
             
             if (!_self.loading) {

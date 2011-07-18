@@ -196,6 +196,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
         var node = this.$currentScope = grpSFScope.value == "projects"
             ? trFiles.xmlRoot.selectSingleNode("folder[1]")
             : this.getSelectedTreeNode();
+
         var findValueSanitized = txtSFFind.value.trim().replace(/([\[\]\{\}])/g, '\\$1');
         _self.$model.clear();
         trSFResult.setAttribute("empty-message", "Searching for '" + findValueSanitized + "'...");
@@ -207,6 +208,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
             else
                 _self.$model.load(data);
         });
+
         ide.dispatchEvent("track_action", {type: "searchinfiles"});
     },
 

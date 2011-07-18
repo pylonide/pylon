@@ -17,7 +17,8 @@ return ext.register("ext/save/save", {
     markup      : markup,
     css         : css,
     deps        : [fs],
-    offline     : false,
+    offline     : true,
+
     commands     : {
         "quicksave": {hint: "save the currently active file to disk"},
         "saveas": {hint: "save the file to disk with a different filename"}
@@ -218,6 +219,7 @@ return ext.register("ext/save/save", {
         panel.setAttribute("caption", "Saving file " + path);
         
         ide.dispatchEvent("beforefilesave", {node: node, doc: doc, value: value});
+
         fs.saveFile(path, value, function(data, state, extra){
             if (state != apf.SUCCESS) {
                 util.alert(
