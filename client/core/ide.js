@@ -131,20 +131,15 @@ define(function(require, exports, module) {
             };
 
             ide.socketDisconnect = function() {
-                clearInterval(ide.$retryTimer);
+                clearTimeout(ide.$retryTimer);
                 
                 var retries = 0;
                 ide.$retryTimer = setInterval(function() {
-                    if (!ide.socket.connecting && ide.loggedIn) {
-                        
-                        if (++retries == 3) {
-                            ide.dispatchEvent("socketDisconnect");
-                            if (ide.testOffline == 1)
-                                clearInterval(ide.$retryTimer);
-                        }
-                        if (ide.testOffline == 2)
-                            ide.socket.connect();
-                    }
+                    if (++retries == 3)
+                        ide.dispatchEvent("socketDisconnect");
+                    
+                    if (!ide.socket.connecting && !ide.testOffline && ide.loggedIn)
+                        ide.socket.connect();
                 }, 500);
             };
 

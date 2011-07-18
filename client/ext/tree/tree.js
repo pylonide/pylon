@@ -246,14 +246,14 @@ return ext.register("ext/tree/tree", {
         
         ide.addEventListener("afteroffline", function(e){
             if (!ide.offlineFileSystemSupport) {
-                trFiles.disable();
-                mnuCtxTree.disable();
+                //trFiles.disable();
+                //mnuCtxTree.disable();
             }
         });
         
         ide.addEventListener("afteronline", function(e){
-            trFiles.enable();
-            mnuCtxTree.enable();
+            //trFiles.enable();
+            //mnuCtxTree.enable();
         });
         
         /**** Support for state preservation ****/
