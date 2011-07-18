@@ -172,24 +172,14 @@ return ext.register("ext/tree/tree", {
         
         trFiles.addEventListener("afterchoose", this.$afterselect = function(e) {
             var node = this.selected;
-<<<<<<< HEAD
-            if (!node || node.tagName != "file" || this.selection.length > 1 
-              || !ide.onLine && !ide.hasFilesystemSupport) //ide.onLine can be removed after update apf
-                return;
-=======
             if (!node || node.tagName != "file" || this.selection.length > 1 || !ide.onLine && !ide.offlineFileSystemSupport) //ide.onLine can be removed after update apf
                     return;
->>>>>>> feature/offline
 
             ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
         });
         
         trFiles.addEventListener("beforecopy", function(e) {
-<<<<<<< HEAD
-            if (!ide.onLine && !ide.hasFilesystemSupport) return false;
-=======
             if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
->>>>>>> feature/offline
             
             setTimeout(function () {
                 var args     = e.args[0].args,
@@ -255,7 +245,7 @@ return ext.register("ext/tree/tree", {
         trFiles.addEventListener("dragdrop", cancelWhenOffline);
         
         ide.addEventListener("afteroffline", function(e){
-            if (!ide.hasFilesystemSupport) {
+            if (!ide.offlineFileSystemSupport) {
                 trFiles.disable();
                 mnuCtxTree.disable();
             }
