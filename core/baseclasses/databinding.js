@@ -821,6 +821,10 @@ apf.DataBinding = function(){
     this.insert = function(xmlNode, options){
         if (typeof xmlNode == "string") {
             if (xmlNode.charAt(0) == "<") {
+                
+                if (options.whitespace === false)
+                    xmlNode = xmlNode.replace(/>[\s\n\r]*</g, "><");
+                
                 xmlNode = apf.getXmlDom(xmlNode).documentElement;
             }
             else {

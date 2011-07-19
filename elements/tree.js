@@ -415,7 +415,7 @@ apf.tree = function(struct, tagName){
     
     this.$draw = function(){
         this.$drawBase();
-    };
+    };    
 }).call(apf.tree.prototype = new apf.BaseTree());
 
 apf.aml.setElement("tree", apf.tree);

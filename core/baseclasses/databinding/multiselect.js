@@ -182,6 +182,39 @@ apf.MultiselectBinding = function(){
     //#endif
 
     /**
+     * Optimizes load time when the xml format is very simple.
+     */
+    this.$propHandlers["simpledata"] = function(value){
+        if (value) {
+            this.getTraverseNodes = function(xmlNode){
+                return (xmlNode || this.xmlRoot).childNodes;
+            };
+        
+            this.getFirstTraverseNode = function(xmlNode){
+                return (xmlNode || this.xmlRoot).childNodes[0];
+            };
+        
+            this.getLastTraverseNode = function(xmlNode){
+                var nodes = (xmlNode || this.xmlRoot).childNodes;
+                return nodes[nodes.length - 1];
+            };
+        
+            this.getTraverseParent = function(xmlNode){
+                if (!xmlNode.parentNode || xmlNode == this.xmlRoot) 
+                    return false;
+                    
+                return xmlNode.parentNode;
+            };
+        }
+        else {
+            delete this.getTraverseNodes;
+            delete this.getFirstTraverseNode;
+            delete this.getLastTraverseNode;
+            delete this.getTraverseParent;
+        }
+    }
+
+    /**
      * Retrieves a nodelist containing the {@link term.datanode data nodes} which
      * are rendered by this element (see each nodes, see
      * {@link baseclass.multiselectbinding.binding.each}).
@@ -442,7 +475,7 @@ apf.MultiselectBinding = function(){
             return this.clear(null, null, true); //@todo apf3.0 this should clear and set a listener
 
         //Traverse through XMLTree
-        var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot);
+        var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot, null, "load");
 
         //Build HTML
         this.$fill(nodes);

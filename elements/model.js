@@ -134,10 +134,11 @@ apf.model = function(struct, tagName){
         session    : 1
     }, this.$attrExcludePropBind);
 
-    this.$booleanProperties["autoinit"] = true;
-    this.$booleanProperties.enablereset  = true;
+    this.$booleanProperties["whitespace"] = true;
+    this.$booleanProperties["autoinit"]   = true;
+    this.$booleanProperties.enablereset   = true;
     this.$supportedProperties = ["submission", "src", "session", "autoinit", 
-        "enablereset", "remote"];
+        "enablereset", "remote", "whitespace"];
     
     this.$propHandlers["src"] = 
     this.$propHandlers["get"] = function(value, prop){
@@ -640,6 +641,9 @@ apf.model = function(struct, tagName){
                             strXml = strXml.replace(/xmlns=\"[^"]*\"/g, "");
                     }
                     
+                    if (this.whitespace === false)
+                        strXml = strXml.replace(/>[\s\n\r]*</g, "><");
+                    
                     return this.load(apf.getXmlDom(strXml).documentElement);
                 }
                 // we also support JSON data loading in a model CDATA section
@@ -1042,6 +1046,9 @@ apf.model = function(struct, tagName){
             if (typeof options.clearContents == "undefined" && extra.userdata) 
                 options.clearContents = apf.isTrue(extra.userdata[1]); //@todo is this still used?
 
+            if (options.whitespace == undefined)
+                options.whitespace = _self.whitespace;
+
             //Call insert function
             (options.amlNode || _self).insert(data, options);
 
@@ -1071,6 +1078,10 @@ apf.model = function(struct, tagName){
                     xmlNode = xmlNode.substr(xmlNode.indexOf(">")+1);
                 if (!apf.supportNamespaces)
                     xmlNode = xmlNode.replace(/xmlns\=\"[^"]*\"/g, "");
+                
+                if (this.whitespace === false)
+                    xmlNode = xmlNode.replace(/>[\s\n\r]*</g, "><");
+                
                 xmlNode = apf.getXmlDom(xmlNode).documentElement;
             }
             //#ifdef __WITH_JSON2XML

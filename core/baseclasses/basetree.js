@@ -497,10 +497,12 @@ apf.BaseTree = function(){
                 this.$setStyleClass(htmlNode,  "root");
                 this.$setStyleClass(container, "root");
             }
-            
+
             var next;
-            if (!beforeNode && (next = this.getNextTraverse(xmlNode)))
-                beforeNode = apf.xmldb.getHtmlNode(next, this);
+            if (action != "load" && action != "extend") {
+                if (!beforeNode && (next = this.getNextTraverse(xmlNode)))
+                    beforeNode = apf.xmldb.getHtmlNode(next, this);
+            }
             if (beforeNode && beforeNode.parentNode != htmlParentNode)
                 beforeNode = null;
         
@@ -771,7 +773,7 @@ apf.BaseTree = function(){
             xmlUpdateHandler.call(this, {
                 action  : "insert", 
                 xmlNode : xmlNode, 
-                result  : this.$addNodes(xmlNode, container, true), //checkChildren ???
+                result  : this.$addNodes(xmlNode, container, true, null, null, null, "extend"), //checkChildren ???
                 anim    : !immediate
             });
         }
