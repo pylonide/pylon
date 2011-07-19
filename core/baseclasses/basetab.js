@@ -413,7 +413,7 @@ apf.BaseTab = function(){
                 from  : html.offsetWidth - apf.getWidthDiff(html),
                 to    : 0
             });
-            var over = apf.getWidthDiff(html) + this.$btnMargin;
+            var over = apf.getWidthDiff(html) + (this.$btnMargin || 0);
             if (over)
                 anim.tweens.push({
                     oHtml : html,
@@ -492,7 +492,7 @@ apf.BaseTab = function(){
                 oHtml : html, 
                 type  : "width", 
                 from  : html.offsetWidth - wd,
-                to    : s - wd - this.$btnMargin
+                to    : s - wd - (this.$btnMargin || 0)
             });
         }
         html = pg[l - 1].$button, wd = apf.getWidthDiff(html);
@@ -501,7 +501,7 @@ apf.BaseTab = function(){
             type  : "width", 
             from  : html.offsetWidth - wd, // - (add ? 3 : 0)
             to    : Math.max(this.$minBtnWidth, 
-                Math.min(cw, this.$maxBtnWidth)) - this.$btnMargin - wd
+                Math.min(cw, this.$maxBtnWidth)) - (this.$btnMargin || 0) - wd
         });
     }
     
@@ -514,9 +514,10 @@ apf.BaseTab = function(){
         }
         
         var page = this.getPage();
+
         if (!page)
             return;
-            
+
         if (this.$btnMargin == undefined)
             this.$btnMargin = apf.getMargin(page.$button)[0];
 
@@ -1203,7 +1204,7 @@ apf.BaseTab = function(){
           || amlNode.localName != "page")
             return;
         
-        if (this.activepage && this.activepage != -1) {
+        if ((this.activepage || this.activepage == 0) && this.activepage != -1) {
             var ln = amlNode.nextSibling;
             while (ln && (!ln.$first || !ln.visible))
                 ln = ln.nextSibling;

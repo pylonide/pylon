@@ -340,6 +340,9 @@ apf.slider = function(struct, tagName){
         if (this.$dragging && !force && !this.realtime)
             return;
 
+        if (typeof value !== "undefined" && value != this.$value)
+            this.dispatchEvent("valuechange");
+
         this.$value = value;
         var value = Math.max(this.min, Math.min(this.max, value)) || 0;
 
@@ -801,6 +804,8 @@ apf.slider = function(struct, tagName){
 
             document.onmouseup = function(e){
                 var o = this.dragNode;
+                if (o)
+                    _self.dispatchEvent("mouseup");
                 this.dragNode = null;
 
                 o.onmouseout();

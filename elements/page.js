@@ -291,7 +291,7 @@ apf.page = function(struct, tagName){
         //if (this.disabled)
             //return false;
 
-        this.$active = false
+        this.$active = false;
 
         if (this.parentNode.$hasButtons) {
             if (this.$position > 0)
