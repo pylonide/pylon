@@ -48,7 +48,6 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
         plugins: options.plugins || Ide.DEFAULT_PLUGINS,
         requirejsConfig: requirejsConfig,
         offlineManifest: options.offlineManifest || "",
-        //gaeLocalPath: options.gaeLocalPath,
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version,
         extra: options.extra,
@@ -299,7 +298,7 @@ Ide.DEFAULT_PLUGINS = [
     this.broadcast = function(msg, scope) {
         // TODO check permissions
         for (var username in this.$users) {
-            var user = this.$users[username];
+            var user = this.$users[username];            
             user.broadcast(msg, scope);
         }
     };
