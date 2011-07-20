@@ -24,13 +24,24 @@ else*/
 
 //Start
 if (window.require && typeof require.def == "function") {
-    require([
-        "apf/elements/codeeditor",
-        "apf/elements/debugger",
-        "apf/elements/debughost"
-    ], function() {
-        apf.start()
-    });
+    var deps = [];
+    // #ifdef __AMLCODEEDITOR || __INC_ALL
+    deps.push("apf/elements/codeeditor");
+    // #endif
+    
+    // #ifdef __AMLDEBUGGER || __INC_ALL
+    deps.push("apf/elements/debugger", "apf/elements/debughost");
+    // #endif
+    
+    if (deps.length) {
+        require([
+            deps
+        ], function() {
+            apf.start();
+        });
+    }
+    else 
+        apf.start();
 }
 else
     apf.start();
