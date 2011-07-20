@@ -24,5 +24,5 @@
 	url = git://github.com/ajaxorg/gnu-builds.git
 
 [submodule "support/socket.io"]
-	path = support/socket.io
-	url = git://github.com/ajaxorg/socket.io.git
+    path = support/socket.io
+    url = git://github.com/ajaxorg/socket.io.git
