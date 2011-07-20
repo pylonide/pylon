@@ -1676,7 +1676,7 @@ doc.$aml=xmlNode;doc.$domParser=this;}if(options.host){doc.$parentNode=options.h
 if(options.htmlNode){amlNode.$int=options.htmlNode;}}else{amlNode=options.amlNode;
 doc=options.doc;if(options.include){var n=amlNode.childNodes;var p=n.indexOf(options.beforeNode);
 var rest=p?n.splice(p,n.length-p):[];}}this.$parseContext=[amlNode,options];var nodes,nodelist={},prios=[],_self=this;
-(function recur(amlNode,nodes){var cL,newNode,node,nNodes,cNodes=amlNode.childNodes,i=0,l=nodes.length;
+var recur;(recur=function(amlNode,nodes){var cL,newNode,node,nNodes,cNodes=amlNode.childNodes,i=0,l=nodes.length;
 for(;i<l;i++){newNode=_self.$createNode(doc,(node=nodes[i]).nodeType,node);if(!newNode){continue;
 }cNodes[cL=cNodes.length]=newNode;newNode.parentNode=amlNode;if(cL>0){(newNode.previousSibling=cNodes[cL-1]).nextSibling=newNode;
 }if(!newNode.render&&newNode.canHaveChildren&&(nNodes=node.childNodes).length){recur(newNode,nNodes);
@@ -5654,8 +5654,8 @@ callback(_self.$modes[syntax]);});};this.$propHandlers.activeline=function(value
 };this.$propHandlers.fontsize=function(value,prop,initial){this.$ext.style.fontSize=value+"px";
 };this.$propHandlers.wrapmode=function(value,prop,initial){this.$editor.getSession().setUseWrapMode(value);
 };this.$propHandlers.wraplimitmin=function(value,prop,initial){this.$editor.getSession().setWrapLimitRange(value,this.wraplimitmax);
-if(value){this.setProperty("wrapmode",true);}};this.$propHandlers.wraplimitmax=function(value,prop,initial){this.$editor.getSession().setWrapLimitRange(this.wraplimitmin,value);
-if(value){this.setProperty("wrapmode",true);}};this.$propHandlers.highlightselectedword=function(value,prop,initial){this.$editor.setHighlightSelectedWord(value);
+};this.$propHandlers.wraplimitmax=function(value,prop,initial){this.$editor.getSession().setWrapLimitRange(this.wraplimitmin,value);
+};this.$propHandlers.highlightselectedword=function(value,prop,initial){this.$editor.setHighlightSelectedWord(value);
 };this.$propHandlers.autohidehorscrollbar=function(value,prop,initial){this.$editor.renderer.setHScrollBarAlwaysVisible(!value);
 };this.$propHandlers.behaviors=function(value,prop,initial){this.$editor.setBehavioursEnabled(value);
 };this.$propHandlers["model-breakpoints"]=function(value,prop,inital){this.$debuggerBreakpoints=false;
@@ -7746,9 +7746,10 @@ i<j;i++){aOut.push("<",oPropsDel[ns][i],' xmlns="',ns,'"/>');}}aOut.push("</D:pr
 }aOut.push("</D:propertyupdate>");return aOut.join("");}function parsePropertyPackets(oXml,state,extra,callback){var status=parseInt(extra.status);
 if(status==403||status==401||!oXml){return callback?callback.call(this,null,state,extra):notAuth.call(this);
 }if(typeof oXml=="string"){oXml=apf.getXml(oXml);}var aResp=$xmlns(oXml,"response",apf.webdav.NS.D),aOut=[];
-if(aResp.length){this.$regVar("authenticated",true);}var start=(extra.headers&&typeof extra.headers.Depth!="undefined"&&extra.headers.Depth==0)?0:1;
-for(var sa=[],data,i=start,j=aResp.length;i<j;i++){parseItem.call(this,aResp[i],data={});
-if(data.data){sa.push({toString:function(){return this.v;},data:data.data,v:(data.data.type=="file"?1:0)+""+data.data.name.toLowerCase()});
+if(aResp.length){this.$regVar("authenticated",true);}var sPath;for(var sa=[],data,i=0,j=aResp.length;
+i<j;i++){sPath=decodeURIComponent($xmlns(aResp[i],"href",apf.webdav.NS.D)[0].firstChild.nodeValue);
+if(sPath===extra.url){continue;}parseItem.call(this,aResp[i],data={});if(data.data){sa.push({toString:function(){return this.v;
+},data:data.data,v:(data.data.type=="file"?1:0)+""+data.data.name.toLowerCase()});
 }}sa.sort();for(var i=0,l=sa.length;i<l;i++){aOut.push(sa[i].data.xml);}callback&&callback.call(this,"<files>"+aOut.join("")+"</files>",state,extra);
 }function parseItem(oNode,extra){var NS=apf.webdav.NS,sPath=decodeURIComponent($xmlns(oNode,"href",NS.D)[0].firstChild.nodeValue.replace(/[\\\/]+$/,"")),sName=sPath.split("/").pop(),bHidden=(sName.charAt(0)==".");
 if(!this.$showHidden&&bHidden){return"";}var t,oItem,sType=$xmlns(oNode,"collection",NS.D).length>0?"folder":"file",aCType=$xmlns(oNode,"getcontenttype",NS.D),aExec=$xmlns(oNode,"executable",NS.lp2);
