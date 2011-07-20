@@ -205,9 +205,9 @@ apf.BaseTree = function(){
         };
         
         pathList.sort();
-        var root = this.xmlRoot, _self = this;
-        check("/", 
-            function(item){
+        var cb, root = this.xmlRoot, _self = this;
+        check("", 
+            cb = function(item){
                 var paths = item.split("/");
                 var lastNode = root;//root.selectSingleNode(paths.shift());
 
@@ -239,8 +239,9 @@ apf.BaseTree = function(){
                         },100);  
                     }, function(err){
                         //if (!err) {
-                            next();
+                            //next();
                         //}
+                        check(item, cb);
                     }
                 );
             }

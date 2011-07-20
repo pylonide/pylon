@@ -34,14 +34,18 @@ if (window.require && typeof require.def == "function") {
     // #endif
     
     if (deps.length) {
-        require([
+        require(
             deps
-        ], function() {
+        , function() {
             apf.start();
         });
     }
     else 
         apf.start();
+    
+    
+    
+    
 }
 else
     apf.start();
