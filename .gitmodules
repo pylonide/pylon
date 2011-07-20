@@ -1,6 +1,3 @@
-[submodule "support/socket.io"]
-	path = support/socket.io
-	url = http://github.com/ajaxorg/Socket.IO-node.git
 [submodule "support/connect"]
 	path = support/connect
 	url = http://github.com/senchalabs/connect.git
