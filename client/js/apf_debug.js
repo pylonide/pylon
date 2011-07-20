@@ -13574,7 +13574,7 @@ apf.skins = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/sort.js)SIZE(8239)TIME(Wed, 20 Jul 2011 12:55:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/sort.js)SIZE(8239)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25021,7 +25021,7 @@ apf.config.$inheritProperties["validgroup"] = 1;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding.js)SIZE(58715)TIME(Tue, 19 Jul 2011 17:16:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding.js)SIZE(58715)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -26523,7 +26523,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(46989)TIME(Tue, 19 Jul 2011 17:18:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(46989)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34680,7 +34680,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(48994)TIME(Wed, 20 Jul 2011 12:37:12 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(49045)TIME(Wed, 20 Jul 2011 14:43:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34887,9 +34887,9 @@ apf.BaseTree = function(){
         };
         
         pathList.sort();
-        var root = this.xmlRoot, _self = this;
-        check("/", 
-            function(item){
+        var cb, root = this.xmlRoot, _self = this;
+        check("", 
+            cb = function(item){
                 var paths = item.split("/");
                 var lastNode = root;//root.selectSingleNode(paths.shift());
 
@@ -34921,8 +34921,9 @@ apf.BaseTree = function(){
                         },100);  
                     }, function(err){
                         //if (!err) {
-                            next();
+                            //next();
                         //}
+                        check(item, cb);
                     }
                 );
             }
@@ -53282,6 +53283,609 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
+/**
+ * Element allowing the user to type code.
+ *
+ * @constructor
+ * @define codeeditor
+ * @addnode elements
+ *
+ * @inherits apf.StandardBinding
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @author      Fabian Jakobs (fabian AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.1
+ */
+
+if (!apf.hasRequireJS)
+    apf.aml.setElement("codeeditor", apf.textbox);
+else
+    define(function(require, exports, module) {
+        
+require("pilot/fixoldbrowsers");
+var Editor = require("ace/editor").Editor;
+var EditSession = require("ace/edit_session").EditSession;
+var VirtualRenderer = require("ace/virtual_renderer").VirtualRenderer;
+var UndoManager = require("ace/undomanager").UndoManager;
+var Range = require("ace/range").Range;
+
+apf.codeeditor = function(struct, tagName) {
+    this.$init(tagName || "codeeditor", apf.NODE_VISIBLE, struct);
+
+    this.documents = [];
+    this.$cache    = {};
+
+    //this.setProperty("overwrite", false);
+    this.setProperty("line", 1);
+    this.setProperty("col", 1);
+};
+
+(function() {
+    this.implement(
+        
+        apf.DataAction
+        
+    );
+
+    this.$focussable       = true; // This object can get the focus
+    this.$childProperty    = "value";
+    this.$isTextInput      = true;
+
+    this.value             = "";
+    this.multiline         = true;
+    this.caching           = true;
+
+    this.$booleanProperties["activeline"]      = true;
+    this.$booleanProperties["caching"]         = true;
+    this.$booleanProperties["readonly"]        = true;
+    this.$booleanProperties["activeline"]      = true;
+    this.$booleanProperties["showinvisibles"]  = true;
+    this.$booleanProperties["showprintmargin"] = true;
+    this.$booleanProperties["overwrite"]       = true;
+    this.$booleanProperties["softtabs"]        = true;
+    this.$booleanProperties["gutter"]          = true;
+    this.$booleanProperties["highlightselectedword"] = true;
+    this.$booleanProperties["autohidehorscrollbar"]  = true;
+    
+    this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
+        "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
+        "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
+        "theme", "gutter", "highlightselectedword", "autohidehorscrollbar");
+
+    var cacheId = 0;
+    this.$getCacheKey = function(value) {
+        if (typeof value == "string") {
+            var key = this.xmlRoot
+                ? this.xmlRoot.getAttribute(apf.xmldb.xmlIdTag)
+                : value;
+        }
+        else if (value.nodeType) {
+            var key = value.getAttribute(apf.xmldb.xmlIdTag);
+        }
+        
+        return key;
+    };
+    
+    this.clearCacheItem = function(xmlNode) {
+        if (!this.caching)
+            return;
+        
+        var key = this.$getCacheKey(xmlNode);
+        if (key)
+            delete this.$cache[key];                    
+    };
+    
+    this.addEventListener("unloadmodel", function(e) {
+        this.syncValue();
+    });
+    
+    /**
+     * @attribute {String} value the text of this element
+     * @todo apf3.0 check use of this.$propHandlers["value"].call
+     */
+    this.$propHandlers["value"] = function(value){ //@todo apf3.0 add support for the range object as a value
+        var doc, key,
+            _self = this;
+
+        if (this.caching)
+            key = this.$getCacheKey(value);
+
+        //Assuming document
+        if (value instanceof EditSession)
+            doc = value;
+
+        if (!doc && key)
+            doc = this.$cache[key];
+
+        if (!doc) {
+            if (value.nodeType) {
+                apf.xmldb.addNodeListener(value.nodeType == 1
+                    ? value : value.parentNode, this);
+            }
+
+            doc = new EditSession(typeof value == "string"
+              ? value
+              : (value.nodeType > 1 && value.nodeType < 5 //@todo replace this by a proper function
+                    ? value.nodeValue
+                    : value.firstChild && value.firstChild.nodeValue || ""));
+
+            doc.cacheId = key;
+            doc.setUndoManager(new UndoManager());
+
+            if (key)
+                this.$cache[key] = doc;
+        }
+        //@todo value can also be an xml node and should be updated in a similar fashion as above
+        else if (typeof value == "string" && !doc.hasValue) {
+            //@todo big hack!
+            doc.setValue(value);
+            this.$editor.moveCursorTo(0, 0);
+            doc.hasValue = true;
+        }
+
+        //apf.queue.add("ce" + _self.$uniqueId, function() {
+            _self.$getMode(_self.syntax, function(mode) {
+                doc.setMode(mode);
+            });
+            doc.setTabSize(parseInt(_self.tabsize, 10));
+            doc.setUseSoftTabs(_self.softtabs);
+            doc.setUseWrapMode(_self.wrapmode);
+            doc.setWrapLimitRange(_self.wraplimitmin, _self.wraplimitmax);
+
+            _self.$removeDocListeners && _self.$removeDocListeners();
+            _self.$removeDocListeners = _self.$addDocListeners(doc);
+
+            _self.$editor.setShowPrintMargin(_self.showprintmargin);
+            _self.$editor.setSession(doc);
+
+            _self.$updateMarker();
+            _self.$updateBreakpoints(doc);
+        //})
+    };
+
+    this.$addDocListeners = function(doc) {
+        var _self = this;
+        var onCursorChange = function() {
+            var cursor = doc.getSelection().getCursor();
+            _self.setProperty("line", cursor.row+1);
+            _self.setProperty("col", cursor.column+1);
+        };
+
+        doc.getSelection().addEventListener("changeCursor", onCursorChange);
+
+        onCursorChange();
+
+        return function() {
+            doc.getSelection().removeEventListener("changeCursor", onCursorChange);
+        };
+    };
+
+    //@todo fix that this is not called three times
+    this.$updateMarker = function(removeOnly) {
+        if (this.$marker) {
+            this.$editor.renderer.removeGutterDecoration(this.$lastRow[0], this.$lastRow[1]);
+            this.$editor.getSession().removeMarker(this.$marker);
+            this.$marker = null;
+            
+            if (removeOnly)
+                return;
+        }
+
+        if (!this.$debugger)
+            return;
+
+        var frame = this.$debugger.activeframe;
+        if (!frame)
+            return;
+
+        var script = this.xmlRoot;
+        if (script.getAttribute("scriptid") !== frame.getAttribute("scriptid"))
+            return;
+
+        var head  = this.$debugger.$mdlStack.queryNode("frame[1]");
+        var isTop = frame == head;
+        
+        var lineOffset = parseInt(script.getAttribute("lineoffset") || "0", 10);
+        var row = parseInt(frame.getAttribute("line"), 10) - lineOffset;
+        var range = new Range(row, 0, row+1, 0);
+
+        this.$marker = this.$editor.getSession().addMarker(range, isTop ? "ace_step" : "ace_stack", "line");
+        var type = isTop ? "arrow" : "stack";
+        this.$lastRow = [row, type];
+        this.$editor.renderer.addGutterDecoration(row, type);
+        
+        this.$editor.gotoLine(row + 1, parseInt(frame.getAttribute("column"), 10));
+        //this.$editor.moveCursorTo(row, parseInt(frame.getAttribute("column")));
+    };
+
+    this.$updateBreakpoints = function(doc) {
+        doc = doc || this.$editor.getSession();
+
+        doc.setBreakpoints([]);
+        if (!this.$breakpoints)
+            return;
+
+        if (this.xmlRoot) {
+            var scriptName = this.xmlRoot.getAttribute("scriptname");
+            if (!scriptName)
+                return;
+
+            var breakpoints = this.$breakpoints.queryNodes("//breakpoint[@script='" + scriptName + "']"); 
+
+            var rows = [];
+            for (var i=0; i<breakpoints.length; i++) {
+                rows.push(parseInt(breakpoints[i].getAttribute("line"), 10) - parseInt(breakpoints[i].getAttribute("lineoffset"), 10));
+            }
+            if (rows.length)
+                doc.setBreakpoints(rows);
+        }
+    };
+
+    this.$toggleBreakpoint = function(row) {
+        this.$debugger.toggleBreakpoint(this.xmlRoot, row);
+    };
+
+    this.$propHandlers["theme"] = function(value) {
+        this.$editor.setTheme(value);
+    };
+
+    this.$propHandlers["syntax"] = function(value) {
+        var _self = this;
+        this.$getMode(value, function(mode) {
+            _self.$editor.getSession().setMode(mode);
+        });
+    };
+
+    this.$modes = {};
+
+    this.$getMode = function(syntax, callback) {
+        syntax = (syntax || "text").toLowerCase();
+        if (syntax.indexOf("/") == -1)
+            syntax = "ace/mode/" + syntax;
+        if (this.$modes[syntax])
+            return callback(this.$modes[syntax]);
+
+        var _self = this;
+        require([syntax], function(modeModule) {
+            
+            _self.$modes[syntax] = new modeModule.Mode();
+            callback(_self.$modes[syntax]);
+        });
+    };
+
+    this.$propHandlers["activeline"] = function(value) {
+        this.$editor.setHighlightActiveLine(value);
+    };
+
+    this.$propHandlers["selectstyle"] = function(value) {
+        this.$editor.setSelectionStyle(value);
+    };
+
+    this.$propHandlers["showprintmargin"] = function(value, prop, initial) {
+        this.$editor.setShowPrintMargin(value);
+    };
+
+    this.$propHandlers["printmargincolumn"] = function(value, prop, initial) {
+        this.$editor.setPrintMarginColumn(value);
+    };
+
+    this.$propHandlers["showinvisibles"] = function(value, prop, initial) {
+        this.$editor.setShowInvisibles(value);
+    };
+
+    this.$propHandlers["overwrite"] = function(value, prop, initial) {
+        this.$editor.setOverwrite(value);
+    };
+
+    this.$propHandlers["readonly"] = function(value, prop, initial) {
+        this.$editor.setReadOnly(value);
+    };
+
+    this.$propHandlers["tabsize"] = function(value, prop, initial) {
+        this.$editor.getSession().setTabSize(parseInt(value, 10));
+    };
+
+    this.$propHandlers["softtabs"] = function(value, prop, initial) {
+        this.$editor.getSession().setUseSoftTabs(value);
+    };
+
+    this.$propHandlers["scrollspeed"] = function(value, prop, initial) {
+        this.$editor.setScrollSpeed(value || 2);
+    };
+    
+    this.$propHandlers["gutter"] = function(value, prop, initial) {
+        this.$editor.renderer.setShowGutter(value);
+    };
+    
+    this.$propHandlers["fontsize"] = function(value, prop, initial) {
+        this.$ext.style.fontSize = value + "px";
+    };
+    this.$propHandlers["wrapmode"] = function(value, prop, initial) {
+        this.$editor.getSession().setUseWrapMode(value);
+    };
+    this.$propHandlers["wraplimitmin"] = function(value, prop, initial) {
+        this.$editor.getSession().setWrapLimitRange(value, this.wraplimitmax);
+        if (value) this.setProperty("wrapmode", true);
+    };
+    this.$propHandlers["wraplimitmax"] = function(value, prop, initial) {
+        this.$editor.getSession().setWrapLimitRange(this.wraplimitmin, value);
+        if (value) this.setProperty("wrapmode", true);
+    };
+    this.$propHandlers["highlightselectedword"] = function(value, prop, initial) {
+        this.$editor.setHighlightSelectedWord(value);
+    };
+    this.$propHandlers["autohidehorscrollbar"] = function(value, prop, initial) {
+        this.$editor.renderer.setHScrollBarAlwaysVisible(!value);
+    };
+    
+    this.$propHandlers["model-breakpoints"] = function(value, prop, inital) {
+        this.$debuggerBreakpoints = false;
+        
+        if (this.$breakpoints)
+            this.$breakpoints.removeEventListener("update", this.$onBreakpoint);
+
+        this.$breakpoints = value;
+
+        if (!this.$breakpoints) {
+            this.$updateBreakpoints();
+            return;
+        }
+
+        var _self = this;
+        _self.$updateBreakpoints();
+        this.$onBreakpoint = function() {
+            _self.$updateBreakpoints();
+        };
+        this.$breakpoints.addEventListener("update", this.$onBreakpoint);
+        this.$updateBreakpoints();
+    };
+    
+    this.$propHandlers["debugger"] = function(value, prop, inital) {
+        if (this.$debugger) {
+            this.$debugger.removeEventListener("changeframe", this.$onChangeActiveFrame);
+            this.$debugger.removeEventListener("break", this.$onChangeActiveFrame);
+            this.$debugger.removeEventListener("beforecontinue", this.$onBeforeContinue);
+        }
+        
+        if (typeof value === "string") {
+            
+            this.$debugger = apf.nameserver.get("debugger", value);
+            
+        } else {
+            this.$debugger = value;
+        }
+
+        if (!this.$breakpoints || this.$debuggerBreakpoints) {
+            this.setProperty("model-breakpoints", this.$debugger ? this.$debugger.$mdlBreakpoints : null);
+            this.$debuggerBreakpoints = true;
+        }
+
+        if (!this.$debugger) {
+            this.$updateMarker();
+            return;
+        }
+            
+        this.$updateMarker();
+        var _self = this;
+        this.$onChangeActiveFrame = function(e) {
+            _self.$updateMarker();
+        };
+        this.$onBeforeContinue = function() {
+            _self.$updateMarker(true);
+        };
+        this.$debugger.addEventListener("changeframe", this.$onChangeActiveFrame);
+        this.$debugger.addEventListener("break", this.$onChangeActiveFrame);
+        this.$debugger.addEventListener("beforecontinue", this.$onBeforeContinue);
+    };
+
+    var propModelHandler = this.$propHandlers["model"];
+    this.$propHandlers["model"] = function(value) {
+        propModelHandler.call(this, value);
+
+        this.$updateMarker();
+        this.$updateBreakpoints();
+    };
+
+    this.addEventListener("xmlupdate", function(e){
+        var id = e.xmlNode.getAttribute(apf.xmldb.xmlIdTag);
+        if (this.$cache[id]) {
+            //@todo Update document
+        }
+    });
+
+    /**** Public Methods ****/
+
+    
+
+    /**
+     * Sets the value of this element. This should be one of the values
+     * specified in the values attribute.
+     * @param {String} value the new value of this element
+     */
+    this.setValue = function(value){
+        return this.setProperty("value", value, false, true);
+    };
+
+    //@todo cleanup and put initial-message behaviour in one location
+    this.clear = function(){
+        this.$propHandlers["value"].call(this, "", null, true);
+
+        this.dispatchEvent("clear");//@todo this should work via value change
+    };
+
+    /**
+     * Returns the current value of this element.
+     * @return {String}
+     */
+    this.getValue = function(){
+        return this.$editor.getSession().getValue(); //@todo very inefficient
+    };
+
+    this.getDocument = 
+    this.getSession = function() {
+        return this.$editor.getSession();        
+    };
+
+    this.getSelection = function() {
+        return this.$editor.getSession().getSelection();        
+    };
+    
+    this.getLastSearchOptions = function() {
+        return this.$editor.getLastSearchOptions();
+    };
+    
+    
+
+    /**
+     * Selects the text in this element.
+     */
+    this.select   = function(){
+
+    };
+
+    /**
+     * Deselects the text in this element.
+     */
+    this.deselect = function(){
+        this.$editor.clearSelection();
+    };
+
+    this.scrollTo = function(){ };
+
+    this.getDefaults = function() {
+        return this.$defaults;
+    };
+
+    /**** Private Methods *****/
+
+    this.$focus = function(e){
+        if (!this.$ext || this.$ext.disabled)
+            return;
+
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
+
+        this.$editor.focus();
+    };
+
+    this.syncValue = function() {
+        var doc = this.$editor.getSession();
+        if (!doc.cacheId || doc.cacheId == this.$getCacheKey(this.value)) {
+            var value = this.getValue();
+            if (this.value != value)
+                this.setProperty("value", value);
+                //this.change(value);
+        }
+    };
+
+    this.$blur = function(e) {
+        if (!this.$ext)
+            return;
+
+        this.syncValue();
+    
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
+        this.$editor.blur();
+    };
+
+    //@todo
+    this.addEventListener("keydown", function(e){
+        
+    }, true);
+
+    /**** Init ****/
+
+    this.$isTextInput = function(e){
+        return true;
+    };
+
+    this.$draw = function(){
+        //Build Main Skin
+        this.$ext   = this.$getExternal();
+        this.$input = this.$getLayoutNode("main", "content", this.$ext);
+
+        this.addEventListener("resize", function(e){
+            this.$editor.resize();
+        });
+
+        this.$editor = new Editor(new VirtualRenderer(this.$input));
+        // read defaults...
+        var ed  = this.$editor;
+
+        var _self = this;
+        ed.addEventListener("changeOverwrite", function(e) {
+            _self.setProperty("overwrite", e.data);
+        });
+
+        ed.addEventListener("gutterclick", function(e) {
+            _self.dispatchEvent("gutterclick", e);
+            if (_self.$debugger) {
+                _self.$toggleBreakpoint(e.row);
+            }
+        });
+
+        ed.addEventListener("gutterdblclick", function(e) {
+            _self.dispatchEvent("gutterdblclick", e);
+        });
+
+        apf.sanitizeTextbox(ed.renderer.container.getElementsByTagName("textarea")[0]);
+    };
+    
+    this.$loadAml = function(){
+        var ed  = this.$editor,
+            doc = ed.getSession();
+        
+        if (this.syntax === undefined)
+            this.syntax = "Text";
+        if (this.tabsize === undefined)
+            this.tabsize = doc.getTabSize(); //4
+        if (this.softtabs === undefined)
+            this.softtabs = doc.getUseSoftTabs(); //true
+        if (this.scrollspeed === undefined)
+            this.scrollspeed = ed.getScrollSpeed();
+        if (this.selectstyle === undefined)
+            this.selectstyle = ed.getSelectionStyle();//"line";
+        if (this.activeline === undefined)
+            this.activeline = ed.getHighlightActiveLine();//true;
+        if (this.readonly === undefined)
+            this.readonly = ed.getReadOnly();//false;
+        if (this.showinvisibles === undefined)
+            this.showinvisibles = ed.getShowInvisibles();//false;
+        if (this.showprintmargin === undefined)
+            this.showprintmargin = ed.getShowPrintMargin();//false;
+        if (this.printmargincolumn === undefined)
+            this.printmargincolumn = ed.getPrintMarginColumn();//80;
+        if (this.overwrite === undefined)
+            this.overwrite = ed.getOverwrite();//false
+        
+        if (this.fontsize === undefined)
+            this.fontsize = 12;
+        var wraplimit = doc.getWrapLimitRange();
+        if (this.wraplimitmin === undefined)
+            this.wraplimitmin = wraplimit.min;
+        if (this.wraplimitmax === undefined)
+            this.wraplimitmax = wraplimit.max;
+        if (this.wrapmode === undefined)
+            this.wrapmode = doc.getUseWrapMode(); //false
+        if (this.gutter === undefined)
+            this.gutter = ed.renderer.getShowGutter();
+        if (this.highlightselectedword === undefined)
+            this.highlightselectedword = ed.getHighlightSelectedWord();
+        if (this.autohidehorscrollbar)
+            this.autohidehorscrollbar = !ed.renderer.getHScrollBarAlwaysVisible();
+    };
+
+
+}).call(apf.codeeditor.prototype = new apf.StandardBinding());
+
+
+apf.config.$inheritProperties["initial-message"] = 1;
+
+apf.aml.setElement("codeeditor", apf.codeeditor);
+
+});
+
+
 
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/collection.js)SIZE(2383)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
@@ -54713,7 +55317,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/debugger.js)SIZE(10804)TIME(Wed, 20 Jul 2011 13:36:07 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/debugger.js)SIZE(10804)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54737,9 +55341,441 @@ apf.aml.setElement("contents",    apf.BindingRule);
  */
 
 
+if (apf.hasRequireJS) require.def("apf/elements/debugger",
+    [], function() {
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/debughost.js)SIZE(4814)TIME(Wed, 20 Jul 2011 13:36:07 GMT)*/
+apf.dbg = function(struct, tagName){
+    this.$init(tagName || "debugger", apf.NODE_HIDDEN, struct);
+};
 
+(function(){
+    
+    this.$host = null;
+    this.$debugger = null;
+    
+    this.$supportedProperties.push("state-running", "state-attached", 
+        "model-sources", "model-stacks", "model-breakpoints", "activeframe");
+  
+    this.$createModelPropHandler = function(name, xml, callback) {
+        return function(value) {
+            if (!value) return;
+            
+            this[name] = apf.setReference(value,
+                apf.nameserver.register("model", value, new apf.model()));
+            
+            // set the root node for this model
+            this[name].id = this[name].name = value;
+            this[name].load(xml);
+            
+        }
+    };
+
+    this.$createStatePropHandler = function(name) {
+        return function(value) {
+            if (!value) return;
+            
+            this[name] = apf.setReference(value,
+                    apf.nameserver.register("state", value, new apf.state()));
+            
+            // set the root node for this model
+            this[name].id = this[name].name = value;
+            this[name].deactivate();
+            
+        }
+    };
+    
+    this.$propHandlers["model-sources"] = this.$createModelPropHandler("$mdlSources", "<sources />");
+    this.$propHandlers["model-stack"] = this.$createModelPropHandler("$mdlStack", "<frames />");
+    this.$propHandlers["model-breakpoints"] = this.$createModelPropHandler("$mdlBreakpoints", "<breakpoints />");
+
+    this.$propHandlers["state-running"] = this.$createStatePropHandler("$stRunning");
+    this.$propHandlers["state-attached"] = this.$createStatePropHandler("$stAttached");
+    
+    this.$propHandlers["activeframe"] = function(value) {
+        if (this.$debugger) {
+            this.$ignoreFrameEvent = true;
+            this.$debugger.setFrame(value);
+            this.$ignoreFrameEvent = false;
+        }
+        this.dispatchEvent("changeframe", {data: value});
+    };
+
+    this.attach = function(host, tab) {
+        var _self = this;
+
+        host.$attach(this, tab, function(err, dbgImpl) {
+            _self.$host = host;
+            _self.$debugger = dbgImpl;
+            dbgImpl.addEventListener("afterCompile", _self.$onAfterCompile.bind(_self));
+            
+            _self.$stAttached.activate();
+            _self.$stRunning.setProperty("active", dbgImpl.isRunning());
+            
+            dbgImpl.addEventListener("changeRunning", _self.$onChangeRunning.bind(_self));
+            dbgImpl.addEventListener("break", _self.$onBreak.bind(_self));
+            dbgImpl.addEventListener("detach", _self.$onDetach.bind(_self));
+            dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));
+            
+            _self.$loadSources(function() {           
+	            dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {      
+	                _self.$debugger.backtrace(_self.$mdlStack, function() {              
+	                    var frame = _self.$mdlStack.queryNode("frame[1]");
+	                    if (frame) {
+	                        var scriptId = frame.getAttribute("scriptid");
+	                        var scriptName = _self.$mdlSources.queryValue("file[@scriptid='" + scriptId + "']/@scriptname");
+	                        
+	                        if (scriptName) {
+	                            var line = frame.getAttribute("line");
+	                            var bp = _self.$mdlBreakpoints.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + line + "']");
+	                        }
+	                        if (!scriptName || !bp) {
+	                           _self.$debugger.continueScript();
+	                        }
+	                    }
+                    });
+	            });
+            });
+        });
+    };
+    
+    this.$onChangeRunning = function() {
+        var isRunning = this.$debugger && this.$debugger.isRunning();
+        if (this.$stRunning.active && !isRunning)
+            this.$onBreak();
+        
+        this.$stRunning.setProperty("active", isRunning);
+        
+        //if (isRunning)
+            //this.$mdlStack.load("<frames />");
+    };
+    
+    this.$onBreak = function() {
+        var _self = this;
+        if (!this.$debugger || this.$debugger.isRunning())
+            return;
+            
+        this.$debugger.backtrace(this.$mdlStack, function() {
+            _self.dispatchEvent("break");
+        });
+    };
+    
+    this.$onAfterCompile = function(e) {
+        var id = e.script.getAttribute("id");
+        var oldNode = this.$mdlSources.queryNode("//file[@id='" + id + "']");
+        if (oldNode)
+            this.$mdlSources.removeXml(oldNode);
+        this.$mdlSources.appendXml(e.script);
+    };
+    
+    this.$onDetach = function() {
+        if (this.$debugger) {
+	        this.$debugger.destroy();
+	        this.$debugger = null;
+        }
+        
+        this.$host = null;
+        
+        this.$mdlSources.load("<sources />");
+        this.$mdlStack.load("<frames />");
+        this.$stAttached.deactivate();
+        this.setProperty("activeframe", null);
+    };   
+
+    this.$onChangeFrame = function() {
+        if (!this.$ignoreFrameEvent) {
+            this.setProperty("activeframe", this.$debugger.getActiveFrame());
+        }
+    };
+    
+    this.changeFrame = function(frame) {
+        this.$debugger.setFrame(frame);
+    };
+    
+    this.detach = function(callback) {
+        this.continueScript();
+        if (this.$host)
+            this.$host.$detach(this.$debugger, callback);
+        else 
+            this.$onDetach();
+    };
+
+    this.$loadSources = function(callback) {
+        this.$debugger.scripts(this.$mdlSources, callback);        
+    };
+    
+    this.loadScript = function(script, callback) {
+        this.$debugger.loadScript(script, callback);
+    };
+
+    this.loadObjects = function(item, callback) {
+        this.$debugger.loadObjects(item, callback);
+    };
+    
+    this.loadFrame = function(frame, callback) {
+        this.$debugger.loadFrame(frame, callback);
+    };
+    
+    this.toggleBreakpoint = function(script, row) {
+        var model = this.$mdlBreakpoints;
+        if (this.$debugger)
+            this.$debugger.toggleBreakpoint(script, row, model);
+        else {
+            var scriptName = script.getAttribute("scriptname");
+            var bp = model.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + row + "']");
+            if (bp)
+                model.removeXml(bp)
+            else {
+	            var bp = apf.n("<breakpoint/>")
+	                .attr("script", scriptName)
+	                .attr("line", row)
+	                .attr("text", script.getAttribute("path") + ":" + row)
+	                .attr("lineoffset", 0)
+	                .node();
+	            model.appendXml(bp);
+            }
+        }
+    };
+
+    this.continueScript = function(callback) {
+        this.dispatchEvent("beforecontinue");
+        
+        if (this.$debugger)
+            this.$debugger.continueScript(callback);
+        else
+            callback && callback();
+    };
+
+    this.stepInto = function() {
+        this.dispatchEvent("beforecontinue");
+        
+        this.$debugger && this.$debugger.stepInto();
+    };
+
+    this.stepNext = function() {
+        this.dispatchEvent("beforecontinue");
+        
+        this.$debugger && this.$debugger.stepNext();
+    };
+
+    this.stepOut = function() {
+        this.dispatchEvent("beforecontinue");
+        
+        this.$debugger && this.$debugger.stepOut();
+    };    
+
+    this.suspend = function() {
+        this.$debugger && this.$debugger.suspend();
+    };
+    
+    this.evaluate = function(expression, frame, global, disableBreak, callback){
+        this.$debugger && this.$debugger.evaluate(expression, frame, global, disableBreak, callback);
+    };
+    
+    this.changeLive = function(scriptId, newSource, previewOnly, callback) {
+        this.$debugger && this.$debugger.changeLive(scriptId, newSource, previewOnly, callback);
+    };
+    
+}).call(apf.dbg.prototype = new apf.AmlElement());
+
+apf.aml.setElement("debugger", apf.dbg);
+
+
+window.adbg = {
+    exec : function(method, args, callback, options) {
+         if (method == "loadScript") {
+             var dbg = args[0];
+             var script = args[1];
+             dbg.loadScript(script, function(source) {
+                 if (options && options.callback) {
+                     options.callback(apf.escapeXML(source), apf.SUCCESS);
+                 } else {
+//                     callback("<file>" + apf.escapeXML(source) + "</file>", apf.SUCCESS);
+                     //TODO: ugly text() bug workaround
+                     callback("<file><![CDATA[" + source.replace("]]>", "]] >") + "]]></file>", apf.SUCCESS);
+                 }
+             });
+         }
+         else if (method == "loadObjects") {
+             var dbg = args[0];
+             var item = args[1];
+             
+             dbg.loadObjects(item, function(xml) {
+                 if (options && options.callback) {
+                     options.callback(xml, apf.SUCCESS);
+                 } else {
+                     callback(xml, apf.SUCCESS);
+                 }
+             });
+         }
+         else if (method == "loadFrame") {
+             var dbg = args[0];
+             var frame = args[1];
+             
+             dbg.loadFrame(frame, function(xml) {
+                 if (options && options.callback) {
+                     options.callback(xml, apf.SUCCESS);
+                 } else {
+                     callback(xml, apf.SUCCESS);
+                 }
+             });
+         }
+     }
+ };
+(apf.$asyncObjects || (apf.$asyncObjects = {}))["adbg"] = 1;
+
+return apf.dbg;
+});
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/debughost.js)SIZE(4814)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+
+
+if (apf.hasRequireJS) require.def("apf/elements/debughost",
+    ["apf/elements/dbg/chromedebughost",
+     "apf/elements/dbg/v8debughost", 
+     "apf/elements/dbg/v8websocketdebughost"],
+    function(ChromeDebugHost, V8DebugHost, V8WebSocketDebugHost) {
+    
+apf.debughost = function(struct, tagName){
+    this.$init(tagName || "debughost", apf.NODE_HIDDEN, struct);
+};
+
+(function(){
+
+    this.port = 9222;
+    this.server = "localhost";
+    this.type = "chrome";
+    this.autoinit = false;
+    this.$modelTabs = null;
+    this.$stateConnected = null;
+    
+    this.$host = null;
+    
+    this.$booleanProperties["autostart"] = true;
+    
+    this.$supportedProperties.push("port", "server", "type", "autoinit",
+        "model-tabs", "state-connected", "strip");
+
+    this.$propHandlers["model-tabs"] = function(value) {
+        if (!value) return;
+        
+        this.$modelTabs = apf.nameserver.get("model", value) || 
+            apf.setReference(value, apf.nameserver.register("model", value, new apf.model()));
+        
+        // set the root node for this model
+        this.$modelTabs.id = this.$modelTabs.name = value;
+        this.$modelTabs.load("<tabs/>");
+        
+    };
+
+    this.$propHandlers["state-connected"] = function(value) {
+        if (!value) return;
+        
+        this.$stateConnected = apf.nameserver.get("state", value) || 
+            apf.setReference(value, apf.nameserver.register("state", value, new apf.state()));
+        
+        // set the root node for this model
+        this.$stateConnected.id = this.$stateConnected.name = value;
+        this.$stateConnected.deactivate();
+        
+    };
+    
+    this.init = function() {
+        if (this.$host) {
+            return;
+        }
+        
+        if (this.type == "chrome" || this.type == "v8" || this.type == "v8-ws") {
+            if (!apf.debughost.$o3obj && this.type !== "v8-ws") {
+                apf.debughost.$o3obj = window.o3Obj || o3.create("8A66ECAC-63FD-4AFA-9D42-3034D18C88F4", { 
+                    oninstallprompt: function() { alert("can't find o3 plugin"); },
+                    product: "O3Demo"
+                }); 
+            }
+
+            if (this.type == "chrome") {
+                this.$host = new ChromeDebugHost(this.server, this.port, apf.debughost.$o3obj);
+            } else if (this.type == "v8") {
+                this.$host = new V8DebugHost(this.server, this.port, apf.debughost.$o3obj);
+            } else if (this.type == "v8-ws") {
+                var socket = this.dispatchEvent("socketfind");
+                if (!socket)
+                    throw new Error("no socket found!")
+                this.$host = new V8WebSocketDebugHost(socket);
+            } else if (this.type == "chrome-ws") {
+                var socket = this.dispatchEvent("socketfind");
+                if (!socket)
+                    throw new Error("no socket found!")
+                this.$host = new ChromeDebugHost(null, null, null, socket);
+            }
+                
+            var self = this;
+            this.$host.addEventListener("connect", function() {
+                self.dispatchEvent("connect");
+                self.$stateConnected.activate();
+            });
+            this.$host.addEventListener("disconnect", function() {
+                self.dispatchEvent("disconnect");
+                self.$stateConnected.deactivate();
+            });
+            
+            this.loadTabs();
+        }
+    };
+    
+    this.loadTabs = function() {
+        if (!this.$host)
+            this.init();
+        
+        var self = this;
+        this.$host.loadTabs(this.$modelTabs, function() {
+            self.$dispatchEvent("tabsloaded");
+        });        
+    }
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e) {
+        if (this.autoinit)
+            this.init();
+    });
+    
+    this.$attach = function(dbg, tab, callback) {        
+        if (!this.$host) 
+            this.init();
+        
+        if (tab) {
+            var id = tab.getAttribute("id");
+        } else {
+            var id = null;
+        }
+        
+        var _self = this;
+        this.$host.attach(id, function(err, dbg) {
+            dbg.setStrip(_self.strip || "");
+            callback(err, dbg);
+        });
+    };
+
+    this.$detach = function(dbgImpl, callback) {
+        if (!this.$host) 
+            return;
+        
+        this.$host.detach(dbgImpl, callback);
+    };
+    
+    this.disconnect = function() {
+        if (!this.$host) 
+            return;
+        
+        this.$host.disconnect();
+        this.$host = null;
+    };
+    
+}).call(apf.debughost.prototype = new apf.AmlElement());
+
+apf.aml.setElement("debughost", apf.debughost);
+return apf.debughost;
+
+});
 
 
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/defaults.js)SIZE(1838)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
@@ -60022,7 +61058,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/model.js)SIZE(42549)TIME(Tue, 19 Jul 2011 17:16:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/model.js)SIZE(42549)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69687,6 +70723,11 @@ apf.textbox  = function(struct, tagName){
             typedBefore = false;
         
         
+        if (this.localName == "codeeditor") {
+            this.skin = "textarea";
+            this.$loadSkin();
+        }
+        
         
         //Build Main Skin
         this.$ext = this.$getExternal(null, null, function(oExt){
@@ -70059,7 +71100,7 @@ apf.aml.setElement("toolbar", apf.toolbar);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/tree.js)SIZE(17313)TIME(Tue, 19 Jul 2011 17:16:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/tree.js)SIZE(17313)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70573,7 +71614,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/webdav.js)SIZE(49942)TIME(Wed, 20 Jul 2011 13:33:02 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/webdav.js)SIZE(49942)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72325,20 +73366,787 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/chromedebughost.js)SIZE(4101)TIME(Wed, 20 Jul 2011 13:36:07 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/chromedebughost.js)SIZE(4101)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
 
 
+if (apf.hasRequireJS) require.def("apf/elements/dbg/chromedebughost",
+    ["debug/ChromeDebugMessageStream", 
+     "debug/WSChromeDebugMessageStream", 
+     "debug/DevToolsService", 
+     "debug/V8DebuggerService",
+     "debug/V8Debugger",
+     "apf/elements/dbg/v8debugger"],
+    function(ChromeDebugMessageStream, WSChromeDebugMessageStream, DevToolsService, V8DebuggerService, V8Debugger, APFV8Debugger) {
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8debugger.js)SIZE(16896)TIME(Wed, 20 Jul 2011 13:36:07 GMT)*/
+var ChromeDebugHost = function(hostname, port, o3obj, ws) {
+    this.$hostname = hostname;
+    this.$port = port;
+    this.$o3obj = o3obj;
+    this.$ws = ws;
+
+    this.$debuggers = {};
+    
+    this.$init();
+    this.$connect(function() {});
+};
+
+(function() {
+     
+    this.$connect = function(callback) {
+        var self = this;
+
+        if (this.state == "connected") {
+            return callback.call(this);
+        } else {
+            this.addEventListener("connect", function() {
+                self.removeEventListener("connect", arguments.callee);
+                callback.call(self);
+            });
+        }
+        if (this.state == "connecting")
+            return;
+
+        this.state = "connecting";
+
+        if (!this.$ws) {
+            var socket = this.$socket = new O3Socket(this.$hostname, this.$port, this.$o3obj);
+            var msgStream = new ChromeDebugMessageStream(socket);
+        } else {
+            var msgStream = new WSChromeDebugMessageStream(this.$ws);            
+        }
+
+        msgStream.addEventListener("connect", function() {
+            self.$dts = new DevToolsService(msgStream);
+            self.$v8ds = new V8DebuggerService(msgStream);
+            self.state = "connected";
+            self.dispatchEvent("connect");
+            
+            window.onunload = self.disconnect.bind(self);
+        });
+
+        msgStream.connect();        
+    };
+    
+    this.loadTabs = function(model) {
+        var self = this;
+        this.$connect(function() {
+            self.$dts.listTabs(function(tabs) {
+                var xml = [];
+                for (var i = 0; i < tabs.length; i++) {
+                    xml.push("<tab id='", tabs[i][0], "' url='", apf.escapeXML(tabs[i][1]+""), "' />");
+                }
+                model.load("<tabs>" + xml.join("") + "</tabs>");
+            });
+        });
+    };
+    
+    this.attach = function(tabId, callback) {
+        var dbg;
+        
+        if (dbg = this.$debuggers[tabId])
+            return callback(null, dbg)
+
+        var self = this;
+        this.$connect(function() {
+            self.$v8ds.attach(tabId, function() {
+                dbg = new APFV8Debugger(new V8Debugger(tabId, self.$v8ds), this);
+                self.$debuggers[tabId] = dbg;
+                callback(null, dbg);
+            });
+        });
+    };
+    
+    this.detach = function(dbg, callback) {        
+        var self = this;
+        for (var id in this.$debuggers) {
+            if (this.$debuggers[id] == dbg) {
+                this.$v8ds.detach(id, function(err) {
+                    delete self.$debuggers[id];
+                    dbg.dispatchEvent("detach");
+                    callback && callback(err);
+                });                
+                break;
+            }    
+        }
+    };  
+    
+    this.disconnect = function(callback) {
+        var debuggers = [];
+        for (var id in this.$debuggers) {
+            debuggers.push(id);
+        }
+        
+        var self = this;
+        var detachNext = function() {
+            if (debuggers.length) {
+                var id = debuggers.shift();
+                var dbg = self.$debuggers[id]
+                self.$v8ds.detach(id, function() {
+                    detachNext();
+                    dbg.dispatchEvent("detach");
+                });
+            } else {
+                self.$socket.close();
+                self.$debuggers = {};
+                self.dispatchEvent("disconnect", {});
+                callback && callback();
+            }
+        }
+        
+        detachNext();
+    };
+    
+}).call(ChromeDebugHost.prototype = new apf.Class());
+
+return ChromeDebugHost;
+
+});
 
 
-
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8debughost.js)SIZE(2485)TIME(Wed, 20 Jul 2011 13:36:07 GMT)*/
-
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8debugger.js)SIZE(16896)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8websocketdebughost.js)SIZE(1852)TIME(Wed, 20 Jul 2011 13:36:07 GMT)*/
+if (apf.hasRequireJS) require.def("apf/elements/dbg/v8debugger",
+    ["debug/Breakpoint"],
+    function(Breakpoint) {
 
+var V8Debugger = function(dbg, host) {
+    this.$init();
+
+    this.$debugger = dbg;
+    this.$host = host;
+
+    this.$breakpoints = {};
+
+    var _self = this;
+    dbg.addEventListener("changeRunning", function(e) {
+        _self.dispatchEvent("changeRunning", e);
+        if (dbg.isRunning()) {
+            _self.setFrame(null);
+        }
+    });
+    dbg.addEventListener("break", function(e) {
+        _self.dispatchEvent("break", e);
+    });
+    dbg.addEventListener("afterCompile", function(e) {
+        _self.dispatchEvent("afterCompile", {script: apf.getXml(_self.$getScriptXml(e.data.script))});
+    });
+
+    this.setFrame(null);
+};
+
+(function() {
+    var hasChildren = {
+        "object": 8,
+        "function": 4
+    };
+
+    this.stripPrefix = "";
+
+    this.setStrip = function(stripPrefix) {
+        this.stripPrefix = stripPrefix
+    };
+
+    this.$strip = function(str) {
+        if (!this.stripPrefix)
+            return str;
+
+        if (str.indexOf(this.stripPrefix) == 0)
+            return str.slice(this.stripPrefix.length)
+        else
+            return str;
+    };
+
+    this.isRunning = function() {
+        return this.$debugger.isRunning();
+    };
+
+    this.scripts = function(model, callback) {
+        var _self = this;
+        this.$debugger.scripts(4, null, false, function(scripts) {
+            var xml = [];
+            for (var i = 0; i < scripts.length; i++) {
+                var script = scripts[i];
+                if (script.name && script.name.indexOf("chrome-extension://") == 0) {
+                    continue;
+                }
+                xml.push(_self.$getScriptXml(script));
+            }
+            model.load("<sources>" + xml.join("") + "</sources>");
+            callback();
+        });
+    };
+
+    this.$getScriptXml = function(script) {
+        return ["<file scriptid='", script.id,
+            "' scriptname='", apf.escapeXML(script.name || "anonymous"),
+            "' text='", this.$strip(apf.escapeXML(script.text || "anonymous")),
+            "' lineoffset='", script.lineOffset,
+            "' debug='true' />"].join("")
+    };
+
+    function getId(frame){
+        return (frame.func.name || frame.func.inferredName || (frame.line + frame.position));
+    }
+
+    this.$isEqual = function(xmlFrameSet, frameSet){
+        if (xmlFrameSet.length != frameSet.length)
+            return false;
+
+        var xmlFirst = xmlFrameSet[0];
+        var first    = frameSet[0];
+        if (xmlFirst.getAttribute("scriptid") != first.func.scriptId)
+            return false;
+        if (xmlFirst.getAttribute("id") != getId(first))
+            return false;
+        //if (xmlFirst.selectNodes("vars/item").length != (1 + first.arguments.length + first.locals.length))
+            //return false;
+
+        //@todo check for ref?? might fail for 2 functions in the same file with the same name in a different context
+        return true;
+    }
+
+    /**
+     * Assumptions:
+     *  - .index stays the same
+     *  - sequence in the array stays the same
+     *  - ref stays the same when stepping in the same context
+     */
+    this.$updateFrame = function(xmlFrame, frame){
+        //With code insertion, line/column might change??
+        xmlFrame.setAttribute("line", frame.line);
+        xmlFrame.setAttribute("column", frame.column);
+
+        var vars = xmlFrame.selectNodes("vars/item");
+        var fVars = frame.arguments;
+        for (var i = 1, j = 0; j < fVars.length; j++) { //i = 1 to skin this
+            if (fVars[j].name)
+                this.$updateVar(vars[i++], fVars[j]);
+        }
+        var fVars = frame.locals;
+        for (var j = 0; j < frame.locals.length; j++) {
+            if (fVars[j].name !== ".arguments")
+                this.$updateVar(vars[i++], fVars[j]);
+        }
+
+        //@todo not caring about globals/scopes right now
+    },
+
+    this.$updateVar = function(xmlVar, fVar){
+        xmlVar.setAttribute("value", this.$valueString(fVar.value));
+        xmlVar.setAttribute("type", fVar.value.type);
+        xmlVar.setAttribute("ref", fVar.value.ref);
+        apf.xmldb.setAttribute(xmlVar, "children", hasChildren[fVar.value.type] ? "true" : "false");
+    }
+
+    this.$buildFrame = function(frame, ref, xml){
+        var script = ref(frame.script.ref);
+        xml.push("<frame index='", frame.index,
+            "' name='", apf.escapeXML(apf.escapeXML(this.$frameToString(frame))),
+            "' column='", frame.column,
+            "' id='", getId(frame),
+            "' ref='", frame.ref,
+            "' line='", frame.line,
+            "' script='", this.$strip(script.name),
+            "' scriptid='", frame.func.scriptId, //script.id,
+            "'>");
+        xml.push("<vars>");
+
+        var receiver = {
+            name: "this",
+            value: frame.receiver
+        };
+        xml.push(this.$serializeVariable(receiver));
+
+        for (var j = 0; j < frame.arguments.length; j++) {
+            if (frame.arguments[j].name)
+                xml.push(this.$serializeVariable(frame.arguments[j]));
+        }
+        for (var j = 0; j < frame.locals.length; j++) {
+            if (frame.locals[j].name !== ".arguments")
+                xml.push(this.$serializeVariable(frame.locals[j]));
+        }
+        xml.push("<globals />");
+        xml.push("</vars>");
+
+        xml.push("<scopes>");
+        var scopes = frame.scopes;
+        for (var j = 0; j < scopes.length; j++) {
+            var scope = scopes[j];
+            xml.push("<scope index='",scope.index, "' type='", scope.type, "' />");
+        }
+        xml.push("</scopes>");
+
+        xml.push("</frame>");
+    }
+
+    this.backtrace = function(model, callback) {
+        var _self = this;
+        this.$debugger.backtrace(null, null, null, true, function(body, refs) {
+            function ref(id) {
+                for (var i=0; i<refs.length; i++) {
+                    if (refs[i].handle == id) {
+                        return refs[i];
+                    }
+                }
+                return {};
+            }
+
+            var frames    = body.frames;        
+            var xmlFrames = model.queryNodes("frame");
+            if (xmlFrames.length && _self.$isEqual(xmlFrames, frames)) {
+                for (var i = 0; i < frames.length; i++) {
+                    _self.$updateFrame(xmlFrames[i], frames[i]);
+                }
+                _self.setFrame(xmlFrames[0]);
+            }
+            else {
+                var xml = [];
+                if (frames) {
+                    for (var i = 0; i < frames.length; i++) {
+                        _self.$buildFrame(frames[i], ref, xml);
+                    }
+                }
+                model.load("<frames>" + xml.join("") + "</frames>");
+                _self.setFrame(model.data.firstChild);
+            }
+            callback();
+        });
+    };
+
+    this.loadScript = function(script, callback) {
+        var id = script.getAttribute("scriptid");
+        var _self = this;
+        this.$debugger.scripts(4, [id], true, function(scripts) {
+            if (scripts.length) {
+                var script = scripts[0];
+                callback(script.source);
+            }
+        });
+    };
+
+    this.loadObjects = function(item, callback) {
+        var ref = item.getAttribute("ref");
+        var _self = this;
+        this.$debugger.lookup([ref], false, function(body) {
+            var refs = [];
+            var props = body[ref].properties;
+            for (var i=0; i<props.length; i++) {
+                refs.push(props[i].ref);
+            }
+
+            _self.$debugger.lookup(refs, false, function(body) {
+                var xml = ["<item>"];
+                for (var i=0; i<props.length; i++) {
+                    props[i].value = body[props[i].ref];
+                    xml.push(_self.$serializeVariable(props[i]));
+                }
+                xml.push("</item>");
+                callback(xml.join(""));
+            });
+        });
+    };
+
+    this.loadFrame = function(frame, callback) {
+        //var xml = "<vars><item name='juhu' value='42' type='number'/></vars>"
+        var scopes = frame.getElementsByTagName("scope");
+
+        var frameIndex = parseInt(frame.getAttribute("index"));
+
+        var _self = this;
+        var processed = 0;
+        var expected = 0;
+        var xml = ["<vars>"];
+
+        for (var i=0; i<scopes.length; i++) {
+            var scope = scopes[i];
+            var type = parseInt(scope.getAttribute("type"));
+
+            // ignore local and global scope
+            if (type > 1) {
+                expected += 1;
+                var index = parseInt(scope.getAttribute("index"));
+                this.$debugger.scope(index, frameIndex, true, function(body) {
+                    var props = body.object.properties;
+                    for (j=0; j<props.length; j++) {
+                        xml.push(_self.$serializeVariable(props[j]))
+                    }
+                    processed += 1;
+                    if (processed == expected) {
+                        xml.push("</vars>");
+                        callback(xml.join(""));
+                    }
+                });
+            }
+        }
+        if (expected == 0)
+            return callback("<vars />");
+    };
+
+    this.setFrame = function(frame) {
+        this.$activeFrame = frame;
+        this.dispatchEvent("changeFrame", {data: frame});
+    };
+
+
+    this.getActiveFrame = function() {
+        return this.$activeFrame;
+    };
+
+    this.setBreakpoints = function(model, callback) {
+        var _self = this;
+
+        var breakpoints = model.queryNodes("breakpoint");
+        _self.$debugger.listbreakpoints(function(v8Breakpoints) {
+            if (v8Breakpoints.breakpoints) {
+                for (var id in _self.$breakpoints)
+                    _self.$breakpoints[id].destroy();
+                _self.$breakpoints = {};
+                
+                for (var i=0,l=v8Breakpoints.breakpoints.length; i<l; i++) {
+                    if (v8Breakpoints.breakpoints[i].type == "scriptId")
+                        continue;
+                        
+                    var breakpoint = Breakpoint.fromJson(v8Breakpoints.breakpoints[i], _self.$debugger);
+                    var id = breakpoint.source + "|" + breakpoint.line;
+                    
+                    _self.$breakpoints[id] = breakpoint;
+                    
+                    model.removeXml("breakpoint[@script='" + breakpoint.source + "' and @line='" + breakpoint.line + "']");
+                    model.appendXml(_self.$getBreakpointXml(breakpoint, 0));
+                }
+            }
+    
+            var modelBps = model.queryNodes("breakpoint") || [];
+            
+            apf.asyncForEach(Array.prototype.slice.call(modelBps, 0), function(modelBp, next) {
+                var script = modelBp.getAttribute("script");
+                var line = modelBp.getAttribute("line");
+                var id = script + "|" + line;
+                var bp = _self.$breakpoints[id];
+                if (!bp) {
+                    bp = _self.$breakpoints[id] = new Breakpoint(script, line, modelBp.getAttribute("column"));
+                    bp.condition = modelBp.getAttribute("condition");
+                    bp.ignoreCount = parseInt(modelBp.getAttribute("ignorecount") || 0);
+                    bp.enabled = modelBp.getAttribute("enabled") == "true";
+                    bp.attach(_self.$debugger, function() {
+		                if (modelBp.parentNode) model.removeXml(modelBp);
+		                model.appendXml(_self.$getBreakpointXml(bp, 0));
+		                next();
+                    });
+                }
+                else {
+	                if (modelBp.parentNode) model.removeXml(modelBp);
+	                model.appendXml(_self.$getBreakpointXml(bp, 0));
+	                next();
+                }
+            }, callback);
+        });
+    };
+    
+    this.toggleBreakpoint = function(script, relativeRow, model) {
+        var _self = this;
+
+        var name = script.getAttribute("scriptname");
+
+        var lineOffset = parseInt(script.getAttribute("lineoffset") || "0");
+        var row = lineOffset + relativeRow;
+        var id = name + "|" + row;
+
+        var breakpoint = this.$breakpoints[id];
+        if (breakpoint) {
+            delete this.$breakpoints[id];
+            breakpoint.clear(function() {
+                model.removeXml(model.queryNode("breakpoint[@id=" + breakpoint.$id + "]"));
+            });
+        } else {
+            breakpoint = this.$breakpoints[id] = new Breakpoint(name, row);
+            breakpoint.attach(this.$debugger, function() {
+                model.appendXml(_self.$getBreakpointXml(breakpoint, lineOffset, script.getAttribute("scriptid")));
+            });
+        }
+    };
+    
+    this.$getBreakpointXml = function(breakpoint, lineOffset, scriptId) {
+        var xml = [];
+        xml.push("<breakpoint",
+            " id='", breakpoint.$id,
+            "' text='", this.$strip(apf.escapeXML(breakpoint.source)), ":", breakpoint.line,
+            "' script='", apf.escapeXML(breakpoint.source),
+            scriptId ? "' scriptid='" + scriptId : "",
+            "' lineoffset='", lineOffset || 0,
+            "' line='", breakpoint.line,
+            "' condition='", apf.escapeXML(breakpoint.condition || ""),
+            "' ignorecount='", breakpoint.ignoreCount || 0,
+            "' enabled='", breakpoint.enabled,
+            "' />")
+
+        return(xml.join(""));
+    };
+
+    this.continueScript = function(callback) {
+        this.$debugger.continueScript(null, null, callback);
+    };
+
+    this.stepInto = function(callback) {
+        this.$debugger.continueScript("in", 1, callback);
+    };
+
+    this.stepNext = function(callback) {
+        this.$debugger.continueScript("next", 1, callback);
+    };
+
+    this.stepOut = function(callback) {
+        this.$debugger.continueScript("out", 1, callback);
+    };
+
+    this.suspend = function() {
+        this.$debugger.suspend();
+    };
+  
+    this.changeLive = function(scriptId, newSource, previewOnly, callback) {
+        this.$debugger.changelive(scriptId, newSource, previewOnly, callback);
+    };
+    
+    this.evaluate = function(expression, frame, global, disableBreak, callback){
+        this.$debugger.evaluate(expression, frame, global, disableBreak, function(body, refs, error){
+            var str = [];
+            var name = expression.trim().split(/;|\n/).pop().trim().replace(/"/g, "&quot;");
+            if (error) {
+                str.push("<item type='.error' name=\"", apf.escapeXML(name),
+                    "\" value='", error.message, "' />");
+            }
+            else {
+                str.push("<item name=\"", apf.escapeXML(name),
+                  "\" value='", apf.escapeXML(body.text), //body.value ||
+                  "' type='", body.type,
+                  "' ref='", body.handle,
+                  body.constructorFunction ? "' constructor='" + body.constructorFunction.ref : "",
+                  body.prototypeObject ? "' prototype='" + body.prototypeObject.ref : "",
+                  body.properties && body.properties.length ? "' children='true" : "",
+                  "' />");
+            }
+            callback(apf.getXml(str.join("")), body, refs, error);
+        });
+    };
+
+    this.$valueString = function(value) {
+        switch (value.type) {
+            case "undefined":
+            case "null":
+                return value.type;
+
+            case "boolean":
+            case "number":
+            case "string":
+                return value.value + "";
+
+            case "object":
+                return "[" + value.className + "]";
+
+            case "function":
+                return "function " + value.inferredName + "()";
+
+            default:
+                return value.type;
+        };
+    };
+
+    this.$frameToString = function(frame) {
+        var str = [];
+        str.push(frame.func.name || frame.func.inferredName || "anonymous", "(");
+        var args = frame.arguments;
+        var argsStr = [];
+        for (var i=0; i<args.length; i++) {
+            var arg = args[i];
+            if (!arg.name)
+                continue;
+            argsStr.push(arg.name);
+        }
+        str.push(argsStr.join(", "), ")");
+        return str.join("");
+    }
+
+    this.$serializeVariable = function(item, name) {
+        var str = [];
+        str.push("<item name='", apf.escapeXML(name || item.name),
+            "' value='", apf.escapeXML(this.$valueString(item.value)),
+            "' type='", item.value.type,
+            "' ref='", typeof item.value.ref == "number" ? item.value.ref : item.value.handle,
+            hasChildren[item.value.type] ? "' children='true" : "",
+            "' />");
+        return str.join("");
+    }
+    
+}).call(V8Debugger.prototype = new apf.Class());
+
+return V8Debugger;
+
+});
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8debughost.js)SIZE(2485)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+
+
+if (apf.hasRequireJS) require.def("apf/elements/dbg/v8debughost",
+    ["debug/StandaloneV8DebuggerService",
+     "debug/V8Debugger",
+     "apf/elements/dbg/v8debugger"],
+    function(StandaloneV8DebuggerService, V8Debugger, APFV8Debugger) {
+
+var V8DebugHost = function(hostname, port, o3obj) {
+    this.$hostname = hostname;
+    this.$port = port;
+    this.$o3obj = o3obj;
+    
+    this.$debugger = null;
+    
+    this.$init();
+};
+
+(function() {
+     
+    this.$connect = function(callback) {
+        var self = this;
+        
+        if (this.state == "connected") {
+            return callback.call(this);
+        } else {
+            this.addEventListener("connect", function() {
+                self.removeEventListener("connect", arguments.callee);
+                callback.call(self);
+            });
+        }
+        if (this.state == "connecting")
+            return;
+
+        this.state = "connecting";
+        
+        var socket = this.$socket = new O3Socket(this.$hostname, this.$port, this.$o3obj);
+        this.$v8ds = new StandaloneV8DebuggerService(socket);
+        
+        this.state = "connected";
+        this.dispatchEvent("connect");
+            
+        window.onunload = this.disconnect.bind(this);
+        callback.call(this);
+    };
+    
+    this.loadTabs = function(model) {
+        model.load("<tabs><tab id='0'>V8</tab></tabs>");
+    };
+    
+    this.attach = function(tabId, callback) {
+        var dbg = this.$debugger;
+        
+        if (dbg)
+            return callback(null, dbg)
+
+        var self = this;
+        this.$connect(function() {
+            self.$v8ds.attach(0, function() {
+                dbg = new APFV8Debugger(new V8Debugger(0, self.$v8ds), this);
+                self.$debugger = dbg;
+                callback(null, dbg);
+            });
+        });
+    };
+    
+    this.detach = function(dbg, callback) {        
+        if (!dbg || this.$debugger !== dbg)
+            return callback();
+        
+        this.$debugger = null;
+
+        var self = this;
+        this.$v8ds.detach(0, function(err) {
+            dbg.dispatchEvent("detach");
+            self.$socket.close();
+            self.dispatchEvent("disconnect", {});
+            callback && callback(err);
+        });                
+    };  
+    
+    this.disconnect = function(callback) {
+        this.detach(this.$debugger, callback);
+    };
+    
+}).call(V8DebugHost.prototype = new apf.Class());
+
+return V8DebugHost;
+
+});
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8websocketdebughost.js)SIZE(1852)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+
+
+if (apf.hasRequireJS) require.def("apf/elements/dbg/v8websocketdebughost",
+    ["debug/WSV8DebuggerService",
+     "debug/V8Debugger",
+     "apf/elements/dbg/v8debugger"],
+    function(WSV8DebuggerService, V8Debugger, APFV8Debugger) {
+
+var V8WebSocketDebugHost = function(socket) {
+    this.$socket = socket;
+    this.$debugger = null;
+    
+    this.$init();
+};
+
+(function() {
+     
+    this.$connect = function(callback) {
+        if (this.state != "connected")
+            this.$v8ds = new WSV8DebuggerService(this.$socket);
+        
+        this.state = "connected";
+        this.dispatchEvent("connect");
+        callback.call(this);
+    };
+    
+    this.loadTabs = function(model) {
+        model.load("<tabs><tab id='0'>V8</tab></tabs>");
+    };
+    
+    this.attach = function(tabId, callback) {
+        var dbg = this.$debugger;
+        
+        if (dbg)
+            return callback(null, dbg)
+
+        var self = this;
+        this.$connect(function() {
+            self.$v8ds.attach(0, function() {
+                dbg = new APFV8Debugger(new V8Debugger(0, self.$v8ds), this);
+                self.$debugger = dbg;
+                callback(null, dbg);
+            });
+        });
+    };
+    
+    this.detach = function(dbg, callback) {        
+        if (!dbg || this.$debugger !== dbg)
+            return callback();
+        
+        this.$debugger = null;
+
+        var self = this;
+        this.$v8ds.detach(0, function(err) {
+            dbg.dispatchEvent("detach");
+            self.dispatchEvent("disconnect", {});
+            callback && callback(err);
+        });                
+    };  
+    
+    this.disconnect = function(callback) {
+        this.detach(this.$debugger, callback);
+    };
+    
+}).call(V8WebSocketDebugHost.prototype = new apf.Class());
+
+return V8WebSocketDebugHost;
+});
 
 
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/modalwindow/widget.js)SIZE(7077)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
@@ -73805,7 +75613,7 @@ apf.aml.setProcessingInstruction("livemarkup", apf.LiveMarkupPi);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/jpack_end.js)SIZE(1296)TIME(Wed, 20 Jul 2011 13:36:07 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/jpack_end.js)SIZE(1294)TIME(Wed, 20 Jul 2011 14:52:25 GMT)*/
 
 
 
@@ -73835,13 +75643,17 @@ else*/
 if (window.require && typeof require.def == "function") {
     var deps = [];
     
+    deps.push("apf/elements/codeeditor");
     
+    
+    
+    deps.push("apf/elements/debugger", "apf/elements/debughost");
     
     
     if (deps.length) {
-        require([
+        require(
             deps
-        ], function() {
+        , function() {
             apf.start();
         });
     }
