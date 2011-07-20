@@ -179,11 +179,35 @@ apf.BaseTree = function(){
             this.select(xmlNode);
     }
     
-    this.expandList = function(pathList, callback){
+    this.expandList = function(pathList, user_callback){
+        var pathLut = {};
+        function check(path, callback){
+            pathLut[path] = true;
+            
+            var found;
+            for(var i = 0, l = pathList.length; i < l; i++) {
+                var ipath = pathList[i];
+                if (ipath) {
+                    if (ipath == path)
+                        delete pathList[i];
+                    
+                    var t = ipath.split("/"); t.pop();
+                    var parent = t.join("/");
+                    if (parent == path) {
+                        callback(ipath);
+                        found = true;
+                    }
+                }
+            }
+
+            if (!found)
+                user_callback();
+        };
+        
         pathList.sort();
         var root = this.xmlRoot, _self = this;
-        apf.asyncForEach(pathList,
-            function(item, next){
+        check("/", 
+            function(item){
                 var paths = item.split("/");
                 var lastNode = root;//root.selectSingleNode(paths.shift());
 
@@ -219,13 +243,10 @@ apf.BaseTree = function(){
                         //}
                     }
                 );
-            },
-            function(err){
-                if (callback) 
-                    callback();
             }
         );
     }
+    
     
     /**
      * @notimplemented

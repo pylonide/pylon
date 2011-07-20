@@ -25,7 +25,6 @@
  * Object handling sorting in a similar way as xslt.
  *
  * @constructor
- * @todo use a struct instead of lots of local variables, and stop using eval
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -35,7 +34,6 @@
  */
 apf.Sort = function(xmlNode){
     var settings = {};
-    //order, xpath, type, method, getNodes, dateFormat, dateReplace, sort_dateFmtStr, getValue;
     
     //use this function to parse the each node
     this.parseXml = function(xmlNode, clear){

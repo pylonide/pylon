@@ -1050,8 +1050,27 @@ apf.webdav = function(struct, tagName){
             this.$regVar("authenticated", true);
         // start from 1 (one), because the first element contains PROP info on the path
         var start = (extra.headers && typeof extra.headers.Depth != "undefined" && extra.headers.Depth == 0) ? 0 : 1;
-        for (var i = start, j = aResp.length; i < j; i++)
-            aOut.push(parseItem.call(this, aResp[i]));
+        for (var sa = [], data, i = start, j = aResp.length; i < j; i++) {
+            parseItem.call(this, aResp[i], data = {});
+            if (data.data) 
+                sa.push({
+                    toString: function(){
+                        return this.v;
+                    },
+                    data : data.data,
+                    v    : (data.data.type == "file" ? 1 : 0) + "" + data.data.name
+                });
+        }
+        
+        sa.sort();
+        
+        for (var i = 0, l = sa.length; i < l; i++) {
+            aOut.push(sa[i].data.xml);
+        }
+        
+//        var start = (extra.headers && typeof extra.headers.Depth != "undefined" && extra.headers.Depth == 0) ? 0 : 1;
+//        for (var i = start, j = aResp.length; i < j; i++)
+//            aOut.push(parseItem.call(this, aResp[i]));
 
         callback && callback.call(this, "<files>" + aOut.join("") + "</files>", state, extra);
     }
@@ -1064,7 +1083,7 @@ apf.webdav = function(struct, tagName){
      * @type  {String}
      * @private
      */
-    function parseItem(oNode) {
+    function parseItem(oNode, extra) {
         var NS      = apf.webdav.NS,
             sPath   = decodeURIComponent($xmlns(oNode, "href", NS.D)[0].firstChild
                       .nodeValue.replace(/[\\\/]+$/, "")),
@@ -1094,6 +1113,9 @@ apf.webdav = function(struct, tagName){
             lockable    : ($xmlns(oNode, "locktype", NS.D).length > 0),
             executable  : (aExec.length > 0 && aExec[0].firstChild.nodeValue == "T")
         });
+        
+        if (extra)
+            extra.data = oItem;
         
         return oItem.xml = "<" + sType + " path='" + sPath + "'  type='" + sType
             + "' size='" + oItem.size + "' name='" + oItem.name + "' contenttype='"
