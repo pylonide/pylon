@@ -278,6 +278,7 @@ return ext.register("ext/filesystem/filesystem", {
 
     init : function(amlNode){
         this.model = new apf.model();
+        this.model.setAttribute("whitespace", false);
         
         var _self = this;
         ide.addEventListener("afteronline", function(){
