@@ -108,8 +108,9 @@ define(function(require, exports, module) {
             // fire up the socket connection:
             var options = {
                 rememberTransport: false,
-                transports:  [/*"htmlfile", "xhr-multipart", "flashsocket", */"xhr-polling", "jsonp-polling"],
+                //transports:  [/*"htmlfile", "xhr-multipart", "flashsocket", */"xhr-polling", "jsonp-polling"],
                 connectTimeout: 5000,
+                reconnect: false,
                 transportOptions: {
                     "xhr-polling": {
                         timeout: 60000
@@ -137,19 +138,21 @@ define(function(require, exports, module) {
                 ide.$retryTimer = setInterval(function() {
                     if (++retries == 3)
                         ide.dispatchEvent("socketDisconnect");
-                    
-                    if (!ide.socket.connecting && !ide.testOffline && ide.loggedIn)
-                        ide.socket.connect();
+
+                    var sock = ide.socket.socket;
+                    if (!sock.reconnecting && !sock.connecting && !ide.testOffline && ide.loggedIn)
+                        sock.reconnect();
                 }, 500);
             };
 
             ide.socketMessage = function(message) {
                 try {
                     message = JSON.parse(message);
-                } catch(e) {
+                }
+                catch(e) {
                     return;
                 }
-                
+
                 if (message.type == "attached")
                     ide.dispatchEvent("socketConnect");
 
@@ -160,7 +163,7 @@ define(function(require, exports, module) {
             
             // for unknown reasons io is sometimes undefined
             try {
-                ide.socket = new io.Socket(null, options);
+                ide.socket = new io.connect(null, options);
             } catch (e) {
                 util.alert(
                     "Error starting up",
@@ -202,8 +205,9 @@ define(function(require, exports, module) {
             
             ide.socket.on("message",    ide.socketMessage);
             ide.socket.on("connect",    ide.socketConnect);
+            //ide.socket.on("reconnect",  ide.socketReconnect);
+            //ide.socket.on("reconnecting",  ide.socketReconnecting);
             ide.socket.on("disconnect", ide.socketDisconnect);
-            ide.socket.connect();
         });
         
         ide.getActivePageModel = function() {
