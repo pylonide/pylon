@@ -137,7 +137,7 @@ return ext.register("ext/noderunner/noderunner", {
     },
 
     run : function(path, args, debug) {      
-        if (stProcessRunning.active || !stServerConnected.active || (ddRunnerSelector.value=='gae' ? '' : !path) || typeof path != "string")
+        if (stProcessRunning.active || !stServerConnected.active/* || (ddRunnerSelector.value=='gae' ? '' : !path)*/ || typeof path != "string")
             return false;
 
         var page = ide.getActivePageModel();
