@@ -1,3 +1,4 @@
+// #ifdef __AMLDEBUGGER || __INC_ALL
 if (apf.hasRequireJS) require.def("apf/elements/debughost",
     ["apf/elements/dbg/chromedebughost",
      "apf/elements/dbg/v8debughost", 
@@ -144,3 +145,4 @@ apf.aml.setElement("debughost", apf.debughost);
 return apf.debughost;
 
 });
+// #endif

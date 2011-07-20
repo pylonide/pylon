@@ -1,3 +1,4 @@
+// #ifdef __AMLDEBUGGER || __INC_ALL
 if (apf.hasRequireJS) require.def("apf/elements/dbg/v8debughost",
     ["debug/StandaloneV8DebuggerService",
      "debug/V8Debugger",
@@ -86,3 +87,4 @@ var V8DebugHost = function(hostname, port, o3obj) {
 return V8DebugHost;
 
 });
+// #endif

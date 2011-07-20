@@ -1,3 +1,4 @@
+// #ifdef __AMLDEBUGGER || __INC_ALL
 if (apf.hasRequireJS) require.def("apf/elements/dbg/v8websocketdebughost",
     ["debug/WSV8DebuggerService",
      "debug/V8Debugger",
@@ -64,3 +65,4 @@ var V8WebSocketDebugHost = function(socket) {
 
 return V8WebSocketDebugHost;
 });
+// #endif

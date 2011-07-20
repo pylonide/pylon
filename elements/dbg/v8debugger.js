@@ -1,3 +1,4 @@
+// #ifdef __AMLDEBUGGER || __INC_ALL
 if (apf.hasRequireJS) require.def("apf/elements/dbg/v8debugger",
     ["debug/Breakpoint"],
     function(Breakpoint) {
@@ -475,3 +476,4 @@ var V8Debugger = function(dbg, host) {
 return V8Debugger;
 
 });
+// #endif
