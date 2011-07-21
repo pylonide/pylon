@@ -184,18 +184,27 @@ return ext.register("ext/tree/tree", {
             setTimeout(function () {
                 var args     = e.args[0].args,
                     filename = args[1].getAttribute("name");
+                
+                while (args[1].parentNode.selectSingleNode("node()[@name='" + filename.replace(/'/g, "\\'") + "']")) {
+                    filename = filename.replace(/_(\d+)$/, function(m, d){
+                        return "_" + parseInt(d ? d : 0) + 1;
+                    });
+                }
+                
                 fs.beforeRename(args[1], null, args[0].getAttribute("path").replace(/[\/]+$/, "") + "/" + filename);
             });
         });
        
         trFiles.addEventListener("beforestoprename", function(e) {
-            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
+            if (!ide.onLine && !ide.offlineFileSystemSupport) 
+                return false;
 
             return fs.beforeStopRename(e.value);
         });
  
         trFiles.addEventListener("beforerename", function(e){
-            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
+            if (!ide.onLine && !ide.offlineFileSystemSupport) 
+                return false;
             
             if(trFiles.$model.data.firstChild == trFiles.selected)
                 return false;
@@ -212,8 +221,11 @@ return ext.register("ext/tree/tree", {
                 break;
             }
             if (exists) {
-                util.alert("Error", "Unable to move", "Couldn't move to this destination because there's already a node with the same name");
-                trFiles.getActionTracker().undo();
+                util.alert("Error", 
+                    "Unable to move", 
+                    "Couldn't move to this destination because there's already\
+                     a node with the same name");
+                //trFiles.getActionTracker().undo();
                 return false;
             }
             
@@ -233,6 +245,13 @@ return ext.register("ext/tree/tree", {
                 }
             });
         });
+        
+//        trFiles.getActionTracker().addEventListener("error", function(e){
+//            if (e.status == 412) {
+//                util.alert("Error", "Unable to move", "Couldn't move to this destination because there's already a node with the same name");
+//                return false;
+//            }
+//        });
         
         var cancelWhenOffline = function(){
             if (!ide.onLine && !ide.offlineFileSystemSupport) return false;

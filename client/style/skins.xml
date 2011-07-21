@@ -7069,7 +7069,15 @@
             white-space: nowrap;
         }
         
-        .filemgr-tree .loading,
+        .filemgr-tree .loading .item LABEL {
+            background-image : url(images/file-tree-load-spinner.gif);
+        }
+        
+        .filemgr-tree .loading.selected .item LABEL {
+            background-image : url(images/file-tree-load-spinner-selected.gif);
+        }
+        
+        .filemgr-tree .ldng,
         .filemgr-tree .empty {
             display : none;
         }
@@ -7184,7 +7192,7 @@
             </div>
         </a:dragindicator>
         <a:loading>
-            <div class="loading">
+            <div class="ldng">
                 <span> </span>
                 <label>Loading...</label>
             </div>

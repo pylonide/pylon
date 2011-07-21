@@ -280,6 +280,25 @@ return ext.register("ext/filesystem/filesystem", {
         this.model = new apf.model();
         this.model.setAttribute("whitespace", false);
         
+        this.model.addEventListener("update", function(e){
+            //resort on move, copy, rename, add
+            if (e.action == "attribute" || e.action == "add" || e.action == "move") {
+                var xmlNode = e.xmlNode, pNode = xmlNode.parentNode;
+                
+                var sort = new apf.Sort();
+                sort.set({xpath: "@name", method: "filesort"});
+                var nodes = sort.apply(pNode.childNodes);
+                
+                for (var i = 0, l = nodes.length; i < l; i++) {
+                    if (nodes[i] == xmlNode) {
+                        if (xmlNode.nextSibling != nodes[i+1])
+                            apf.xmldb.appendChild(pNode, xmlNode, nodes[i+1]);
+                        break;
+                    }
+                }
+            }
+        });
+        
         var _self = this;
         ide.addEventListener("afteronline", function(){
             _self.model.load("<data><folder type='folder' name='" + ide.projectName + "' path='" + ide.davPrefix + "' root='1'/></data>");
