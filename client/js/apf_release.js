@@ -1,7 +1,7 @@
 var apf={VERSION:"3.0beta",CDN:"",READY:false,NODE_HIDDEN:101,NODE_VISIBLE:102,NODE_O3:103,KEYBOARD:2,KEYBOARD_MOUSE:true,SUCCESS:1,TIMEOUT:2,ERROR:3,OFFLINE:4,debug:false,includeStack:[],initialized:false,AppModules:[],autoLoadSkin:false,started:false,crypto:{},config:{},_GET:{},$asyncObjects:{"apf.oHttp":1,"apf.ajax":1},basePath:"",ns:{apf:"http://ajax.org/2005/aml",aml:"http://ajax.org/2005/aml",xsd:"http://www.w3.org/2001/XMLSchema",xhtml:"http://www.w3.org/1999/xhtml",xslt:"http://www.w3.org/1999/XSL/Transform",xforms:"http://www.w3.org/2002/xforms",ev:"http://www.w3.org/2001/xml-events"},xPathAxis:{self:1,"following-sibling":1,ancestor:1},hasRequireJS:window.require&&typeof require.def=="function",availHTTP:[],releaseHTTP:function(http){if(apf.brokenHttpAbort){return;
 }if(self.XMLHttpRequestUnSafe&&http.constructor==XMLHttpRequestUnSafe){return;}http.onreadystatechange=function(){};
 http.abort();this.availHTTP.push(http);},browserDetect:function(){if(this.$bdetect){return;
-}this.$bdetect=true;var sAgent=navigator.userAgent.toLowerCase()||"",oldSaf=/a/.__proto__=="//",b=(typeof/./)[0]=="f"?+"1\0"?3:2:+"1\0"?5:1-"\0"?1:!oldSaf?3:+{valueOf:function(x){return !x;
+}this.$bdetect=true;var sAgent=navigator.userAgent.toLowerCase()||"",isSafInf=(sAgent.indexOf("safari")!=-1)&&/a/.__proto__=="//",b=(typeof/./)[0]=="f"?+"1\0"?3:2:+"1\0"?5:1-"\0"?1:isSafInf?3:+{valueOf:function(x){return !x;
 }}?4:0;if((typeof/./)[0]=="f"&&parseFloat((sAgent.match(/(?:firefox|minefield)\/([\d\.]+)/i)||{})[1])<=2){b=0;
 }if(b===4&&sAgent.indexOf("chrome")>-1){b=2;}this.isOpera=b===4||b===5;this.isKonqueror=b===5;
 this.isSafari=b===3;this.isSafariOld=false;this.isIphone=sAgent.indexOf("iphone")!=-1||sAgent.indexOf("aspen simulator")!=-1;

@@ -3,7 +3,7 @@
 
 
 
-/*FILEHEAD(apf.js)SIZE(97197)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+/*FILEHEAD(apf.js)SIZE(97236)TIME(Thu, 21 Jul 2011 14:09:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -251,9 +251,9 @@ VERSION:'3.0beta',
         // http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
         // http://sla.ckers.org/forum/read.php?24,31765,33730
         var sAgent = navigator.userAgent.toLowerCase() || "",
-            oldSaf = /a/.__proto__=='//', // Safari versions < 5.1 (before Lion release)
+            isSafInf = (sAgent.indexOf('safari') != -1) && /a/.__proto__=='//', // Safari versions < 5.1 (before Lion release)
             // 1->IE, 0->FF, 2->GCrome, 3->Safari, 4->Opera, 5->Konqueror 
-            b      = (typeof/./)[0]=='f'?+'1\0'?3:2:+'1\0'?5:1-'\0'?1:!oldSaf?3:+{valueOf:function(x){return!x}}?4:0;
+            b      = (typeof/./)[0]=='f'?+'1\0'?3:2:+'1\0'?5:1-'\0'?1:isSafInf?3:+{valueOf:function(x){return!x}}?4:0;
 
        /*
         * Fix for firefox older than 2
