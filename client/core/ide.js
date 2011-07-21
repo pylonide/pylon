@@ -140,7 +140,7 @@ define(function(require, exports, module) {
                         ide.dispatchEvent("socketDisconnect");
 
                     var sock = ide.socket.socket;
-                    if (!sock.reconnecting && !sock.connecting && !ide.testOffline && ide.loggedIn)
+                    if (!sock.connecting && !ide.testOffline && ide.loggedIn)
                         sock.reconnect();
                 }, 500);
             };
