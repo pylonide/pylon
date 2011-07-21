@@ -3937,6 +3937,7 @@
                 top  : 30px;
                 right : 0;
                 bottom : 0;
+                background:url(images/panelBg.png) repeat-y right 0;
             }
         ]]></a:style>
         
@@ -5948,17 +5949,17 @@
     }
 
     .editor_tab .editor_bg .editor_bg_content {
-        width: 315px;
+        width: 430px;
         margin: 80px auto 0;
         background: url(images/empty_editor_icon.png) no-repeat center 0;
-        padding-top: 138px;
+        padding-top: 125px;
         text-align: center;
         color: #333333;
         text-shadow : rgba(255, 255, 255, .71) 1px 1px 1px;
         font-size: 18px;
     }
 
-    .editor_tab .editor_bg .editor_bg_content .editor_bg_message{
+    .editor_tab .editor_bg .editor_bg_content .editor_bg_message2 {
         background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(237,237,237)),color-stop(1, rgb(255,255,255)));
         background: -moz-linear-gradient(center bottom,rgb(237,237,237) 0%,rgb(255,255,255) 100%);
         -webkit-box-shadow: 1px 1px 3px #aaaaaa;
@@ -5974,7 +5975,15 @@
         -webkit-border-radius: 4px;
         -webkit-border-radius: 4px;
     }
-
+    
+    .editor_tab .editor_bg .editor_bg_content .editor_bg_message {
+        color: #489829;
+        font-family: georgia;
+        padding-top: 4px;
+        background: url(images/green-arrow-left.png) no-repeat 0 0;
+        text-shadow : rgba(240, 240, 240, .71) 1px 1px 1px;
+    }
+    
     .editor_tab .session_page {
         display : none;
         position : absolute;
@@ -6002,11 +6011,7 @@
             <div class="btnsesssioncontainer"> </div>
             <div class="editor_bg">
                 <div class="editor_bg_content">
-                    No files opened yet...
-                    <div class="editor_bg_message">
-                        To get started double-click a supported file
-                        from the Files-panel on the left...
-                    </div>
+                    <div class="editor_bg_message">Open a file or create a new one to get started</div>
                 </div>
             </div>
         </div>
@@ -6739,7 +6744,7 @@
 
         .searchbox_textboxFocus .btnclose {
             position : absolute;
-            right : 11px;
+            right : 8px;
             top : 5px;
             width : 14px;
             height : 14px;

@@ -112,14 +112,15 @@ return ext.register("ext/console/console", {
         var wsRe = new RegExp(lang.escapeRegExp(workspaceDir) + "\\/([^:]*)(:\\d+)(:\\d+)*", "g");
         // relative workspace files
         var wsrRe = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+(?:\.[\w\_\$]+))?(\:\d+)(\:\d+)*/g;
-        
+
         for (var i=0; i<lines.length; i++) {
             if (!lines[i]) continue;
-
             log.push("<div class='item'><span style='" + style + "'>" + lines[i]
-                .replace(/\s/g, "&nbsp;")
-                .replace(wsrRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>$1$2$3</a>")
                 .replace(wsRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>"+workspaceDir+"/$1$2$3</a>")
+                .replace(wsrRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>$1$2$3</a>")
+                .replace(/\s{2,}/g, function(str) {
+                    return lang.stringRepeat("&nbsp;", str.length)
+                })
                 .replace(/(((http:\/\/)|(www\.))[\w\d\.-]*(:\d+)?(\/[\w\d]+)?)/, "<a href='$1' target='_blank'>$1</a>")
                 // tty escape sequences (http://ascii-table.com/ansi-escape-sequences.php)
                 .replace(/(\u0007|\u001b)\[(K|2J)/g, "")

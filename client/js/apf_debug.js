@@ -1,9 +1,17 @@
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/jpack_begin.js)SIZE(0)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 
 
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/apf.js)SIZE(97098)TIME(Tue, 19 Jul 2011 12:26:37 GMT)*/
+=======
+/*FILEHEAD(jpack_begin.js)SIZE(0)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+
+
+
+/*FILEHEAD(apf.js)SIZE(97197)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -251,8 +259,9 @@ VERSION:'3.0beta',
         // http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
         // http://sla.ckers.org/forum/read.php?24,31765,33730
         var sAgent = navigator.userAgent.toLowerCase() || "",
+            oldSaf = /a/.__proto__=='//', // Safari versions < 5.1 (before Lion release)
             // 1->IE, 0->FF, 2->GCrome, 3->Safari, 4->Opera, 5->Konqueror 
-            b      = (typeof/./)[0]=='f'?+'1\0'?3:2:+'1\0'?5:1-'\0'?1:+{valueOf:function(x){return!x}}?4:0;
+            b      = (typeof/./)[0]=='f'?+'1\0'?3:2:+'1\0'?5:1-'\0'?1:!oldSaf?3:+{valueOf:function(x){return!x}}?4:0;
 
        /*
         * Fix for firefox older than 2
@@ -1820,7 +1829,11 @@ apf.Init.run("apf");
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/class.js)SIZE(44597)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/class.js)SIZE(44597)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2916,7 +2929,11 @@ apf.Init.run("class");
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/color.js)SIZE(10887)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/color.js)SIZE(10887)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3151,7 +3168,11 @@ apf.color = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/abstractevent.js)SIZE(4316)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/abstractevent.js)SIZE(4316)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3288,7 +3309,11 @@ apf.AbstractEvent.stop = function(event) {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/async.js)SIZE(4124)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/async.js)SIZE(4124)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3432,7 +3457,11 @@ apf.asyncChain = function(funcs) {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/cookie.js)SIZE(3073)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/cookie.js)SIZE(3073)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3458,7 +3487,11 @@ apf.asyncChain = function(funcs) {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/ecmaext.js)SIZE(25941)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/ecmaext.js)SIZE(25941)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4242,7 +4275,11 @@ if (!Date.now) {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/flash.js)SIZE(22995)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/flash.js)SIZE(22995)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4268,7 +4305,11 @@ if (!Date.now) {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/hook.js)SIZE(10100)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/hook.js)SIZE(10100)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4294,7 +4335,11 @@ if (!Date.now) {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/hotkey.js)SIZE(6278)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/hotkey.js)SIZE(6278)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 
 //@todo maybe generalize this to pub/sub event system??
@@ -4517,7 +4562,11 @@ apf.hotkeys = {};
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/iepngfix.js)SIZE(3570)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/iepngfix.js)SIZE(3570)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4543,7 +4592,11 @@ apf.hotkeys = {};
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/json.js)SIZE(26243)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/json.js)SIZE(26243)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5258,7 +5311,11 @@ apf.unserialize = function(str){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/nameserver.js)SIZE(5807)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/nameserver.js)SIZE(5807)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5448,7 +5505,11 @@ apf.Init.run("nameserver");
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/o3.js)SIZE(8157)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/o3.js)SIZE(8157)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5473,7 +5534,11 @@ apf.Init.run("nameserver");
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/plane.js)SIZE(7451)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/plane.js)SIZE(7451)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5671,7 +5736,11 @@ apf.plane = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/popup.js)SIZE(11754)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/popup.js)SIZE(11754)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6026,7 +6095,11 @@ apf.popup = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/silverlight.js)SIZE(25659)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/silverlight.js)SIZE(25659)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6052,7 +6125,11 @@ apf.popup = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/style.js)SIZE(18143)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/style.js)SIZE(18143)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6539,7 +6616,11 @@ apf.getViewPort = function(win) {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/syntax.js)SIZE(12610)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/syntax.js)SIZE(12610)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6564,7 +6645,11 @@ apf.getViewPort = function(win) {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/textdiff.js)SIZE(89290)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/textdiff.js)SIZE(89290)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6590,7 +6675,11 @@ apf.getViewPort = function(win) {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/utilities.js)SIZE(19540)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/utilities.js)SIZE(19540)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7136,7 +7225,11 @@ apf.selectTextHtml = function(oHtml){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/visibilitymanager.js)SIZE(4929)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/visibilitymanager.js)SIZE(4929)TIME(Fri, 15 Jul 2011 15:38:55 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7298,7 +7391,11 @@ apf.visibilitymanager = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/xml.js)SIZE(45361)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/xml.js)SIZE(45361)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8654,7 +8751,11 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/xmldiff.js)SIZE(36580)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/xmldiff.js)SIZE(36580)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9541,7 +9642,11 @@ apf.xmlDiff = function (doc1, doc2){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/zmanager.js)SIZE(2524)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/lib/util/zmanager.js)SIZE(2524)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9622,7 +9727,11 @@ apf.zmanager = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/history.js)SIZE(9996)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/history.js)SIZE(9996)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9901,7 +10010,11 @@ apf.history = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/config.js)SIZE(8175)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/config.js)SIZE(8175)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10066,7 +10179,11 @@ if (apf.history)
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline.js)SIZE(20264)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/offline.js)SIZE(20264)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10096,7 +10213,11 @@ apf.offline = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/application.js)SIZE(11733)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/offline/application.js)SIZE(11733)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10122,7 +10243,11 @@ apf.offline = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/gears.js)SIZE(4771)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/offline/gears.js)SIZE(4771)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10148,7 +10273,11 @@ apf.offline = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/detector.js)SIZE(4827)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/offline/detector.js)SIZE(4827)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10174,7 +10303,11 @@ apf.offline = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/models.js)SIZE(5471)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/offline/models.js)SIZE(5471)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10200,7 +10333,11 @@ apf.offline = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/queue.js)SIZE(7008)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/offline/queue.js)SIZE(7008)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10226,7 +10363,11 @@ apf.offline = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/state.js)SIZE(7978)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/offline/state.js)SIZE(7978)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10252,7 +10393,11 @@ apf.offline = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/transactions.js)SIZE(9780)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/offline/transactions.js)SIZE(9780)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10278,7 +10423,11 @@ apf.offline = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/data.js)SIZE(16420)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/data.js)SIZE(16420)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10681,7 +10830,11 @@ apf.setModel = function(instruction, amlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/date.js)SIZE(40737)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/date.js)SIZE(40737)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11747,7 +11900,11 @@ apf.setModel = function(instruction, amlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/draw.js)SIZE(66997)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/draw.js)SIZE(66997)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11771,7 +11928,11 @@ apf.setModel = function(instruction, amlNode){
  */
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/flow.js)SIZE(71086)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/flow.js)SIZE(71086)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11797,7 +11958,11 @@ apf.setModel = function(instruction, amlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/flow2.js)SIZE(70664)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/flow2.js)SIZE(70664)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11823,7 +11988,11 @@ apf.setModel = function(instruction, amlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/geolocation.js)SIZE(11303)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/geolocation.js)SIZE(11303)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11849,7 +12018,11 @@ apf.setModel = function(instruction, amlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/html.js)SIZE(15348)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/html.js)SIZE(15348)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12209,7 +12382,11 @@ apf.htmlCleaner = (function() {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/language.js)SIZE(8586)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/language.js)SIZE(8586)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12235,7 +12412,11 @@ apf.htmlCleaner = (function() {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/layout.js)SIZE(14004)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/layout.js)SIZE(14004)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12661,7 +12842,11 @@ apf.getWindowHeight = function(){
     return apf.isIE ? document.documentElement.offsetHeight - apf.windowVerBorder : window.innerHeight;
 }
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/printer.js)SIZE(5120)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/printer.js)SIZE(5120)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12687,7 +12872,11 @@ apf.getWindowHeight = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/queue.js)SIZE(2950)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/queue.js)SIZE(2950)TIME(Fri, 15 Jul 2011 15:38:55 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12794,7 +12983,11 @@ apf.queue = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/resize.js)SIZE(13139)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/resize.js)SIZE(13139)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13190,7 +13383,11 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/resize2.js)SIZE(10417)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/resize2.js)SIZE(10417)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13215,7 +13412,11 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/selection.js)SIZE(32184)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/selection.js)SIZE(32184)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13240,7 +13441,11 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/skins.js)SIZE(12705)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/skins.js)SIZE(12705)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13574,7 +13779,11 @@ apf.skins = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/sort.js)SIZE(8239)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+=======
+/*FILEHEAD(core/lib/sort.js)SIZE(8239)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13802,7 +14011,11 @@ apf.Sort = function(xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage.js)SIZE(9036)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/storage.js)SIZE(9036)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13828,7 +14041,11 @@ apf.Sort = function(xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/tween.js)SIZE(35419)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/tween.js)SIZE(35419)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14802,12 +15019,20 @@ return {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/uirecorder.js)SIZE(86788)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/uirecorder.js)SIZE(86788)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/vector.js)SIZE(46289)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/lib/vector.js)SIZE(46289)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14833,7 +15058,11 @@ return {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/xmldb.js)SIZE(40521)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/lib/xmldb.js)SIZE(40521)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15852,7 +16081,11 @@ apf.xmldb = new (function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/draw/canvas.js)SIZE(21818)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/draw/canvas.js)SIZE(21818)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15876,7 +16109,11 @@ apf.xmldb = new (function(){
  */
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/draw/chartdraw.js)SIZE(47182)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/draw/chartdraw.js)SIZE(47182)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15901,7 +16138,11 @@ apf.xmldb = new (function(){
  
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/draw/vml.js)SIZE(20284)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/draw/vml.js)SIZE(20284)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15925,7 +16166,11 @@ apf.xmldb = new (function(){
  */
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/air.file.js)SIZE(10053)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/storage/air.file.js)SIZE(10053)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15950,7 +16195,11 @@ apf.xmldb = new (function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/air.js)SIZE(9669)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/storage/air.js)SIZE(9669)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15975,7 +16224,11 @@ apf.xmldb = new (function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/air.sql.js)SIZE(11835)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/storage/air.sql.js)SIZE(11835)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16000,7 +16253,11 @@ apf.xmldb = new (function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/cookie.js)SIZE(10313)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/storage/cookie.js)SIZE(10313)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16026,7 +16283,11 @@ apf.xmldb = new (function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/flash.js)SIZE(15458)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/storage/flash.js)SIZE(15458)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16052,7 +16313,11 @@ apf.xmldb = new (function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/gears.js)SIZE(12312)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/storage/gears.js)SIZE(12312)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16078,7 +16343,11 @@ apf.xmldb = new (function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/html5.js)SIZE(8228)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/storage/html5.js)SIZE(8228)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16104,7 +16373,11 @@ apf.xmldb = new (function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/memory.js)SIZE(10208)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/storage/memory.js)SIZE(10208)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16130,7 +16403,11 @@ apf.xmldb = new (function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/http.js)SIZE(37750)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/teleport/http.js)SIZE(37750)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16983,7 +17260,11 @@ apf.http = function(){
 apf.Init.run("http");
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/iframe.js)SIZE(5720)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/teleport/iframe.js)SIZE(5720)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17008,7 +17289,11 @@ apf.Init.run("http");
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/socket.js)SIZE(19222)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/lib/teleport/socket.js)SIZE(19222)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17034,7 +17319,11 @@ apf.Init.run("http");
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16761)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/domparser.js)SIZE(16761)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17453,7 +17742,11 @@ apf.AmlNamespace.prototype = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml.js)SIZE(1478)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/aml.js)SIZE(1478)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17496,7 +17789,11 @@ apf.aml = new apf.AmlNamespace();
 apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/node.js)SIZE(21515)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/aml/node.js)SIZE(21515)TIME(Fri, 15 Jul 2011 15:38:55 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18051,7 +18348,11 @@ apf.AmlNode = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/element.js)SIZE(21829)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/aml/element.js)SIZE(21829)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18642,7 +18943,11 @@ apf.AmlElement = function(struct, tagName){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/characterdata.js)SIZE(2018)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/aml/characterdata.js)SIZE(2018)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18706,7 +19011,11 @@ apf.AmlCharacterData = function(){
 apf.AmlCharacterData.prototype = new apf.AmlNode();
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/text.js)SIZE(4136)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/aml/text.js)SIZE(4136)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18806,7 +19115,11 @@ apf.AmlText = function(isPrototype){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/attr.js)SIZE(4716)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/aml/attr.js)SIZE(4716)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18931,7 +19244,11 @@ apf.AmlAttr = function(ownerElement, name, value){
 }).call(apf.AmlAttr.prototype = new apf.AmlNode());
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/cdatasection.js)SIZE(1300)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/aml/cdatasection.js)SIZE(1300)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18968,7 +19285,11 @@ apf.AmlCDATASection.prototype.serialize = function(){
 };
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/comment.js)SIZE(1509)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/aml/comment.js)SIZE(1509)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19014,7 +19335,11 @@ apf.AmlComment = function(isPrototype){
 }).call(apf.AmlComment.prototype = new apf.AmlCharacterData());
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/configuration.js)SIZE(1384)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/aml/configuration.js)SIZE(1384)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19055,7 +19380,11 @@ apf.AmlConfiguration = function(isPrototype){
 }).call(apf.AmlConfiguration.prototype = new apf.Class());
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/document.js)SIZE(9454)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/aml/document.js)SIZE(9454)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19264,7 +19593,11 @@ apf.AmlDocument = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/documentfragment.js)SIZE(1286)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/aml/documentfragment.js)SIZE(1286)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19298,7 +19631,11 @@ apf.AmlDocumentFragment.prototype.nodeType =
     apf.AmlDocumentFragment.prototype.NODE_DOCUMENT_FRAGMENT;
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/event.js)SIZE(2086)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/aml/event.js)SIZE(2086)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19369,7 +19706,11 @@ apf.AmlEvent.prototype = {
 };
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/namednodemap.js)SIZE(3407)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/aml/namednodemap.js)SIZE(3407)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19480,7 +19821,11 @@ apf.AmlNamedNodeMap = function(host){
 }).call(apf.AmlNamedNodeMap.prototype = {}); //apf.isIE < 8 ? {} : []
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/processinginstruction.js)SIZE(4311)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/aml/processinginstruction.js)SIZE(4311)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19589,7 +19934,11 @@ apf.AmlProcessingInstruction = function(isPrototype){
 }).call(apf.AmlProcessingInstruction.prototype = new apf.AmlNode());
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/range.js)SIZE(15809)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/aml/range.js)SIZE(15809)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19614,7 +19963,11 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/selection.js)SIZE(8861)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/aml/selection.js)SIZE(8861)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19878,7 +20231,11 @@ apf.AmlSelection = function(doc){
 }).call(apf.AmlSelection.prototype = new apf.Class());
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/textrectangle.js)SIZE(1662)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/aml/textrectangle.js)SIZE(1662)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19922,7 +20279,11 @@ apf.AmlTextRectangle = function(host){
 apf.AmlTextRectangle.prototype = new apf.Class();
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml.js)SIZE(1530)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xhtml.js)SIZE(1530)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19973,7 +20334,11 @@ if (apf.getTextNode(x)) {
 
 */
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/element.js)SIZE(5022)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xhtml/element.js)SIZE(5022)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20130,7 +20495,11 @@ apf.xhtml.setElement("@default", apf.XhtmlElement);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/body.js)SIZE(1783)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xhtml/body.js)SIZE(1783)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20181,7 +20550,11 @@ apf.xhtml.setElement("body", apf.XhtmlBodyElement);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/html.js)SIZE(2693)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xhtml/html.js)SIZE(2693)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20262,7 +20635,11 @@ apf.xhtml.setElement("html", apf.XhtmlHtmlElement);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/ignore.js)SIZE(1360)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xhtml/ignore.js)SIZE(1360)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20298,7 +20675,11 @@ apf.xhtml.setElement("head",     apf.XhtmlIgnoreElement);
 apf.xhtml.setElement("meta",     apf.XhtmlIgnoreElement);
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/input.js)SIZE(2187)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xhtml/input.js)SIZE(2187)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20359,7 +20740,11 @@ apf.XhtmlInputElement = function(struct, tagName){
 apf.xhtml.setElement("input", apf.XhtmlInputElement);
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/option.js)SIZE(1537)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xhtml/option.js)SIZE(1537)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20402,7 +20787,11 @@ apf.XhtmlOptionElement = function(struct, tagName){
 apf.xhtml.setElement("option", apf.XhtmlOptionElement);
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/skipchildren.js)SIZE(2342)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xhtml/skipchildren.js)SIZE(2342)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20464,7 +20853,11 @@ apf.xhtml.setElement("table", apf.XhtmlSkipChildrenElement);
 apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd.js)SIZE(12998)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd.js)SIZE(12998)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20830,7 +21223,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/element.js)SIZE(1869)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd/element.js)SIZE(1869)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20855,7 +21252,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/enumeration.js)SIZE(1844)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd/enumeration.js)SIZE(1844)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20880,7 +21281,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/fractiondigits.js)SIZE(1620)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd/fractiondigits.js)SIZE(1620)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20905,7 +21310,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/length.js)SIZE(1527)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd/length.js)SIZE(1527)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20930,7 +21339,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/list.js)SIZE(1215)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd/list.js)SIZE(1215)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20955,7 +21368,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxexclusive.js)SIZE(1553)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd/maxexclusive.js)SIZE(1553)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20980,7 +21397,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxinclusive.js)SIZE(1568)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd/maxinclusive.js)SIZE(1568)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21005,7 +21426,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxlength.js)SIZE(1597)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd/maxlength.js)SIZE(1597)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21030,7 +21455,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxscale.js)SIZE(1436)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd/maxscale.js)SIZE(1436)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21055,7 +21484,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/minexclusive.js)SIZE(1556)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd/minexclusive.js)SIZE(1556)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21080,7 +21513,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/mininclusive.js)SIZE(1567)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd/mininclusive.js)SIZE(1567)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21105,7 +21542,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/minlength.js)SIZE(1610)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd/minlength.js)SIZE(1610)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21130,7 +21571,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/minscale.js)SIZE(1436)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd/minscale.js)SIZE(1436)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21155,7 +21600,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/pattern.js)SIZE(1537)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd/pattern.js)SIZE(1537)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21180,7 +21629,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/restriction.js)SIZE(1644)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd/restriction.js)SIZE(1644)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21205,7 +21658,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/schema.js)SIZE(1124)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd/schema.js)SIZE(1124)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21230,7 +21687,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/simpletype.js)SIZE(2201)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd/simpletype.js)SIZE(2201)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21255,7 +21716,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/totaldigits.js)SIZE(1564)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd/totaldigits.js)SIZE(1564)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21280,7 +21745,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/union.js)SIZE(2331)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xsd/union.js)SIZE(2331)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21305,7 +21774,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/html5.js)SIZE(3232)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/html5.js)SIZE(3232)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21408,7 +21881,11 @@ if (tagName == "input") {
 //#-endif*/
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xforms.js)SIZE(4191)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xforms.js)SIZE(4191)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21441,7 +21918,11 @@ if (tagName == "input") {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xinclude.js)SIZE(1325)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xinclude.js)SIZE(1325)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21483,7 +21964,11 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xinclude/fallback.js)SIZE(1322)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xinclude/fallback.js)SIZE(1322)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21508,7 +21993,11 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xinclude/include.js)SIZE(7025)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xinclude/include.js)SIZE(7025)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21691,7 +22180,11 @@ apf.aml.setElement("include", apf.XiInclude);
 }).call(apf.XiInclude.prototype = new apf.AmlElement());
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xslt/xslt.js)SIZE(13722)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/markup/xslt/xslt.js)SIZE(13722)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21717,7 +22210,11 @@ apf.aml.setElement("include", apf.XiInclude);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit.js)SIZE(34637)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit.js)SIZE(34637)TIME(Fri, 15 Jul 2011 15:38:55 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21744,7 +22241,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/richtext.js)SIZE(53610)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/richtext.js)SIZE(53610)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21770,7 +22271,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21796,7 +22301,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/blockquote.js)SIZE(1594)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/blockquote.js)SIZE(1594)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21822,7 +22331,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/charmap.js)SIZE(6951)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/charmap.js)SIZE(6951)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21848,7 +22361,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/clipboard.js)SIZE(13429)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/clipboard.js)SIZE(13429)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21874,7 +22391,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/code.js)SIZE(11899)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/code.js)SIZE(11899)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21900,7 +22421,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/color.js)SIZE(7167)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/color.js)SIZE(7167)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21926,7 +22451,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/datetime.js)SIZE(3585)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/datetime.js)SIZE(3585)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21952,7 +22481,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/directions.js)SIZE(1579)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/directions.js)SIZE(1579)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21978,7 +22511,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/emotions.js)SIZE(4322)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/emotions.js)SIZE(4322)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22004,7 +22541,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/fontbase.js)SIZE(8575)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/fontbase.js)SIZE(8575)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22030,7 +22571,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/fontstyle.js)SIZE(25741)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/fontstyle.js)SIZE(25741)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22057,7 +22602,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/help.js)SIZE(1485)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/help.js)SIZE(1485)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22083,7 +22632,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/hr.js)SIZE(1593)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/hr.js)SIZE(1593)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22109,7 +22662,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/image.js)SIZE(5033)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/image.js)SIZE(5033)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22135,7 +22692,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/links.js)SIZE(7721)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/links.js)SIZE(7721)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22161,7 +22722,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/list.js)SIZE(4641)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/list.js)SIZE(4641)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22187,7 +22752,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/media.js)SIZE(1489)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/media.js)SIZE(1489)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22213,7 +22782,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/printing.js)SIZE(2098)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/printing.js)SIZE(2098)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22239,7 +22812,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/search.js)SIZE(10436)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/search.js)SIZE(10436)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22265,7 +22842,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/spell.js)SIZE(11849)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/spell.js)SIZE(11849)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22291,7 +22872,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/subsup.js)SIZE(1935)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/subsup.js)SIZE(1935)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22317,7 +22902,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/tables.js)SIZE(27128)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/tables.js)SIZE(27128)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22343,7 +22932,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/visualaid.js)SIZE(1736)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/liveedit/visualaid.js)SIZE(1736)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22369,7 +22962,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/anchoring.js)SIZE(19356)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/anchoring.js)SIZE(19356)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22867,7 +23464,11 @@ apf.Anchoring = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable.js)SIZE(20162)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/contenteditable.js)SIZE(20162)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22893,7 +23494,11 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/guielement.js)SIZE(33087)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33087)TIME(Fri, 15 Jul 2011 15:38:55 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23681,7 +24286,11 @@ apf.GuiElement.propHandlers = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/presentation.js)SIZE(20749)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/presentation.js)SIZE(20749)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24281,7 +24890,11 @@ apf.config.$inheritProperties["skinset"] = 1;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/validation.js)SIZE(27683)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/validation.js)SIZE(27683)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25021,7 +25634,11 @@ apf.config.$inheritProperties["validgroup"] = 1;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding.js)SIZE(58715)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/databinding.js)SIZE(58715)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -26523,7 +27140,11 @@ apf.Init.run("databinding");
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(46989)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/databinding/multiselect.js)SIZE(46988)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27219,7 +27840,11 @@ apf.MultiselectBinding = function(){
                 return;
             
             if (this.$hasLoadStatus(xmlNode) && this.$removeLoading)
+<<<<<<< HEAD
                 this.$removeLoading(htmlNode);
+=======
+                this.$removeLoading(xmlNode);
+>>>>>>> hotfix/0.5.1
 
             if (this.$container.firstChild && !apf.xmldb.getNode(this.$container.firstChild)) {
                 //Appearantly the content was cleared
@@ -27698,7 +28323,11 @@ apf.MultiselectBinding = function(){
 }).call(apf.MultiselectBinding.prototype = new apf.DataBinding());
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding/standard.js)SIZE(6499)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/databinding/standard.js)SIZE(6499)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27868,7 +28497,11 @@ apf.StandardBinding.prototype = new apf.DataBinding();
 apf.Init.run("standardbinding");
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/multiselect.js)SIZE(73638)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/multiselect.js)SIZE(73638)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29680,7 +30313,11 @@ apf.MultiSelectServer = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/childvalue.js)SIZE(3934)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/childvalue.js)SIZE(3934)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29786,7 +30423,11 @@ apf.ChildValue = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dataaction.js)SIZE(27010)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/dataaction.js)SIZE(27055)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30091,6 +30732,7 @@ apf.DataAction = function(){
             
                 return false;
         }
+<<<<<<< HEAD
 
         var compiled;
         ["valuematch", "match", "value"].each(function(type){
@@ -30221,6 +30863,140 @@ apf.DataAction = function(){
             ? this.$attrBindings["value"] 
             : this.$hasBindRule(this.$mainBind))) {
         
+=======
+
+        var compiled;
+        ["valuematch", "match", "value"].each(function(type){
+            if (!rule[type] || compiled)
+                return;
+            
+            compiled = rule["c" + type]; //cvaluematch || (rule.value ? rule.cvalue : rule.cmatch);
+            if (!compiled)
+                compiled = rule.compile(type);
+            
+            if (compiled.type != 3)
+                compiled = null;
+        });
+        
+        
+
+        var atAction, model, node,
+            sel        = compiled.xpaths, //get first xpath
+            shouldLoad = false;
+        
+        if (sel[0] == "#" || sel[1] == "#") {
+            var m = (rule.cvalue3 || (rule.cvalue3 = apf.lm.compile(rule.value, {
+                xpathmode: 5
+            })))(xmlNode);
+            
+            model = m.model && m.model.$isModel && m.model;
+            if (model) {
+                node  = model.queryNode(m.xpath);
+                xmlNode = model.data;
+            }
+            else {
+                model = apf.xmldb.findModel(m.model);
+                node  = m.model.selectSingleNode(m.xpath);
+                xmlNode = m.model;
+            }
+
+            sel[1] = m.xpath;
+        }
+        else {
+            
+            model = sel[0] && apf.nameserver.get("model", sel[0]) || this.$model,
+            node  = model
+                ? model.queryNode(sel[1])
+                : (xmlNode || this.xmlRoot).selectSingleNode(sel[1]);
+            if (model && !xmlNode)
+                xmlNode = model.data; //@experimental, after changing this, please run test/test_rename_edge.html
+            
+        }
+
+        if (node) {
+            if (apf.queryValue(node) == value) return; // Do nothing if value is unchanged
+
+            atAction = (node.nodeType == 1 || node.nodeType == 3
+                || node.nodeType == 4) ? "setTextNode" : "setAttribute";
+            args = (node.nodeType == 1)
+                ? [node, value]
+                : (node.nodeType == 3 || node.nodeType == 4
+                    ? [node.parentNode, value]
+                    : [node.ownerElement || node.selectSingleNode(".."), node.nodeName, value]);
+        }
+        else {
+            if (!this.$createModel)
+                return false;
+
+            atAction = "setValueByXpath";
+            xpath    = sel[1];
+
+            if (!xmlNode) {
+                //Assuming this component is connnected to a model
+                if (!model)
+                    model = this.getModel();
+                if (model) {
+                    if (!model.data)
+                        model.load("<data />");
+    
+                    xpath   = (model.getXpathByAmlNode(this) || ".")
+                        + (xpath && xpath != "." ? "/" + xpath : "");
+                    xmlNode = model.data;
+                }
+                else {
+                    if (!this.dataParent)
+                        return false;
+
+                    xmlNode = this.dataParent.parent.selected || this.dataParent.parent.xmlRoot;
+                    if (!xmlNode)
+                        return false;
+                    
+                    xpath = (this.dataParent.xpath || ".")
+                        + (xpath && xpath != "." ? "/" + xpath : "");
+                    shouldLoad = true;
+                }
+            }
+
+            args = [xmlNode, value, xpath];
+        }
+        
+        if (getArgList) {
+            return {
+                action : atAction,
+                args   : args
+            };
+        }
+
+        //Use Action Tracker
+        var result = this.$executeAction(atAction, args, atName, xmlNode);
+        
+        if (shouldLoad)
+            this.load(xmlNode.selectSingleNode(xpath));
+        
+        return result;
+    };
+    
+    /**
+     * Changes the value of this element.
+     * @action
+     * @param  {String} [string] the new value of this element.
+     * @todo apf3.0 maybe not for multiselect?? - why is clearError handling not
+     *       in setProperty for value
+     */
+    this.change = function(value, force){
+        
+        if (this.errBox && this.errBox.visible && this.isValid && this.isValid())
+            this.clearError();
+        
+
+        
+        //Not databound
+        if (!this.xmlRoot && !this.$createModel || !(this.$mainBind == "value" 
+          && this.hasFeature(apf.__MULTISELECT__) 
+            ? this.$attrBindings["value"] 
+            : this.$hasBindRule(this.$mainBind))) {
+        
+>>>>>>> hotfix/0.5.1
             if (!force && value === this.value 
               || this.dispatchEvent("beforechange", {value : value}) === false)
                 return false;
@@ -30299,7 +31075,11 @@ apf.config.$inheritProperties["create-model"] = 1;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/cache.js)SIZE(12760)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/cache.js)SIZE(12760)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30661,7 +31441,11 @@ apf.GuiElement.propHandlers["caching"] = function(value) {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/rename.js)SIZE(14376)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/rename.js)SIZE(14985)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30742,6 +31526,7 @@ apf.Rename = function(){
     this.$booleanProperties["canrename"]  = true;
     this.$booleanProperties["autorename"] = true;
     this.$supportedProperties.push("canrename", "autorename");
+<<<<<<< HEAD
 
     
     this.$propHandlers["autorename"] = function(value){
@@ -30805,6 +31590,72 @@ apf.Rename = function(){
             return;
 
         clearTimeout(this.renameTimer);
+=======
+
+    
+    this.$propHandlers["autorename"] = function(value){
+        if (value) {
+            this.reselectable = true;
+            this.bufferselect = false;
+            this.addEventListener("afterselect", $afterselect);
+            this.addEventListener("keydown", $keydown);
+        }
+        else {
+            this.removeEventListener("afterselect", $afterselect);
+            this.removeEventListener("keydown", $keydown);
+        }
+    }
+
+    function $afterselect(){
+        var _self = this;
+        $setTimeout(function(){
+            if (_self.hasFocus())
+                _self.startRename();
+        }, 20);
+    }
+    
+    function $keydown(e){
+        if (!this.renaming && apf.isCharacter(e.keyCode))
+            this.startRename();
+    }
+    
+    this.$isContentEditable = function(e){
+        if (this.renaming && this.autorename)
+            return true;
+    }
+    
+
+    /**
+     * Changes the data presented as the caption of a specified {@link term.datanode data node}.
+     * If none is specified the indicated node is used.
+     *
+     * @action
+     * @param  {XMLElement} xmlNode the element to change the caption of.
+     * @param  {String}     value   the value to set as the caption of the {@link term.datanode data node}.
+     */
+    this.rename = function(xmlNode, value){
+        if (!xmlNode)
+            xmlNode = this.caret || this.selected;
+
+        if (!xmlNode) return;
+
+        return this.$executeSingleValue("rename", "caption", xmlNode, value);
+    };
+
+    /**
+     * Starts the rename process with a delay, allowing for cancellation when
+     * necesary. Cancellation is necesary for instance, when double click was
+     * intended or a dragdrop operation.
+     *
+     */
+    this.startDelayedRename = function(e, time, userAction){
+        clearTimeout(this.renameTimer);
+        
+        if (e && (e.button == 2 || e.ctrlKey || e.shiftKey) 
+          || userAction && this.disabled)
+            return;
+
+>>>>>>> hotfix/0.5.1
         this.renameTimer = $setTimeout('apf.lookup('
             + this.$uniqueId + ').startRename()', time || 400);
     };
@@ -30933,10 +31784,18 @@ apf.Rename = function(){
             this.$stopAction("rename");
         }
         else {
+<<<<<<< HEAD
             if (this.$replacedNode)
                 this.$replacedNode.innerHTML = value.replace(/</g, "&lt;").replace(/\r?\n/g, "<br />");
             //this.$selected.innerHTML = this.$txt.innerHTML;
             this.rename(this.$renameSubject, value);
+=======
+            //this.$selected.innerHTML = this.$txt.innerHTML;
+            if (this.rename(this.$renameSubject, value) !== false) {
+                if (this.$replacedNode)
+                    this.$replacedNode.innerHTML = value.replace(/</g, "&lt;").replace(/\r?\n/g, "<br />");
+            }
+>>>>>>> hotfix/0.5.1
         }
 
         if (!this.renaming) {
@@ -31001,6 +31860,7 @@ apf.Rename = function(){
         }
         this.$txt = null;
     });
+<<<<<<< HEAD
     
     this.$init(apf.Rename.initEditableArea);
 };
@@ -31042,6 +31902,50 @@ apf.Rename.initEditableArea = function(){
             apf.stopPropagation(e || event)
         };
     
+=======
+    
+    this.$init(apf.Rename.initEditableArea);
+};
+
+apf.Rename.initEditableArea = function(){
+    if (!(this.$txt = document.getElementById("txt_rename"))) {
+        if (apf.hasContentEditable) {
+            this.$txt = document.createElement("DIV");
+            this.$txt.contentEditable = true;
+            if (apf.isIE6)
+                this.$txt.style.width = "1px";
+            //this.$txt.canHaveHTML = false;
+        }
+        else {
+            this.$txt              = document.createElement("input");
+            this.$txt.id           = "txt_rename";
+            this.$txt.autocomplete = false;
+        }
+    
+        
+        //if (apf.hasFocusBug)
+            //apf.sanitizeTextbox(this.$txt);
+        
+    
+        this.$txt.refCount         = 0;
+        this.$txt.id               = "txt_rename";
+        //this.$txt.style.whiteSpace = "nowrap";
+        apf.importCssString("#txt_rename{white-space:nowrap}");
+        this.$txt.onselectstart    = function(e){
+            (e || event).cancelBubble = true;
+        };
+    
+        this.$txt.onmouseover = 
+        this.$txt.onmouseout  = 
+        this.$txt.oncontextmenu =
+        //this.$txt.onkeydown   = 
+        this.$txt.onmouseup   = 
+        this.$txt.ondblclick  =
+        this.$txt.onmousedown = function(e){ 
+            apf.stopPropagation(e || event)
+        };
+    
+>>>>>>> hotfix/0.5.1
         this.$txt.onkeyup = function(e){
             //(e || event).cancelBubble = true;
             
@@ -31049,6 +31953,7 @@ apf.Rename.initEditableArea = function(){
                 return;
     
             this.host.$lookup(this[apf.hasContentEditable ? "innerHTML" : "value"]);
+<<<<<<< HEAD
         }
     
         var sel;
@@ -31077,8 +31982,52 @@ apf.Rename.initEditableArea = function(){
                 if (apf.window)
                     apf.window.$focusfix2();
             };
+=======
+>>>>>>> hotfix/0.5.1
+        }
+    
+        var sel;
+        this.$txt.select = function(){
+            if (!apf.hasMsRangeObject) {
+                if (window.getSelection && document.createRange) {
+                    var sel = window.getSelection();
+                    sel.removeAllRanges()
+                    var r = document.createRange();
+                    r.setStart(div.firstChild, 0);
+                    var lastIndex = this.value.lastIndexOf(".");
+                    r.setEnd(div.firstChild, lastIndex > -1 ? lastIndex : this.value.length);
+                    sel.addRange(r)
+                }
+                else {
+                    (sel || (sel = new apf.selection())).selectNode(this);
+                }
+                return;
+            }
+    
+            var r = document.selection.createRange();
+            //r.moveEnd("character", this.$ext.innerText.length);
+            try {
+                r.moveToElementText(this);
+    
+                if (apf.isFalse(this.host.$getOption("main", "selectrename"))
+                  || typeof this.host.$renameStartCollapse != "undefined") //@todo please deprecate renameStartCollapse
+                    r.collapse(this.host.$renameStartCollapse);
+            } catch(e) {} //BUG!!!!
+    
+            r.select();
+        };
+    
+        
+<<<<<<< HEAD
+=======
+        if (apf.hasFocusBug) {
+            this.$txt.onfocus = function(){
+                if (apf.window)
+                    apf.window.$focusfix2();
+            };
         }
         
+>>>>>>> hotfix/0.5.1
     
         this.$txt.onblur = function(){
             //if (apf.isGecko)
@@ -31105,11 +32054,34 @@ apf.Rename.initEditableArea = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/a11y.js)SIZE(5144)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/a11y.js)SIZE(5144)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
+<<<<<<< HEAD
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+=======
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -31132,7 +32104,7 @@ apf.__ALIGNMENT__ = 1 << 29;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basebutton.js)SIZE(10335)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+/*FILEHEAD(core/baseclasses/basebutton.js)SIZE(10335)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31174,6 +32146,2026 @@ apf.BaseButton = function(){
 };
 
 (function() {
+    
+    this.implement(apf.ChildValue);
+    
+    
+    this.$refKeyDown   =        // Number of keys pressed.
+    this.$refMouseDown = 0;     // Mouse button down?
+    this.$mouseOver    =        // Mouse hovering over the button?
+    this.$mouseLeft    = false; // Has the mouse left the control since pressing the button.
+
+    /**** Properties and Attributes ****/
+
+    /**
+     * @attribute {string} background sets a multistate background. The arguments
+     * are seperated by pipes '|' and are in the order of:
+     * 'imagefilename|mapdirection|nrofstates|imagesize'
+     * The mapdirection argument may have the value of 'vertical' or 'horizontal'.
+     * The nrofstates argument specifies the number of states the iconfile contains:
+     * 1 - normal
+     * 2 - normal, hover
+     * 3 - normal, hover, down
+     * 4 - normal, hover, down, disabled
+     * The imagesize argument specifies how high or wide each icon is inside the
+     * map, depending of the mapdirection argument.
+     *
+     * Example:
+     * A 3 state picture where each state is 16px high, vertically spaced
+     * <code>
+     * background="threestates.gif|vertical|3|16"
+     * </code>
+     */
+    this.$propHandlers["background"] = function(value){
+        var oNode = this.$getLayoutNode("main", "background", this.$ext);
+        
+        if (!oNode) return;
+        
+
+        if (value) {
+            var b = value.split("|");
+            this.$background = b.concat(["vertical", 2, 16].slice(b.length - 1));
+
+            oNode.style.backgroundImage  = "url(" + this.mediaPath + b[0] + ")";
+            oNode.style.backgroundRepeat = "no-repeat";
+        }
+        else {
+            oNode.style.backgroundImage  = "";
+            oNode.style.backgroundRepeat = "";
+            this.$background = null;
+        }
+    };
+
+    /**** Keyboard Support ****/
+
+    
+    this.addEventListener("keydown", function(e){
+        var key      = e.keyCode;
+        //var ctrlKey  = e.ctrlKey;  << UNUSED
+        //var shiftKey = e.shiftKey; << UNUSED
+
+        switch (key) {
+            case 13:
+                if (this.localName != "checkbox")
+                    this.$ext.onmouseup(e.htmlEvent, true);
+                break;
+            case 32:
+                if (!e.htmlEvent.repeat) { // Only when first pressed, not on autorepeat.
+                    this.$refKeyDown++;
+                    this.$updateState(e.htmlEvent);
+                }
+                return false;
+        }
+    }, true);
+
+    this.addEventListener("keyup", function(e){
+        var key = e.keyCode;
+
+        switch (key) {
+            case 32:
+                this.$refKeyDown--;
+
+                if (this.$refKeyDown < 0) {
+                    this.$refKeyDown = 0;
+                    return false;
+                }
+
+                if (this.$refKeyDown + this.$refMouseDown == 0 && !this.disabled)
+                    this.$ext.onmouseup(e, true);
+
+                this.$updateState(e);
+                return false;
+        }
+    }, true);
+    
+
+    /**** Private state handling methods ****/
+
+    this.states = {
+        "Out"   : 1,
+        "Over"  : 2,
+        "Down"  : 3
+    };
+
+    this.$updateState = function(e, strEvent) {
+        if (e.reset) { //this.disabled || 
+            this.$refKeyDown   = 0;
+            this.$refMouseDown = 0;
+            this.$mouseOver    = false;
+            return false;
+        }
+
+        if (this.$refKeyDown > 0
+          || (this.$refMouseDown > 0 && (this.$mouseOver || (!apf.isIE && this.$ext === e.currentTarget)))
+          || (this.isBoolean && this.value)) {
+            this.$setState("Down", e, strEvent);
+        }
+        else if (this.$mouseOver) {
+            this.$setState("Over", e, strEvent);
+        }
+        else
+            this.$setState("Out", e, strEvent);
+    };
+
+    this.$setupEvents = function() {
+        if (this.editable)
+            return;
+        
+        var _self = this;
+
+        this.$ext.onmousedown = function(e) {
+            e = e || window.event;
+
+            if (_self.$notfromext && (e.srcElement || e.target) == this)
+                return;
+
+            _self.$refMouseDown = 1;
+            _self.$mouseLeft    = false;
+            
+            if (_self.disabled)
+                return;
+
+            if (!apf.isIE) { // && (apf.isGecko || !_self.submenu) Causes a focus problem for menus
+                if (_self.value)
+                    apf.stopEvent(e);
+                else
+                    apf.cancelBubble(e);
+            }
+            
+            _self.$updateState(e, "mousedown");
+        };
+        
+        this.$ext.onmouseup = function(e, force) {
+            e = e || window.event;
+            //if (e)  e.cancelBubble = true;
+            if (_self.disabled || !force && ((!_self.$mouseOver && (!apf.isIE && this !== e.currentTarget)) || !_self.$refMouseDown))
+                return;
+
+            _self.$refMouseDown = 0;
+            _self.$updateState(e, "mouseup");
+
+            // If this is coming from a mouse click, we shouldn't have left the button.
+            if (_self.disabled || (e && e.type == "click" && _self.$mouseLeft == true))
+                return false;
+
+            // If there are still buttons down, this is not a real click.
+            if (_self.$refMouseDown + _self.$refKeyDown)
+                return false;
+
+            if (_self.$clickHandler && _self.$clickHandler())
+                _self.$updateState (e || event, "click");
+            else
+                _self.dispatchEvent("click", {htmlEvent : e});
+
+            return false;
+        };
+
+        this.$ext.onmousemove = function(e) {
+            if ((!_self.$mouseOver || _self.$mouseOver == 2)) {
+                e = e || window.event;
+
+                if (_self.$notfromext && (e.srcElement || e.target) == this)
+                    return;
+
+                _self.$mouseOver = true;
+                
+                if (!_self.disabled)
+                    _self.$updateState(e, "mouseover");
+            }
+        };
+
+        this.$ext.onmouseout = function(e) {
+            e = e || window.event;
+
+            //Check if the mouse out is meant for us
+            var tEl = e.explicitOriginalTarget || e.toElement;
+            if (apf.isChildOf(this, tEl)) //this == tEl ||
+                return;
+
+            _self.$mouseOver    = false;
+            _self.$refMouseDown = 0;
+            _self.$mouseLeft    = true;
+            
+            if (!_self.disabled)
+                _self.$updateState(e, "mouseout");
+        };
+
+        
+
+        if (apf.hasClickFastBug)
+            this.$ext.ondblclick = this.$ext.onmouseup;
+    };
+
+    this.$doBgSwitch = function(nr){
+        if (this.background && (this.$background[2] >= nr || nr == 4)) {
+            if (nr == 4)
+                nr = this.$background[2] + 1;
+
+            var strBG = this.$background[1] == "vertical"
+                ? "0 -" + (parseInt(this.$background[3]) * (nr - 1)) + "px"
+                : "-"   + (parseInt(this.$background[3]) * (nr - 1)) + "px 0";
+
+            this.$getLayoutNode("main", "background",
+                this.$ext).style.backgroundPosition = strBG;
+        }
+    };
+
+    /**** Focus Handling ****/
+
+    this.$focus = function(){
+        if (!this.$ext)
+            return;
+
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
+    };
+
+    this.$blur = function(e){
+        if (!this.$ext)
+            return; //FIREFOX BUG!
+
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
+        /*this.$refKeyDown   = 0;
+        this.$refMouseDown = 0;
+        this.$mouseLeft    = true;*/
+
+        
+        /*if (this.submenu) {
+            if (this.value) {
+                this.$setState("Down", {}, "mousedown");
+                this.$hideMenu();
+            }
+        }*/
+        
+
+        if (e)
+            this.$updateState({});//, "onblur"
+    };
+    
+    this.addEventListener("prop.disabled", function(e){
+        this.$refKeyDown   =   
+        this.$refMouseDown = 0;
+        //this.$mouseOver    =   
+        //this.$mouseLeft    = false;
+    });
+
+    /*** Clearing potential memory leaks ****/
+
+    this.$destroy = function(skinChange){
+        if (!skinChange && this.$ext) {
+            this.$ext.onmousedown = this.$ext.onmouseup = this.$ext.onmouseover =
+            this.$ext.onmouseout = this.$ext.onclick = this.$ext.ondblclick = null;
+        }
+    };
+
+}).call(apf.BaseButton.prototype = new apf.StandardBinding());
+>>>>>>> hotfix/0.5.1
+
+apf.__ALIGNMENT__ = 1 << 29;
+
+
+
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basebutton.js)SIZE(10335)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/baselist.js)SIZE(38995)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * Baseclass of elements that allows the user to select one or more items
+ * out of a list.
+ *
+ * @constructor
+ * @baseclass
+ *
+ * @inherits apf.MultiSelect
+ * @inherits apf.Cache
+ * @inherits apf.DataAction
+ * @inherits apf.XForms
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8
+ * @default_private
+ *
+ * @binding caption  Determines the caption of a node.
+ * @binding icon     Determines the icon of a node. This binding rule is used
+ * to determine the icon displayed when using a list skin. The {@link baseclass.baselist.binding.image image binding}
+ * is used to determine the image in the thumbnail skin.
+ * @binding image    Determines the image of a node. This binding rule is used
+ * to determine the image displayed when using a thumbnail skin. The {@link baseclass.baselist.binding.icon icon binding}
+ * is used to determine the icon in the list skin.
+ * Example:
+ * In this example the image url is read from the thumbnail attribute of the data node.
+ * <code>
+ *  <a:thumbnail>
+ *      <a:model>
+ *          <data>
+ *              <image caption="Thumb 1" thumbnail="img1" />
+ *              <image caption="Thumb 2" thumbnail="img2" />
+ *              <image caption="Thumb 3" />
+ *          </data>
+ *      </a:model>
+ *      <a:bindings>
+ *          <a:caption match="[@caption]" />
+ *          <a:image match="[@thumbnail]" value="images/slideshow_img/[@thumbnail]_small.jpg" />
+ *          <a:image value="images/slideshow_img/img29_small.jpg" />
+ *          <a:each match="[image]" />
+ *      </a:bindings>
+ *  </a:thumbnail>
+ * </code>
+ * @binding css      Determines a css class for a node.
+ * Example:
+ * In this example a node is bold when the folder contains unread messages:
+ * <code>
+ *  <a:tree>
+ *      <a:model>
+ *          <data>
+ *              <folder caption="Folder 1">
+ *                  <message unread="true" caption="message 1" />
+ *              </folder>
+ *              <folder caption="Folder 2" icon="email.png">
+ *                  <message caption="message 2" />
+ *              </folder>
+ *              <folder caption="Folder 3">
+ *                  <message caption="message 3" />
+ *                  <message caption="message 4" />
+ *              </folder>
+ *          </data>
+ *      </a:model>
+ *      <a:bindings>
+ *          <a:caption match="[@caption]" />
+ *          <a:css match="[message[@unread]]" value="highlighUnread" />
+ *          <a:icon match="[@icon]" />
+ *          <a:icon match="[folder]" value="Famfolder.gif" />
+ *          <a:each match="[folder|message]" />
+ *      </a:bindings>
+ *  </a:tree>
+ * </code>
+ * @binding tooltip  Determines the tooltip of a node.
+ * @event notunique Fires when the more attribute is set and an item is added that has a caption that already exists in the list.
+ *   object:
+ *   {String} value the value that was entered.
+ */
+apf.BaseList = function(){
+    this.$init(true);
+    
+    
+    this.$dynCssClasses = [];
+    
+    
+    this.listNodes   = [];
+};
+
+(function() {
+    
+    this.implement(
+        
+        apf.Cache,
+        
+        
+        apf.DataAction,
+        
+        
+        apf.K
+    );
+    
+
+    /**** Properties and Attributes ****/
+
+    this.$focussable = true; // This object can get the focus
+    this.$isWindowContainer = -1;
+    
+    this.multiselect = true; // Initially Disable MultiSelect
+
+    /**
+     * @attribute {String} fill the set of items that should be loaded into this
+     * element. A start and an end seperated by a -.
+     * Example:
+     * This example loads a list with items starting at 1980 and ending at 2050.
+     * <code>
+     *  <a:dropdown fill="1980-2050" />
+     *  <a:dropdown fill="red,green,blue,white" />
+     *  <a:dropdown fill="None,100-110,1000-1100" />
+     *  <a:dropdown fill="01-10" />
+     *  <a:dropdown fill="1-10" />
+     * </code>
+     */
+    this.$propHandlers["fill"] = function(value){
+        if (value)
+            this.loadFillData(this.getAttribute("fill"));
+        else
+            this.clear();
+    };
+    
+    
+    
+    /**
+     * @attribute {String} mode Sets the way this element interacts with the user.
+     *   Possible values:
+     *   check  the user can select a single item from this element. The selected item is indicated.
+     *   radio  the user can select multiple items from this element. Each selected item is indicated.
+     */
+    this.$mode = 0;
+    this.$propHandlers["mode"] = function(value){
+        if ("check|radio".indexOf(value) > -1) {
+            if (!this.hasFeature(apf.__MULTICHECK__))
+                this.implement(apf.MultiCheck);
+            
+            this.addEventListener("afterrename", $afterRenameMode); //what does this do?
+            
+            this.multicheck = value == "check"; //radio is single
+            this.$mode = this.multicheck ? 1 : 2;
+        }
+        else {
+            //@todo undo actionRules setting
+            this.removeEventListener("afterrename", $afterRenameMode);
+            //@todo unimplement??
+            this.$mode = 0;
+        }
+    };
+    
+    //@todo apf3.0 retest this completely
+    function $afterRenameMode(){
+    }
+    
+    
+
+    /**** Keyboard support ****/
+
+    
+
+    //Handler for a plane list
+    this.$keyHandler = function(e){
+        var key      = e.keyCode,
+            ctrlKey  = e.ctrlKey,
+            shiftKey = e.shiftKey,
+            selHtml  = this.$caret || this.$selected;
+
+        if (e.returnValue == -1 || !selHtml || this.renaming) //@todo how about allowdeselect?
+            return;
+
+        var selXml = this.caret || this.selected,
+            oExt   = this.$ext,
+            // variables used in the switch statement below:
+            node, margin, items, lines, hasScroll, hasScrollX, hasScrollY;
+
+        switch (key) {
+            case 13:
+                if (this.$tempsel)
+                    this.$selectTemp();
+
+                if (this.ctrlselect == "enter")
+                    this.select(this.caret, true);
+
+                this.choose(this.selected);
+                break;
+            case 32:
+                if (ctrlKey || !this.isSelected(this.caret))
+                    this.select(this.caret, ctrlKey);
+                break;
+            case 109:
+            case 46:
+                //DELETE
+                if (this.disableremove)
+                    return;
+
+                if (this.$tempsel)
+                    this.$selectTemp();
+
+                this.remove();
+                break;
+            case 36:
+                //HOME
+                if (this.hasFeature(apf.__VIRTUALVIEWPORT__)) 
+                    this.viewport.change(0, null, true, true);
+                    
+                this.select(this.getFirstTraverseNode(), false, shiftKey);
+                this.$container.scrollTop = 0;
+                break;
+            case 35:
+                //END
+                if (this.hasFeature(apf.__VIRTUALVIEWPORT__)) 
+                    this.viewport.change(this.viewport.length, null, true, true);
+                
+                this.select(this.getLastTraverseNode(), false, shiftKey);
+                this.$container.scrollTop = this.$container.scrollHeight;
+                break;
+            case 107:
+                //+
+                if (this.more)
+                    this.startMore();
+                break;
+            case 37:
+                //LEFT
+                if (!selXml && !this.$tempsel)
+                    return;
+
+                node   = this.$tempsel
+                    ? apf.xmldb.getNode(this.$tempsel)
+                    : selXml;
+                margin = apf.getBox(apf.getStyle(selHtml, "margin"));
+                items  = selHtml.offsetWidth
+                    ? Math.floor((oExt.offsetWidth
+                        - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
+                        + margin[1] + margin[3]))
+                    : 1;
+
+                //margin = apf.getBox(apf.getStyle(selHtml, "margin"));
+
+                node   = this.getNextTraverseSelected(node, false);
+                if (node)
+                    this.$setTempSelected(node, ctrlKey, shiftKey, true);
+                else
+                    return;
+
+                selHtml = apf.xmldb.findHtmlNode(node, this);
+                if (selHtml.offsetTop < oExt.scrollTop) {
+                    oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
+                        ? 0
+                        : selHtml.offsetTop - margin[0];
+                }
+                break;
+            case 38:
+                //UP
+                if (!selXml && !this.$tempsel)
+                    return;
+
+                node = this.$tempsel
+                    ? apf.xmldb.getNode(this.$tempsel)
+                    : selXml;
+
+                margin    = apf.getBox(apf.getStyle(selHtml, "margin"));
+                hasScroll = oExt.scrollHeight > oExt.offsetHeight;
+                items     = selHtml.offsetWidth
+                    ? Math.floor((oExt.offsetWidth
+                        - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
+                        + margin[1] + margin[3]))
+                    : 1;
+
+                node      = this.getNextTraverseSelected(node, false, items);
+                if (node)
+                    this.$setTempSelected (node, ctrlKey, shiftKey, true);
+                else
+                    return;
+
+                selHtml = apf.xmldb.findHtmlNode(node, this);
+                if (selHtml.offsetTop < oExt.scrollTop) {
+                    oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
+                        ? 0
+                        : selHtml.offsetTop - margin[0];
+                }
+                break;
+            case 39:
+                //RIGHT
+                if (!selXml && !this.$tempsel)
+                    return;
+
+                node = this.$tempsel
+                    ? apf.xmldb.getNode(this.$tempsel)
+                    : selXml;
+                margin = apf.getBox(apf.getStyle(selHtml, "margin"));
+                node   = this.getNextTraverseSelected(node, true);
+                if (node)
+                    this.$setTempSelected (node, ctrlKey, shiftKey);
+                else
+                    return;
+
+                selHtml = apf.xmldb.findHtmlNode(node, this);
+                if (selHtml.offsetTop + selHtml.offsetHeight
+                  > oExt.scrollTop + oExt.offsetHeight) {
+                    oExt.scrollTop = selHtml.offsetTop
+                        - oExt.offsetHeight + selHtml.offsetHeight
+                        + margin[0];
+                }
+                break;
+            case 40:
+                //DOWN
+                if (!selXml && !this.$tempsel)
+                    return;
+
+                node = this.$tempsel
+                    ? apf.xmldb.getNode(this.$tempsel)
+                    : selXml;
+
+                margin    = apf.getBox(apf.getStyle(selHtml, "margin"));
+                hasScroll = oExt.scrollHeight > oExt.offsetHeight;
+                items     = selHtml.offsetWidth
+                    ? Math.floor((oExt.offsetWidth
+                        - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
+                        + margin[1] + margin[3]))
+                    : 1;
+
+                node      = this.getNextTraverseSelected(node, true, items);
+                if (node)
+                    this.$setTempSelected (node, ctrlKey, shiftKey);
+                else
+                    return;
+
+                selHtml = apf.xmldb.findHtmlNode(node, this);
+                if (selHtml.offsetTop + selHtml.offsetHeight
+                  > oExt.scrollTop + oExt.offsetHeight) { // - (hasScroll ? 10 : 0)
+                    oExt.scrollTop = selHtml.offsetTop
+                        - oExt.offsetHeight + selHtml.offsetHeight
+                        + margin[0]; //+ (hasScroll ? 10 : 0)
+                }
+                break;
+            case 33:
+                //PGUP
+                if (!selXml && !this.$tempsel)
+                    return;
+
+                node = this.$tempsel
+                    ? apf.xmldb.getNode(this.$tempsel)
+                    : selXml;
+
+                margin     = apf.getBox(apf.getStyle(selHtml, "margin"));
+                hasScrollY = oExt.scrollHeight > oExt.offsetHeight;
+                hasScrollX = oExt.scrollWidth > oExt.offsetWidth;
+                items      = Math.floor((oExt.offsetWidth
+                    - (hasScrollY ? 15 : 0)) / (selHtml.offsetWidth
+                    + margin[1] + margin[3]));
+                lines      = Math.floor((oExt.offsetHeight
+                    - (hasScrollX ? 15 : 0)) / (selHtml.offsetHeight
+                    + margin[0] + margin[2]));
+
+                node       = this.getNextTraverseSelected(node, false, items * lines);
+                if (!node)
+                    node = this.getFirstTraverseNode();
+                if (node)
+                    this.$setTempSelected (node, ctrlKey, shiftKey, true);
+                else
+                    return;
+
+                selHtml = apf.xmldb.findHtmlNode(node, this);
+                if (selHtml.offsetTop < oExt.scrollTop) {
+                    oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
+                        ? 0
+                        : selHtml.offsetTop - margin[0];
+                }
+                break;
+            case 34:
+                //PGDN
+                if (!selXml && !this.$tempsel)
+                    return;
+
+                node = this.$tempsel
+                    ? apf.xmldb.getNode(this.$tempsel)
+                    : selXml;
+
+                margin     = apf.getBox(apf.getStyle(selHtml, "margin"));
+                hasScrollY = oExt.scrollHeight > oExt.offsetHeight;
+                hasScrollX = oExt.scrollWidth > oExt.offsetWidth;
+                items      = Math.floor((oExt.offsetWidth - (hasScrollY ? 15 : 0))
+                    / (selHtml.offsetWidth + margin[1] + margin[3]));
+                lines      = Math.floor((oExt.offsetHeight - (hasScrollX ? 15 : 0))
+                    / (selHtml.offsetHeight + margin[0] + margin[2]));
+
+                node       = this.getNextTraverseSelected(selXml, true, items * lines);
+                if (!node)
+                    node = this.getLastTraverseNode();
+                if (node)
+                    this.$setTempSelected (node, ctrlKey, shiftKey);
+                else
+                    return;
+
+                selHtml = apf.xmldb.findHtmlNode(node, this);
+                if (selHtml.offsetTop + selHtml.offsetHeight
+                  > oExt.scrollTop + oExt.offsetHeight) { // - (hasScrollY ? 10 : 0)
+                    oExt.scrollTop = selHtml.offsetTop
+                        - oExt.offsetHeight + selHtml.offsetHeight
+                        + margin[0]; //+ 10 + (hasScrollY ? 10 : 0)
+                }
+                break;
+
+            default:
+                if (key == 65 && ctrlKey) {
+                    this.selectAll();
+                }
+                else if (this.$hasBindRule("caption")) {
+                    if (!this.xmlRoot || this.autorename) return;
+
+                    //this should move to a onkeypress based function
+                    if (!this.lookup || new Date().getTime()
+                      - this.lookup.date.getTime() > 300) {
+                        this.lookup = {
+                            str  : "",
+                            date : new Date()
+                        };
+                    }
+
+                    this.lookup.str += String.fromCharCode(key);
+
+                    var nodes = this.getTraverseNodes(); //@todo start at current indicator
+                    for (var v, i = 0; i < nodes.length; i++) {
+                        v = this.$applyBindRule("caption", nodes[i]);
+                        if (v && v.substr(0, this.lookup.str.length)
+                          .toUpperCase() == this.lookup.str) {
+
+                            if (!this.isSelected(nodes[i])) {
+                                this.select(nodes[i]);
+                            }
+
+                            if (selHtml) {
+                                this.$container.scrollTop = selHtml.offsetTop
+                                    - (this.$container.offsetHeight
+                                    - selHtml.offsetHeight) / 2;
+                            }
+                            return;
+                        }
+                    }
+                    return;
+                }
+                break;
+        }
+
+        this.lookup = null;
+        return false;
+    };
+
+    
+
+    /**** Private databinding functions ****/
+
+    this.$deInitNode   = function(xmlNode, htmlNode){
+        if (!htmlNode) return;
+
+        //Remove htmlNodes from tree
+        htmlNode.parentNode.removeChild(htmlNode);
+    };
+
+    this.$updateNode   = function(xmlNode, htmlNode, noModifier){
+        //Update Identity (Look)
+        var elIcon = this.$getLayoutNode("item", "icon", htmlNode);
+
+        if (elIcon) {
+            if (elIcon.nodeType == 1) {
+                elIcon.style.backgroundImage = "url(" + 
+                  apf.getAbsolutePath(this.iconPath,
+                      this.$applyBindRule("icon", xmlNode)) + ")";
+            }
+            else {
+                elIcon.nodeValue = apf.getAbsolutePath(this.iconPath,
+                    this.$applyBindRule("icon", xmlNode));
+            }
+        }
+        else {
+            //.style.backgroundImage = "url(" + this.$applyBindRule("image", xmlNode) + ")";
+            var elImage = this.$getLayoutNode("item", "image", htmlNode);
+            if (elImage) {
+                if (elImage.nodeType == 1) {
+                    elImage.style.backgroundImage = "url(" + 
+                        apf.getAbsolutePath(apf.hostPath,
+                            this.$applyBindRule("image", xmlNode)) + ")";
+                }
+                else {
+                    elImage.nodeValue = apf.getAbsolutePath(apf.hostPath, 
+                        this.$applyBindRule("image", xmlNode));
+                }
+            }
+        }
+
+        var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
+        if (elCaption) {
+            if (elCaption.nodeType == 1) {
+                
+                if (!this.$cbindings.caption || !this.$cbindings.caption.hasAml)
+                
+                    elCaption.innerHTML = this.$applyBindRule("caption", xmlNode);
+            }
+            else
+                elCaption.nodeValue = this.$applyBindRule("caption", xmlNode);
+        }
+        
+        
+        //@todo
+        
+
+        htmlNode.title = this.$applyBindRule("title", xmlNode) || "";
+
+        
+        var cssClass = this.$applyBindRule("css", xmlNode);
+
+        if (cssClass || this.$dynCssClasses.length) {
+            this.$setStyleClass(htmlNode, cssClass, this.$dynCssClasses);
+            if (cssClass && !this.$dynCssClasses.contains(cssClass)) {
+                this.$dynCssClasses.push(cssClass);
+            }
+        }
+        
+
+        if (!noModifier && this.$updateModifier)
+            this.$updateModifier(xmlNode, htmlNode);
+    };
+
+    this.$moveNode = function(xmlNode, htmlNode){
+        if (!htmlNode) return;
+
+        var oPHtmlNode = htmlNode.parentNode;
+        var nNode      = this.getNextTraverse(xmlNode); //@todo could optimize because getTraverseNodes returns array indexOf
+        var beforeNode = nNode
+            ? apf.xmldb.findHtmlNode(nNode, this)
+            : null;
+
+        oPHtmlNode.insertBefore(htmlNode, beforeNode);
+        //if(this.emptyMessage && !oPHtmlNode.childNodes.length) this.setEmpty(oPHtmlNode);
+    };
+
+    this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
+        //Build Row
+        this.$getNewContext("item");
+        var oItem      = this.$getLayoutNode("item"),
+            elSelect   = this.$getLayoutNode("item", "select"),
+            elIcon     = this.$getLayoutNode("item", "icon"),
+            elImage    = this.$getLayoutNode("item", "image"),
+            //elCheckbox = this.$getLayoutNode("item", "checkbox"), // NOT USED
+            elCaption  = this.$getLayoutNode("item", "caption");
+
+        oItem.setAttribute("id", Lid);
+
+        elSelect.setAttribute("onmouseover",   "var o = apf.lookup(" + this.$uniqueId 
+        	+ "); o.$setStyleClass(this, 'hover', null, true);");
+        elSelect.setAttribute("onselectstart", "return false;");
+        elSelect.setAttribute("style",         (elSelect.getAttribute("style") || "") 
+        	+ ";user-select:none;-moz-user-select:none;-webkit-user-select:none;");
+
+        if (this.hasFeature(apf.__RENAME__) || this.hasFeature(apf.__DRAGDROP__)) {
+            elSelect.setAttribute("ondblclick", "var o = apf.lookup(" + this.$uniqueId + "); " +
+                
+                "o.stopRename();" +
+                
+                " o.choose()");
+            elSelect.setAttribute("onmouseout", "var o = apf.lookup(" + this.$uniqueId + ");\
+            	  o.$setStyleClass(this, '', ['hover'], true);\
+                this.hasPassedDown = false;");
+            elSelect.setAttribute(this.itemSelectEvent || "onmousedown",
+                'var o = apf.lookup(' + this.$uniqueId + ');\
+                 var xmlNode = apf.xmldb.findXmlNode(this);\
+                 var isSelected = o.isSelected(xmlNode);\
+                 this.hasPassedDown = true;\
+                 if (!o.renaming && o.hasFocus() && isSelected == 1) \
+                    this.dorename = true;\
+                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
+                     o.select(this, event.ctrlKey, event.shiftKey, -1)');
+            elSelect.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
+                var o = apf.lookup(' + this.$uniqueId + ');' +
+                
+                'if (o.hasFeature(apf.__RENAME__) && this.dorename)\
+                    o.startDelayedRename(event, null, true);' +
+                
+                'this.dorename = false;\
+                 var xmlNode = apf.xmldb.findXmlNode(this);\
+                 var isSelected = o.isSelected(xmlNode);\
+                 if (o.hasFeature(apf.__DRAGDROP__))\
+                     o.select(this, event.ctrlKey, event.shiftKey, -1)');
+        } //@todo add DRAGDROP ifdefs
+        else {
+            elSelect.setAttribute("onmouseout",    "apf.setStyleClass(this, '', ['hover']);");
+            elSelect.setAttribute("ondblclick", 'var o = apf.lookup('
+                + this.$uniqueId + '); o.choose(null, true)');
+            elSelect.setAttribute(this.itemSelectEvent
+                || "onmousedown", 'var o = apf.lookup(' + this.$uniqueId
+                + '); o.select(this, event.ctrlKey, event.shiftKey, -1)');
+        }
+        
+        
+        
+        
+        if (this.$mode) {
+            var elCheck = this.$getLayoutNode("item", "check");
+            if (elCheck) {
+                elCheck.setAttribute("onmousedown",
+                    "var o = apf.lookup(" + this.$uniqueId + ");\
+                    o.checkToggle(this, true);\o.$skipSelect = true;");
+
+                if (apf.isTrue(this.$applyBindRule("checked", xmlNode))) {
+                    this.$checkedList.push(xmlNode);
+                    this.$setStyleClass(oItem, "checked");
+                }
+                else if (this.isChecked(xmlNode))
+                    this.$setStyleClass(oItem, "checked");
+            }
+            else {
+                
+                return false;
+            }
+        }
+        
+
+        //Setup Nodes Identity (Look)
+        if (elIcon) {
+            if (elIcon.nodeType == 1) {
+                elIcon.setAttribute("style", "background-image:url("
+                    + apf.getAbsolutePath(this.iconPath, this.$applyBindRule("icon", xmlNode))
+                    + ")");
+            }
+            else {
+                elIcon.nodeValue = apf.getAbsolutePath(this.iconPath,
+                    this.$applyBindRule("icon", xmlNode));
+            }
+        }
+        else if (elImage) {
+            if (elImage.nodeType == 1) {
+                if ((elImage.tagName || "").toLowerCase() == "img") {
+                    elImage.setAttribute("src", apf.getAbsolutePath(apf.hostPath, this.$applyBindRule("image", xmlNode)));
+                }
+                else {
+                    elImage.setAttribute("style", "background-image:url("
+                        + apf.getAbsolutePath(apf.hostPath, this.$applyBindRule("image", xmlNode))
+                        + ")");
+                }
+            }
+            else {
+                if (apf.isSafariOld) { //@todo this should be changed... blrgh..
+                    var p   = elImage.ownerElement.parentNode,
+                        img = p.appendChild(p.ownerDocument.createElement("img"));
+                    img.setAttribute("src", 
+                        apf.getAbsolutePath(apf.hostPath, this.$applyBindRule("image", xmlNode)));
+                }
+                else {
+                    elImage.nodeValue = 
+                        apf.getAbsolutePath(apf.hostPath, this.$applyBindRule("image", xmlNode));
+                }
+            }
+        }
+
+        if (elCaption) {
+            
+            if (elCaption.nodeType == 1 
+              && this.$cbindings.caption && this.$cbindings.caption.hasAml){
+                var q = (this.$amlBindQueue || (this.$amlBindQueue = {}));
+
+                if (elCaption == oItem) {
+                    apf.setNodeValue(elCaption, "");
+                    var span = elCaption.appendChild(elCaption.ownerDocument.createElement("span"));
+                    if (apf.isIE)
+                        span.appendChild(elCaption.ownerDocument.createTextNode(" "));
+                    span.setAttribute("id", "placeholder_" + this.$uniqueId
+                        + "_" + ((q.caption || (q.caption = [])).push(xmlNode) - 1));
+                }
+                else {
+                    elCaption.setAttribute("id", "placeholder_" + this.$uniqueId
+                        + "_" + ((q.caption || (q.caption = [])).push(xmlNode) - 1));
+                    apf.setNodeValue(elCaption, "");
+                }
+            }
+            else
+            
+            {
+                apf.setNodeValue(elCaption,
+                    this.$applyBindRule("caption", xmlNode));
+            }
+        }
+        oItem.setAttribute("title", this.$applyBindRule("tooltip", xmlNode) || "");
+
+        
+        var cssClass = this.$applyBindRule("css", xmlNode);
+        if (cssClass) {
+            this.$setStyleClass(oItem, cssClass);
+            if (cssClass)
+                this.$dynCssClasses.push(cssClass);
+        }
+        
+
+        if (this.$addModifier && 
+          this.$addModifier(xmlNode, oItem, htmlParentNode, beforeNode) === false)
+            return;
+
+        if (htmlParentNode)
+            apf.insertHtmlNode(oItem, htmlParentNode, beforeNode);
+        else
+            this.listNodes.push(oItem);
+    };
+    
+    this.addEventListener("$skinchange", function(e){
+        if (this.more)
+            delete this.moreItem;
+    });
+
+    this.$fill = function(){
+        if (this.more && !this.moreItem) {
+            this.$getNewContext("item");
+            var Item      = this.$getLayoutNode("item"),
+                elCaption = this.$getLayoutNode("item", "caption"),
+                elSelect  = this.$getLayoutNode("item", "select");
+
+            Item.setAttribute("class", this.$baseCSSname + "More");
+            elSelect.setAttribute("onmousedown", 'var o = apf.lookup(' + this.$uniqueId
+                + ');o.clearSelection();o.$setStyleClass(this, "more_down", null, true);');
+            elSelect.setAttribute("onmouseout", 'apf.lookup(' + this.$uniqueId
+                + ').$setStyleClass(this, "", ["more_down"], true);');
+            elSelect.setAttribute("onmouseup", 'apf.lookup(' + this.$uniqueId
+                + ').startMore(this, true)');
+
+            if (elCaption)
+                apf.setNodeValue(elCaption,
+                    this.more.match(/caption:(.*)(;|$)/i)[1]);
+            this.listNodes.push(Item);
+        }
+
+        apf.insertHtmlNodes(this.listNodes, this.$container);
+        this.listNodes.length = 0;
+
+        if (this.more && !this.moreItem) {
+            this.moreItem = this.$container.lastChild;
+        }
+            
+    };
+
+    /**
+     * Adds a new item to the list and lets the users type in the new name.
+     * This functionality is especially useful in the interface when
+     * {@link element.list.attribute.mode} is set to check or radio. For instance in a form.
+     * @see element.list.attribute.more
+     */
+    this.startMore = function(o, userAction){
+        if (userAction && this.disabled)
+            return;
+
+        this.$setStyleClass(o, "", ["more_down"]);
+
+        var xmlNode;
+        if (!this.$actions["add"]) {
+            if (this.each && !this.each.match(/[\/\[]/)) {
+                xmlNode = "<" + this.each + (this.each.match(/^a:/) 
+                    ? " xmlns:a='" + apf.ns.aml + "'" 
+                    : "") + " custom='1' />";
+            }
+            else {
+                
+                //return false;
+                xmlNode = "<item />";
+            }
+        }
+
+        this.add(xmlNode, null, null, function(addedNode){
+            this.select(addedNode, null, null, null, null, true);
+            if (this.morePos == "begin")
+                this.$container.insertBefore(this.moreItem, this.$container.firstChild);
+            else
+                this.$container.appendChild(this.moreItem);
+    
+            var undoLastAction = function(){
+                this.getActionTracker().undo(this.autoselect ? 2 : 1);
+    
+                this.removeEventListener("stoprename", undoLastAction);
+                this.removeEventListener("beforerename", removeSetRenameEvent);
+                this.removeEventListener("afterrename",  afterRename);
+            }
+            var afterRename = function(){
+                //this.select(addedNode);
+                this.removeEventListener("afterrename",  afterRename);
+            };
+            var removeSetRenameEvent = function(e){
+                this.removeEventListener("stoprename", undoLastAction);
+                this.removeEventListener("beforerename", removeSetRenameEvent);
+    
+                //There is already a choice with the same value
+                var xmlNode = this.findXmlNodeByValue(e.args[1]);
+                if (xmlNode || !e.args[1]) {
+                    if (e.args[1] && this.dispatchEvent("notunique", {
+                        value : e.args[1]
+                    }) === false) {
+                        this.startRename();
+                        
+                        this.addEventListener("stoprename",   undoLastAction);
+                        this.addEventListener("beforerename", removeSetRenameEvent);
+                    }
+                    else {
+                        this.removeEventListener("afterrename", afterRename);
+                        
+                        this.getActionTracker().undo();//this.autoselect ? 2 : 1);
+                        if (!this.isSelected(xmlNode))
+                            this.select(xmlNode);
+                    }
+                    
+                    return false;
+                }
+            };
+    
+            this.addEventListener("stoprename",   undoLastAction);
+            this.addEventListener("beforerename", removeSetRenameEvent);
+            this.addEventListener("afterrename",  afterRename);
+    
+            
+            this.startDelayedRename({}, 1);
+            
+        });
+    };
+
+    /**** Selection ****/
+
+    this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
+        var r = [],
+            nodes = this.hasFeature(apf.__VIRTUALVIEWPORT__)
+                ? this.xmlRoot.selectNodes(this.each)
+                : this.getTraverseNodes(),
+            f, i;
+        for (f = false, i = 0; i < nodes.length; i++) {
+            if (nodes[i] == xmlStartNode)
+                f = true;
+            if (f)
+                r.push(nodes[i]);
+            if (nodes[i] == xmlEndNode)
+                f = false;
+        }
+
+        if (!r.length || f) {
+            r = [];
+            for (f = false, i = nodes.length - 1; i >= 0; i--) {
+                if (nodes[i] == xmlStartNode)
+                    f = true;
+                if (f)
+                    r.push(nodes[i]);
+                if (nodes[i] == xmlEndNode)
+                    f = false;
+            }
+        }
+
+        return r;
+    };
+
+    this.$selectDefault = function(XMLRoot){
+        this.select(this.getTraverseNodes()[0], null, null, null, true);
+    };
+
+    /**
+     * Generates a list of items based on a string.
+     * @param {String} str the description of the items. Items are seperated by a comma (,). Ranges are specified by a start and end value seperated by a dash (-).
+     * Example:
+     * This example loads a list with items starting at 1980 and ending at 2050.
+     * <code>
+     *  lst.loadFillData("1980-2050");
+     *  lst.loadFillData("red,green,blue,white");
+     *  lst.loadFillData("None,100-110,1000-1100");
+     *  lst.loadFillData("1-10"); // 1 2 3 4 etc
+     *  lst.loadFillData("01-10"); //01, 02, 03, 04, etc
+     * </code>
+     */
+    this.loadFillData = function(str){
+        var len, start, end, parts = str.splitSafe(","), data = [];
+        
+        for (var p, part, i = 0; i < parts.length; i++) {
+            if ((part = parts[i]).match(/^\d+-\d+$/)) {
+                p     = part.split("-");
+                start = parseInt(p[0]);
+                end   = parseInt(p[1]);
+                
+                if (p[0].length == p[1].length) {
+                    len = Math.max(p[0].length, p[1].length);
+                    for (var j = start; j < end + 1; j++) {
+                        data.push("<item>" + (j + "").pad(len, "0") + "</item>");
+                    }
+                }
+                else {
+                    for (var j = start; j < end + 1; j++) {
+                        data.push("<item>" + j + "</item>");
+                    }
+                }
+            }
+            else {
+                data.push("<item>" + part + "</item>");
+            }
+        }
+        
+        //@todo this is all an ugly hack (copied from item.js line 486)
+        //this.$preventDataLoad = true;//@todo apf3.0 add remove for this
+        
+        this.$initingModel = true;
+        
+        this.each = "item";
+        this.$setDynamicProperty("caption", "[label/text()|@caption|text()]");
+        this.$setDynamicProperty("eachvalue", "[value/text()|@value|text()]");
+        this.$canLoadDataAttr = false;
+
+        this.load("<data>" + data.join("") + "</data>");
+    };
+
+}).call(apf.BaseList.prototype = new apf.MultiSelect());
+
+
+
+
+
+/*FILEHEAD(core/baseclasses/basesimple.js)SIZE(1729)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+/**
+ * Baseclass of a simple element. This are usually displaying elements 
+ * (i.e. {@link element.label}, {@link element.picture})
+ *
+ * @constructor
+ * @baseclass
+ *
+ * @inherits apf.StandardBinding
+ * @inherits apf.DataAction
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8
+ */
+apf.BaseSimple = function(){
+    this.$init(true);
+};
+
+(function() {
+    
+    this.implement(apf.DataAction);
+    
+    
+    this.getValue = function(){
+        return this.value;
+    };
+
+}).call(apf.BaseSimple.prototype = new apf.StandardBinding());
+
+
+
+
+
+/*FILEHEAD(core/baseclasses/basestatebuttons.js)SIZE(27242)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+/**
+ * @constructor
+ * @baseclass
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8
+ */
+apf.BaseStateButtons = function(){
+    this.state   = "normal";
+    this.edit    = false;
+    
+    var actions  = {
+        "min"   : ["minimized", "minimize", "restore"],
+        "max"   : ["maximized", "maximize", "restore"],
+        "edit"  : ["edit", "edit", "closeedit"],
+        "close" : ["closed", "close", "show"]
+    };
+    this.$lastheight  = null;
+    this.$lastpos     = null;
+
+    this.$lastState = {"normal":true};    
+    this.$booleanProperties["animate"] = true;
+    this.$supportedProperties.push("buttons", "animate", "state");
+    
+    /**
+     * Close the window. It can be reopened by using {@link baseclass.guielement.method.show}
+     * Call-chaining is supported.
+     * @todo show should unset closed
+     */
+    this.close = function(){
+        this.setProperty("state", this.state.split("|")
+            .pushUnique("closed").join("|"), false, true);
+        return this;
+    };
+
+    /**
+     * Minimize the window. The window will become the height of the title of
+     * the window.
+     * Call-chaining is supported.
+     */
+    this.minimize = function(){
+        this.setProperty("state", this.state.split("|")
+            .remove("maximized")
+            .remove("normal")
+            .pushUnique("minimized").join("|"), false, true);
+        return this;
+    };
+
+    /**
+     * Maximize the window. The window will become the width and height of the
+     * browser window.
+     * Call-chaining is supported.
+     */
+    this.maximize = function(){
+        this.setProperty("state", this.state.split("|")
+            .remove("minimized")
+            .remove("normal")
+            .pushUnique("maximized").join("|"), false, true);
+        return this;
+    };
+
+    /**
+     * Restore the size of the window. The window will become the width and
+     * height it had before it was minimized or maximized.
+     * Call-chaining is supported.
+     */
+    this.restore = function(){
+        this.setProperty("state", this.state.split("|")
+            .remove("minimized")
+            .remove("maximized")
+            .pushUnique("normal").join("|"), false, true);
+        return this;
+    };
+    
+     /**
+     * Set the window into edit state. The configuration panel is shown.
+     * Call-chaining is supported.
+     */
+    this.edit = function(value){
+        this.setProperty("state", this.state.split("|")
+            .pushUnique("edit").join("|"), false, true);
+        return this;
+    };
+
+    /**
+     * Removes the edit state of this window. The configuration panel is hidden.
+     * Call-chaining is supported.
+     */
+    this.closeedit = function(value){
+        this.setProperty("state", this.state.split("|")
+            .remove("edit").join("|"), false, true);
+        return this;
+    };
+    
+    this.$toggle = function(type){
+        var c = actions[type][0];
+        this[actions[type][this.state.indexOf(c) > -1 ? 2 : 1]]();
+    };
+    
+    this.$propHandlers["refparent"] = function(value){
+        if (typeof value == "string")
+            this.$refParent = self[value] && self[value].$ext || document.getElementById(value);
+        else this.$refParent = value;
+    }
+    
+    this.$propHandlers["maxconf"] = function(value){
+        this.$maxconf = value.splitSafe(",");
+    }
+    
+    /**
+     * @attribute {String} state the state of the window. The state can be a
+     * combination of multiple states seperated by a pipe '|' character.
+     *   Possible values:
+     *   normal     The window has it's normal size and position. Default value.
+     *   minimized  The window is minimized.
+     *   maximized  The window is maximized.
+     *   edit       The window is in the edit state.
+     *   closed     The window is closed.
+     */
+    this.$propHandlers["state"] = function(value, prop, force, reenter, noanim){
+        var _self = this;
+        if (!this.$amlLoaded) { //@todo I still think this is weird and should not be needed
+            apf.queue.add("state" + this.$uniqueId, function(){
+                _self.$propHandlers["state"].call(_self, value, prop, force, reenter, noanim);
+            });
+            return;
+        }
+
+        if (value == 0)
+            value = "normal";
+
+        var i, pNode, position, l, t,
+            o          = {},
+            s          = value.split("|"),
+            lastState  = this.$lastState,
+            styleClass = [];
+
+        for (i = 0; i < s.length; i++)
+            o[s[i]] = true;
+        o.value = value;
+
+        if (!o.maximized && !o.minimized)
+            o.normal = true;
+
+        if (!reenter && this.dispatchEvent("beforestatechange", {
+          from : lastState, 
+          to   : o}) === false) {
+            this.state = lastState.value;
+            return false;
+        }
+
+        //Closed state
+        if (o.closed == this.visible) {//change detected
+            this.setProperty("visible", !o["closed"], false, true);
+            //@todo difference is, we're not clearing the other states, check the docking example
+        }
+
+        //Restore state
+        if (o.normal != lastState.normal
+          || !o.normal && (o.minimized != lastState.minimized
+            || o.maximized != lastState.maximized)) {
+
+            if (this.$lastheight) // this.aData && this.aData.hidden == 3 ??
+                this.$ext.style.height = this.$lastheight;//(this.$lastheight - apf.getHeightDiff(this.$ext)) + "px";
+
+            if (this.$lastpos) {
+                apf.plane.hide(this.$uniqueId);
+                
+                if (this.animate && !noanim) {
+                    //Pre remove paused event because of not having onresize
+                    //if (apf.hasSingleRszEvent)
+                        //delete apf.layout.onresize[apf.layout.getHtmlId(this.$pHtmlNode)];
+
+                    var htmlNode = this.$ext;
+                    position = apf.getStyle(htmlNode, "position");
+                    if (position != "absolute") {
+                        l = parseInt(apf.getStyle(htmlNode, "left")) || 0;
+                        t = parseInt(apf.getStyle(htmlNode, "top")) || 0;
+                    }
+                    else {
+                        l = htmlNode.offsetLeft;
+                        t = htmlNode.offsetTop;
+                    }
+
+                    this.animstate = 1;
+                    apf.tween.multi(htmlNode, {
+                        steps    : 15,
+                        anim     : apf.tween.easeInOutCubic,
+                        interval : 10,
+                        tweens   : [
+                            {type: "left",   from: l,    to: this.$lastpos.px[0]},
+                            {type: "top",    from: t,    to: this.$lastpos.px[1]},
+                            {type: "width",  from: this.$ext.offsetWidth,
+                                to: this.$lastpos.px[2]},
+                            {type: "height", from: this.$ext.offsetHeight,
+                                to: this.$lastpos.px[3]}
+                        ],
+                        oneach   : function(){
+                            
+                            if (apf.hasSingleRszEvent)
+                                apf.layout.forceResize(_self.$int);
+                            
+                        },
+                        onfinish : function(){
+                            _self.$lastpos.parentNode.insertBefore(_self.$ext, _self.$lastpos.beforeNode);
+                            
+                            if (_self.$placeHolder)
+                                _self.$placeHolder.parentNode.removeChild(_self.$placeHolder);
+                            
+                            _self.$propHandlers["state"].call(_self, value, null,
+                                null, true, true);
+                        }
+                    });
+
+                    return;
+                }
+                else if (!this.animate) {
+                    apf.plane.hide(this.$uniqueId, true);
+                    
+                    _self.$lastpos.parentNode.insertBefore(_self.$ext, _self.$lastpos.beforeNode);
+                            
+                    if (_self.$placeHolder)
+                        _self.$placeHolder.parentNode.removeChild(_self.$placeHolder);
+                }
+
+                this.$ext.style.position = this.$lastpos.pos;
+                this.$ext.style.left     = this.$lastpos.css[0];
+                this.$ext.style.top      = this.$lastpos.css[1];
+                this.$ext.style.width    = this.$lastpos.css[2];
+                this.$ext.style.height   = this.$lastpos.css[3];
+                
+                pNode = this.$lastpos.parentNode;
+                pNode.style.width    = this.$lastpos.parent[0];
+                pNode.style.height   = this.$lastpos.parent[1];
+                pNode.style.overflow = this.$lastpos.parent[2];
+            }
+
+            
+            if (this.aData && this.aData.restore)
+                this.aData.restore();
+            
+
+            
+            if (apf.layout)
+                apf.layout.play(this.$pHtmlNode);
+            
+
+            this.$lastheight = this.$lastpos = null;
+
+            if (o.normal)
+                styleClass.push("",
+                    this.$baseCSSname + "Max",
+                    this.$baseCSSname + "Min");
+        }
+
+        if (o.minimized != lastState.minimized) {
+            if (o.minimized) {
+                styleClass.unshift(
+                    this.$baseCSSname + "Min",
+                    this.$baseCSSname + "Max",
+                    this.$baseCSSname + "Edit");
+
+                
+                if (this.aData && this.aData.minimize)
+                    this.aData.minimize(this.collapsedHeight);
+                
+
+                if (!this.aData || !this.aData.minimize) {
+                    this.$lastheight = apf.getStyle(this.$ext, "height");//this.$ext.offsetHeight;
+
+                    this.$ext.style.height = Math.max(0, this.collapsedHeight
+                        - apf.getHeightDiff(this.$ext)) + "px";
+                }
+
+                if (this.hasFocus())
+                    apf.window.moveNext(null, this, true);
+                //else if(apf.document.activeElement)
+                    //apf.document.activeElement.$focus({mouse: true});
+            }
+            else {
+                styleClass.push(this.$baseCSSname + "Min");
+
+                $setTimeout(function(){
+                    apf.window.$focusLast(_self);
+                });
+            }
+        }
+
+        if (o.maximized != lastState.maximized) {
+            if (o.maximized) {
+                styleClass.unshift(
+                    this.$baseCSSname + "Max",
+                    this.$baseCSSname + "Min",
+                    this.$baseCSSname + "Edit");
+
+                pNode = this.$refParent;
+                if (!pNode)
+                    pNode = (this.$ext.offsetParent == document.body
+                      ? document.documentElement
+                      : this.$ext.parentNode);
+
+                this.animstate = 0;
+                var hasAnimated = false, htmlNode = this.$ext;
+                
+                var position = apf.getStyle(htmlNode, "position");
+                if (position == "absolute") {
+                    pNode.style.overflow = "hidden";
+                    l = htmlNode.offsetLeft;
+                    t = htmlNode.offsetTop;
+                }
+                else {
+                    var pos = apf.getAbsolutePosition(htmlNode); //pNode
+                    l = pos[0];//parseInt(apf.getStyle(htmlNode, "left")) || 0;
+                    t = pos[1];//parseInt(apf.getStyle(htmlNode, "top")) || 0;
+                }
+                
+                this.$lastpos = {
+                    css    : [this.$ext.style.left, this.$ext.style.top,
+                              this.$ext.style.width, this.$ext.style.height,
+                              this.$ext.style.margin, this.$ext.style.zIndex],
+                    px     : [l, t, this.$ext.offsetWidth, 
+                              this.$ext.offsetHeight],
+                    parent : [pNode.style.width, pNode.style.height, 
+                              pNode.style.overflow],
+                    pos        : htmlNode.style.position,
+                    parentNode : pNode,
+                    beforeNode : this.$ext.nextSibling
+                };
+                
+                if (this.parentNode.$layout) {
+                    if (!this.$placeHolder)
+                        this.$placeHolder = document.createElement("div");
+                    this.$placeHolder.style.position = this.$lastpos.pos;
+                    this.$placeHolder.style.left   = this.$lastpos.css[0];
+                    this.$placeHolder.style.top    = this.$lastpos.css[1];
+                    this.$placeHolder.style.width  = this.$lastpos.px[2] + "px";
+                    this.$placeHolder.style.height = this.$lastpos.px[3] + "px";
+                    this.$placeHolder.style.margin = this.$lastpos.css[4];
+                    this.$placeHolder.style.zIndex = this.$lastpos.css[5];
+                    this.$pHtmlNode.insertBefore(this.$placeHolder, this.$ext);
+                    
+                    htmlNode.style.position = "absolute";
+                }
+                
+                document.body.appendChild(htmlNode);
+                htmlNode.style.left = l + "px";
+                htmlNode.style.top  = t + "px";
+                
+                function setMax(){
+                    //While animating dont execute this function
+                    if (_self.animstate)
+                        return;
+                    
+                    var w, h, pos, box, pDiff;
+                    if (_self.maxconf) {
+                        w = _self.$maxconf[0];
+                        h = _self.$maxconf[1];
+                        
+                        pos = [_self.$maxconf[2] == "center" 
+                            ? (apf.getWindowWidth() - w)/2
+                            : _self.$maxconf[2], 
+                               _self.$maxconf[3] == "center" 
+                            ? (apf.getWindowHeight() - h)/3
+                            : _self.$maxconf[3]];
+                    }
+                    else {
+                        w = !apf.isIE && pNode == document.documentElement
+                            ? window.innerWidth
+                            : pNode.offsetWidth,
+                        h = !apf.isIE && pNode == document.documentElement
+                            ? window.innerHeight
+                            : pNode.offsetHeight;
+                    }
+                    
+                    if (!pos) {
+                        pos = pNode != htmlNode.offsetParent
+                            ? apf.getAbsolutePosition(pNode, htmlNode.offsetParent)
+                            : [0, 0];
+                    }
+
+                    if (position != "absolute") {
+                        var diff = apf.getDiff(pNode);
+                        w -= diff[0] + (!_self.$refParent && apf.isIE8 ? 4 : 0);//@todo dirty hack!
+                        h -= diff[0] + (!_self.$refParent && apf.isIE8 ? 4 : 0);//@todo dirty hack!
+                    }
+                    //@todo dirty hack!
+                    else if (!_self.$refParent && apf.isIE8) {
+                        w -= 4;
+                        h -= 4;
+                    }
+                    
+                    box = _self.$refParent ? [0,0,0,0] : marginBox;
+                    pDiff = apf.getDiff(pNode);
+
+                    pNode.style.width  = (pNode.offsetWidth - pDiff[0]) + "px";
+                    pNode.style.height = (pNode.offsetHeight - pDiff[1]) + "px";
+                    
+                    if (!hasAnimated && _self.$maxconf && _self.$maxconf[4])
+                        apf.plane.show(htmlNode, false, null, null, {
+                            color   : _self.$maxconf[4], 
+                            opacity : _self.$maxconf[5],
+                            animate : _self.animate,
+                            protect : _self.$uniqueId
+                        });
+                    
+                    if (_self.animate && !hasAnimated) {
+                        _self.animstate = 1;
+                        hasAnimated     = true;
+                        apf.tween.multi(htmlNode, {
+                            steps    : 15,
+                            anim     : apf.tween.easeInOutCubic,
+                            interval : 10,
+                            tweens   : [
+                                {type: "left",   from: l, to: pos[0] - box[3]},
+                                {type: "top",    from: t, to: pos[1] - box[0]},
+                                {type: "width",  from: _self.$lastpos.px[2],
+                                    to: (w + box[1] + box[3] - apf.getWidthDiff(_self.$ext))},
+                                {type: "height", from: _self.$lastpos.px[3],
+                                    to: (h + box[0] + box[2] - apf.getHeightDiff(_self.$ext))}
+                            ],
+                            oneach   : function(){
+                                
+                                if (apf.hasSingleRszEvent)
+                                    apf.layout.forceResize(_self.$int);
+                                
+                            },
+                            onfinish : function(){
+                                _self.animstate = 0;
+                                
+                                _self.dispatchEvent("afterstatechange", {
+                                  from : lastState, 
+                                  to   : o
+                                });
+                                
+                                
+                                if (apf.hasSingleRszEvent)
+                                    apf.layout.forceResize(_self.$int);
+                                
+                            }
+                        });
+                    }
+                    else if (!_self.animstate) {
+                        htmlNode.style.left = (pos[0] - box[3]) + "px";
+                        htmlNode.style.top  = (pos[1] - box[0]) + "px";
+
+                        var diff = apf.getDiff(_self.$ext);
+                        htmlNode.style.width  = (w
+                            - diff[0] + box[1] + box[3]) + "px";
+                        htmlNode.style.height = (h
+                            - diff[1] + box[0] + box[2]) + "px";
+                    }
+                }
+
+                
+                if (apf.layout)
+                    apf.layout.pause(this.$pHtmlNode, setMax);
+                
+            }
+            else {
+                styleClass.push(this.$baseCSSname + "Max");
+            }
+        }
+
+        if (o.edit != lastState.edit) {
+            if (o.edit) {
+                styleClass.unshift(
+                    this.$baseCSSname + "Edit",
+                    this.$baseCSSname + "Max",
+                    this.$baseCSSname + "Min");
+
+                if (this.btnedit)
+                    oButtons.edit.innerHTML = "close"; //hack
+
+                this.dispatchEvent('editstart');
+            }
+            else {
+                if (this.dispatchEvent('editstop') === false)
+                    return false;
+
+                styleClass.push(this.$baseCSSname + "Edit");
+                if (styleClass.length == 1)
+                    styleClass.unshift("");
+
+                if (this.btnedit)
+                    oButtons.edit.innerHTML = "edit"; //hack
+            }
+        }
+
+        if (styleClass.length || o.closed != lastState.closed) {
+            if (styleClass.length)
+                this.$setStyleClass(this.$ext, styleClass.shift(), styleClass);
+                
+            if (o.edit) { //@todo apf3.0
+                this.dispatchEvent("prop.visible", {value:true});
+                
+                if (_self.oSettings)
+                    apf.layout.forceResize(_self.oSettings);
+                
+            }
+
+            //@todo research why this is not symmetrical
+            if (!o.maximized || !this.animate || lastState.maximized && _self.animate) {
+                _self.dispatchEvent("afterstatechange", {
+                  from : lastState, 
+                  to   : o});
+            }
+            
+            this.$lastState = o;
+
+            
+            if (this.aData && !o.maximized) { //@todo is this the most optimal position?
+                this.$purgeAlignment();
+            }
+            
+
+            
+            if (!this.animate && apf.hasSingleRszEvent && apf.layout)
+                apf.layout.forceResize(_self.$int);
+            
+        }
+    };
+
+    var marginBox, hordiff, verdiff, oButtons = {}
+    /**
+     * @attribute {String} buttons the buttons that the window displays. This
+     * can be multiple values seperated by a pipe '|' character.
+     *   Possible values:
+     *   min    The button that minimizes the window.
+     *   max    The button that maximizes the window.
+     *   close  The button that closes the window.
+     *   edit   The button that puts the window into the edit state.
+     */
+    this.$propHandlers["buttons"] = function(value){
+        
+        if (!this.$hasLayoutNode("button"))
+            return;
+
+        var buttons   = value && (value = value.replace(/(\|)\||\|$/, "$1")).split("|") || [],
+            nodes     = this.$buttons.childNodes,
+            re        = value && new RegExp("(" + value + ")"),
+            found     = {},
+            idleNodes = [];
+
+        //Check if we can 'remove' buttons
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].nodeType != 1 || nodes[i].tagName != "DIV") //@todo temp hack
+                continue;
+
+            if (nodes[i].getAttribute("button") && (!value 
+              || !nodes[i].className || !nodes[i].className.match(re))) {
+                nodes[i].style.display = "none";
+                this.$setStyleClass(nodes[i], "", ["min", "max", "close", "edit"]);
+                idleNodes.push(nodes[i]);
+            }
+            else {
+                found[RegExp.$1] = nodes[i];
+            }
+        }
+
+        //Create new buttons if needed
+        for (i = 0; i < buttons.length; i++) {
+            if (!buttons[i])
+                continue;
+            
+            if (found[buttons[i]]) {
+                this.$buttons.insertBefore(found[buttons[i]], this.$buttons.firstChild);
+                continue;
+            }
+
+            var btn = idleNodes.pop();
+            if (!btn) {
+                this.$getNewContext("button");
+                btn = this.$getLayoutNode("button");
+                btn.setAttribute("button", "button");
+                setButtonEvents.call(this, btn);
+                btn = apf.insertHtmlNode(btn, this.$buttons);
+            }
+
+            this.$setStyleClass(btn, buttons[i], ["min", "max", "close", "edit"]);
+            btn.onclick = new Function("apf.lookup(" + this.$uniqueId + ").$toggle('"
+                                       + buttons[i] + "')");
+            btn.style.display = "block";
+            oButtons[buttons[i]] = btn;
+            this.$buttons.insertBefore(btn, this.$buttons.firstChild);
+        }
+        
+        marginBox = apf.getBox(apf.getStyle(this.$ext, "borderWidth"));
+    };
+    
+    function setButtonEvents(btn){
+        //@todo can this cancelBubble just go?
+        //event.cancelBubble = true; \
+        btn.setAttribute("onmousedown",
+            "var o = apf.all[" + this.$uniqueId + "];\
+             o.$setStyleClass(this, 'down', null, true);\
+             apf.cancelBubble(event, o); \
+             var o = apf.findHost(this).$ext;\
+             if (o.onmousedown) o.onmousedown(event);\
+             apf.cancelBubble(event, o);\
+             apf.window.$mousedown(event);");
+        btn.setAttribute("onmouseup",
+            "var o = apf.all[" + this.$uniqueId + "];\
+             o.$setStyleClass(this, '', ['down'], true);");
+        btn.setAttribute("onmouseover",
+            "var o = apf.all[" + this.$uniqueId + "];\
+             o.$setStyleClass(this, 'hover', null, true);");
+        btn.setAttribute("onmouseout",
+            "var o = apf.all[" + this.$uniqueId + "];\
+             o.$setStyleClass(this, '', ['hover', 'down'], true);");
+        btn.setAttribute("ondblclick", "apf.stopPropagation(event);");
+    }
+    
+    this.$initButtons = function(oExt){
+        this.animate = apf.enableAnim;
+        
+        this.collapsedHeight = this.$getOption("Main", "collapsed-height");
+
+        var oButtons = this.$getLayoutNode("main", "buttons", oExt);
+        if (!oButtons || apf.isIphone || !this.getAttribute("buttons") 
+          || !this.$hasLayoutNode("button"))
+            return;
+
+        var len = (this.getAttribute("buttons") || "").split("|").length;
+        for (var btn, i = 0; i < len; i++) {
+            this.$getNewContext("button");
+            btn = oButtons.appendChild(this.$getLayoutNode("button"));
+            btn.setAttribute("button", "button");
+            setButtonEvents.call(this, btn);
+        }
+    };
+    
+    this.addEventListener("DOMNodeRemovedFromDocument", function(e){
+        for (var name in oButtons) {
+            oButtons[name].onclick = null;
+        }
+    });
+};
+
+
+
+
+/*FILEHEAD(core/baseclasses/basetab.js)SIZE(57119)TIME(Tue, 19 Jul 2011 12:01:49 GMT)*/
+>>>>>>> hotfix/0.5.1
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+<<<<<<< HEAD
+ * Baseclass of an element that has one or two states and can be clicked on to
+ * trigger an action. (i.e. {@link element.button} or {@link element.checkbox}).
+ *
+ * @constructor
+ * @baseclass
+ * @author      Abe Ginner
+ * @version     %I%, %G%
+ * @since       0.8
+ *
+ * @event click     Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
+ */
+apf.BaseButton = function(){
+=======
+ * Baseclass of a paged element. 
+ *
+ * @constructor
+ * @baseclass
+ * @allowchild page
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8
+ * 
+ * @event beforeswitch  Fires before this element switches to another page.
+ *   cancelable: Prevents the page to become active.
+ *   object:
+ *   {Mixed}    previous     the name or number of the current page.
+ *   {Number}   previousId   the number of the current page.
+ *   {apf.page} previousPage the current page.
+ *   {Mixed}    next         the name or number of the page the will become active.
+ *   {Number}   nextId       the number of the page the will become active.
+ *   {apf.page} nextPage     the page the will become active.
+ * @event afterswitch   Fires after this element has switched to another page.
+ *   object:
+ *   {Mixed}    previous     the name or number of the previous page.
+ *   {Number}   previousId   the number of the previous page.
+ *   {apf.page} previousPage the previous page.
+ *   {Mixed}    next         the name or number of the current page.
+ *   {Number}   nextId       the number of the the current page.
+ *   {apf.page} nextPage     the the current page.   
+ */
+apf.BaseTab = function(){
+>>>>>>> hotfix/0.5.1
+    this.$init(true);
+};
+
+(function() {
+<<<<<<< HEAD
     
     this.implement(apf.ChildValue);
     
@@ -33196,6 +36188,31 @@ apf.BaseTab = function(){
 
         this.$lastCallback = callback;
         this.setProperty("activepage", page);
+=======
+    this.isPaged     = true;
+    this.$focussable = apf.KEYBOARD;
+    this.length      = 0;
+    this.isLoading   = {};
+    this.inited      =
+    this.ready       = false;
+    this.$scroll     = true;
+
+    /**
+     * Sets the current page of this element.
+     * @param {mixed}    page     the name of numer of the page which is made active.
+     * @param {Function} callback the function called after setting the page. Especially handy when using the src attribute.
+     */
+    this.set = function(page, callback, noEvent){
+        if (noEvent || this.src && !this.$findPage(page, {})) {
+            return this.$propHandlers["activepage"].call(
+                this, page, null, null, callback, noEvent);
+        }
+        
+        if (callback && this.activepage == page)
+            return callback(this.getPage(page));
+
+        this.$lastCallback = callback;
+        this.setProperty("activepage", page);
     };
 
     /**** Properties and Attributes ****/
@@ -33456,6 +36473,860 @@ apf.BaseTab = function(){
         if (this.$control && this.$control.type != "remove" && this.$control.stop)
             this.$control.stop();
 
+        var _self = this;
+        var anim  = {
+            steps    : type == "remove" ? 8 : 8,
+            control  : this.$control = {},
+            anim     : apf.tween.EASEOUT,
+            interval : 10,
+            tweens   : [],
+            oHtml    : node,
+            onfinish : function(){
+                if (!node)
+                    return;
+
+                if (type == "add")
+                    node.dispatchEvent("afteropen");
+            },
+            onstop    : function(){
+                if (!node)
+                    return;
+
+                if (type == "add")
+                    node.dispatchEvent("afteropen");
+                else if (type == "remove")
+                    node.dispatchEvent("afterclose");
+            }
+            //oneach   : function(){alert(1);}
+        };
+        this.$control.type = type;
+        
+        if (type == "add") {
+            var htmlNode = node.$button;
+            htmlNode.style.width = this.$minBtnWidth + "px";
+            if (pg.length) {
+                scalersz.call(this, null, node);
+                this.$buildScaleAnim(anim, pg, null, true);
+            }
+        }
+        else if (type == "sync") {
+            this.$buildScaleAnim(anim, pg);
+        }
+        else if (type == "remove") {
+            anim.onfinish = function(){
+            	if (node.dispatchEvent("afterclose") !== false)
+                	callback();
+                    
+                html.style.marginLeft = 0;
+                apf.setOpacity(html, 1);
+                
+                if (_self.$waitForMouseOut == 2) {
+                    apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
+                    delete _self.$waitForMouseOut;
+                    _self.$scaleinit(null, "sync");
+                }
+                else if (isLast)
+                    delete _self.$waitForMouseOut;
+            }
+            anim.onstop = function(){
+                apf.setOpacity(html, 1);
+            }
+            
+            var html = node.$button;
+            anim.tweens.push({
+                oHtml : html,
+                type  : "width", 
+                from  : html.offsetWidth - apf.getWidthDiff(html),
+                to    : 0
+            });
+            var over = apf.getWidthDiff(html) + (this.$btnMargin || 0);
+            if (over)
+                anim.tweens.push({
+                    oHtml : html,
+                    type  : "marginLeft", 
+                    from  : 0,
+                    to    : -1 * over
+                });
+            anim.tweens.push({
+                oHtml : html,
+                type  : "fade", 
+                from  : 1,
+                to    : 0
+            });
+            
+            var isLast = pg[pg.length - 1] == node;
+            if (isLast)
+                this.$buildScaleAnim(anim, pg, node);
+            
+            //Set activetab if the current one is lost
+            if (this.$activepage == node) {
+                var ln = node.nextSibling;
+                while (ln && (!ln.$first || !ln.visible))
+                    ln = ln.nextSibling;
+                var rn = node.previousSibling;
+                while (rn && (!rn.$last || !rn.visible))
+                    rn = rn.previousSibling;
+                if (ln || rn)
+                    this.set(ln || rn);
+            }
+            
+            this.$waitForMouseOut = true;
+            if (!isLast) {
+                if (!btnMoHandler) {
+                    var _self = this;
+                    function btnMoHandler(e){
+                        var pos = apf.getAbsolutePosition(this);
+                        if (e.clientX <= pos[0] || e.clientY <= pos[1] 
+                          || e.clientX >= pos[0] + this.offsetWidth 
+                          || e.clientY >= pos[1] + this.offsetHeight) {
+                            apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
+                            if (_self.$control.state == apf.tween.STOPPED) {
+                                delete _self.$waitForMouseOut;
+                                _self.$scaleinit(null, "sync");
+                            }
+                            else if (_self.$waitForMouseOut)
+                                _self.$waitForMouseOut = 2;
+                        }
+                    }
+                }
+                
+                apf.addListener(_self.$buttons, "mouseout", btnMoHandler);
+            }
+        }
+        
+        if (anim.tweens.length)
+            apf.tween.multi(this, anim);
+    }
+    
+    this.$buildScaleAnim = function(anim, pg, excl, add){
+        if (excl) {
+            pg = pg.slice();
+            pg.remove(excl);
+        }
+        if (!pg.length)
+            return;
+        
+        var cw = this.$buttons.offsetWidth - apf.getWidthDiff(this.$buttons);//apf.getHtmlInnerWidth(this.$ext);
+        var l  = pg.length;
+        var bw = Math.min(cw/l, this.$maxBtnWidth);
+        var re = Math.round((bw % 1) * 10);
+        for (var wd, html, s, i = 0; i < l - 1; i++) {
+            s = Math.max(this.$minBtnWidth, round[i < re ? 1 : 0](bw));
+            cw -= s;
+            html = pg[i].$button, wd = apf.getWidthDiff(html);
+            anim.tweens.push({
+                oHtml : html, 
+                type  : "width", 
+                from  : html.offsetWidth - wd,
+                to    : s - wd - (this.$btnMargin || 0)
+            });
+        }
+        html = pg[l - 1].$button, wd = apf.getWidthDiff(html);
+        anim.tweens.push({
+            oHtml : html, 
+            type  : "width", 
+            from  : html.offsetWidth - wd, // - (add ? 3 : 0)
+            to    : Math.max(this.$minBtnWidth, 
+                Math.min(cw, this.$maxBtnWidth)) - (this.$btnMargin || 0) - wd
+        });
+    }
+    
+    var round = [Math.floor, Math.ceil];
+    function scalersz(e, excl){
+        if (!this.length && !this.getPages().length || this.$waitForMouseOut 
+          || this.$control && this.$control.state == apf.tween.RUNNING) {
+            //@todo queue call here to after anim
+            return;
+        }
+        
+        var page = this.getPage();
+
+        if (!page)
+            return;
+
+        if (this.$btnMargin == undefined)
+            this.$btnMargin = apf.getMargin(page.$button)[0];
+
+        var pg = this.getPages();
+        if (excl)
+            pg.remove(excl);
+        if (!pg.length)
+            return;
+
+        var cw = this.$buttons.offsetWidth - apf.getWidthDiff(this.$buttons) 
+            - (excl ? excl.$button.offsetWidth + this.$btnMargin: 0);//apf.getHtmlInnerWidth(this.$ext);
+        var l  = pg.length;
+        var bw = Math.min(cw/l, this.$maxBtnWidth);
+        var re = Math.round((bw % 1) * 10);
+        for (var s, i = 0; i < l - 1; i++) {
+            s = Math.max(this.$minBtnWidth, round[i < re ? 1 : 0](bw));
+            cw -= s;
+            if (!pg[i].$button) continue;
+            pg[i].$button.style.width = (s - apf.getWidthDiff(pg[i].$button) - this.$btnMargin) + "px";
+        }
+        if (!pg[l - 1].$button) return;
+        pg[l - 1].$button.style.width = (Math.max(this.$minBtnWidth, 
+            Math.min(cw, this.$maxBtnWidth)) 
+              - this.$btnMargin 
+              - apf.getWidthDiff(pg[l - 1].$button)) + "px";
+    }
+    
+
+    /**** Public methods ****/
+
+    
+    this.transition = function(pageIn, animIn, pageOut, animOut){
+        var _self = this;
+        
+        if (!this.$transInfo) {
+            this.$int.style.overflow = apf.getStyle(this.$int, 'overflow') || "hidden";
+            
+            this.$transInfo = {
+                start : function(){
+                    var h = _self.$ext;
+                    this.size = [h.style.width, h.style.height];
+                    var d = apf.getDiff(h);
+                    h.style.width  = (h.offsetWidth - d[0]) + "px";
+                    h.style.height = (h.offsetHeight - d[1]) + "px";
+                    
+                    //@todo start anims
+                    if (this["in"]) {
+                        var h = this["in"].oHtml.$ext;
+                        var d = apf.getDiff(h);
+                        h.style.width   = (_self.$int.offsetWidth - d[0]) + "px";
+                        h.style.height  = (_self.$int.offsetHeight - d[1]) + "px";
+                        h.style.display = "block";
+                        apf.tween.multi(h, this["in"]);
+                    }
+                    if (this["out"]) {
+                        var h = this["out"].oHtml.$ext;
+                        var d = apf.getDiff(h);
+                        h.style.width   = (_self.$int.offsetWidth - d[0]) + "px";
+                        h.style.height  = (_self.$int.offsetHeight - d[1]) + "px";
+                        h.style.display = "block";
+                        apf.tween.multi(h, this["out"]);
+                    }
+                },
+                
+                stop : function(){
+                    if (this["in"] && this["in"].control.stop) 
+                        this["in"].control.stop();
+                    if (this["out"] && this["out"].control.stop) 
+                        this["out"].control.stop();
+                },
+                
+                finish : function(){
+                    //@todo buffer calls with timeout
+                    var h = _self.$ext;
+                    h.style.width  = this.size[0]; //@todo possibly anim to new size
+                    h.style.height = this.size[1];
+
+                    if (this["in"]) {
+                        var h = this["in"].oHtml.$ext;
+                        h.style.width  = this["in"].size[0];
+                        h.style.height = this["in"].size[1];
+                        h.style.display = "";
+                        h.style.position = "";
+                        h.style.zIndex   = "";
+                        h.style.left     = "";
+                        h.style.top      = "";
+                        apf.setOpacity(h, 1);
+                        delete this["in"];
+                    }
+                    if (this["out"]) {
+                        var h = this["out"].oHtml.$ext;
+                        h.style.width  = this["out"].size[0];
+                        h.style.height = this["out"].size[1];
+                        h.style.display = "";
+                        h.style.position = "";
+                        h.style.zIndex   = "";
+                        h.style.left     = "";
+                        h.style.top      = "";
+                        apf.setOpacity(h, 1);
+                        delete this["out"];
+                    }
+                    
+                    _self.oPages.style.width = "";
+                    _self.oPages.style.height = "";
+                }
+            };
+        }
+        
+        //stop
+        this.$transInfo.stop();
+        
+        var d = apf.getDiff(this.oPages);
+        this.oPages.style.width = (this.oPages.offsetWidth - d[0]) + "px";
+        this.oPages.style.height = (this.oPages.offsetHeight - d[1]) + "px";
+        
+        var preventNext = this.$createAnim(pageIn, animIn, false, pageOut);
+        if (preventNext !== false && pageOut)
+            this.$createAnim(pageOut, animOut, true, pageIn);
+
+        setTimeout(function(){
+            _self.$transInfo.start();
+        });
+    }
+    
+    this.$cube = {
+        "left"   : [-1, "offsetWidth", "left", "getHtmlInnerWidth"],
+        "right"  : [1, "offsetWidth", "left", "getHtmlInnerWidth"],
+        "top"    : [-1, "offsetHeight", "top", "getHtmlInnerHeight"],
+        "bottom" : [1, "offsetHeight", "top", "getHtmlInnerHeight"]
+    }
+    
+    this.$createAnim = function(page, animType, out, pageOut){
+        var _self = this;
+        
+        //create new anim
+        var anim = {
+            steps    : apf.isIE ? 15 : 25,
+            control  : {},
+            anim     : out ? apf.tween.EASEOUT : apf.tween.EASEOUT,
+            interval : 10,
+            tweens   : [],
+            oHtml    : page,
+            size     : [page.$ext.style.width, page.$ext.style.height],
+            onfinish : function(){
+                _self.$transInfo.finish(out);
+            }
+        };
+        this.$transInfo[out ? "out" : "in"] = anim;
+        
+        var from, to, h = page.$ext;
+        h.style.zIndex   = out ? 10 : 20;
+        h.style.position = "absolute";
+        h.style.left     = 0;
+        h.style.top      = 0;
+        h.style.display  = "block";
+
+        animType = animType.split("-");
+        switch (animType[0]) {
+            case "fade":
+                anim.anim = apf.tween.NORMAL;
+                if (out) h.style.zIndex = 30;
+                anim.tweens.push(
+                    out 
+                        ? {type: "fade", from: 1, to: 0}
+                        : {type: "fade", from: 0, to: 1}
+                );
+                break;
+            case "slide":
+                var info = this.$cube[animType[1]]
+                from     = 0;
+                to       = info[0] * h[info[1]];
+                if (!out)
+                    h.style[info[2]] = from + "px";
+                
+                anim.tweens.push({type: info[2], from: out ? from : to, to: out ? to : from});
+                //else etc
+                break;
+            case "push":
+                var info = this.$cube[animType[1]]
+                var h2   = pageOut.$ext;
+                
+                if (out) {
+                    if (this.$transInfo["in"])
+                        this.$transInfo["in"].tweens = []; //prevent in animation
+                }
+                else
+                    this.$createAnim(pageOut, "normal", true);
+
+                var hInt = apf[info[3]](this.$int);
+
+                var from1 = info[0] * hInt;//h[info[1]];
+                var to1   = 0;
+                
+                var from2 = 0;
+                var to2   = -1 * info[0] * hInt;//h2[info[1]];
+                
+                if (out)
+                    h2.style[info[2]] = to2 + "px";
+                else
+                    h.style[info[2]] = from1 + "px";
+
+                anim.tweens.push({oHtml: h,  type: [info[2]], from: out ? to1 : from1, to: out ? from1 : to1});
+                anim.tweens.push({oHtml: h2, type: [info[2]], from: out ? to2 : from2, to: out ? from2 : to2});
+                
+                return false;
+            case "normal":
+                break;
+            default:
+                throw new Error("Unknown animation type:" + animType[0]); //@todo make into proper apf3.0 error
+        }
+    }
+    
+
+    /**
+     * Retrieves an array of all the page elements of this element.
+     */
+    this.getPages = function(){
+        var r = [], nodes = this.childNodes;
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            if ("page|case".indexOf(nodes[i].localName) > -1 && nodes[i].visible !== false)
+                r.push(nodes[i]);
+        }
+        return r;
+    };
+
+    /**
+     * Retrieves a page element by it's name or child number
+     * @param {mixed} nameOrId the name or child number of the page element to retrieve.
+     * @return {Page} the found page element.
+     */
+    this.getPage = function(nameOrId){
+        if (apf.isNot(nameOrId))
+            return this.$activepage;
+        else
+            return this.$findPage(nameOrId);
+    };
+
+    /**
+     * Add a new page element
+     * @param {String} [caption] the text displayed on the button of the page.
+     * @param {String} [name]    the name of the page which is can be referenced by.
+     * @return {page} the created page element.
+     */
+    this.add = function(caption, name, type, before, callback){
+        var page = this.ownerDocument.createElementNS(apf.ns.aml, "page");
+        if (name)
+            page.setAttribute("id", name);
+        if (type)
+            page.setAttribute("type", type);
+        if (caption)
+            page.setAttribute("caption", caption);
+        
+        if (callback)
+            callback(page);
+            
+        this.insertBefore(page, before);
+        
+        
+        //this.scrollIntoView(page);
+        
+        return page;
+>>>>>>> hotfix/0.5.1
+    };
+
+    /**** Properties and Attributes ****/
+
+    this.$supportedProperties.push("activepage", "activepagenr", "length",
+        "src", "loading", "trans-in", "trans-out");
+
+    /**
+<<<<<<< HEAD
+     * @attribute {Number} activepagenr the child number of the active page.
+     * Example:
+     * This example uses property binding to maintain consistency between a
+     * dropdown which is used as a menu, and a pages element
+     * <code>
+     *  <a:dropdown id="ddMenu" value="0">
+     *      <a:item value="0">Home</a:item>
+     *      <a:item value="1">General</a:item>
+     *      <a:item value="2">Advanced</a:item>
+     *  </a:dropdown>
+     * 
+     *  <a:pages activepagenr="{ddMenu.value}">
+     *      <a:page>
+     *          <h1>Home Page</h1>
+     *      </a:page>
+     *      <a:page>
+     *          <h1>General Page</h1>
+     *      </a:page>
+     *      <a:page>
+     *          <h1>Advanced Page</h1>
+     *      </a:page>
+     *  </a:pages>
+     * </code>
+     */
+    this.$propHandlers["activepagenr"] =
+
+    /**
+     * @attribute {String} activepage the name of the active page.
+     * Example:
+     * <code>
+     *  <a:tab activepage="general" width="250" height="100">
+     *      <a:page id="home" caption="Home">
+     *      ...
+     *      </a:page>
+     *      <a:page id="advanced" caption="Advanced">
+     *          ...
+     *      </a:page>
+     *      <a:page id="general" caption="General">
+     *          ...
+     *      </a:page>
+     *   </a:tab>
+     * </code>
+     */
+    this.$propHandlers["activepage"]   = function(next, prop, force, callback, noEvent){
+        if (!this.inited || apf.isNot(next) || next == -1) return;
+        
+        if (!callback) {
+            callback = this.$lastCallback;
+            delete this.$lastCallback;
+        }
+
+        var page, info = {};
+        page = this.$findPage(next, info);
+
+        if (!page) {
+            if (this.src) {
+                if (this.isLoading[next])
+                    return;
+                
+                if (this.$findPage("loading", {}))
+                    this.$propHandlers["activepage"].call(this, "loading");
+                
+                this.setProperty("loading", true);
+                this.isLoading[next] = true;
+
+                page = this.ownerDocument.createElementNS(apf.ns.apf, "page");
+                page.setAttribute("id", next);
+                this.appendChild(page);
+
+                var _self = this;
+                page.insertMarkup(this.src, {
+                    page     : next,
+                    //@todo apf3.0 change callback arguments in xinclude
+                    callback : function(options){
+                        delete _self.isLoading[next];
+                    
+                        if (!options.xmlNode) {
+                            var oError = new Error(apf.formatErrorString(0, null,
+                                "Loading new page", "Could not load new page: "
+                                + _self.src));
+                                
+                            _self.setProperty("loading", false);
+                            
+                            if (this.dispatchEvent("error", apf.extend({
+                                error   : oError,
+                                bubbles : true
+                            }, options)) === false)
+                                return true;
+                            
+                            throw oError;
+                        }
+                        else {
+                            //for success
+                            _self.setProperty("activepage", next);
+                            
+                            //Needs to be after set
+                            if (callback)
+                                callback(options.amlNode);
+    
+                            _self.setProperty("loading", false);
+                        }
+                    }
+                });
+                return;
+            }
+            
+            
+
+            return false;
+        }
+
+        if (page.parentNode != this) {
+            
+
+            return false;
+        }
+
+        if (!page.visible || page.disabled) {
+            
+
+            return false;
+        }
+
+        //If page is given as first argument, let's use its position
+        if (next.tagName) {
+            next = info.position;
+            this.activepage = page.name || next;//page.type || 
+        }
+
+        //Call the onbeforeswitch event;
+        if (!noEvent) {
+            var oEvent = {
+                previous     : this.activepage,
+                previousId   : this.activepagenr,
+                previousPage : this.$activepage,
+                next         : next,
+                nextId       : info.position,
+                nextPage     : page
+            };
+
+            if (this.dispatchEvent("beforeswitch", oEvent) === false) {
+                //Loader support
+                if (this.hideLoader)
+                    this.hideLoader();
+
+                return false;
+            }
+=======
+     * Removes a page element from this element. This function destroys ALL children
+     * of this page. To simple remove the page from the DOM tree use the
+     * removeNode() method.
+     *
+     * @param {mixed} nameOrId the name or child number of the page element to remove.
+     * @return {Page} the removed page element.
+     */
+    this.remove = function(nameOrId, force){
+        var page = typeof nameOrId == "object" 
+            ? nameOrId 
+            : this.$findPage(nameOrId);
+        if (!page)
+            return false;
+
+        var e = {page: page};
+        if (typeof force == "object") {
+            e.htmlEvent = force;
+            force = false;
+        }
+
+        if (!force && this.dispatchEvent("close", e) === false)
+            return;
+
+        
+        if (this.$scale) {
+            this.$scaleinit(page, "remove", function(){
+                //page.removeNode();
+                page.destroy(true, true);
+            });
+        }
+        else 
+        
+        {
+            //page.removeNode();
+            if (page.dispatchEvent("afterclose") !== false)
+            	page.destroy(true, true);
+
+            
+            //@todo this is wrong, we can also use removeChild
+            //this.setScrollerState();
+            
+        }
+        
+        return page;
+    };
+
+    
+    /*
+    var SCROLLANIM = {
+            scrollOn  : false,
+            steps     : 15,
+            interval  : 10,
+            size      : 0,
+            left      : 0,
+            control   : {
+                stop  : false
+            },
+            stopHandle: function() {
+                bAnimating = false;
+            }
+        },
+        SCROLL_OFF     = 0x0001,
+        SCROLL_HOVER   = 0x0002,
+        SCROLL_DOWN    = 0x0004,
+        SCROLL_DIS     = 0x0008,
+        SCROLL_L_STATE = SCROLL_OFF,
+        SCROLL_R_STATE = SCROLL_OFF,
+        SCROLL_LEFT    = 0x0001,
+        SCROLL_RIGHT   = 0x0002,
+        SCROLL_BOTH    = 0x0004,
+        bAnimating     = false,
+        scrollTimer    = null,
+        keepScrolling  = false,
+        globalDir      = SCROLL_LEFT;
+*/
+    function getButtonsWidth() {
+        var cId = "cache_" + this.$buttons.childNodes.length;
+        if (SCROLLANIM[cId])
+            return SCROLLANIM[cId];
+
+        var iWidth = 0;
+        for (var i = 0, l = this.$buttons.childNodes.length; i < l; i++) {
+            if (typeof this.$buttons.childNodes[i].offsetWidth != "undefined")
+                iWidth += this.$buttons.childNodes[i].offsetWidth;
+        }
+
+        return SCROLLANIM[cId] = iWidth;
+    }
+
+    function setButtonState(dir, state) {
+        var bBoth = dir & SCROLL_BOTH;
+        if (bBoth)
+            dir = SCROLL_LEFT;
+        var oBtn = this[dir & SCROLL_LEFT ? "oLeftScroll" : "oRightScroll"];
+        if (!(state & SCROLL_DIS)) {
+            if (dir & SCROLL_LEFT)
+                SCROLL_L_STATE = state;
+            else
+                SCROLL_R_STATE = state;
+>>>>>>> hotfix/0.5.1
+        }
+
+        //Maintain an activepagenr property (not reentrant)
+        this.activepagenr = info.position;
+        this.setProperty("activepagenr", info.position);
+
+        //Deactivate the current page, if any,  and activate the new one
+        if (this.$activepage)
+            this.$activepage.$deactivate();
+
+        page.$activate();
+
+        
+        if (page["trans-in"] || this.$activepage && this.$activepage["trans-out"])
+            this.transition(page, page["trans-in"] || "normal",
+                this.$activepage, this.$activepage && this.$activepage["trans-out"] || "normal");
+        
+        if (state & SCROLL_OFF)
+            apf.setStyleClass(oBtn,  "", ["disabled", "hover", "down"]);
+        else if (state & SCROLL_HOVER)
+            apf.setStyleClass(oBtn,  "hover", ["disabled", "down"]);
+        else if (state & SCROLL_DOWN)
+            apf.setStyleClass(oBtn,  "down", ["disabled", "hover"]);
+        else if (state & SCROLL_DIS)
+            apf.setStyleClass(oBtn,  "disabled", ["hover", "down"]);
+
+<<<<<<< HEAD
+        this.$activepage = page;
+        
+        //this.scrollIntoView(page);
+        
+
+        //Loader support
+        if (this.hideLoader) {
+            if (page.$rendered !== false) {
+                this.hideLoader();
+            }
+            else {
+                //Delayed rendering support
+                page.addEventListener("afterrender", function(){
+                    this.parentNode.hideLoader();
+                 });
+            }
+        }
+
+        if (!noEvent) {
+            if (page.$rendered !== false)
+                this.dispatchEvent("afterswitch", oEvent);
+            else {
+                //Delayed rendering support
+                page.addEventListener("afterrender", function(){ 
+                    this.parentNode.dispatchEvent("afterswitch", oEvent);
+                });
+             }
+        }
+        
+        if (typeof callback == "function") 
+            callback(page);
+
+        return true;
+    };
+    
+    /**
+     * @attribute {String} buttons the modifier for tab page buttons, seperated by a | character
+     *   Possible values:
+     *   close   the button has a close button inside it.
+     *   scale   the buttons are scaled to make room for more buttons.
+     *   scroll  when the buttons take too much space scroll buttons are displayed.
+     */
+    this.$propHandlers["buttons"] = function(value){
+        //this.buttons = value;
+        this.$scale = value.indexOf("scale") > -1;
+        this.$scroll = !this.$scale;
+        
+        
+        //@todo skin change
+        //@todo buttons on the side
+        if (this.$scale) {
+            this.$maxBtnWidth = parseInt(this.$getOption("button", "maxwidth")) || 150;
+            this.$minBtnWidth = parseInt(this.$getOption("button", "minwidth")) || 10;
+            this.$setStyleClass(this.$buttons, "scale");
+            this.addEventListener("resize", scalersz);
+            
+            this.minwidth = this.$minBtnWidth * this.getPages().length + 10;
+            this.$ext.style.minWidth = Math.max(0, this.minwidth - apf.getWidthDiff(this.$ext)) + "px";
+        }
+        else {
+            this.$setStyleClass(this.$buttons, "", ["scale"]);
+            this.removeEventListener("resize", scalersz);
+        }
+        
+=======
+        if (bBoth)
+            setButtonState(SCROLL_RIGHT, state);
+    }
+
+    /**
+     * Set the state scroller buttons: enabled, disabled or completely hidden,
+     * depending on the state of the tab buttons
+     *
+     * @param {Boolean} [bOn]   Indicates whether to turn the scroll buttons on or off
+     * @param {Number}  [iBtns] Specifies the buttons to set the state of. Can be SCROLL_LEFT, SCROLL_RIGHT or SCROLL_BOTH
+     * @type  {void}
+     */
+    this.setScrollerState = function(bOn, iBtns) {
+        if (!this.ready || !this.$hasButtons || !this.oScroller) return;
+
+        if (typeof bOn == "undefined") {
+            var scrollerWidth = this.oScroller.offsetWidth
+                || parseInt(apf.getStyle(this.oScroller, "width").replace(/(px|em|%)/, ""));
+            bOn   = ((getButtonsWidth.call(this) + scrollerWidth) > this.$ext.offsetWidth);
+            iBtns = SCROLL_BOTH;
+        }
+
+        if (iBtns & SCROLL_BOTH && bOn !== SCROLLANIM.scrollOn) {
+            // in case of HIDING the scroller: check if the anim stuff has reverted
+            SCROLLANIM.scrollOn = bOn;
+            if (!bOn) {
+                this.$buttons.style.left = SCROLLANIM.left + "px";
+                this.oScroller.style.display = "none";
+            }
+            //else
+            //    TODO: scroll active tab into view if it becomes hidden beneath scroller node(s)
+        }
+        else {
+            this.oScroller.style.display = "";
+        }
+
+        this.oScroller.style.display = (iBtns & SCROLL_BOTH && !bOn)
+            ? "none"
+            : "";
+        if (typeof iBtns == "undefined")
+            iBtns = SCROLL_BOTH;
+        if (!bOn) {
+            if ((iBtns & SCROLL_LEFT) || (iBtns & SCROLL_BOTH))
+                setButtonState.call(this, SCROLL_LEFT, SCROLL_DIS);
+            if ((iBtns & SCROLL_RIGHT) || (iBtns & SCROLL_BOTH))
+                setButtonState.call(this, SCROLL_RIGHT, SCROLL_DIS);
+        }
+>>>>>>> hotfix/0.5.1
+    };
+    
+    
+    function visCheck(){
+        scalersz.call(this)
+    }
+    
+    var btnMoHandler;
+    this.$scaleinit = function(node, type, callback){
+        var pg = this.getPages();
+        var l  = pg.length;
+        this.minwidth = this.$minBtnWidth * l + 10; //@todo padding + margin of button container
+        this.$ext.style.minWidth = Math.max(0, this.minwidth - apf.getWidthDiff(this.$ext)) + "px";
+        
+        if (!apf.window.vManager.check(this, "tabscale", visCheck))
+            return;
+        
+        if (!type)
+            return scalersz.call(this);
+        
+        if (this.$control && this.$control.type != "remove" && this.$control.stop)
+            this.$control.stop();
+
+<<<<<<< HEAD
         var _self = this;
         var anim  = {
             steps    : type == "remove" ? 8 : 8,
@@ -34350,6 +38221,307 @@ apf.BaseTab = function(){
                 if (this.$scale) 
                     this.$scaleinit();
                 
+=======
+    /**
+     * Corrects the state of the scroller buttons when the state of external
+     * components change, like on a resize event of a window.
+     *
+     * @type {void}
+     */
+    this.correctScrollState = function() {
+        if (!this.ready || !this.$hasButtons || !this.oScroller) return;
+        this.setScrollerState();
+    };
+
+    /**
+     * Retrieves the utmost left or right boundaries of the tab buttons strip that
+     * can be scrolled to. The tabs cannot scroll any further than these boundaries
+     *
+     * @param {Number} dir        Determines which boundary side to look at; SCROLL_LEFT or SCROLL_RIGHT
+     * @param {Boolan} [useCache] Used only when tabs are draggable. Not implemented.
+     * @type  {Number}
+     */
+    function getAnimationBoundary(dir, useCache) {
+        if (SCROLLANIM.size <= 0) {
+            SCROLLANIM.left = this.$buttons.offsetLeft;
+            SCROLLANIM.size = Math.round(this.firstChild.$button.offsetWidth);
+        }
+        if (dir & SCROLL_LEFT) {
+            return SCROLLANIM.left;
+        }
+        else if (dir & SCROLL_RIGHT) {
+            // TODO: support Drag n Drop of tabs...
+            //if (typeof useCache == "undefined") useCache = false;
+            //if (!tabcontrol.drag) tabcontrol.drag = {};
+            //if (useCache && tabcontrol.drag.boundCache)
+            //    return tabcontrol.drag.boundCache;
+            var oNode = this.$buttons.childNodes[this.$buttons.childNodes.length - 1];
+
+            return this.$ext.offsetWidth - (oNode.offsetLeft + oNode.offsetWidth
+                + (this.oScroller.offsetWidth + 4));// used to be tabcontrol.drag.boundCache;
+        }
+    }
+
+    /**
+     * Event handler; executed when the user pressed one of the two scroll buttons
+     * (left or right one). If the tab-buttons strip may/ can be scrolled, the
+     * respective behavior is called.
+     *
+     * @param {Event}  e   Event object, usually a mousedown event from a scroller-button
+     * @param {Number} dir Direction to scroll; SCROLL_LEFT or SCROLL_RIGHT
+     * @type  {void}
+     */
+    this.scroll = function(e, dir) {
+        if (!this.ready || !this.$hasButtons || !this.oScroller) return;
+        if (!e)
+            e = window.event;
+        if (typeof e["type"] == "unknown") //scope expired (prolly GC'ed)
+            e = {type: "click"};
+        if (bAnimating && e.type != "dblclick") return;
+        bAnimating = true;
+
+        if (typeof dir == "undefined")
+            dir = SCROLL_LEFT;
+
+        //apf.tween.clearQueue(this.$buttons, true);
+        var iCurrentLeft = this.$buttons.offsetLeft,
+            size         = e["delta"] ? Math.round(e.delta * 36) : SCROLLANIM.size,
+            //get maximum left offset for either direction
+            iBoundary = getAnimationBoundary.call(this, dir),
+            _self     = this;
+        if (dir & SCROLL_LEFT) {
+            setButtonState(SCROLL_LEFT,  SCROLL_DOWN);
+            setButtonState(SCROLL_RIGHT, SCROLL_OFF);
+            if (iCurrentLeft === iBoundary) {
+                this.setScrollerState(false, SCROLL_LEFT);
+                return apf.tween.single(this.$buttons, {
+                    steps   : SCROLLANIM.steps,
+                    interval: 20,
+                    from    : iCurrentLeft,
+                    to      : iCurrentLeft + 12,
+                    type    : "left",
+                    anim    : apf.tween.EASEOUT,
+                    onstop  : SCROLLANIM.stopHandle,
+                    onfinish: function(oNode) {
+                        apf.tween.single(oNode, {
+                            steps   : SCROLLANIM.steps,
+                            interval: SCROLLANIM.interval,
+                            from    : iCurrentLeft + 12,
+                            to      : iCurrentLeft,
+                            type    : "left",
+                            anim    : apf.tween.EASEIN,
+                            onstop  : SCROLLANIM.stopHandle,
+                            onfinish: function() {
+                                bAnimating = false;
+                                if (e.name == "mousescroll")
+                                    setButtonState(SCROLL_LEFT, SCROLL_OFF);
+                            }
+                        });
+                    }
+                });
+            }
+            //one scroll animation scrolls by a SCROLLANIM.size px.
+            var iTargetLeft = iCurrentLeft + (e.type == "dblclick" ? size * 3 : size);
+            if (iTargetLeft > iBoundary)
+                iTargetLeft = iBoundary;
+
+            if (iTargetLeft === iBoundary)
+                this.setScrollerState(false, SCROLL_LEFT);
+            this.setScrollerState(true, SCROLL_RIGHT);
+
+            //start animated scroll to the left
+            apf.tween.single(this.$buttons, {
+                steps   : SCROLLANIM.steps,
+                interval: SCROLLANIM.interval,
+                control : SCROLLANIM.control,
+                from    : iCurrentLeft,
+                to      : iTargetLeft,
+                type    : "left",
+                anim    : apf.tween.NORMAL,
+                onstop  : SCROLLANIM.stopHandle,
+                onfinish: function() {
+                    bAnimating = false;
+                    if (e.name == "mousescroll")
+                        setButtonState(SCROLL_LEFT, SCROLL_OFF);
+                    if (keepScrolling)
+                        _self.scroll(e, globalDir);
+                }
+            });
+        }
+        else if (dir & SCROLL_RIGHT) {
+            this.setScrollerState(true);
+            setButtonState(SCROLL_RIGHT, SCROLL_DOWN);
+            setButtonState(SCROLL_LEFT,  SCROLL_OFF);
+            if (iCurrentLeft === iBoundary) {
+                this.setScrollerState(false, SCROLL_RIGHT);
+                return apf.tween.single(this.$buttons, {
+                    steps   : SCROLLANIM.steps,
+                    interval: 20,
+                    from    : iCurrentLeft,
+                    to      : iCurrentLeft - 24,
+                    type    : "left",
+                    anim    : apf.tween.EASEOUT,
+                    onstop  : SCROLLANIM.stopHandle,
+                    onfinish: function(oNode, options) {
+                        apf.tween.single(oNode, {
+                            steps   : SCROLLANIM.steps,
+                            interval: SCROLLANIM.interval,
+                            from    : iCurrentLeft - 24,
+                            to      : iCurrentLeft,
+                            type    : "left",
+                            anim    : apf.tween.EASEIN,
+                            onstop  : SCROLLANIM.stopHandle,
+                            onfinish: function() {
+                                bAnimating = false;
+                                if (e.name == "mousescroll")
+                                    setButtonState(SCROLL_RIGHT, SCROLL_OFF);
+                            }
+                        });
+                    }
+                });
+            }
+            //one scroll animation scrolls by a SCROLLANIM.size px.
+            var iTargetLeft = iCurrentLeft - (e.type == "dblclick" ? size * 3 : size);
+            //make sure we don't scroll more to the right than the
+            //maximum left:
+            if (iTargetLeft < iBoundary)
+                iTargetLeft = iBoundary;
+            //start animated scroll to the right
+            apf.tween.single(this.$buttons, {
+                steps   : SCROLLANIM.steps,
+                interval: SCROLLANIM.interval,
+                control : SCROLLANIM.control,
+                from    : iCurrentLeft,
+                to      : iTargetLeft,
+                type    : "left",
+                anim    : apf.tween.NORMAL,
+                onstop  : SCROLLANIM.stopHandle,
+                onfinish: function() {
+                    bAnimating = false;
+                    if (e.name == "mousescroll")
+                        setButtonState(SCROLL_RIGHT, SCROLL_OFF);
+                    if (keepScrolling)
+                        _self.scroll(e, globalDir);
+                }
+            });
+        }
+    };
+
+    /**
+     * If a tabpage is outside of the users' view, this function scrolls that
+     * tabpage into view smoothly.
+     *
+     * @param {page} oPage The page to scroll into view
+     * @type  {void}
+     */
+    this.scrollIntoView = function(oPage) {
+        bAnimating = false;
+        if (!this.ready || !this.$hasButtons || !this.oScroller || !oPage.$drawn)
+            return;
+        bAnimating = true;
+        if (this.$buttons.offsetWidth < this.$ext.offsetWidth)
+            return this.setScrollerState(false);
+
+        var iTabLeft     = oPage.$button.offsetLeft,
+            iTabWidth    = oPage.$button.offsetWidth,
+            iCurrentLeft = this.$buttons.offsetLeft;
+
+        if (SCROLLANIM.size <= 0) {
+            SCROLLANIM.left = this.$buttons.offsetLeft;
+            var p = this.firstChild;
+            while (!p.$button)
+                p = p.nextSibling;
+            SCROLLANIM.size = Math.round(p.$button.offsetWidth);
+        }
+        this.$buttons.style.left = iCurrentLeft;
+
+        var iRealWidth  = this.$ext.offsetWidth,
+            iScrollCorr = this.oScroller.offsetWidth + 4,
+            iTargetLeft = null,
+            dir;
+
+        if ((iTabLeft + iTabWidth) > ((iRealWidth - iScrollCorr) - iCurrentLeft)) { //scroll to the right
+            iTargetLeft = (-(iTabLeft - SCROLLANIM.left)
+                + (iRealWidth - iTabWidth - iScrollCorr));
+            dir         = SCROLL_RIGHT;
+        }
+        else if ((iCurrentLeft + iTabLeft) < SCROLLANIM.left) { //sroll to the left
+            iTargetLeft = SCROLLANIM.left - iTabLeft;
+            dir         = SCROLL_LEFT;
+        }
+
+        if (iTargetLeft !== null) {
+            this.setScrollerState(true);
+            setButtonState(SCROLL_RIGHT, dir & SCROLL_RIGHT ? SCROLL_DOWN : SCROLL_OFF);
+            setButtonState(SCROLL_LEFT,  dir & SCROLL_LEFT  ? SCROLL_DOWN : SCROLL_OFF);
+            apf.tween.clearQueue(this.$buttons, true);
+
+            apf.tween.single(this.$buttons, {
+                steps   : SCROLLANIM.steps,
+                interval: SCROLLANIM.interval,
+                from    : iCurrentLeft,
+                to      : iTargetLeft,
+                type    : "left",
+                anim    : apf.tween.NORMAL,
+                onstop  : SCROLLANIM.stopHandle,
+                onfinish: function() {
+                    bAnimating = false;
+                    setButtonState(SCROLL_RIGHT, SCROLL_OFF);
+                    setButtonState(SCROLL_LEFT,  SCROLL_OFF);
+                }
+            });
+        }
+        else
+            bAnimating = false;
+    };
+
+    
+
+    /**** DOM Hooks ****/
+
+    this.addEventListener("DOMNodeRemoved", function(e){
+        var amlNode = e.currentTarget;
+        if (e.$doOnlyAdmin || e.relatedNode != this 
+          || amlNode.localName != "page")
+            return;
+        
+        if ((this.activepage || this.activepage == 0) && this.activepage != -1) {
+            var ln = amlNode.nextSibling;
+            while (ln && (!ln.$first || !ln.visible))
+                ln = ln.nextSibling;
+            var rn = amlNode.previousSibling;
+            while (rn && (!rn.$last || !rn.visible))
+                rn = rn.previousSibling;
+    
+            if (this.firstChild == amlNode && ln)
+                ln && ln.$first();
+            if (this.lastChild == amlNode && rn)
+                rn && rn.$last();
+    
+            if (this.$activepage == amlNode) {
+                if (ln || rn)
+                    this.set(ln || rn);
+                else {
+                    amlNode.$deactivate();
+                    
+                    
+                    //this.setScrollerState();
+                    
+                    this.$activepage  =
+                    this.activepage   =
+                    this.activepagenr = null;
+                    this.setProperty("activepage", null);
+                }
+            }
+            else {
+                
+                //if (this.$scroll) 
+                    //this.setScrollerState();
+                
+                
+                if (this.$scale) 
+                    this.$scaleinit();
+                
             }
         }
         
@@ -34680,7 +38852,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(49045)TIME(Wed, 20 Jul 2011 14:43:15 GMT)*/
+/*FILEHEAD(core/baseclasses/basetree.js)SIZE(49306)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34940,6 +39112,1194 @@ apf.BaseTree = function(){
     
     /**** Sliding functions ****/
     
+    /**
+     * @private
+     */
+    this.slideToggle = function(htmlNode, force, immediate, userAction, callback){
+        if (this.nocollapse || userAction && this.disabled)
+            return;
+
+        if (!htmlNode)
+            htmlNode = this.$selected;
+        
+        if (!htmlNode)
+            return callback && callback();
+        
+        var id = htmlNode.getAttribute(apf.xmldb.htmlIdTag);
+        while (!id && htmlNode.parentNode)
+            id = (htmlNode = htmlNode.parentNode)
+                .getAttribute(apf.xmldb.htmlIdTag);
+
+        var container = this.$getLayoutNode("item", "container", htmlNode);
+        if (!container) return;
+        
+        if (apf.getStyle(container, "display") == "block") {
+            if (force == 1) {
+                if (callback) callback();
+                return;
+            }
+            htmlNode.className = htmlNode.className.replace(/min/, "plus");
+            this.slideClose(container, apf.xmldb.getNode(htmlNode), immediate, callback);
+        }
+        else {
+            if (force == 2) {
+                if (callback) callback();
+                return;
+>>>>>>> hotfix/0.5.1
+            }
+            htmlNode.className = htmlNode.className.replace(/plus/, "min");
+            this.slideOpen(container, apf.xmldb.getNode(htmlNode), immediate, callback);
+        }
+<<<<<<< HEAD
+        
+        
+        this.setProperty("length", this.childNodes.length);
+        
+    });
+
+    this.addEventListener("DOMNodeInserted",function(e){
+        var amlNode = e.currentTarget;
+
+        if (amlNode.localName != "page" || e.relatedNode != this || amlNode.nodeType != 1)
+            return;
+
+        if (!e.$beforeNode) {
+            var lastChild, pg = this.getPages();
+            if (lastChild = pg[pg.length - 1])
+                lastChild.$last(true);
+            amlNode.$last();
+        }
+    
+        var p = this.getPage(0); //@todo $beforeNode doesnt have to be a page
+        if (!p || e.$beforeNode == p) {
+            if (p)
+                p.$first(true);
+            amlNode.$first();
+=======
+    };
+    
+    this.isCollapsed = function(xmlNode){
+        return (apf.getStyle(this.$getLayoutNode("item", "container",
+            apf.xmldb.getHtmlNode(xmlNode, this)), "display") == "none");
+    }
+    
+    var lastOpened = {};
+    /**
+     * @event expand Fires when a tree leaf is expanded from collapsed view to
+     *               reveal its children leaves.
+     * @private
+     */
+    this.slideOpen = function(container, xmlNode, immediate, callback){
+        if (!xmlNode)
+            xmlNode = this.selected;
+
+        var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
+        if (!container)
+            container = this.$findContainer(htmlNode);
+        
+        //We don't slide open elements without children.
+        if (!container.childNodes.length && !this.getTraverseNodes(xmlNode).length)
+            return callback && callback(); 
+
+        if (this.singleopen) {
+            var pNode = this.getTraverseParent(xmlNode),
+                p     = (pNode || this.xmlRoot).getAttribute(apf.xmldb.xmlIdTag);
+            if (lastOpened[p] && lastOpened[p][1] != xmlNode 
+              && this.getTraverseParent(lastOpened[p][1]) == pNode)
+                this.slideToggle(lastOpened[p][0], 2);//lastOpened[p][1]);
+            lastOpened[p] = [htmlNode, xmlNode];
+>>>>>>> hotfix/0.5.1
+        }
+        
+        if (!this.nocollapse)
+            container.style.display = "block";
+
+<<<<<<< HEAD
+        if (this.$activepage) {
+            var info = {};
+            this.$findPage(this.$activepage, info);
+
+            if (this.activepagenr != info.position) {
+                if (parseInt(this.activepage) == this.activepage) {
+                    this.activepage = info.position;
+                    this.setProperty("activepage", info.position);
+                }
+                this.activepagenr = info.position;
+                this.setProperty("activepagenr", info.position);
+            }
+        }
+        else if (!this.activepage && !this.$activepage)
+            this.set(amlNode);
+        
+        
+        if (this.$scale && amlNode.visible) 
+            this.$scaleinit(amlNode, "add");
+        else 
+        
+        {
+            amlNode.dispatchEvent("afteropen");
+        }
+        
+        
+        this.setProperty("length", this.childNodes.length);
+        
+    });
+
+    /**** Private state handling functions ****/
+
+    this.$findPage = function(nameOrId, info){
+        var node, nodes = this.childNodes;
+        
+        if (nameOrId.localName) {
+            for (var t = 0, i = 0, l = nodes.length; i < l; i++) {
+                node = nodes[i];
+                if ("page|case".indexOf(node.localName) > -1 && (++t) && node == nameOrId) {
+                    if (info)
+                        info.position = t - 1;
+                    return node;
+                }
+            }
+        }
+        else {
+            for (var t = 0, i = 0, l = nodes.length; i < l; i++) {
+                node = nodes[i];
+                if ("page|case".indexOf(node.localName) > -1 && (t++ == nameOrId
+                  || node.name == nameOrId)) {
+                    if (info)
+                        info.position = t - 1;
+                    return node;
+                }
+            }
+        }
+        
+        return null;
+    };
+
+    this.$enable = function(){
+        var nodes = this.childNodes;
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            if (nodes[i].enable)
+                nodes[i].enable();
+        }
+    };
+
+    this.$disable = function(){
+        var nodes = this.childNodes;
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            if (nodes[i].disable)
+                nodes[i].disable();
+        }
+    };
+
+    /**** Keyboard support ****/
+
+    
+
+    this.addEventListener("keydown", function(e){
+        if (!this.$hasButtons)
+            return;
+
+        var page,
+            key = e.keyCode;
+
+        switch (key) {
+            case 9:
+                break;
+            case 13:
+                break;
+            case 32:
+                break;
+            case 37: //LEFT
+                page = this.getPage().previousSibling;
+                while(page && (page.nodeType != 1
+                  || "page|case".indexOf(page.localName) == -1 || !page.visible)) {
+                    page = page.previousSibling;
+                }
+
+                if (page)
+                    this.setProperty("activepage", page);
+                break;
+            case 39: //RIGHT
+                page = this.getPage().nextSibling;
+                while(page && (page.nodeType != 1 
+                  || "page|case".indexOf(page.localName) == -1 || !page.visible)) {
+                    page = page.nextSibling;
+                }
+
+                if (page)
+                    this.setProperty("activepage", page);
+                break;
+            default:
+                return;
+        }
+        //return false;
+    }, true);
+
+    
+
+    /**** Init ****/
+
+    this.$loadChildren = function(callback){
+        var page  = false,
+            _self = this,
+            i, j, l, node, nodes;
+
+        this.inited = true;
+
+        if (this.$hasButtons) {
+            this.$buttons = this.$getLayoutNode("main", "buttons", this.$ext);
+            this.$buttons.setAttribute("id", this.$uniqueId + "_buttons");
+        }
+
+        this.oPages = this.$getLayoutNode("main", "pages", this.$ext);
+        
+        
+        // add scroller node(s)
+        /*this.oScroller = this.$getLayoutNode("main", "scroller", this.oPages);
+        if (this.oScroller) {
+            function startTimer(e, dir) {
+                clearTimeout(scrollTimer);
+                globalDir   = dir;
+                scrollTimer = $setTimeout(function() {
+                    keepScrolling = true;
+                    _self.scroll(e, dir);
+                }, 500);
+            }
+            function stopTimer() {
+                clearTimeout(scrollTimer);
+                keepScrolling = false;
+            }
+
+            this.oScroller.onmouseout = function(e) {
+                SCROLLANIM.control.stop = true;
+                setButtonState(SCROLL_BOTH, SCROLL_OFF);
+            };
+
+            
+            /*apf.addEventListener("mousescroll", function(e) {
+                var found = (e.target == _self.$buttons);
+                while (!found && e.target != document.body) {
+                    e.target = e.target.offsetParent;
+                    found = (e.target == _self.$buttons);
+                }
+                if (!found) return;
+                var dir = e.delta > 0 ? SCROLL_LEFT : SCROLL_RIGHT;
+                e.delta = Math.abs(e.delta);
+                _self.scroll(e, dir);
+            });* /
+            
+
+            this.oLeftScroll  = apf.getNode(this.oScroller, [0]);
+            this.oRightScroll = apf.getNode(this.oScroller, [1]);
+            
+            ["oLeftScroll", "oRightScroll"].forEach(function(sBtn) {
+                var dir    = sBtn == "oLeftScroll" ? SCROLL_LEFT  : SCROLL_RIGHT,
+                    revDir = sBtn == "oLeftScroll" ? SCROLL_RIGHT : SCROLL_LEFT;
+
+                _self[sBtn].ondbclick   =
+                _self[sBtn].onmousedown = function(e) {
+                    SCROLLANIM.control.stop = false;
+                    var state = dir & SCROLL_LEFT ? SCROLL_L_STATE : SCROLL_R_STATE;
+                    if (this.className.indexOf("disabled") != -1
+                      || state & SCROLL_DOWN) return;
+                    e = e || event;
+                    _self.scroll(e, dir);
+                    startTimer(e, dir);
+                    if (!apf.isSafariOld)
+                        this.onmouseout();
+                };
+                _self[sBtn].onmouseover = function() {
+                    SCROLLANIM.control.stop = false;
+                    var state = dir & SCROLL_LEFT ? SCROLL_L_STATE : SCROLL_R_STATE;
+                    if (this.className.indexOf("disabled") != -1
+                      || state & SCROLL_DOWN) return;
+                    setButtonState(dir, SCROLL_HOVER);
+                    setButtonState(revDir, SCROLL_OFF);
+                    globalDir = dir;
+                };
+                _self[sBtn].onmouseout = function() {
+                    var state = dir & SCROLL_LEFT ? SCROLL_L_STATE : SCROLL_R_STATE;
+                    if (this.className.indexOf("disabled") != -1
+                      || state & SCROLL_DOWN) return;
+                    setButtonState(dir, SCROLL_OFF);
+                };
+                _self[sBtn].onmouseup = function() {
+                    if (this.className.indexOf("disabled") == -1) {
+                        setButtonState(dir, SCROLL_OFF);
+                    }
+                    stopTimer();
+                    SCROLLANIM.control.stop = true;
+                };
+            });
+        }
+
+        
+        apf.layout.setRules(this.$ext, this.$uniqueId + "_tabscroller",
+            "var o = apf.all[" + this.$uniqueId + "]; o && o.correctScrollState()");
+        apf.layout.queue(this.$ext);*/
+        
+        
+
+        //Skin changing support
+        if (this.$int) {
+            //apf.AmlParser.replaceNode(this.oPages, oPages);
+            this.$int = this.oPages;
+            page      = true;
+
+            //@todo apf3.0 skin change?
+            nodes = this.childNodes;
+            for (i = 0; i < nodes.length; i++) {
+                node = nodes[i];
+                if(node.nodeType != 1)
+                    continue;
+                node.$draw(true);
+                if(node.$skinchange)
+                    node.$skinchange();
+                node.$loadAml();
+            }
+        }
+        else {
+            this.$int = this.oPages;
+
+            //Build children
+            nodes = this.getPages();
+            if (nodes.length) {
+                nodes[0].$first();
+                (node = nodes[nodes.length - 1]).$last();
+            }
+        }
+
+        //Set active page
+        if (node) {
+            this.activepage = (typeof this.activepage != "undefined"
+                ? this.activepage
+                : this.activepagenr) || 0;
+            page = this.getPage(this.activepage);
+            if (!page.render || page.$rendered)
+                this.$propHandlers.activepage.call(this, this.activepage);
+        }
+        else {
+            this.isPages = false;
+=======
+        if (!this.prerender && this.$hasLoadStatus(xmlNode, "potential")
+          && !container.childNodes.length) {
+            this.$extend(xmlNode, container, immediate, callback);
+            return;
+        }
+
+        if (immediate || container.scrollHeight > 1000) {
+            if (!this.nocollapse && container != this.$container) {
+                container.style.height = "auto";
+                container.style.overflow = "visible";
+            }
+
+            if (this.$hasLoadStatus(xmlNode, "potential"))
+                return this.$extend(xmlNode, container, immediate, callback);
+            
+            this.dispatchEvent("expand", {xmlNode: xmlNode});
+            return callback && callback();
+        }
+
+        var _self = this;
+        var prevHeight = container.style.height;
+        container.style.overflow = "visible";
+        if (!apf.isIE7) {
+            container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
+        }
+        var height = container.scrollHeight;
+        container.style.overflow = "hidden";
+        container.style.height = prevHeight;
+        
+        apf.tween.single(container, {
+            type    : 'scrollheight', 
+            from    : container.offsetHeight, 
+            to      : height, 
+            anim    : this.$animType, 
+            steps   : this.$animOpenStep,
+            interval: this.$animSpeed,
+            onfinish: function(container){
+                if (xmlNode && _self.$hasLoadStatus(xmlNode, "potential")) {
+                    $setTimeout(function(){
+                        if (container != this.$container) {
+                            container.style.height = container.scrollHeight + "px";
+                            container.style.overflow = "hidden";
+                        }
+                        _self.$extend(xmlNode, container, null, callback);
+                    });
+                    if (container != this.$container) {
+                        if (!apf.isIE7) {
+                            container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
+                        }
+                        container.style.overflow = "visible";
+                    }
+                }
+                else if (container != this.$container) {
+                    container.style.overflow = "visible";
+                    if (!apf.isIE7) {
+                        container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
+                    }
+                }
+                _self.dispatchEvent("expand", {xmlNode: xmlNode});
+            }
+        });
+    };
+
+    /**
+     * @event collapse Fires when a tree leaf is collapsed from expanded view to
+     *                 conceal its children leaves.
+     * @private
+     */
+    this.slideClose = function(container, xmlNode, immediate){
+        if (this.nocollapse) 
+            return;
+        
+        if (!xmlNode)
+            xmlNode = this.selected;
+        
+        if (this.singleopen) {
+            var p = (this.getTraverseParent(xmlNode) || this.xmlRoot)
+                .getAttribute(apf.xmldb.xmlIdTag);
+            lastOpened[p] = null;
+        }
+        
+        if (!container) {
+            var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
+            container = this.$findContainer(htmlNode);
+        }
+        
+        if (container != this.$container) {
+            container.style.height   = container.offsetHeight;
+            container.style.overflow = "hidden";
+        }
+        
+        if (immediate) {
+            if (container != this.$container)
+                container.style.height = 0;
+            container.style.display = "none";
+            this.dispatchEvent("collapse", {xmlNode: xmlNode});
+            return;
+        }
+
+        var _self = this;
+        apf.tween.single(container, {
+            type    : 'scrollheight', 
+            from    : container.scrollHeight, 
+            to      : 0, 
+            anim    : this.$animType, 
+            steps   : this.$animCloseStep,
+            interval: this.$animSpeed,
+            onfinish: function(container, data){
+               container.style.display = "none";
+               _self.dispatchEvent("collapse", {xmlNode: xmlNode});
+            }
+        });
+    };
+    
+    /**** Databinding Support ****/
+
+    //@todo apf3.x refactor
+    this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode, isLast, depth, nextNode, action){
+        if (this.$isTreeArch && this.$needsDepth && typeof depth == "undefined") {
+            var loopNode = xmlParentNode; depth = 0;
+            while(loopNode != this.xmlRoot) {
+                depth++;
+                loopNode = loopNode.parentNode;
+            }
+        }
+        
+        var loadChildren     = this.$getBindRule("insert", xmlNode) ? true : false,
+            traverseNodes    = this.getTraverseNodes(xmlNode),
+            hasTraverseNodes = traverseNodes.length ? true : false,
+            hasChildren      = loadChildren || hasTraverseNodes,
+            startcollapsed   = this.$hasBindRule("collapsed")
+                ? (this.$getDataNode("collapsed", xmlNode) ? true : false)
+                : (this.$hasBindRule("expanded") 
+                    ? (this.$getDataNode("expanded", xmlNode) ? false : true)
+                    : this.startcollapsed),
+            state            = (hasChildren ? HAS_CHILD : 0) | (startcollapsed && hasChildren
+                || loadChildren ? IS_CLOSED : 0) | (isLast ? IS_LAST : 0),
+
+            htmlNode         = this.$initNode(xmlNode, state, Lid, depth),
+            container        = this.$getLayoutNode("item", "container", htmlNode),
+            eachLength;
+
+        if (!startcollapsed && !this.nocollapse)
+            container.setAttribute("style", "overflow:visible;height:auto;display:block;");
+        
+        var msg, removeContainer = (!this.removecontainer || hasChildren);
+
+        //TEMP on for dynamic subloading
+        if (!hasChildren || loadChildren)
+            container.setAttribute("style", "display:none;");
+
+        //Dynamic SubLoading (Insertion) of SubTree
+        if (!this.prerender)
+            eachLength = traverseNodes.length;
+
+        if (hasChildren && !this.prerender && eachLength > 2 && startcollapsed
+          || loadChildren && (!this.$hasLoadStatus(xmlNode) 
+          || this.$hasLoadStatus(xmlNode, "potential")))
+            this.$setLoading(xmlNode, container);
+        else if (!hasTraverseNodes && (msg = this.$applyBindRule("empty", xmlNode))) {
+            this.$setEmptyMessage(container, msg);
+        }
+
+        if ((!htmlParentNode || htmlParentNode == this.$container) 
+          && xmlParentNode == this.xmlRoot && !beforeNode
+          || action == "insert") {
+            this.$nodes.push(htmlNode);
+            if (!apf.isChildOf(htmlNode, container, true) && removeContainer)
+                this.$nodes.push(container);
+            
+            if (action != "insert") {
+                this.$setStyleClass(htmlNode,  "root");
+                this.$setStyleClass(container, "root");
+            }
+        }
+        else {
+            if (!htmlParentNode) {
+                htmlParentNode = apf.xmldb.getHtmlNode(xmlNode.parentNode, this);
+                htmlParentNode = htmlParentNode 
+                    ? this.$getLayoutNode("item", "container", htmlParentNode) 
+                    : this.$container;
+            }
+            
+            if (htmlParentNode == this.$container) {
+                this.$setStyleClass(htmlNode,  "root");
+                this.$setStyleClass(container, "root");
+            }
+
+            var next;
+            if (action != "load" && action != "extend") {
+                if (!beforeNode && (next = this.getNextTraverse(xmlNode)))
+                    beforeNode = apf.xmldb.getHtmlNode(next, this);
+            }
+            if (beforeNode && beforeNode.parentNode != htmlParentNode)
+                beforeNode = null;
+        
+            if (htmlParentNode.style 
+              && this.getTraverseNodes(xmlNode.parentNode).length == 1) 
+                this.$removeEmptyMessage(htmlParentNode);
+        
+            //alert("|" + htmlNode.nodeType + "-" + htmlParentNode.nodeType + "-" + beforeNode + ":" + container.nodeType);
+            //Insert Node into Tree
+            if (htmlParentNode.style) {
+                var isChildOfHtmlNode = !apf.isChildOf(htmlNode, container, true)
+                htmlNode = apf.insertHtmlNode(htmlNode, htmlParentNode, beforeNode);
+                if (isChildOfHtmlNode && removeContainer)
+                    var container = apf.insertHtmlNode(container, 
+                        htmlParentNode, beforeNode);
+                else
+                    var container = this.$getLayoutNode("item", "container", htmlNode);
+            }
+            else {
+                htmlParentNode.insertBefore(htmlNode, beforeNode);
+                if (!apf.isChildOf(htmlNode, container, true) && removeContainer)
+                    htmlParentNode.insertBefore(container, beforeNode);
+            }
+
+            //Fix parent if child is added to drawn parentNode
+            if (htmlParentNode.style) {
+                if (this.openadd && htmlParentNode != this.$container 
+                  && htmlParentNode.style.display != "block") 
+                    this.slideOpen(htmlParentNode, xmlParentNode, true);
+                
+                if (!this.$fillParent)
+                    this.$fillParent = xmlParentNode;
+                
+                var next = nextNode == undefined ? this.getNextTraverse(xmlNode, true) : nextNode;
+                
+                var html;
+                if (next && (html = apf.xmldb.getHtmlNode(next, this))) //should use each here
+                    this.$fixItem(next, html);
+            }
+        }
+
+        if ((this.prerender || eachLength < 3 || !startcollapsed) && (xmlNode.namespaceURI != apf.ns.apf || xmlNode.localName != "item")) {
+            this.$addNodes(xmlNode, container, false, null, null, (depth || 0) + 1); //checkChildren ???
+        }
+        /*else {
+            this.$setLoadStatus(xmlNode, "potential");
+        }*/
+
+        return container;
+    };
+    
+    this.$fill = function(){
+        if (this.$useiframe)
+            this.$pHtmlDoc = this.oDoc;
+
+        if (this.$nodes.length) {
+            apf.insertHtmlNodes(this.$nodes, this.$fillParentHtml || this.$container);
+            this.$nodes.length = 0;
+            delete this.$fillParentHtml;
+>>>>>>> hotfix/0.5.1
+        }
+        
+<<<<<<< HEAD
+        this.setProperty("length", j);
+        
+
+        this.ready = true;
+        
+        /*window.setTimeout(function() {
+            _self.setScrollerState();
+        }, 0);*/
+        
+
+        if (!this.activepage && this.getAttribute("src")) {
+            this.src = this.getAttribute("src");
+            this.$propHandlers["activepage"].call(this);
+        }
+    };
+    
+    this.$destroy = function(bSkinChange) {
+        if (bSkinChange || !this.oScroller)
+            return;
+        
+        
+        /*apf.layout.removeRule(this.$ext, this.$uniqueId + "_tabscroller");
+        
+        [this.oLeftScroll, this.oRightScroll].forEach(function(oBtn) {
+            oBtn.onmousedown = oBtn.ondblclick = oBtn.onmouseover = 
+            oBtn.onmouseout  = oBtn.onmouseup  = null;
+        });*/
+        
+    };
+}).call(apf.BaseTab.prototype = new apf.Presentation());
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(49045)TIME(Wed, 20 Jul 2011 14:43:15 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * Baseclass of elements that allows the user to select one or more items
+ * from a tree based element.
+ *
+ * @constructor
+ * @baseclass
+ *
+ * @inherits apf.XForms
+ * @inherits apf.Cache
+ * @inherits apf.DataAction
+ * @inherits apf.Rename
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8
+ * @default_private
+ *
+ */
+apf.BaseTree = function(){
+    this.$init(true);
+    
+    
+    this.$dynCssClasses = [];
+    
+    
+    this.$nodes = [];
+};
+
+(function() {
+    
+    this.implement(
+        
+        
+        apf.Rename,
+        
+        
+        apf.DataAction,
+        
+        
+        apf.Cache,
+        
+        apf.K
+    );
+    
+
+    /**** Properties and Attributes ****/
+
+    //Options
+    this.$isTreeArch   = true; // This element has a tree architecture.
+    this.$focussable   = true; // This object can get the focus.
+    this.multiselect   = false; // Initially multiselect is disabled.
+    this.bufferselect  = true;
+    
+    this.startcollapsed  = true;
+    this.$animType       = apf.tween.NORMAL;
+    this.$animOpenStep   = 3;
+    this.$animCloseStep  = 1;
+    this.$animSpeed      = 10;
+    
+    var HAS_CHILD = 1 << 1,
+        IS_CLOSED = 1 << 2,
+        IS_LAST   = 1 << 3,
+        IS_ROOT   = 1 << 4;
+    
+    var treeState = this.$treeState = {};
+    this.$treeState[0]                               = "";
+    this.$treeState[HAS_CHILD]                       = "min";
+    this.$treeState[HAS_CHILD | IS_CLOSED]           = "plus";
+    this.$treeState[IS_LAST]                         = "last";
+    this.$treeState[IS_LAST | HAS_CHILD]             = "minlast";
+    this.$treeState[IS_LAST | HAS_CHILD | IS_CLOSED] = "pluslast";
+    this.$treeState[IS_ROOT]                         = "root";
+    
+    /**** Properties and Attributes ****/
+
+    /**
+     * @attribute {Boolean} openadd         whether the tree expands the parent to which a node is added. Defaults to true.
+     * @attribute {Boolean} startcollapsed  whether the tree collapses all nodes that contain children on load. Defaults to true.
+     * @attribute {Boolean} nocollapse      whether the user cannot collapse a node. Defaults to false.
+     * @attribute {Boolean} singleopen      whether the tree will expand a node by a single click. Defaults to false.
+     * @attribute {Boolean} prerender       whether the tree will render all the nodes at load. Defaults to true.
+     */
+    this.$booleanProperties["openadd"]        = true;
+    this.$booleanProperties["startcollapsed"] = true;
+    this.$booleanProperties["nocollapse"]     = true;
+    this.$booleanProperties["singleopen"]     = true;
+    this.$booleanProperties["prerender"]      = true;
+    this.$booleanProperties["removecontainer"] = true;
+    
+    this.$supportedProperties.push("openadd", "startcollapsed", "nocollapse",
+        "singleopen", "prerender", "removecontainer");
+    
+    this.openadd        = true;
+    this.startcollapsed = 1;
+    this.prerender      = true;
+    
+    /**** Public Methods ****/
+    
+    /**
+     * Expands all items in the tree
+     */
+    this.expandAll    = function(){
+        if (!this.xmlRoot)
+            return;
+        
+        var xpath = this.each.split('|')
+                        .join('[' + this.each.replace(/\|/g, " or ") + ']|.//'),
+            _self = this;
+        (function(node){
+            var nodes = node.selectNodes(xpath);
+            //for (var i = nodes.length - 1; i >= 0; i--) {
+            for (var o, i = 0; i < nodes.length; i++) {
+                if (o = apf.xmldb.getHtmlNode(nodes[i], _self))
+                    _self.slideToggle(o, 1, true);
+                arguments.callee(nodes[i]);
+            }
+        })(this.xmlRoot);
+    };
+    
+    /**
+     * Collapses all items in the tree
+     */
+    this.collapseAll   = function(){
+        if (!this.xmlRoot)
+            return;
+        
+        var pNodes = this.xmlRoot.selectNodes(".//" + this.each
+          .split('|').join('[' + this.each.replace(/\|/g, " or ") + ']|.//'));
+        
+        for (var o, i = pNodes.length - 1; i >=0; i--) {
+            if (o = apf.xmldb.getHtmlNode(pNodes[i], this))
+                this.slideToggle(o, 2, true);
+        }
+    };
+    
+    /**
+     * Selects a node and expands each parent of it.
+     */
+    this.expandAndSelect = function(xmlNode) {
+        if (!this.xmlRoot)
+            return;
+        
+        var _self = this;
+        if ((function _recur(loopNode){
+            var pNode = _self.getTraverseParent(loopNode);
+            if (pNode == _self.xmlRoot)
+                return true;
+
+            if (!pNode || _recur(pNode) === false)
+                return false;
+                
+            _self.slideToggle(apf.xmldb.getHtmlNode(pNode, _self), 1, true);
+        })(xmlNode) !== false)
+            this.select(xmlNode);
+    }
+    
+    this.expandList = function(pathList, user_callback){
+        var pathLut = {};
+        function check(path, callback){
+            pathLut[path] = true;
+            
+            var found;
+            for(var i = 0, l = pathList.length; i < l; i++) {
+                var ipath = pathList[i];
+                if (ipath) {
+                    if (ipath == path)
+                        delete pathList[i];
+                    
+                    var t = ipath.split("/"); t.pop();
+                    var parent = t.join("/");
+                    if (parent == path) {
+                        callback(ipath);
+                        found = true;
+                    }
+                }
+            }
+
+            if (!found)
+                user_callback();
+        };
+        
+        pathList.sort();
+        var cb, root = this.xmlRoot, _self = this;
+        check("", 
+            cb = function(item){
+                var paths = item.split("/");
+                var lastNode = root;//root.selectSingleNode(paths.shift());
+
+                //var lastPath = paths.pop();
+                apf.asyncForEach(paths, 
+                    function(part, next2, index) {
+                        apf.queue.empty();
+                        //This timeout is here to workaround a bug in chrome7 (and perhaps earlier)
+                        setTimeout(function(){
+                            var xmlNode = (lastNode || root).selectSingleNode(part);
+                            if (xmlNode) {
+                                //if (index == paths.length - 1)
+                                    //return _self.select(xmlNode);
+                                
+                                lastNode = xmlNode;
+                                _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 1, true, null, function(){
+                                    next2();
+                                });
+                            }
+                            else {
+                                _self.slideToggle(apf.xmldb.getHtmlNode(lastNode, _self), 1, true, null, function(){
+                                    lastNode = lastNode.selectSingleNode(part);
+                                    if (!lastNode)
+                                        next2(true);
+                                    else
+                                        next2();
+                                });
+                            }
+                        },100);  
+                    }, function(err){
+                        //if (!err) {
+                            //next();
+                        //}
+                        check(item, cb);
+                    }
+                );
+            }
+        );
+    }
+    
+    
+    /**
+     * @notimplemented
+     * @todo who's volunteering?
+     * @private
+     */
+    this.selectPath = function(path){};
+=======
+        if (this.$fillParent) {
+            this.$fixItem(this.$fillParent, apf.xmldb.getHtmlNode(this.$fillParent, this));
+            delete this.$fillParent;
+        }
+    };
+    
+    this.$getParentNode = function(htmlNode){
+        return htmlNode 
+            ? this.$getLayoutNode("item", "container", htmlNode) 
+            : this.$container;
+    };
+
+    this.$fixItem = function(xmlNode, htmlNode, isDeleting, oneLeft, noChildren){
+        if (!htmlNode) return;
+
+        if (isDeleting) {
+            //if isLast fix previousSibling
+            var prevSib;
+            if (prevSib = this.getNextTraverse(xmlNode, true))
+                this.$fixItem(prevSib, this.$findHtmlNode(prevSib
+                    .getAttribute(apf.xmldb.xmlIdTag) + "|" 
+                    + this.$uniqueId), null, true);
+
+            //if no sibling fix parent
+            if (!this.emptyMessage && xmlNode.parentNode.selectNodes(this.each).length == 1)
+                this.$fixItem(xmlNode.parentNode, this.$findHtmlNode(
+                    xmlNode.parentNode.getAttribute(apf.xmldb.xmlIdTag) 
+                    + "|" + this.$uniqueId), null, false, true); 
+        }
+        else {
+            var container   = this.$getLayoutNode("item", "container", htmlNode),
+                hasChildren = false;
+            if (noChildren) 
+                hasChildren = false;
+            else if (this.getTraverseNodes(xmlNode).length > 0)
+                hasChildren = true;
+            else if (this.$hasLoadStatus(xmlNode, "potential"))
+                hasChildren = true;
+            else
+                hasChildren = false;
+
+            var isClosed = hasChildren && htmlNode.className.indexOf("plus") > -1;//container.style.display != "block",
+                isLast   = this.getNextTraverse(xmlNode, null, oneLeft ? 2 : 1)
+                    ? false
+                    : true,
+                state = (hasChildren ? HAS_CHILD : 0)
+                    | (isClosed ? IS_CLOSED : 0) | (isLast ? IS_LAST : 0);
+            this.$setStyleClass(this.$getLayoutNode("item", "class", htmlNode),
+                treeState[state], ["min", "plus", "last", "minlast", "pluslast"]);
+            this.$setStyleClass(this.$getLayoutNode("item", "container", htmlNode),
+                treeState[state], ["min", "plus", "last", "minlast", "pluslast"]);
+
+            if(this.$getLayoutNode("item", "openclose", htmlNode))
+                this.$getLayoutNode("item", "openclose", htmlNode)
+                    .setAttribute("children", hasChildren);
+            
+            if (container) {
+                if (!hasChildren)
+                    container.style.display = "none";
+                else if (!isClosed)
+                    container.style.display = "block";
+            }
+        }
+    };
+
+    this.$deInitNode = function(xmlNode, htmlNode){
+        //Lookup container
+        var containerNode = this.$getLayoutNode("item", "container", htmlNode),
+            pContainer    = htmlNode.parentNode;
+        
+        //Remove htmlNodes from tree
+        containerNode.parentNode.removeChild(containerNode);
+        pContainer.removeChild(htmlNode);
+        
+        //Datagrid??
+        if (this.$withContainer)
+            htmlNode.parentNode.removeChild(htmlNode.nextSibling);
+        
+        //Fix Images (+, - and lines)
+        if (xmlNode.parentNode != this.xmlRoot)
+            this.$fixItem(xmlNode, htmlNode, true);
+        
+        var msg;
+        if (!pContainer.childNodes.length && (msg = this.$applyBindRule("empty", xmlNode)))
+            this.$setEmptyMessage(pContainer, msg);
+        
+        //Fix look (tree thing)
+        this.$fixItem(xmlNode, htmlNode, true);
+        //this.$fixItem(xmlNode.parentNode, apf.xmldb.findHtmlNode(xmlNode.parentNode, this));
+        /*throw new Error();
+        if(xmlNode.previousSibling) //should use each here
+            this.$fixItem(xmlNode.previousSibling, apf.xmldb.findHtmlNode(xmlNode.previousSibling, this));*/
+    };
+    
+    this.$moveNode = function(xmlNode, htmlNode, oldXmlParent){
+        if (!self.apf.debug && !htmlNode) 
+            return;
+            
+        var container;
+        if (this.$hasLoadStatus(xmlNode.parentNode, "potential")) {
+            container = this.$getLayoutNode("item", "container", htmlNode);
+            htmlNode.parentNode.removeChild(htmlNode);
+            container.parentNode.removeChild(container);
+            this.$extend(xmlNode.parentNode);
+            return;
+        }
+        
+        var oPHtmlNode = htmlNode.parentNode,
+            tParent    = this.getTraverseParent(xmlNode),
+            pHtmlNode  = apf.xmldb.getHtmlNode(tParent, this),
+        //if(!pHtmlNode) return;
+        
+            nSibling = this.getNextTraverse(xmlNode),
+            beforeNode = nSibling
+                ? apf.xmldb.getHtmlNode(nSibling, this)
+                : null,
+            pContainer = pHtmlNode
+                ? this.$getLayoutNode("item", "container", pHtmlNode)
+                : this.$container;
+        
+        container = this.$getLayoutNode("item", "container", htmlNode);
+
+        if (pContainer != oPHtmlNode && this.getTraverseNodes(xmlNode.parentNode).length == 1)
+            this.$removeEmptyMessage(pContainer);
+
+        pContainer.insertBefore(htmlNode, beforeNode);
+        if (container)
+            pContainer.insertBefore(container, beforeNode);
+        
+        /*if (!this.startcollapsed) {
+            pContainer.style.display = "block";
+            pContainer.style.height = "auto";
+        }*/
+        
+        var msg;
+        if (!this.getTraverseNodes(oldXmlParent).length && (msg = this.$applyBindRule("empty", oldXmlParent)))
+            this.$setEmptyMessage(oPHtmlNode, msg);
+        
+//        if (this.openadd && pHtmlNode != this.$container && pContainer.style.display != "block") 
+//            this.slideOpen(pContainer, pHtmlNode, true);
+        
+        //Fix look (tree thing)
+        this.$fixItem(xmlNode, htmlNode);
+        
+        this.$fixItem(tParent, apf.xmldb.getHtmlNode(tParent, this));
+        this.$updateNode(oldXmlParent, apf.xmldb.getHtmlNode(oldXmlParent, this));
+        var next;
+        if (next = this.getNextTraverse(xmlNode, true)) { //should use each here
+            this.$fixItem(next, apf.xmldb.getHtmlNode(next, this));
+        }
+    };
+    
+    //???
+    this.$setLoading = function(xmlNode, container){
+        this.$setLoadStatus(xmlNode, "potential");
+        
+        var len = this.getTraverseNodes(xmlNode).length;
+        if (!len || len > 20) {
+            this.$getNewContext("loading");
+            apf.insertHtmlNode(this.$getLayoutNode("loading"), container);
+            
+            var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
+            this.$setStyleClass(htmlNode, "loading");
+        }
+    };
+    
+    //???
+    this.$removeLoading = function(xmlNode){
+        if (!xmlNode) return;
+        var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this); 
+        if (htmlNode) {
+            this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
+            this.$setStyleClass(htmlNode, "", ["loading"]);
+        }
+    };
+    
+    //check databinding for how this is normally implemented
+    this.$extend = function(xmlNode, container, immediate, callback){
+        if (!this.$hasLoadStatus(xmlNode, "potential")) 
+            return;
+
+        var rule       = this.$getBindRule("insert", xmlNode),
+            xmlContext = rule && rule.match
+                ? (rule.cmatch || rule.compile("match"))(xmlNode)
+                : xmlNode;
+
+        if (rule && xmlContext) {
+            this.$setLoadStatus(xmlNode, "loading");
+            
+            if (rule.get) {
+                
+                
+                this.getModel().$insertFrom(rule.getAttribute("get"), {
+                    xmlNode     : xmlContext,
+                    insertPoint : xmlContext, 
+                    amlNode     : this,
+                    callback    : callback
+                });
+            }
+            else {
+                if (this.$applyBindRule("insert", xmlNode))
+                    this.insert(data, {insertPoint: xmlContext});
+            }
+        }
+        else if (!this.prerender) {
+            this.$setLoadStatus(xmlNode, "loaded");
+            this.$removeLoading(xmlNode);
+            xmlUpdateHandler.call(this, {
+                action  : "insert", 
+                xmlNode : xmlNode, 
+                result  : this.$addNodes(xmlNode, container, true, null, null, null, "extend"), //checkChildren ???
+                anim    : !immediate
+            });
+        }
+    };
+    
+    function xmlUpdateHandler(e){
+        /*
+            Display the animation if the item added is 
+            * Not in the cache
+            - Being insterted using xmlUpdate
+            - there is at least 1 child inserted
+        */
+
+        if (e.action == "move-away")
+            this.$fixItem(e.xmlNode, apf.xmldb.findHtmlNode(e.xmlNode, this), true);
+
+        if (e.action != "insert") return;
+        
+        var htmlNode = this.$findHtmlNode(e.xmlNode.getAttribute(
+            apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
+        if (!htmlNode) return;
+
+        //this.$hasLoadStatus(e.xmlNode, "loading")
+        if (e.action == "insert" && e.result.length > 0) {
+            if (this.$hasLoadStatus(e.xmlNode, "loaded", true)) {
+                var container = this.$getLayoutNode("item", "container", htmlNode);
+                this.slideOpen(container, e.xmlNode);//, e.$anim ? false : true
+            }
+            else if (this.$hasLoadStatus(e.xmlNode, "potential", true)) {
+                this.$setLoadStatus(e.xmlNode, "loaded");
+            }
+        }
+        else
+            this.$fixItem(e.xmlNode, htmlNode);
+
+        //Can this be removed?? (because it was added in the insert function)
+        //if (this.$hasLoadStatus(e.xmlNode, "loading"))
+            //this.$setLoadStatus(e.xmlNode, "loaded");
+    }
+    
+    this.addEventListener("xmlupdate", xmlUpdateHandler);
+    
+    /**** Keyboard Support ****/
+    
+    
+    this.addEventListener("beforerename", function(){
+        if (this.$tempsel) {
+            clearTimeout(this.timer);
+            this.select(this.$tempsel);
+
+            this.$tempsel = null;
+            this.timer   = null;
+        }
+    });
+    
+>>>>>>> hotfix/0.5.1
+    
+    /**** Sliding functions ****/
+    
+<<<<<<< HEAD
     /**
      * @private
      */
@@ -35463,8 +40823,371 @@ apf.BaseTree = function(){
             else {
                 if (this.$applyBindRule("insert", xmlNode))
                     this.insert(data, {insertPoint: xmlContext});
+=======
+    this.addEventListener("keydown", function(e){
+        var key      = e.keyCode,
+            ctrlKey  = e.ctrlKey,
+            shiftKey = e.shiftKey,
+            selHtml  = this.$caret || this.$selected,
+            pos, top, el, node, nodes, sNode, pNode, container;
+
+        if (e.returnValue == -1 || !selHtml || this.renaming) //@todo how about allowdeselect?
+            return;
+
+        var selXml = this.caret || this.selected,
+            oExt   = this.$container;
+
+        switch (key) {
+            case 13:
+                if (this.$tempsel)
+                    this.$selectTemp();
+            
+                if (this.ctrlselect == "enter")
+                    this.select(this.caret, true);
+            
+                this.choose(selHtml);
+                break;
+            case 32:
+                if (this.$tempsel)
+                    this.$selectTemp();
+
+                
+                if (this.$mode && !ctrlKey) {
+                    var sel = this.getSelection();
+                    if (!sel.length || !this.multiselect)
+                        this.checkToggle(this.caret, true);
+                    else
+                        this.checkList(sel, this.isChecked(this.selected), true, false, true);
+                }
+                else
+                
+                if (ctrlKey || !this.isSelected(this.caret))
+                    this.select(this.caret, true);
+                return false;
+            case 46:
+                if (this.$tempsel)
+                    this.$selectTemp();
+            
+                //DELETE
+                //this.remove();
+                this.remove(this.caret); //this.mode != "check"
+                break;
+            case 36:
+                //HOME
+                this.$setTempSelected(this.getFirstTraverseNode(), false, shiftKey);
+                oExt.scrollTop = 0;
+                return false;
+            case 35:
+                //END
+                var lastNode = this.getLastTraverseNode();
+                while (!this.isCollapsed(lastNode))
+                    lastNode = this.getLastTraverseNode(lastNode);
+                
+                this.$setTempSelected(lastNode, false, shiftKey, true);
+                oExt.scrollTop = oExt.scrollHeight;
+                return false;
+            case 37:
+                //LEFT
+                if (this.$tempsel)
+                    this.$selectTemp();
+                if (this.caret.selectSingleNode(this.each) 
+                  && !this.isCollapsed(this.caret))
+                    this.slideToggle(this.$caret || this.$selected, 2)
+                else if ((pNode = this.getTraverseParent(this.caret))
+                  && pNode != this.xmlRoot)
+                    this.select(pNode)
+                return false;
+            case 107: //+
+            case 187: //+
+            case 39:
+                //RIGHT
+                if (this.$tempsel)
+                    this.$selectTemp();
+            
+                if (this.$hasLoadStatus(this.caret, "potential") 
+                  || this.getFirstTraverseNode(this.caret))
+                    this.slideToggle(this.$caret || this.$selected, 1)
+                break;
+            case 109:
+            case 189:
+                //-
+                if (this.getFirstTraverseNode(this.caret))
+                    this.slideToggle(this.$caret || this.$selected, 2)
+                break;
+            case 38:
+                //UP
+                if (!selXml && !this.$tempsel) 
+                    return;
+                
+                node = this.$tempsel 
+                    ? apf.xmldb.getNode(this.$tempsel) 
+                    : selXml;
+                
+                sNode = this.getNextTraverse(node, true);
+                if (sNode) {
+                    nodes = this.getTraverseNodes(sNode);
+                    
+                    do {
+                        container = this.$getLayoutNode("item", "container",
+                            this.$findHtmlNode(apf.xmldb.getID(sNode, this)));
+                        if (container && apf.getStyle(container, "display") == "block" 
+                          && nodes.length) {
+                                sNode = nodes[nodes.length-1];
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                    while (sNode && (nodes = this.getTraverseNodes(sNode)).length);
+                }
+                else if (this.getTraverseParent(node) == this.xmlRoot) {
+                    this.dispatchEvent("selecttop");
+                    return;
+                }
+                else
+                    sNode = this.getTraverseParent(node);
+
+                if (sNode && sNode.nodeType == 1)
+                   this.$setTempSelected(sNode, ctrlKey, shiftKey, true);
+                else
+                    return false;
+                
+                selHtml = apf.xmldb.getHtmlNode(sNode, this);
+                top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
+                     - (selHtml.offsetHeight);
+                if (top <= oExt.scrollTop)
+                    oExt.scrollTop = top;
+                
+                return false;
+            case 40:
+                //DOWN
+                if (!selXml && !this.$tempsel) 
+                    return;
+
+                node = this.$tempsel 
+                    ? apf.xmldb.getNode(this.$tempsel)
+                    : selXml;
+                
+                sNode = this.getFirstTraverseNode(node);
+                if (sNode) {
+                    container = this.$getLayoutNode("item", "container",
+                        this.$findHtmlNode(apf.xmldb.getID(node, this)));
+                    if (container && apf.getStyle(container, "display") != "block")
+                        sNode = null;
+                }
+                
+                while (!sNode) {
+                    pNode = this.getTraverseParent(node);
+                    if (!pNode) break;
+                    
+                    var i = 0;
+                    nodes = this.getTraverseNodes(pNode);
+                    while (nodes[i] && nodes[i] != node)
+                        i++;
+                    sNode = nodes[i+1];
+                    node  = pNode;
+                }
+
+                if (sNode && sNode.nodeType == 1)
+                   this.$setTempSelected(sNode, ctrlKey, shiftKey);
+                else
+                    return false;
+
+                selHtml = apf.xmldb.getHtmlNode(sNode, this);
+                top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
+                    + (selHtml.offsetHeight);
+                if (top > oExt.scrollTop + oExt.offsetHeight)
+                    oExt.scrollTop = top - oExt.offsetHeight;
+                return false;
+            case 33: //@todo
+                //PGUP
+                pos   = apf.getAbsolutePosition(this.$container);
+                el    = document.elementFromPoint(pos[0] + this.$container.offsetWidth
+                      - 2, pos[1] + 2);
+                sNode = apf.xmldb.findXmlNode(el);
+                if (sNode == this.selected) {
+                    oExt.scrollTop -= oExt.offsetHeight - apf.getHeightDiff(oExt);
+                    el    = document.elementFromPoint(pos[0] + this.$container.offsetWidth
+                          - 2, pos[1] + 2);
+                    sNode = apf.xmldb.findXmlNode(el);
+                }
+                this.select(sNode);
+                
+                selHtml = apf.xmldb.getHtmlNode(sNode, this);
+                top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
+                     - (selHtml.offsetHeight);
+                if (top <= oExt.scrollTop)
+                    oExt.scrollTop = top;
+                break;
+            case 34: //@todo
+                //PGDN
+                pos   = apf.getAbsolutePosition(this.$container);
+                el    = document.elementFromPoint(pos[0] + this.$container.offsetWidth
+                      - 2, pos[1] + this.$ext.offsetHeight - 4);
+                sNode = apf.xmldb.findXmlNode(el);
+                if (sNode == this.selected) {
+                    oExt.scrollTop += oExt.offsetHeight - apf.getHeightDiff(oExt);
+                    el    = document.elementFromPoint(pos[0] + this.$container.offsetWidth
+                          - 2, pos[1] + this.$ext.offsetHeight - 4);
+                    sNode = apf.xmldb.findXmlNode(el);
+                }
+                this.select(sNode);
+                
+                selHtml = apf.xmldb.getHtmlNode(sNode, this);
+                top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
+                    + (selHtml.offsetHeight);
+                if (top > oExt.scrollTop + oExt.offsetHeight)
+                    oExt.scrollTop = top - oExt.offsetHeight;
+                break;
+            default:
+                if (this.celledit) {
+                    if (!ctrlKey && !e.altKey && (key > 46 && key < 112 || key > 123))
+                        this.startRename(null, true);
+                    return;
+                }
+                else if (key == 65 && ctrlKey) {
+                    this.selectAll();
+                    return false;
+                } 
+                //@todo make this work with the sorted column
+                else if (this.caption || (this.bindingRules || {})["caption"]) {
+                    if (!this.xmlRoot) return;
+                    
+                    //this should move to a onkeypress based function
+                    if (!this.lookup || new Date().getTime()
+                      - this.lookup.date.getTime() > 300)
+                        this.lookup = {
+                            str  : "",
+                            date : new Date()
+                        };
+                    
+                    this.lookup.str += String.fromCharCode(key);
+    
+                    var nodes = this.getTraverseNodes(); //@todo start at current indicator
+                    for (var v, i = 0; i < nodes.length; i++) {
+                        v = this.$applyBindRule("caption", nodes[i]);
+                        if (v && v.substr(0, this.lookup.str.length)
+                          .toUpperCase() == this.lookup.str) {
+                            
+                            if (!this.isSelected(nodes[i]))
+                                this.select(nodes[i]);
+                            
+                            if (selHtml)
+                                this.$container.scrollTop = selHtml.offsetTop
+                                    - (this.$container.offsetHeight
+                                    - selHtml.offsetHeight) / 2;
+                            return;
+                        }
+                    }
+                    return;
+                }
+                break;
+        }
+    }, true);
+    
+    
+    /**** Rename Support ****/
+    
+    
+    this.$getCaptionElement = function(){
+        if (!this.$selected) return false;
+        var x = this.$getLayoutNode("item", "caption", this.$selected);
+        return x.nodeType == 1 ? x : x.parentNode;
+    };
+    
+    
+    /**** Selection Support ****/
+    /*
+        nodes = this.hasFeature(apf.__VIRTUALVIEWPORT__)
+                ? this.xmlRoot.selectNodes(this.$isTreeArch 
+                    ? this.each
+                    : ".//" + this.each.split('|').join('|.//'))
+                : 
+    */
+    this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
+        var r     = [],
+            f     = false,
+            i     = 0,
+            pNodeStart = this.getTraverseParent(xmlStartNode),
+            pNodeEnd   = this.getTraverseParent(xmlEndNode),
+            nodes      = this.getTraverseNodes(pNodeStart);
+
+        for (; i < nodes.length; i++) {
+            if (nodes[i] == xmlStartNode)
+                f = true;
+            if (f)
+                r.push(nodes[i]);
+            if (nodes[i] == xmlEndNode)
+                f = false;
+        }
+        
+        if (!r.length || f) {
+            r = [];
+            for (f = false, i = nodes.length - 1; i >= 0; i--) {
+                if (nodes[i] == xmlStartNode)
+                    f = true;
+                if (f)
+                    r.push(nodes[i]);
+                if (nodes[i] == xmlEndNode)
+                    f = false;
             }
         }
+        
+        return r;
+    };
+    
+    this.$findContainer = function(htmlNode){
+        return this.$getLayoutNode("item", "container", htmlNode);
+    };
+    
+    this.$selectDefault = function(xmlNode){
+        if (this.select(this.getFirstTraverseNode(xmlNode), null, null, null, true)) {
+            return true;
+        }
+        else {
+            var nodes = this.getTraverseNodes(xmlNode);
+            for (var i = 0; i < nodes.length; i++) {
+                if (this.$selectDefault(nodes[i]))
+                    return true;
+            }
+        }
+    };
+    
+    this.$setEmptyMessage = function(htmlNode, msg){
+        this.$getNewContext("empty");
+        var xmlEmpty = this.$getLayoutNode("empty");
+        if (!xmlEmpty) return;
+
+        var empty = apf.insertHtmlNode(xmlEmpty, htmlNode);
+        empty.setAttribute("empty", "true");
+        var caption = this.$getLayoutNode("empty", "caption", empty);
+
+        if (caption)
+            apf.setNodeValue(caption, msg || "");
+        
+        if (htmlNode.style)
+            this.slideOpen(htmlNode, null, true);
+        else if (this.nocollapse)
+            htmlNode.setAttribute("style", "display:inline-block;");
+        else 
+            htmlNode.setAttribute("style", "overflow:visible;height:auto;display:block;"); 
+        
+    }
+    
+    this.$removeEmptyMessage = function(htmlNode){
+        var cNode = htmlNode.firstElementChild || htmlNode.firstChild;
+        if (!cNode)
+            return;
+
+        do {
+            if (cNode.getAttribute && cNode.getAttribute("empty")) { //@todo hack
+                htmlNode.removeChild(cNode);
+                return;
+>>>>>>> hotfix/0.5.1
+            }
+            cNode = cNode.nextSibling;
+        }
+<<<<<<< HEAD
         else if (!this.prerender) {
             this.$setLoadStatus(xmlNode, "loaded");
             this.$removeLoading(apf.xmldb.getHtmlNode(xmlNode, this));
@@ -35958,11 +41681,79 @@ apf.BaseTree = function(){
 
 }).call(apf.BaseTree.prototype = new apf.MultiSelect());
 
+=======
+        while(cNode);
+    }
+    
+    /**** Init ****/
+
+    /**
+     * @event click Fires when the user presses a mousebutton while over this
+     *              element and then let's the mousebutton go.
+     * @see baseclass.multiselect.event.beforeselect
+     * @see baseclass.multiselect.event.afterselect
+     * @see baseclass.multiselect.event.beforechoose
+     * @see baseclass.multiselect.event.afterchoose
+     */
+    this.$drawBase = function(){
+        //@todo apf3.0 checkmode, radiomode
+        /*if (!this.getAttribute("skin")) {
+            var mode = this.getAttribute("mode");
+            this.skinName = null;
+            this.skin = mode + "tree";
+            this.$loadSkin();
+        }*/
+        
+        //Build Main Skin
+        this.$ext = this.$getExternal(); 
+        this.$container = this.$getLayoutNode("main", "container", this.$ext);
+        this.opencloseaction = this.$getOption("main", "openclose");
+        
+        //Need fix...
+        //this.$ext.style.MozUserSelect = "none";
+
+        if (apf.hasCssUpdateScrollbarBug && !this.mode)
+            this.$fixScrollBug();
+        
+        var _self = this;
+        this.$ext.onclick = function(e){
+            _self.dispatchEvent("click", {htmlEvent : e || event});
+        };
+        this.$ext.onmousedown = function(e){
+            _self.dispatchEvent("mousedown", {htmlEvent : e || event});
+        };
+        this.$ext.onmouseover = function(e){
+            _self.dispatchEvent("mouseover", {htmlEvent : e || event});
+        };
+        this.$ext.onmouseout = function(e){
+            _self.dispatchEvent("mouseout", {htmlEvent : e || event});
+        };
+        this.$ext.onmousemove = function(e){
+            _self.dispatchEvent("mousemove", {htmlEvent : e || event});
+        };
+    };
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(){
+        if (this.nocollapse)
+            this.startcollapsed = false;
+        else if (this.startcollapsed === 1)
+            this.startcollapsed = !apf.isFalse(this.$getOption("main", "startcollapsed"));
+    });
+    
+    this.addEventListener("DOMNodeRemovedFromDocument", function(){
+        this.$ext.onclick = null;
+        
+        apf.destroyHtmlNode(this.oDrag);
+        this.oDrag = null;
+    });
+
+}).call(apf.BaseTree.prototype = new apf.MultiSelect());
 
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/delayedrender.js)SIZE(5243)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+
+/*FILEHEAD(core/baseclasses/delayedrender.js)SIZE(5243)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36109,7 +41900,7 @@ apf.config.$inheritProperties["render-delay"] = 1;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dragdrop.js)SIZE(53452)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+/*FILEHEAD(core/baseclasses/dragdrop.js)SIZE(53452)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36975,6 +42766,7 @@ apf.DragServer = {
 
         /*if (runEvent && this.dragdata.host.$dragstop) 
             this.dragdata.host.$dragstop();*/
+>>>>>>> hotfix/0.5.1
 
         apf.dragMode         = false;
         document.onmousemove = 
@@ -36991,6 +42783,669 @@ apf.DragServer = {
         if (o.$findValueNode)
             fEl = o.$findValueNode(el);
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/delayedrender.js)SIZE(5243)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+apf.__DELAYEDRENDER__ = 1 << 11
+
+
+
+/**
+ * All elements inheriting from this {@link term.baseclass baseclass} have delayed
+ * rendering features. Any element that is (partially) hidden at startup has the
+ * possibility to delay rendering it's childNodes by setting render="runtime" on
+ * the element. These elements include window, tab, pages, form and container.
+ * For instance a Tab page in a container is initally hidden and does not
+ * need to be rendered. When the tab button is pressed to activate the page
+ * the page is rendered and then displayed. This can dramatically decrease
+ * the startup time of the application.
+ * Example:
+ * In this example the button isn't rendered until the advanced tab becomes active.
+ * <code>
+ *  <a:tab width="200" height="150">
+ *      <a:page caption="General">
+ *      ...
+ *      </a:page>
+ *      <a:page caption="Advanced" render="runtime">
+ *         <a:button>OK</a:button>
+ *      </a:page>
+ *  </a:tab>
+ * </code>
+ *
+ * @event beforerender  Fires before elements are rendered. Use this event to display a loader.
+ *   cancelable: Prevents rendering of the childNodes
+ * @event afterrender   Fires after elements are rendered. User this event to hide a loader.
+ *
+ * @attribute {String}  render           when the contents of this element is rendered.
+ *   Possible values:
+ *   init     elements are rendered during init of the application.
+ *   runtime  elements are rendered when the user requests them.
+ * @attribute {Boolean} use-render-delay whether there's a short delay between showing this element and rendering it's contents.
+ *   Possible values:
+ *   true   The elements are rendered immediately
+ *   false  There is a delay between showing this element and the actual rendering,
+ *          allowing the browsers' render engine to draw (for instance a loader).
+ *
+ * @constructor
+ * @baseclass
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8.9
+ */
+apf.DelayedRender = function(){
+    this.$regbase   = this.$regbase | apf.__DELAYEDRENDER__;
+    this.$rendered  = false;
+    
+    /**
+     * Renders the children of this element.
+     *
+     * @param {Boolean} [usedelay] whether a delay is added between calling 
+     * this function and the actual rendering. This allows the browsers' 
+     * render engine to draw (for instance a loader).
+     */
+    this.$render = function(usedelay){
+        if (this.$rendered)
+            return;
+
+        if (this.dispatchEvent("beforerender") === false)
+            return;
+
+        if (this["render-delay"] || usedelay)
+            $setTimeout("apf.lookup(" + this.$uniqueId + ").$renderparse()", 10);
+        else
+            this.$renderparse();
+    };
+
+    this.$renderparse = function(){
+        if (this.$rendered)
+            return;
+
+        // Hide render pass from sight for inner callstack 
+        // redrawing browsers like firefox
+        this.$ext.style.visibility = "hidden";
+
+        var domParser = this.ownerDocument.$domParser;
+        domParser.parseFromXml(this.$aml, {
+            amlNode       : this,
+            doc           : this.ownerDocument,
+            //nodelay       : true,
+            delayedRender : true
+        });
+        domParser.$continueParsing(this);
+
+        this.$rendered = true;
+
+        this.dispatchEvent("afterrender");
+
+        this.$ext.style.visibility = "";
+    };
+    
+    var f;
+    this.addEventListener("prop.visible", f = function(){
+        if (arguments[0].value) {
+            
+            this.$render();
+            
+            
+            this.removeEventListener("prop.visible", f);
+        }
+    });
+};
+
+apf.GuiElement.propHandlers["render"] = function(value) {
+    if (!this.hasFeature(apf.__DELAYEDRENDER__) && value == "runtime") {
+        this.implement(apf.DelayedRender);
+    
+        if (this.localName != "page") {
+            this.visible = false;
+            this.$ext.style.display = "none";
+        }
+        
+        if (typeof this["render-delay"] == "undefined")
+            this.$setInheritedAttribute("render-delay");
+    }
+};
+
+apf.config.$inheritProperties["render-delay"] = 1;
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dragdrop.js)SIZE(53452)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+apf.__DRAGDROP__ = 1 << 5;
+
+
+
+/**
+ * All elements inheriting from this {@link term.baseclass baseclass} have drag&drop 
+ * features. This baseclass operates on the bound data of this element. 
+ * When a rendered item is dragged and dropped the bound data is moved or 
+ * copied from one element to another, or to the same element but at a different 
+ * position. This is possible because the rendered item has a 
+ * {@link term.smartbinding bidirectional connection} to the data. Drag&drop can 
+ * be turned on with a simple boolean, or by specifying detailed rules to set 
+ * which data can be dragged and dropped and where.
+ *
+ * Example:
+ * This is a simple example, enabling drag&drop for a list.
+ * <code>
+ *  <a:list
+ *    drag     = "true"
+ *    drop     = "true"
+ *    dragcopy = "true" />
+ * </code>
+ *
+ * Example:
+ * This example shows a smartbinding that represents files and folders. It uses 
+ * {@link term.datainstruction data instruction} to tell communicat to the webdav
+ * server when an item is copied or moved.
+ * <code>
+ *  <a:smartbinding>
+ *      <a:bindings>
+ *          <a:caption match="[@filename]" />
+ *          <a:each match="[file|folder]" />
+ *
+ *          <a:drag 
+ *            match = "[person]" 
+ *            copy  = "event.ctrlKey" />
+ *          <a:drop
+ *            match  = "[file]"
+ *            target = "[folder]"
+ *            action = "tree-append"
+ *            copy   = "event.ctrlKey" />
+ *          <a:drop
+ *            match  = "[folder]"
+ *            target = "[folder]"
+ *            action = "insert-before"
+ *            copy   = "event.ctrlKey" />
+ *      </a:bindings>
+ *      <a:actions>
+ *          <a:move
+ *              match = "[folder]"
+ *              set   = "{myWebdav.move([@path], [../@path])}" />
+ *          <a:copy
+ *              match = "[file]"
+ *              set   = "{myWebdav.copy([@path], [../@path])}" />
+ *      </a:actions>
+ *  </a:smartbinding>
+ * </code>
+ *
+ * @event  dragdata  Fires before a drag&drop operation is started to determine the data that is dragged.
+ *   object:
+ *   {XMLElement} data the default data for the drag&drop operation
+ * @event  dragstart Fires before a drag operation is started.
+ *   cancelable: Prevents the drag operation to start.
+ *   object:
+ *   {XMLElement}  data      the data for the drag&drop operation
+ *   {XMLElement}  selection the selection at the start of the drag operation
+ *   {HTMLElement} indicator the html element that is shown while dragging the data
+ *   {AMLElement}  host      the aml source element.
+ * @event  dragover Fires when the users drags over this aml element.
+ *   cancelable: Prevents the possibility to drop.
+ *   object:
+ *   {XMLElement}  data      the data for the drag&drop operation
+ *   {XMLElement}  selection the selection at the start of the drag operation
+ *   {HTMLElement} indicator the html element that is shown while dragging the data
+ *   {AMLElement}  host      the aml source element.
+ * @event  dragout  Fires when the user moves away from this aml element.
+ *   object:
+ *   {XMLElement}  data      the data for the drag&drop operation
+ *   {XMLElement}  selection the selection at the start of the drag operation
+ *   {HTMLElement} indicator the html element that is shown while dragging the data
+ *   {AMLElement}  host      the aml source element.
+ * @event  dragdrop  Fires when the user drops an item on this aml element.
+ *   cancelable: Prevents the possibility to drop.
+ *   object:
+ *   {XMLElement}  data      the data for the drag&drop operation
+ *   {XMLElement}  selection the selection at the start of the drag operation
+ *   {HTMLElement} indicator the html element that is shown while dragging the data
+ *   {AMLElement}  host      the aml source element.
+ *   {Boolean}     candrop   whether the data can be inserted at the point hovered over by the user
+ *
+ * @see element.drag
+ * @see element.drop
+ * @see element.dragdrop
+ *
+ * @define dragdrop
+ * @allowchild drop, drag
+ * @define drag   Determines whether a {@link term.datanode data node} can 
+ * be dragged from this element. 
+ * Example:
+ * This example shows a small mail application. The tree element displays a root
+ * node, accounts and folders in a tree. The datagrid contains the mails. This
+ * rule specifies which data nodes can be dropped where. Folders can be dropped 
+ * in folders and accounts. Mails can be dropped in folders.
+ * <code>
+ *  <a:tree align="left" width="200">
+ *      <a:each match="[root|account|folder|mail]">
+ *          <a:caption match="[@name]" />
+ *          <a:drag match  = "[folder]" />
+ *          <a:drop match  = "[folder]" 
+ *                  target = "[folder|account]"
+ *                  action = "tree-append" />
+ *          <a:drop match  = "[mail]" 
+ *                  target = "[folder]"
+ *                  action = "tree-append" />
+ *      </a:each>
+ *      <a:model>
+ *          <data>
+ *              <root name="Root">
+ *                  <account name="Account 1">
+ *                      <folder name="Folder 1"></folder>
+ *                  </account>
+ *              </root>
+ *           </data>
+ *      </a:model>
+ *  </a:tree>
+ *  <a:datagrid align="right">
+ *      <a:each match="[mail]">
+ *          <a:column 
+ *            caption = "Name" 
+ *            value   = "[@name]"
+ *            width   = "100%" /> 
+ *          <a:drag match="[mail]" />
+ *      </a:each>
+ *      <a:model>
+ *          <data>
+ *              <mail name="Mail 1"></mail>
+ *          </data>
+ *      </a:model>
+ *  </a:datagrid>
+ * </code>
+ *
+ * @attribute {String} match           an xpath statement querying the
+ *                                     {@link term.datanode data node} that is
+ *                                     dragged. If the query matches a node it
+ *                                     is allowed to be dropped. The xpath is
+ *                                     automatically prefixed by 'self::'.
+ * @attribute {String} copy            a javascript expression that determines
+ *                                     whether the dragged element is a copy or
+ *                                     a move. Use event.ctrlKey to use the Ctrl
+ *                                     key to determine whether the element is copied.
+ *
+ * @define drop   Determines whether a {@link term.datanode data node} can 
+ * be dropped on a data node bound to this element. 
+ * 
+ * @attribute {String} match           an xpath statement querying the
+ *                                     {@link term.datanode data node} that is
+ *                                     dragged. If the query matches a node it
+ *                                     is allowed to be dropped. The xpath is
+ *                                     automatically prefixed by 'self::'.
+ * @attribute {String} target          an xpath statement determining the new
+ *                                     parent of the dropped {@link term.datanode data node}.
+ *                                     The xpath is automatically prefixed by 'self::'.
+ * @attribute {String} action          the action to perform when the
+ *                                     {@link term.datanode data node} is inserted.
+ *   Possible values:
+ *   tree-append    Appends the {@link term.datanode data node} to the element it's dropped on.
+ *   list-append    Appends the {@link term.datanode data node} to the root element of this element.
+ *   insert-before  Inserts the {@link term.datanode data node} before the elements it's dropped on.
+ * @attribute {String} copy            a javascript expression that determines
+ *                                     whether the drop is a copy or a move.
+ *                                     Use event.ctrlKey to use the Ctrl key to
+ *                                     determine whether the element is copied.
+ */
+/**
+ * @constructor
+ * @baseclass
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.5
+ */
+apf.DragDrop = function(){
+    this.$regbase = this.$regbase | apf.__DRAGDROP__;
+
+    this.$dragInited = false;
+
+    /* **********************
+            Actions
+    ***********************/
+
+    /**
+     * Copies a {@link term.datanode data node} to the bound data of this element.
+     *
+     * @action
+     * @param  {XMLElement} xmlNode      the {@link term.datanode data node} which is copied.
+     * @param  {XMLElement} pNode        the new parent element of the copied
+     *                                   {@link term.datanode data node}. If none
+     *                                   specified the root element of the data
+     *                                   loaded in this element is used.
+     * @param  {XMLElement} [beforeNode] the position where the {@link term.datanode data node}
+     *                                   is inserted.
+     */
+    this.copy = function(nodeList, pNode, beforeNode, isMove){
+        if (nodeList.nodeType)
+            nodeList = [nodeList];
+        
+        var exec,
+            changes = [],
+            i       = 0,
+            l       = nodeList.length;
+        for (; i < l; i++) {
+            changes.push({
+                action : isMove ? "moveNode" : "appendChild",
+                args   : [pNode, isMove
+                    ? nodeList[i]
+                    : nodeList[i] = nodeList[i].cloneNode(true), beforeNode]
+            });
+        }
+        
+        if (this.$actions[(isMove ? "movegroup" : "copygroup")]) {
+            exec = this.$executeAction("multicall", changes, 
+                (isMove ? "movegroup" : "copygroup"), nodeList[0]);
+        }
+        else {
+            exec = this.$executeAction("multicall", changes, 
+                (isMove ? "move" : "copy"), nodeList[0], null, null, 
+                nodeList.length > 1 ? nodeList : null);
+        }
+
+        if (exec !== false)
+            return nodeList;
+
+        return false;
+    };
+
+    /**
+     * Moves a {@link term.datanode data node} to the bound data of this element.
+     *
+     * @action
+     * @param  {XMLElement}  xmlNode      the {@link term.datanode data node} which is copied.
+     * @param  {XMLElement}  pNode        the new parent element of the moved
+     *                                    {@link term.datanode data node}. If none
+     *                                    specified the root element of the data
+     *                                    loaded in this element is used.
+     * @param  {XMLElement}  [beforeNode] the position where the
+     *                                    {@link term.datanode data node} is inserted.
+     */
+    this.move = function(nodeList, pNode, beforeNode){
+        return this.copy(nodeList, pNode, beforeNode, true);
+    };
+    
+    /**
+     * Determines whether the user is allowed to drag the passed 
+     * {@link term.datanode data node}. The decision is made based on the 
+     * {@link element.drag drag} and {@link element.drag drag} 
+     * rules. These elements determine when a data node can be dropped on 
+     * another data node. For instance, imagine a mail application with a root
+     * node, accounts and folders in a tree, and mails in a datagrid. The rules
+     * would specify you can drag&drop folders within an account, and emails between
+     * folders, but not on accounts or the root.
+     *
+     * @param  {XMLElement} dataNode the {@link term.datanode data node} subject to the test.
+     * @return {Boolean} result of the test
+     * @see baseclass.dragdrop.method.isDragAllowed
+     */
+    this.isDragAllowed = function(x, data){
+        
+
+        if (this.disabled || !x || !x.length || !x[0])
+            return false;
+
+        if (this.drag || this.dragcopy) {
+            if (data)
+                data.merge(x);
+            return true;
+        }
+
+        /*var rules = this.$bindings["drag"]
+          || this.$attrBindings && this.$attrBindings["drag"];
+        if (!rules || !rules.length)
+            return false;*/
+
+        var d, 
+            ruleList = [],
+            j        = 0,
+            l        = x.length;
+        for (; j < l; j++) {
+            d = this.$getDataNode("drag", x[j], null, ruleList);
+            if (!d) return false; //It's all or nothing
+            if (data)
+                data.push(d);
+        }
+
+        return ruleList.length ? ruleList : false;
+    };
+
+    /**
+     * Determines whether the user is allowed to dropped the passed 
+     * {@link term.datanode data node}. The decision is made based on the 
+     * {@link element.drag drag} and {@link element.drag drag} 
+     * rules. These elements determine when a data node can be dropped on 
+     * another data node. For instance, imagine a mail application with a root
+     * node, accounts and folders in a tree, and mails in a datagrid. The rules
+     * would specify you can drag&drop folders within an account, and emails between
+     * folders, but not on accounts or the root.
+     *
+     * @param  {XMLElement} dataNode the {@link term.datanode data node} subject
+     *                               to the test.
+     * @param  {XMLElement} target   the {@link term.datanode data node} on which
+     *                               the dragged data node is dropped.
+     * @return {Boolean} result of the test
+     * @see baseclass.dragdrop.method.isDragAllowed
+     */
+    this.isDropAllowed = function(x, target){
+        
+
+        if (this.disabled || !x || !x.length || !target) //!x[0] ???
+            return false;
+
+        var data, tgt, hasDropRule = this.$attrBindings && this.$attrBindings["drop"];
+        if (this.drop && (!hasDropRule || hasDropRule.value == "true")) {
+            this.$setDynamicProperty("drop", this.hasFeature(apf.__MULTISELECT__)
+              ? "[" + this.each + "]"
+              : "[node()]"); //@todo apf3.0 make sure each is without {}
+            hasDropRule = true;
+        }
+
+        if (hasDropRule) {
+            for (var j = 0, l = x.length; j < l; j++) {
+                data = this.$getDataNode("drop", x[j]);
+                if (!data)
+                    break;
+            }
+            if (j == l && target && !apf.isChildOf(data, target, true))
+                return [target, null];
+        }
+
+        var rules = this.$bindings["drop"];
+        if (!rules || !rules.length)
+            return false;
+
+        //@todo this can be optimized when needed
+        var rule, strTgt,
+            i  = 0,
+            rl = rules.length;
+        for (; i < rl; i++) {
+            rule = this.$bindings.getRuleIndex("drop", i);
+
+            for (var j = 0, l = x.length; j < l; j++) {
+                data = rule.cvalue ? rule.cvalue(x[j]) : rule.cmatch(x[j]);
+                if (!data)
+                    break;
+            }
+            if (j != l)
+                continue;
+            
+            strTgt = rule.target;//node.getAttribute("target");
+            if (!strTgt || strTgt == ".") {
+                //op = node.getAttribute("action") 
+                  //|| (this.$isTreeArch ? "tree-append" : "list-append");
+                tgt = target;/*(op == "list-append" || target == this.xmlRoot
+                  ? this.xmlRoot
+                  : null);*/
+            }
+            else {
+                tgt = (rule.ctarget || rule.compile("target"))(target);
+            }
+            
+            if (tgt && !apf.isChildOf(data, tgt, true))
+                return [tgt, rule];
+        }
+
+        return false;
+    };
+
+    this.$dragDrop = function(xmlReceiver, xmlNodeList, rule, defaction, isParent, srcRule, event){
+        // @todo apf3.0 action not known here yet... should be moved down?
+        if (action == "tree-append" && isParent) 
+            return false;
+
+        /*
+            Possibilities:
+
+            tree-append [default]: xmlNode.appendChild(movedNode);
+            list-append          : xmlNode.parentNode.appendChild(movedNode);
+            insert-before        : xmlNode.parentNode.insertBefore(movedNode, xmlNode);
+        */
+        var action = rule && rule.action;//node && node.getAttribute("action");
+
+        if (action)
+            action = (rule.caction || rule.compile("action"))(xmlNodeList[0]);
+        else
+            action = defaction;
+
+        //copy convenience variables
+        var context = {
+              internal : apf.DragServer.dragdata.host == this,
+              ctrlKey  : event.ctrlKey,
+              keyCode  : event.keyCode
+          },
+          //@todo apf3.0 below should actually be compileNode with with_options
+          ifcopy = rule && rule.copy;//.getAttribute("copy");
+
+        if (ifcopy) {
+            ifcopy = !apf.isFalse((rule.ccopy || rule.compile("copy"))(xmlNodeList[0], context));
+        }
+        else if (typeof this.dragcopy == "boolean" || typeof this.dropcopy == "boolean") { //@todo apf3.0 boolean here?
+            if (this.dropcopy) {
+                ifcopy = this.dropcopy;
+            }
+            else if (this.dragcopy) {
+                ifcopy = event.ctrlKey;
+            }
+            else {
+                //@todo read this from src
+                var copyRule = this.$attrBindings && this.$attrBindings["dragcopy"];
+                if (copyRule) {
+                    ifcopy = !apf.isFalse((copyRule.cvalue2
+                      || copyRule.compile("value", {
+                        withopt : true
+                      }))(xmlNodeList[0], context));
+                }
+            }
+        }
+
+        if (!ifcopy) { //Implemented one copy is all copy
+            for (var i = 0, l = srcRule.length; i < l; i++) {
+                ifcopy = typeof srcRule[i] == "object" && srcRule[i].copy
+                    ? !apf.isFalse((srcRule[i].ccopy || srcRule[i].compile("copy"))(xmlNodeList[0], context))
+                    : event.ctrlKey;
+                if (ifcopy) break;
+            }
+        }
+
+        var sNode,
+            actRule     = ifcopy ? "copy" : "move",
+            parentXpath = rule ? rule.getAttribute("parent") : null; //@todo apf3.0 Should be lm syntax
+        switch (action) {
+            case "list-append":
+                xmlReceiver = (isParent 
+                  ? xmlReceiver
+                  : this.getTraverseParent(xmlReceiver));
+                if (parentXpath) {
+                    if (xmlReceiver.selectSingleNode(parentXpath))
+                        xmlReceiver = xmlReceiver.selectSingleNode(parentXpath);
+                    else {
+                        xmlReceiver.appendChild(xmlReceiver.ownerDocument.createElement(parentXpath));
+                        xmlReceiver = xmlReceiver.selectSingleNode(parentXpath);
+                    }
+                }
+                sNode = this[actRule](xmlNodeList, xmlReceiver);
+                break;
+            case "insert-before":
+                sNode = isParent
+                    ? this[actRule](xmlNodeList, xmlReceiver)
+                    : this[actRule](xmlNodeList, xmlReceiver.parentNode, xmlReceiver);
+                break;
+            case "tree-append":
+                if (parentXpath) {
+                    if (xmlReceiver.selectSingleNode(parentXpath))
+                        xmlReceiver = xmlReceiver.selectSingleNode(parentXpath);
+                    else {
+                        xmlReceiver.appendChild(xmlReceiver.ownerDocument.createElement(parentXpath));
+                        xmlReceiver = xmlReceiver.selectSingleNode(parentXpath);
+                    }
+                }
+                sNode = this[actRule](xmlNodeList, xmlReceiver);
+                break;
+        }
+
+        if (this.selectable && sNode) {
+            this.selectList(sNode);//, null, null, null, true);
+            this.setCaret(sNode[0]);
+            this.focus();
+        }
+
+        return sNode;
+    };
+
+    /* **********************
+            Init
+    ***********************/
+
+    /**
+     * Loads the dragdrop rules from the dragdrop element
+     *
+     * @param  {Array}      rules     the rules array created using {@link core.apf.method.getrules}
+     * @param  {XMLElement} [node] the reference to the dragdrop element
+     * @see  SmartBinding
+     * @private
+     */
+    this.enableDragDrop = function(){
+=======
         if (this.lastFel && this.lastFel == fEl 
           || !this.lastFel && this.last == o) //optimization
             return;
@@ -37420,6 +43875,7 @@ apf.MultiselectDragDrop = function() {
                 "dragInsert", "dragAppend", "indicate"]);
         
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Drop"]);
+>>>>>>> hotfix/0.5.1
         
         this.lastel = null;
     };
@@ -37427,6 +43883,603 @@ apf.MultiselectDragDrop = function() {
     if (!this.$dragdrop)
         this.$dragdrop = this.$dragout;
 
+<<<<<<< HEAD
+        //Set cursors
+        //SHOULD come from skin
+        this.icoAllowed = "";//this.xmlDragDrop.getAttribute("allowed");
+        this.icoDenied  = "";//this.xmlDragDrop.getAttribute("denied");
+
+        //Setup External Object
+        this.$ext.dragdrop = false;
+
+        var _self = this;
+
+        this.$ext[apf.isIphone ? "ontouchstart" : "onmousedown"] = function(e){
+            if (_self.disabled)
+                return;
+
+            e = e || window.event;
+            
+
+            var fEl,
+                srcEl       = e.originalTarget || e.srcElement || e.target,
+                multiselect = _self.hasFeature(apf.__MULTISELECT__);
+            if (multiselect && srcEl == _self.$container)
+                return;
+            _self.dragging = 0;
+
+            try{ //Firefox can crash here because of some chrome permission issue 
+                if (!apf.isIphone && _self.allowdeselect
+                  && (srcEl == this || srcEl.getAttribute(apf.xmldb.htmlIdTag) 
+                  && _self.$getLayoutNode("item", "select", this) != this))
+                    return; //This broke making a selection with the mouse in rename:  _self.clearSelection(); //@todo hacky - should detect what element has the select from the skin
+            }catch(e) {return;}
+
+            //MultiSelect must have carret behaviour AND deselect at clicking white
+            if (_self.$findValueNode)
+                fEl = _self.$findValueNode(srcEl);
+            var el = (fEl
+                ? apf.xmldb.getNode(fEl)
+                : apf.xmldb.findXmlNode(srcEl));
+            if (multiselect && (!_self.selected || !el || el == _self.xmlRoot))
+                return;
+
+            if (_self.isDragAllowed(multiselect ? _self.$getSelection() : el)) {
+                
+
+                apf.DragServer.start(_self, srcEl, e);
+            }
+
+            //e.cancelBubble = true;
+        };
+
+        this.$ext[apf.isIphone ? "ontouchmove" : "onmousemove"] = function(e){
+            if (this.host.dragging != 1 || _self.disabled) return;
+        };
+
+        
+        {
+            this.$ext.onmouseup = function(){
+                if (_self.disabled)
+                    return;
+                    
+                this.host.dragging = 0;
+            };
+
+            this.$ext.ondragcopy  =
+            this.$ext.ondragstart = function(){ return false; };
+        }
+
+        if (document.elementFromPointAdd)
+            document.elementFromPointAdd(this.$ext);
+
+        if (this.$initDragDrop && !this.$dragInited) {
+            this.$initDragDrop();
+            this.$dragInited = 2;
+        }
+        else {
+            this.$dragInited = true;
+        }
+    };
+    
+    function disableDragDrop(){
+        this.$dragInited = false; //@todo solve oExt event conflicts
+        
+        
+        {
+            this.$ext.onmousedown = this.$ext.onmousemove
+                = this.$ext.onmouseup = null;
+        }
+
+        if (document.elementFromPointRemove)
+            document.elementFromPointRemove(this.$ext);
+    }
+    
+    this.implement(
+      
+      this.hasFeature(apf.__MULTISELECT__)
+        ? apf.MultiselectDragDrop : 
+      
+        apf.StandardDragDrop);
+    
+    //this.$booleanProperties["drag"]     = true;
+    //this.$booleanProperties["dragcopy"] = true;
+    this.$supportedProperties.push("drop", "drag", "dragcopy");
+
+    /**
+     * @attribute  {Boolean}  drag       whether the element allows dragging of it's items.
+     * Example:
+     * <code>
+     *  <a:list drag="true">
+     *      <a:item>item 1</a:item>
+     *      <a:item>item 2</a:item>
+     *      <a:item>item 3</a:item>
+     *  </a:list>
+     * </code>
+     * @attribute  {Boolean}  dragcopy   whether dragged items are copied.
+     * Example:
+     * <code>
+     *  <a:list 
+     *    drag    = "true" 
+     *    align   = "right" 
+     *    height  = "300" 
+     *    caption = "[@name]" 
+     *    each    = "[mail]">
+     *      <a:model>
+     *          <data>
+     *              <mail name="Mail 1"></mail>
+     *              <mail name="Mail 2"></mail>
+     *              <mail name="Mail 3"></mail>
+     *          </data>
+     *      </a:model>
+     *  </a:list>
+     * </code>
+     * Example:
+     * Items are only copied when the user holds the Ctrl key
+     * <code>
+     *  <a:list dragcopy="[ctrlKey]">
+     *      <a:item>item 1</a:item>
+     *      <a:item>item 2</a:item>
+     *      <a:item>item 3</a:item>
+     *  </a:list>
+     * </code>
+     * @attribute  {Boolean}  drop       whether the element allows items to be dropped.
+     * Example:
+     * <code>
+     *  <a:list drop="true">
+     *      <a:item>item 1</a:item>
+     *      <a:item>item 2</a:item>
+     *      <a:item>item 3</a:item>
+     *  </a:list>
+     * </code>
+     * @attribute  {String}   dragdrop          the name of the dragdrop element for this element.
+     * <code>
+     *  <a:tree align="left" width="200" height="300">
+     *      <a:each match="[root|account|folder|mail]">
+     *          <a:caption match  = "[@name]" />
+     *          <a:drag    match  = "[folder|mail]" />
+     *          <a:drop    match  = "[folder]" 
+     *                     target = "[folder|account]"
+     *                     action = "tree-append" />
+     *           <a:drop   match  = "[mail]" 
+     *                     target = "[folder]"
+     *                     action = "tree-append" />
+     *      </a:each>
+     *      <a:model>
+     *          <data>
+     *              <root name="Root">
+     *                  <account name="Account 1">
+     *                      <folder name="Folder 1">
+     *                          <mail name="Mail drag drop"></mail>
+     *                      </folder>
+     *                  </account>
+     *              </root>
+     *          </data>
+     *      </a:model>
+     *  </a:tree>
+     * 
+     *  <a:list bindings="bndDragdrop" align="right">
+     *      <a:model>
+     *          <data>
+     *              <mail name="Mail 1"></mail>
+     *              <mail name="Mail 2"></mail>
+     *              <mail name="Mail 3"></mail>
+     *          </data>
+     *      </a:model>
+     *  </a:list>
+     * 
+     *  <a:bindings id="bndDragdrop">
+     *      <a:caption match="[@name]" />
+     *      <a:each match="[mail]" />
+     *      <a:drag match = "[mail]" />
+     *      <a:drop
+     *        match = "[mail]"
+     *        action = "list-append" />
+     *   </a:bindings>
+     * </code>
+     */
+    this.$propHandlers["dragcopy"] =
+    this.$propHandlers["dropcopy"] =
+    this.$propHandlers["drag"]     =
+    this.$propHandlers["drop"]     = function(value, prop){
+        this[prop] = apf.isTrue(value);
+
+        if (this.$dragInited && prop == "drag" && value && this.$dragInited != 2) {
+            this.$initDragDrop();
+            this.$dragInited = 2;
+            return;
+        }
+
+        if (prop == "dragcopy" || prop == "dropcopy")
+            return;
+        
+        if (!value && !this.drag && !this.drop && !this.$bindings 
+          && (this.$attrBindings && (!this.$attrBindings["drag"] || !this.$attrBindings["drop"])))
+            disableDragDrop.call(this);
+        else if (value && !this.$dragInited)
+            this.enableDragDrop();
+    };
+
+    this.addEventListener("DOMNodeRemovedFromDocument", function(e){
+        disableDragDrop.call(this);
+        
+        if (this.oDrag) {
+            apf.destroyHtmlNode(this.oDrag);
+            this.oDrag = null;
+        }
+    });
+};
+
+apf.GuiElement.propHandlers["dragcopy"] =
+apf.GuiElement.propHandlers["dropcopy"] =
+apf.GuiElement.propHandlers["drop"]     =
+apf.GuiElement.propHandlers["drag"]     = function(value, prop) {
+    if (!apf.isFalse(value)) {
+        if (!this.hasFeature(apf.__DRAGDROP__)) {
+            this.implement(apf.DragDrop);
+            this.enableDragDrop();
+        }
+        
+        this[prop] = apf.isTrue(value);
+    }
+};
+
+/**
+ * Central object for dragdrop handling.
+ * @private
+ */
+apf.DragServer = {
+    Init : function(){
+        
+
+        apf.addEventListener("hotkey", function(e){
+            if (apf.window.dragging && e.keyCode == 27) {
+                if (document.body.lastHost && document.body.lastHost.dragOut)
+                    document.body.lastHost.dragOut(apf.dragHost);
+
+                return apf.DragServer.stopdrag();
+            }
+        });
+    },
+
+    start : function(amlNode, srcEl, e, customNode){
+        if (document.elementFromPointReset)
+            document.elementFromPointReset();
+        
+        amlNode.dragging = 1;
+
+        var d = window.document;
+        d = (!d.compatMode || d.compatMode == "CSS1Compat")
+            ? d.html || d.documentElement
+            : d.body
+
+        var scrollX = (apf.isIE ? d.scrollLeft : window.pageXOffset),
+            scrollY = (apf.isIE ? d.scrollTop  : window.pageYOffset),
+            oParent = amlNode.$ext.offsetParent,
+            pos
+        while (oParent && oParent != d && oParent.tagName != "BODY") {
+            scrollX -= oParent.scrollLeft;
+            scrollY -= oParent.scrollTop;
+            oParent = oParent.offsetParent;
+        }
+
+        //The coordinates need to be relative to the html element that 
+        //represents the xml data node.
+        if (!srcEl && customNode) {
+            pos = [0, 0];
+        }
+        else {
+            var loopEl = srcEl, lastId;
+            while (loopEl && loopEl.nodeType == 1 
+              && !(lastId = loopEl.getAttribute(apf.xmldb.htmlIdTag))) {
+                loopEl = loopEl.parentNode;
+            }
+            if (!lastId)
+                return;
+            pos = apf.getAbsolutePosition(loopEl);
+        }
+
+        //Set coordinates object
+        apf.DragServer.coordinates = {
+            srcElement : srcEl,
+            doc        : d,
+            scrollX    : scrollX,
+            scrollY    : scrollY,
+            offsetX    : e.clientX - pos[0],
+            offsetY    : e.clientY - pos[1],
+            clientX    : e.pageX ? e.pageX - window.pageXOffset : e.clientX,
+            clientY    : e.pageY ? e.pageY - window.pageYOffset : e.clientY
+        };
+        
+        //Create Drag Data Object
+        var selection = customNode || amlNode.hasFeature(apf.__MULTISELECT__) 
+                ? amlNode.getSelection()
+                : [amlNode.xmlRoot],
+            data      = [],
+            srcRules  = amlNode.isDragAllowed(selection, data);
+        if (!srcRules) return;
+
+        if (amlNode.hasEventListener("dragdata"))
+            data = amlNode.dispatchEvent("dragdata", {data : data});
+        
+        /*for(var i = 0, l = data.length; i < l; i++) {
+            data[i] = apf.getCleanCopy(data[i]);
+        }*/
+
+        this.dragdata = {
+            rules       : srcRules,
+            selection   : selection,
+            data        : data,
+            indicator   : amlNode.$showDragIndicator(selection, this.coordinates),
+            host        : amlNode
+        };
+
+        //EVENT - cancelable: ondragstart
+        if (amlNode.dispatchEvent("dragstart", this.dragdata) === false)
+            return false;//(this.amlNode.$tempsel ? select(this.amlNode.$tempsel) : false);
+        
+        amlNode.dragging = 2;
+
+        apf.dragMode         = true;
+        document.onmousemove = this.onmousemove;
+        document.onmouseup   = this.onmouseup;
+    },
+
+    stop : function(runEvent, success){
+        if (this.last) this.dragout();
+
+        //Reset Objects
+        this.dragdata.host.dragging = 0;
+        this.dragdata.host.$hideDragIndicator(success);
+
+        /*if (runEvent && this.dragdata.host.$dragstop) 
+            this.dragdata.host.$dragstop();*/
+
+        apf.dragMode         = false;
+        document.onmousemove = 
+        document.onmouseup   = null;
+        
+        this.dragdata = null;
+    },
+
+    dragover : function(o, el, e){
+        e = e || window.event;
+
+        //@todo optimize by not checking the same node dragged over twice in a row
+        var fEl;
+        if (o.$findValueNode)
+            fEl = o.$findValueNode(el);
+
+        if (this.lastFel && this.lastFel == fEl 
+          || !this.lastFel && this.last == o) //optimization
+            return;
+
+        //Check Permission
+        var elSel = (fEl
+                ? apf.xmldb.getNode(fEl)
+                : apf.xmldb.findXmlNode(el)),
+            candrop = o.isDropAllowed && o.xmlRoot
+                ? o.isDropAllowed(this.dragdata.data, elSel || o.xmlRoot)
+                : apf.isTrue(apf.getInheritedAttribute(o, "", function(p){
+                      if (p.drop) {
+                          o = p;
+                          if (o == apf.DragServer.last)
+                            return false;
+                          return true;
+                      }
+                   }));
+
+        if (this.last && this.last != o)
+            this.dragout(this.last, e);
+
+        this.last = o;
+        this.lastFel = fEl;
+
+        if (!candrop)
+            return;
+
+        //EVENT - cancelable: ondragover
+        if (o.dispatchEvent("dragover", this.dragdata) === false)
+            candrop = false;
+
+        //Set Cursor
+        var srcEl = e.originalTarget || e.srcElement || e.target;
+        /*srcEl.style.cursor = (candrop ? o.icoAllowed : o.icoDenied);
+        if (srcEl.onmouseout != this.m_out) {
+            srcEl.$onmouseout = srcEl.onmouseout;
+            srcEl.onmouseout   = this.m_out;
+        }
+        o.$ext.style.cursor = (candrop ? o.icoAllowed : o.icoDenied);*/
+
+        //REQUIRED INTERFACE: __dragover()
+        if (o && o.$dragover)
+            o.$dragover(el, this.dragdata, candrop);
+    },
+
+    dragout : function(o, e){
+        //if (this.last == o) 
+            //return false;
+
+        this.lastFel = null;
+
+        //EVENT: ondragout
+        if (o) {
+            this.dragdata.htmlEvent = e;
+            o.dispatchEvent("dragout", this.dragdata);
+        }
+
+        //REQUIRED INTERFACE: __dragout()
+        if (this.last && this.last.$dragout)
+            this.last.$dragout(null, this.dragdata);
+
+        //Reset Cursor
+        //o.$ext.style.cursor = "default";
+        this.last = null;
+    },
+
+    dragdrop : function(o, el, srcO, e){
+        //Check Permission
+        var isParent, lastTop,
+            elSel   = (o.$findValueNode
+              ? apf.xmldb.getNode(o.$findValueNode(el))
+              : apf.xmldb.findXmlNode(el)),
+            candrop = (o.isDropAllowed && o.xmlRoot)
+                ? o.isDropAllowed(this.dragdata.data, elSel || o.xmlRoot) : false;
+         
+        if (this.dragdata.indicator) {
+            lastTop = this.dragdata.indicator.style.top;
+            this.dragdata.indicator.style.top = "10000px";
+        }
+         
+        if (!candrop) 
+            candrop = apf.isTrue(apf.getInheritedAttribute(o, "", function(p){
+              if (p.drop) {
+                  o = p;
+                  return true;
+              }
+            }));
+
+        //EVENT - cancelable: ondragdrop
+        if (candrop) {
+            if (o.dispatchEvent("dragdrop", apf.extend({candrop : candrop, htmlEvent : e, top: lastTop},
+              this.dragdata)) === false) {
+                candrop = false;
+            }
+            else {
+                if (!o.xmlRoot) {
+                    var m = o.getModel 
+                      ? o.getModel(true) 
+                      :
+                      
+                      apf.nameserver.get("model", o.model)
+                      
+                    if (m)
+                        m.load(this.dragdata.data[0])
+                    //else warn??
+                    return true;
+                }
+                else {
+                    var action = candrop[1]
+                        && candrop[1].action
+                        || (o.$isTreeArch ? "tree-append" : "list-append");
+                    if (action == "list-append" && (!o.$isTreeArch && o == this.dragdata.host))
+                        candrop = false;
+                }
+            }
+        }
+        
+        if (this.dragdata.indicator)
+            this.dragdata.indicator.style.top = lastTop;
+
+        //Exit if not allowed
+        if (!candrop) {
+            this.dragout(o, e);
+            return false;
+        }
+
+        if (o.$dragDrop) {
+            //Move XML
+            var rNode = o.$dragDrop(candrop[0], this.dragdata.data, candrop[1],
+                action, isParent || candrop[0] == o.xmlRoot, this.dragdata.rules, e);
+            this.dragdata.resultNode = rNode;
+        }
+        
+        if (o.$dragdrop) {
+            o.$dragdrop(el, apf.extend({
+                htmlEvent : e,
+                xmlNode   : rNode
+            }, this.dragdata), candrop);
+        }
+
+        //Reset Cursor
+        //o.$ext.style.cursor = "default";
+        this.last    = null;
+        this.lastFel = null;
+        
+        return true;
+    },
+
+    /* **********************
+        Mouse Movements
+    ***********************/
+
+    onmousemove : function(e){
+        if (!apf.DragServer.dragdata) return;
+        e = e || window.event;
+        
+        
+        var dragdata = apf.DragServer.dragdata,
+            c = {
+                clientX: e.pageX ? e.pageX - window.pageXOffset : e.clientX,
+                clientY: e.pageY ? e.pageY - window.pageYOffset : e.clientY
+            };
+
+        if (!dragdata.started
+          && Math.abs(apf.DragServer.coordinates.clientX - c.clientX) < 6
+          && Math.abs(apf.DragServer.coordinates.clientY - c.clientY) < 6)
+            return;
+
+        if (!dragdata.started) {
+            if (dragdata.host.$dragstart)
+                dragdata.host.$dragstart(null, dragdata);
+            dragdata.started = true;
+        }
+        
+        //dragdata.indicator.style.top = e.clientY+"px";
+        //dragdata.indicator.style.left = e.clientX+"px";
+
+        var storeIndicatorTopPos = dragdata.indicator.style.top;
+        //console.log("INDICATOR BEFORE: "+dragdata.indicator.style.top+" "+dragdata.indicator.style.left);
+        //get Element at x, y
+        dragdata.indicator.style.display = "block";
+        if (dragdata.indicator)
+            dragdata.indicator.style.top = "10000px";
+
+        apf.DragServer.dragdata.x = e.pageX ? e.pageX - (!apf.isIE
+            ? window.pageXOffset
+            : 0) : c.clientX;
+        apf.DragServer.dragdata.y = e.pageY ? e.pageY - (!apf.isIE
+            ? window.pageYOffset
+            : 0) : c.clientY;
+        var el = document.elementFromPoint(apf.DragServer.dragdata.x,
+            apf.DragServer.dragdata.y);
+            if (!el) {
+                el = document.elementFromPoint(apf.DragServer.dragdata.x,
+                apf.DragServer.dragdata.y);
+            }
+
+        dragdata.indicator.style.top = storeIndicatorTopPos;
+        //console.log("INDICATOR AFTER: "+dragdata.indicator.style.top+" "
+        //+dragdata.indicator.style.left+" "+apf.DragServer.dragdata.x+" "+apf.DragServer.dragdata.y);
+        //Set Indicator
+        dragdata.host.$moveDragIndicator(c);
+
+        //get element and call events
+        var receiver = apf.findHost(el);
+
+        //Run Events
+        if (receiver)
+            apf.DragServer.dragover(receiver, el, e);
+        else if (apf.DragServer.last)
+            apf.DragServer.dragout(apf.DragServer.last, e);
+
+        apf.DragServer.lastTime = new Date().getTime();
+    },
+
+    onmouseup : function(e){
+        e = e || window.event;
+        
+
+        var c = {
+            clientX: e.pageX ? e.pageX - window.pageXOffset : e.clientX,
+            clientY: e.pageY ? e.pageY - window.pageYOffset : e.clientY
+        };
+
+        if (!apf.DragServer.dragdata.started
+          && Math.abs(apf.DragServer.coordinates.clientX - c.clientX) < 6
+          && Math.abs(apf.DragServer.coordinates.clientY - c.clientY) < 6) {
+            apf.DragServer.stop(true)
+=======
     this.$dragover = function(el, dragdata, extra){
         this.$setStyleClass(this.$ext, this.$baseCSSname + "Drop");
         
@@ -37519,7 +44572,7 @@ apf.DragServer.Init();
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/focussable.js)SIZE(3405)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+/*FILEHEAD(core/baseclasses/focussable.js)SIZE(3405)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37627,7 +44680,7 @@ apf.Focussable = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/interactive.js)SIZE(30016)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+/*FILEHEAD(core/baseclasses/interactive.js)SIZE(30016)TIME(Fri, 15 Jul 2011 15:38:55 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38280,6 +45333,7 @@ apf.Interactive = function(){
             timer = setTimeout(function(){
                 doResize(z);
             }, 10);
+>>>>>>> hotfix/0.5.1
             return;
         }
         lastTime = new Date().getTime();
@@ -38294,6 +45348,298 @@ apf.Interactive = function(){
             ? oOutline
             : _self.$ext;
 
+<<<<<<< HEAD
+        //get Element at x, y
+        var indicator            = apf.DragServer.dragdata.indicator,
+            storeIndicatorTopPos = indicator.style.top;
+        //apf.console.info("INDICATOR UP BEFORE: "+indicator.style.top+" "+indicator.style.left);
+        if (indicator)
+            indicator.style.top = "10000px";
+
+        apf.DragServer.dragdata.x = e.pageX ? e.pageX - (!apf.isIE
+            ? window.pageXOffset
+            : 0) : c.clientX;
+        apf.DragServer.dragdata.y = e.pageY ? e.pageY - (!apf.isIE
+            ? window.pageYOffset
+            : 0) : c.clientY;
+
+        var el = document.elementFromPoint(apf.DragServer.dragdata.x,
+            apf.DragServer.dragdata.y);
+        if (!el) {
+            el = document.elementFromPoint(apf.DragServer.dragdata.x,
+            apf.DragServer.dragdata.y);
+        }
+
+        indicator.style.top = storeIndicatorTopPos;
+        //apf.console.info("INDICATOR UP AFTER: "+indicator.style.top+" "+indicator.style.left);
+
+        //get element and call events
+        var host = apf.findHost(el);
+
+        //Run Events
+        if (apf.DragServer.host && host != apf.DragServer.host)
+            apf.DragServer.dragout(apf.DragServer.host, e);
+        var success = apf.DragServer.dragdrop(host, el, apf.DragServer.dragdata.host, e);
+        apf.DragServer.stop(true, success);
+    }
+};
+
+/**
+ * @private
+ */
+apf.MultiselectDragDrop = function() {
+    /**** Drag & Drop ****/
+    
+    this.diffX        =
+    this.diffY        = 0;
+    this.multiple     = false;
+    this.lastDragNode = null;
+    this.lastel       = null;
+
+    this.$showDragIndicator = function(sel, e){
+        this.multiple = sel.length > 1;
+        
+        if (this.multiple) {
+            this.diffX = e.scrollX;
+            this.diffY = e.scrollY;
+        }
+        else {
+            this.diffX = -1 * e.offsetX;
+            this.diffY = -1 * e.offsetY;
+        }
+        
+        var prefix = this.oDrag.className.split(" ")[0]
+        //@todo the class should be removed here
+        this.$setStyleClass(this.oDrag, (this.multiple
+            ? prefix + "_multiple" : "") + (this["class"] ? " " + this["class"] : ""), [prefix + "_multiple"]);
+
+        if (this.multiple) {
+            document.body.appendChild(this.oDrag);
+            return this.oDrag;
+        }
+        else if (this.localName == "datagrid") {
+            if (this.lastDragNode)
+                apf.destroyHtmlNode(this.lastDragNode);
+
+            sel = this.$selected || this.$caret;
+            var oDrag = sel.cloneNode(true);
+            oDrag.removeAttribute("onmousedown"); oDrag.onmousedown = null;
+            oDrag.removeAttribute("onmouseup"); oDrag.onmouseup = null;
+            oDrag.removeAttribute("onmouseout"); oDrag.onmouseout = null;
+            oDrag.removeAttribute("ondblclick"); oDrag.ondblclick = null;
+            document.body.appendChild(oDrag);
+            
+            oDrag.style.position = "absolute";
+            oDrag.style.width    = sel.offsetWidth + "px";
+            oDrag.style.display  = "none";
+            oDrag.removeAttribute("id");
+            
+            this.$setStyleClass(oDrag, "draggrid");
+            var nodes = sel.childNodes;
+            var dragnodes = oDrag.childNodes;
+            for (var i = nodes.length - 1; i >= 0; i--) {
+                if (dragnodes[i].nodeType == 1)
+                    dragnodes[i].style.width = apf.getStyle(nodes[i], "width");
+            }
+            //@todo apf3.0 remove all the event handlers of the children.
+            return (this.lastDragNode = oDrag);
+        }
+        else {
+            var sel = this.$selected || this.$caret,
+                width = apf.getStyle(this.oDrag, "width");
+            
+            if (!width || width == "auto")
+                this.oDrag.style.width = (sel.offsetWidth - apf.getWidthDiff(this.oDrag)) + "px";
+            this.$updateNode(this.selected, this.oDrag);
+        }
+        
+        apf.window.zManager.set("drag", this.oDrag);
+        
+        return this.oDrag;
+    };
+    
+    this.$hideDragIndicator = function(success){
+        var oDrag = this.lastDragNode || this.oDrag, _self = this;
+        if (!this.multiple && !success && oDrag.style.display == "block") {
+            if (!this.$selected && !this.$caret)
+                return;
+            
+            var pos = apf.getAbsolutePosition(this.$selected || this.$caret);
+            apf.tween.multi(oDrag, {
+                anim     : apf.tween.easeInOutCubic,
+                steps    : apf.isIE ? 15 : 20,
+                interval : 15,
+                tweens   : [
+                    {type: "left", from: oDrag.offsetLeft, to: pos[0]},
+                    {type: "top",  from: oDrag.offsetTop,  to: pos[1]}
+                ],
+                onfinish : function(){
+                    if (_self.lastDragNode) {
+                        apf.destroyHtmlNode(_self.lastDragNode);
+                        _self.lastDragNode = null;
+                    }
+                    else {
+                        _self.oDrag.style.display = "none";
+                    }
+                }
+            });
+        }
+        else if (this.lastDragNode) {
+            apf.destroyHtmlNode(this.lastDragNode);
+            this.lastDragNode = null;
+        }
+        else {
+            this.oDrag.style.display = "none";
+        }
+    };
+    
+    this.$moveDragIndicator = function(e){
+        var oDrag = this.lastDragNode || this.oDrag;
+        oDrag.style.left = (e.clientX + this.diffX) + "px";// - this.oDrag.startX
+        oDrag.style.top  = (e.clientY + this.diffY + (this.multiple ? 15 : 0)) + "px";// - this.oDrag.startY
+    };
+    
+    this.addEventListener("$skinchange", function(){
+        this.$initDragDrop();
+    });
+    
+    this.$initDragDrop = function(){
+        if (!this.$hasLayoutNode("dragindicator")) 
+            return;
+
+        this.oDrag = apf.insertHtmlNode(
+            this.$getLayoutNode("dragindicator"), document.body);
+
+        apf.window.zManager.set("drag", this.oDrag);
+        
+        this.oDrag.style.position = "absolute";
+        this.oDrag.style.cursor   = "default";
+        this.oDrag.style.display  = "none";
+    };
+
+    this.$findValueNode = function(el){
+        if (!el) return null;
+
+        while(el && el.nodeType == 1 
+          && !el.getAttribute(apf.xmldb.htmlIdTag)) {
+            if (this.$isTreeArch && el.previousSibling 
+              && el.previousSibling.nodeType == 1) //@todo hack!! apf3.0 fix this.
+                el = el.previousSibling;
+            else
+                el = el.parentNode;
+        }
+
+        return (el && el.nodeType == 1 && el.getAttribute(apf.xmldb.htmlIdTag)) 
+            ? el 
+            : null;
+    };
+    
+
+    this.$dragout  = function(el, dragdata, extra){
+        if (this.lastel)
+            this.$setStyleClass(this.lastel, "", ["dragDenied", "dragInsert",
+                "dragAppend", "selected", "indicate"]);
+        
+        var sel = this.$getSelection(true);
+        for (var i = 0, l = sel.length; i < l; i++) 
+            this.$setStyleClass(sel[i], "selected", ["dragDenied",
+                "dragInsert", "dragAppend", "indicate"]);
+        
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Drop"]);
+        
+        this.lastel = null;
+    };
+    
+    if (!this.$dragdrop)
+        this.$dragdrop = this.$dragout;
+
+    this.$dragover = function(el, dragdata, extra){
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Drop");
+        
+        var sel = this.$getSelection(true);
+        for (var i = 0, l = sel.length; i < l; i++) 
+            this.$setStyleClass(sel[i], "", ["dragDenied",
+                "dragInsert", "dragAppend", "selected", "indicate"]);
+        
+        if (this.lastel)
+            this.$setStyleClass(this.lastel, "", ["dragDenied",
+                "dragInsert", "dragAppend", "selected", "indicate"]);
+
+        var action = extra[1] && extra[1].action;
+        this.lastel = this.$findValueNode(el);
+        if (this.$isTreeArch && action == "list-append") {
+            var htmlNode = apf.xmldb.findHtmlNode(this.getTraverseParent(apf.xmldb.getNode(this.lastel)), this);
+            
+            this.lastel = htmlNode
+                ? this.$getLayoutNode("item", "container", htmlNode)
+                : this.$container;
+            
+            this.$setStyleClass(this.lastel, "dragInsert");
+        }
+        else {
+            this.$setStyleClass(this.lastel, extra
+                ? (action == "insert-before" 
+                    ? "dragInsert" 
+                    : "dragAppend") 
+                : "dragDenied");
+        }
+    };
+    
+};
+
+/**
+ * @private
+ */
+apf.StandardDragDrop = function() {
+    this.$showDragIndicator = function(sel, e){
+        var x = e.offsetX + 22,
+            y = e.offsetY;
+        
+        this.oDrag.startX = x;
+        this.oDrag.startY = y;
+        
+        
+        document.body.appendChild(this.oDrag);
+        //this.oDrag.getElementsByTagName("DIV")[0].innerHTML = this.selected.innerHTML;
+        //this.oDrag.getElementsByTagName("IMG")[0].src = this.selected.parentNode.parentNode.childNodes[1].firstChild.src;
+        var oInt = this.$getLayoutNode("main", "caption", this.oDrag);
+        if (oInt.nodeType != 1) 
+            oInt = oInt.parentNode;
+        
+        oInt.innerHTML = this.$applyBindRule("caption", this.xmlRoot) || "";
+        
+        return this.oDrag;
+    };
+    
+    this.$hideDragIndicator = function(){
+        this.oDrag.style.display = "none";
+    };
+    
+    this.$moveDragIndicator = function(e){
+        this.oDrag.style.left = (e.clientX - this.oDrag.startX
+            + document.documentElement.scrollLeft) + "px";
+        this.oDrag.style.top  = (e.clientY - this.oDrag.startY
+            + document.documentElement.scrollTop) + "px";
+    };
+    
+    //@todo falsely assuming only attributes are used for non multiselect widgets
+    this.$initDragDrop = function(){
+        if (!this.getAttribute("drag"))
+            return;
+        
+        this.oDrag = document.body.appendChild(this.$ext.cloneNode(true));
+        
+        apf.window.zManager.set("drag", this.oDrag);
+        
+        this.oDrag.style.position   = "absolute";
+        this.oDrag.style.cursor     = "default";
+        this.oDrag.style.filter     = "progid:DXImageTransform.Microsoft.Alpha(opacity=50)";
+        this.oDrag.style.MozOpacity = 0.5;
+        this.oDrag.style.opacity    = 0.5;
+        this.oDrag.style.display    = "none";
+    };
+};
+=======
         var sLeft = document.documentElement.scrollLeft,
             sTop  = document.documentElement.scrollTop;
         
@@ -38470,10 +45816,15 @@ apf.GuiElement.propHandlers["draggable"] = function(value){
 };
 
 apf.Init.run("interactive");
+>>>>>>> hotfix/0.5.1
+
+apf.DragServer.Init();
 
 
+<<<<<<< HEAD
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/media.js)SIZE(18898)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/focussable.js)SIZE(3405)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38496,9 +45847,3651 @@ apf.Init.run("interactive");
  *
  */
 
+apf.__FOCUSSABLE__ = 1 << 26;
+
+
+apf.Focussable = function(){
+    this.$regbase = this.$regbase | apf.__FOCUSSABLE__;
+    if (this.disabled == undefined)
+        this.disabled = false;
+    
+    /**
+     * Sets the position in the list that determines the sequence
+     * of elements when using the tab key to move between them.
+     * Call-chaining is supported.
+     * @param {Number} tabindex the position in the list
+     */
+    this.setTabIndex = function(tabindex){
+        apf.window.$removeFocus(this);
+        apf.window.$addFocus(this, tabindex);
+        return this;
+    };
+
+    /**
+     * Gives this element the focus. This means that keyboard events
+     * are send to this element.
+     */
+    this.focus = function(noset, e, nofix){
+        if (!noset) {
+            if (this.$isWindowContainer > -1) {
+                apf.window.$focusLast(this, e, true);
+            }
+            else {
+                apf.window.$focus(this, e);
+
+                
+                if (!nofix && apf.hasFocusBug)
+                    apf.window.$focusfix();
+                
+            }
+
+            return this;
+        }
+
+        if (this.$focus && !this.editable && (!e || !e.mouse || this.$focussable == apf.KEYBOARD_MOUSE))
+            this.$focus(e);
+
+        this.dispatchEvent("focus", apf.extend({
+            bubbles    : true
+        }, e));
+        return this;
+    };
+
+    /**
+     * Removes the focus from this element.
+     * Call-chaining is supported.
+     */
+    this.blur = function(noset, e){
+        
+        if ((e && !apf.isChildOf(e.fromElement, e.toElement)) && apf.popup.isShowing(this.$uniqueId))
+            apf.popup.forceHide(); //This should be put in a more general position
+        
+        
+        if (this.$blur)
+            this.$blur(e);
+
+        if (!noset)
+            apf.window.$blur(this);
+
+        this.dispatchEvent("blur", apf.extend({
+            bubbles    : !e || !e.cancelBubble
+        }, e));
+        return this;
+    };
+
+    /**
+     * Determines whether this element has the focus
+     * @returns {Boolean} indicating whether this element has the focus
+     */
+    this.hasFocus = function(){
+        return apf.document.activeElement == this || this.$isWindowContainer
+            && (apf.document.activeElement || {}).$focusParent == this;
+    };
+};
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/interactive.js)SIZE(30016)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(core/baseclasses/media.js)SIZE(18898)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+<<<<<<< HEAD
+apf.__INTERACTIVE__ = 1 << 21;
+=======
 apf.__MEDIA__ = 1 << 20;
 
 
+
+
+/*FILEHEAD(core/baseclasses/multicheck.js)SIZE(16594)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+apf.__MULTICHECK__ = 1 << 22;
+
+
+
+/**
+ * All elements inheriting from this {@link term.baseclass baseclass} have checkable items.
+ *
+ * @constructor
+ * @baseclass
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       3.0
+ *
+ * @todo type detection, errors (see functions in multiselect)
+ */
+apf.MultiCheck = function(){
+    this.$regbase    = this.$regbase | apf.__MULTICHECK__;
+
+    /**** Properties ****/
+
+    this.multicheck  = true;
+    this.checklength = 0;
+    this.$checkedList = [];
+
+    /**** Public Methods ****/
+    
+    /**
+     * Checks a single, or set of.
+     * The checking can be visually represented in this element.
+     * The element can be checked, partialy checked or unchecked
+     *
+     * @param {mixed}   xmlNode      the identifier to determine the selection.
+     * @return  {Boolean}  whether the selection could not be made
+     *
+     * @event  beforecheck  Fires before a check is made
+     *
+     * @event  aftercheck  Fires after a check is made
+     *
+     */
+    this.check = function(xmlNode, userAction){
+        if (userAction && this.disabled 
+          || this.$checkedList.indexOf(xmlNode) > -1)
+            return;
+
+        if (userAction
+          && this.$executeSingleValue("check", "checked", xmlNode, "true") !== false)
+            return;
+        
+        if (this.dispatchEvent("beforecheck", {xmlNode : xmlNode}) === false)
+            return false;
+        
+        if (!this.multicheck && this.$checkedList.length)
+            this.clearChecked(true);
+
+        this.$checkedList.push(xmlNode);
+        
+        
+        if (this.$isTreeArch) {
+            //Children
+            var nodes = xmlNode.selectNodes(".//" 
+                + this.each.split("|").join("|.//"));
+        
+            this.checkList(nodes, null, true, true);
+            
+            //Parents
+            var all, pNode = this.getTraverseParent(xmlNode);
+            while(pNode && pNode != this.xmlRoot) {
+                nodes = this.getTraverseNodes(pNode);
+                
+                all = true;
+                for (var i = 0; i < nodes.length; i++) {
+                    if (this.$checkedList.indexOf(nodes[i]) == -1) {
+                        all = false;
+                        break;
+                    }
+                }
+                
+                apf.setStyleClass(apf.xmldb.getHtmlNode(pNode, this), 
+                    all ? "checked"
+                        : "partial", ["partial", "checked"]);
+                
+                if (all) //logical assumption that parent cannot be selected at this point
+                    this.$checkedList.push(pNode);
+                
+                pNode = this.getTraverseParent(pNode);
+            }
+        }
+        
+
+        this.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, this),
+            "checked", ["partial"]);
+        
+        this.dispatchEvent("aftercheck", {
+            list        : this.$checkedList,
+            xmlNode     : xmlNode
+        });
+    };
+    
+    /**
+     * Unchecks a single, or set of.
+     *
+     * @param {mixed}   xmlNode      the identifier to determine the selection.
+     * @return  {Boolean}  whether the selection could be made
+     *
+     * @event  beforeuncheck  Fires before a uncheck is made
+     *
+     * @event  afteruncheck  Fires after a uncheck is made
+     *
+     */
+    this.uncheck = function(xmlNode, userAction){
+        if (userAction && this.disabled 
+          || this.$checkedList.indexOf(xmlNode) == -1)
+            return;
+        
+        if (userAction
+          && this.$executeSingleValue("check", "checked", xmlNode, "false") !== false)
+            return;
+        
+        
+        if (this.$isTreeArch)
+            return this.checkList([xmlNode], true, true);
+        
+        
+        if (this.dispatchEvent("beforeuncheck", {
+            xmlNode : xmlNode
+        }) === false)
+            return false;
+
+        this.$checkedList.remove(xmlNode);
+        this.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, this), 
+            "", ["checked", "partial"]);
+        
+        this.dispatchEvent("afteruncheck", {
+            list        : this.$checkedList,
+            xmlNode     : xmlNode
+        });
+    };
+
+    /**
+     * Toggles between check and uncheck a single, or set of.
+     *
+     * @param {mixed}   xmlNode      the identifier to determine the selection.
+     *
+     */
+    this.checkToggle = function(xmlNode, userAction){
+        if (userAction && this.disabled)
+            return;
+        
+        if (xmlNode.style) {
+            var htmlNode = xmlNode,
+                id       = htmlNode.getAttribute(apf.xmldb.htmlIdTag);
+            while (!id && htmlNode.parentNode)
+                id = (htmlNode = htmlNode.parentNode)
+                    .getAttribute(apf.xmldb.htmlIdTag);
+            xmlNode = apf.xmldb.getNode(htmlNode)
+        }
+
+        if (this.$checkedList.indexOf(xmlNode) > -1)
+            this.uncheck(xmlNode, userAction);
+        else
+            this.check(xmlNode, userAction);
+    };
+    
+    /**
+     * Checks a set of items
+     *
+     * @param {Array} xmlNodeList the {@link term.datanode data nodes} that will be selected.
+     * @param {boolean} uncheck
+     * @param {boolean} noClear
+     * @param {boolean} noEvent whether to not call any events
+     * @event  beforecheck  Fires before a check is made
+     *   object:
+     *   {XMLElement} xmlNode   the {@link term.datanode data node} that will be deselected.
+     * @event  aftercheck   Fires after a check is made
+     *   object:
+     *   {XMLElement} xmlNode   the {@link term.datanode data node} that is deselected.
+     */
+    this.checkList = function(xmlNodeList, uncheck, noClear, noEvent, userAction){
+        //if (apf.isIE < 8)
+        if (!xmlNodeList.indexOf)
+            xmlNodeList = apf.getArrayFromNodelist(xmlNodeList);
+            //@todo is this need for ie8 and/or other browsers
+
+        if (userAction){
+            if (this.disabled) 
+                return;
+            
+            var changes = [];
+            for (var c, i = 0; i < xmlNodeList.length; i++) {
+                c = this.$executeSingleValue("check", "checked", xmlNodeList[i], uncheck ? "false" : "true", true)
+                if (c === false) break;
+                changes.push(c);
+            }
+    
+            if (changes.length) {
+                return this.$executeAction("multicall", changes, "checked", 
+                  xmlNodeList[0], null, null, 
+                  xmlNodeList.length > 1 ? xmlNodeList : null);
+            }
+        }
+        
+        if (userAction && this.disabled) return;
+        
+        if (!noEvent && this.dispatchEvent("beforecheck", {
+            list : xmlNodeList
+        }) === false)
+            return false;
+        
+        if (!uncheck && !noClear) 
+            this.clearChecked(true);
+        
+        if (!this.multicheck)
+            xmlNodeList = [xmlNodeList[0]];
+
+        var i;
+        if (uncheck) {
+            for (i = xmlNodeList.length - 1; i >= 0; i--) {
+                this.$checkedList.remove(xmlNodeList[i]);
+                this.$setStyleClass(
+                    apf.xmldb.getHtmlNode(xmlNodeList[i], this), "", ["checked"]);
+            }
+        }
+        else {
+            for (i = xmlNodeList.length - 1; i >= 0; i--) {
+                this.$checkedList.push(xmlNodeList[i]);
+                this.$setStyleClass(
+                    apf.xmldb.getHtmlNode(xmlNodeList[i], this), "checked");
+            }
+        }
+
+        
+        if (!noEvent && this.$isTreeArch) {
+            var _self = this;
+            function recur(xmlNode, forceChange) {
+                var nodes = _self.getTraverseNodes(xmlNode);
+                if (!nodes.length) {
+                    if (forceChange) {
+                        if (uncheck) {
+                            _self.$checkedList.remove(xmlNode);
+                            _self.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
+                                "", ["checked"]);
+                            return 0;
+                        }
+                        else {
+                            if (_self.$checkedList.indexOf(xmlNode) == -1) {
+                                _self.$checkedList.push(xmlNode);
+                                _self.$setStyleClass(
+                                    apf.xmldb.getHtmlNode(xmlNode, _self), "checked");
+                            }
+                            return 1;
+                        }
+                    }
+                    return _self.$checkedList.indexOf(xmlNode) > -1 ? 1 : 0;
+                }
+
+                var isInList = _self.$checkedList.indexOf(xmlNode) != -1,
+                    shouldBeChanged = forceChange
+                        || xmlNodeList.indexOf(xmlNode) > -1 && (uncheck
+                            ? !isInList
+                            : isInList),
+                    all      = true,
+                    none     = true,
+                    partial  = false,
+                    isChecked;
+                for (var i = nodes.length - 1; i >= 0; i--) {
+                    isChecked = recur(nodes[i], shouldBeChanged);
+                    if (isChecked) {
+                        none = false;
+                        if (!partial && isChecked == 2) {
+                            partial = true;
+                            //break;
+                        }
+                    }
+                    else
+                        all = false;
+                    if (!all && !none) {
+                        partial = true;
+                        //break;
+                    }
+                }
+                
+                if (xmlNode == _self.xmlRoot)
+                    return;
+                
+                if (all) {
+                    if (!isInList) {
+                        _self.$checkedList.push(xmlNode);
+                        apf.setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
+                            "checked", ["partial"]);
+                    }
+                }
+                else{
+                    if (isInList)
+                        _self.$checkedList.remove(xmlNode);
+
+                    apf.setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
+                        partial ? "partial" : "", ["partial", "checked"]);
+                }
+                
+                return all ? 1 : (none ? 0 : 2);
+            }
+
+            recur(this.xmlRoot)
+        }
+        
+        
+        if (!noEvent)
+            this.dispatchEvent("aftercheck", {
+                list        : xmlNodeList
+            });
+    };
+
+    /**
+     * Removes the selection of one or more checked nodes.
+     *
+     * @param {Boolean} [singleNode] whether to only deselect the indicated node
+     * @param {Boolean} [noEvent]    whether to not call any events
+     * @event  beforeuncheck  Fires before a uncheck is made
+     *   object:
+     *   {XMLElement} xmlNode   the {@link term.datanode data node} that will be deselected.
+     * @event  afteruncheck   Fires after a uncheck is made
+     *   object:
+     *   {XMLElement} xmlNode   the {@link term.datanode data node} that is deselected.
+     */
+    this.clearChecked = function(noEvent){
+        if (!noEvent && this.dispatchEvent("beforeuncheck", {
+            xmlNode : this.$checkedList
+        }) === false)
+            return false;
+        
+        for (var i = this.$checkedList.length - 1; i >= 0; i--) {
+            this.$setStyleClass(
+                apf.xmldb.getHtmlNode(this.$checkedList[i], this), "", ["checked"]);
+        }
+        
+        this.$checkedList.length = 0;
+        
+        if (!noEvent) {
+            this.dispatchEvent("afteruncheck", {
+                list : this.$checkedList
+            });
+        }
+    };
+    
+    /**
+     * Determines whether a node is checked.
+     *
+     * @param  {XMLElement} xmlNode  The {@link term.datanode data node} to be checked.
+     * @return  {Boolean} whether the element is selected.
+     */
+    this.isChecked = function(xmlNode){
+        return this.$checkedList.indexOf(xmlNode) > -1;
+    };
+
+    /**
+     * Retrieves an array or a document fragment containing all the checked
+     * {@link term.datanode data nodes} from this element.
+     *
+     * @param {Boolean} [xmldoc] whether the method should return a document fragment.
+     * @return {mixed} the selection of this element.
+     */
+    this.getChecked = function(xmldoc){
+        var i, r;
+        if (xmldoc) {
+            r = this.xmlRoot
+                ? this.xmlRoot.ownerDocument.createDocumentFragment()
+                : apf.getXmlDom().createDocumentFragment();
+            for (i = 0; i < this.$checkedList.length; i++)
+                apf.xmldb.cleanNode(r.appendChild(
+                    this.$checkedList[i].cloneNode(true)));
+        }
+        else {
+            for (r = [], i = 0; i < this.$checkedList.length; i++)
+                r.push(this.$checkedList[i]);
+        }
+
+        return r;
+    };
+    
+    /**
+     * Checks all the {@link term.eachnode each nodes} of this element
+     *
+     */
+    this.checkAll = function(userAction){
+        if (!this.multicheck || userAction && this.disabled || !this.xmlRoot)
+            return;
+
+        var nodes = this.$isTreeArch
+            ? this.xmlRoot.selectNodes(".//" 
+              + this.each.split("|").join("|.//"))
+            : this.getTraverseNodes();
+        
+        this.checkList(nodes);
+    };
+    
+    this.addEventListener("beforeload", function(){
+        if (!this.$hasBindRule("checked")) //only reset state when check state isnt recorded
+            this.clearChecked(true);
+    });
+    
+    this.addEventListener("afterload", function(){
+        if (!this.$hasBindRule("checked") && this.$checkedList.length) //only reset state when check state isnt recorded
+            this.checkList(this.$checkedList, false, true, false); //@todo could be optimized (no event calling)
+    });
+    
+    this.addEventListener("xmlupdate", function(e){
+        if (e.action == "attribute" || e.action == "text"
+          || e.action == "synchronize" || e.action == "update") {
+            //@todo list support!
+            var c1 = apf.isTrue(this.$applyBindRule("checked", e.xmlNode));
+            var c2 = this.isChecked(e.xmlNode);
+            if (c1 != c2) {
+                if (c1) {
+                    this.check(e.xmlNode);
+                }
+                else {
+                    this.uncheck(e.xmlNode);
+                }
+            }
+        }
+    });
+    
+    
+    this.addEventListener("aftercheck", function(){
+        //@todo inconsistent because setting this is in event callback
+        if (this.checklength != this.$checkedList.length)
+            this.setProperty("checklength", this.$checkedList.length);
+    });
+    
+    this.addEventListener("afteruncheck", function(){
+        //@todo inconsistent because setting this is in event callback
+        if (this.checklength != this.$checkedList.length)
+            this.setProperty("checklength", this.$checkedList.length);
+    });
+    
+};
+
+
+
+/*FILEHEAD(core/baseclasses/teleport.js)SIZE(8790)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+>>>>>>> hotfix/0.5.1
+
+
+
+/**
+<<<<<<< HEAD
+ * All elements inheriting from this {@link term.baseclass baseclass} have interactive features, making an
+ * element draggable and resizable.
+ * Example:
+ * <code>
+ *  <a:textarea draggable="true" resizable="true" />
+ * </code>
+ * 
+ * @attribute {Boolean} draggable whether an element is draggable. The user will
+ * able to move the element around while holding the mouse button down on the 
+ * element.
+ * Example:
+ * <code>
+ *  <a:bar 
+ *    draggable = "true" 
+ *    width     = "200" 
+ *    height    = "200" 
+ *    left      = "10" 
+ *    top       = "10" />
+ * </code>
+ * @attribute {Boolean} resizable whether an element is resizable. The user will able
+ * to resize the element by grabbing one of the four edges of the element and 
+ * pulling it in either direction. Grabbing the corners allows users to 
+ * resize horizontally and vertically at the same time. The right bottom corner 
+ * is special, because it offers an especially big grab area. The size of this
+ * area can be configured in the skin of the element.
+ * Example:
+ * <code>
+ *  <a:window 
+ *    resizable = "true"
+ *    visible   = "true" 
+ *    width     = "400" 
+ *    height    = "200" />
+ * </code>
+ * @attribute {Number} minwidth  the minimum horizontal size the element can get when resizing.
+ * @attribute {Number} minheight the minimum vertical size the element can get when resizing.
+ * @attribute {Number} maxwidth  the maximum horizontal size the element can get when resizing.
+ * @attribute {Number} maxheight the maximum vertical size the element can get when resizing.
+ *
+ * @event drag          Fires when the widget has been dragged.
+ * @event resizestart   Fires before the widget is resized.
+ *   cancelable: Prevents this resize action to start.
+ *   object:
+ *   {String} type the type of resize. This is a combination of the four directions, n, s, e, w.
+ * @event resize        Fires when the widget has been resized.
+ *
+ * @constructor
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       1.0
+ *
+ * @see element.appsettings.attribute.outline
+ * @see element.appsettings.attribute.resize-outline
+ * @see element.appsettings.attribute.drag-outline
+ */
+apf.Interactive = function(){
+    var nX, nY, rX, rY, startPos, lastCursor = null, l, t, r, b, lMax, tMax, lMin,
+        tMin, w, h, we, no, ea, so, rszborder, rszcorner, marginBox,
+        verdiff, hordiff, _self = this, posAbs, oX, oY, overThreshold,
+        dragOutline, resizeOutline, myPos, startGeo;
+
+    this.$regbase = this.$regbase | apf.__INTERACTIVE__;
+
+    this.$dragStart = function(e, reparent){
+        var nativeEvent = e || event;
+        if (!reparent && nativeEvent.button == 2)
+            return;
+
+        
+        {
+            dragStart.apply(nativeEvent.srcElement || this, arguments);
+        }
+    }
+
+    this.$propHandlers["draggable"] = function(value){
+        if (apf.isFalse(value))
+            this.draggable = value = false;
+        else if (apf.isTrue(value))
+            this.draggable = value = true;
+
+        var o = this.editable ? this.$ext : this.oDrag || this.$ext;
+        if (value)
+            apf.addListener(o, "mousedown", this.$dragStart);
+        else
+            apf.removeListener(o, "mousedown", this.$dragStart);
+        
+        //deprecated??
+        if (o.interactive & 1) 
+            return;
+        o.interactive = (o.interactive||0)+1;
+        
+        //this.$ext.style.position = "absolute";
+    };
+
+    this.$propHandlers["resizable"] = function(value){
+        if (apf.isFalse(value))
+            this.resizable = value = false;
+        else if (apf.isTrue(value))
+            this.resizable = value = true;
+        
+        this.$ext.style.cursor = "";
+        
+        var o = this.oResize || this.$ext;
+        if (o.interactive & 2) 
+            return;
+
+        if (!_self.editable) {        
+            apf.addListener(o, "mousedown", function(){
+                resizeStart.apply(o, arguments);
+            });
+    
+            apf.addListener(o, "mousemove", function(){
+                resizeIndicate.apply(o, arguments);
+            });
+        }
+        
+        o.interactive = (o.interactive||0)+2;
+        
+        //this.$ext.style.position = "absolute";
+        
+        rszborder = this.$getOption && parseInt(this.$getOption("Main", "resize-border")) || 3;
+        rszcorner = this.$getOption && parseInt(this.$getOption("Main", "resize-corner")) || 12;
+        marginBox = apf.getBox(apf.getStyle(this.$ext, "borderWidth"));
+=======
+ * Element which specifies the ways the application can communicate to remote
+ * data sources.
+ * Example:
+ * Example of the {@link teleport.cgi rpc module with the cgi protocol}.
+ * <code>
+ *  <a:rpc id="comm" protocol="cgi">
+ *      <a:method
+ *        name    = "searchProduct"
+ *        url     = "http://example.com/search.php"
+ *        receive = "processSearch">
+ *          <a:param name="search" />
+ *          <a:param name="page" />
+ *          <a:param name="textbanner" value="1" />
+ *      </a:method>
+ *      <a:method
+ *        name = "loadProduct"
+ *        url  = "http://example.com/show-product.php">
+ *          <a:param name="id" />
+ *          <a:param name="search_id" />
+ *      </a:method>
+ *  </a:rpc>
+ *
+ *  <a:script>
+ *      //This function is called when the search returns
+ *      function processSearch(data, state, extra){
+ *          alert(data)
+ *      }
+ *
+ *      //Execute a search for the product car
+ *      comm.searchProduct('car', 10);
+ *  </a:script>
+ * </code>
+ * Example:
+ * Example of the {@link teleport.soap rpc module with the soap protocol}.
+ * <code>
+ *  <a:rpc id="comm" 
+ *    protocol    = "soap" 
+ *    url         = "http://example.com/show-product.php" 
+ *    soap-prefix = "m" 
+ *    soap-xmlns  = "http://example.com">
+ *      <a:method 
+ *        name    = "searchProduct" 
+ *        receive = "processSearch">
+ *          <a:param name="search" />
+ *          <a:param name="page" />
+ *          <a:param name="textbanner" value="1" />
+ *      </a:method>
+ *      <a:method 
+ *        name = "loadProduct">
+ *          <a:param name="id" />
+ *          <a:param name="search_id" />
+ *      </a:method>
+ *  </a:rpc>
+ *
+ *  <a:script>
+ *      //This function is called when the search returns
+ *      function processSearch(data, state, extra){
+ *          alert(data)
+ *      }
+ *
+ *      //Execute a search for the product car
+ *      comm.searchProduct('car', 10);
+ *  </a:script>
+ * </code>
+ * Example:
+ * Writing to a file with a WebDAV connector
+ * <code>
+ *   <a:webdav id="myWebDAV"
+ *    url   = "http://my-webdav-server.com/dav_files/" />
+ *     
+ *  <a:script>
+ *      // write the text 'bar' to a file on the server called 'foo.txt'
+ *      myWebDAV.write('http://my-webdav-server.com/dav_files/foo.txt', 'bar');
+ *  </a:script>
+ * </code>
+ * Example:
+ * XMPP connector with new message notification
+ * <code>
+ *  <a:xmpp id="myXMPP"
+ *    url           = "http://my-jabber-server.com:5280/http-bind"
+ *    model         = "mdlRoster"
+ *    connection    = "bosh"
+ *    onreceivechat = "messageReceived(arguments[0].from)" />
+ *
+ *  <a:script>
+ *      // This function is called when a message has arrived
+ *      function messageReceived(from){
+ *          alert('Received message from ' + from);
+ *      }
+ *
+ *      // Send a message to John
+ *      myXMPP.sendMessage('john@my-jabber-server.com', 'A test message', '',
+ *          apf.xmpp.MSG_CHAT);
+ *  </a:script>
+ * </code>
+ *
+ * @attribute {String}  url              the location of the server that is
+ *                                       recipient of the rpc messages.
+ * @attribute {String}  [route-server]   String specifying the url to the route script.
+ *                                       Remarks:
+ *                                       The route script will receive the route information in 3 extra headers:
+ *                                           X-Route-Request     - Containing the destination url.<br />
+ *                                           X-Proxy-Request     - Containing the destination url.<br />
+ *                                           X-Compress-Response - Set to 'gzip'.<br />
+ * @attribute {Boolean} [autoroute]      whether the call should be routed
+ *                                       through a proxy when a permission
+ *                                       error occurs due to the same domein policy.
+ * @attribute {Number}  [timeout]        the number of milliseconds after
+ *                                       which the call is considered timed out.
+ *
+ * 
+ * @define teleport
+ * @addnode global
+ * @allowchild {teleport}
+ *
+ * @default_private
+ */
+apf.Teleport = function(){
+    this.$init(true);
+};
+
+apf.__TELEPORT__ = 1 << 28;
+
+(function() {
+    this.$parsePrio = "002";
+    
+    this.$regbase = this.$regbase | apf.__TELEPORT__;
+
+    this.$booleanProperties["autoroute"] = true;
+    
+    this.$supportedProperties.push("url", "timeout", "protocol", "route-server",
+        "autoroute");
+
+    this.$propHandlers["url"] = function(value) {
+        var url = new apf.url(value);
+
+        // do some extra startup/ syntax error checking
+        if (!url.protocol) {
+            return apf.console.error(apf.formatErrorString(0, this,
+                "Communication (Teleport) initialization error",
+                "Invalid server url provided: '" + value + "'"));
+        }
+
+        this.$host     = url.host;
+        this.$rootPath = url.path;
+        this.$server   = value.replace(new RegExp(this.$rootPath + "$"), "");
+    };
+
+    this.$propHandlers["timeout"] = function(value) {
+        this.timeout = parseInt(value) || 10000;
+    };
+
+    this.$propHandlers["protocol"] = function(value) {
+        var proto = value.toLowerCase();
+        if (!apf[proto]) {
+            throw new Error(apf.formatErrorString(1025, null, "Teleport baseclass",
+                "Could not find Ajax.org Teleport RPC Component '" + proto + "'", this));
+        }
+        this.implement(apf[proto]);
+    };
+    
+    /**
+     * Returns a string representation of this object.
+     */
+    this.toString = function(){
+        return "[Ajax.org Teleport Component : " + (this.name || "")
+            + " (" + this.type + ")]";
+    };
+
+    this.addEventListener("DOMNodeInsertedIntoDocument", function() {
+        var error;
+        if (this.type && this.type == "socket") {
+            // Implement Socket Module
+            if (!apf.socket)
+                error = "Socket";
+            else
+                this.implement(apf.socket);
+        }
+        else {
+            // Implement HTTP Module
+            if (!apf.http)
+                error = "HTTP";
+            else
+                this.implement(apf.http);
+        }
+        if (error) {
+            throw new Error(apf.formatErrorString(1024, null, "Teleport baseclass", 
+                    "Could not find Ajax.org Teleport " + error + " Component", this.$aml));
+        }
+
+        if (this.id)
+            apf.$asyncObjects[this.id] = 1;
+    });
+}).call(apf.Teleport.prototype = new apf.AmlElement());
+
+
+
+
+
+apf.Init.run("teleport");
+
+
+/*FILEHEAD(core/baseclasses/transaction.js)SIZE(23494)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+apf.__TRANSACTION__ = 1 << 3;
+
+
+
+/**
+ * All elements inheriting from this {@link term.baseclass baseclass} have transaction support. A transaction is a 
+ * set of changes to data which are treated as one change. When one of the 
+ * changes in the set fails, all the changes will be cancelled. In the case of
+ * a gui this is mostly relevant when a user decides to cancel after 
+ * making several changes. A good example are the well known property windows 
+ * with an ok, cancel and apply button. 
+ *
+ * When a user edits data, for instance user information, all the changes are
+ * seen as one edit and put on the undo stack as a single action. Thus clicking
+ * undo will undo the entire transaction, not just the last change done by that
+ * user in the edit window. Transaction support both optimistic and pessimistic 
+ * locking. For more information on the latter see the first example below.
+ * Example:
+ * This example shows a list with one item. When double clicked on the item
+ * a window shows that allows the user to edit the properties of this item.
+ * When the window is closed the changes are committed to the xml data. If the
+ * user presses cancel the changes are discarded. By pressing the 'add new item'
+ * button the same window appears which allows the user to add a new item. All
+ * changes made by the user are also sent to the original data source via 
+ * rpc calls. When the user starts editing an existing item a lock is requested.
+ * This is not necesary for transaction support, but this example shows that it
+ * is possible. When the lock fails the window will close. By hooking the
+ * 'lockfail' event the user can be notified of the reason. For more information 
+ * see {@link term.locking}.
+ * <code>
+ *  <a:list 
+ *    id            = "lstItems" 
+ *    onafterchoose = "winEdit.show()" 
+ *    width         = "200">
+ *      <a:each match="[item]">
+ *          <a:caption match="[@name]" />
+ *          <a:icon value="icoItem.png" />
+ *      </a:each>
+ *      <a:actions>
+ *          <a:add set="http://localhost/save.php?xml=%[.]">
+ *              <item name="New Item" />
+ *          </a:add>
+ *          <a:update 
+ *            set  = "http://localhost/save.php?xml=%[.]" 
+ *            lock = "http://localhost/lock.php?id=[@id]" />
+ *      </a:actions>
+ *      <a:model>
+ *          <items>
+ *              <item name="test" subject="subject" id="1">message</item>
+ *          </items>
+ *      </a:model>
+ *  </a:list>
+ *      
+ *  <a:button onclick="winEdit.begin('add');">Add new item</a:button>
+ *       
+ *  <a:window 
+ *    width       = "300"
+ *    id          = "winEdit" 
+ *    transaction = "true"
+ *    model       = "{lstItems.selected}"
+ *    title       = "Edit this message">
+ *      <a:label>Name</a:label>
+ *      <a:textbox 
+ *        value      = "[@name]" 
+ *        required   = "true" 
+ *        invalidmsg = "Please enter your name" />
+ *      <a:label>Subject</a:label>
+ *      <a:textbox value="[@subject]" />
+ *    
+ *      <a:label>Message</a:label>
+ *      <a:textarea value="[text()]" min-length="100" />
+ *      
+ *      <a:button action="ok" default="true">OK</a:button>
+ *      <a:button action="cancel">Cancel</a:button>
+ *      <a:button action="apply" disabled="{!winEdit.undolength}">Apply</a:button>
+ *   </a:window>
+ * </code>
+ *
+ * @constructor
+ * @baseclass
+ *
+ * @inherits apf.StandardBinding
+ * @inherits apf.DataAction
+ * 
+ * @event transactionconflict Fires when data in a transaction is being updated by an external process.
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8.9
+ */
+apf.Transaction = function(){
+    this.$regbase = this.$regbase | apf.__TRANSACTION__;
+
+    this.$addParent          =
+    this.$transactionNode    =
+    this.$transactionSubject =
+    this.$originalNode       =
+    this.$inTransaction      =
+    this.$lastAction         = null;
+
+    this.$supportedProperties.push("autoshow");
+    
+    /**
+     * @attribute {Boolean} autoshow whether this element is shown when a transaction begins.
+     */
+    this.$booleanProperties["autoshow"] = true;
+
+    /**
+     * Commits a started transaction. This will trigger an update or add action.
+     * forked copy of template data.
+     *
+     * @todo  check what's up with actiontracker usage... 
+     * @bug  when a commit is cancelled using the onbeforecommit event, the 
+     * state of the element becomes undefined.
+     */
+    this.commit = function(repeat){
+        if (!this.$inTransaction)
+            return false;
+
+        if (!this.$validgroup && this.validgroup)
+            this.$validgroup = self[this.validgroup];
+
+        if (this.$validgroup && !this.$validgroup.isValid())
+            return false;
+
+        var returnValue = true;
+        if (!this.$at.undolength) {
+            if (repeat)
+                return false;
+            
+            this.$at.purge();
+            this.$inTransaction = false;
+            
+            this.load(this.$originalNode);
+            this.$helperModel.reset();
+            
+            returnValue = false;
+        }
+        else {
+            
+            
+            this.$at.reset();//purge();
+            this.$inTransaction = false;
+            
+            //@todo recursive
+            this.$transactionNode.removeAttribute(apf.xmldb.xmlListenTag)
+            
+            if (this.$lastAction == "add") {
+                //Use ActionTracker :: this.xmlData.selectSingleNode("DataBinding/@select") ? o.xmlRoot : o.selected
+                if (this.$transactionSubject.$executeAction("appendChild",
+                  [this.$addParent, this.$transactionNode], "add", this.$transactionNode)
+                  && this.$transactionSubject.hasFeature(apf.__MULTISELECT__)) {
+                    this.$transactionSubject.select(this.$transactionNode);
+                }
+                
+                this.$transactionSubject = null;
+            }
+            else {
+                //Use ActionTracker
+                //getTraverseParent(o.selected) || o.xmlRoot
+                var at = this.$at;
+                this.$at = this.dataParent 
+                    ? this.dataParent.parent.getActionTracker()
+                    : null;//self[this.getAttribute("actiontracker")];//this.dataParent.parent.getActionTracker();
+                
+                this.$transactionSubject.$executeAction("replaceNode", [this.$originalNode, this.$transactionNode],
+                    "update", this.$transactionNode);
+    
+                this.$at = at;
+        
+                //this.load(this.$transactionNode);
+            }
+        }
+        
+        this.$transactionNode = null;
+        this.$addParent       = null;
+        this.$originalNode    = null;
+        
+        if (this.autoshow) {
+            if (this.autoshow == -1)
+                this.autoshow = true;
+            else
+                this.hide();
+        }
+        
+        return returnValue;
+    };
+    
+    /**
+     * Rolls back the started transaction.
+     */
+    this.rollback = function(noLoad){
+        if (!this.$inTransaction)
+            return;
+        
+        
+        
+        if (this.$at) {
+            if (this.rpcMode == "realtime")
+                this.$at.undo(-1);
+
+            this.$at.reset();
+        }
+        //this.xmldb.reset();
+        
+        this.$transactionNode = null; //prevent from restarting the transaction in load
+        this.$addParent       = null;
+
+        //Cleanup
+        if (!noLoad)
+            this.load(this.$originalNode);
+        
+        this.$helperModel.reset();
+        
+        this.$stopAction(this.$lastAction, true);
+        
+        this.$originalNode    = null;
+        this.$inTransaction   = false;
+        
+        if (this.autoshow) {
+            if (this.autoshow == -1)
+                this.autoshow = true;
+            else
+                this.hide();
+        }
+    };
+
+    /**
+     * Starts a transaction for this element. This is either an add or update.
+     * @param {String}     strAction the type of transaction to start
+     *   Possible values:
+     *   add    the transaction is started to add a new {@link term.datanode data node}.
+     *   update the transaction is started to update an existing {@link term.datanode data node}.
+     * @param {XMLElement} xmlNode 
+     * @param {XMLElement} parentXmlNode 
+     * @param {AMLElement} dataParent 
+     */
+    this.begin = function(strAction, xmlNode, parentXmlNode, dataParent){
+        if (this.$inTransaction) {
+            /*throw new Error(apf.formatErrorString(0, this, 
+                "Starting Transaction", 
+                "Cannot start a transaction without committing or rolling \
+                 back previously started transaction.", this.oldRoot));*/
+            
+            
+            
+            if (this.autoshow)
+                this.autoshow = -1;
+            this.rollback();
+        }
+
+        
+
+        //Add should look at dataParent and take selection or xmlRoot
+        //winMail.dataParent.parent.xmlRoot
+
+        var _self = this;
+        this.$lastAction = strAction;
+
+        if (!this.$lastAction) {
+            this.$lastAction = this.xmlRoot && "update" || "add";
+                /*this.actionRules && (this.actionRules.add 
+                ? "add"
+                : (this.actionRules.update
+                    ? "update" 
+                    : null)) || this.xmlRoot && "update";*/
+        }
+        
+        
+        
+        //Determines the actiontracker to integrate the grouped action into
+        if (dataParent)
+            this.$setDynamicProperty("model", "[" + dataParent.id + ".selected]"); //@todo what if it doesn't have an id
+
+        if (xmlNode && this.$lastAction == "update") {
+            this.xmlRoot = xmlNode;
+            //this.$inTransaction = -1; //Prevent load from triggering a new transaction
+            //this.load(xmlNode);
+        }
+        
+        /*
+         * @todo:
+         *   create actiontracker based on data id, destroy actiontracker on cancel/commit - thus being able to implement editor feature natively
+         *   Multiple transactions can exist at the same time in the same container, but on different data
+         *   .cancel(xmlNode) .apply(xmlNode)
+         *   .list(); // returns a list of all started transactions
+         *   Add undo/redo methods to winMultiEdit
+         *   Route undolength/redolength properties
+         *   Setting replaceat="start" or replaceat="end"
+         */
+        if (!this.$at) {
+            this.$at  = new apf.actiontracker();
+            var propListen = function(e){
+                _self.setProperty(e.prop, e.value);
+            };
+            this.$at.addEventListener("prop.undolength", propListen);
+            this.setProperty("undolength", 0);
+            this.$at.addEventListener("prop.redolength", propListen);
+            this.setProperty("redolength", 0);
+        }
+        if (!this.$helperModel) {
+            this.$helperModel = new apf.model();
+            this.$helperModel["save-original"] = true;
+            this.$helperModel.load("<data />");
+        }
+
+        this.$transactionNode = null;
+        this.$addParent       = null;
+        this.$originalNode    = this.xmlRoot;
+
+        
+
+        this.$inTransaction = true;
+        function begin(){
+            
+
+            this.$inTransaction = -1;
+            this.$helperModel.data.appendChild(this.$transactionNode);//apf.xmldb.cleanNode());
+            this.load(this.$helperModel.data.firstChild);
+            this.$inTransaction = true;
+            
+            if (this.disabled)
+                this.enable();
+            
+            if (this.autoshow) {
+                if (this.autoshow == -1)
+                    this.autoshow = true;
+                else
+                    this.show();
+            }
+        }
+        
+        //Determine data parent
+        dataParent = this.dataParent && this.dataParent.parent;
+        
+        if (!dataParent || !dataParent.$actions 
+          || !dataParent.$actions[this.$lastAction]) {
+            dataParent = this;
+        }
+        
+        //Add
+        if (this.$lastAction == "add") {
+            //Check for add rule on data parent
+            var rule, actionRules = dataParent.$actions;
+            if (actionRules) {
+                if (xmlNode && xmlNode.nodeType)
+                    rule = actionRules.getRule("add", xmlNode);
+                else if (typeof xmlNode == "string") {
+                    if (xmlNode.trim().charAt(0) == "<") {
+                        xmlNode = apf.getXml(xmlNode);
+                        rule = actionRules.getRule("add", xmlNode)
+                    }
+                    else {
+                        var rules = actionRules.$rules["add"];
+                        for (var i = 0, l = rules.length; i < l; i++) {
+                            if (rules[i].getAttribute("type") == xmlNode) {
+                                xmlNode = null;
+                                rule = rules[i];
+                                break;
+                            }
+                        }
+                    }
+                }
+    
+                if (!rule) 
+                    rule = (dataParent.$actions["add"] || {})[0];
+            }
+            else
+                rule = null;
+            
+            
+            
+            //Run the add code (copy from multiselect) but don't add until commit
+            var refNode  = this.$isTreeArch ? this.selected || this.xmlRoot : this.xmlRoot;
+            var callback = function(addXmlNode, state, extra){
+                if (state != apf.SUCCESS) {
+                    var oError;
+    
+                    oError = new Error(apf.formatErrorString(1032, dataParent,
+                        "Loading xml data",
+                        "Could not add data for control " + dataParent.name
+                        + "[" + dataParent.tagName + "] \nUrl: " + extra.url
+                        + "\nInfo: " + extra.message + "\n\n" + xmlNode));
+    
+                    if (extra.tpModule.retryTimeout(extra, state, dataParent, oError) === true)
+                        return true;
+    
+                    throw oError;
+                }
+                
+                /*if (apf.supportNamespaces && node.namespaceURI == apf.ns.xhtml) {
+                    node = apf.getXml(node.xml.replace(/xmlns\=\"[^"]*\"/g, ""));
+                    //@todo import here for webkit?
+                }*/
+
+                if (typeof addXmlNode != "object")
+                    addXmlNode = apf.getXmlDom(addXmlNode).documentElement;
+                if (addXmlNode.getAttribute(apf.xmldb.xmlIdTag))
+                    addXmlNode.setAttribute(apf.xmldb.xmlIdTag, "");
+    
+                if (!dataParent.$startAction("add", addXmlNode, _self.rollback))
+                    return false;
+    
+                var actionNode = (dataParent.$actions && 
+                  dataParent.$actions.getRule("add", dataParent.$isTreeArch
+                    ? dataParent.selected
+                    : dataParent.xmlRoot) || {})[2];
+                
+                if (parentXmlNode) {
+                    _self.$addParent = parentXmlNode;
+                }
+                else if (actionNode && actionNode.getAttribute("parent")) {
+                    _self.$addParent = dataParent.xmlRoot
+                        .selectSingleNode(actionNode.getAttribute("parent"));
+                }
+                else {
+                    _self.$addParent = dataParent.$isTreeArch
+                        ? dataParent.selected || dataParent.xmlRoot
+                        : dataParent.xmlRoot
+                }
+    
+                if (!_self.$addParent)
+                    _self.$addParent = dataParent.xmlRoot || dataParent.getModel(true).data;
+    
+                if (apf.isWebkit && _self.$addParent.ownerDocument != addXmlNode.ownerDocument)
+                    addXmlNode = _self.$addParent.ownerDocument.importNode(addXmlNode, true); //Safari issue not auto importing nodes
+    
+                _self.$transactionNode    = addXmlNode;
+                _self.$transactionSubject = dataParent;
+                begin.call(_self);
+            }
+
+            if (xmlNode)
+                return callback(xmlNode, apf.SUCCESS);
+            else {
+                if (rule && rule.get)
+                    return apf.getData(rule.get, {xmlNode: refNode, callback: callback})
+                else {
+                    
+                }
+            }
+        }
+        
+        //Update
+        else {
+            if (!dataParent.$startAction(this.$lastAction, this.xmlRoot, this.rollback))
+                return false;
+
+            this.$transactionSubject = dataParent;
+            this.$transactionNode    = this.$originalNode.cloneNode(true);//xmldb.cleanNode(this.xmlRoot.cloneNode(true));
+            //xmlNode.removeAttribute(xmldb.xmlIdTag);
+            
+            //@todo rename listening attributes
+            begin.call(this);
+        }
+    };
+    
+    //Transaction nodes can always load data
+    this.$canLoadData = function(){
+        return true;
+    }
+
+    //Prevent model inheritance to the children
+    this.addEventListener("prop.model", function(e){
+        return false;
+    });
+    
+    //Prevent clear dynamic
+    this.clear = function(){
+        this.documentId = this.xmlRoot = this.cacheId = null;
+    }
+
+    //No need to restart the transaction when the same node is loaded
+    this.addEventListener("beforeload", function(e){
+        var xmlNode = e.xmlNode;
+        
+        //@todo apf3.0 test if this can be enabled again
+        //if (this.$originalNode == xmlNode)
+            //return false;
+        
+        if (this.$inTransaction == -1)
+            return;
+
+        if (this.$inTransaction) {
+            if (this.$transactionNode && xmlNode != this.$transactionNode) {
+                if (this.autoshow)
+                    this.autoshow = -1;
+                
+                this.rollback(true);
+            }
+            else return;
+        }
+
+        if (this.autoshow)
+            this.autoshow = -1;
+            
+        if (this.begin("update", xmlNode) !== false)
+            return false;
+    });
+     
+    //hmm really?
+    //@todo what to do here? check original cloned node???
+    /*this.addEventListener("xmlupdate", function(e){
+        if (this.$inTransaction) {
+            this.dispatchEvent("transactionconflict", {
+                action : e.action,
+                xmlNode: e.xmlNode,
+                UndoObj: e.UndoObj,
+                bubbles : true
+            });
+        }
+    });*/
+    
+    //@todo add when not update???
+    /*this.watch("visible", function(id, oldval, newval){
+        if (!this.xmlRoot || oldval == newval)
+            return;
+        
+        if (newval) {
+            if (!this.$inTransaction)
+                this.begin();
+        }
+        else {
+            if (this.$inTransaction) 
+                this.rollback();
+        }
+    });*/
+}
+
+/**
+ * @attribute {Boolean} transaction Whether this element provides transaction
+ * support for all it's children.
+ * @see baseclass.transaction
+ */
+apf.GuiElement.propHandlers["transaction"] = function(value){
+    if (!(this.transaction = apf.isTrue(value)))
+        return;
+
+    if (!this.hasFeature(apf.__DATABINDING__))
+        this.implement(apf.StandardBinding);
+
+    if (!this.hasFeature(apf.__DATAACTION__)) {
+        this.implement(apf.DataAction);
+
+        if (this.actions)
+            this.$propHandlers["actions"].call(this, this.actions, "actions");
+    }
+     
+    if (!this.hasFeature(apf.__TRANSACTION__)) {
+        this.implement(apf.Transaction);
+        
+        if (!this.validgroup) {
+            this.$validgroup = new apf.ValidationGroup();
+            this.$validgroup.register(this);
+        }
+        
+        if (!this.id)
+            this.setProperty("id", this.localName + "_" + this.$uniqueId);
+        
+        var attr = this.attributes.getNamedItem("model");
+        if (!attr)  //@todo find a way to not have to add a model
+            this.attributes.push(attr = new apf.AmlAttr(this, "model", null));
+        attr.inheritedValue = "{" + this.id + ".root}";
+                
+        if (typeof this.autoshow == "undefined" 
+          && (this.localName == "modalwindow" || this.localName == "window"))
+            this.autoshow = true;
+    }
+}
+
+
+
+/*FILEHEAD(core/baseclasses/virtualviewport.js)SIZE(28823)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+apf.__VIRTUALVIEWPORT__ = 1 << 19;
+
+
+
+/**
+ * All elements inheriting from this {@link term.baseclass baseclass} can have a virtual viewport.
+ *
+ * @experimental This code has never been run. 
+ * @constructor
+ * @baseclass
+ * @private
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org) & Mike de Boer
+ * @version     %I%, %G%
+ * @since       1.0
+ */
+apf.VirtualViewport = function(){
+    this.$init(true);
+
+    this.$regbase = this.$regbase | apf.__VIRTUALVIEWPORT__;
+
+    this.virtualVTimer = null;
+    this._xmlUpdate    = this.$xmlUpdate;
+    
+    apf.setStyleClass(this.$ext, "virtual");
+    
+    this.$deInitNode = function(xmlNode, htmlNode){
+        /*  
+            Not the htmlNode is deleted, but the viewport is rerendered from this node on. 
+            If viewport is too high either the render starting point is adjusted and
+            a complete rerender is requested, or the last empty elements are hidden
+        */
+        this.viewport.redraw();//very unoptimized
+    };
+    
+    this.$moveNode = function(xmlNode, htmlNode){
+        /*
+            Do a remove when removed from current viewport
+            Do an add when moved to current viewport
+            Do a redraw from the first of either when both in viewport
+        */
+        this.viewport.redraw();//very unoptimized
+    };
+    
+    this.emptyNode = apf.xmldb.getXml("<empty />");
+    this.$addEmpty = this.$add;
+    this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
+        //find new slot
+        var htmlNode = this.$pHtmlDoc.getElementById(Lid);
+        
+        if(!htmlNode)
+            return;
+        
+        //execute update
+        this.$updateNode(xmlNode, htmlNode);//, noModifier);
+    };
+
+    this.$fill = function(){
+        
+    };
+    
+    this.addEventListener("$load", function(){
+        if (!this.viewport.limit)
+            this.viewport.limit = 1;
+    });
+    
+    this.clear = function(nomsg, do_event){
+        if (this.clearSelection)
+            this.clearSelection(!do_event);
+
+        this.documentId = this.xmlRoot = this.cacheId = null;
+
+        if (!nomsg) {
+            this.viewport.offset = 0;
+            this.viewport.length = 0;
+            this.viewport.resize(0);
+            this.viewport.sb.update();
+    
+            this.$setClearMessage(this["empty-message"]);
+        }
+        else if(this.$removeClearMessage)
+           this.$removeClearMessage();
+        
+        this.viewport.cache = null;
+    };
+
+    var _self = this;
+    this.viewport = {
+        offset : 0,
+        limit  : 2,
+        length : 0,
+        sb     : new apf.scrollbar(),
+        host   : this,
+        cache  : null,
+        
+        inited : false,
+        draw : function(){
+            this.inited = true;
+            var limit = this.limit; this.limit = 0;
+            this.resize(limit, true);
+        },
+        
+        redraw : function(){
+            this.change(this.offset);
+        },
+        
+        // set id's of xml to the viewport
+        prepare : function(){
+            if (!this.inited)
+                this.draw();
+            
+            var nodes = _self.getTraverseNodes();
+            if (!nodes)
+                return;
+            
+            var docId  = apf.xmldb.getXmlDocId(_self.xmlRoot),
+                hNodes = _self.$container.childNodes;
+            for (var j = 0, i = 0, l = hNodes.length; i < l; i++) {
+                if (hNodes[i].nodeType != 1) continue;
+                
+                hNodes[i].style.display = (j >= nodes.length) ? "none" : "block"; //Will ruin tables & lists
+                
+                apf.xmldb.nodeConnect(docId, nodes[j], hNodes[i], _self);
+                j++;
+            }
+        },
+        
+        /**
+         * @note This function only supports single dimension items (also no grid, like thumbnails)
+         */
+        resize : function(limit, updateScrollbar){
+            this.cache = null;
+
+            var i;
+            //Viewport shrinks
+            if (limit < this.limit) {
+                var nodes = _self.$container.childNodes;
+                for (i = nodes.length - 1; i >= 0; i--) {
+                    if (nodes[i].nodeType != 1) continue;
+                    _self.$container.removeChild(nodes[i]);
+                    if (--this.limit == limit) break;
+                }
+            }
+            //Viewport grows
+            else if (limit > this.limit) {
+                for (i = this.limit; i < limit; i++) {
+                    _self.$addEmpty(_self.emptyNode, "", _self.xmlRoot, _self.$container);
+                }
+            }
+            else
+                return;
+            
+            this.limit = limit;
+            
+            if (updateScrollbar)
+                this.sb.update(this.$container);
+        },
+        
+        findNewLimit : function(scrollTop){
+            var oHtml = _self.$container;
+            
+            if (!scrollTop)
+                scrollTop = oHtml.scrollTop;
+
+            if (!_self.xmlRoot || oHtml.lastChild && oHtml.lastChild.style.display == "none")
+                return;
+
+            //Grow
+            if (!oHtml.lastChild || oHtml.lastChild.offsetTop + oHtml.lastChild.offsetHeight <= oHtml.offsetHeight + scrollTop) {
+                var Lid, xmlNode, nodes, sel = _self.$getSelection();
+                while (this.limit < this.length - 1 && (!oHtml.lastChild || oHtml.lastChild.offsetTop + oHtml.lastChild.offsetHeight <= oHtml.offsetHeight + scrollTop)) {
+                    this.limit++;
+
+                    nodes = _self.getTraverseNodes();
+                    if (nodes.length < this.limit) {
+                        this.limit = nodes.length;
+                        break;
+                    }
+
+                    xmlNode = nodes[nodes.length - 1];
+                    Lid = apf.xmldb.nodeConnect(_self.documentId, xmlNode, null, _self);
+                    _self.$addEmpty(xmlNode, Lid, _self.xmlRoot, oHtml);
+                    if (sel.indexOf(xmlNode) > -1)
+                        _self.$select(oHtml.lastChild);
+                    else
+                        _self.$deselect(oHtml.lastChild);
+                }
+            }
+            //Shrink
+            else if (oHtml.lastChild && oHtml.lastChild.offsetTop > oHtml.offsetHeight + scrollTop) {
+                var lastChild;
+                while (this.limit > 2 && (lastChild = oHtml.lastChild).offsetTop > oHtml.offsetHeight + scrollTop) {
+                    _self.$container.removeChild(lastChild);
+                    this.limit--;
+                }
+            }
+            
+            if (!this.initialLimit)
+                this.initialLimit = this.limit;
+        },
+        
+        /**
+         *  @todo   This method should be optimized by checking if there is
+         *          overlap between the new offset and the old one
+         */
+        change : function(offset, limit, updateScrollbar, noScroll){
+            var offsetN;
+            
+            if (offset < 0) 
+                offset = 0;
+            
+            if (offset > this.length - this.limit - 1) 
+                offsetN = Math.floor(this.length - this.limit - 1);
+            else 
+                offsetN = Math.floor(offset);
+                
+            if (!limit)
+                limit = this.limit;
+            
+            //var offsetN = Math.floor(offset);
+
+            this.cache   = null;
+            var diff     = offsetN - this.offset,
+                oldLimit = this.limit;
+            if (diff * diff >= this.limit*this.limit) //there is no overlap
+                diff = false;
+            this.offset = offsetN;
+            
+            if (diff > 0) { //get last node before resize
+                var lastNode = _self.$container.lastChild;
+                if (lastNode.nodeType != 1)
+                    lastNode = lastNode.previousSibling;
+            }
+            
+            /*if (limit && this.limit != limit)
+                this.resize(limit, updateScrollbar);
+            else */
+            if (updateScrollbar) {
+                this.sb.$curValue = this.offset / (this.length - this.limit - 1);
+                this.sb.updatePos();
+            }
+
+            //this.viewport.prepare();
+
+            //Traverse through XMLTree
+            //var nodes = this.$addNodes(this.xmlRoot, this.$container, null, this.renderRoot);
+            var nodes = _self.getTraverseNodes();
+            if (!nodes)
+                return;
+                
+            if (nodes.length < this.limit) {
+                if (offset > 0)
+                    alert("shouldnt get here");
+                else
+                    this.resize(nodes.length);
+            }
+
+            var docId  = apf.xmldb.getXmlDocId(_self.xmlRoot),
+                hNodes = _self.$container.childNodes,
+                xmlNode, htmlNode, xmlPos, sel, len, j, i;
+
+            //remove nodes from the beginning
+            if (diff > 0) {
+                xmlPos = oldLimit - diff;
+                len    = hNodes.length,
+                sel    = _self.$getSelection();
+                for (j = 0, i = 0; j < diff && i < len; i++) {
+                    htmlNode = _self.$container.firstChild;
+                    if (htmlNode.nodeType == 1) {
+                        j++;
+                        xmlNode = nodes[xmlPos++];
+                        if (xmlNode) {
+                            apf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
+                            _self.$updateNode(xmlNode, htmlNode);//, noModifier);
+                            if (sel.indexOf(xmlNode) > -1)
+                                _self.$select(htmlNode);
+                            else
+                                _self.$deselect(htmlNode);
+                            htmlNode.style.display = "block";
+                        }
+                        else {
+                            htmlNode.style.display = "none";
+                        }
+                    }
+                    
+                    _self.$container.appendChild(htmlNode);
+                }
+                
+                //var lastNode = nodes[oldLimit - diff - 1]
+            }
+            //remove nodes from the end
+            else if (diff < 0) {
+                diff = diff * -1;
+                xmlPos = 0; //should be adjusted for changing limit
+                sel    = _self.$getSelection();
+                for (j = 0, i = hNodes.length-1; j < diff && i >= 0; i++) {
+                    htmlNode = _self.$container.lastChild;
+                    if (htmlNode.nodeType == 1) {
+                        j++;
+                        xmlNode = nodes[xmlPos++];
+                        apf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
+                        _self.$updateNode(xmlNode, htmlNode);//, noModifier);
+                        if (sel.indexOf(xmlNode) > -1)
+                            _self.$select(htmlNode);
+                        else
+                            _self.$deselect(htmlNode);
+                        htmlNode.style.display = "block";
+                    }
+                    
+                    _self.$container.insertBefore(htmlNode, _self.$container.firstChild);
+                }
+            }
+            //Recalc all nodes
+            else if (diff === false){
+                len = hNodes.length; 
+                sel = _self.$getSelection();
+                for (j = 0, i = 0; i < len; i++) {
+                    htmlNode = hNodes[i];
+                    if (htmlNode.nodeType == 1) {
+                        xmlNode = nodes[j++];
+                        apf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
+                        _self.$updateNode(xmlNode, htmlNode);//, noModifier);
+                        if (sel.indexOf(xmlNode) > -1)
+                            _self.$select(htmlNode);
+                        else
+                            _self.$deselect(htmlNode);
+                    }
+                }
+            }
+
+            if (!noScroll) {
+                if (offset >= this.length - this.initialLimit) {
+                    diff = offset - (this.length - this.initialLimit) + 2;
+                    _self.$container.scrollTop = (_self.$container.scrollHeight - _self.$container.offsetHeight) * (diff / 2);
+                }
+                else {
+                    var scrollTop = (offset % 1) * _self.$container.firstChild.offsetHeight;//(diff/limit) * _self.$container.offsetHeight;
+                    this.findNewLimit(scrollTop);
+                    _self.$container.scrollTop = scrollTop;
+                }
+                
+                if (updateScrollbar)
+                    this.sb.update();
+                
+                return;
+            }
+        
+            //Build HTML
+            //_self.$fill(nodes);
+            
+            /*if (_self.$selected) {
+                _self.$deselect(_self.$selected);
+                _self.$selected = null;
+            }
+            
+            if (_self.selected && _self.$isInViewport(_self.selected))
+                _self.select(_self.selected);*/
+        }
+    };
+    
+    this.viewport.sb.parentNode = new apf.Class().$init();
+    this.viewport.sb.parentNode.$container = this.$pHtmlNode;
+    this.viewport.sb.dispatchEvent("DOMNodeInsertedIntoDocument");
+    
+    //this.$container.style.paddingLeft = this.viewport.sb.$ext.offsetWidth + "px";
+    
+    //this.viewport.sb.realtime = false;//!apf.isIE;
+    this.viewport.sb.attach(this.$container, this.viewport, function(timed, pos){
+        var vp = _self.viewport;
+        
+        if (vp.sb.realtime || !timed) {
+            var l = vp.length - vp.initialLimit;
+            if (l == 0)
+                _self.$container.scrollTop = pos * (_self.$container.scrollHeight - _self.$container.offsetHeight);
+            else 
+                vp.change(l * pos, vp.limit, false);
+        }
+        else {
+            clearTimeout(this.virtualVTimer);
+            this.virtualVTimer = $setTimeout(function(){
+                vp.change(Math.round((vp.length - vp.initialLimit) * pos), vp.limit, false);
+            }, 300);
+        }
+    });
+    
+    /* @todo
+     * - Fix bug in optimization
+     * - Fix flickering with larger viewport
+     * - Get templates to work
+     * - Firefox has problems with the scrollbar
+     * / Fix scrolling of items bigger than viewport (limit is too tight sometimes)
+     * - Improve pgup/pgdown
+     * - Fix multigrid lists (thumbnail)
+     * - Fix FF html conversion (insertHtmlNodes)
+     * - Optimize grow function to use fill
+     */
+    
+    apf.layout.setRules(this.$container, "scrollbar", "\
+        var s = apf.all[" + this.viewport.sb.$uniqueId + "];\
+        s.update();\
+    ", true);
+    apf.layout.queue(this.$container);
+    
+    this.$isInViewport = function(xmlNode, struct){
+        /*var marker = xmlNode.selectSingleNode("preceding-sibling::a_marker");
+        var start = marker ? marker.getAttribute("end") : 0;
+        
+        if(!struct && this.viewport.offset + this.viewport.limit < start + 1)
+            return false;
+        
+        var position = start;
+        var nodes = (marker || xmlNode).selectNodes("following-sibling::"
+              + this.each.split("|").join("following-sibling::"));
+        
+        for (var i = 0; i < nodes.length; i++) {
+            ++position;
+            if (nodes[i] == xmlNode)
+                break;
+        }
+        
+        if(struct) struct.position = position;
+        
+        if(this.viewport.offset > position 
+          || this.viewport.offset + this.viewport.limit < position)
+            return false;
+        
+        return true;*/
+        var nodes = this.getTraverseNodes();
+        for (var i = 0, l = nodes.length; i < l; i++){
+            if (nodes[i] == xmlNode)
+                return true;
+        }
+        
+        return false;
+    };
+    
+    this.scrollTo = function(xmlNode, last){
+        var sPos = {};
+        this.$isInViewport(xmlNode, sPos);
+        this.viewport.change(sPos.position + (last ? this.viewport.limit - 1 : 0));
+    };
+    
+    /**
+     * @todo this one should be optimized
+     */
+    this.getFirstTraverseNode = function(xmlNode){
+        return this.getTraverseNodes(xmlNode)[0];
+    };
+    
+    /**
+     * @private
+     */
+    this.$clearVirtualDataset = function(parentNode){
+        var nodes = parentNode.childNodes;
+        for (var i = nodes.length - 1; i >= 0; i--)
+            parentNode.removeChild(nodes[i]);
+    };
+
+    /**
+     * @private
+     */
+    this.$createVirtualDataset = function(xmlNode, length, docId) {
+        var marker = xmlNode.selectSingleNode("a_marker") 
+          || xmlNode.appendChild(xmlNode.ownerDocument.createElement("a_marker"));
+        marker.setAttribute("start", "0");
+
+        if (length) {
+            marker.setAttribute("end",   length);
+            marker.setAttribute("reserved", ++this.nodeCount[docId]);
+            this.nodeCount[docId] += length;
+        }
+    };
+    
+    this.$xmlUpdate = function(){
+        this.viewport.cache  = null;
+        this.viewport.length = this.xmlRoot.selectNodes(this.each).length; //@todo fix this for virtual length
+        this.viewport.sb.update(this.$container);
+        this._xmlUpdate.apply(this, arguments);
+    };
+    
+    this.$load = function(XMLRoot){
+        //Add listener to XMLRoot Node
+        apf.xmldb.addNodeListener(XMLRoot, this);
+
+        //Reserve here a set of nodeConnect id's and add them to our initial marker
+        //Init virtual dataset here
+        
+        if (!this.renderRoot && !this.getTraverseNodes(XMLRoot).length)
+            return this.clear("loading");
+        
+        //Initialize virtual dataset if load rule exists
+        if (this.$hasBindRule("load"))
+            this.$createVirtualDataset(XMLRoot);
+        
+        //Prepare viewport
+        this.viewport.cache  = null;
+        this.viewport.length = this.xmlRoot.selectNodes(this.each).length + 1; //@todo fix this for virtual length
+        this.viewport.prepare();
+        
+        //Traverse through XMLTree
+        var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot);
+        
+        this.viewport.sb.update(this.$container);
+
+        //Build HTML
+        //this.$fill(nodes);
+
+        //Select First Child
+        if (this.selectable) {
+            if (this.autoselect) {
+                if (nodes.length)
+                    this.$selectDefault(XMLRoot);
+                
+                else
+                    this.setProperty("selected", null); //@todo review this
+                
+            }
+            else {
+                this.clearSelection(true);
+                var xmlNode = this.getFirstTraverseNode(); //should this be moved to the clearSelection function?
+                if (xmlNode)
+                    this.setCaret(xmlNode);
+                
+                this.setProperty("selected", null); //@todo review this
+                this.setProperty("chosen", null);
+                
+            }
+        }
+
+        if (this.$focussable)
+            apf.window.hasFocus(this) ? this.$focus() : this.$blur();
+    };
+    
+    this.$loadSubData = function(){}; //We use the same process for subloading, it shouldn't be done twice
+    
+    /**
+     * @example <a:load get="call:getCategory(start, length, ascending)" total="@total" />
+     */
+    this.$loadPartialData = function(marker, start, length){
+        //We should have a queing system here, disabled the check for now
+        //if (this.$hasLoadStatus(xmlRootNode)) return;
+        
+        var loadNode, rule = this.$getBindRule("load", xmlRootNode);
+        if (rule && (!rule[1] || rule[1](xmlRootNode))) {
+            this.$setLoadStatus(xmlRootNode, "loading");
+            
+            var mdl = this.getModel(true);
+            
+
+            mdl.$insertFrom(rule.getAttribute("get"), {
+                
+                ascending  : this.$sort ? this.$sort.get().ascending : true,
+                
+                xmlNode     : loadNode,
+                documentId  : this.documentId, //or should xmldb find this itself
+                marker      : marker,
+                start       : start,
+                length      : length,
+                insertPoint : this.xmlRoot, 
+                amlNode     : this,
+                callback    : function(xmlNode){
+                    
+                    _self.setProperty("root", _self.xmlRoot);
+                    
+                    
+                    var length = parseInt(apf.queryValue(xmlNode, 
+                        rule.getAttribute("total")));
+                    
+                    if (_self.viewport.length != length) {
+                        _self.viewport.length = length;
+                        
+                        this.$createVirtualDataset(_self.xmlRoot, 
+                            _self.viewport.length, _self.documentId);
+                    }
+                }
+            });
+        }
+    };
+    
+    //Consider moving these functions to the xmldatabase selectByXpath(xpath, from, length);
+    function fillList(len, list, from){
+        for (var i = 0; i < len; i++) 
+            list.push(_self.documentId + "|" + (from+i));
+    }
+    
+    function buildList(markers, markerId, distance, xml) {
+        var marker, nodes, start,
+            vlen = this.viewport.limit,
+            list = [];
+        
+        //Count from 0
+        if (markerId == -1) {
+            nodes    = xml.selectNodes(_self.each);
+            start    = 0;
+            marker   = markers[0];
+        }
+        else {
+            //Count back from end of marker
+            if (distance < 0) {
+                fillList(Math.abs(distance), list, 
+                    parseInt(marker.getAttribute("reserved")) + parseInt(marker.getAttribute("end"))
+                    - parseInt(marker.getAttribute("start")) + distance);
+                
+                distance = 0;
+                _self.$loadPartialData(marker);
+                
+                if (list.length == vlen)
+                    return list;
+            }
+            
+            nodes  = markers[markerId].selectNodes("following-sibling::"
+              + this.each.split("|").join("following-sibling::"));
+            start  = markers[markerId].getAttribute("end");
+            marker = markers[++markerId];
+        }
+        
+        do {
+            //Add found nodes
+            var loop = Math.min(marker.getAttribute("start") - start, vlen);//, nodes.length
+            for (var i = distance; i < loop; i++)
+                list.push(nodes[i]);
+            
+            if (list.length == vlen)
+                break;
+            
+            //Add empty nodes
+            var mlen = parseInt(marker.getAttribute("end")) - parseInt(marker.getAttribute("start"));
+            fillList(Math.min(mlen, vlen - list.length), list, parseInt(marker.getAttribute("reserved")));
+            
+            //Add code here to trigger download of this missing info
+            _self.$loadPartialData(marker);
+            
+            start    = parseInt(marker.getAttribute("end"));
+            marker   = markers[++markerId];
+            distance = 0;
+        } 
+        while (list.length < vlen && marker);
+        
+        _self.viewport.cache = list;
+        return list;
+    }
+    
+    /**
+     * Retrieves a nodelist containing the {@link term.datanode data nodes} which are rendered by
+     * this element (see each nodes, see {@link baseclass.multiselectbinding.binding.each}).
+     *
+     * @param {XMLElement} [xmlNode] the parent element on which the each query is applied.
+     */
+    this.getTraverseNodes = function(xmlNode){
+        if (!this.xmlRoot)
+            return;
+        
+        if (this.viewport.cache)
+            return this.viewport.cache;
+
+        var start = this.viewport.offset + 1,
+            end   = start + this.viewport.limit;
+        
+        //caching statement here
+
+        var markers = (xmlNode || this.xmlRoot).selectNodes("a_marker");
+
+        //Special case for fully loaded virtual dataset
+        if (!markers.length) {
+            var list = (xmlNode || this.xmlRoot).selectNodes("("
+                + this.each + ")[position() >= " + start
+                + " and position() < " + (end) + "]");
+
+            
+            return this.$sort ? this.$sort.apply(list) : list;
+            
+        }
+
+        for (var i = 0; i < markers.length; i++) {
+            //Looking for marker that (partially) exceeds viewport's current position
+            if (markers[i].getAttribute("end") < start) {
+                //If this is the last marker, count from here
+                if (i == markers.length - 1)
+                    return buildList(markers, i, start - markers[i].getAttribute("end"), 
+                      (xmlNode || this.xmlRoot));
+
+                continue;
+            }
+            
+            //There is overlap AND begin is IN marker
+            if (markers[i].getAttribute("start") - end <= 0 
+              && start >= markers[i].getAttribute("start"))
+                return buildList(markers, i, start - markers[i].getAttribute("end"), 
+                  (xmlNode || this.xmlRoot));
+
+            //Marker is after viewport, there is no overlap
+            else if (markers[i-1]) //Lets check the previous marker, if there is one
+                return buildList(markers, i-1, start - markers[i-1].getAttribute("end"), 
+                  (xmlNode || this.xmlRoot));
+                
+            //We have to count from the beginning
+            else
+                return buildList(markers, -1, start, (xmlNode || this.xmlRoot));
+        }
+    };
+    
+    var baseNTS = this.getNextTraverseSelected;
+    this.getNextTraverseSelected = function(xmlNode, up, count){
+        if (!xmlNode)
+            xmlNode = this.selected;
+        if (!count)
+            count = 1;
+
+        var node = baseNTS.call(this, xmlNode, up, count);
+        if (node && node != xmlNode)
+            return node;
+
+        //@todo treeArch support
+        var nodes = this.getTraverseNodes(), i = 0;
+        while (nodes[i] && nodes[i] != xmlNode)
+            i++;
+
+        if (up)
+            i = -1 * (nodes.length - i - 1);
+
+        this.viewport.change(Math.max(0, this.viewport.offset + i
+            + (up ? count : -1 * count)), null, true, true);
+            
+        nodes = this.getTraverseNodes();
+        return nodes[up ? nodes.length - 1 : 0];
+    };
+    
+    //@todo keyboard handlers for pgup/pgdown should measure items instead of assuming fixed height
+    
+    //Init
+    this.caching = false; //for now, because the implications are unknown
+};
+
+
+
+/*FILEHEAD(core/baseclasses/xforms.js)SIZE(9367)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+apf.__XFORMS__ = 1 << 17;
+
+
+
+
+/*FILEHEAD(core/baseclasses/contenteditable/clipboard.js)SIZE(2951)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+apf.clipboard = new apf.Class().$init();
+apf.clipboard.store = null;
+apf.clipboard.empty = true;
+apf.clipboard.copied = null;
+apf.clipboard.put = function(item){
+    this.store = item;
+    this.setProperty("empty", item ? false : true);
+};
+apf.clipboard.clear = function(){
+    this.setProperty("empty", true);
+}
+apf.clipboard.get = function(){
+    return this.store;
+};
+
+
+apf.clipboard.$highlightSelection = function(amlNode, nodes, unset){
+    for (var i = 0, l = nodes.length; i < l; i++) {
+        apf.setStyleClass(apf.xmldb.getHtmlNode(nodes[i], amlNode), (unset ? '' : 'cut'), ['cut']);
+    }
+}
+apf.clipboard.copySelection = function(amlNode){
+    var nodes = this.get() || [];
+    this.$highlightSelection(amlNode, nodes, true);
+    this.put(amlNode.getSelection().map(function (node) {
+        return apf.xmldb.getCleanCopy(node);
+    }));
+    this.copied = true;
+};
+apf.clipboard.cutSelection = function(amlNode){
+    var nodes = this.get() || [];
+    this.$highlightSelection(amlNode, nodes, true);
+    this.put(nodes = amlNode.getSelection());
+    this.$highlightSelection(amlNode, nodes);
+    this.copied = false;
+};
+apf.clipboard.pasteSelection = function(amlNode, selected){
+    var nodes = this.get();
+    if (!nodes) return;
+
+    if (!selected)
+        selected = amlNode.selected || amlNode.getFirstTraverseNode();
+
+    if (amlNode.hasFeature(apf.__DRAGDROP__))
+        amlNode.copy(nodes, selected, undefined, !this.copied);
+    else {
+        if (nodes[0].parentNode) {
+            for (var i = 0, l = nodes.length; i < l; i++) {
+                apf.xmldb.moveNode(selected, nodes[i]);
+            }
+        }
+        else {
+            for (var i = 0, l = nodes.length; i < l; i++) {
+                apf.xmldb.appendChild(selected, nodes[i]);
+            }
+        }
+    }
+    
+    this.$highlightSelection(amlNode, nodes, true);
+    amlNode.selectList(nodes);
+};
+
+
+
+
+
+/*FILEHEAD(core/baseclasses/contenteditable/commands.js)SIZE(30488)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(core/baseclasses/contenteditable/interactive.js)SIZE(57362)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(core/baseclasses/contenteditable/selectrect.js)SIZE(5678)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(core/baseclasses/contenteditable/visualconnect.js)SIZE(36914)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(core/baseclasses/contenteditable/visualselect.js)SIZE(18159)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(core/window-o3.js)SIZE(5461)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(core/window.js)SIZE(50526)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * Object representing the window of the aml application. The semantic is
+ * similar to that of a window in the browser, except that this window is not
+ * the same as the javascript global object. It handles the focussing within
+ * the document and several other events such as exit and the keyboard events.
+ *
+ * @event blur              Fires when the browser window looses focus.
+ * @event focus             Fires when the browser window receives focus.
+ *
+ * @constructor
+ * @inherits apf.Class
+ * @default_private
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8
+ */
+apf.window = function(){
+    this.$uniqueId = apf.all.push(this);
+    this.apf       = apf;
+
+    /**
+     * Returns a string representation of this object.
+     */
+    this.toString = function(){
+        return "[apf.window]";
+    };
+    
+    /**
+     * Retrieves the primary {@link element.actiontracker action tracker} of the application.
+     */
+    this.getActionTracker = function(){
+        return this.$at
+    };
+
+    /**
+     * @private
+     */
+    this.loadCodeFile = function(url){
+        //if(apf.isWebkit) return;
+        if (self[url])
+            apf.importClass(self[url], true, this.win);
+        else
+            apf.include(url);//, this.document);
+    };
+
+    
+
+    /**
+     * Show the browser window.
+     */
+    this.show = function(){
+        if (apf.isDeskrun)
+            jdwin.Show();
+    };
+
+    /**
+     * Hide the browser window.
+     */
+    this.hide = function(){
+        if (apf.isDeskrun) {
+            jdwin.Hide();
+        }
+        else {
+            this.loaded = false;
+            if (this.win)
+                this.win.close();
+        }
+>>>>>>> hotfix/0.5.1
+    };
+    
+    /*
+    this.$propHandlers["minwidth"]  = 
+    this.$propHandlers["maxwidth"]  = 
+    this.$propHandlers["minheight"] = 
+    this.$propHandlers["maxheight"] = function(value, prop){
+        if (this.aData)
+            this.aData[prop] = parseInt(value);
+    }
+    if (this.aData) {
+        this.aData.minwidth = this.minwidth;
+        this.aData.minheight = this.minheight;
+    }*/
+    
+    this.$cancelInteractive = function(){
+        document.onmouseup(null, true);
+    }
+    
+    function dragStart(e, reparent){
+        if (!e) e = event;
+
+<<<<<<< HEAD
+        if (!reparent && (!_self.draggable || apf.dragMode))//_self.editable || 
+            return;
+        
+        
+        dragOutline = _self.dragOutline == true || apf.config.dragOutline;
+        
+        
+        if (_self.dispatchEvent("beforedragstart", {htmlEvent: e}) === false)
+            return;
+        
+        apf.dragMode  = true;
+        if (reparent) {
+            _self.dispatchEvent("beforedrag")
+            overThreshold = true;
+        }
+        else
+            overThreshold = false;
+        
+        
+        apf.popup.forceHide();
+        
+        
+        posAbs = "absolute|fixed".indexOf(apf.getStyle(_self.$ext, "position")) > -1;
+        if (!posAbs) {
+            _self.$ext.style.position = posAbs //(posAbs = _self.dragSelection) 
+                ? "absolute" : "relative";
+        }
+        if (_self.editable)
+            posAbs = true;
+
+        //@todo not for docking
+        
+        if (posAbs && !_self.aData) {
+            apf.plane.show(dragOutline
+                ? oOutline
+                : _self.$ext, e.reappend);//, true
+        }
+        
+
+        var ext = (reparent || (oOutline && oOutline.self)) && dragOutline //little dirty hack to detect outline set by visualselect
+            ? oOutline 
+            : _self.$ext;
+        var pos = posAbs
+            ? apf.getAbsolutePosition(ext, ext.offsetParent, true) 
+            : [parseInt(apf.getStyle(ext, "left")) || 0, 
+               parseInt(apf.getStyle(ext, "top")) || 0];
+
+        
+        startGeo = [ext.style.left, ext.style.top, ext.style.right, 
+                    ext.style.bottom, ext.style.width, ext.style.height];
+        
+
+        nX = pos[0] - (oX = e.clientX);
+        nY = pos[1] - (oY = e.clientY);
+        
+        //if (_self.hasFeature && _self.hasFeature(apf.__ANCHORING__))
+            //_self.$disableAnchoring();
+
+        if (!(reparent || (oOutline && oOutline.self))) {
+            
+            if (posAbs && dragOutline) {
+                oOutline.className     = "drag";
+                
+                var diffOutline = apf.getDiff(oOutline);
+                _self.$ext.offsetParent.appendChild(oOutline);
+                oOutline.style.left    = pos[0] + "px";
+                oOutline.style.top     = pos[1] + "px";
+                oOutline.style.width   = (_self.$ext.offsetWidth - diffOutline[0]) + "px";
+                oOutline.style.height  = (_self.$ext.offsetHeight - diffOutline[1]) + "px";
+                
+                if (_self.editable)
+                    oOutline.style.display = "block";
+            }
+            else
+            
+            {
+                if (_self.$ext.style.right) {
+                    _self.$ext.style.left = pos[0] + "px";
+                    _self.$ext.style.right = "";
+                }
+                if (_self.$ext.style.bottom) {
+                    _self.$ext.style.top = pos[1] + "px";
+                    _self.$ext.style.bottom = "";
+                }
+            }
+        }
+
+        document.onmousemove = dragMove;
+        document.onmouseup   = function(e, cancel){
+            document.onmousemove = document.onmouseup = null;
+
+            
+            if (posAbs && !_self.aData)
+                apf.plane.hide();
+            
+            
+            var htmlNode = dragOutline
+                ? oOutline
+                : _self.$ext;
+
+            if (overThreshold && !_self.$multidrag) {
+                
+                if (cancel) {
+                    var ext = _self.$ext;
+                    ext.style.left   = startGeo[0];
+                    ext.style.top    = startGeo[1];
+                    ext.style.right  = startGeo[2];
+                    ext.style.bottom = startGeo[3];
+                    ext.style.width  = startGeo[4];
+                    ext.style.height = startGeo[5];
+                    
+                    if (_self.dispatchEvent)
+                        _self.dispatchEvent("dragcancel", {
+                            htmlNode  : htmlNode,
+                            htmlEvent : e
+                        });
+                }
+                else
+                
+                
+                if (_self.setProperty) {
+                    updateProperties();
+                }
+                else if (dragOutline) {
+                    _self.$ext.style.left = l + "px";
+                    _self.$ext.style.top  = t + "px";
+                }
+            }
+            
+            l = t = w = h = null;
+            
+            if (!posAbs)
+                _self.$ext.style.position = "relative";
+            
+            if (_self.showdragging)
+                apf.setStyleClass(_self.$ext, "", ["dragging"]);
+            
+            if (posAbs && dragOutline && !oOutline.self) //little dirty hack to detect outline set by visualselect
+                oOutline.style.display = "none";
+            
+            apf.dragMode = false;
+=======
+    /**
+     * Focus the browser window.
+     */
+    this.focus = function(){
+        if (apf.isDeskrun)
+            jdwin.SetFocus();
+        else
+            window.focus();
+    };
+
+    /**
+     * Set the icon of the browser window.
+     * @param {String} url the location of the .ico file.
+     */
+    this.setIcon = function(url){
+        if (apf.isDeskrun)
+            jdwin.icon = parseInt(url) == url ? parseInt(url) : url;
+    };
+
+    /**
+     * Set the title of the browser window.
+     * @param {String} value the new title of the window.
+     */
+    this.setTitle = function(value){
+        this.title = value || "";
+
+        if (apf.isDeskrun)
+            jdwin.caption = value;
+        else
+            document.title = (value || "");
+    };
+
+    /**
+     * @private
+     */
+    this.loadAml = function(x){
+        if (x[apf.TAGNAME] == "deskrun")
+            this.loadDeskRun(x);
+        /*else {
+
+        }*/
+    };
+
+    
+
+    /**** Focus Internals ****/
+
+    
+    this.vManager = new apf.visibilitymanager();
+    
+
+    
+    this.zManager = new apf.zmanager();
+    
+
+    
+
+    this.$tabList = [];
+
+    this.$addFocus = function(amlNode, tabindex, isAdmin){
+        if (!isAdmin) {
+            amlNode.addEventListener("DOMNodeInserted", moveFocus);
+            amlNode.addEventListener("DOMNodeRemoved", removeFocus);
+
+            if (amlNode.$isWindowContainer > -2) {
+                amlNode.addEventListener("focus", trackChildFocus);
+                amlNode.addEventListener("blur", trackChildFocus);
+
+                amlNode.$focusParent = amlNode;
+
+                if (amlNode.$isWindowContainer > -1) {
+                    if (!amlNode.$tabList)
+                        amlNode.$tabList = [amlNode];
+                    
+                    this.$tabList.push(amlNode);
+                    return;
+                }
+                else {
+                    amlNode.$tabList = [amlNode];
+                }
+            }
+        }
+
+        var fParent = findFocusParent(amlNode),
+            list    = fParent.$tabList;
+>>>>>>> hotfix/0.5.1
+
+            if (!cancel && _self.dispatchEvent && overThreshold)
+                _self.dispatchEvent("afterdrag", {
+                    htmlNode  : htmlNode,
+                    htmlEvent : e
+                });
+        };
+        
+        if (reparent)
+            document.onmousemove(e);
+        //else if (apf.isIE)
+            //apf.window.$mousedown(e);
+
+<<<<<<< HEAD
+        return false;
+=======
+        if (!amlNode.$isWindowContainer)
+            amlNode.$focusParent = fParent;
+        else
+            amlNode.$focusParent2 = fParent;
+
+        if (list[tabindex])
+            list.insertIndex(amlNode, tabindex);
+        else
+            list.push(amlNode);
+>>>>>>> hotfix/0.5.1
+    };
+    
+    function dragMove(e){
+        if(!e) e = event;
+        
+        //if (_self.dragSelection)
+            //overThreshold = true;
+        
+        if (!overThreshold && _self.showdragging)
+            apf.setStyleClass(_self.$ext, "dragging");
+        
+        // usability rule: start dragging ONLY when mouse pointer has moved delta x pixels
+        var dx = e.clientX - oX,
+            dy = e.clientY - oY,
+            distance; 
+
+<<<<<<< HEAD
+        if (!overThreshold 
+          && (distance = dx*dx > dy*dy ? dx : dy) * distance < 2)
+            return;
+
+        //Drag outline support
+        else if (!overThreshold) {
+            if (dragOutline 
+              && oOutline.style.display != "block")
+                oOutline.style.display = "block";
+
+            if (_self.dispatchEvent && _self.dispatchEvent("beforedrag", {htmlEvent: e}) === false) {
+                document.onmouseup();
+                return;
+            }
+=======
+    this.$removeFocus = function(amlNode){
+        if (!amlNode.$focusParent)
+            return;
+
+        amlNode.$focusParent.$tabList.remove(amlNode);
+
+        if (!amlNode.$isWindowContainer) {
+            amlNode.removeEventListener("DOMNodeInserted", moveFocus);
+            amlNode.removeEventListener("DOMNodeRemoved", removeFocus);
+        }
+
+        if (amlNode.$isWindowContainer > -2) {
+            amlNode.removeEventListener("focus", trackChildFocus); 
+            amlNode.removeEventListener("blur", trackChildFocus);
+>>>>>>> hotfix/0.5.1
+        }
+
+<<<<<<< HEAD
+        var oHtml = dragOutline
+            ? oOutline
+            : _self.$ext;
+
+        oHtml.style.left = (l = e.clientX + nX) + "px";
+        oHtml.style.top  = (t = e.clientY + nY) + "px";
+
+        if (_self.realtime) {
+            var change = _self.$stick = {};
+            _self.$showDrag(l, t, oHtml, e, change);
+            
+            if (typeof change.l != "undefined") 
+                l = change.l, oHtml.style.left = l + "px";
+            if (typeof change.t != "undefined") 
+                t = change.t, oHtml.style.top = t + "px";
+        }
+
+        overThreshold = true;
+    };
+    
+    this.$resizeStart = resizeStart;
+    function resizeStart(e, options){
+        if (!e) e = event;
+
+        //|| _self.editable 
+        if (!_self.resizable 
+          || String(_self.height).indexOf("%") > -1 && _self.parentNode.localName == "vbox" //can't resize percentage based for now
+          || String(_self.width).indexOf("%") > -1 && _self.parentNode.localName == "hbox") //can't resize percentage based for now
+            return;
+
+        
+        resizeOutline = !(_self.resizeOutline == false || !apf.config.resizeOutline);
+        
+        
+        var ext = _self.$ext;
+        if (!resizeOutline) {
+            var diff = apf.getDiff(ext);
+            hordiff  = diff[0];
+            verdiff  = diff[1];
+        }
+        
+        //@todo This is probably not gen purpose
+        startPos = apf.getAbsolutePosition(ext);//, ext.offsetParent);
+        startPos.push(ext.offsetWidth);
+        startPos.push(ext.offsetHeight);
+        myPos    = apf.getAbsolutePosition(ext, ext.offsetParent, true);
+
+        
+        startGeo = [ext.style.left, ext.style.top, ext.style.right, 
+                    ext.style.bottom, ext.style.width, ext.style.height];
+        
+
+        var sLeft = 0,
+            sTop  = 0,
+            x     = (oX = e.clientX) - startPos[0] + sLeft + document.documentElement.scrollLeft,
+            y     = (oY = e.clientY) - startPos[1] + sTop + document.documentElement.scrollTop,
+            resizeType;
+
+        if (options && options.resizeType) {
+            posAbs = "absolute|fixed".indexOf(apf.getStyle(ext, "position")) > -1;
+            resizeType = options.resizeType;
+        }
+        else {
+            resizeType = getResizeType.call(ext, x, y);
+        }
+        rX = x;
+        rY = y;
+
+        if (!resizeType)
+            return;
+
+        if (_self.dispatchEvent && _self.dispatchEvent("beforeresize", {
+            type    : resizeType,
+            setType : function(type){
+                resizeType = type;
+            }
+          }) === false) {
+            //if (apf.isIE)
+                //apf.window.$mousedown(e); //@todo is this necessary?
+            return;
+        }
+        
+        
+        apf.popup.forceHide();
+        
+
+        //if (_self.hasFeature && _self.hasFeature(apf.__ANCHORING__))
+            //_self.$disableAnchoring();
+        
+        apf.dragMode  = true;
+        overThreshold = false;
+
+        we = resizeType.indexOf("w") > -1;
+        no = resizeType.indexOf("n") > -1;
+        ea = resizeType.indexOf("e") > -1;
+        so = resizeType.indexOf("s") > -1;
+        
+        if (!_self.minwidth)  _self.minwidth  = 0;
+        if (!_self.minheight) _self.minheight = 0;
+        if (!_self.maxwidth)  _self.maxwidth  = 10000;
+        if (!_self.maxheight) _self.maxheight = 10000;
+
+        if (posAbs) {
+            lMax = myPos[0] + startPos[2];
+            tMax = myPos[1] + startPos[3];
+            lMin = myPos[0] + startPos[2];
+            tMin = myPos[1] + startPos[3];
+        }
+
+        
+        if (posAbs) {
+            apf.plane.show(resizeOutline
+                ? oOutline
+                : ext);//, true
+        }
+        
+        
+        
+        if (resizeOutline) {
+            oOutline.className     = "resize";
+            var diffOutline = apf.getDiff(oOutline);
+            hordiff = diffOutline[0];
+            verdiff = diffOutline[1];
+            
+            //ext.parentNode.appendChild(oOutline);
+            oOutline.style.left    = startPos[0] + "px";
+            oOutline.style.top     = startPos[1] + "px";
+            oOutline.style.width   = (ext.offsetWidth - hordiff) + "px";
+            oOutline.style.height  = (ext.offsetHeight - verdiff) + "px";
+            oOutline.style.display = "block";
+        }
+        else
+        
+        {
+            if (ext.style.right) {
+                iStyleRight = ext.style.right.slice(0, -2);
+                if (iStyleRight) {
+                    myPos[0] = myPos[0] + parseInt(iStyleRight);
+                    ext.style.left  = myPos[0] + "px";
+                }
+
+                else {
+                    ext.style.left  = myPos[0] + "px";
+                }
+
+                //console.log(myPos[0]);
+                //ext.style.right = "";
+            }
+            if (ext.style.bottom) {
+                ext.style.top = myPos[1] + "px";
+                //ext.style.bottom = "";
+            }
+        }
+        
+        if (!options || !options.nocursor) {
+            if (lastCursor === null)
+                lastCursor = document.body.style.cursor;//apf.getStyle(document.body, "cursor");
+            document.body.style.cursor = resizeType + "-resize";
+        }
+        
+        document.onmousemove = resizeMove;
+        document.onmouseup   = function(e, cancel){
+            document.onmousemove = document.onmouseup = null;
+            
+            
+            if (posAbs)
+                apf.plane.hide();
+            
+            
+            clearTimeout(timer);
+            
+            if (resizeOutline) {
+                var diff = apf.getDiff(_self.$ext);
+                hordiff  = diff[0];
+                verdiff  = diff[1];
+            }
+
+            
+            if (cancel) {
+                var ext = _self.$ext;
+                ext.style.left   = startGeo[0];
+                ext.style.top    = startGeo[1];
+                ext.style.right  = startGeo[2];
+                ext.style.bottom = startGeo[3];
+                ext.style.width  = startGeo[4];
+                ext.style.height = startGeo[5];
+                
+                if (_self.dispatchEvent)
+                    _self.dispatchEvent("resizecancel");
+            }
+            else
+            
+                doResize(e || event, true);
+
+            if (_self.setProperty)
+                updateProperties();
+
+            document.body.style.cursor = lastCursor || "";
+            lastCursor = null;
+            
+            if (resizeOutline)
+                oOutline.style.display = "none";
+            
+            apf.dragMode = false;
+
+            if (!cancel && _self.dispatchEvent)
+                _self.dispatchEvent("afterresize", {
+                    l: l, t: t, w: w+hordiff, h: h+verdiff
+                });
+            
+            l = t = w = h = null;
+        };
+        
+        //if (apf.isIE)
+            //apf.window.$mousedown(e);
+
+        return false;
+    }
+    
+    function updateProperties(left, top, width, height, hdiff, vdiff, right, bottom){
+        if (typeof left == "undefined") {
+            left = l, top = t, width = w, height = h, 
+                vdiff = verdiff, hdiff  = hordiff;
+        }
+        else posAbs = true;
+
+        var hasLeft   = _self.left || _self.left === 0;
+        var hasRight  = _self.right || _self.right === 0;
+        var hasBottom = _self.bottom || _self.bottom === 0;
+        var hasTop    = _self.top || _self.top === 0;
+
+        if (posAbs) {
+            var htmlNode = (oOutline && oOutline.style.display == "block")
+                ? oOutline
+                : _self.$ext;
+
+            if (hasRight && !(right || right === 0))
+                right = apf.getHtmlRight(htmlNode);
+
+            if (hasBottom && !(bottom || bottom === 0))
+                bottom = apf.getHtmlBottom(htmlNode);
+
+            if (hasRight) {
+                _self.setProperty("right", right, 0, _self.editable);
+                if (!_self.left)
+                    htmlNode.style.left = "";
+            }
+            
+            if (hasBottom) {
+                _self.setProperty("bottom", bottom, 0, _self.editable);
+                if (!_self.top)
+                    htmlNode.style.top = "";
+            }
+        
+            if ((left || left === 0) && (!hasRight || hasLeft)) 
+                _self.setProperty("left", left, 0, _self.editable);
+            if ((top || top === 0) && (!hasBottom || hasTop)) 
+                _self.setProperty("top", top, 0, _self.editable);
+        }
+
+        if (hdiff != undefined && width && (!hasLeft || !hasRight)) 
+            _self.setProperty("width", width + hdiff, 0, _self.editable) 
+        if (vdiff != undefined && height && (!hasTop || !hasBottom)) 
+            _self.setProperty("height", height + vdiff, 0, _self.editable); 
+    }
+    this.$updateProperties = updateProperties;
+    
+    var min = Math.min, max = Math.max, lastTime, timer;
+    function resizeMove(e){
+        if(!e) e = event;
+        
+        //if (!e.button)
+            //return this.onmouseup();
+        
+        // usability rule: start dragging ONLY when mouse pointer has moved delta x pixels
+        /*var dx = e.clientX - oX,
+            dy = e.clientY - oY,
+            distance; 
+        
+        if (!overThreshold 
+          && (distance = dx*dx > dy*dy ? dx : dy) * distance < 4)
+            return;*/
+        
+        clearTimeout(timer);
+        if (lastTime && new Date().getTime() 
+          - lastTime < (resizeOutline ? 6 : apf.mouseEventBuffer)) {
+            var z = {
+                clientX: e.clientX,
+                clientY: e.clientY
+            }
+            timer = setTimeout(function(){
+                doResize(z);
+            }, 10);
+            return;
+        }
+        lastTime = new Date().getTime();
+        
+        doResize(e);
+        
+        //overThreshold = true;
+    }
+    
+    function doResize(e, force){
+        var oHtml = resizeOutline && !force
+            ? oOutline
+            : _self.$ext;
+
+        var sLeft = document.documentElement.scrollLeft,
+            sTop  = document.documentElement.scrollTop;
+        
+        if (we) {
+            if (posAbs)
+                oHtml.style.left = (l = max((lMin - _self.maxwidth), 
+                    min((lMax - _self.minwidth), 
+                    myPos[0] + e.clientX - oX + sLeft))) + "px";
+            oHtml.style.width = (w = min(_self.maxwidth - hordiff, 
+                max(hordiff, _self.minwidth, 
+                    startPos[2] - (e.clientX - oX) + sLeft
+                    ) - hordiff)) + "px"; //@todo
+        }
+        
+        if (no) {
+            if (posAbs)
+                oHtml.style.top = (t = max((tMin - _self.maxheight), 
+                    min((tMax - _self.minheight), 
+                    myPos[1] + e.clientY - oY + sTop))) + "px";
+            oHtml.style.height = (h = min(_self.maxheight - verdiff, 
+                max(verdiff, _self.minheight, 
+                    startPos[3] - (e.clientY - oY) + sTop
+                    ) - verdiff)) + "px"; //@todo
+        }
+
+        if (ea)
+            oHtml.style.width  = (w = min(_self.maxwidth - hordiff, 
+                max(hordiff, _self.minwidth, 
+                    e.clientX - startPos[0] + (startPos[2] - rX) + sLeft)
+                    - hordiff)) + "px";
+
+        if (so)
+            oHtml.style.height = (h = min(_self.maxheight - verdiff, 
+                max(verdiff, _self.minheight, 
+                    e.clientY - startPos[1] + (startPos[3] - rY) + sTop)
+                    - verdiff)) + "px";
+
+        //@todo apf3.0 this is execution wise inefficient
+        if (_self.parentNode && _self.parentNode.localName == "table") {
+            updateProperties();
+            apf.layout.processQueue();
+        }
+        
+        if (_self.realtime) {
+            var change = _self.$stick = {};
+            
+            //@todo calc l and t once at start of resize (subtract borders)
+            _self.$showResize(l || apf.getHtmlLeft(oHtml), t || apf.getHtmlTop(oHtml), 
+                w && w + hordiff || oHtml.offsetWidth, 
+                h && h + verdiff || oHtml.offsetHeight, e, change, we, no, ea, so);
+
+            if (posAbs && we && typeof change.l != "undefined")
+                oHtml.style.left = (l = max((lMin - _self.maxwidth), min((lMax - _self.minwidth), change.l))) + "px";
+            
+            if (posAbs && no && typeof change.t != "undefined")
+                oHtml.style.top = (t = max((tMin - _self.maxheight), min((tMax - _self.minheight), change.t))) + "px";
+            
+            if (typeof change.w != "undefined") 
+                oHtml.style.width = (w = min(_self.maxwidth - hordiff, 
+                    max(hordiff, _self.minwidth, 
+                        change.w) - hordiff)) + "px";
+            if (typeof change.h != "undefined") 
+                oHtml.style.height = (h = min(_self.maxheight - verdiff, 
+                    max(verdiff, _self.minheight, 
+                        change.h) - verdiff)) + "px";
+        }
+
+        
+        if (apf.hasSingleRszEvent)
+            apf.layout.forceResize(_self.$int);
+        
+    }
+    
+    function getResizeType(x, y){
+        var cursor  = "", 
+            tcursor = "";
+        posAbs = "absolute|fixed".indexOf(apf.getStyle(_self.$ext, "position")) > -1;
+
+        if (_self.resizable == true || _self.resizable == "vertical") {
+            if (y < rszborder + marginBox[0])
+                cursor = posAbs ? "n" : "";
+            else if (y > this.offsetHeight - rszborder) //marginBox[0] - marginBox[2] - 
+                cursor = "s";
+            else if (y > this.offsetHeight - rszcorner) //marginBox[0] - marginBox[2] - 
+                tcursor = "s";
+        }
+        
+        if (_self.resizable == true || _self.resizable == "horizontal") {
+            if (x < (cursor ? rszcorner : rszborder) + marginBox[0])
+                cursor += tcursor + (posAbs ? "w" : "");
+            else if (x > this.offsetWidth - (cursor || tcursor ? rszcorner : rszborder)) //marginBox[1] - marginBox[3] - 
+                cursor += tcursor + "e";
+=======
+    var focusLoopDetect;
+    this.$focus = function(amlNode, e, force){
+        var aEl = this.document.activeElement;
+        if (aEl == amlNode && !force)
+            return; //or maybe when force do $focus
+
+        
+
+        this.$settingFocus = amlNode;
+
+        if (!e)
+            e = {};
+
+        e.toElement   = amlNode;
+        e.fromElement = aEl;
+
+        if (aEl && aEl != amlNode && focusLoopDetect != aEl) {
+            focusLoopDetect = aEl;
+
+            aEl.blur(true, e);
+
+            
+            
+            if (focusLoopDetect != aEl)
+                return false;
+        }
+
+        (apf.activeElement = this.document.activeElement = amlNode).focus(true, e);
+
+        this.$settingFocus = null;
+
+        apf.dispatchEvent("movefocus", {
+            toElement : amlNode
+        });
+
+        
+
+        
+
+        
+    };
+
+    this.$blur = function(amlNode){
+        var aEl = this.document.activeElement;
+        if (aEl != amlNode)
+            return false;
+
+        
+
+        aEl.$focusParent.$lastFocussed = null;
+        apf.activeElement = this.document.activeElement = null;
+
+        apf.dispatchEvent("movefocus", {
+            fromElement : amlNode
+        });
+
+        
+    };
+    
+    var lastFocusParent;
+
+    this.$focusDefault = function(amlNode, e){
+        var fParent = findFocusParent(amlNode);
+        this.$focusLast(fParent, e);
+    };
+
+    this.$focusRoot = function(e){
+        var docEl = apf.document.documentElement;
+        if (this.$focusLast(docEl, e) === false) {
+            //docEl.$lastFocussed = null;
+            //this.moveNext(null, apf.document.documentElement, true, e);
+>>>>>>> hotfix/0.5.1
+        }
+        
+        return cursor;
+    }
+    
+    var originalCursor;
+    function resizeIndicate(e){
+        if(!e) e = event;
+        
+        if (!_self.resizable || _self.editable || document.onmousemove)
+            return;
+
+        //@todo This is probably not gen purpose
+        var pos   = apf.getAbsolutePosition(_self.$ext),//, _self.$ext.offsetParent
+            sLeft = 0,
+            sTop  = 0,
+            x     = e.clientX - pos[0] + sLeft + document.documentElement.scrollLeft,
+            y     = e.clientY - pos[1] + sTop + document.documentElement.scrollTop;
+        
+        if (!originalCursor)
+            originalCursor = apf.getStyle(this, "cursor");
+
+        var cursor = getResizeType.call(_self.$ext, x, y);
+        this.style.cursor = cursor 
+            ? cursor + "-resize" 
+            : originalCursor || "default";
+    };
+
+<<<<<<< HEAD
+    var oOutline;
+    
+    function initOutline(e){
+        var doc = this.$pHtmlDoc || document;
+        oOutline = doc.getElementById("apf_outline");
+        if (!oOutline) {
+            oOutline = doc.body.appendChild(doc.createElement("div"));
+            
+            oOutline.refCount = 0;
+            oOutline.setAttribute("id", "apf_outline");
+            
+            oOutline.style.position = "absolute";
+            oOutline.style.display  = "none";
+            //oOutline.style.zIndex   = 2000000;
+            apf.window.zManager.set("drag", oOutline);
+            oOutline.host = false;
+        }
+        oOutline.refCount++
+    }
+    
+    if (this.addEventListener && this.hasFeature(apf.__AMLNODE__) && !this.$amlLoaded) {
+        if (document.body)
+            initOutline.call(this);
+        else
+            this.addEventListener("DOMNodeInsertedIntoDocument", initOutline);
+    }
+    else {
+        this.$pHtmlDoc = document;
+        initOutline.call(this);
+    }
+    
+    this.$setOutline = function(o){
+        oOutline = o;
+    }
+    
+    
+    /*this.addEventListener("DOMNodeRemovedFromDocument", function(e){
+        oOutline.refCount--;
+        
+        if (!oOutline.refCount) {
+            //destroy
+        }
+    });*/
+};
+
+apf.GuiElement.propHandlers["resizable"] = function(value){
+    this.implement(apf.Interactive);
+    this.$propHandlers["resizable"].apply(this, arguments);
+}
+
+apf.GuiElement.propHandlers["draggable"] = function(value){
+    this.implement(apf.Interactive);
+    this.$propHandlers["draggable"].apply(this, arguments);
+};
+
+apf.Init.run("interactive");
+=======
+    this.$focusLast = function(amlNode, e, ignoreVisible){
+        var lf = amlNode.$lastFocussed;
+
+        if (lf && lf.parentNode && lf.$focussable === true
+          && (ignoreVisible || lf.$ext.offsetHeight)) {
+            this.$focus(lf, e, true);
+        }
+        else { //Let's find the object to focus first
+            var next, node = amlNode, skip;
+            while (node) {
+                if (!skip && node.focussable !== false && node.$focussable === true && !node.$tabList
+                  && (ignoreVisible || node.$ext && node.$ext.offsetHeight) && node.disabled < 1) {
+                    this.$focus(node, e, true);
+                    break;
+                }
+                
+                //Walk sub tree
+                if ((next = !skip && node.firstChild || !(skip = false) && node.nextSibling)) {
+                    node = next;
+                    if (node.$isWindowContainer > 0)
+                        skip = true;
+                }
+                else if (node == amlNode) {
+                    if (node.$isWindowContainer)
+                        this.$focus(node, e, true);
+                    return;
+                }
+                else {
+                    do {
+                        node = node.parentNode;
+                    } while (node && !node.nextSibling && node != amlNode 
+                      && !node.$isWindowContainer)
+                    
+                    if (node == amlNode) {
+                        if (node.$isWindowContainer)
+                            this.$focus(node, e, true);
+                        return; //do nothing
+                    }
+                    
+                    if (node) {
+                        if (node.$isWindowContainer) {
+                            this.$focus(node, e, true);
+                            break;
+                        }
+                        
+                        node = node.nextSibling;
+                    }
+                }
+            }
+
+            if (!node)
+                this.$focus(apf.document.documentElement);//return false;//
+>>>>>>> hotfix/0.5.1
+
+            /*@todo get this back from SVN
+            var node, list = amlNode.$tabList;
+            for (var i = 0; i < list.length; i++) {
+                node = list[i];
+                if (node.focussable !== false && node.$focussable === true
+                  && (ignoreVisible || node.$ext.offsetHeight)) {
+                    this.$focus(node, e, true);
+                    return;
+                }
+            }
+
+            this.$focus(apf.document.documentElement);*/
+        }
+    };
+
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/media.js)SIZE(18898)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+    function trackChildFocus(e){
+        if (e.name == "blur") {
+            if (e.srcElement != this && this.$blur)
+                this.$blur();
+            return;
+        }
+        
+        if (e.srcElement != this && this.$focus && (!e || !e.mouse || this.$focussable == apf.KEYBOARD_MOUSE))
+            this.$focus();
+        
+        if (e.srcElement == this || e.trackedChild) {
+            e.trackedChild = true;
+            return;
+        }
+>>>>>>> hotfix/0.5.1
+
+        this.$lastFocussed = e.srcElement;
+
+<<<<<<< HEAD
+apf.__MEDIA__ = 1 << 20;
+=======
+        if (this.localName && this.localName.indexOf("window") > -1)
+            e.trackedChild = true;
+    }
+>>>>>>> hotfix/0.5.1
+
+    function findFocusParent(amlNode){
+        var node = amlNode;
+        do {
+            node = node.parentNode;
+        } while(node && !node.$isWindowContainer);
+        //(!node.$focussable || node.focussable === false)
+
+<<<<<<< HEAD
 
 
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/multicheck.js)SIZE(16594)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
@@ -41148,55 +52141,7 @@ apf.window = function(){
                         
                         node = node.nextSibling;
                     }
-                }
-            }
-
-            if (!node)
-                this.$focus(apf.document.documentElement);//return false;//
-
-            /*@todo get this back from SVN
-            var node, list = amlNode.$tabList;
-            for (var i = 0; i < list.length; i++) {
-                node = list[i];
-                if (node.focussable !== false && node.$focussable === true
-                  && (ignoreVisible || node.$ext.offsetHeight)) {
-                    this.$focus(node, e, true);
-                    return;
-                }
-            }
-
-            this.$focus(apf.document.documentElement);*/
-        }
-    };
-
-    function trackChildFocus(e){
-        if (e.name == "blur") {
-            if (e.srcElement != this && this.$blur)
-                this.$blur();
-            return;
-        }
-        
-        if (e.srcElement != this && this.$focus && (!e || !e.mouse || this.$focussable == apf.KEYBOARD_MOUSE))
-            this.$focus();
-        
-        if (e.srcElement == this || e.trackedChild) {
-            e.trackedChild = true;
-            return;
-        }
-
-        this.$lastFocussed = e.srcElement;
-
-        if (this.localName && this.localName.indexOf("window") > -1)
-            e.trackedChild = true;
-    }
-
-    function findFocusParent(amlNode){
-        var node = amlNode;
-        do {
-            node = node.parentNode;
-        } while(node && !node.$isWindowContainer);
-        //(!node.$focussable || node.focussable === false)
-
+=======
         return node || apf.document.documentElement;
     }
 
@@ -41499,6 +52444,371 @@ apf.window = function(){
                     x         : e.clientX + document.documentElement.scrollLeft,
                     y         : e.clientY + document.documentElement.scrollTop,
                     htmlEvent : e
+>>>>>>> hotfix/0.5.1
+                }
+            }
+
+<<<<<<< HEAD
+            if (!node)
+                this.$focus(apf.document.documentElement);//return false;//
+
+            /*@todo get this back from SVN
+            var node, list = amlNode.$tabList;
+            for (var i = 0; i < list.length; i++) {
+                node = list[i];
+                if (node.focussable !== false && node.$focussable === true
+                  && (ignoreVisible || node.$ext.offsetHeight)) {
+                    this.$focus(node, e, true);
+                    return;
+                }
+            }
+
+            this.$focus(apf.document.documentElement);*/
+        }
+    };
+
+    function trackChildFocus(e){
+        if (e.name == "blur") {
+            if (e.srcElement != this && this.$blur)
+                this.$blur();
+            return;
+        }
+        
+        if (e.srcElement != this && this.$focus && (!e || !e.mouse || this.$focussable == apf.KEYBOARD_MOUSE))
+            this.$focus();
+        
+        if (e.srcElement == this || e.trackedChild) {
+            e.trackedChild = true;
+            return;
+=======
+        ev.bubbles = true; //@todo discuss this, are we ok with bubbling?
+
+        apf.contextMenuKeyboard = null;
+
+        if ((amlNode || apf).dispatchEvent("contextmenu", ev) === false
+          || ev.returnValue === false) {
+            if (e.preventDefault)
+                e.preventDefault();
+            return false;
+>>>>>>> hotfix/0.5.1
+        }
+
+        this.$lastFocussed = e.srcElement;
+
+        if (this.localName && this.localName.indexOf("window") > -1)
+            e.trackedChild = true;
+    }
+
+    function findFocusParent(amlNode){
+        var node = amlNode;
+        do {
+            node = node.parentNode;
+        } while(node && !node.$isWindowContainer);
+        //(!node.$focussable || node.focussable === false)
+
+        return node || apf.document.documentElement;
+    }
+
+    //Dom handler
+    //@todo make this look at the dom tree insertion point to determine tabindex
+    function moveFocus(e){
+        if (e && e.currentTarget != this)
+            return;
+        
+        if (this.$isWindowContainer)
+            apf.window.$tabList.pushUnique(this);
+        else
+            apf.window.$addFocus(this, this.tabindex, true)
+    }
+
+<<<<<<< HEAD
+    //Dom handler
+    function removeFocus(e){
+        if (e && (e.currentTarget != this || e.$doOnlyAdmin))
+            return;
+
+        //@todo apf3.0 this should be fixed by adding domremovenode events to all children
+        var list  = this.$focusParent.$tabList;
+        var nodes = this.childNodes;
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            list.remove(nodes[i]); //@todo assuming no windows here
+        }
+
+        if (apf.document.activeElement == this)
+            apf.window.moveNext();
+        
+        if (this.$isWindowContainer) {
+            apf.window.$tabList.remove(this); //@todo this can't be right
+            return;
+        }
+
+        if (!this.$focusParent)
+            return;
+
+        list.remove(this);
+        //this.$focusParent = null; //@experimental to not execute this
+    }
+
+    /**** Focus API ****/
+
+    /**
+     * Determines whether a given aml element has the focus.
+     * @param {AMLElement} the element to check
+     * @returns {Boolean} whether the element has focus.
+     */
+    this.hasFocus = function(amlNode){
+        return this.document.activeElement == amlNode;
+    };
+
+    /**
+     * @private
+     */
+    this.moveNext = function(shiftKey, relObject, switchWindows, e){
+        if (switchWindows && apf.document.activeElement) {
+            var p = apf.document.activeElement.$focusParent;
+            if (p.visible && p.modal)
+                return false;
+        }
+
+        var dir, start, next,
+            amlNode = relObject || apf.document.activeElement,
+            fParent = amlNode
+                ? (switchWindows && amlNode.$isWindowContainer 
+                  && amlNode.$isWindowContainer != -1
+                    ? apf.window
+                    : e && e.innerList ? amlNode.$focusParent : amlNode.$focusParent2 || amlNode.$focusParent)
+                : apf.document.documentElement,
+            list    = fParent.$tabList;
+
+        if (amlNode && (switchWindows || amlNode != apf.document.documentElement)) {
+            start   = (list || []).indexOf(amlNode);
+            if (start == -1) {
+                
+
+                return;
+            }
+        }
+        else {
+            start = -1;
+        }
+
+        if (this.document.activeElement && this.document.activeElement == amlNode
+          && list.length == 1 || list.length == 0)
+            return false;
+
+        dir  = (shiftKey ? -1 : 1);
+        next = start;
+        if (start < 0)
+            start = 0;
+        do {
+            next += dir;
+
+            if (next >= list.length)
+                next = 0;
+            else if (next < 0)
+                next = list.length - 1;
+
+            if (start == next && amlNode) {
+                if (list[0].$isWindowContainer)
+                    this.$focus(list[0], e);
+                
+                return false; //No visible enabled element was found
+            }
+
+            amlNode = list[next];
+        }
+        while (!amlNode
+            || amlNode.disabled > 0
+            || amlNode == apf.document.activeElement
+            || (switchWindows ? !amlNode.visible : amlNode.$ext && !amlNode.$ext.offsetHeight)
+            || amlNode.focussable === false
+            || switchWindows && !amlNode.$tabList.length);
+
+        if (fParent == apf.window && amlNode.$isWindowContainer != -2) {
+            this.$focusLast(amlNode, {mouse:true}, switchWindows);
+        }
+        else {
+            (e || (e = {})).shiftKey = shiftKey;
+            this.$focus(amlNode, e);
+        }
+
+        
+    };
+
+    /**
+     * @private
+     */
+    this.focusDefault = function(){
+        
+
+        if (this.moveNext() === false)
+            this.moveNext(null, apf.document.documentElement, true)
+    };
+
+    
+
+    /**** Set Window Events ****/
+
+    apf.addListener(window, "beforeunload", function(){
+        return apf.dispatchEvent("exit");
+    });
+
+    //@todo apf3.x why is this loaded twice
+    apf.addListener(window, "unload", function(){
+        if (!apf)
+            return;
+        
+        apf.window.isExiting = true;
+        apf.window.destroy();
+    });
+
+    
+
+    var timer, state = "", last = "";
+    this.$focusfix = function(){
+        
+        state += "a";
+        clearTimeout(timer);
+        $setTimeout("window.focus();");
+        timer = $setTimeout(determineAction);
+    };
+
+    this.$focusfix2 = function(){
+        
+        state += "b";
+        clearTimeout(timer);
+        timer = $setTimeout(determineAction);
+    };
+
+    this.$blurfix = function(){
+        
+        state += "c";
+        clearTimeout(timer);
+        timer = $setTimeout(determineAction);
+    };
+
+    function determineAction(){
+        clearTimeout(timer);
+
+        //apf.console.info(state);
+        if (state == "e" || state == "c"
+          || state.charAt(0) == "x" && !state.match(/eb$/)
+          || state == "ce" || state == "de") { //|| state == "ae"
+            if (last != "blur") {
+                last = "blur";
+                apf.window.dispatchEvent("blur");
+                //apf.console.warn("blur");
+            }
+        }
+        else {
+            if (last != "focus") {
+                last = "focus";
+                apf.window.dispatchEvent("focus");
+                //apf.console.warn("focus");
+            }
+        }
+
+        state = "";
+        timer = null;
+    }
+
+    apf.addListener(window, "focus", this.$focusevent = function(){
+        
+        if (apf.hasFocusBug) {
+            state += "d";
+            clearTimeout(timer);
+            timer = $setTimeout(determineAction);
+        }
+        else {
+            clearTimeout(iframeFixTimer)
+            iframeFix.newState = "focus";
+            //apf.console.warn("win-focus");
+            iframeFixTimer = $setTimeout(iframeFix, 10);
+        }
+    });
+
+    apf.addListener(window, "blur", this.$blurevent = function(){
+        if (!apf) return;
+        
+        
+        if (apf.hasFocusBug) {
+            state += "e";
+            clearTimeout(timer);
+            timer = $setTimeout(determineAction);
+        }
+        else {
+            clearTimeout(iframeFixTimer)
+            iframeFix.newState = "blur";
+            //apf.console.warn("win-blur");
+            iframeFixTimer = $setTimeout(iframeFix, 10);
+        }
+    });
+
+    var iframeFixTimer;
+    function iframeFix(){
+        clearTimeout(iframeFixTimer);
+
+        var newState = iframeFix.newState;
+        if (last == newState)
+            return;
+
+        last = newState;
+
+        apf.dispatchEvent(last);
+        //apf.console.warn(last);
+    }
+
+    this.hasFocus = function(){
+        return (last == "focus");
+    };
+
+    
+
+    /**** Keyboard and Focus Handling ****/
+
+    apf.addListener(document, "contextmenu", function(e){
+        if (!e)
+            e = event;
+
+        
+        var pos, ev,
+            amlNode = apf.findHost(e.srcElement || e.target)
+              || apf.document.activeElement
+              || apf.document && apf.document.documentElement;
+
+        if (amlNode && amlNode.localName == "menu") //The menu is already visible
+            return false;
+
+
+        //if (amlNode && amlNode.localName == "menu")
+            //amlNode = amlNode.parentNode;
+
+        if (apf.contextMenuKeyboard) {
+            if (amlNode) {
+                pos = amlNode.selected
+                    ? apf.getAbsolutePosition(amlNode.$selected)
+                    : apf.getAbsolutePosition(amlNode.$ext || amlNode.$pHtmlNode);
+            }
+            else {
+                pos = [0, 0];
+            }
+
+            ev = {
+                x         : pos[0] + 10 + document.documentElement.scrollLeft,
+                y         : pos[1] + 10 + document.documentElement.scrollTop,
+                amlNode   : amlNode,
+                htmlEvent : e
+            }
+        }
+        else {
+            if (e.htmlEvent) {
+                ev = e;
+            }
+            else {
+                ev = { //@todo probably have to deduct the border of the window
+                    x         : e.clientX + document.documentElement.scrollLeft,
+                    y         : e.clientY + document.documentElement.scrollTop,
+                    htmlEvent : e
                 }
             }
         }
@@ -41512,9 +52822,162 @@ apf.window = function(){
             if (e.preventDefault)
                 e.preventDefault();
             return false;
+=======
+        if (apf.config.disableRightClick) {
+            if (e.preventDefault)
+                e.preventDefault();
+            return false;
+        }
+    });
+    
+    apf.addListener(document, "mouseup", function(e){
+        if (!e) e = event;
+        
+        apf.dispatchEvent("mouseup", {
+            htmlEvent : e
+        });
+    });
+
+    var ta = {"INPUT":1, "TEXTAREA":1, "SELECT":1};
+    apf.addListener(document, "mousedown", this.$mousedown = function(e){
+        if (!e) e = event;
+        var p,
+            amlNode   = apf.findHost(e.srcElement || e.target);
+            /*cEditable = amlNode && amlNode.liveedit
+              
+            ;*/
+
+        
+        if (apf.popup.last && (!amlNode || apf.popup.last != amlNode.$uniqueId) 
+          && apf.popup.cache[apf.popup.last] 
+          && !apf.isChildOf(apf.popup.cache[apf.popup.last].content, e.srcElement || e.target, true))
+            apf.popup.forceHide();
+        
+
+        if (amlNode === false) 
+            amlNode = apf.document.activeElement;
+
+        
+        //Make sure the user cannot leave a modal window
+        if ((!amlNode || ((!amlNode.$focussable || amlNode.focussable === false)
+          && amlNode.canHaveChildren != 2 && !amlNode.$focusParent))
+          && apf.config.allowBlur) {
+            lastFocusParent = null;
+            if (apf.document.activeElement)
+                apf.document.activeElement.blur();
+        }
+        else if (amlNode) { //@todo check this for documentElement apf3.0
+            if ((p = apf.document.activeElement
+              && apf.document.activeElement.$focusParent || lastFocusParent)
+              && p.visible && p.modal && amlNode.$focusParent != p
+              && amlNode.$isWindowContainer != -1) {
+                apf.window.$focusLast(p, {mouse: true, ctrlKey: e.ctrlKey});
+            }
+            else if (!amlNode && apf.document.activeElement) {
+                apf.window.$focusRoot();
+            }
+            else if (amlNode.$isWindowContainer == -1) {
+                if (amlNode.$tabList.length)
+                    apf.window.moveNext(null, amlNode.$tabList[0], null, {mouse: true, innerList: true});
+                else
+                    apf.window.$focus(amlNode);
+            }
+            else if ((amlNode.disabled == undefined || amlNode.disabled < 1) 
+              && amlNode.focussable !== false) {
+                if (amlNode.$focussable) { // === apf.KEYBOARD_MOUSE
+                    apf.window.$focus(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
+                }
+                else if (amlNode.canHaveChildren == 2) {
+                    if (!apf.config.allowBlur || !apf.document.activeElement 
+                      || apf.document.activeElement.$focusParent != amlNode)
+                        apf.window.$focusLast(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
+                }
+                else {
+                    if (!apf.config.allowBlur || amlNode != apf.document.documentElement)
+                        apf.window.$focusDefault(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
+                }
+            }
+            else {
+                apf.window.$focusDefault(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
+            }
+    
+            
+            if (apf.hasFocusBug) {
+                var isTextInput = (ta[e.srcElement.tagName]
+                    || e.srcElement.isContentEditable) && !e.srcElement.disabled
+                    || amlNode.$isTextInput
+                    && amlNode.$isTextInput(e) && amlNode.disabled < 1;
+    
+                if (!amlNode || !isTextInput)
+                    apf.window.$focusfix();
+            }
+            else if (!last) {
+                apf.window.$focusevent();
+            }
+            
+        }
+        
+        
+        apf.dispatchEvent("mousedown", {
+            htmlEvent : e,
+            amlNode   : amlNode || apf.document.documentElement
+        });
+
+        //Non IE/ iPhone selection handling
+        if (apf.isIE || apf.isIphone)
+            return;
+
+        var canSelect = !((!apf.document
+          && (!apf.isParsingPartial || amlNode)
+          || apf.dragMode) && !ta[e.target.tagName]);
+
+        if (canSelect && amlNode) {
+            if (!e.target && e.srcElement)
+                e.target = {};
+            var isTextInput = (ta[e.target.tagName]
+                || e.target.contentEditable == "true") && !e.target.disabled  //@todo apf3.0 need to loop here?
+                || amlNode.$isTextInput
+                && amlNode.$isTextInput(e) && amlNode.disabled < 1;
+
+            //(!amlNode.canHaveChildren || !apf.isChildOf(amlNode.$int, e.srcElement))
+            if (!apf.config.allowSelect && !isTextInput
+              && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
+              && !amlNode.textselect) //&& (!amlNode.$int || amlNode.$focussable) //getElementsByTagNameNS(apf.ns.xhtml, "*").length
+                canSelect = false;
+        }
+        
+        // && e.button != 2
+        if (!canSelect) { // && !cEditable
+            if (e.preventDefault)
+                e.preventDefault();
+           
+	        try{  
+                if (document.activeElement && document.activeElement.contentEditable == "true") //@todo apf3.0 need to loop here?
+                    document.activeElement.blur();
+    	    }catch(e){}
+        }
+    });
+
+    //IE selection handling
+    apf.addListener(document, "selectstart", function(e){
+        if (!e) e = event;
+
+        var amlNode   = apf.findHost(e.srcElement);
+        var canSelect = !(!apf.document
+          && (!apf.isParsingPartial || amlNode)
+          || apf.dragMode);
+        
+        if (canSelect) {
+            //(!amlNode.canHaveChildren || !apf.isChildOf(amlNode.$int, e.srcElement))
+            if (!apf.config.allowSelect 
+              && (amlNode && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
+              && !amlNode.textselect)) //&& !amlNode.$int // getElementsByTagNameNS(apf.ns.xhtml, "*").length
+                canSelect = false;
+>>>>>>> hotfix/0.5.1
         }
         
 
+<<<<<<< HEAD
         if (apf.config.disableRightClick) {
             if (e.preventDefault)
                 e.preventDefault();
@@ -41664,8 +53127,7 @@ apf.window = function(){
               && (amlNode && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
               && !amlNode.textselect)) //&& !amlNode.$int // getElementsByTagNameNS(apf.ns.xhtml, "*").length
                 canSelect = false;
-        }
-
+=======
         if (!canSelect) {
             e.returnValue = false;
             return false;
@@ -41701,6 +53163,472 @@ apf.window = function(){
         if (!e)
             e = event;
 
+        var delta = null;
+        if (e.wheelDelta) {
+            delta = e.wheelDelta / 120;
+            if (apf.isOpera)
+                delta *= -1;
+        }
+        else if (e.detail) {
+            delta = -e.detail / 3;
+        }
+
+        if (delta !== null) {
+            //Fix for scrolling too much
+            if (apf.isIE) {
+                var el = e.srcElement || e.target;
+                while (el && el.scrollHeight <= el.offsetHeight)
+                    el = el.parentNode || el.$parentNode;
+                
+                if (el && el.nodeType == 9)
+                    el = el.documentElement;
+                
+                if (!el || el.nodeType != 1) return;
+
+                if (el && el.tagName == "BODY" && "auto|scroll".indexOf(apf.getStyle(el, "overflowY")) == -1)
+                    el = document.documentElement;
+
+                if (el && "auto|scroll".indexOf(apf.getStyle(el, "overflowY")) > -1) {
+                    var max, dist = 0.35 * el.offsetHeight * delta;
+                    if (delta < 0) {
+                        if (el && el.scrollTop >= (max = el.scrollHeight - el.offsetHeight + apf.getVerBorders(el)) + dist) {
+                            el.scrollTop = max;
+                            e.returnValue = false;
+                        }
+                    }
+                    else {
+                        if (el && el.scrollTop <= dist) {
+                            el.scrollTop = 0;
+                            e.returnValue = false;
+                        }
+                    }
+                }
+            }
+            
+            var ev  = {
+                delta     : delta, 
+                target    : e.target || e.srcElement, 
+                button    : e.button, 
+                ctrlKey   : e.ctrlKey, 
+                shiftKey  : e.shiftKey, 
+                altKey    : e.altKey,
+                bubbles   : true,
+                htmlEvent : e
+            };
+            
+            var amlNode = apf.findHost(e.srcElement || e.target);
+            var res = (amlNode || apf).dispatchEvent("mousescroll", ev);
+            if (res === false || ev.returnValue === false) {
+                if (e.preventDefault)
+                    e.preventDefault();
+
+                e.returnValue = false;
+            }
+        }
+    }
+
+    if (document.addEventListener)
+        document.addEventListener('DOMMouseScroll', wheel, false);
+
+    window.onmousewheel   =
+    document.onmousewheel = wheel; //@todo 2 keer events??
+    
+
+    //var browserNavKeys = {32:1,33:1,34:1,35:1,36:1,37:1,38:1,39:1,40:1}
+    
+    apf.addListener(document, "keyup", function(e){
+        e = e || event;
+
+        if (e.ctrlKey && e.keyCode == 9 && apf.document.activeElement) {
+            var w = apf.document.activeElement.$focusParent;
+            if (w.modal) {
+                if (e.preventDefault)
+                    e.preventDefault();
+                return false;
+            }
+
+            apf.window.moveNext(e.shiftKey,
+                apf.document.activeElement.$focusParent, true);
+
+            w = apf.document.activeElement.$focusParent;
+            if (w && w.bringToFront)
+                w.bringToFront();
+            
+            if (e.preventDefault)
+                e.preventDefault();
+            return false;    
+        }
+    });
+    
+    //@todo optimize this function
+    apf.addListener(document, "keydown", this.$keydown = function(e){
+        e = e || event;
+
+        
+
+        
+        if (e.keyCode == 93)
+            apf.contextMenuKeyboard = true;
+        
+
+        var amlNode           = apf.document.activeElement, //apf.findHost(e.srcElement || e.target),
+            htmlNode          = (e.explicitOriginalTarget || e.srcElement || e.target),
+            isTextInput = (ta[htmlNode.tagName]
+              || htmlNode.contentEditable || htmlNode.contentEditable == "true")  //@todo apf3.0 need to loop here?
+              && !htmlNode.disabled
+              || amlNode && amlNode.$isTextInput
+              && amlNode.$isTextInput(e) && amlNode.disabled < 1;
+
+        
+        //@todo move this to appsettings and use with_hotkey
+        var o,
+            ctrlKey = apf.isMac ? e.metaKey : e.ctrlKey;
+        if (!isTextInput && apf.config.undokeys && ctrlKey) {
+            //Ctrl-Z - Undo
+            if (e.keyCode == 90) {
+                o = apf.document.activeElement;
+                while (o && !o.getActionTracker && !o.$at)
+                    o = o.parentNode;
+                if (!o) o = apf.window;
+                (o.$at || o.getActionTracker()).undo();
+            }
+            //Ctrl-Y - Redo
+            else if (e.keyCode == 89) {
+                o = apf.document.activeElement;
+                while (o && !o.getActionTracker && !o.$at)
+                    o = o.parentNode;
+                if (!o) o = apf.window;
+                (o.$at || o.getActionTracker()).redo();
+            }
+>>>>>>> hotfix/0.5.1
+        }
+        
+
+<<<<<<< HEAD
+        if (!canSelect) {
+            e.returnValue = false;
+            return false;
+        }
+    });
+
+    // Keyboard forwarding to focussed object
+    apf.addListener(document, "keyup", this.$keyup = function(e){
+        if (!e) e = event;
+
+        
+        var ev = {
+            keyCode  : e.keyCode,
+            ctrlKey  : e.ctrlKey,
+            shiftKey : e.shiftKey,
+            altKey   : e.altkey,
+            htmlEvent: e,
+            bubbles  : true //@todo is this much slower?
+        };
+        
+        var aEl = apf.document && apf.document.activeElement;
+        if ((aEl && !aEl.disableKeyboard
+          ? aEl.dispatchEvent("keyup", ev)
+          : apf.dispatchEvent("keyup", ev)) === false) {
+            apf.preventDefault(e);
+            return false;
+        }
+        
+    });
+=======
+        var eInfo = {
+            ctrlKey    : e.ctrlKey,
+            metaKey    : e.metaKey,
+            shiftKey   : e.shiftKey,
+            altKey     : e.altKey,
+            keyCode    : e.keyCode,
+            htmlEvent  : e,
+            isTextInput: isTextInput,
+            bubbles    : true
+        };
+        
+        delete eInfo.currentTarget;
+        
+        //Keyboard forwarding to focussed object
+        var aEl = amlNode; //isTextInput ? amlNode :
+        if ((aEl && !aEl.disableKeyboard && !aEl.editable
+          ? aEl.dispatchEvent("keydown", eInfo) 
+          : apf.dispatchEvent("keydown", eInfo)) === false) {
+            apf.stopEvent(e);
+            if (apf.canDisableKeyCodes) {
+                try {
+                    e.keyCode = 0;
+                }
+                catch(e) {}
+            }
+            return false;
+        }
+        
+        //Focus handling
+        else if ((!apf.config.disableTabbing || apf.document.activeElement) && e.keyCode == 9) {
+            //Window focus handling
+            if (e.ctrlKey && apf.document.activeElement) {
+                var w = apf.document.activeElement.$focusParent;
+                if (w.modal) {
+                    if (e.preventDefault)
+                        e.preventDefault();
+                    return false;
+                }
+
+                apf.window.moveNext(e.shiftKey,
+                    apf.document.activeElement.$focusParent, true);
+
+                w = apf.document.activeElement.$focusParent;
+                if (w && w.bringToFront)
+                    w.bringToFront();
+            }
+            //Element focus handling
+            else if(!apf.document.activeElement || apf.document.activeElement.tagName != "menu") {
+                apf.window.moveNext(e.shiftKey);
+            }
+
+            if (e.preventDefault)
+                e.preventDefault();
+            return false;
+        }
+        
+
+        //Disable backspace behaviour triggering the backbutton behaviour
+        var altKey = apf.isMac ? e.metaKey : e.altKey;
+        if (apf.config.disableBackspace
+          && e.keyCode == 8// || (altKey && (e.keyCode == 37 || e.keyCode == 39)))
+          && !isTextInput) {
+            if (apf.canDisableKeyCodes) {
+                try {
+                    e.keyCode = 0;
+                }
+                catch(e) {}
+            }
+            e.returnValue = false;
+        }
+
+        //Disable space behaviour of scrolling down the page
+        /*if(Application.disableSpace && e.keyCode == 32 && e.srcElement.tagName.toLowerCase() != "input"){
+            e.keyCode = 0;
+            e.returnValue = false;
+        }*/
+
+        //Disable F5 refresh behaviour
+        if (apf.config.disableF5 && (e.keyCode == 116 || e.keyCode == 117)) {
+            if (apf.canDisableKeyCodes) {
+                try {
+                    e.keyCode = 0;
+                }
+                catch(e) {}
+            }
+            else {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            //return false;
+        }
+        
+        
+        /*if (browserNavKeys[e.keyCode] && apf.document.activeElement 
+          && apf.config.autoDisableNavKeys)
+            e.returnValue = false;*/
+
+        if (e.keyCode == 27)
+            e.returnValue = false;
+
+        if (!apf.config.allowSelect
+          && e.shiftKey && (e.keyCode > 32 && e.keyCode < 41)
+          && !isTextInput) {
+            e.returnValue = false;
+        }
+
+        //apf.dispatchEvent("keydown", null, eInfo);
+
+        if (e.returnValue === false && e.preventDefault)
+            e.preventDefault();
+
+        return e.returnValue;
+        
+    });
+    
+    apf.document = {};
+    this.init = function(strAml){
+        
+        if (apf.actiontracker) {
+            this.$at      = new apf.actiontracker();
+            this.$at.name = "default";
+            
+            apf.nameserver.register("actiontracker", "default", this.$at);
+            
+        }
+        
+        
+        
+
+         
+        
+        
+        //Put this in callback in between the two phases
+        
+        /*XForms and lazy devs support
+        if (!nodes.length && !apf.skins.skins["default"] && apf.autoLoadSkin) {
+            apf.console.warn("No skin file found, attempting to autoload the \
+                              default skin file: skins.xml");
+            apf.loadAmlInclude(null, doSync, "skins.xml", true);
+        }*/
+        
+
+        this.$domParser = new apf.DOMParser();
+        this.document = apf.document = this.$domParser.parseFromString(strAml, 
+          "text/xml", {
+            
+            timeout   : apf.config.initdelay,
+            
+            callback  : function(doc){
+                //@todo apf3.0
+
+                //Call the onload event (prevent recursion)
+                if (apf.parsed != 2) {
+                    //@todo apf3.0 onload is being called too often
+                    var inital = apf.parsed;
+                    apf.parsed = 2;
+                    apf.dispatchEvent("parse", { //@todo apf3.0 document
+                        initial : inital
+                    });
+                    apf.parsed = true;
+                }
+        
+                if (!apf.loaded) {
+                    
+        
+                    
+                    //Set the default selected element
+                    if (!apf.document.activeElement && (!apf.config.allowBlur 
+                      || apf.document.documentElement 
+                      && apf.document.documentElement.editable))
+                        apf.window.focusDefault();
+                    
+
+                    apf.loaded = true;
+                    $setTimeout(function() {
+                        apf.dispatchEvent("load");
+                        apf.addEventListener("$event.load", function(cb){
+                            cb();
+                        });
+                    });
+                }
+        
+                //END OF ENTIRE APPLICATION STARTUP
+        
+                
+                
+                
+          }
+        }); //async
+    };
+    
+    
+    var lastFocusElement;
+    this.addEventListener("focus", function(e){
+        if (!apf.document.activeElement && lastFocusParent && !apf.isIphone) {
+            lastFocusElement.focus();
+            /*
+            if (lastFocusParent.$isWindowContainer < 0) {
+                if (lastFocusParent.$tabList.length)
+                    apf.window.moveNext(null, lastFocusParent.$tabList[0]);
+                else
+                    apf.window.$focus(lastFocusParent);
+            }
+            else 
+                apf.window.$focusLast(lastFocusParent);*/
+        }
+    });
+    this.addEventListener("blur", function(e){
+        if (!apf.document.activeElement || apf.isIphone)
+            return;
+
+        apf.document.activeElement.blur(true, {srcElement: this});//, {cancelBubble: true}
+        lastFocusParent   = apf.document.activeElement.$focusParent;
+        lastFocusElement  = apf.document.activeElement;
+        apf.activeElement = apf.document.activeElement = null;
+    });
+    this.getLastActiveElement = function(){
+        return apf.activeElement || lastFocusElement;
+    }
+    
+
+    /**
+     * @private
+     */
+    this.destroy = function(){
+        this.$at = null;
+
+        apf.unload(this);
+
+        apf           =
+        this.win      =
+        this.window   =
+        this.document = null;
+
+        //@todo this is not needed... maybe use apf.removeListener
+        window.onfocus        =
+        window.onerror        =
+        window.onunload       =
+        window.onbeforeunload =
+        window.onbeforeprint  =
+        window.onafterprint   =
+        window.onmousewheel   =
+        window.onblur         = null;
+
+        //@todo use apf.removeEvent
+
+        document.oncontextmenu =
+        document.onmousedown   =
+        document.onmousemove   =
+        document.onmouseup     =
+        document.onmousewheel  =
+        document.onkeyup       =
+        document.onkeydown     = null
+
+        if (document.body) {
+            document.body.onmousedown =
+            document.body.onmousemove =
+            document.body.onmouseup   = null;
+
+            document.body.innerHTML = "";
+        }
+    };
+};
+apf.window.prototype = new apf.Class().$init();
+apf.window = new apf.window();
+
+
+/**
+ * @private
+ */
+apf.sanitizeTextbox = function(oTxt){
+    if (!apf.hasFocusBug)
+        return;
+    
+    oTxt.onfocus = function(){
+        if (apf.window)
+            apf.window.$focusfix2();
+    };
+
+    oTxt.onblur = function(){
+        if (apf.window)
+            apf.window.$blurfix();
+    };
+};
+
+
+>>>>>>> hotfix/0.5.1
+
+    
+    var wheel = this.$mousewheel = function wheel(e) {
+        if (!e)
+            e = event;
+
+<<<<<<< HEAD
         var delta = null;
         if (e.wheelDelta) {
             delta = e.wheelDelta / 120;
@@ -42135,6 +54063,13 @@ apf.sanitizeTextbox = function(oTxt){
 
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/gecko.js)SIZE(6753)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
+=======
+/*FILEHEAD(core/browsers/gears.js)SIZE(1391)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+
+
+/*FILEHEAD(core/browsers/gecko.js)SIZE(6753)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
 /*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
@@ -42155,6 +54090,1133 @@ apf.sanitizeTextbox = function(oTxt){
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
+
+
+/**
+ * Compatibility layer for Gecko based browsers.
+ * @private
+ */
+apf.runGecko = function(){
+    if (apf.runNonIe)
+        apf.runNonIe();
+
+    /* ***************************************************************************
+     XSLT
+     ****************************************************************************/
+    
+    
+    //XMLDocument.selectNodes
+    HTMLDocument.prototype.selectNodes = XMLDocument.prototype.selectNodes = function(sExpr, contextNode){
+        try {
+            var oResult = this.evaluate(sExpr, (contextNode || this),
+                this.createNSResolver(this.documentElement),
+                7, null); //XpathResult.ORDERED_NODE_ITERATOR_TYPE
+        }
+        catch(ex) {
+            var msg = ex.message;
+            if (ex.code == ex.INVALID_EXPRESSION_ERR)
+                msg = msg.replace(/the expression/i, "'" + sExpr + "'");
+            throw new Error(ex.lineNumber, "XPath error: " + msg);
+        }
+
+        var nodeList = new Array(oResult.snapshotLength);
+        nodeList.expr = sExpr;
+        for (var i = nodeList.length - 1; i >= 0; i--) 
+            nodeList[i] = oResult.snapshotItem(i);
+        return nodeList;
+    };
+    
+    //Element.selectNodes
+    Text.prototype.selectNodes =
+    Attr.prototype.selectNodes =
+    Element.prototype.selectNodes = function(sExpr){
+       return this.ownerDocument.selectNodes(sExpr, this);
+    };
+    
+    //XMLDocument.selectSingleNode
+    HTMLDocument.prototype.selectSingleNode = 
+    XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
+        try {
+            var oResult = this.evaluate(sExpr, (contextNode || this),
+                this.createNSResolver(this.documentElement),
+                9, null); //XpathResult.FIRST_ORDERED_NODE_TYPE
+        }
+        catch(ex) {
+            var msg = ex.message;
+            if (ex.code == ex.INVALID_EXPRESSION_ERR)
+                msg = msg.replace(/the expression/i, "'" + sExpr + "'");
+            throw new Error(ex.lineNumber, "XPath error: " + msg);
+        }
+        
+        return oResult.singleNodeValue;
+    };
+    
+    //Element.selectSingleNode
+    Text.prototype.selectSingleNode =
+    Attr.prototype.selectSingleNode =
+    Element.prototype.selectSingleNode = function(sExpr){
+        return this.ownerDocument.selectSingleNode(sExpr, this);
+    };
+    
+    
+    
+    var serializer = new XMLSerializer();
+    var o = document.createElement("div");
+    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s) {
+        var frag, l, node, i;
+        if (nodeList) {
+            frag = document.createDocumentFragment();
+            for (i = nodeList.length - 1; i >= 0; i--) {
+                node = nodeList[i];
+                frag.insertBefore(node, frag.firstChild);
+            }
+        }
+        
+        o.innerHTML = typeof s == "string" ? s : apf.html_entity_decode(serializer.serializeToString(frag))
+            .replace(/<([^>]+)\/>/g, "<$1></$1>");
+
+        frag = document.createDocumentFragment();
+        for (i = 0, l = o.childNodes.length; i < l; i++) {
+            node = o.childNodes[0];
+            frag.appendChild(node);
+        }
+
+        if (beforeNode)
+            htmlNode.insertBefore(frag, beforeNode);
+        htmlNode.appendChild(frag);
+    };
+
+    apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
+        if (htmlNode.nodeType != 11 && !htmlNode.style)
+            return htmlNode.appendChild(xmlNode);
+        
+        if (!s) {
+            s = apf.html_entity_decode(xmlNode.serialize
+                ? xmlNode.serialize(true)
+                : ((xmlNode.nodeType == 3 || xmlNode.nodeType == 4 || xmlNode.nodeType == 2)
+                    ? xmlNode.nodeValue
+                    : serializer.serializeToString(xmlNode)));
+        }
+
+        o.innerHTML = s.replace(/<([^>]+)\/>/g, "<$1></$1>");
+
+        if (beforeNode)
+            htmlNode.insertBefore(o.firstChild, beforeNode);
+        else
+            htmlNode.appendChild(o.firstChild);
+
+        return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
+    };
+    
+    /* ******** Error Compatibility **********************************************
+     Error Object like IE
+     ****************************************************************************/
+    function Error(nr, msg){
+        
+        
+        this.message = msg;
+        this.nr = nr;
+    }
+    
+    apf.getHtmlLeft = function(oHtml){
+        return (oHtml.offsetLeft
+            + (parseInt(apf.getStyle(oHtml.parentNode, "borderLeftWidth")) || 0));
+    };
+
+    apf.getHtmlRight = function(oHtml){
+        var p;
+        return (((p = oHtml.offsetParent).tagName == "BODY" 
+          ? apf.getWindowWidth()
+          : p.offsetWidth)
+            - oHtml.offsetLeft - oHtml.offsetWidth
+            - (2 * (parseInt(apf.getStyle(p, "borderLeftWidth")) || 0))
+            - (parseInt(apf.getStyle(p, "borderRightWidth")) || 0));
+    };
+
+    apf.getHtmlTop = function(oHtml){
+        return (oHtml.offsetTop
+            + (parseInt(apf.getStyle(oHtml.parentNode, "borderTopWidth")) || 0));
+    };
+    
+    apf.getHtmlBottom = function(oHtml){
+        var p;
+        return (((p = oHtml.offsetParent).tagName == "BODY" 
+          ? apf.getWindowHeight()
+          : p.offsetHeight)
+            - oHtml.offsetTop - oHtml.offsetHeight
+            - (2 * (parseInt(apf.getStyle(p, "borderTopWidth")) || 0))
+            - (parseInt(apf.getStyle(p, "borderBottomWidth")) || 0));
+    };
+
+    apf.getBorderOffset = function(oHtml){
+        return [-1 * (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0),
+            -1 * (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)];
+    };
+}
+
+
+
+
+/*FILEHEAD(core/browsers/ie.js)SIZE(14081)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+/**
+ * Compatibility layer for Internet Explorer browsers.
+ * @private
+ */
+apf.runIE = function(){
+    /* ******** XML Compatibility ************************************************
+     Extensions to the xmldb
+     ****************************************************************************/
+    var hasIE7Security = false,
+        hasIESecurity  = false;
+    
+
+    
+    
+
+    apf.getHttpReq = hasIESecurity
+        ? function(){
+            if (apf.availHTTP.length)
+                return apf.availHTTP.pop();
+
+            
+
+            return new XMLHttpRequest();
+        }
+        : function(){
+            if (apf.availHTTP.length)
+                return apf.availHTTP.pop();
+
+            
+
+            return new ActiveXObject("microsoft.XMLHTTP");
+        };
+
+    apf.getXmlDom = hasIESecurity
+        ? function(message, noError){
+            var xmlParser = getDOMParser(message, noError);
+            return xmlParser;
+        }
+        : function(message, noError, preserveWhiteSpaces){
+            var xmlParser = new ActiveXObject("microsoft.XMLDOM");
+            xmlParser.setProperty("SelectionLanguage", "XPath");
+            if (preserveWhiteSpaces)
+                xmlParser.preserveWhiteSpace = true;
+
+            if (message) {
+                if (apf.cantParseXmlDefinition)
+                    message = message.replace(/\] \]/g, "] ]")
+                                     .replace(/^<\?[^>]*\?>/, "");//replace xml definition <?xml .* ?> for IE5.0
+
+                xmlParser.loadXML(message);
+
+                
+                if (xmlParser.parseError != 0 && apf.xmldb && apf.isJson(message)) {
+                    try {
+                        xmlParser = apf.json2Xml(message, noError);
+                    }
+                   catch(e) {
+                        throw new Error(apf.formatErrorString(1051, null,
+                           "JSON to XML conversion error occurred."+e.message,
+                           "\nSource Text : " + message.replace(/\t/gi, " ")));
+                    }
+                }
+                else
+                
+                if (!noError)
+                    this.xmlParseError(xmlParser);
+            }
+
+            return xmlParser;
+        };
+
+    apf.xmlParseError = function(xml){
+        var xmlParseError = xml.parseError;
+        if (xmlParseError != 0) {
+            /*
+             http://msdn.microsoft.com/library/en-us/xmlsdk30/htm/xmobjpmexmldomparseerror.asp?frame=true
+
+             errorCode     Contains the error code of the last parse error. Read-only.
+             filepos         Contains the absolute file position where the error occurred. Read-only.
+             line             Specifies the line number that contains the error. Read-only.
+             linepos         Contains the character position within the line where the error occurred. Read-only.
+             reason         Explains the reason for the error. Read-only.
+             srcText         Returns the full text of the line containing the error. Read-only.
+             url             Contains the URL of the XML document containing the last error. Read-only.
+             */
+            throw new Error(apf.formatErrorString(1050, null,
+                "XML Parse error on line " + xmlParseError.line,
+                xmlParseError.reason + "Source Text:\n"
+                    + xmlParseError.srcText.replace(/\t/gi, " ")
+            ));
+        }
+
+        return xml;
+    };
+    
+    /**
+     * This method retrieves the current value of a property on a HTML element
+     * @param {HTMLElement} el    the element to read the property from
+     * @param {String}      prop  the property to read
+     * @returns {String}
+     */
+    apf.getStyle = function(el, prop) {
+        return el.currentStyle[prop];
+    };
+  
+    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s){
+        var str;
+        if (nodeList) {
+	        for (str = [], i = 0, l = nodeList.length; i < l; i++)
+	            str[i] = nodeList[i].xml;
+        }
+        str = s || apf.html_entity_decode(str.join(""));
+        
+        if (apf.isIE < 7)
+            str = str.replace(/style="background-image:([^"]*)"/g, 
+              "find='$1' style='background-image:$1'");
+
+        try {
+            (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
+                ? "beforebegin"
+                : "beforeend", str);
+        }
+        catch (e) {
+            //IE table hack
+            document.body.insertAdjacentHTML("beforeend", "<table><tr>"
+                + str + "</tr></table>");
+
+            var x = document.body.lastChild.firstChild.firstChild;
+            for (i = x.childNodes.length - 1; i >= 0; i--)
+                htmlNode.appendChild(x.childNodes[apf.hasDynamicItemList ? 0 : i]);
+        }
+
+        //Fix IE image loading bug
+        if (apf.isIE < 7) {
+            $setTimeout(function(){
+                var nodes = htmlNode.getElementsByTagName("*");
+                for (var s, i = 0, l = nodes.length; i < l; i++) {
+                    if (s = nodes[i].getAttribute("find"))
+                        nodes[i].style.backgroundImage = s.trim(); //@todo apf3.0 why is this needed?
+                }
+            });
+        }
+    };
+    
+    /* I have no idea what below code should do
+    
+    if (pNode.nodeType == 11) {
+        id = xmlNode.getAttribute("id");
+        if (!id)
+            throw new Error(apf.formatErrorString(1049, null, "xmldb", "Inserting Cache Item in Document Fragment without an ID"));
+
+        document.body.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
+        pNode.appendChild(document.getElementById(id));
+    }*/
+    apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, str){
+        if (htmlNode.nodeType != 11 && !htmlNode.style)
+            return htmlNode.appendChild(xmlNode);
+        
+        var pNode = beforeNode || htmlNode;
+        
+        if (!str)
+            str = apf.html_entity_decode(xmlNode.serialize
+                ? xmlNode.serialize(true)
+                : xmlNode.xml || xmlNode.outerHTML || xmlNode.nodeValue);
+        try {
+            pNode.insertAdjacentHTML(beforeNode 
+                ? "beforeBegin" 
+                : "beforeEnd", str);
+        }
+        catch(e) {
+            
+            
+            pNode.insertAdjacentHTML("afterEnd", str);
+            return pNode.nextSibling;
+        }
+
+        if (beforeNode)
+            return beforeNode.previousSibling;
+        else 
+            return htmlNode.lastChild.nodeType == 1 
+                ? htmlNode.lastChild 
+                : htmlNode.lastChild.previousSibling;
+            
+    };
+
+    apf.getHtmlLeft = function(oHtml){
+        return (oHtml.offsetLeft
+            - (apf.isIE > 7 && parseInt(oHtml.parentNode.currentStyle["borderLeftWidth"]) || 0));
+    };
+
+    apf.getHtmlRight = function(oHtml){
+        var p;
+        return (((p = oHtml.offsetParent).tagName == "BODY"
+          ? apf.getWindowWidth()
+          : p.offsetWidth)
+            - oHtml.offsetLeft - oHtml.offsetWidth
+            - (apf.isIE < 8 && parseInt(p.currentStyle["borderLeftWidth"]) || 0)
+            - (parseInt(p.currentStyle["borderRightWidth"]) || 0));
+    };
+
+    apf.getHtmlTop = function(oHtml){
+        return (oHtml.offsetTop
+            - (apf.isIE > 7 && parseInt(oHtml.offsetParent.currentStyle["borderTopWidth"]) || 0));
+    };
+
+    apf.getHtmlBottom = function(oHtml){
+        var p;
+        return (((p = oHtml.offsetParent).tagName == "BODY"
+          ? apf.getWindowHeight()
+          : p.offsetHeight)
+            - oHtml.offsetTop - oHtml.offsetHeight
+            - (apf.isIE < 8 && parseInt(p.currentStyle["borderTopWidth"]) || 0)
+            - (parseInt(p.currentStyle["borderBottomidth"]) || 0));
+    };
+
+    apf.getBorderOffset = function(oHtml){
+        return apf.isIE < 8 && [0,0] || [parseInt(oHtml.currentStyle["borderLeftWidth"]) || 0,
+                parseInt(oHtml.currentStyle["borderTopWidth"]) || 0]
+    };
+    
+    apf.getOpacity = function(oHtml) {
+        return parseInt(((oHtml.currentStyle["filter"] || "").match(/alpha\(opacity=(\d*)\)/) || [0,0])[1]) / 100;
+    };
+    
+    apf.setOpacity = function(oHtml, value){
+        oHtml.style.filter = value == 1
+            ? ""
+            : "alpha(opacity=" + Math.round(value * 100) + ")";
+    };
+    
+    
+    /**
+     * @private
+     */
+    apf.popup2 = {
+        cache: {},
+        setContent: function(cacheId, content, style, width, height){
+            if (!this.popup)
+                this.init();
+
+            this.cache[cacheId] = {
+                content: content,
+                style  : style,
+                width  : width,
+                height : height
+            };
+            if (content.parentNode)
+                content.parentNode.removeChild(content);
+            if (style)
+                apf.importCssString(style, this.popup.document);
+
+            return this.popup.document;
+        },
+
+        removeContent: function(cacheId){
+            this.cache[cacheId] = null;
+            delete this.cache[cacheId];
+        },
+
+        init: function(){
+            this.popup = window.createPopup();
+
+            this.popup.document.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\
+                <html xmlns="http://www.w3.org/1999/xhtml" xmlns:a=' + apf.ns.aml + ' xmlns:xsl="http://www.w3.org/1999/XSL/Transform">\
+                <head>\
+                    <script>\
+                    var apf = {\
+                        all: [],\
+                        lookup:function(uniqueId){\
+                            return this.all[uniqueId] || {\
+                                $setStyleClass:function(){}\
+                            };\
+                        }\
+                    };\
+                    function destroy(){\
+                        apf.all=null;\
+                    }\
+                    </script>\
+                    <style>\
+                    HTML{border:0;overflow:hidden;margin:0}\
+                    BODY{margin:0}\
+                    </style>\
+                </head>\
+                <body onmouseover="if(!self.apf) return;if(this.c){apf.all = this.c.all;this.c.Popup.parentDoc=self;}"></body>\
+                </html>');
+
+            var c = apf;
+            this.popup.document.body.onmousemove = function(){
+                this.c = c
+            }
+        },
+
+        show: function(cacheId, x, y, animate, ref, width, height, callback){
+            if (!this.popup)
+                this.init();
+            var o = this.cache[cacheId];
+            //if(this.last != cacheId)
+            this.popup.document.body.innerHTML = o.content.outerHTML;
+
+            if (animate) {
+                var iVal, steps = 7, i = 0, popup = this.popup;
+                iVal = setInterval(function(){
+                    var value = ++i * ((height || o.height) / steps);
+                    popup.show(x, y, width || o.width, value, ref);
+                    popup.document.body.firstChild.style.marginTop
+                        = (i - steps - 1) * ((height || o.height) / steps);
+                    if (i > steps) {
+                        clearInterval(iVal)
+                        callback(popup.document.body.firstChild);
+                    }
+                }, 10);
+            }
+            else {
+                this.popup.show(x, y, width || o.width, height || o.height, ref);
+            }
+
+            this.last = cacheId;
+        },
+
+        hide: function(){
+            if (this.popup)
+                this.popup.hide();
+        },
+
+        forceHide: function(){
+            if (this.last)
+                apf.lookup(this.last).dispatchEvent("popuphide");
+        },
+
+        destroy: function(){
+            if (!this.popup)
+                return;
+            this.popup.document.body.c = null;
+            this.popup.document.body.onmouseover = null;
+        }
+    };
+    
+
+    
+    apf.importClass(apf.runXpath, true, self);
+    
+}
+
+
+
+
+/*FILEHEAD(core/browsers/iphone.js)SIZE(11827)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(core/browsers/non_ie.js)SIZE(24968)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+/**
+ * @private
+ */
+apf.runNonIe = function (){
+    
+
+    DocumentFragment.prototype.getElementById = function(id){
+        return this.childNodes.length ? this.childNodes[0].ownerDocument.getElementById(id) : null;
+    };
+
+    
+    
+    /**** XML Serialization ****/
+    if (XMLDocument.prototype.__defineGetter__) {
+        //XMLDocument.xml
+        XMLDocument.prototype.__defineGetter__("xml", function(){
+            return (new XMLSerializer()).serializeToString(this);
+        });
+        XMLDocument.prototype.__defineSetter__("xml", function(){
+            throw new Error(apf.formatErrorString(1042, null, "XML serializer", "Invalid assignment on read-only property 'xml'."));
+        });
+        
+        //Node.xml
+        Node.prototype.__defineGetter__("xml", function(){
+            if (this.nodeType == 3 || this.nodeType == 4 || this.nodeType == 2) 
+                return this.nodeValue;
+            return (new XMLSerializer()).serializeToString(this);
+        });
+        
+        //Node.xml
+        Element.prototype.__defineGetter__("xml", function(){
+            return (new XMLSerializer()).serializeToString(this);
+        });
+    }
+    
+    /* ******** HTML Interfaces **************************************************
+        insertAdjacentHTML(), insertAdjacentText() and insertAdjacentElement()
+    ****************************************************************************/
+    if (typeof HTMLElement!="undefined") {
+        if (!HTMLElement.prototype.insertAdjacentElement) {
+            Text.prototype.insertAdjacentElement =
+            HTMLElement.prototype.insertAdjacentElement = function(where,parsedNode){
+                switch (where.toLowerCase()) {
+                    case "beforebegin":
+                        this.parentNode.insertBefore(parsedNode,this);
+                        break;
+                    case "afterbegin":
+                        this.insertBefore(parsedNode,this.firstChild);
+                        break;
+                    case "beforeend":
+                        this.appendChild(parsedNode);
+                        break;
+                    case "afterend":
+                        if (this.nextSibling)
+                            this.parentNode.insertBefore(parsedNode,this.nextSibling);
+                        else
+                            this.parentNode.appendChild(parsedNode);
+                        break;
+                }
+            };
+        }
+
+        if (!HTMLElement.prototype.insertAdjacentHTML) {
+            Text.prototype.insertAdjacentHTML =
+            HTMLElement.prototype.insertAdjacentHTML = function(where,htmlStr){
+                var r = this.ownerDocument.createRange();
+                r.setStartBefore(apf.isWebkit
+                    ? document.body
+                    : (self.document ? document.body : this));
+                var parsedHTML = r.createContextualFragment(htmlStr);
+                this.insertAdjacentElement(where, parsedHTML);
+            };
+        }
+
+        if (!HTMLBodyElement.prototype.insertAdjacentHTML) //apf.isWebkit)
+            HTMLBodyElement.prototype.insertAdjacentHTML = HTMLElement.prototype.insertAdjacentHTML;
+    
+        if (!HTMLElement.prototype.insertAdjacentText) {
+            Text.prototype.insertAdjacentText =
+            HTMLElement.prototype.insertAdjacentText = function(where,txtStr){
+                var parsedText = document.createTextNode(txtStr);
+                this.insertAdjacentElement(where,parsedText);
+            };
+        }
+        
+        //HTMLElement.removeNode
+        HTMLElement.prototype.removeNode = function(){
+            if (!this.parentNode) return;
+
+            this.parentNode.removeChild(this);
+        };
+        
+        //Currently only supported by Gecko
+        if (HTMLElement.prototype.__defineSetter__) {
+            //HTMLElement.innerText
+            HTMLElement.prototype.__defineSetter__("innerText", function(sText){
+                var s = "" + sText;
+                this.innerHTML = s.replace(/\&/g, "&amp;")
+                    .replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            });
+        
+            HTMLElement.prototype.__defineGetter__("innerText", function(){
+                return this.innerHTML.replace(/<[^>]+>/g,"")
+                    .replace(/\s\s+/g, " ").replace(/^\s+|\s+$/g, " ");
+            });
+            
+            HTMLElement.prototype.__defineGetter__("outerHTML", function(){
+                return (new XMLSerializer()).serializeToString(this);
+            });
+        }
+    }
+    
+    /* ******** XML Compatibility ************************************************
+        Giving the Mozilla XML Parser the same interface as IE's Parser
+    ****************************************************************************/
+    var ASYNCNOTSUPPORTED = false;
+    
+    //Test if Async is supported
+    try {
+        XMLDocument.prototype.async = true;
+        ASYNCNOTSUPPORTED           = true;
+    } catch(e) {/*trap*/} 
+    
+    Document.prototype.onreadystatechange = null;
+    Document.prototype.parseError         = 0;
+    
+    Array.prototype.item = function(i){return this[i];};
+    Array.prototype.expr = "";
+    
+    /*try{
+        XMLDocument.prototype.readyState = 0;
+    }catch(e){}*/
+    
+    XMLDocument.prototype.$clearDOM = function(){
+        while (this.hasChildNodes())
+            this.removeChild(this.firstChild);
+    };
+    
+    XMLDocument.prototype.$copyDOM = function(oDoc){
+        this.$clearDOM();
+        
+        if (oDoc.nodeType == 9 || oDoc.nodeType == 11) {
+           var oNodes = oDoc.childNodes;
+    
+           for (var i = 0; i < oNodes.length; i++)
+                this.appendChild(this.importNode(oNodes[i], true));
+        }
+        else if (oDoc.nodeType == 1)
+            this.appendChild(this.importNode(oDoc, true));
+    };
+    
+    //XMLDocument.loadXML();
+    XMLDocument.prototype.loadXML = function(strXML){
+        apf.xmldb.setReadyState(this, 1);
+        var sOldXML = this.xml || this.serialize();
+        var oDoc    = (new DOMParser()).parseFromString(strXML, "text/xml");
+        apf.xmldb.setReadyState(this, 2);
+        this.$copyDOM(oDoc);
+        apf.xmldb.setReadyState(this, 3);
+        apf.xmldb.loadHandler(this);
+        return sOldXML;
+    };
+    
+    Node.prototype.getElementById = function(id){};
+    
+    HTMLElement.prototype.replaceNode = 
+    Element.prototype.replaceNode     = function(xmlNode){
+        if (!this.parentNode) return;
+
+        this.parentNode.insertBefore(xmlNode, this);
+        this.parentNode.removeChild(this);
+    };
+    
+    //XMLDocument.load
+    XMLDocument.prototype.$load = XMLDocument.prototype.load;
+    XMLDocument.prototype.load  = function(sURI){
+        var oDoc = document.implementation.createDocument("", "", null);
+        oDoc.$copyDOM(this);
+        this.parseError = 0;
+        apf.xmldb.setReadyState(this, 1);
+    
+        try {
+            if (this.async == false && ASYNCNOTSUPPORTED) {
+                var tmp = new XMLHttpRequest();
+                tmp.open("GET", sURI, false);
+                tmp.overrideMimeType("text/xml");
+                tmp.send(null);
+                apf.xmldb.setReadyState(this, 2);
+                this.$copyDOM(tmp.responseXML);
+                apf.xmldb.setReadyState(this, 3);
+            } else
+                this.$load(sURI);
+        }
+        catch (objException) {
+            this.parseError = -1;
+        }
+        finally {
+            apf.xmldb.loadHandler(this);
+        }
+    
+        return oDoc;
+    };
+    
+    
+    
+    
+    
+    /**
+     * This method retrieves the current value of a property on a HTML element
+     * @param {HTMLElement} el    the element to read the property from
+     * @param {String}      prop  the property to read
+     * @returns {String}
+     */
+    var getStyle = apf.getStyle = function(el, prop) {
+        try{
+            return (window.getComputedStyle(el, "") || {})[prop] || "";
+        }catch(e){}
+    };
+    
+    //XMLDocument.setProperty
+    HTMLDocument.prototype.setProperty = 
+    XMLDocument.prototype.setProperty  = function(x,y){};
+    
+    /* ******** XML Compatibility ************************************************
+        Extensions to the xmldb
+    ****************************************************************************/
+    apf.getHttpReq = function(){
+        if (apf.availHTTP.length)
+            return apf.availHTTP.pop();
+        return new XMLHttpRequest();
+    };
+
+    apf.getXmlDom = function(message, noError, preserveWhiteSpaces){
+        var xmlParser;
+        if (message) {
+            if (preserveWhiteSpaces === false)
+                message = message.replace(/>[\s\n\r]*</g, "><");
+            
+            xmlParser = new DOMParser();
+            xmlParser = xmlParser.parseFromString(message, "text/xml");
+
+            
+            //xmlParser.documentElement.tagName == "parsererror"
+            if (xmlParser.getElementsByTagName("parsererror").length && apf.xmldb
+              && apf.isJson(message)) {
+                try {
+                    xmlParser = apf.json2Xml(message, noError);
+                }
+                catch(e) {
+                    throw new Error(apf.formatErrorString(1051, null,
+                        "JSON to XML conversion error occurred.",
+                        "\nSource Text : " + message.replace(/\t/gi, " ")));
+                }
+            }
+            else
+            
+            if (!noError)
+                this.xmlParseError(xmlParser);
+        }
+        else {
+            xmlParser = document.implementation.createDocument("", "", null);
+        }
+        
+        return xmlParser;
+    };
+    
+    apf.xmlParseError = function(xml){
+        //if (xml.documentElement.tagName == "parsererror") {
+        if (xml.getElementsByTagName("parsererror").length) { 
+            var nodeValue = xml.documentElement.firstChild.nodeValue;
+
+            if (nodeValue != null) {
+                var str     = nodeValue.split("\n"),
+                    linenr  = str[2].match(/\w+ (\d+)/)[1],
+                    message = str[0].replace(/\w+ \w+ \w+: (.*)/, "$1");
+            } else {
+                if(nodeValue = xml.documentElement.firstChild.getElementsByTagName('div')[0].firstChild.nodeValue) {
+                    var linenr  = nodeValue.match(/line\s(\d*)/)[1] || "N/A",
+                        message = nodeValue.match(/column\s\d*:(.*)/)[1] || "N/A";
+                }
+                else {
+                    var linenr  = "N/A",
+                        message = "N/A";
+                }
+            }
+
+            var srcText = xml.documentElement.lastChild.firstChild,//.split("\n")[0];
+                srcMsg  = "";
+            if(srcText && srcText.nodeValue) {
+                srcMsg = "\nSource Text : " + srcText.nodeValue.replace(/\t/gi, " ")
+            }
+            throw new Error(apf.formatErrorString(1050, null, 
+                "XML Parse Error on line " +  linenr, message + srcMsg));
+        }
+        
+        return xml;
+    };
+
+    
+    apf.xmldb.setReadyState = function(oDoc, iReadyState) {
+        oDoc.readyState = iReadyState;
+        if (oDoc.onreadystatechange != null && typeof oDoc.onreadystatechange == "function")
+            oDoc.onreadystatechange();
+    };
+    
+    apf.xmldb.loadHandler = function(oDoc){
+        if (!oDoc.documentElement || oDoc.documentElement.tagName == "parsererror")
+            oDoc.parseError = -1;
+        
+        apf.xmldb.setReadyState(oDoc, 4);
+    };
+    
+    //
+    //Fix XML Data-Island Support Problem with Form Tag
+    apf.Init.add(function(){
+        var i, nodes = document.getElementsByTagName("form");
+        for (i = 0; i < nodes.length; i++)
+            nodes[i].removeNode();
+        nodes = document.getElementsByTagName("xml");
+        for(i = 0; i < nodes.length; i++)
+            nodes[i].removeNode();
+        nodes = null;
+    });
+    
+    /*window.onerror = function(message, filename, linenr){
+        if(++ERROR_COUNT > MAXMSG) return;
+        filename = filename ? filename.match(/\/([^\/]*)$/)[1] : "[Mozilla Library]";
+        new Error("---- APF Error ----\nProcess : Javascript code in '" + filename +  "'\nLine : " + linenr + "\nMessage : " + message);
+        return false;
+    }*/
+    
+    if (document.body)
+        document.body.focus = function(){};
+    
+    
+    
+    if (!document.elementFromPoint) {
+        Document.prototype.elementFromPointRemove = function(el){
+            if (!this.RegElements) return;
+
+            this.RegElements.remove(el);
+        };
+        
+        Document.prototype.elementFromPointAdd = function(el){
+            if (!this.RegElements)
+                this.RegElements = [];
+            this.RegElements.push(el);
+        };
+        
+        Document.prototype.elementFromPointReset = function(RegElements){
+            //define globals
+            FoundValue   = [];
+            FoundNode    = null;
+            LastFoundAbs = document.documentElement;
+        };
+        
+        Document.prototype.elementFromPoint = function(x, y){
+            // Optimization, Keeping last found node makes it ignore all lower levels 
+            // when there is no possibility of changing positions and zIndexes
+            /*if(self.FoundNode){
+                var sx = getElementPosX(FoundNode); 
+                var sy = getElementPosY(FoundNode);
+                var ex = sx + FoundNode.offsetWidth; var ey = sy + FoundNode.offsetHeight;
+            }
+            if(!self.FoundNode || !(x > sx && x < ex && y > sy && y < ey))*/
+                document.elementFromPointReset();
+        
+            // Optimization only looking at registered nodes
+            if (this.RegElements) {
+                var calc_z = -1,
+                    i, calc, n, sx, sy, ex, ey, z
+                for (calc_z = -1, calc, i = 0; i < this.RegElements.length; i++) {
+                    n = this.RegElements[i];
+                    if (getStyle(n, "display") == "none") continue;
+        
+                    sx = getElementPosX(n); 
+                    sy = getElementPosY(n);
+                    ex = sx + n.offsetWidth;
+                    ey = sy + n.offsetHeight;
+                    
+                    if (x > sx && x < ex && y > sy && y < ey) {
+                        z = getElementZindex(n);
+                        if (z > calc_z) { //equal z-indexes not supported
+                            calc   = [n, x, y, sx, sy];
+                            calc_z = z;
+                        }
+                    }
+                }
+                
+                if (calc) {
+                    efpi(calc[0], calc[1], calc[2], 0, FoundValue, calc[3], calc[4]);
+                    if (!FoundNode) {
+                        FoundNode    = calc[0];
+                        LastFoundAbs = calc[0];
+                        FoundValue   = [calc_z];
+                    }
+                }
+            }
+            
+            if (!this.RegElements || !this.RegElements.length)
+                efpi(document.body, x, y, 0, [], getElementPosX(document.body),
+                    getElementPosY(document.body));
+                
+            return FoundNode;
+        };
+        
+        function efpi(from, x, y, CurIndex, CurValue, px, py){
+            var StartValue = CurValue,
+                StartIndex = CurIndex,
+            //Loop through childNodes
+                nodes      = from.childNodes,
+                n, i, z, sx, sy, ex, ey, isAbs, isHidden, inSpace;
+            for (n, i = 0; i < from.childNodes.length; i++) {
+                n = from.childNodes[i];
+                if (n.nodeType == 1 && getStyle(n, "display") != "none" && n.offsetParent) {
+                    sx = px + n.offsetLeft - n.offsetParent.scrollLeft;//getElementPosX(n); 
+                    sy = py + n.offsetTop - n.offsetParent.scrollTop;//getElementPosY(n);
+                    ex = sx + n.offsetWidth;
+                    ey = sy + n.offsetHeight;
+                    
+                    //if(Child is position absolute/relative and overflow == "hidden" && !inSpace) continue;
+                    isAbs    = getStyle(n, "position");
+                    isAbs        = (isAbs == "absolute") || (isAbs == "relative");
+                    isHidden = getStyle(n, "overflow") == "hidden";
+                    inSpace  = (x > sx && x < ex && y > sy && y < ey);
+
+                    if (isAbs && isHidden && !inSpace) continue;
+            
+                    CurIndex = StartIndex;
+                    CurValue = StartValue.copy();
+            
+                    //if (Child is position absolute/relative and has zIndex) or overflow == "hidden"
+                    z = parseInt(getStyle(n, "zIndex")) || 0;
+                    if (isAbs && (z || z == 0) || isHidden) {
+                        //if(!is position absolute/relative) zIndex = 0
+                        if (!isAbs) z = 0;
+                        
+                        //if zIndex >= FoundValue[CurIndex] 
+                        if (z >= (FoundValue[CurIndex] || 0)) {
+                            //if zIndex > CurValue[CurIndex];
+                            if (z > (CurValue[CurIndex] || 0)) {
+                                //CurValue = StartValue.copy();
+                                
+                                //set CurValue[CurIndex] = zIndex
+                                CurValue[CurIndex] = z;
+                            }
+                            
+                            CurIndex++;
+                            
+                            //if(inSpace && CurIndex >= FoundValue.length)
+                            if (inSpace && CurIndex >= FoundValue.length) {
+                                //Set FoundNode is currentNode
+                                FoundNode = n;
+                                //Set FoundValue is CurValue
+                                FoundValue = CurValue;//.copy();
+                                
+                                LastFoundAbs = n;
+                            }
+                        }
+                        else
+                            continue; //Ignore this treedepth
+                    }
+                    else if(inSpace && CurIndex >= FoundValue.length){
+                        //else if CurValue[CurIndex] continue; //Ignore this treedepth
+                        //else if(CurValue[CurIndex]) continue;
+                        
+                        //Set FoundNode is currentNode
+                        FoundNode = n;
+                        //Set FoundValue is CurValue
+                        FoundValue = CurValue;//.copy();
+                    }
+                    
+                    //loop through childnodes recursively
+                    efpi(n, x, y, CurIndex, CurValue, isAbs ? sx : px, isAbs ? sy : py)
+                }
+            }
+        }
+        
+        function getElementPosY(myObj){
+            return myObj.offsetTop + parseInt(apf.getStyle(myObj, "borderTopWidth"))
+                + (myObj.offsetParent ? getElementPosY(myObj.offsetParent) : 0);
+        }
+        
+        function getElementPosX(myObj){
+            return myObj.offsetLeft + parseInt(apf.getStyle(myObj, "borderLeftWidth"))
+                + (myObj.offsetParent ? getElementPosX(myObj.offsetParent) : 0);
+        }
+        
+        function getElementZindex(myObj){
+            //This is not quite sufficient and should be changed
+            var z = 0, n, p = myObj;
+            while (p && p.nodeType == 1) {
+                z = Math.max(z, parseInt(getStyle(p, "zIndex")) || -1);
+                p = p.parentNode;
+            }
+            return z;
+        }
+    }
+    
+    
+
+    apf.getOpacity = function(oHtml) {
+        return apf.getStyle(oHtml, "opacity");
+    };
+    
+    apf.setOpacity = function(oHtml, value){
+        oHtml.style.opacity = value;
+    };
+}
+
+
+
+/*FILEHEAD(core/browsers/o3.js)SIZE(9017)TIME(Fri, 15 Jul 2011 15:38:55 GMT)*/
+
+
+
+
+/*FILEHEAD(core/browsers/opera.js)SIZE(6583)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+
+>>>>>>> hotfix/0.5.1
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+<<<<<<< HEAD
 
 
 /**
@@ -43440,11 +56502,172 @@ apf.runOpera = function (){
                 parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0]
     };
 };
+=======
+
+
+/**
+ * Compatibility layer for Opera browsers.
+ * @private
+ */
+apf.runOpera = function (){
+    if (apf.runNonIe)
+        apf.runNonIe();
+    
+    /* ***************************************************************************
+     XML Serialization
+     ****************************************************************************/
+    //XMLDocument.xml
+    
+    //Node.xml
+    /*Node.prototype.serialize = function(){
+     return (new XMLSerializer()).serializeToString(this);
+     }
+    //Node.xml
+    
+    Node.prototype.serialize        =
+    XMLDocument.prototype.serialize =
+    Element.prototype.serialize     = function(){
+        return (new XMLSerializer()).serializeToString(this);
+    };*/
+    
+    
+    
+    //XMLDocument.selectNodes
+    Document.prototype.selectNodes     = 
+    XMLDocument.prototype.selectNodes  =
+    HTMLDocument.prototype.selectNodes = function(sExpr, contextNode){
+        var oResult = this.evaluate(sExpr, (contextNode ? contextNode : this),
+            this.createNSResolver(this.documentElement),
+            XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+        var nodeList = new Array(oResult.snapshotLength);
+        nodeList.expr = sExpr;
+        for (var i = 0; i < nodeList.length; i++) 
+            nodeList[i] = oResult.snapshotItem(i);
+        return nodeList;
+    };
+    
+    //Element.selectNodes
+    Text.prototype.selectNodes =
+    Attr.prototype.selectNodes =
+    Element.prototype.selectNodes = function(sExpr){
+        var doc = this.ownerDocument;
+        if (!doc.selectSingleNode) {
+            doc.selectSingleNode = HTMLDocument.prototype.selectSingleNode;
+            doc.selectNodes = HTMLDocument.prototype.selectNodes;
+        }
+        
+        if (doc.selectNodes) 
+            return doc.selectNodes(sExpr, this);
+        else {
+            throw new Error(apf.formatErrorString(1047, null, "XPath Selection", 
+                "Method selectNodes is only supported by XML Nodes"));
+        }
+    };
+    
+    //XMLDocument.selectSingleNode
+    Document.prototype.selectSingleNode     =
+    XMLDocument.prototype.selectSingleNode  =
+    HTMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
+        var nodeList = this.selectNodes("(" + sExpr + ")[1]", contextNode ? contextNode : null);
+        return nodeList.length > 0 ? nodeList[0] : null;
+    };
+    
+    //Element.selectSingleNode
+    Text.prototype.selectSingleNode =
+    Attr.prototype.selectSingleNode =
+    Element.prototype.selectSingleNode = function(sExpr){
+        var doc = this.ownerDocument;
+        if (!doc.selectSingleNode) {
+            doc.selectSingleNode = HTMLDocument.prototype.selectSingleNode;
+            doc.selectNodes = HTMLDocument.prototype.selectNodes;
+        }
+        
+        if (doc.selectSingleNode) {
+            return doc.selectSingleNode(sExpr, this);
+        }
+        else {
+            throw new Error(apf.formatErrorString(1048, null, "XPath Selection", 
+                "Method selectSingleNode is only supported by XML Nodes. \nInfo : " + e));
+        }
+    };
+    
+    
+    
+    var serializer = new XMLSerializer();
+    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s) {
+        var node, frag, i, l;
+        if (nodeList) {
+            frag = document.createDocumentFragment();
+            i    = 0;
+            l    = nodeList.length;
+	        for (; i < l; i++) {
+	            if (!(node = nodeList[i])) continue;
+	            frag.appendChild(node);
+	        }
+        }
+        
+        (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
+            ? "beforebegin"
+            : "beforeend", s || apf.html_entity_decode(serializer.serializeToString(frag)).replace(/<([^>]+)\/>/g, "<$1></$1>"));
+    };
+
+    apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
+        if (htmlNode.nodeType != 11 && !htmlNode.style)
+            return htmlNode.appendChild(xmlNode);
+        
+        if (!s) {
+            s = apf.html_entity_decode(xmlNode.serialize 
+                ? xmlNode.serialize(true)
+                : ((xmlNode.nodeType == 3 || xmlNode.nodeType == 4 || xmlNode.nodeType == 2)
+                    ? xmlNode.nodeValue
+                    : serializer.serializeToString(xmlNode)));
+        }
+        
+        (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
+            ? "beforebegin"
+            : "beforeend", s.replace(/<([^>]+)\/>/g, "<$1></$1>"));
+
+        return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
+    };
+    
+    apf.getHtmlLeft = function(oHtml){
+        return (oHtml.offsetLeft
+            - (parseInt(apf.getStyle(oHtml.parentNode, "borderLeftWidth")) || 0));
+    };
+
+    apf.getHtmlRight = function(oHtml){
+        var p;
+        return (((p = oHtml.offsetParent).tagName == "BODY" 
+          ? apf.getWindowWidth()
+          : p.offsetWidth)
+            - oHtml.offsetLeft - oHtml.offsetWidth
+            - (parseInt(apf.getStyle(p, "borderRightWidth")) || 0));
+    };
+
+    apf.getHtmlTop = function(oHtml){
+        return (oHtml.offsetTop
+            - (parseInt(apf.getStyle(oHtml.offsetParent, "borderTopWidth")) || 0));
+    };
+
+    apf.getHtmlBottom = function(oHtml){
+        var p;
+        return (((p = oHtml.offsetParent).tagName == "BODY" 
+          ? apf.getWindowHeight()
+          : p.offsetHeight)
+            - oHtml.offsetTop - oHtml.offsetHeight
+            - (parseInt(apf.getStyle(p, "borderBottomWidth")) || 0));
+    };
+
+    apf.getBorderOffset = function(oHtml){
+        return [parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0,
+                parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0]
+    };
+};
 
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/webkit.js)SIZE(7728)TIME(Tue, 19 Jul 2011 17:17:35 GMT)*/
+/*FILEHEAD(core/browsers/webkit.js)SIZE(7777)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43477,6 +56700,203 @@ apf.runWebkit = function(){
     
     
     
+    
+    
+    HTMLDocument.prototype.selectNodes = XMLDocument.prototype.selectNodes = function(sExpr, contextNode){
+        if (sExpr.substr(0,2) == "//")
+            sExpr = "." + sExpr;
+        
+        try {
+            var oResult = this.evaluate(sExpr, (contextNode || this),
+                this.createNSResolver(this.documentElement),
+                7, null);//XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+        }
+        catch(ex) {
+            try {
+                var oResult = this.evaluate("child::" + sExpr, (contextNode || this),
+                    this.createNSResolver(this.documentElement),
+                    7, null);//XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+            }
+            catch(ex) {
+                throw new Error("XPath error: " + ex.message + "\nLine: " + ex.lineNumber  + "\nExpression: '" + sExpr + "'");
+            }
+        }
+        
+        var nodeList = new Array(oResult.snapshotLength);
+        nodeList.expr = sExpr;
+        for (var i = nodeList.length - 1; i >= 0; i--) 
+            nodeList[i] = oResult.snapshotItem(i);
+        return nodeList;
+    };
+    
+    //Element.selectNodes
+    Text.prototype.selectNodes =
+    Attr.prototype.selectNodes =
+    Element.prototype.selectNodes = function(sExpr){
+       return this.ownerDocument.selectNodes(sExpr, this);
+    };
+    
+    //XMLDocument.selectSingleNode
+    HTMLDocument.prototype.selectSingleNode = XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
+        var nodeList = this.selectNodes("(" + sExpr + ")[1]", contextNode ? contextNode : null);
+        return nodeList.length > 0 ? nodeList[0] : null;
+    };
+    
+    //Element.selectSingleNode
+    Text.prototype.selectSingleNode =
+    Attr.prototype.selectSingleNode =
+    Element.prototype.selectSingleNode = function(sExpr){
+        return this.ownerDocument.selectSingleNode(sExpr, this);
+    };
+    
+    
+    
+    var serializer = new XMLSerializer();
+    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s) {
+        var node, frag, a, i, l;
+        if (nodeList) {
+	        frag = document.createDocumentFragment();
+	        a = [], i = 0, l = nodeList.length;
+	        for (; i < l; i++) {
+	            if (!(node = nodeList[i])) continue;
+	            frag.appendChild(node);
+	        }
+        }
+        
+        (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
+            ? "beforebegin"
+            : "beforeend", s || apf.html_entity_decode(serializer.serializeToString(frag))
+                .replace(/<([^>]+)\/>/g, "<$1></$1>"));
+    };
+
+    apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
+        if (htmlNode.nodeType != 11 && !htmlNode.style)
+            return htmlNode.appendChild(xmlNode);
+        
+        if (!s) {
+            s = apf.html_entity_decode(xmlNode.serialize 
+                ? xmlNode.serialize(true)
+                : ((xmlNode.nodeType == 3 || xmlNode.nodeType == 4 || xmlNode.nodeType == 2)
+                    ? xmlNode.nodeValue
+                    : serializer.serializeToString(xmlNode)));
+        }
+        
+        (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
+            ? "beforebegin"
+            : "beforeend", s.match(/<(IMG|LINK|META|BR|HR|BASEFONT)[^\/>]*/i) ? s.replace(/<([^>]+)\/>/g, "<$1 />") : s.replace(/<([^>]+)\/>/g, "<$1></$1>"));
+
+        return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
+    };
+
+    apf.getHtmlLeft = function(oHtml){
+        return oHtml.offsetLeft;
+    };
+
+    apf.getHtmlRight = function(oHtml){
+        var p;
+        return (((p = oHtml.offsetParent).tagName == "BODY" 
+          ? apf.getWindowWidth()
+          : p.offsetWidth)
+            - oHtml.offsetLeft - oHtml.offsetWidth
+            - (parseInt(apf.getStyle(p, "borderLeftWidth")) || 0)
+            - (parseInt(apf.getStyle(p, "borderRightWidth")) || 0));
+    };
+
+    apf.getHtmlTop = function(oHtml){
+        return oHtml.offsetTop
+    };
+
+    apf.getHtmlBottom = function(oHtml){
+        var p;
+        return (((p = oHtml.offsetParent).tagName == "BODY" 
+          ? apf.getWindowHeight()
+          : p.offsetHeight)
+            - oHtml.offsetTop - oHtml.offsetHeight
+            - (parseInt(apf.getStyle(p, "borderTopWidth")) || 0)
+            - (parseInt(apf.getStyle(p, "borderBottomWidth")) || 0));
+    };
+
+    apf.getBorderOffset = function(oHtml){
+        return [0,0];
+    };
+    
+    if (apf.runNonIe)
+        apf.runNonIe();
+};
+
+
+
+
+/*FILEHEAD(core/browsers/node/XMLHttpRequest.js)SIZE(6419)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+
+>>>>>>> hotfix/0.5.1
+
+/*FILEHEAD(core/crypto/barrett.js)SIZE(2650)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/**
+ * Crypt.Barrett, a class for performing Barrett modular reduction computations in
+ * JavaScript.
+ *
+ * Requires BigInt.js.
+ *
+ * Copyright 2004-2005 David Shapiro.
+ *
+ * You may use, re-use, abuse, copy, and modify this code to your liking, but
+ * please keep this header.
+ *
+ * Thanks!
+ * 
+ * @author Dave Shapiro <dave AT ohdave DOT com>
+ */
+
+
+
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/webkit.js)SIZE(7728)TIME(Tue, 19 Jul 2011 17:17:35 GMT)*/
+=======
+
+/*FILEHEAD(core/crypto/base64.js)SIZE(6758)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+<<<<<<< HEAD
+/**
+ * Compatibility layer for Webkit based browsers.
+ * @private
+ */
+apf.runWebkit = function(){
+    
+    
+=======
+
+apf.crypto.Base64 = (function() {
+>>>>>>> hotfix/0.5.1
+    
+    var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+    
+<<<<<<< HEAD
     
     
     HTMLDocument.prototype.selectNodes = XMLDocument.prototype.selectNodes = function(sExpr, contextNode){
@@ -44438,6 +57858,246 @@ global.SHA1 = function(str) {
 
 
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/debug/debugwin.js)SIZE(42735)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+    // public method for encoding
+    function encode(data) {
+        var o1, o2, o3, h1, h2, h3, h4, bits, i = 0, ac = 0, enc = "",
+            tmp_arr = [];
+
+        if (!data)
+            return data;
+
+        data = apf.crypto.UTF8.encode(data + "");
+
+        do { // pack three octets into four hexets
+            o1 = data.charCodeAt(i++);
+            o2 = data.charCodeAt(i++);
+            o3 = data.charCodeAt(i++);
+
+            bits = o1 << 16 | o2 << 8 | o3;
+
+            h1 = bits >> 18 & 0x3f;
+            h2 = bits >> 12 & 0x3f;
+            h3 = bits >> 6  & 0x3f;
+            h4 = bits & 0x3f;
+
+            // use hexets to index into b64, and append result to encoded string
+            tmp_arr[ac++] = b64.charAt(h1) + b64.charAt(h2) + b64.charAt(h3)
+                + b64.charAt(h4);
+        }
+        while (i < data.length);
+
+        enc = tmp_arr.join("");
+
+        switch (data.length % 3) {
+            case 1:
+                enc = enc.slice(0, -2) + '==';
+                break;
+            case 2:
+                enc = enc.slice(0, -1) + '=';
+                break;
+        }
+
+        return enc;
+    }
+    
+    // public method for decoding
+    function decode(data) {
+        var o1, o2, o3, h1, h2, h3, h4, bits, i = 0, ac = 0, tmp_arr = [];
+
+        if (!data) {
+            return data;
+        }
+
+        data += "";
+
+        do {  // unpack four hexets into three octets using index points in b64
+            h1 = b64.indexOf(data.charAt(i++));
+            h2 = b64.indexOf(data.charAt(i++));
+            h3 = b64.indexOf(data.charAt(i++));
+            h4 = b64.indexOf(data.charAt(i++));
+
+            bits = h1 << 18 | h2 << 12 | h3 << 6 | h4;
+
+            o1 = bits>>16 & 0xff;
+            o2 = bits>>8 & 0xff;
+            o3 = bits & 0xff;
+
+            if (h3 == 64)
+                tmp_arr[ac++] = String.fromCharCode(o1);
+            else if (h4 == 64)
+                tmp_arr[ac++] = String.fromCharCode(o1, o2);
+            else
+                tmp_arr[ac++] = String.fromCharCode(o1, o2, o3);
+        }
+        while (i < data.length);
+
+        return apf.crypto.UTF8.decode(tmp_arr.join(""));
+    }
+    
+    return {
+        decode: decode,
+        encode: encode
+    };
+    
+})();
+
+apf.crypto.UTF8 = {
+    // private method for UTF-8 encoding
+    encode : function (string) {
+        // Encodes an ISO-8859-1 string to UTF-8
+        //
+        // version: 905.1217
+        // discuss at: http://phpjs.org/functions/utf8_encode
+        // +   original by: Webtoolkit.info (http://www.webtoolkit.info/)
+        // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+        // +   improved by: sowberry
+        // +    tweaked by: Jack
+        // +   bugfixed by: Onno Marsman
+        // +   improved by: Yves Sucaet
+        // +   bugfixed by: Onno Marsman
+        // *     example 1: utf8_encode('Kevin van Zonneveld');
+        // *     returns 1: 'Kevin van Zonneveld'
+        string = (string + "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+
+        var tmp_arr = [],
+            start   = 0,
+            end     = 0,
+            c1, enc;
+
+        for (var n = 0, l = string.length; n < l; n++) {
+            c1 = string.charCodeAt(n);
+            enc = null;
+
+            if (c1 < 128) {
+                end++;
+            }
+            else if ((c1 > 127) && (c1 < 2048)) {
+                enc = String.fromCharCode((c1 >> 6) | 192)
+                    + String.fromCharCode((c1 & 63) | 128);
+            }
+            else {
+                enc = String.fromCharCode((c1 >> 12) | 224) 
+                    + String.fromCharCode(((c1 >> 6) & 63) | 128)
+                    + String.fromCharCode((c1 & 63) | 128);
+            }
+            if (enc !== null) {
+                if (end > start)
+                    tmp_arr.push(string.substring(start, end));
+                tmp_arr.push(enc);
+                start = end = n + 1;
+            }
+        }
+
+        if (end > start)
+            tmp_arr.push(string.substring(start, string.length));
+
+        return tmp_arr.join("");
+    },
+
+    // private method for UTF-8 decoding
+    decode : function (str_data) {
+        // Converts a UTF-8 encoded string to ISO-8859-1
+        //
+        // version: 905.3122
+        // discuss at: http://phpjs.org/functions/utf8_decode
+        // +   original by: Webtoolkit.info (http://www.webtoolkit.info/)
+        // +      input by: Aman Gupta
+        // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+        // +   improved by: Norman "zEh" Fuchs
+        // +   bugfixed by: hitwork
+        // +   bugfixed by: Onno Marsman
+        // +      input by: Brett Zamir (http://brett-zamir.me)
+        // +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+        // *     example 1: utf8_decode('Kevin van Zonneveld');
+        // *     returns 1: 'Kevin van Zonneveld'
+        var tmp_arr = [], i = 0, ac = 0, c1 = 0, c2 = 0, c3 = 0;
+
+        str_data += "";
+
+        while (i < str_data.length) {
+            c1 = str_data.charCodeAt(i);
+            if (c1 < 128) {
+                tmp_arr[ac++] = String.fromCharCode(c1);
+                i++;
+            }
+            else if ((c1 > 191) && (c1 < 224)) {
+                c2 = str_data.charCodeAt(i+1);
+                tmp_arr[ac++] = String.fromCharCode(((c1 & 31) << 6) | (c2 & 63));
+                i += 2;
+            }
+            else {
+                c2 = str_data.charCodeAt(i+1);
+                c3 = str_data.charCodeAt(i+2);
+                tmp_arr[ac++] = String.fromCharCode(((c1 & 15) << 12)
+                    | ((c2 & 63) << 6) | (c3 & 63));
+                i += 3;
+            }
+        }
+
+        return tmp_arr.join('');
+    }
+
+};
+
+
+
+
+/*FILEHEAD(core/crypto/bigint.js)SIZE(20439)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/**
+ * BigInt, a suite of routines for performing multiple-precision arithmetic in
+ * JavaScript.
+ *
+ * Copyright 1998-2005 David Shapiro.
+ *
+ * You may use, re-use, abuse,
+ * copy, and modify this code to your liking, but please keep this header.
+ * Thanks!
+ *
+ * @author Dave Shapiro <dave AT ohdave DOT com>
+ * @author Ian Bunning
+ *
+ * IMPORTANT THING: Be sure to set maxDigits according to your precision
+ * needs. Use the setMaxDigits() function to do this. See comments below.
+ *
+ * Tweaked by Ian Bunning
+ * Alterations:
+ * Fix bug in function biFromHex(s) to allow
+ * parsing of strings of length != 0 (mod 4)
+ *
+ * Changes made by Dave Shapiro as of 12/30/2004:
+ *
+ * The BigInt() constructor doesn't take a string anymore. If you want to
+ * create a BigInt from a string, use biFromDecimal() for base-10
+ * representations, biFromHex() for base-16 representations, or
+ * biFromString() for base-2-to-36 representations.
+ *
+ * biFromArray() has been removed. Use biCopy() instead, passing a BigInt
+ * instead of an array.
+ *
+ * The BigInt() constructor now only constructs a zeroed-out array.
+ * Alternatively, if you pass <true>, it won't construct any array. See the
+ * biCopy() method for an example of this.
+ *
+ * Be sure to set maxDigits depending on your precision needs. The default
+ * zeroed-out array ZERO_ARRAY is constructed inside the setMaxDigits()
+ * function. So use this function to set the variable. DON'T JUST SET THE
+ * VALUE. USE THE FUNCTION.
+ *
+ * ZERO_ARRAY exists to hopefully speed up construction of BigInts(). By
+ * precalculating the zero array, we can just use slice(0) to make copies of
+ * it. Presumably this calls faster native code, as opposed to setting the
+ * elements one at a time. I have not done any timing tests to verify this
+ * claim.
+ * Max number = 10^16 - 2 = 9999999999999998;
+ *               2^53     = 9007199254740992;
+ */
+
+
+
+
+/*FILEHEAD(core/crypto/blowfish.js)SIZE(26046)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44462,6 +58122,815 @@ global.SHA1 = function(str) {
 
 
 
+
+/*FILEHEAD(core/crypto/md4.js)SIZE(9799)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(core/crypto/md5.js)SIZE(10997)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+apf.crypto.MD5 = {
+    /*
+     * Configurable variables. You may need to tweak these to be compatible with
+     * the server-side, but the defaults work in most cases.
+     */
+    hexcase: 0,  /* hex output format. 0 - lowercase; 1 - uppercase        */
+    b64pad : "", /* base-64 pad character. "=" for strict RFC compliance   */
+    chrsz  : 8,  /* bits per input character. 8 - ASCII; 16 - Unicode      */
+
+    /**
+     * These are the functions you'll usually want to call
+     * They take string arguments and return either hex or base-64 encoded strings
+     * 
+     * Example:
+     * var hash = apf.crypto.MD5.hex_md5("uzza"); //fddb7463a72e6b000abf631f558cf034
+     */
+    
+    hex_md5: function(s) {
+        return this.binl2hex(this.core_md5(this.str2binl(s), s.length * this.chrsz));
+    },
+    b64_md5: function(s) {
+        return this.binl2b64(this.core_md5(this.str2binl(s), s.length * this.chrsz));
+    },
+    str_md5: function(s) {
+        return this.binl2str(this.core_md5(this.str2binl(s), s.length * this.chrsz));
+    },
+    hex_hmac_md5: function(key, data) {
+        return this.binl2hex(this.core_hmac_md5(key, data));
+    },
+    b64_hmac_md5: function(key, data) {
+        return this.binl2b64(this.core_hmac_md5(key, data));
+    },
+    str_hmac_md5: function(key, data) {
+        return this.binl2str(this.core_hmac_md5(key, data));
+    },
+    /**
+     * Calculate the MD5 of an array of little-endian words, and a bit length
+     */
+    core_md5: function(x, len) {
+      /* append padding */
+      x[len >> 5] |= 0x80 << ((len) % 32);
+      x[(((len + 64) >>> 9) << 4) + 14] = len;
+
+      var a =  1732584193, b = -271733879, c = -1732584194, d =  271733878;
+
+      for(var i = 0; i < x.length; i += 16) {
+        var olda = a, oldb = b, oldc = c, oldd = d;
+
+        a = this.md5_ff(a, b, c, d, x[i+ 0], 7 , -680876936);
+        d = this.md5_ff(d, a, b, c, x[i+ 1], 12, -389564586);
+        c = this.md5_ff(c, d, a, b, x[i+ 2], 17,  606105819);
+        b = this.md5_ff(b, c, d, a, x[i+ 3], 22, -1044525330);
+        a = this.md5_ff(a, b, c, d, x[i+ 4], 7 , -176418897);
+        d = this.md5_ff(d, a, b, c, x[i+ 5], 12,  1200080426);
+        c = this.md5_ff(c, d, a, b, x[i+ 6], 17, -1473231341);
+        b = this.md5_ff(b, c, d, a, x[i+ 7], 22, -45705983);
+        a = this.md5_ff(a, b, c, d, x[i+ 8], 7 ,  1770035416);
+        d = this.md5_ff(d, a, b, c, x[i+ 9], 12, -1958414417);
+        c = this.md5_ff(c, d, a, b, x[i+10], 17, -42063);
+        b = this.md5_ff(b, c, d, a, x[i+11], 22, -1990404162);
+        a = this.md5_ff(a, b, c, d, x[i+12], 7 ,  1804603682);
+        d = this.md5_ff(d, a, b, c, x[i+13], 12, -40341101);
+        c = this.md5_ff(c, d, a, b, x[i+14], 17, -1502002290);
+        b = this.md5_ff(b, c, d, a, x[i+15], 22,  1236535329);
+
+        a = this.md5_gg(a, b, c, d, x[i+ 1], 5 , -165796510);
+        d = this.md5_gg(d, a, b, c, x[i+ 6], 9 , -1069501632);
+        c = this.md5_gg(c, d, a, b, x[i+11], 14,  643717713);
+        b = this.md5_gg(b, c, d, a, x[i+ 0], 20, -373897302);
+        a = this.md5_gg(a, b, c, d, x[i+ 5], 5 , -701558691);
+        d = this.md5_gg(d, a, b, c, x[i+10], 9 ,  38016083);
+        c = this.md5_gg(c, d, a, b, x[i+15], 14, -660478335);
+        b = this.md5_gg(b, c, d, a, x[i+ 4], 20, -405537848);
+        a = this.md5_gg(a, b, c, d, x[i+ 9], 5 ,  568446438);
+        d = this.md5_gg(d, a, b, c, x[i+14], 9 , -1019803690);
+        c = this.md5_gg(c, d, a, b, x[i+ 3], 14, -187363961);
+        b = this.md5_gg(b, c, d, a, x[i+ 8], 20,  1163531501);
+        a = this.md5_gg(a, b, c, d, x[i+13], 5 , -1444681467);
+        d = this.md5_gg(d, a, b, c, x[i+ 2], 9 , -51403784);
+        c = this.md5_gg(c, d, a, b, x[i+ 7], 14,  1735328473);
+        b = this.md5_gg(b, c, d, a, x[i+12], 20, -1926607734);
+
+        a = this.md5_hh(a, b, c, d, x[i+ 5], 4 , -378558);
+        d = this.md5_hh(d, a, b, c, x[i+ 8], 11, -2022574463);
+        c = this.md5_hh(c, d, a, b, x[i+11], 16,  1839030562);
+        b = this.md5_hh(b, c, d, a, x[i+14], 23, -35309556);
+        a = this.md5_hh(a, b, c, d, x[i+ 1], 4 , -1530992060);
+        d = this.md5_hh(d, a, b, c, x[i+ 4], 11,  1272893353);
+        c = this.md5_hh(c, d, a, b, x[i+ 7], 16, -155497632);
+        b = this.md5_hh(b, c, d, a, x[i+10], 23, -1094730640);
+        a = this.md5_hh(a, b, c, d, x[i+13], 4 ,  681279174);
+        d = this.md5_hh(d, a, b, c, x[i+ 0], 11, -358537222);
+        c = this.md5_hh(c, d, a, b, x[i+ 3], 16, -722521979);
+        b = this.md5_hh(b, c, d, a, x[i+ 6], 23,  76029189);
+        a = this.md5_hh(a, b, c, d, x[i+ 9], 4 , -640364487);
+        d = this.md5_hh(d, a, b, c, x[i+12], 11, -421815835);
+        c = this.md5_hh(c, d, a, b, x[i+15], 16,  530742520);
+        b = this.md5_hh(b, c, d, a, x[i+ 2], 23, -995338651);
+
+        a = this.md5_ii(a, b, c, d, x[i+ 0], 6 , -198630844);
+        d = this.md5_ii(d, a, b, c, x[i+ 7], 10,  1126891415);
+        c = this.md5_ii(c, d, a, b, x[i+14], 15, -1416354905);
+        b = this.md5_ii(b, c, d, a, x[i+ 5], 21, -57434055);
+        a = this.md5_ii(a, b, c, d, x[i+12], 6 ,  1700485571);
+        d = this.md5_ii(d, a, b, c, x[i+ 3], 10, -1894986606);
+        c = this.md5_ii(c, d, a, b, x[i+10], 15, -1051523);
+        b = this.md5_ii(b, c, d, a, x[i+ 1], 21, -2054922799);
+        a = this.md5_ii(a, b, c, d, x[i+ 8], 6 ,  1873313359);
+        d = this.md5_ii(d, a, b, c, x[i+15], 10, -30611744);
+        c = this.md5_ii(c, d, a, b, x[i+ 6], 15, -1560198380);
+        b = this.md5_ii(b, c, d, a, x[i+13], 21,  1309151649);
+        a = this.md5_ii(a, b, c, d, x[i+ 4], 6 , -145523070);
+        d = this.md5_ii(d, a, b, c, x[i+11], 10, -1120210379);
+        c = this.md5_ii(c, d, a, b, x[i+ 2], 15,  718787259);
+        b = this.md5_ii(b, c, d, a, x[i+ 9], 21, -343485551);
+
+        a = this.safe_add(a, olda);
+        b = this.safe_add(b, oldb);
+        c = this.safe_add(c, oldc);
+        d = this.safe_add(d, oldd);
+      }
+      return [a, b, c, d];
+    },
+    /*
+     * These functions implement the four basic operations the algorithm uses.
+     */
+    md5_cmn: function(q, a, b, x, s, t) {
+        return this.safe_add(this.bit_rol(this.safe_add(this.safe_add(a, q),
+            this.safe_add(x, t)), s),b);
+    },
+    md5_ff: function(a, b, c, d, x, s, t) {
+        return this.md5_cmn((b & c) | ((~b) & d), a, b, x, s, t);
+    },
+    md5_gg: function(a, b, c, d, x, s, t) {
+        return this.md5_cmn((b & d) | (c & (~d)), a, b, x, s, t);
+    },
+    md5_hh: function(a, b, c, d, x, s, t) {
+        return this.md5_cmn(b ^ c ^ d, a, b, x, s, t);
+    },
+    md5_ii: function(a, b, c, d, x, s, t) {
+        return this.md5_cmn(c ^ (b | (~d)), a, b, x, s, t);
+    },
+    /**
+     * Calculate the HMAC-MD5, of a key and some data
+     */
+    core_hmac_md5: function(key, data) {
+        var bkey = this.str2binl(key),
+            ipad = Array(16),
+            opad = Array(16);
+        if (bkey.length > 16)
+            bkey = this.core_md5(bkey, key.length * this.chrsz);
+
+        for (var i = 0; i < 16; i++) {
+            ipad[i] = bkey[i] ^ 0x36363636;
+            opad[i] = bkey[i] ^ 0x5C5C5C5C;
+        }
+
+        return this.core_md5(opad.concat(
+            this.core_md5(ipad.concat(this.str2binl(data)), 512 + data.length * this.chrsz)
+        ), 512 + 128);
+    },
+    /**
+     * Add integers, wrapping at 2^32. This uses 16-bit operations internally
+     * to work around bugs in some JS interpreters.
+     */
+    safe_add: function(x, y) {
+        var lsw = (x & 0xFFFF) + (y & 0xFFFF),
+            msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+        return (msw << 16) | (lsw & 0xFFFF);
+    },
+    /**
+     * Bitwise rotate a 32-bit number to the left.
+     */
+    bit_rol: function(num, cnt) {
+        return (num << cnt) | (num >>> (32 - cnt));
+    },
+    /**
+     * Convert a string to an array of little-endian words
+     * If chrsz is ASCII, characters >255 have their hi-byte silently ignored.
+     */
+    str2binl: function(str) {
+        var bin  = [], i,
+            mask = (1 << this.chrsz) - 1;
+        for (i = 0; i < str.length * this.chrsz; i += this.chrsz)
+            bin[i >> 5] |= (str.charCodeAt(i / this.chrsz) & mask) << (i%32);
+        return bin;
+    },
+    /**
+     * Convert an array of little-endian words to a string
+     */
+    binl2str: function(bin) {
+        var str = [], i,
+            mask = (1 << this.chrsz) - 1;
+        for (i = 0; i < bin.length * 32; i += this.chrsz)
+            str.push(String.fromCharCode((bin[i>>5] >>> (i % 32)) & mask));
+        return str.join("");
+    },
+    /**
+     * Convert an array of little-endian words to a hex string.
+     */
+    binl2hex: function(binarray) {
+        var hex_tab = this.hexcase ? "0123456789ABCDEF" : "0123456789abcdef",
+            str = [], i;
+        for (i = 0; i < binarray.length * 4; i++) {
+            str.push(hex_tab.charAt((binarray[i>>2] >> ((i%4)*8+4)) & 0xF) +
+                     hex_tab.charAt((binarray[i>>2] >> ((i%4)*8  )) & 0xF));
+        }
+        return str.join("");
+    },
+    /**
+     * Convert an array of little-endian words to a base-64 string
+     */
+    binl2b64: function(binarray) {
+        var tab = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+            str = [], i;
+        for(i = 0; i < binarray.length * 4; i += 3) {
+            var triplet = (((binarray[i   >> 2] >> 8 * ( i   %4)) & 0xFF) << 16)
+                    | (((binarray[i+1 >> 2] >> 8 * ((i+1)%4)) & 0xFF) << 8 )
+                    |  ((binarray[i+2 >> 2] >> 8 * ((i+2)%4)) & 0xFF);
+            for (var j = 0; j < 4; j++) {
+                if (i * 8 + j * 6 > binarray.length * 32)
+                    str.push(this.b64pad);
+                else
+                    str.push(tab.charAt((triplet >> 6*(3-j)) & 0x3F));
+            }
+        }
+        return str.join("");
+    }
+};
+
+
+
+
+/*FILEHEAD(core/crypto/rsa.js)SIZE(5048)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/**
+ * RSA, a suite of routines for performing RSA public-key computations in
+ * JavaScript.
+ *
+ * Requires BigInt.js and Barrett.js.
+ *
+ * Copyright 1998-2005 David Shapiro.
+ *
+ * You may use, re-use, abuse, copy, and modify this code to your liking, but
+ * please keep this header.
+ *
+ * Thanks!
+ * 
+ * @author Dave Shapiro <dave AT ohdave DOT com>
+ */
+
+
+
+
+
+/*FILEHEAD(core/crypto/sha1.js)SIZE(5258)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+(function(global) {
+
+function rotate_left(n,s) {
+    var t4 = ( n<<s ) | (n>>>(32-s));
+    return t4;
+};
+
+/*
+function lsb_hex(val) { // Not in use; needed?
+    var str="";
+    var i;
+    var vh;
+    var vl;
+
+    for( i=0; i<=6; i+=2 ) {
+        vh = (val>>>(i*4+4))&0x0f;
+        vl = (val>>>(i*4))&0x0f;
+        str += vh.toString(16) + vl.toString(16);
+    }
+    return str;
+};
+*/
+
+function cvt_hex(val) {
+    var str="";
+    var i;
+    var v;
+
+    for( i=7; i>=0; i-- ) {
+        v = (val>>>(i*4))&0x0f;
+        str += v.toString(16);
+    }
+    return str;
+};
+
+global.SHA1 = function(str) {
+    // Calculate the sha1 hash of a string
+    //
+    // version: 905.3122
+    // discuss at: http://phpjs.org/functions/sha1
+    // +   original by: Webtoolkit.info (http://www.webtoolkit.info/)
+    // + namespaced by: Michael White (http://getsprink.com)
+    // +      input by: Brett Zamir (http://brett-zamir.me)
+    // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+    // -    depends on: utf8_encode
+    // *     example 1: sha1('Kevin van Zonneveld');
+    // *     returns 1: '54916d2e62f65b3afa6e192e6a601cdbe5cb5897'
+    var blockstart, i, j, W = new Array(80),
+        H0 = 0x67452301,
+        H1 = 0xEFCDAB89,
+        H2 = 0x98BADCFE,
+        H3 = 0x10325476,
+        H4 = 0xC3D2E1F0,
+        A, B, C, D, E, temp;
+
+    str = apf.crypto.UTF8.encode(str);
+    var str_len = str.length,
+        word_array = [];
+
+    for(i = 0; i < str_len - 3; i += 4) {
+        j = str.charCodeAt(i) << 24 | str.charCodeAt(i + 1) << 16 |
+            str.charCodeAt(i + 2) << 8 | str.charCodeAt(i + 3);
+        word_array.push(j);
+    }
+
+    switch (str_len % 4) {
+        case 0:
+            i = 0x080000000;
+            break;
+        case 1:
+            i = str.charCodeAt(str_len - 1) << 24 | 0x0800000;
+            break;
+        case 2:
+            i = str.charCodeAt(str_len - 2) << 24 | str.charCodeAt(str_len - 1)
+                << 16 | 0x08000;
+            break;
+        case 3:
+            i = str.charCodeAt(str_len - 3) << 24 | str.charCodeAt(str_len - 2)
+                << 16 | str.charCodeAt(str_len - 1) << 8 | 0x80;
+            break;
+    }
+
+    word_array.push( i );
+
+    while((word_array.length % 16) != 14)
+        word_array.push( 0 );
+
+    word_array.push(str_len >>> 29);
+    word_array.push((str_len << 3) & 0x0ffffffff);
+
+    for (blockstart = 0; blockstart < word_array.length; blockstart += 16) {
+        for (i = 0; i < 16; i++)
+            W[i] = word_array[blockstart + i];
+        for (i = 16; i <= 79; i++)
+            W[i] = rotate_left(W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16], 1);
+
+        A = H0;
+        B = H1;
+        C = H2;
+        D = H3;
+        E = H4;
+
+        for (i = 0; i <= 19; i++) {
+            temp = (rotate_left(A, 5) + ((B & C) | (~B & D)) + E + W[i]
+                + 0x5A827999) & 0x0ffffffff;
+            E = D;
+            D = C;
+            C = rotate_left(B, 30);
+            B = A;
+            A = temp;
+        }
+
+        for (i = 20; i <= 39; i++) {
+            temp = (rotate_left(A, 5) + (B ^ C ^ D) + E + W[i] + 0x6ED9EBA1)
+                & 0x0ffffffff;
+            E = D;
+            D = C;
+            C = rotate_left(B, 30);
+            B = A;
+            A = temp;
+        }
+
+        for (i = 40; i <= 59; i++) {
+            temp = (rotate_left(A, 5) + ((B & C) | (B & D) | (C & D)) + E + W[i]
+                + 0x8F1BBCDC) & 0x0ffffffff;
+            E = D;
+            D = C;
+            C = rotate_left(B, 30);
+            B = A;
+            A = temp;
+        }
+
+        for (i = 60; i <= 79; i++) {
+            temp = (rotate_left(A, 5) + (B ^ C ^ D) + E + W[i] + 0xCA62C1D6)
+                & 0x0ffffffff;
+            E = D;
+            D = C;
+            C = rotate_left(B, 30);
+            B = A;
+            A = temp;
+        }
+
+        H0 = (H0 + A) & 0x0ffffffff;
+        H1 = (H1 + B) & 0x0ffffffff;
+        H2 = (H2 + C) & 0x0ffffffff;
+        H3 = (H3 + D) & 0x0ffffffff;
+        H4 = (H4 + E) & 0x0ffffffff;
+    }
+
+    temp = cvt_hex(H0) + cvt_hex(H1) + cvt_hex(H2) + cvt_hex(H3) + cvt_hex(H4);
+    return temp.toLowerCase();
+};
+
+})(apf.crypto);
+
+
+
+
+/*FILEHEAD(core/debug/debug.js)SIZE(9811)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(core/debug/debugwin.js)SIZE(42735)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(core/debug/profiler.js)SIZE(24827)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+
+
+
+/*FILEHEAD(core/parsers/js.js)SIZE(9016)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * Object returning an implementation of a JavaScript parser.
+ *
+ * @constructor
+ * @parser
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.9
+ */
+apf.JsParser = new (function(){
+    var tok_lut = {
+            '"': 4, '\'': 4, '[': 2, ']': 3, '{': 2, '}': 3, '(': 2, ')': 3,
+            '\n': 6, '\r\n': 6, '//': 7, '/*': 7, '*/': 7, '/':8
+        },
+        tok_close = {'}': '{', ']': '[', ')': '('},
+        tokenizerx    = /(\r?[\n]|\/[\/*]|\*\/|["'{(\[\])}\]\/])|([ \t]+)|([\w\$._])+|(\\?[\w._?,:;!=+-\\\/^&|*"'[\]{}()%$#@~`<>])/g;    
+    
+    function errToString(){
+        return this.t + '[' + this.pos + ']';
+    }
+    
+    function posToString(){
+        return 'Ln : ' + this.line + ', Col : ' + this.col;
+    }
+    
+    function argToString(){
+        return this.type + ' ' + this.name
+            + (this.def !== undefined ? '=' + this.def : '');
+    }
+    
+    function markerToString(){
+        return 'Marker:' + this.type + '  [' + this.pos + '] '+ (this.args ? '('
+            + this.args.join(',') + ')' : '');
+    }
+    
+    function funcToString(){
+        return this.type + ' ' + this.ret + ' ' + this.name + (this.args ? '('
+            + this.args.join(',') + ')' : '') + '  [' + this.pos + ']'
+            + (this.doc ? (' Doc: ' + this.doc) : '');
+    }
+    
+    function concat(t, b, e, m){
+        for (var s = [], sl = 0, i = b; i < e; i += 3) {
+            s[sl++] = (t[i] == 2)
+                ? concat(t[i + 2], 0, t[i + 2].length)
+                : t[i + 2];
+            if(m && i<e-3) s[sl++] = m;    
+        }
+        return s.join('');
+    }    
+    
+    function formatPos(l,pos){
+        return JsParser.line(l, pos).toString();
+    }
+
+    var pre_regex = {
+        'throw': 1, 'return': 1, '(': 1, '[': 1, ',': 1, '=': 1, ":": 1
+    }        
+    
+    this.parse = function(str){
+        var t = [],     // parse tree
+            b = 0,      // block output
+            stack = [], // tree stack
+            type = 0,   // token type
+            mode_tok = 0, // parsemode, contains char of block we parse
+            n,          // tempvar
+            lines = [], // array of linepositions
+            err = [];   // tokenize array
+        var last_tok = null;
+        str.replace(tokenizerx, function(tok, rx_lut, rx_ws, rx_word, rx_misc, pos){
+            type = rx_lut ? tok_lut[rx_lut] : (rx_ws ? 9 : (rx_word ? 5 : 0)); //5 = word
+            //logw( type+" "+pos+"\n");
+            if (!mode_tok) {
+                switch (type) {
+                    case 8: // regex
+                        // previous is: throw return ( , [
+                        if (pre_regex[last_tok] || pre_regex[t[t.length-1]]) {
+                            if (t[t.length-3] == "[") {
+                                mode_tok = "objRgx";
+                                var openTags = 1;
+                            } else
+                                mode_tok = tok;
+                            
+                            t[n = t.length] = type,
+                            t[++n] = pos;
+                            
+                            b = [tok];
+                        } else {
+                            t[n = t.length] = 0;
+                            t[++n] = pos;
+                            t[++n] = tok; 
+                        }
+                        //debugger;
+                        break;                
+                    case 4: //String 
+                    case 7: //Comment
+                        t[n=t.length] = type,
+                        t[++n] = pos;
+                        mode_tok = tok;
+                        b = [tok];
+                        break;
+                    case 2: //[ ( {
+                        t[n = t.length] = type;
+                        t[++n] = pos;
+                        stack.push(t);
+                        t = t[++n] = [0, pos, tok];
+                        break;
+                    case 3: // } ) ]
+                        if (t[2] != tok_close[tok])  {                            
+                            err.push({t: "Error closing " + tok + " (opened with: " + t[2] + ")", pos: pos, toString: errToString});                                                                                                                            
+                        }
+                        else {
+                            t[n = t.length] = type;
+                            t[++n] = pos;
+                            t[++n] = tok;
+                            t      = stack.pop();
+                        }
+                        break;
+                    case 6: // \n
+                        lines[lines.length] = pos;
+                        break;
+                    case 9: // white space
+                        break;
+                    default: // word
+                        t[n = t.length] = type;
+                        t[++n] = pos;
+                        t[++n] = tok;
+                        break;
+                }
+            }
+            else { //In comment or string mode
+                b[b.length] = tok;
+                if (mode_tok == "objRgx") {
+                    if (tok == "[") { 
+                        openTags++;
+                    } else if (tok == "]") {
+                        openTags--;
+                    }
+                    if (openTags == 0) {
+                        mode_tok = 0;
+                        t[++n] = b.join('');
+                    }
+                    //debugger;
+                }
+                switch (type) {
+                    case 4: //String
+                        if (mode_tok == tok){
+                            mode_tok = 0;
+                            t[++n] = b.join('');
+                        }
+                        break;
+                    case 7: //Comment
+                        if (tok == '*/' && mode_tok == '/*') {
+                            mode_tok = 0;
+                            t[++n] = b.join('');
+                        } else if (tok == '*/' && mode_tok == '/') {
+                            mode_tok = 0;
+                            t[++n] = b.join('');
+                        }
+                        break;
+                    case 8: // regex
+                        if(mode_tok == '/'){
+                            mode_tok = 0;
+                            t[++n] = b.join('');
+                        }
+                        break;
+                    case 6: //New line
+                        lines[lines.length] = pos;
+                        if (mode_tok == '//'){
+                            mode_tok = 0;
+                            b.pop();
+                            t[++n] = b.join('');
+                        }
+                        break;
+                }
+            }
+            if(type<9)last_tok = tok;
+        });
+        while (stack.length)
+            err.push({t: "Not closed: " + (n = t[2], t = stack.pop(), n), pos: formatPos(lines,t[t.length - 2]), toString: errToString});
+        if (mode_tok)
+            err.push({t: "Blockmode not closed of " + b[0], pos: formatPos(lines,t[t.length - 1]), toString: errToString});
+                        
+        return {tree: t, lines: lines, err: err};
+    };
+    
+    this.dump = function(s, t, level){
+        for (var i = 0; i < t.length; i += 3) {
+            var type = t[i];
+            if (type ==2)
+                this.dump(s, t[i + 2], level + 1);
+            else 
+                s.push(Array(level).join('----'), type, " ", t[i + 2], "\n");
+        }
+    };
+    
+    this.line = function(lines,pos){
+        for (var i = 0, j = lines.length; i < j && lines[i] < pos; i++);
+        return {line: i+1, col: pos - lines[i - 1], toString: posToString};
+    };
+    
+    this.scan = function(t, tag_prefix, classes, err, in_struct, scope, outer, base_class){
+        
+    }    
+})();
+
+
+
+
+/*FILEHEAD(core/parsers/livemarkup.js)SIZE(112942)TIME(Fri, 15 Jul 2011 15:38:55 GMT)*/
+>>>>>>> hotfix/0.5.1
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+<<<<<<< HEAD
 
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/debug/profiler.js)SIZE(24827)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
@@ -44708,24 +59177,96 @@ apf.JsParser = new (function(){
 /*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
+=======
+/**
+ * @term livemarkup
+ * Live Markup is an extension to Javascript, and it allows APF to have
+ * a simple consistent syntax for all attribute values and templates.
+ * Live markup is used for templating, rpc, data binding,
+ * property binding, formatting and even events.
+ * Live Markup generates text-output via the default-output of statements,
+ * and APF maintains knowledge of all properties and data used to create
+ * this output allowing for a Live update when any of this information changes.
+ * Nearly all attributes in APF are processed as a live markup " " string
+ * Some attributes (like events) and <?lm ?> blocks are processed as code.
+ * LiveMarkup features:
+ * <ol>
+ *  <li>inline xpaths</li>
+ *  <li>E4X-like xml literals</li>
+ *  <li>automatic statement/expression output and concat</li>
+ *  <li>code and xpath expansion in-strings</li>
+ *  <li>virtual-sync of async calls</li>
+ * </ol>
+ * Examples:
+ * <code>
+ *    var x = [folder/@name]; // value of xpath
+ *    [folder/@name] = 'hello'; // set an attribute
+ *    [folder/file] += <file/>; // add a new file node to folder/file list
+ *    var y = <folder><file name={x}/></folder> // e4x-style xml
+ *    x; //automatic output
+ *    <xml/>; // automatic output
+ *    if(a)func(); // automatic output of function returnvalue
+ *    x = 15; // not outputted, assignments are never output.
+ *    var z = "string with jsvars: {x} and xpath: [folder/@name]";
+ *    alert(comm.someRpcCall(x)); // async call returns sync value
+ * </code>
+ * LiveMarkup syntax has one conflict with normal JS syntax; an array of 1 item vs xpath.
+ * Arrays are recognised if there is atleast one , present: [1,2] and 1 item: [,1]
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
+ * Another important feature of LiveMarkup is that its infinitely nestable:
+ * Outer construct: inner constructs
+ * <ol>
+ *  <li>string: xpath, code</li>
+ *  <li>xpath: code, xpath(its a sub-xpath when NOT after [)\w] or IS inside "str" or 'str' )</li>
+ *  <li>code: xpath, code, string, xml</li>
+ *  <li>xml: xpath, code</li>
+ * </ol>
+ * Example of code in xpath in xml in code in string, for the sake of argument:
+ * <code>
+ * var x = "str{<xml id=[xp{y}]/>}"
+ * </code>
+ * since code has an auto-output, it is also possible to use scope { } delimiters holding a value
+ * and used as an expression.
+ * var x = {..code with auto output..}
+ * The ^ character at the beginning of a statement can force 'no output' but is very rarely needed.
+>>>>>>> hotfix/0.5.1
  *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * It is important to realise that Live Markup is converted to normal Javascript
+ * in a single compile pass, and does not constitute black-magic.
+ * As rarely debugging might force you to look at generated code, its useful to know it exists.
+ * For instance:
+ * XML literals are turned into normal JS strings: <xml/> becomes "<xml/>"
+ * in generated code. This is different from E4X where they are special type of object.
+ * xpaths and operators are turned into functioncalls: [xpath] becomes _val(_n,"xpath")
+ * and nesting becomes concatenation: "a{x}b" becomes ("str"+(x)+"str")
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Live markup xpath reference
+ * Different xpath types:
+ * [xpath] - value xpath (string)
+ * %[xpath] - single node
+ * *[xpath] - node set
+ * #[xpath] - number of nodes selected by xpath
+ * $[symbol] - language 'xpath', fetches value from language symbol library
+ * [model::xpath] - xpath value on model with name 'model'
+ * [{x}::xpath] - xpath value on xml node or model with js variable x
+ * [{rpc.thing()}::xpath] - xpath value on an rpc call
+ * [xpath] = 'value' - assign text-value to xpath (nodeValue = ..)
+ * [xpath] = <xml/> - replace node with right hand xml
+ * [xpath] = xmlNode - replace node with right hand node, removing xmlNode from its old position
+ * [xpath] += 'value' - appends text-value to nodeValue
+ * [xpath] += <xml/> - appends the <xml/> after the selected node
+ * [xpath] += xmlNode - appends the node and removes from its old position
+ *
+ * Macro reference
+ * localName(n) - returns the localName of the context node or supplied argument
+ * tagName(n) - tagName of context node or supplied argument
+ * nodeValue(n) - value of context nore or supplied argment similar to [.]
+ * local(n){..code..} - a codeblock with a new context node n, n can be xml-string too
+ * each(set){..code..) iterates over the set. usually used as: each(*[xpath]){}
  *
  */
 
+<<<<<<< HEAD
 
 
 /**
@@ -44819,6 +59360,12 @@ apf.JsParser = new (function(){
  * @constructor
  * @parser
  *
+=======
+/**
+ * @constructor
+ * @parser
+ *
+>>>>>>> hotfix/0.5.1
  * @author      Rik Arends
  * @version     %I%, %G%
  * @since       3.0
@@ -45790,6 +60337,7 @@ apf.lm = new (function(){
                         break;
                     case 10: // -------- ] --------
                         sl--, parse_mode = (w = s[--sl]) >> 28, w = w & 0x0fffffff;
+<<<<<<< HEAD
 
                         if (parse_mode == 6){ // was part of [] internally to xpath, see above
                             if (s[sl + 1] != "[")
@@ -46289,6 +60837,507 @@ apf.lm = new (function(){
             alert("ERROR, undefined live markup cache marker found:"+istr);
             return {type:2,str:istr};
         }
+=======
+
+                        if (parse_mode == 6){ // was part of [] internally to xpath, see above
+                            if (s[sl + 1] != "[")
+                                throw {
+                                    t:"In xpath, cannot close " + s[sl + 1] + " with " + tok,
+                                    p: pos
+                                };
+                            if (ol == segment)
+                                o[ol] = (ol++ == scope) ? "\"" : "+\"";
+
+                            o[ol++] = "]";
+                            parse_mode = 3;
+                        }
+                        else {
+                            if (ol == scope ) {
+                                if ((s[sl] >> 28) <= 1) // empty array in code
+                                    o[scope - 1] = "[", o[ol++] = "]";
+                                else // empty xpath elsewhere
+                                    o[scope - 1] = o[ol++] = "\"" ;
+                                segment = ol;
+                            }
+                            else {
+                                //if( s[sl+1] != '[' )
+                                //    throw {t:"Unclosed string in xpath"+s[sl+1], p: pos};
+                                if (ol != segment)
+                                    o[ol++] = "\"";
+                                if (segment == scope){ // we might have an xpath name
+                                    v = o.slice(segment + 1, ol - 1).join("");
+                                    if (c_injectself && o[scope - 1] != "," // inject self
+                                      && v != (u = v.replace(selfrx, "$1self::"))
+                                      && s[sl + 1] != xpath_lut_text["$"]) {
+                                        o[scope+1] = v = u;
+                                        for (u = scope + 2; u < ol - 1; u++)
+                                            o[u] = "";
+                                    }
+                                }
+                                else {
+                                    if ((u = o[scope - 1]) != ",") {
+                                        v = "#";
+                                        if (c_injectself)// inject dyn self if dyn xpath
+                                            o[scope - 1] = u + "_injself(", o[ol++] = ")";
+                                    } 
+                                    else
+                                        v = "";
+                                }
+                                if (s[sl + 1] != xpath_lut_text["$"] && v) {
+                                    o_xpathpairs.push(last_model, v);  // only store if not _lng
+                                    if (last_model)
+                                        o_models++;
+                                }
+                                o[ol++] = ") ", segment = ol; // close xpath with ') ' marker
+                                //logw("CLOSING XPATH"+o.join('#')+nesting);
+                                if (parse_mode == 7) // attribute assign in xml mode
+                                    o[ol++] = "+\"\\\"", parse_mode = 4;
+                            }
+                            // lets output an xpath if we werent a language symbol
+                            nesting--, last_model = null;
+                            if (!nesting)
+                                o_segs++, o_xpaths++;
+                        }
+                        scope = w;
+                        break;
+                    case 11: // -------- ( --------
+                        if (ol == segment)
+                            o[ol] = (ol++ == scope) ? "\"" : "+\"";
+                        s[sl++] = scope | 0x30000000, // keep track of () in xpath
+                        s[sl++] = o[ol++] =  "(";//, last_model = null;
+                        break;
+                    case 12: // -------- ) --------
+                        if (ol == segment)
+                            o[ol] = (ol++ == scope) ? "\"" : "+\"";
+
+                        if (type_close[v = s[--sl]] != (o[ol++] = tok))
+                            throw {
+                                t:"Cannot close " + v + " with " + tok,
+                                p: pos
+                            };
+
+                        scope = s[--sl] & 0xfffffff;
+                        break;
+                    case 15: // -------- end --------
+                        throw {
+                            t: "Unexpected end whilst parsing xpath",
+                            p: pos
+                        };
+                        break;
+                    default: // -------- default --------
+                        if (ol == segment)
+                            o[ol] = (ol++ == scope) ? "\"" : "+\"";
+                        o[ol++] = tok;
+                        break;
+                }
+                break;
+            case 4: // ===========================  xml parse_mode ==========================
+                switch (type) {// stack: '<'sl+4,outside=0, '</'sl-4  '>'sl-2,outside=1 '/>'sl-4,outside=1
+                    case 0: // -------- whitespace --------
+                        if (ol == segment)
+                            o[ol++] = "+\"";
+
+                        o[ol++] = " ", last_type = 0;
+                        break;
+                    case 1: // -------- newline --------
+                        if (ol == segment)
+                            o[ol++] = "+\"";
+
+                        line_no++, last_line = pos, o[ol++] = "\\n", last_type = 1;
+                        break;
+                    case 2: // -------- misc --------
+                        if (ol == segment)
+                            o[ol++] = "+\"";
+                        if (tok == "/" && last_tok == "<") {
+                            sl -= 4; // </ closing tag, drop stacklevel by 4
+                            if (s[sl] || s[sl + 2])
+                                throw {
+                                    t: "Unexpected closing tag whilst parsing xml",
+                                    p: pos
+                                };
+                        }
+                        else if (tok == ":" && last_type == 3 && o[ol - 2] == "<")
+                            last_ns = last_tok; // found a namespace item in a tag
+                        o[ol++] = unesc_txt[tok] || tok;
+                        break;
+                    case 3: // word
+                        if (ol == segment)
+                            o[ol++] = "+\"";        
+                        if(tok.charAt(tok.length-1)=='$'){
+                            o[ol++] = tok.slice(0,-1);
+                            o[ol++] = tok = '$';// fix word$[xpath] 
+                        }else o[ol++] = tok;
+                        break                       
+                    case 5: // -------- stringquotes --------
+                        if (ol == segment)
+                            o[ol++] = "+\"";
+
+                        if (tok == '"')
+                            o[ol++] = "\\";
+                        o[ol++] = tok;
+                        break;
+                    case 6: // -------- comment --------
+                        if (tok == "//" && !s[sl - 1]) {
+                            if (ol == segment)
+                                o[ol++] = "+\"";  // < char ups stack by 4, outside= 0
+                            o[ol++] = tok;
+                        }
+                        else {
+                            if (tok == "*/")
+                                throw {
+                                    t: "Unmatched comment "+tok,
+                                    p: pos
+                                };
+                            last_cmt_mode = parse_mode, last_cmt_tok = last_tok,
+                            last_cmt_type = last_type, parse_mode = 6, start_tok = tok;
+                        }
+                        break;
+                    case 13: // -------- < --------
+                        last_ns = null;
+                        if (ol == segment)
+                            o[ol++] = "+\"";  // < char ups stack by 4, outside= 0
+                        o[ol++] = tok, s[sl] = s[sl + 2] = 0, sl += 4, s[sl - 1]=0;
+                        break;
+                    case 14: // -------- > --------
+                        if (ol == segment)
+                            o[ol++] = "+\"";
+
+                        o[ol++] = tok;
+                        if (last_tok != "<") {
+                            if (last_tok == "/") {
+                                sl -= 4; // self close tag /> drops stack -4
+                                if (s[sl + 2])
+                                    throw {
+                                        t: "Unexpected / whilst parsing xml",
+                                        p: pos
+                                    }
+                                if (o[ol - 3] == "<") // remove empty </> from output
+                                    ol -= 2, o[ol - 1] = "";
+                            }
+                            else
+                                sl -= 2; // <tag> nets stackdepth of 2
+                            if (s[sl]) { // end of xml mode
+                                nesting--, o[ol++] = "\"", scope = s[sl], segment = ol,
+                                parse_mode = scope >> 28, scope = scope & 0x0fffffff;
+                            }
+                            else
+                                s[sl - 1] = 1; // we are outside a tag, flag it on the stack
+                        }
+                        else // remove empty <> from output
+                            ol--, o[ol - 1] = "";
+                        break;
+                    case 9:  // -------- [ --------  xpath mode
+                        last_model = null;
+
+                        if (last_tok == "!" && o[ol - 2] == "<" && !s[sl - 1]) { // CDATA mode
+                            o[ol++] = tok, s[sl++] = scope | (parse_mode << 28);
+                            s[sl++] = "]]>", scope = segment = ol - 1;
+                            nesting++, parse_mode = 5;
+                        }
+                        else {
+                            if (s[sl - 1]) { // we are outside a tag
+                                if((v = xpath_lut_node[last_tok]))
+                                    ol --;
+                                else
+                                    v = xpath_macro[c_elemxpath];
+                                    
+                                s[sl++] = scope | 0x40000000
+                            }
+                            else {
+                                s[sl++] = scope | 0x40000000
+                                if ((v = xpath_lut_attr[last_tok])) {
+                                    ol--;
+                                    if (o[ol - 1] == "=")
+                                        last_tok = "=";
+                                }
+                                else
+                                    v = xpath_macro[last_ns ? c_statexpath : 8];
+                                
+                                if (last_tok == "=")//0x7 flags xpath-in-missing-quotes <a i=[xp]/>
+                                    o[ol++] = "\\\"", s[sl - 1] = scope | 0x70000000;
+                            }
+                            o[ol] = (ol++ == segment) ? "+''+" : "\"+";
+                            nesting++, s[sl++] = o[ol++] = v,
+                            segment = scope = ol, parse_mode = 3;
+                        }
+                        break;
+                    case 7: // -------- { -------- code mode
+                        if ( !s[sl - 1] && last_tok == "=") // 0x7 flags code-in-missing-quotes <a i={x}/>
+                            o[ol++] = "\\\"", s[sl++] = scope | 0x70000000;
+                        else
+                            s[sl++] = scope | 0x40000000
+
+                        o[ol] = (ol++ == segment) ? "+''+" : "\"+";
+                        s[sl++] = o[ol++] = "{{", nesting++;
+                        segment = scope = ol, parse_mode = 0;
+                        break;
+                    default:
+                        if (ol == segment)
+                            o[ol++] = "+\"";
+                        o[ol++] = tok;
+                        break;
+                    case 15: // -------- end --------
+                        throw {
+                            t: "Unexpected end whilst parsing xml",
+                            p: pos
+                        };
+                        break;
+                }break
+            case 5: // ==========================  string parse_mode ========================
+                switch (type) {
+                    case 1: // -------- newline --------
+                        line_no++, last_line = pos;
+                        if (ol == segment)
+                            o[ol] = (ol++ == scope) ? "\"" : "+\"";
+                        o[ol++] = "\\n";
+                        break;
+                    case 2: // -------- misc --------
+                        if (tok == "/" && s[sl - 1] == "/") { // regexp closing character
+                            o[ol++]    = "/", scope = s[sl -= 2], segment = ol,
+                            parse_mode = scope >> 28,
+                            scope      = scope & 0x0fffffff, nesting--;
+                        }
+                        else {
+                            if (ol == segment)
+                                o[ol] = (ol++ == scope) ? "\"" : "+\"";
+                            o[ol++] = (s[sl - 1] != "/" && unesc_str[tok]) || tok;
+                        }
+                        break;
+                    case 3: // word
+                        if (ol == segment)
+                            o[ol] = (ol++ == scope) ? "" : "+\"";       
+                        if(tok.charAt(tok.length-1)=='$'){
+                            o[ol++] = tok.slice(0,-1);
+                            o[ol++] = tok = '$';// fix word$[xpath] 
+                        }else o[ol++] = tok;
+                        break                           
+                    case 5: // -------- stringquotes --------
+                        if (s[sl - 1] == tok) { // closed by matching quote
+                            if (scope != segment) // string is segmented, output )
+                                o[ol] = (ol++ != segment) ? (tok + ")") : ")";
+                            else
+                                o[ol++] = tok; // else just close
+                            scope = s[sl -= 2], segment = ol, parse_mode = scope >> 28;
+                            scope = scope & 0x0fffffff, nesting--;
+                        }
+                        else {
+                            if (ol == segment)
+                                o[ol] = (ol++ == scope) ? "\"" : "+\"";
+                            o[ol++] = tok == '"' ? "\\\"" : tok;
+                        }
+                        break;
+                    case 6: // -------- default --------
+                        if (s[sl - 1] == "/" && tok == "*/") { // caught faux comment in regexp /a*/, is close
+                            o[ol++] = "*/", scope = s[sl -= 2], segment = ol,
+                            parse_mode = scope >> 28, scope = scope & 0x0fffffff, nesting--;
+                        }
+                        else {
+                            if (ol == segment)
+                                o[ol] = (ol++ == scope) ? "" : "+\"";
+                            o[ol++] = tok;
+                        }
+                        break;
+                    case 7: // -------- { -------- code mode
+                        if (s[sl - 1] != "'" && s[sl - 1] != "/") {
+                            if (s[sl - 1] == '"')
+                                o[scope] = '("';
+                            if (ol == segment) {
+                                if (ol != scope)
+                                    o[ol++] = "+";
+                            }
+                            else
+                                o[ol++] = "\"+";
+                            s[sl++] = scope | 0x50000000, o[ol++] =  s[sl++] = "{{",
+                            nesting++, segment = scope = ol, parse_mode = 0;
+                        }
+                        else
+                            o[ol++] = tok;
+                        break;
+                    case 9:  // -------- [ --------  xpath mode
+                        if (s[sl - 1] != "'" && s[sl - 1] != "/" // ignore in '' and CDATA[, else xpath
+                          && (s[sl - 1] == '"' && (o[scope] = '("') || ol != scope + 2
+                          || last_tok != "CDATA") ) {
+                            last_model = null;
+                            if ((w = xpath_lut_text[last_tok])  && o[ol - 1] == last_tok)
+                                ol--;
+                            else
+                                w = xpath_macro[0]
+
+                            if (ol != scope)
+                                o[ol] = (ol++ == segment) ? "+" : "\"+";
+
+                            s[sl++] = scope | 0x50000000, s[sl++] = o[ol++] = w,
+                            segment = scope = ol, nesting++, parse_mode = 3;
+                        }
+                        else
+                            o[ol++] = tok;
+                        break;
+                    case 14: // -------- > --------
+                        if (ol == segment)
+                            o[ol] = (ol++ == scope) ? "" : "+\"";
+                        o[ol++] = tok;
+
+                        if (s[sl - 1] == "]]>" && last_tok == "]" && o[ol - 3]=="]") { // check if CDATA close
+                            scope = s[sl -= 2], parse_mode = scope >> 28;
+                            scope = scope & 0x0fffffff, nesting--;
+                            sl -= 4; // close the tag since we came from XML mode
+                            if (s[sl]) // was last tag, jump up the stack one more.
+                                nesting--, o[ol++] = "\"", scope = s[sl], segment = ol,
+                                parse_mode = scope >> 28, scope = scope & 0x0fffffff;
+                            else
+                                s[sl - 1] = 1;
+                        }
+                        break;
+                    case 15: // -------- end --------
+                        throw {
+                            t: "Unexpected end whilst parsing string",
+                            p: pos
+                        };
+                        break;
+                    default: // -------- default --------
+                        if (ol == segment)
+                            o[ol] = (ol++ == scope) ? "" : "+\"";
+                        o[ol++] = tok;
+                        break;
+                }
+                break;
+            case 6: // =========================  comment parse_mode ========================
+                switch (type) {
+                    case 1: // -------- newline --------
+                        line_no++, last_line = pos;
+                        if (start_tok == "//")
+                            parse_mode = last_cmt_mode,
+                            tok = last_tok = last_cmt_tok,
+                            type = last_type = last_cmt_type;
+                        break;
+                    case 6: // -------- comment --------
+                        if ((start_tok == "/*" && tok == "*/") 
+                          || (start_tok == "<!--" && tok == "-->")) {
+                            parse_mode = last_cmt_mode,
+                            tok = last_tok = last_cmt_tok,
+                            type = last_type = last_cmt_type;
+                        }
+                        break;
+                    case 15: // -------- end --------
+                        if(start_tok != "//"){
+                            throw {
+                                t: "Unexpected end whilst parsing comment",
+                                p: pos
+                            }
+                        } else {
+                            parse_mode = last_cmt_mode,
+                            tok = last_tok = last_cmt_tok,
+                            type = last_type = last_cmt_type;                        
+                            if (sl && !s[sl - 1]) { // close = macro
+                                o[ol - 1] == "\n" && (o[ol - 1] = ""), o[ol++] = ")",
+                                o[ol++] = "\n", v = 1, sl -= 2;
+                            }  
+                        };
+                        break;
+                }
+                break;
+        }
+        if (type > 1)
+            last_tok = tok, last_type = type;
+    }
+
+    this.lastCode = function(){
+        if (typeof(o) == "object")
+            return o.join("");
+        return o;
+    };
+
+    function handleError(e, last_line, part, linenr){
+        // TODO: make a proper APF exception with this information:
+        if (e.t) {
+            throw new Error(apf.formatErrorString(0, null,
+                "Parsing live markup source",
+                "Error whilst parsing: " + e.t + " on line:"+ line_no
+                + " col:" + (e.p - last_line - 2)
+                + (part ? (" part: " + part) : "") + "\n" + str));
+        }
+        else {
+            throw new Error(apf.formatErrorString(0, null,
+                "Compiling live markup function on line " + linenr,
+                "Error whilst compiling: " + e.message 
+                //+ "\nStack Trace:\n" + e.stack
+                + "\nInput:\n" + str
+                + "\nGenerated:\n" + apf.lm.lastCode()));
+        }
+    }
+
+    /**
+     * description of the method.
+     * Remarks:
+     *   function{type:1,xpaths:[ model,name], props: ['obj.propname','obj2.otherpropname'], asyncs=1}
+     *   this is a normal compiled function with extra properties
+     *   if the xpath model and/or name is '#' it means it is a runtime calculated modelname or xpath.
+     *   obj{type:2, str:str} it was single string by cfg option !alwayscode
+     *   obj{type:3, xpaths:[ model, name ] } it was a single xpath  by cfg simplexpath
+     *
+     * @param  {String}  str      the code to compile
+     * @param  {Object}  options
+     *   Properties:
+     *   {Boolean} withopt     creates with(_w){  code using an options block. (reqd for precall)
+     *   {Boolean} precall     wraps 1 async call into precallstore. call with _w._pc = 1 to precall, second time to execute.
+     *   {Boolean} alwayscb    always call callback function, even if not async
+     *   {Boolean} nostring    even generate code for a simple string
+     *   {Number} xpathmode    default type of root level xpath in code mode
+     *      Possible values:
+     *      0: value
+     *      1: value with createnode
+     *      2: node
+     *      3: node with createnode
+     *      4: nodes
+     *      5: xpathobj        returns a {model:model,xpath:xpath} object from xpaths
+     *   {Boolean} parsecode   start in codemode. if 0 its textmode.
+      *  {Boolean} nostate       dont' use _valst macro on [xpath] in namespaced xml.
+     *   {Boolean} liveedit    use the _valed macro for <xml>[xpath]</xml> in namespaced xml.
+     *   {Boolean} langedit    use of language items in namespaced xml text.
+     *   {Boolean} injectself  injects self:: to suitable xpaths
+     *   {Boolean} event       its an event thats being compiled, results in no returnvalue for this function.
+     *                         and the first argument is now an 'e' for the event object.
+     *   {Boolean} funcglobal  all functions defined in LM are made global
+
+     *
+     * @return  {Function} returns a function with extra properties
+     *   Properties:
+     *   {Number}  type         description
+     *      Possible values:
+     *      1  Function return type
+     *      2  Parsed data is a pure string
+     *      3  Function return type, but its a single xpath
+     *      4  Function return type, but single propxs
+     *   {Array}   xpaths       array of [model,xpath, model,xpath] pairs if model
+     *                          or xpath is '#', its dynamic if model is null its a local xpath
+     *   {Number}  models        number of models
+     *   {Array}   props        description
+     *   {Number}  asyncs       description
+     *   {String]  str            optional, returned with type 2
+     */
+    var cache    = {},
+        emptyCfg = {};
+    this.resetCache = function(){
+        cache = {};
+    };
+    var lmcache_rx = /^\s*~~(c\d+)~~/;
+    this.compile = function(istr, cfg){
+        if (!cfg)
+            cfg = emptyCfg;
+        if(istr == null || !istr.length){
+            return (cfg.nostring || cfg.event)?function(){return istr}:{
+                type: 2,
+                str :istr
+            };
+        }
+        // lets see if we need to fetch precompiled cachemarker
+        var c, f, is_single_prop;
+        if(istr.charAt(0)=="~" && (c=istr.match(lmcache_rx))){
+            if(c=apf.lm_exec[c[1]]) return c;
+            alert("ERROR, undefined live markup cache marker found:"+istr);
+            return {type:2,str:istr};
+        }
+>>>>>>> hotfix/0.5.1
             
         var key = (cfg.xpathmode | (cfg.withopt && 0x10) | (cfg.precall && 0x20)
                 | (cfg.alwayscb && 0x40) | (cfg.nostring && 0x80)  | (cfg.parsecode && 0x100)
@@ -46303,12 +61352,21 @@ apf.lm = new (function(){
         c_statexpath = cfg.nostate ? 0 : 6, c_elemxpath = 0;
         c_export = cfg.funcglobal?"self":(cfg.withopt?"_w":null);
         c_process_async = !cfg.event;
+<<<<<<< HEAD
 
         xpath_macro.edit = cfg.liveedit ? "_argwrap(_n," : "_argwrap(_n,";//"_val(_n,";
         macro_o.edit     = cfg.liveedit ? macro_o._editlm : macro_o._editnormal;
         
         xpath_lut_node = cfg.langedit ? xpath_lut_node_langedit : xpath_lut_node_normal;
 
+=======
+
+        xpath_macro.edit = cfg.liveedit ? "_argwrap(_n," : "_argwrap(_n,";//"_val(_n,";
+        macro_o.edit     = cfg.liveedit ? macro_o._editlm : macro_o._editnormal;
+        
+        xpath_lut_node = cfg.langedit ? xpath_lut_node_langedit : xpath_lut_node_normal;
+
+>>>>>>> hotfix/0.5.1
         o_props = {}, o_xpathpairs = [], s = [], o = ["","","",""], str = istr,
         str_len = str.length;
         ol = scope = segment = o.length,
@@ -46406,6 +61464,7 @@ apf.lm = new (function(){
             if (cfg.event) { // event
                 if (parse_mode == 1)
                     o[3] = "";
+<<<<<<< HEAD
             }
             else if(c_xpathmode) { // object return
                 if (parse_mode == 1) {
@@ -46423,6 +61482,25 @@ apf.lm = new (function(){
                 else
                     o[3] = cc_v_ret_o, o[ol++] = cc_v_ret_c;
             }
+=======
+            }
+            else if(c_xpathmode) { // object return
+                if (parse_mode == 1) {
+                    o[3]    = (o[3] != cf_block_o) ? cc_o_blk_o : cc_o_blk_ob,
+                    o[ol++] = cc_o_blk_c;
+                }
+                else
+                    o[3] = cc_o_ret_o, o[ol++] = cc_o_ret_c;
+            }
+            else { // value return
+                if (parse_mode == 1) {
+                    o[3]    = (o[3] != cf_block_o) ? cc_v_blk_o : cc_v_blk_ob,
+                    o[ol++] = cc_v_blk_c;
+                }
+                else
+                    o[3] = cc_v_ret_o, o[ol++] = cc_v_ret_c;
+            }
+>>>>>>> hotfix/0.5.1
             if (cfg.withopt)
                 o[2] = cc_opt_o, o[ol++] = cc_opt_c;
 
@@ -46610,6 +61688,7 @@ apf.lm = new (function(){
                 return null;
             }
         }
+<<<<<<< HEAD
 
         f.type  = 1, f.xpaths = o_xpathpairs,
         f.props = o_props, f.asyncs = o_asyncs;
@@ -46718,6 +61797,116 @@ apf.lm_exec = new (function(){
           && n.nodeValue || ("");
     }
 
+=======
+
+        f.type  = 1, f.xpaths = o_xpathpairs,
+        f.props = o_props, f.asyncs = o_asyncs;
+        return f;
+    };
+
+    this.setWarnLevel = function(lvl){
+        apf.lm_exec.setWarnLevel(lvl);
+    };
+    
+    this.parseExpression = function(istr, cfg){
+        if (!cfg)
+            cfg = emptyCfg;
+
+        o_props = {}, o_xpathpairs = [], o = [], s = [],
+        nesting = 0, xpath_lut_node = xpath_lut_node_normal;
+        str = istr, str_len = str.length;
+        ob = ol = scope = segment = o.length, cf_mode_output = cf_str_output;
+        c_xpathmode = c_injectself = last_tok = sl = line_no = o_segs = o_xpaths =
+        last_type = o_asyncs = last_line = 0;
+        parse_mode = 2;
+        
+        if (cfg.nothrow) {
+            str.replace(parserx, parser);
+        }
+        else {
+            try {
+                str.replace(parserx, parser);
+            }
+            catch(e) {
+                handleError(e,last_line);
+                return null;
+            }
+        }
+        return o.join('');
+    }
+
+    
+})();
+
+// apf lm_exec makes sure there is no scope pollution for eval'ed live markup.
+apf.lm_exec = new (function(){
+    
+    var wlvl = 1; // 0: no warnings 1: language/models missing, 2:nodes missing, 3:all failed xpaths
+
+    //warning functions
+    this.setWarnLevel = function(lvl){
+        wlvl = lvl;
+    };
+
+    function wxpath(x, t){
+        apf.console.warn("Live Markup warning in " + t + ", no results for xpath: '" + x + "'");
+    }
+
+    function wnode(x, t){
+        apf.console.warn("Live Markup warning in " + t + ", xpath on null node: '" + x + "'");
+    }
+
+    function wmodel(m, x, t){
+        apf.console.log("Live Markup warning in " + t + ", xpath on empty model: '" + m + "' xpath: '" + x + "'");
+    }
+
+    function wlang(x, t){
+        apf.console.log("Live Markup warning in " + t + ", language symbol not found: '" + x + "'");
+    }
+
+    // xml parse function used by all livemarkup objects
+    function xmlParse(str){
+        var n = apf.getXmlDom("<_apflmlist_>" + str + "</_apflmlist_>");
+        if (!n || !(n = n.documentElement))
+            return null;
+        return (n.firstChild == n.lastChild) ? n.firstChild : n;
+    }
+
+    // value of node by xpath
+    function __val(n, x){
+        if (!n)
+            return ("")
+        return (n = (!n.nodeType && n || (n = n.selectSingleNode(x)) //!= 1 
+          && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
+          && n.nodeValue || ("");
+    }
+
+    var __valattrrx = /(["'])/g;
+    function __valattrrp(m,a){
+        return m=='"'?"&quot;":"&apos;";
+    }
+    function __valattr(n, x){
+        if (!n)
+            return ("")
+        return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) 
+          && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
+          &&  n.nodeValue.replace(__valattrrx,__valattrrp) || ("");
+    }
+
+    
+    // value of model node by xpath
+    function __valm(m, x){
+        var n;
+        if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
+          || ((n = apf.nameserver.lookup.model[m]) && n.data)))
+          || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
+            return ("");
+        return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) 
+          && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
+          && n.nodeValue || ("");
+    }
+
+>>>>>>> hotfix/0.5.1
     function __nod(n, x){           // node by xpath
         return n ? n.selectSingleNode(x) : (null);
     }
@@ -46784,6 +61973,12 @@ apf.lm_exec = new (function(){
             }
         };
     }
+<<<<<<< HEAD
+
+    //----- the following functions are combined model and normal mode ------
+
+    function _xml(n, m, x){     // serialize node by xpath via .xml
+=======
 
     //----- the following functions are combined model and normal mode ------
 
@@ -46793,6 +61988,19 @@ apf.lm_exec = new (function(){
             ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
         (m.$isModel?m.data:(m.charAt?0:m))))
             return ("");
+
+        return (n && (n = n.selectSingleNode(x))) && n.xml ||
+        ("");
+    }
+
+    function _xmls(n, m, x){    // serialize nodes by xpath with .xml concatenated
+>>>>>>> hotfix/0.5.1
+        if(n) x = m;
+        else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
+            ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
+        (m.$isModel?m.data:(m.charAt?0:m))))
+            return ("");
+<<<<<<< HEAD
 
         return (n && (n = n.selectSingleNode(x))) && n.xml ||
         ("");
@@ -46810,10 +62018,36 @@ apf.lm_exec = new (function(){
     }
 
     function _valcr(n, cr, m, x){ // value with a create flag
+=======
+        for(var i = 0,j = ((n=n.selectNodes(x))).length,o = [];i<j;i++)
+            o[i] = n[i].xml;
+        return o.join("");
+    }
+
+    function _valcr(n, cr, m, x){ // value with a create flag
         if(n) x = m;
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
             ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
         (m.$isModel?m.data:(m.charAt?0:m))))
+            return ("");
+
+        if(cr){
+            apf.createNodeFromXpath( ni, x );
+        }else
+        if( n = ni.selectSingleNode(x) ){
+            return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) &&
+                (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n))) && n.nodeValue || ""
+        }
+        return ("");
+    }
+
+    function _nodcr(n, cr, m, x){ // node with create flag
+>>>>>>> hotfix/0.5.1
+        if(n) x = m;
+        else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
+            ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
+        (m.$isModel?m.data:(m.charAt?0:m))))
+<<<<<<< HEAD
             return ("");
 
         if(cr){
@@ -46894,13 +62128,103 @@ apf.lm_exec = new (function(){
     }
 
     // Language processing
+=======
+            return (null);
+        return n.selectSingleNode(x) || (cr && apf.createNodeFromXpath( n, x ));
+    }
+
+    function _valst(n, x){      // a value with state holding
+        var m = apf.xmldb.findModel(n);
+        if(!m)
+            return ("");
+        return "[" + m.id + "::" + apf.xmlToXpath(n, m.data, true) + (!x || x == "." ? "" : "/" + x) + "]";
+    }
+
+    function _asn(o, p, v){     // assign propert
+        if(!o || typeof(o)!="object")
+            throw new Error(apf.formatErrorString(0,0,"LM Property Assign",
+                "Cannot assign property on non object, property:"+p));
+
+        if(o.setAttribute)
+            o.setAttribute(p,v);
+        else
+            o[p] = v;
+        return v;
+    }
+
+    function _add(o, p, v){     // += property
+        return _asn(o,p,o && o[p]+v);
+    }
+
+    function _sub(o, p, v){     // -= propery
+        return _asn(o,p,o && o[p]-v);
+    }
+
+    function _div(o, p, v){     // /= property
+        return _asn(o,p,o && o[p]/v);
+    }
+
+    function _mul(o, p, v){     // *= property
+        return _asn(o,p,o && o[p]*v);
+    }
+
+    // macro implementations
+    function _local(n){         // local(x) for local n
+        // check what n is.. if string parse
+        if(n && n.charAt && n.charAt(0)=="<")
+            return apf.getXmlDom(n).documentElement;
+        
+        return n;
+    }
+
+    function _tagName(n1, n2){  // tagname macro
+        return (n2 && n2.tagName) || (n1 && n1.tagName);
+    }
+
+    function _localName(n1, n2){    // localname macro
+        return (n2 && n2[apf.TAGNAME]) || (n1 && n1[apf.TAGNAME]);
+    }
+
+    function _nodeValue(n,n2){      // value of a node, or localnode.
+        if(n2) n = n2;
+        return (n = (n.nodeType != 1 && n ||
+            (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n))) && n.nodeValue || ""
+    }
+
+    // Language processing
 
 
+    function __ret(r){          // return function, translates $[lang] things in data
+>>>>>>> hotfix/0.5.1
+
+        return r;
+    }
+
+<<<<<<< HEAD
     function __ret(r){          // return function, translates $[lang] things in data
 
         return r;
     }
 
+    function __lng(x,x2){           // the language macro
+
+        return "$["+x+"]"; 
+
+    }
+
+    function _lnged(x,x2){          // editable language macro
+
+        return "$["+x+"]"; 
+
+    }
+    
+    function _(n, m, x){   // wrap a value with editable div
+        return '<span class="liveEdit" xpath="' + (n 
+            ? (m.substr(0,1) != "/" 
+                ? apf.xmlToXpath(n, null, false) 
+                : "") + "/" + m 
+            : "") + '">' + ((n?__val(n,m):__valm(m,x)) || "&#32;") + '</span>';
+=======
     function __lng(x,x2){           // the language macro
 
         return "$["+x+"]"; 
@@ -46965,6 +62289,54 @@ apf.lm_exec = new (function(){
         else {
             return res;
         }
+>>>>>>> hotfix/0.5.1
+    }
+
+//    function _edit(n, opts){
+//        return '<span class="liveEdit" xpath="' + (apf.xmlToXpath(n, null, false)  '">' + ((n?__val(n,m):__valm(m,x)) || "&nbsp;") + '</span>';        
+//    }
+    
+<<<<<<< HEAD
+    function _argwrap(n,x){
+        return [n,x];
+    }
+    
+    function _argwrapm(m,x){
+        return [0,m,x];
+    }
+    
+    function _valedx(editMode, args, opt){   // wrap a value with editable div
+        args[3] = opt;
+        args[4] = editMode;
+        return _valed.apply(this, args);
+    }
+    
+    function _valed(n, m, x, options, editMode){   // wrap a value with editable div
+        var res = (n?__val(n,m):__valm(m,x));
+
+        if (options && options.multiline && options.editor != "richtext")
+            res = res.replace(/\n/g, "<br />");
+        
+        if (editMode !== false) {
+            return '<div' 
+              + ' onmousedown="apf.LiveEdit.mousedown(this, event)" class="liveEdit' + (options && options.multiline ? ' liveeditMultiline' : '') + (!res && options && options.initial ? ' liveEditInitial' : '') + '" xpath="' + (n 
+                ? ((m.substr(0,1) != "/" 
+                    ? apf.xmlToXpath(n, null, false) 
+                    : "") + "/" + m).replace(/([\[\{\}\]])/g, "\\$1")
+                : (self[m] 
+                    ? (m + ".queryNode('" + x.replace(/'/g, "\\'") + "')").replace(/([\[\{\}\]])/g, "\\$1")
+                    : "")) + '"' 
+              + (options
+                ? ' options="' + apf.serialize(options).escapeHTML()
+                                  .replace(/"/g, "&quot;")
+                                  .replace(/([\[\{\}\]])/g, "\\$1") + '"'
+                    + (options.editor ? ' editor="' + options.editor + '"' : "")
+                : "") + '>' + (res || options && options.initial || "&#32;") 
+              + '</div>';
+        }
+        else {
+            return res;
+        }
     }
     
     var selfrx = /(^|\|)(?!\@|text\(\)|\.\.|[\w\-\:]+?\:\:)/g; // inject self regexp
@@ -46985,6 +62357,26 @@ apf.lm_exec = new (function(){
 
         _a[i] = true;   // flag this ID so args dont get computed again
 
+=======
+    var selfrx = /(^|\|)(?!\@|text\(\)|\.\.|[\w\-\:]+?\:\:)/g; // inject self regexp
+    
+    function _injself(s){           // self inject helper func
+        return s.charAt?s.replace(selfrx, "$1self::"):s;
+    }
+
+    apf.$lmx = null;
+
+    function _async(_n,_c,_a,_w,_f,_this,obj,func,args){ // Async handling
+        var i = _a.i, v;
+
+        if(!_a.ret)_a.ret = [];
+
+        if (_a[i])
+            return _a.ret[i];
+
+        _a[i] = true;   // flag this ID so args dont get computed again
+
+>>>>>>> hotfix/0.5.1
         if (!obj.exec)
             return  _a.ret[i]=(func)?obj[func].apply(obj,args):obj.apply(obj,args);
 
@@ -47150,7 +62542,11 @@ apf.lm_exec = new (function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/parsers/url.js)SIZE(4570)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/parsers/url.js)SIZE(4570)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47272,7 +62668,11 @@ apf.url.options = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/parsers/xpath.js)SIZE(21971)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+=======
+/*FILEHEAD(core/parsers/xpath.js)SIZE(21971)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 
 /**
@@ -47330,6 +62730,7 @@ apf.XPath = {
 
         //commented out :  && (!numsearch || numsearch == numfound)
     },
+<<<<<<< HEAD
 
     doQuery : function(htmlNode, qData, info, count, num, sResult){
         var result = null, data = info[count];
@@ -47447,6 +62848,125 @@ apf.XPath = {
             else
                 sResult.push(nodes[i]);
         }
+=======
+
+    doQuery : function(htmlNode, qData, info, count, num, sResult){
+        var result = null, data = info[count];
+        var query = qData[0];
+        var returnResult = qData[1];
+        try {
+            var qResult = eval(query);
+        }catch(e){
+            apf.console.error(e.name + " " + e.type + ":" + apf.XPath.lastExpr + "\n\n" + query);
+            //throw new Error(e.name + " " + e.type + ":" + apf.XPath.lastExpr + "\n\n" + query);
+            return;
+        }
+
+        if (returnResult)
+            return sResult.push(qResult);
+        if (!qResult || qResult.dataType == apf.ARRAY && !qResult.length) 
+            return;
+
+        if (data)
+            data[0](htmlNode, data[1], info, count + 1, 0, sResult);
+        else
+            sResult.push(htmlNode);
+    },
+
+    getTextNode : function(htmlNode, empty, info, count, num, sResult){
+        var data  = info[count],
+            nodes = htmlNode.childNodes;
+
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].nodeType != 3 && nodes[i].nodeType != 4)
+                continue;
+
+            if (data)
+                data[0](nodes[i], data[1], info, count + 1, i, sResult);
+            else
+                sResult.push(nodes[i]);
+        }
+    },
+
+    getAnyNode : function(htmlNode, empty, info, count, num, sResult){
+        var data  = info[count],
+            nodes = htmlNode.getElementsByTagName("*");//childNodes;
+
+        for (var i = 0; i < nodes.length; i++) {
+            if (data)
+                data[0](nodes[i], data[1], info, count + 1, i, sResult);
+            else
+                sResult.push(nodes[i]);
+        }
+    },
+
+    getAttributeNode : function(htmlNode, attrName, info, count, num, sResult){
+        if (!htmlNode || htmlNode.nodeType != 1) return;
+
+        if (attrName == "*") {
+            var nodes = htmlNode.attributes;
+            for (var i = 0; i < nodes.length; i++) {
+                arguments.callee.call(this, htmlNode, nodes[i].nodeName, info,
+                    count, i, sResult);
+            }
+            return;
+        }
+
+        var data = info[count],
+            value = htmlNode.getAttributeNode(attrName);//htmlNode.attributes[attrName];//
+
+        if (data)
+            data[0](value, data[1], info, count + 1, 0, sResult);
+        else if (value)
+            sResult.push(value);
+    },
+
+    getAllNodes : function(htmlNode, x, info, count, num, sResult){
+        var data = info[count],
+            tagName  = x[0],
+            inclSelf = x[1],
+            prefix   = x[2],
+            nodes, i, l;
+
+        if (inclSelf && (htmlNode.tagName == tagName || tagName == "*" || tagName == "node()")) {
+            if (data)
+                data[0](htmlNode, data[1], info, count + 1, 0, sResult);
+            else
+                sResult.push(htmlNode);
+        }
+
+        if (tagName == "node()") {
+            tagName = "*";
+            prefix = "";
+            if (apf.isIE) {
+                nodes = htmlNode.getElementsByTagName("*");
+            }
+            else {
+                nodes = [];
+                (function recur(x){
+                    for (var n, i = 0; i < x.childNodes.length; i++) {
+                        n = x.childNodes[i];
+                        if (n.nodeType != 1)
+                            continue;
+                        nodes.push(n);
+                        
+                        recur(n);
+                    }
+                })(htmlNode);
+            }
+        }
+        else {
+            nodes = htmlNode.getElementsByTagName((prefix
+              && (apf.isGecko || apf.isOpera || htmlNode.nodeFunc) ? prefix + ":" : "") + tagName);
+        }
+
+        for (i = 0, l = nodes.length; i < l; i++) {
+            if (data)
+                data[0](nodes[i], data[1], info, count + 1, i, sResult);
+            else
+                sResult.push(nodes[i]);
+        }
+>>>>>>> hotfix/0.5.1
     },
 
     getAllAncestorNodes : function(htmlNode, x, info, count, num, sResult){
@@ -47739,6 +63259,7 @@ apf.XPath = {
 
     selectNodeExtended : function(sExpr, contextNode, match){
         var sResult = this.selectNodes(sExpr, contextNode);
+<<<<<<< HEAD
 
         if (sResult.length == 0)
             return null;
@@ -47824,6 +63345,93 @@ apf.CodeCompilation = function(code){
         // Tokenize
         this.tokenize();
 
+=======
+
+        if (sResult.length == 0)
+            return null;
+        if (!match)
+            return sResult;
+
+        for (var i = 0, l = sResult.length; i < l; i++) {
+            if (String(getNodeValue(sResult[i])) == match)
+                return [sResult[i]];
+        }
+
+        return null;
+    },
+    
+    getRoot : function(xmlNode){
+        while (xmlNode.parentNode && xmlNode.parentNode.nodeType == 1)
+            xmlNode = xmlNode.parentNode;
+        
+        return xmlNode.parentNode;
+    },
+
+    selectNodes : function(sExpr, contextNode){
+        if (!this.cache[sExpr])
+            this.cache[sExpr] = this.compile(sExpr);
+
+        
+        
+        if (typeof this.cache[sExpr] == "string"){
+            if (this.cache[sExpr] == ".")
+                return [contextNode];
+            if (this.cache[sExpr] == "/") {
+                return [(contextNode.nodeType == 9
+                    ? contextNode.documentElement
+                    : this.getRoot(contextNode))];
+            }
+        }
+
+        if (typeof this.cache[sExpr] == "string" && this.cache[sExpr] == ".")
+            return [contextNode];
+
+        var info     = this.cache[sExpr][0],
+            rootNode = (info[3]
+                ? (contextNode.nodeType == 9
+                    ? contextNode.documentElement
+                    : this.getRoot(contextNode))
+                : contextNode),//document.body*/
+            sResult  = [];
+
+        if (rootNode)
+            info[0](rootNode, info[1], this.cache[sExpr], 1, 0, sResult);
+
+        return sResult;
+    }
+};
+
+function getNodeValue(sResult){
+    if (sResult.nodeType == 1)
+        return sResult.firstChild ? sResult.firstChild.nodeValue : "";
+    if (sResult.nodeType > 1 || sResult.nodeType < 5)
+        return sResult.nodeValue;
+    return sResult;
+}
+
+/**
+ * @constructor
+ * @private
+ */
+apf.CodeCompilation = function(code){
+    this.data = {
+        F : [],
+        S : [],
+        I : [],
+        X : []
+    };
+
+    this.compile = function(){
+        code = code.replace(/ or /g, " || ")
+            .replace(/ and /g, " && ")
+            .replace(/!=/g, "{}")
+            .replace(/=/g, "==")
+            .replace(/\{\}/g, "!=");
+
+        // Tokenize
+        this.tokenize();
+
+>>>>>>> hotfix/0.5.1
         // Insert
         this.insert();
         
@@ -47898,7 +63506,11 @@ apf.CodeCompilation = function(code){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingrule.js)SIZE(8931)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/bindingrule.js)SIZE(8931)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48147,7 +63759,11 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/accordion.js)SIZE(22288)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/accordion.js)SIZE(22288)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48172,7 +63788,11 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actionrule.js)SIZE(4035)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/actionrule.js)SIZE(4035)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48297,7 +63917,11 @@ apf.aml.setElement("change", apf.ActionRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actions.js)SIZE(3251)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/actions.js)SIZE(3251)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48401,7 +64025,11 @@ apf.aml.setElement("actions", apf.actions);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker.js)SIZE(36292)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/actiontracker.js)SIZE(36296)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48552,6 +64180,7 @@ apf.actiontracker = function(struct, tagName){
                 this[prop] = value;
         }
     };
+<<<<<<< HEAD
 
     /*this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         if (this.parentNode)
@@ -48574,6 +64203,30 @@ apf.actiontracker = function(struct, tagName){
         throw new Error("Not implemented yet");
     }
 
+=======
+
+    /*this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        if (this.parentNode)
+            this.parentNode.$at = this;
+    });*/
+
+    
+    this.item = function(index){
+        if (index < this.$undostack.length)
+            return this.$undostack[index];
+
+        return this.$redostack[index - this.$undostack.length];
+    }
+
+    this.add = function(data, title){
+        throw new Error("Not implemented yet");
+    }
+
+    this.remove = function(index){
+        throw new Error("Not implemented yet");
+    }
+
+>>>>>>> hotfix/0.5.1
     this.clearUndo = function(){
         this.setProperty("undolength", this.$undostack.length = 0);
         
@@ -48866,6 +64519,7 @@ apf.actiontracker = function(struct, tagName){
 
             if (callback)
                 callback(!extra.userdata);
+<<<<<<< HEAD
 
             if (!extra.userdata) {
                 /*
@@ -48892,6 +64546,34 @@ apf.actiontracker = function(struct, tagName){
                 }, extra)) === false)
                     return;
 
+=======
+
+            if (!extra.userdata) {
+                /*
+                    Clearing the execStack, none of the changes will be send to
+                    the server. This seems the best way right now and is related
+                    to the todo item above.
+
+                    @todo: Think about adding ignore-fail to settings and
+                           actiontracker.
+                */
+                this.$execstack = [];
+
+                var oError = new Error(apf.formatErrorString(0, this,
+                    "Executing action",
+                    "Error sending action to the server:\n"
+                    + (extra.url ? "Url:" + extra.url + "\n\n" : "")
+                    + extra.message));
+
+                //(UndoObj && UndoObj.xmlActionNode || extra.amlNode || apf)
+                if (this.dispatchEvent("error", apf.extend({
+                    error   : oError,
+                    state   : state,
+                    bubbles : true
+                }, extra)) === false)
+                    return;
+
+>>>>>>> hotfix/0.5.1
                 throw oError;
             }
         }
@@ -48910,6 +64592,7 @@ apf.actiontracker = function(struct, tagName){
 
         this.$queueNext(UndoObj, callback);
     };
+<<<<<<< HEAD
 
     this.$addToQueue = function(UndoObj, undo, isGroup){
         /*
@@ -48925,6 +64608,23 @@ apf.actiontracker = function(struct, tagName){
 
             
 
+=======
+
+    this.$addToQueue = function(UndoObj, undo, isGroup){
+        /*
+            Remove item from the execution stack if it's not yet executed
+            to keep the stack clean
+        */
+        //@todo Implement this for isGroup if deemed useful
+        if (!isGroup && this.$execstack.length && !UndoObj.state
+          && this.$execstack[this.$execstack.length - 1].undoObj == UndoObj) {
+            this.$execstack.length--;
+
+            
+
+            
+
+>>>>>>> hotfix/0.5.1
             return;
         }
 
@@ -48999,7 +64699,11 @@ apf.aml.setElement("actiontracker", apf.actiontracker);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/application.js)SIZE(1834)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/application.js)SIZE(1834)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49054,7 +64758,11 @@ apf.aml.setElement("application", apf.application);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/appsettings.js)SIZE(9304)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/appsettings.js)SIZE(9304)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49215,7 +64923,11 @@ apf.appsettings = function(struct, tagName){
 apf.aml.setElement("appsettings", apf.appsettings);
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/audio.js)SIZE(12958)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/audio.js)SIZE(12958)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49241,7 +64953,11 @@ apf.aml.setElement("appsettings", apf.appsettings);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/auth.js)SIZE(23999)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/auth.js)SIZE(23999)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49846,7 +65562,11 @@ apf.aml.setElement("auth", apf.auth);
 }).call(apf.auth.prototype = new apf.AmlElement());
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/axis.js)SIZE(14009)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/axis.js)SIZE(14009)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49871,7 +65591,11 @@ apf.aml.setElement("auth", apf.auth);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bar.js)SIZE(4205)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/bar.js)SIZE(4205)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49999,7 +65723,11 @@ apf.aml.setElement("section", apf.section);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingcolorrule.js)SIZE(2906)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/bindingcolorrule.js)SIZE(2906)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50070,7 +65798,11 @@ apf.aml.setElement("color", apf.BindingColorRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingcolumnrule.js)SIZE(20506)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/bindingcolumnrule.js)SIZE(20506)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50610,7 +66342,11 @@ apf.aml.setElement("column", apf.BindingColumnRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingdndrule.js)SIZE(3737)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/bindingdndrule.js)SIZE(3737)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50728,7 +66464,11 @@ apf.aml.setElement("drop", apf.BindingDndRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingeachrule.js)SIZE(11503)TIME(Tue, 19 Jul 2011 17:18:06 GMT)*/
+=======
+/*FILEHEAD(elements/bindingeachrule.js)SIZE(11503)TIME(Tue, 19 Jul 2011 12:01:49 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50912,6 +66652,7 @@ apf.BindingEachRule = function(struct, tagName){
             return this.match;
 
         var keywords = value.trim().toLowerCase().split(" ");
+<<<<<<< HEAD
         
         var each = this.match.charAt(0) == "[" && this.match.charAt(this.match.length - 1) == "]"
             ? this.match.replace(/^\[|\]$/g, "")
@@ -50939,6 +66680,35 @@ apf.BindingEachRule = function(struct, tagName){
         var filter = "(" + search.join(") and (") + ")";
         var groups = this["filter-groups"] ? this["filter-groups"].split("|") : [];
         
+=======
+        
+        var each = this.match.charAt(0) == "[" && this.match.charAt(this.match.length - 1) == "]"
+            ? this.match.replace(/^\[|\]$/g, "")
+            : this.match;
+        
+        var model;
+        if (each.indexOf("::") > -1) {
+            var parsed = each.split("::"); //@todo could be optimized
+            if (!apf.xPathAxis[parsed[0]]) {
+                model = parsed[0];
+                each  = parsed[1];
+            }
+        }
+        
+        // show search results
+        var search = [], word, words, fields = this.$fields || ["text()"];
+        for (var i = 0, l = keywords.length; i < l; i++) {
+            words = [], word = keywords[i];
+            for (var j = 0, jl = fields.length; j < jl; j++) {
+                words.push("contains(translate(" + fields[j] + ", 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" + word + "')");
+            }
+            search.push(words.join(" or "));
+        }
+        
+        var filter = "(" + search.join(") and (") + ")";
+        var groups = this["filter-groups"] ? this["filter-groups"].split("|") : [];
+        
+>>>>>>> hotfix/0.5.1
         each = each.split("|");
         var newEach = [];
         for (i = 0, l = each.length; i < l; i++) {
@@ -50954,6 +66724,7 @@ apf.BindingEachRule = function(struct, tagName){
 
         return newEach.join("|");
     }
+<<<<<<< HEAD
     
     /**
      *      <a:each 
@@ -51051,6 +66822,105 @@ apf.BindingEachRule = function(struct, tagName){
     
     this.addEventListener("DOMNodeInsertedIntoDocument", f);
     
+=======
+    
+    /**
+     *      <a:each 
+     *         match="[group|item]"
+     *         filter="{tb.value}"
+     *         filter-fields="@caption"
+     *         filter-groups="group"
+     *      /> 
+     */
+    
+    this.$propHandlers["filter"]  = function(value, prop){
+        if (!this.$amlLoaded)
+            return;
+
+        this.$updateEach(this.$getFilteredMatch(value));
+    }
+    this.$propHandlers["filter-fields"]  = function(value, prop){
+        this.$fields = value.splitSafe(",");
+    }
+    
+    this.addEventListener("prop.match", function(e){
+        if (!this.$amlLoaded)
+            return;
+        
+        if (this.filter)
+            this.$propHandlers["filter"].call(this, this.filter);
+        else
+            this.$updateEach(this.match);
+    });
+    
+    //@todo apf3.0 optimize
+    var f;
+    this.addEventListener("DOMNodeInserted", f = function(e){
+        if (e.currentTarget != this)
+            return;
+
+        var match = this.$getFilteredMatch(this.filter);
+        var pNode = this.parentNode;//@todo apf3.0 get a list via $bindings
+        if (pNode.localName == "bindings") {
+            pNode.addEventListener("noderegister", this.$noderegister);
+            
+            var nodes = pNode.$amlNodes,
+                i     = 0,
+                l     = nodes.length;
+            for (; i < l; ++i) {
+                nodes[i].$handleBindingRule(match, "each");
+    
+                
+                nodes[i].$sort = this.sort ? new apf.Sort(this) : null;
+                
+            }
+        }
+        else {
+            pNode.$handleBindingRule(match, "each");
+    
+            
+            pNode.$sort = this.sort ? new apf.Sort(this) : null;
+            
+        }
+    });
+    
+    this.addEventListener("DOMNodeRemoved", function(e){
+        if (e.currentTarget != this)
+            return;
+        
+        //@todo apf3.0 how does this conflict with setting it through an attribute.
+        //this.$clearDynamicProperty("each");
+        //pNode.setProperty("each", null);//@todo double?
+        //@todo remove model?
+        
+        //@todo this should be near $handleBindingRule...
+        var pNode = this.parentNode;//@todo apf3.0 get a list via $bindings
+        if (pNode.localName == "bindings") {
+            pNode.removeEventListener("noderegister", this.$noderegister);
+            
+            var nodes = pNode.$amlNodes,
+                i     = 0,
+                l     = nodes.length;
+            for (; i < l; ++i) {
+                //delete nodes[i].each; //@todo apf3.x is already set by new one
+    
+                
+                delete nodes[i].$sort;
+                
+            }
+        }
+        else {
+            //delete pNode.each; //@todo apf3.x is already set by new one
+            
+            
+            delete pNode.$sort;
+            
+        }
+    });
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", f);
+    
+>>>>>>> hotfix/0.5.1
 }).call(apf.BindingEachRule.prototype = new apf.BindingRule());
 
 apf.aml.setElement("each", apf.BindingEachRule);
@@ -51058,7 +66928,11 @@ apf.aml.setElement("each", apf.BindingEachRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingloadrule.js)SIZE(1529)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/bindingloadrule.js)SIZE(1529)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51107,7 +66981,11 @@ apf.aml.setElement("insert", apf.BindingLoadRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingquicksandrule.js)SIZE(12333)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/bindingquicksandrule.js)SIZE(12333)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51414,7 +67292,11 @@ apf.aml.setElement("quicksand", apf.BindingQuicksandRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindings.js)SIZE(8618)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/bindings.js)SIZE(8618)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51689,7 +67571,11 @@ apf.aml.setElement("bindings", apf.bindings);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingseriesrule.js)SIZE(1944)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/bindingseriesrule.js)SIZE(1944)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51751,7 +67637,11 @@ apf.aml.setElement("series", apf.BindingSeriesRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/body.js)SIZE(1861)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/body.js)SIZE(1861)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51807,7 +67697,11 @@ apf.aml.setElement("config", apf.AmlConfig);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/browser.js)SIZE(6175)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/browser.js)SIZE(6175)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52010,7 +67904,11 @@ apf.aml.setElement("browser", apf.browser);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/button.js)SIZE(30911)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/button.js)SIZE(30911)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52111,6 +68009,7 @@ apf.button  = function(struct, tagName){
         function setDefault(e){
             if (e.defaultButtonSet || e.returnValue === false)
                 return;
+<<<<<<< HEAD
     
             e.defaultButtonSet = true;
     
@@ -52119,6 +68018,16 @@ apf.button  = function(struct, tagName){
     
             _self.$setStyleClass(_self.$ext, _self.$baseCSSname + "Default");
     
+=======
+    
+            e.defaultButtonSet = true;
+    
+            if (this.$useExtraDiv)
+                _self.$ext.appendChild(apf.button.$extradiv);
+    
+            _self.$setStyleClass(_self.$ext, _self.$baseCSSname + "Default");
+    
+>>>>>>> hotfix/0.5.1
             if (e.srcElement != _self && _self.$focusParent) {
                 _self.$focusParent.addEventListener("keydown", btnKeyDown);
             }
@@ -52137,6 +68046,7 @@ apf.button  = function(struct, tagName){
     
         function btnKeyDown(e){
             var ml;
+<<<<<<< HEAD
     
             var f = apf.document.activeElement;
             if (f) {
@@ -52179,6 +68089,50 @@ apf.button  = function(struct, tagName){
             if (this["default"])
                 removeDefault({});
     
+=======
+    
+            var f = apf.document.activeElement;
+            if (f) {
+                if (f.hasFeature(apf.__MULTISELECT__))
+                    return;
+    
+                ml = f.multiline;
+            }
+    
+            if (!_self.$ext.onmouseup)
+                return;
+    
+            if (ml && ml != "optional" && e.keyCode == 13
+              && e.ctrlKey || (!ml || ml == "optional")
+              && e.keyCode == 13 && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                apf.preventDefault(e.htmlEvent);
+                _self.$ext.onmouseup(e.htmlEvent, true);
+            }
+        }
+    
+        this.addEventListener("focus", setDefault);
+        this.addEventListener("blur", removeDefault);
+        
+        this.$enable = function(){
+            if (this["default"]) {
+                setDefault({});
+                if (apf.document.activeElement)
+                    apf.document.activeElement.focus(true);
+            }
+            
+            if (this.state && this.value)
+                this.$setState("Down", {});
+            else if (this.$mouseOver)
+                this.$updateState({}, "mouseover");
+            else
+                this.$doBgSwitch(1);
+        };
+    
+        this.$disable = function(){
+            if (this["default"])
+                removeDefault({});
+    
+>>>>>>> hotfix/0.5.1
             this.$doBgSwitch(4);
             this.$setStyleClass(this.$ext, "",
                 [this.$baseCSSname + "Over", this.$baseCSSname + "Down"]);
@@ -52499,6 +68453,59 @@ apf.button  = function(struct, tagName){
         if (this.value) {
             this.$setStyleClass(this.$ext, this.$baseCSSname + "Down");
             this.$doBgSwitch(this.states["Down"]);
+<<<<<<< HEAD
+        }
+    };
+
+    this.$setNormalBehaviour = function(){
+        this.value     = null;
+        this.isBoolean = false;
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Bool"]);
+    };
+
+    this.$setState = function(state, e, strEvent){
+        var parentNode = this.parentNode;
+        //if (this.disabled)
+            //return;
+
+        if (strEvent && this.dispatchEvent(strEvent, {htmlEvent: e}) === false)
+            return;
+        
+        if(parentNode && parentNode.$button2 && parentNode.$button2.value && !this.submenu)
+            return;
+
+        this.$doBgSwitch(this.states[state]);
+        var bs = this.$baseCSSname;
+        this.$setStyleClass(this.$ext, (state != "Out" ? bs + state : ""),
+            [(this.value ? "" : bs + "Down"), bs + "Over"]);
+
+        if (this.submenu) {
+            bs = this.$baseCSSname + "menu";
+            this.$setStyleClass(this.$ext, (state != "Out" ? bs + state : ""),
+            [(this.value ? "" : bs + "Down"), bs + "Over"]);
+        }
+
+        //if (state != "Down")
+            //e.cancelBubble = true;
+    };
+
+    this.$clickHandler = function(){
+        // This handles the actual OnClick action. Return true to redraw the button.
+        if (this.isBoolean && !this.submenu) {
+            this.setProperty("value", !this.value);
+            return true;
+        }
+    };
+
+    
+    this.$submenu = function(hide, force){
+        if (hide) {
+            this.setValue(false);
+            this.$setState("Out", {}, "mouseout");
+            if(this.parentNode)
+                this.parentNode.menuIsPressed = false;
+        }
+=======
         }
     };
 
@@ -52552,6 +68559,47 @@ apf.button  = function(struct, tagName){
         }
     };
     
+
+    /**** Init ****/
+
+    this.addEventListener("$skinchange", function(e){
+        if (this.tooltip)
+            apf.GuiElement.propHandlers.tooltip.call(this, this.tooltip);
+    });
+
+    this.$draw  = function(){
+        var pNode, isToolbarButton = (pNode = this.parentNode) 
+            && pNode.parentNode.localName == "toolbar";
+        
+        if (isToolbarButton) {
+            if (typeof this.focussable == "undefined")
+                this.focussable = false;
+            
+            this.$focussable = apf.KEYBOARD;
+        }
+
+        //Build Main Skin
+        this.$ext     = this.$getExternal();
+        this.oIcon    = this.$getLayoutNode("main", "icon", this.$ext);
+        this.oCaption = this.$getLayoutNode("main", "caption", this.$ext);
+
+        this.$useExtraDiv = apf.isTrue(this.$getOption("main", "extradiv"));
+        if (!apf.button.$extradiv && this.$useExtraDiv) {
+            (apf.button.$extradiv = document.createElement("div"))
+                .className = "extradiv"
+        }
+
+        if (this.localName == "submit")
+            this.action = "submit";
+        else if (this.localName == "reset")
+            this.action = "reset";
+
+        this.$setupEvents();
+>>>>>>> hotfix/0.5.1
+    };
+
+    
+<<<<<<< HEAD
 
     /**** Init ****/
 
@@ -52682,6 +68730,99 @@ apf.button.actions  = {
         
     },
     
+=======
+    this.addEventListener("$skinchange", function(){
+        if (this.caption)
+            this.$propHandlers["caption"].call(this, this.caption);
+
+        if (this.icon)
+            this.$propHandlers["icon"].call(this, this.icon);
+
+        this.$updateState({reset:1});
+        //this.$blur();
+
+        //if (this.$focussable !== true && this.hasFocus())
+            //apf.window.$focusLast(this.$focusParent);
+    });
+    
+
+    
+    //@todo solve how this works with XForms
+    this.addEventListener("click", function(e){
+        var action = this.action;
+
+        //#-ifdef __WITH_HTML5
+        if (!action)
+            action = this.localName;
+        //#-endif
+
+        var _self = this;
+        $setTimeout(function(){
+            (apf.button.actions[action] || apf.K).call(_self);
+        });
+    });
+    
+
+    
+}).call(apf.button.prototype = new apf.BaseButton());
+
+// submit, trigger, reset, button
+apf.submit.prototype  =
+apf.trigger.prototype =
+apf.reset.prototype   = apf.button.prototype;
+
+apf.aml.setElement("submit",  apf.submit);
+apf.aml.setElement("trigger", apf.trigger);
+apf.aml.setElement("reset",   apf.reset);
+apf.aml.setElement("button",  apf.button);
+
+
+apf.submit.action   =
+apf.trigger.actions =
+apf.reset.actions   =
+apf.button.actions  = {
+    
+    "undo" : function(action){
+        var tracker;
+        if (this.target && self[this.target]) {
+            tracker = self[this.target].localName == "actiontracker"
+                ? self[this.target]
+                : self[this.target].getActionTracker();
+        }
+        else {
+            var at, node = this;
+            while(node.parentNode)
+                at = (node = node.parentNode).$at;
+        }
+
+        (tracker || apf.window.$at)[action || "undo"]();
+    },
+
+    "redo" : function(){
+        apf.button.actions.undo.call(this, "redo");
+    },
+    
+
+    
+    "remove" : function(){
+        if (this.target && self[this.target])
+            self[this.target].remove()
+        
+    },
+
+    "add" : function(){
+        if (this.target && self[this.target])
+            self[this.target].add()
+        
+    },
+
+    "rename" : function(){
+        if (this.target && self[this.target])
+            self[this.target].startRename()
+        
+    },
+    
+>>>>>>> hotfix/0.5.1
 
     
     "login" : function(){
@@ -52825,6 +68966,12 @@ apf.button.actions  = {
         if (node.commit() && node.close) 
             node.close();
     },
+<<<<<<< HEAD
+
+    "cancel" : function(){
+        var node;
+
+=======
 
     "cancel" : function(){
         var node;
@@ -52850,6 +68997,7 @@ apf.button.actions  = {
     "apply" : function(){
         var node;
 
+>>>>>>> hotfix/0.5.1
         if (this.target) {
             node = self[this.target];
         }
@@ -52857,6 +69005,30 @@ apf.button.actions  = {
             var node = this.parentNode;
             while (node && !node.hasFeature(apf.__TRANSACTION__)) {
                 node = node.parentNode;
+<<<<<<< HEAD
+            }
+
+            if (node && !node.hasFeature(apf.__TRANSACTION__))
+                return;
+        }
+
+        node.rollback();
+        if (node.close)
+            node.close();
+    },
+
+    "apply" : function(){
+        var node;
+
+        if (this.target) {
+            node = self[this.target];
+        }
+        else {
+            var node = this.parentNode;
+            while (node && !node.hasFeature(apf.__TRANSACTION__)) {
+                node = node.parentNode;
+=======
+>>>>>>> hotfix/0.5.1
             }
 
             if (node && !node.hasFeature(apf.__TRANSACTION__))
@@ -52888,7 +69060,11 @@ apf.button.actions  = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/caldropdown.js)SIZE(36358)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/caldropdown.js)SIZE(36358)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52914,7 +69090,11 @@ apf.button.actions  = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/calendar.js)SIZE(29646)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/calendar.js)SIZE(29646)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52939,7 +69119,11 @@ apf.button.actions  = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/calendarlist.js)SIZE(15123)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/calendarlist.js)SIZE(15123)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52965,7 +69149,11 @@ apf.button.actions  = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/chart.js)SIZE(9687)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/chart.js)SIZE(9687)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52990,7 +69178,11 @@ apf.button.actions  = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/checkbox.js)SIZE(8077)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/checkbox.js)SIZE(8077)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53255,6 +69447,7 @@ apf.checkbox = function(struct, tagName){
 }).call(apf.checkbox.prototype = new apf.BaseButton());
 
 apf.aml.setElement("checkbox", apf.checkbox);
+<<<<<<< HEAD
 
 
 
@@ -53328,6 +69521,81 @@ apf.codeeditor = function(struct, tagName) {
         
     );
 
+=======
+
+
+
+/*FILEHEAD(elements/codeeditor.js)SIZE(20739)TIME(Fri, 15 Jul 2011 15:38:55 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * Element allowing the user to type code.
+ *
+ * @constructor
+ * @define codeeditor
+ * @addnode elements
+ *
+ * @inherits apf.StandardBinding
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @author      Fabian Jakobs (fabian AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.1
+ */
+
+if (!apf.hasRequireJS)
+    apf.aml.setElement("codeeditor", apf.textbox);
+else
+    define(function(require, exports, module) {
+        
+require("pilot/fixoldbrowsers");
+var Editor = require("ace/editor").Editor;
+var EditSession = require("ace/edit_session").EditSession;
+var VirtualRenderer = require("ace/virtual_renderer").VirtualRenderer;
+var UndoManager = require("ace/undomanager").UndoManager;
+var Range = require("ace/range").Range;
+
+apf.codeeditor = function(struct, tagName) {
+    this.$init(tagName || "codeeditor", apf.NODE_VISIBLE, struct);
+
+    this.documents = [];
+    this.$cache    = {};
+
+    //this.setProperty("overwrite", false);
+    this.setProperty("line", 1);
+    this.setProperty("col", 1);
+};
+
+(function() {
+    this.implement(
+        
+        apf.DataAction
+        
+    );
+
+>>>>>>> hotfix/0.5.1
     this.$focussable       = true; // This object can get the focus
     this.$childProperty    = "value";
     this.$isTextInput      = true;
@@ -53435,6 +69703,145 @@ apf.codeeditor = function(struct, tagName) {
 
             _self.$removeDocListeners && _self.$removeDocListeners();
             _self.$removeDocListeners = _self.$addDocListeners(doc);
+<<<<<<< HEAD
+
+            _self.$editor.setShowPrintMargin(_self.showprintmargin);
+            _self.$editor.setSession(doc);
+
+            _self.$updateMarker();
+            _self.$updateBreakpoints(doc);
+        //})
+    };
+
+    this.$addDocListeners = function(doc) {
+        var _self = this;
+        var onCursorChange = function() {
+            var cursor = doc.getSelection().getCursor();
+            _self.setProperty("line", cursor.row+1);
+            _self.setProperty("col", cursor.column+1);
+        };
+
+        doc.getSelection().addEventListener("changeCursor", onCursorChange);
+
+        onCursorChange();
+
+        return function() {
+            doc.getSelection().removeEventListener("changeCursor", onCursorChange);
+        };
+    };
+
+    //@todo fix that this is not called three times
+    this.$updateMarker = function(removeOnly) {
+        if (this.$marker) {
+            this.$editor.renderer.removeGutterDecoration(this.$lastRow[0], this.$lastRow[1]);
+            this.$editor.getSession().removeMarker(this.$marker);
+            this.$marker = null;
+            
+            if (removeOnly)
+                return;
+        }
+
+        if (!this.$debugger)
+            return;
+
+        var frame = this.$debugger.activeframe;
+        if (!frame)
+            return;
+
+        var script = this.xmlRoot;
+        if (script.getAttribute("scriptid") !== frame.getAttribute("scriptid"))
+            return;
+
+        var head  = this.$debugger.$mdlStack.queryNode("frame[1]");
+        var isTop = frame == head;
+        
+        var lineOffset = parseInt(script.getAttribute("lineoffset") || "0", 10);
+        var row = parseInt(frame.getAttribute("line"), 10) - lineOffset;
+        var range = new Range(row, 0, row+1, 0);
+
+        this.$marker = this.$editor.getSession().addMarker(range, isTop ? "ace_step" : "ace_stack", "line");
+        var type = isTop ? "arrow" : "stack";
+        this.$lastRow = [row, type];
+        this.$editor.renderer.addGutterDecoration(row, type);
+        
+        this.$editor.gotoLine(row + 1, parseInt(frame.getAttribute("column"), 10));
+        //this.$editor.moveCursorTo(row, parseInt(frame.getAttribute("column")));
+    };
+
+    this.$updateBreakpoints = function(doc) {
+        doc = doc || this.$editor.getSession();
+
+        doc.setBreakpoints([]);
+        if (!this.$breakpoints)
+            return;
+
+        if (this.xmlRoot) {
+            var scriptName = this.xmlRoot.getAttribute("scriptname");
+            if (!scriptName)
+                return;
+
+            var breakpoints = this.$breakpoints.queryNodes("//breakpoint[@script='" + scriptName + "']"); 
+
+            var rows = [];
+            for (var i=0; i<breakpoints.length; i++) {
+                rows.push(parseInt(breakpoints[i].getAttribute("line"), 10) - parseInt(breakpoints[i].getAttribute("lineoffset"), 10));
+            }
+            if (rows.length)
+                doc.setBreakpoints(rows);
+        }
+    };
+
+    this.$toggleBreakpoint = function(row) {
+        this.$debugger.toggleBreakpoint(this.xmlRoot, row);
+    };
+
+    this.$propHandlers["theme"] = function(value) {
+        this.$editor.setTheme(value);
+    };
+
+    this.$propHandlers["syntax"] = function(value) {
+        var _self = this;
+        this.$getMode(value, function(mode) {
+            _self.$editor.getSession().setMode(mode);
+        });
+    };
+
+    this.$modes = {};
+
+    this.$getMode = function(syntax, callback) {
+        syntax = (syntax || "text").toLowerCase();
+        if (syntax.indexOf("/") == -1)
+            syntax = "ace/mode/" + syntax;
+        if (this.$modes[syntax])
+            return callback(this.$modes[syntax]);
+
+        var _self = this;
+        require([syntax], function(modeModule) {
+            
+            _self.$modes[syntax] = new modeModule.Mode();
+            callback(_self.$modes[syntax]);
+        });
+    };
+
+    this.$propHandlers["activeline"] = function(value) {
+        this.$editor.setHighlightActiveLine(value);
+    };
+
+    this.$propHandlers["selectstyle"] = function(value) {
+        this.$editor.setSelectionStyle(value);
+    };
+
+    this.$propHandlers["showprintmargin"] = function(value, prop, initial) {
+        this.$editor.setShowPrintMargin(value);
+    };
+
+    this.$propHandlers["printmargincolumn"] = function(value, prop, initial) {
+        this.$editor.setPrintMarginColumn(value);
+    };
+
+    this.$propHandlers["showinvisibles"] = function(value, prop, initial) {
+        this.$editor.setShowInvisibles(value);
+=======
 
             _self.$editor.setShowPrintMargin(_self.showprintmargin);
             _self.$editor.setSession(doc);
@@ -53733,6 +70140,7 @@ apf.codeeditor = function(struct, tagName) {
     
     this.getLastSearchOptions = function() {
         return this.$editor.getLastSearchOptions();
+>>>>>>> hotfix/0.5.1
     };
     
     
@@ -53742,8 +70150,677 @@ apf.codeeditor = function(struct, tagName) {
      */
     this.select   = function(){
 
+<<<<<<< HEAD
+    this.$propHandlers["overwrite"] = function(value, prop, initial) {
+        this.$editor.setOverwrite(value);
     };
 
+    this.$propHandlers["readonly"] = function(value, prop, initial) {
+        this.$editor.setReadOnly(value);
+    };
+
+    this.$propHandlers["tabsize"] = function(value, prop, initial) {
+        this.$editor.getSession().setTabSize(parseInt(value, 10));
+    };
+
+    this.$propHandlers["softtabs"] = function(value, prop, initial) {
+        this.$editor.getSession().setUseSoftTabs(value);
+    };
+
+    this.$propHandlers["scrollspeed"] = function(value, prop, initial) {
+        this.$editor.setScrollSpeed(value || 2);
+    };
+    
+    this.$propHandlers["gutter"] = function(value, prop, initial) {
+        this.$editor.renderer.setShowGutter(value);
+=======
+    };
+
+    /**
+     * Deselects the text in this element.
+     */
+    this.deselect = function(){
+        this.$editor.clearSelection();
+    };
+
+    this.scrollTo = function(){ };
+
+    this.getDefaults = function() {
+        return this.$defaults;
+    };
+
+    /**** Private Methods *****/
+
+    this.$focus = function(e){
+        if (!this.$ext || this.$ext.disabled)
+            return;
+
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
+
+        this.$editor.focus();
+    };
+
+    this.syncValue = function() {
+        var doc = this.$editor.getSession();
+        if (!doc.cacheId || doc.cacheId == this.$getCacheKey(this.value)) {
+            var value = this.getValue();
+            if (this.value != value)
+                this.setProperty("value", value);
+                //this.change(value);
+        }
+>>>>>>> hotfix/0.5.1
+    };
+
+    this.$blur = function(e) {
+        if (!this.$ext)
+            return;
+
+        this.syncValue();
+    
+<<<<<<< HEAD
+    this.$propHandlers["fontsize"] = function(value, prop, initial) {
+        this.$ext.style.fontSize = value + "px";
+    };
+    this.$propHandlers["wrapmode"] = function(value, prop, initial) {
+        this.$editor.getSession().setUseWrapMode(value);
+    };
+    this.$propHandlers["wraplimitmin"] = function(value, prop, initial) {
+        this.$editor.getSession().setWrapLimitRange(value, this.wraplimitmax);
+        if (value) this.setProperty("wrapmode", true);
+    };
+    this.$propHandlers["wraplimitmax"] = function(value, prop, initial) {
+        this.$editor.getSession().setWrapLimitRange(this.wraplimitmin, value);
+        if (value) this.setProperty("wrapmode", true);
+    };
+    this.$propHandlers["highlightselectedword"] = function(value, prop, initial) {
+        this.$editor.setHighlightSelectedWord(value);
+    };
+    this.$propHandlers["autohidehorscrollbar"] = function(value, prop, initial) {
+        this.$editor.renderer.setHScrollBarAlwaysVisible(!value);
+    };
+    
+    this.$propHandlers["model-breakpoints"] = function(value, prop, inital) {
+        this.$debuggerBreakpoints = false;
+        
+        if (this.$breakpoints)
+            this.$breakpoints.removeEventListener("update", this.$onBreakpoint);
+
+        this.$breakpoints = value;
+
+        if (!this.$breakpoints) {
+            this.$updateBreakpoints();
+            return;
+        }
+
+        var _self = this;
+        _self.$updateBreakpoints();
+        this.$onBreakpoint = function() {
+            _self.$updateBreakpoints();
+        };
+        this.$breakpoints.addEventListener("update", this.$onBreakpoint);
+        this.$updateBreakpoints();
+    };
+    
+    this.$propHandlers["debugger"] = function(value, prop, inital) {
+        if (this.$debugger) {
+            this.$debugger.removeEventListener("changeframe", this.$onChangeActiveFrame);
+            this.$debugger.removeEventListener("break", this.$onChangeActiveFrame);
+            this.$debugger.removeEventListener("beforecontinue", this.$onBeforeContinue);
+        }
+        
+        if (typeof value === "string") {
+            
+            this.$debugger = apf.nameserver.get("debugger", value);
+            
+        } else {
+            this.$debugger = value;
+        }
+
+        if (!this.$breakpoints || this.$debuggerBreakpoints) {
+            this.setProperty("model-breakpoints", this.$debugger ? this.$debugger.$mdlBreakpoints : null);
+            this.$debuggerBreakpoints = true;
+        }
+
+        if (!this.$debugger) {
+            this.$updateMarker();
+            return;
+        }
+            
+        this.$updateMarker();
+        var _self = this;
+        this.$onChangeActiveFrame = function(e) {
+            _self.$updateMarker();
+        };
+        this.$onBeforeContinue = function() {
+            _self.$updateMarker(true);
+        };
+        this.$debugger.addEventListener("changeframe", this.$onChangeActiveFrame);
+        this.$debugger.addEventListener("break", this.$onChangeActiveFrame);
+        this.$debugger.addEventListener("beforecontinue", this.$onBeforeContinue);
+    };
+
+    var propModelHandler = this.$propHandlers["model"];
+    this.$propHandlers["model"] = function(value) {
+        propModelHandler.call(this, value);
+
+        this.$updateMarker();
+        this.$updateBreakpoints();
+    };
+
+    this.addEventListener("xmlupdate", function(e){
+        var id = e.xmlNode.getAttribute(apf.xmldb.xmlIdTag);
+        if (this.$cache[id]) {
+            //@todo Update document
+        }
+    });
+
+    /**** Public Methods ****/
+
+    
+
+    /**
+     * Sets the value of this element. This should be one of the values
+     * specified in the values attribute.
+     * @param {String} value the new value of this element
+     */
+    this.setValue = function(value){
+        return this.setProperty("value", value, false, true);
+    };
+
+    //@todo cleanup and put initial-message behaviour in one location
+    this.clear = function(){
+        this.$propHandlers["value"].call(this, "", null, true);
+
+        this.dispatchEvent("clear");//@todo this should work via value change
+    };
+
+    /**
+     * Returns the current value of this element.
+     * @return {String}
+     */
+    this.getValue = function(){
+        return this.$editor.getSession().getValue(); //@todo very inefficient
+    };
+
+    this.getDocument = 
+    this.getSession = function() {
+        return this.$editor.getSession();        
+    };
+
+    this.getSelection = function() {
+        return this.$editor.getSession().getSelection();        
+    };
+    
+    this.getLastSearchOptions = function() {
+        return this.$editor.getLastSearchOptions();
+    };
+    
+    
+
+    /**
+     * Selects the text in this element.
+     */
+    this.select   = function(){
+
+=======
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
+        this.$editor.blur();
+    };
+
+    //@todo
+    this.addEventListener("keydown", function(e){
+        
+    }, true);
+
+    /**** Init ****/
+
+    this.$isTextInput = function(e){
+        return true;
+    };
+
+    this.$draw = function(){
+        //Build Main Skin
+        this.$ext   = this.$getExternal();
+        this.$input = this.$getLayoutNode("main", "content", this.$ext);
+
+        this.addEventListener("resize", function(e){
+            this.$editor.resize();
+        });
+
+        this.$editor = new Editor(new VirtualRenderer(this.$input));
+        // read defaults...
+        var ed  = this.$editor;
+
+        var _self = this;
+        ed.addEventListener("changeOverwrite", function(e) {
+            _self.setProperty("overwrite", e.data);
+        });
+
+        ed.addEventListener("gutterclick", function(e) {
+            _self.dispatchEvent("gutterclick", e);
+            if (_self.$debugger) {
+                _self.$toggleBreakpoint(e.row);
+            }
+        });
+
+        ed.addEventListener("gutterdblclick", function(e) {
+            _self.dispatchEvent("gutterdblclick", e);
+        });
+
+        apf.sanitizeTextbox(ed.renderer.container.getElementsByTagName("textarea")[0]);
+    };
+    
+    this.$loadAml = function(){
+        var ed  = this.$editor,
+            doc = ed.getSession();
+        
+        if (this.syntax === undefined)
+            this.syntax = "Text";
+        if (this.tabsize === undefined)
+            this.tabsize = doc.getTabSize(); //4
+        if (this.softtabs === undefined)
+            this.softtabs = doc.getUseSoftTabs(); //true
+        if (this.scrollspeed === undefined)
+            this.scrollspeed = ed.getScrollSpeed();
+        if (this.selectstyle === undefined)
+            this.selectstyle = ed.getSelectionStyle();//"line";
+        if (this.activeline === undefined)
+            this.activeline = ed.getHighlightActiveLine();//true;
+        if (this.readonly === undefined)
+            this.readonly = ed.getReadOnly();//false;
+        if (this.showinvisibles === undefined)
+            this.showinvisibles = ed.getShowInvisibles();//false;
+        if (this.showprintmargin === undefined)
+            this.showprintmargin = ed.getShowPrintMargin();//false;
+        if (this.printmargincolumn === undefined)
+            this.printmargincolumn = ed.getPrintMarginColumn();//80;
+        if (this.overwrite === undefined)
+            this.overwrite = ed.getOverwrite();//false
+        
+        if (this.fontsize === undefined)
+            this.fontsize = 12;
+        var wraplimit = doc.getWrapLimitRange();
+        if (this.wraplimitmin === undefined)
+            this.wraplimitmin = wraplimit.min;
+        if (this.wraplimitmax === undefined)
+            this.wraplimitmax = wraplimit.max;
+        if (this.wrapmode === undefined)
+            this.wrapmode = doc.getUseWrapMode(); //false
+        if (this.gutter === undefined)
+            this.gutter = ed.renderer.getShowGutter();
+        if (this.highlightselectedword === undefined)
+            this.highlightselectedword = ed.getHighlightSelectedWord();
+        if (this.autohidehorscrollbar)
+            this.autohidehorscrollbar = !ed.renderer.getHScrollBarAlwaysVisible();
+    };
+
+
+}).call(apf.codeeditor.prototype = new apf.StandardBinding());
+
+
+apf.config.$inheritProperties["initial-message"] = 1;
+
+apf.aml.setElement("codeeditor", apf.codeeditor);
+
+});
+
+
+
+/*FILEHEAD(elements/collection.js)SIZE(2383)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(elements/colorpicker.js)SIZE(12736)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(elements/colorpicker2.js)SIZE(11113)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(elements/comment.js)SIZE(1324)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * all elements within the comment tag are ignored by the parser.
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.4
+ */
+apf.comment = function(){
+    this.$init("comment", apf.NODE_HIDDEN);
+};
+
+apf.comment.prototype = new apf.AmlComment();
+apf.aml.setElement("comment", apf.comment);
+
+
+
+
+/*FILEHEAD(elements/contextmenu.js)SIZE(2557)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * element specifying which menu is shown when a
+ * contextmenu is requested by a user for a aml node.
+ * Example:
+ * This example shows a list that shows the mnuRoot menu when the user
+ * right clicks on the root {@link term.datanode data node}. Otherwise the mnuItem menu is
+ * shown.
+ * <code>
+ *  <a:list>
+ *      <a:contextmenu menu="mnuRoot" match="[root]" />
+ *      <a:contextmenu menu="mnuItem" />
+ *  </a:list>
+ * </code>
+ * @attribute {String} menu   the id of the menu element.
+ * @attribute {String} select the xpath executed on the selected element of the databound element which determines whether this contextmenu is shown.
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.4
+ */
+apf.contextmenu = function(){
+    this.$init("contextmenu", apf.NODE_HIDDEN);
+};
+
+(function(){
+    this.$amlNodes = [];
+    
+    //1 = force no bind rule, 2 = force bind rule
+    this.$attrExcludePropBind = apf.extend({
+        "match" : 1
+    }, this.$attrExcludePropBind);
+    
+    this.register = function(amlParent){
+        if (!amlParent.contextmenus)
+            amlParent.contextmenus = [];
+        amlParent.contextmenus.push(this);
+    };
+    
+    this.unregister = function(amlParent){
+        amlParent.contextmenus.remove(this);
+    };
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        this.register(this.parentNode);
+    });
+}).call(apf.contextmenu.prototype = new apf.AmlElement());
+
+apf.aml.setElement("contextmenu", apf.contextmenu);
+
+
+
+
+/*FILEHEAD(elements/datagrid.js)SIZE(53258)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * Element providing a sortable, selectable grid containing scrollable 
+ * information. Grid columns can be reordered and resized.
+ * Example:
+ * This example shows a datagrid width several columns mixing percentage and
+ * fixed size columns.
+ * <code>
+ *  <a:model id="mdlNews">
+ *      <data>
+ *          <news title="text 1" subtitle="text 11" date="2009-11-18"></news>
+ *          <news title="text 2" subtitle="text 21" date="2009-11-19"></news>
+ *          <news title="text 3" subtitle="text 31" date="2009-11-20"></news>
+ *      </data>
+ *  </a:model>
+ *  <a:datagrid model="mdlNews" options="move|size">
+ *      <a:each match="[news]">
+ *          <a:column caption="Icon" type="icon" width="40" value="newspaper.png" />
+ *          <a:column caption="Date" value="[@date]" width="70" />
+ *          <a:column caption="Title" width="180" value="[@title]" />
+ *          <a:column caption="Subtitle" value="[@subtitle]" width="100" />
+ *      </a:each>
+ *  </a:datagrid>
+ * </code>
+ *
+ * @constructor
+ * @define datagrid
+ * @addnode elements
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.4
+ *
+ * @inherits apf.BaseTree
+ *
+ * @binding invalidmsg  Determines the error message that is shown when a cell is not valid.
+ * @binding description Determines the text that is displayed under the expanded row.
+ */
+apf.datagrid = function(struct, tagName){
+    this.$init(tagName || "datagrid", apf.NODE_VISIBLE, struct);
+    
+    this.$headings       = [],
+    this.$cssRules       = []; //@todo Needs to be reset;
+    this.$lastOpened     = {};
+    
+    this.$editors        = {};
+    
+    
+    this.$dynCssClasses = [];
+    
+};
+
+(function(){
+    var HAS_CHILD = 1 << 1,
+        IS_CLOSED = 1 << 2,
+        IS_LAST   = 1 << 3,
+        IS_ROOT   = 1 << 4,
+        treeState = this.$treeState;
+
+    
+    this.implement(
+        apf.DataAction
+    );
+    
+
+    /*this.$init(function() {
+        this.addEventListener("keydown", keyHandler, true);
+    });*/
+
+    this.bufferselect       = false;
+    this.$useTable          = false;
+    this.$focussable        = true;
+    this.$isWindowContainer = -1;
+
+    this.$widthdiff      = 0;
+    this.$defaultwidth   = 0;
+    this.$useiframe      = 0;
+    this.$needsDepth     = true;
+
+    
+    this.canrename = false; //@todo remove rename from basetree and move to tree.js
+    
+
+    /**
+     * @attribute {Boolean} iframe     whether this element is rendered inside an iframe. This is only supported for IE. Default is false for datagrid and true for spreadsheet and propedit.
+     */
+    this.$booleanProperties["iframe"]     = true;
+
+     
+    
+    /**
+     * @attribute {String} mode Sets the way this element interacts with the user.
+     *   Possible values:
+     *   check  the user can select a single item from this element. The selected item is indicated.
+     *   radio  the user can select multiple items from this element. Each selected item is indicated.
+     */
+    this.$mode = 0;
+    this.$propHandlers["mode"] = function(value){
+        if ("check|radio".indexOf(value) > -1) {
+            if (!this.hasFeature(apf.__MULTICHECK__))
+                this.implement(apf.MultiCheck);
+            
+            this.addEventListener("afterrename", $afterRenameMode); //what does this do?
+            
+            this.multicheck = value == "check"; //radio is single
+            this.$mode = this.multicheck ? 1 : 2;
+        }
+        else {
+            //@todo undo actionRules setting
+            this.removeEventListener("afterrename", $afterRenameMode);
+            //@todo unimplement??
+            this.$mode = 0;
+        }
+    };
+    
+    //@todo apf3.0 retest this completely
+    function $afterRenameMode(){
+    }
+    
+    
+    
+    this.$propHandlers["options"] = function(value){
+        for (var i = 0, l = this.$headings.length; i < l; i++) {
+            this.$headings[i].setAttribute("options", value);
+        }
+>>>>>>> hotfix/0.5.1
+    };
+    
+    function scrollIntoView(){
+        var Q = (this.current || this.$selected),
+            o = this.$container;
+        o.scrollTop = (Q.offsetTop) - 21;
+    }
+
+<<<<<<< HEAD
     /**
      * Deselects the text in this element.
      */
@@ -54783,6 +71860,551 @@ apf.datagrid = function(struct, tagName){
             }
         }
         
+=======
+    /**** Keyboard Support ****/
+    
+    
+    /*function keyHandler(e){
+        var key      = e.keyCode,
+            ctrlKey  = e.ctrlKey,
+            shiftKey = e.shiftKey,
+            selHtml  = this.$selected || this.$caret;
+        
+        if (!e.force && (!selHtml || this.renaming)) //@todo how about allowdeselect?
+            return;
+
+        var selXml = this.caret || this.selected,
+            oInt   = this.$useiframe ? this.oDoc.documentElement : this.$container,
+            margin, node, hasScroll, hasScrollX, hasScrollY, items, lines;
+
+        switch (key) {
+            case 13:
+                if (this.$tempsel)
+                    this.$selectTemp();
+            
+                this.choose(selHtml);
+                break;
+            case 32:
+                if (ctrlKey || !this.isSelected(this.caret))
+                    this.select(this.caret, true);
+                return false;
+            case 109:
+            case 46:
+                //DELETE
+                if (this.disableremove) 
+                    return;
+                    
+                if (this.celledit) {
+                    this.rename(this.caret || this.selected, "");
+                    return;
+                }
+            
+                if (this.$tempsel)
+                    this.$selectTemp();
+            
+                this.remove(this.mode ? this.caret : null); //this.mode != "check"
+                break;
+            case 36:
+                //HOME
+                this.$setTempSelected (this.getFirstTraverseNode(), false, shiftKey);
+                this.$container.scrollTop = 0;
+                return false;
+            case 35:
+                //END
+                this.$setTempSelected (this.getLastTraverseNode(), false, shiftKey);
+                this.$container.scrollTop = this.$container.scrollHeight;
+                return false;
+            case 107:
+                //+
+                if (this.more)
+                    this.startMore();
+                break;
+            case 37:
+                //LEFT
+                if (this.$tempsel)
+                    this.$selectTemp();
+                    
+                if (this.cellselect) {
+                    if (this.$lastcell) {
+                        if (this.$lastcell.previousSibling) {
+                            this.selectCell({target:this.$lastcell.previousSibling},
+                                this.$selected);
+                        }
+                    }
+                    else {
+                        this.selectCell({target:this.$selected.firstChild}, 
+                            this.$selected);
+                    }
+                }
+                else if (this.$withContainer)
+                    this.slideToggle(this.$caret || this.$selected, 2)
+                return false;
+            case 107:
+            case 39:
+                //RIGHT
+                if (this.$tempsel)
+                    this.$selectTemp();
+                    
+                if (this.cellselect) {
+                    if (this.$lastcell) {
+                        if (this.$lastcell.nextSibling) {
+                            this.selectCell({target:this.$lastcell.nextSibling},
+                                this.$selected);
+                        }
+                    }
+                    else {
+                        this.selectCell({target:this.$selected.firstChild}, 
+                            this.$selected);
+                    }
+                }
+                else if (this.$withContainer)
+                    this.slideToggle(this.$caret || this.$selected, 1)
+                    
+                return false;
+            case 38:
+                //UP
+                if (!selXml && !this.$tempsel) 
+                    return false;
+                    
+                node = this.$tempsel 
+                    ? apf.xmldb.getNode(this.$tempsel) 
+                    : selXml;
+
+                margin    = apf.getBox(apf.getStyle(selHtml, "margin"));
+                hasScroll = oInt.scrollHeight > oInt.offsetHeight;
+                items     = Math.floor((oInt.offsetWidth
+                    - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
+                    + margin[1] + margin[3]));
+                
+                node = this.getNextTraverseSelected(node, false, items);
+                if (node)
+                    this.$setTempSelected (node, ctrlKey, shiftKey);
+                else
+                    return false;
+
+                selHtml = apf.xmldb.findHtmlNode(node, this);
+                if (selHtml.offsetTop <= oInt.scrollTop) {
+                    oInt.scrollTop = (Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
+                      ? 0
+                      : selHtml.offsetTop - margin[0])
+                        - parseInt(apf.getStyle(oInt, "paddingTop"));
+                }
+                return false;
+            case 40:
+                //DOWN
+                if (!selXml && !this.$tempsel) 
+                    return false;
+                    
+                node = this.$tempsel 
+                    ? apf.xmldb.getNode(this.$tempsel) 
+                    : selXml;
+                
+                margin    = apf.getBox(apf.getStyle(selHtml, "margin"));
+                hasScroll = oInt.scrollHeight > oInt.offsetHeight;
+                items     = Math.floor((oInt.offsetWidth
+                    - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
+                    + margin[1] + margin[3]));
+                
+                node = this.getNextTraverseSelected(node, true, items);
+                if (node)
+                   this.$setTempSelected (node, ctrlKey, shiftKey);
+                else
+                    return false;
+                
+                selHtml = apf.xmldb.findHtmlNode(node, this);
+                if (selHtml.offsetTop + selHtml.offsetHeight
+                  > oInt.scrollTop + oInt.offsetHeight) // - (hasScroll ? 10 : 0)
+                    oInt.scrollTop = selHtml.offsetTop
+                        - oInt.offsetHeight + selHtml.offsetHeight
+                        + margin[0]; //+ (hasScroll ? 10 : 0)
+                
+                return false;
+            case 33:
+                //PGUP
+                if (!selXml && !this.$tempsel) 
+                    return false;
+                    
+                node = this.$tempsel 
+                    ? apf.xmldb.getNode(this.$tempsel) 
+                    : selXml;
+                
+                margin     = apf.getBox(apf.getStyle(selHtml, "margin"));
+                hasScrollY = oInt.scrollHeight > oInt.offsetHeight;
+                hasScrollX = oInt.scrollWidth > oInt.offsetWidth;
+                items      = Math.floor((oInt.offsetWidth
+                    - (hasScrollY ? 15 : 0)) / (selHtml.offsetWidth
+                    + margin[1] + margin[3])) || 1;
+                lines      = Math.floor((oInt.offsetHeight
+                    - (hasScrollX ? 15 : 0)) / (selHtml.offsetHeight
+                    + margin[0] + margin[2]));
+                
+                node = this.getNextTraverseSelected(node, false, items * lines);
+                if (!node)
+                    node = this.getFirstTraverseNode();
+                if (node)
+                   this.$setTempSelected (node, ctrlKey, shiftKey);
+                else
+                    return false;
+                
+                selHtml = apf.xmldb.findHtmlNode(node, this);
+                if (selHtml.offsetTop < oInt.scrollTop) {
+                    oInt.scrollTop = (Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
+                      ? 0
+                      : selHtml.offsetTop - margin[0]) 
+                        - parseInt(apf.getStyle(oInt, "paddingTop"));
+                }
+                return false;
+            case 34:
+                //PGDN
+                if (!selXml && !this.$tempsel) 
+                    return false;
+
+                node = this.$tempsel 
+                    ? apf.xmldb.getNode(this.$tempsel) 
+                    : selXml;
+                
+                margin     = apf.getBox(apf.getStyle(selHtml, "margin"));
+                hasScrollY = oInt.scrollHeight > oInt.offsetHeight;
+                hasScrollX = oInt.scrollWidth > oInt.offsetWidth;
+                items      = Math.floor((oInt.offsetWidth - (hasScrollY ? 15 : 0))
+                    / (selHtml.offsetWidth + margin[1] + margin[3])) || 1;
+                lines      = Math.floor((oInt.offsetHeight - (hasScrollX ? 15 : 0))
+                    / (selHtml.offsetHeight + margin[0] + margin[2]));
+                
+                node = this.getNextTraverseSelected(selXml, true, items * lines);
+                if (!node)
+                    node = this.getLastTraverseNode();
+                if (node)
+                   this.$setTempSelected (node, ctrlKey, shiftKey);
+                else
+                    return false;
+                
+                selHtml = apf.xmldb.findHtmlNode(node, this);
+                if (selHtml.offsetTop + selHtml.offsetHeight
+                  > oInt.scrollTop + oInt.offsetHeight) // - (hasScrollY ? 10 : 0)
+                    oInt.scrollTop = selHtml.offsetTop
+                        - oInt.offsetHeight + selHtml.offsetHeight
+                        + margin[0]; //+ 10 + (hasScrollY ? 10 : 0)
+                return false;
+            default:
+                if (this.celledit) {
+                    if (!ctrlKey && !e.altKey && (key > 46 && key < 112 || key > 123))
+                        this.startRename(null, true);
+                    return;
+                }
+                else if (key == 65 && ctrlKey) {
+                    this.selectAll();
+                    return false;
+                } 
+                //@todo make this work with the sorted column
+                else if (this.caption || (this.bindingRules || {})["caption"]) {
+                    if (!this.xmlRoot) return;
+                    
+                    //this should move to a onkeypress based function
+                    if (!this.lookup || new Date().getTime()
+                      - this.lookup.date.getTime() > 300)
+                        this.lookup = {
+                            str  : "",
+                            date : new Date()
+                        };
+                    
+                    this.lookup.str += String.fromCharCode(key);
+    
+                    var nodes = this.getTraverseNodes(); //@todo start at current indicator
+                    for (var v, i = 0; i < nodes.length; i++) {
+                        v = this.$applyBindRule("caption", nodes[i]);
+                        if (v && v.substr(0, this.lookup.str.length)
+                          .toUpperCase() == this.lookup.str) {
+                            
+                            if (!this.isSelected(nodes[i])) {
+                                if (this.mode == "check")
+                                    this.setCaret(nodes[i]);
+                                else
+                                    this.select(nodes[i]);
+                            }
+                            
+                            if (selHtml)
+                                this.$container.scrollTop = selHtml.offsetTop
+                                    - (this.$container.offsetHeight
+                                    - selHtml.offsetHeight) / 2;
+                            return;
+                        }
+                    }
+                    return;
+                }
+                break;
+        };
+        
+        this.lookup = null;
+        //return false;
+    }*/
+    
+    
+    
+    /**** Focus ****/
+    // Too slow for IE
+    
+    
+    this.$getCaptionElement = function(){
+        if (!this.$selected) 
+            return false;
+
+        var nodes     = this.$head.childNodes,
+            htmlNodes = this.$selected.childNodes, i = 0;
+            
+        nodeIter = htmlNodes[i];
+        while (nodeIter) {
+            if (nodeIter.nodeType != 1) {
+                nodeIter = nodeIter.nextSibling;
+                continue;
+            }
+            
+            h = apf.all[nodes[i].getAttribute("hid")];
+            if (h.tree || h.rename)
+                return this.$getLayoutNode(h.tree ? "treecell" : "cell", "caption", nodeIter) || nodeIter;
+            
+            i++;
+            nodeIter = nodeIter.nextSibling;
+        }
+        
+        throw new Error("Datagrid without rename column specified");
+    };
+    
+    
+    this.$focus = function(){
+        if (!this.$ext || (apf.isIE && this.$useiframe && this.cssfix)) //@todo fix this by fixing focussing for this component
+            return;
+
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
+        
+        if (this.oDoc)
+            this.$setStyleClass(this.oDoc.documentElement, this.$baseCSSname + "Focus");
+    };
+
+    this.$blur = function(){
+        //@todo fix this by fixing focussing for this component
+        if (!this.$ext || (apf.isIE && this.$useiframe && this.cssfix))
+            return;
+
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
+        
+        if (this.oDoc)
+            this.$setStyleClass(this.oDoc.documentElement, "", [this.$baseCSSname + "Focus"]);
+        
+        hideEditor.call(this);
+    };
+    
+    /**** Databinding ****/
+    
+    this.addEventListener("bindingsload", this.$loaddatabinding = function(e){
+        var rules = e.bindings["column"];
+        if (!rules || !rules.length)
+            return;
+        
+        this.$headings = rules;
+        
+        var fixed = 0, found = false;
+        for (var h, i = 0, l = rules.length; i < l; i++) {
+            h = rules[i];
+            
+            
+            
+            if (!h.$isPercentage)
+                fixed += parseFloat(h.$width) || 0;
+            else 
+                found = true;
+        }
+        
+        if (!found) { //@todo removal???
+            this.$isFixedGrid = true;
+            this.$setStyleClass(this.$ext, "fixed");
+            
+            if (this.$useiframe)
+                this.$setStyleClass(this.oDoc.documentElement, "fixed");
+        }
+        else {
+            //@todo remove
+        }
+
+        if (fixed > 0 && !this.$isFixedGrid) {
+            var vLeft = fixed;
+            
+            //first column has total -1 * fixed margin-left. - 5
+            //cssRules[0][1] += ";margin-left:-" + vLeft + "px;";
+            //cssRules[1][1] += ";margin-left:-" + vLeft + "px;";
+            this.$cssRules.push(["." + this.$baseCSSname + " .row" + this.$uniqueId,
+                "padding-right:" + vLeft + "px;margin-right:-" + vLeft + "px"]);
+        
+            //headings and records have same padding-right
+            this.$container.style.paddingRight  =
+            this.$head.style.paddingRight = vLeft + "px";
+        }
+        
+        this.$fixed = fixed;
+        this.$first = 0;
+
+        this.$withContainer = e.bindings.description ? true : false;
+
+        //Activate CSS Rules
+        apf.importStylesheet(this.$cssRules, window);
+        
+        if (this.$useiframe)
+            apf.importStylesheet(this.$cssRules, this.oWin);
+    });
+    
+    this.$initNode = function(xmlNode, state, Lid, depth){
+        //Build Row
+        this.$getNewContext("item");
+        var oRow = this.$getLayoutNode("item");
+        oRow.setAttribute("id", Lid);
+        
+        //@todo if treearch
+        oRow.setAttribute("class", oRow.getAttribute("class") + " "  
+            + treeState[state] + " item" + this.$uniqueId);//"width:" + (totalWidth+40) + "px");
+        this.$setStyleClass(this.$getLayoutNode("item", "container"), treeState[state])
+        
+        oRow.setAttribute("ondblclick", 'var o = apf.lookup(' + this.$uniqueId + ');o.choose(null, true);'
+            + (this.$withContainer ? 'o.slideToggle(this, null, true);' : '')
+            + (this.celledit && !this.namevalue ? 'o.startRename(null, null, true);' : ''));
+        
+        if (this.hasFeature(apf.__DRAGDROP__)) {
+            oRow.setAttribute("onmouseout", 'this.hasPassedDown = false;');
+            oRow.setAttribute("onmousedown", 'var o = apf.lookup(' + this.$uniqueId + ');\
+                var xmlNode = apf.xmldb.findXmlNode(this);\
+                 var isSelected = o.isSelected(xmlNode);\
+                 this.hasPassedDown = true;\
+                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
+                     o.select(this, event.ctrlKey, event.shiftKey, -1);'
+                + (this.cellselect || this.namevalue ? 'o.selectCell(event, this, isSelected);' : ''));
+            
+            oRow.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
+                var o = apf.lookup(' + this.$uniqueId + ');\
+                 var xmlNode = apf.xmldb.findXmlNode(this);\
+                 var isSelected = o.isSelected(xmlNode);\
+                 if (o.hasFeature(apf.__DRAGDROP__))\
+                     o.select(this, event.ctrlKey, event.shiftKey, -1);');
+        } //@todo add DRAGDROP ifdefs
+        else {
+            oRow.setAttribute("onmousedown", 'var o = apf.lookup(' + this.$uniqueId + ');\
+                var wasSelected = o.$selected == this;\
+                o.select(this, event.ctrlKey, event.shiftKey, -1);'
+                + (this.cellselect || this.namevalue ? 'o.selectCell(event, this, wasSelected);' : ''));
+        }
+        
+        //Build the Cells
+        for (var cellType, cell, h, i = 0; i < this.$headings.length; i++) {
+            h = this.$headings[i];
+            
+            if (h.tree && h.check) {
+                cellType = "treecheckcell";
+                
+                this.$getNewContext("treecheckcell");
+                cell = this.$getLayoutNode("treecheckcell");
+                var oc = this.$getLayoutNode("treecheckcell", "openclose");
+                oc.setAttribute("style", "margin-left:" + (((depth||0)) * 15 + 4) + "px;");
+                oc.setAttribute("onmousedown",
+                    "var o = apf.lookup(" + this.$uniqueId + ");\
+                    o.slideToggle(this, null, null, true);\
+                    event.cancelBubble = true;\
+                    apf.window.$mousedown(event);");
+            
+                oc.setAttribute("ondblclick", "event.cancelBubble = true");
+            }
+            else if (h.tree) {
+                cellType = "treecell";
+                
+                this.$getNewContext("treecell");
+                cell = this.$getLayoutNode("treecell");
+                var oc = this.$getLayoutNode("treecell", "openclose");
+                oc.setAttribute("style", "margin-left:" + (((depth||0)) * 15 + 4) + "px;");
+                oc.setAttribute("onmousedown",
+                    "var o = apf.lookup(" + this.$uniqueId + ");\
+                    o.slideToggle(this, null, null, true);\
+                    event.cancelBubble = true;\
+                    apf.window.$mousedown(event);");
+            
+                oc.setAttribute("ondblclick", "event.cancelBubble = true");
+                
+                /*cell.setAttribute("style", "background-position: " 
+                    + ((((depth||0)+1) * 15) - 10) + "px 50%");*/
+            }
+            else {
+                
+                cellType = h.check ? "checkcell" : "cell";
+                
+                
+                this.$getNewContext(cellType);
+                cell = this.$getLayoutNode(cellType);
+            }
+            
+            
+            if (this.$mode && h.check) {
+                var elCheck = this.$getLayoutNode(cellType, "check");
+                if (elCheck) {
+                    elCheck.setAttribute("onmousedown",
+                        "var o = apf.lookup(" + this.$uniqueId + ");\
+                        o.checkToggle(this, true);\o.$skipSelect = true;");
+    
+                    if (apf.isTrue(this.$applyBindRule("checked", xmlNode))) {
+                        this.$checkedList.push(xmlNode);
+                        this.$setStyleClass(oRow, "checked");
+                    }
+                    else if (this.isChecked(xmlNode))
+                        this.$setStyleClass(oRow, "checked");
+                }
+                else {
+                    
+                    return false;
+                }
+            }
+            
+            
+            apf.setStyleClass(cell, h.$className);
+            
+            if (h.css)
+                apf.setStyleClass(cell, (apf.lm.compile(h.css))(xmlNode)); //@todo cashing of compiled function?
+            
+            if (h.icon) {
+                var node = this.$getLayoutNode(cellType, "caption", oRow.appendChild(cell));
+                    node = (node.nodeType == 1 && node || node.parentNode);
+                    node.setAttribute("style", "background-image:url(" 
+                        + apf.getAbsolutePath(this.iconPath, 
+                            ((h.cicon || h.$compile("icon", {nostring: true}))(xmlNode) || ""))
+                        + ");");
+                    this.$setStyleClass(node, "iconCell", []);
+            }
+            
+            if (h.value) {
+                if (!h.cvalue2) {
+                    h.$compile("value", {nostring: true});
+                    
+                    
+                    if (h.value)
+                        h.cvalue2.hasAml = h.value.indexOf("<a:") > -1;
+                    
+                }
+                
+                
+                if (h.cvalue2.hasAml){
+                    var q = (this.$amlBindQueue || (this.$amlBindQueue = {}));
+                    
+                    var htmlEl = this.$getLayoutNode(cellType, 
+                        "caption", oRow.appendChild(cell));
+                    htmlEl.setAttribute("id", "placeholder_" + this.$uniqueId 
+                        + "_" + ((q.column || (q.column = [])).push(xmlNode) - 1));
+                    apf.setNodeValue(htmlEl, '&nbsp');
+                }
+                else
+                
+                {
+                    apf.setNodeValue(this.$getLayoutNode(cellType, 
+                        "caption", oRow.appendChild(cell)),
+                        h.cvalue2(xmlNode) || '&nbsp');
+                }
+            }
+        }
+        
+>>>>>>> hotfix/0.5.1
         if (this.$bindings && this.$bindings.color) {
             var colorRule = this.$getDataNode("color", xmlNode);
             this.$setStyleClass(oRow, colorRule ? "highlight" : null, colorRule ? ["highlight"] : null);
@@ -55181,6 +72803,124 @@ apf.datagrid = function(struct, tagName){
         var h = this.$headings[nr];
         h.move(to);
     }
+<<<<<<< HEAD
+    
+    /**** Init ****/
+
+    this.$draw = function(){
+        this.$drawBase();
+        
+        var _self = this;
+        this.$ext.onmousedown = function(e){
+            _self.dispatchEvent("mousedown", {htmlEvent: e || event}); 
+        }
+        
+        //@todo rename 'body' to 'container'
+        
+        //Build Main Skin
+        this.$head    = this.$getLayoutNode("main", "head", this.$ext);
+        this.$pointer = this.$getLayoutNode("main", "pointer", this.$ext);
+
+        if (this.$head.firstChild)
+            this.$head.removeChild(this.$head.firstChild);
+        if (this.$container.firstChild)
+            this.$container.removeChild(this.$container.firstChild);
+
+        var widthdiff = this.$widthdiff = this.$getOption("main", "widthdiff") || 0;
+        this.$defaultwidth = this.$getOption("main", "defaultwidth") || "100";
+        this.$useiframe    = apf.isIE && (apf.isTrue(this.$getOption("main", "iframe")) || this.iframe);
+
+        //Initialize Iframe 
+        if (this.$useiframe && !this.oIframe) {
+            //this.$container.style.overflow = "hidden";
+            //var sInt = this.$container.outerHTML 
+            var sClass   = this.$container.className;
+            //this.$container.parentNode.removeChild(this.$container);
+            this.oIframe = this.$container.appendChild(document.createElement(apf.isIE 
+                ? "<iframe frameborder='0'></iframe>"
+                : "iframe"));
+            this.oIframe.frameBorder = 0;
+            this.oWin = this.oIframe.contentWindow;
+            this.oDoc = this.oWin.document;
+            this.oDoc.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\
+                <html xmlns="http://www.w3.org/1999/xhtml">\
+                    <head><script>\
+                        apf = {\
+                            lookup : function(uid){\
+                                return window.parent.apf.lookup(uid);\
+                            },\
+                            Init : {add:function(){},run:function(){}}\
+                        };</script>\
+                    </head>\
+                    <body></body>\
+                </html>');
+            //Import CSS
+            //this.oDoc.body.innerHTML = sInt;
+            this.$container = this.oDoc.body;//.firstChild;
+            this.$container.className = sClass;//this.oIframe.parentNode.className;
+            this.oDoc.documentElement.className = this.$ext.className;
+            //this.oDoc.body.className = this.$ext.className;
+
+            apf.skins.loadCssInWindow(this.skinName, this.oWin, this.mediaPath, this.iconPath);
+            
+            if (apf.isIE) //@todo this can be removed when focussing is fixed for this component
+                this.$setStyleClass(this.oDoc.documentElement, this.$baseCSSname + "Focus");
+            
+            apf.convertIframe(this.oIframe, true);
+
+            if (apf.getStyle(this.oDoc.documentElement, "overflowY") == "auto") {
+                //@todo ie only
+                this.oIframe.onresize = function(){
+                    _self.$head.style.marginRight = 
+                      _self.oDoc.documentElement.scrollHeight > _self.oDoc.documentElement.offsetHeight 
+                        ? "16px" : "0";
+                }
+                
+                this.addEventListener("afterload", this.oIframe.onresize);
+                this.addEventListener("xmlupdate", this.oIframe.onresize);
+            }
+            
+            this.oDoc.documentElement.onscroll = 
+                function(){
+                    if (_self.$isFixedGrid)
+                        _self.$head.scrollLeft = _self.oDoc.documentElement.scrollLeft;
+                };
+        }
+        else {
+            if (apf.getStyle(this.$container, "overflowY") == "auto") {
+                this.$resize = function(){
+                    _self.$head.style.marginRight = 
+                      _self.$container.scrollHeight > _self.$container.offsetHeight 
+                        ? "16px" : "0";
+                }
+                
+                
+                apf.layout.setRules(this.$ext, this.$uniqueId + "_datagrid",
+                    "var o = apf.all[" + this.$uniqueId + "];\
+                     if (o) o.$resize()");
+                apf.layout.queue(this.$ext);
+                
+                
+                this.addEventListener("afterload", this.$resize);
+                this.addEventListener("xmlupdate", this.$resize);
+            }
+            
+            this.$container.onscroll = 
+                function(){
+                    if (_self.$isFixedGrid)
+                        _self.$head.scrollLeft = _self.$container.scrollLeft;
+                };
+        }
+        
+        this.$container[this.clickedit ? "onmousedown" : "ondblclick"] = function(e){
+            if (!e) e = event;
+            _self.$dblclick(e.srcElement || e.target);
+        }
+    };
+    
+    this.$destroy = function(){
+        //@todo destroy this.$txt here
+=======
     
     /**** Init ****/
 
@@ -55314,9 +73054,34 @@ apf.aml.setElement("color",       apf.BindingRule);
 apf.aml.setElement("contents",    apf.BindingRule);
 
 
+>>>>>>> hotfix/0.5.1
+
+        this.$ext.onclick = this.$container.onresize = null;
+        
+        
+        apf.layout.removeRule(this.$container, "dg" + this.$uniqueId);
+        apf.layout.activateRules(this.$container);
+        
+    };
+}).call(apf.datagrid.prototype = new apf.BaseTree());
+
+apf.aml.setElement("datagrid",    apf.datagrid);
+//apf.aml.setElement("column",      apf.BindingRule);
+apf.aml.setElement("description", apf.BindingRule);
+apf.aml.setElement("color",       apf.BindingRule);
+apf.aml.setElement("contents",    apf.BindingRule);
+
+<<<<<<< HEAD
+=======
+/*FILEHEAD(elements/debugger.js)SIZE(10804)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 
 
+if (apf.hasRequireJS) require.def("apf/elements/debugger",
+    [], function() {
+
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/debugger.js)SIZE(10804)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
 
 /*
@@ -55344,6 +73109,8 @@ apf.aml.setElement("contents",    apf.BindingRule);
 if (apf.hasRequireJS) require.def("apf/elements/debugger",
     [], function() {
 
+=======
+>>>>>>> hotfix/0.5.1
 apf.dbg = function(struct, tagName){
     this.$init(tagName || "debugger", apf.NODE_HIDDEN, struct);
 };
@@ -55359,6 +73126,7 @@ apf.dbg = function(struct, tagName){
     this.$createModelPropHandler = function(name, xml, callback) {
         return function(value) {
             if (!value) return;
+<<<<<<< HEAD
             
             this[name] = apf.setReference(value,
                 apf.nameserver.register("model", value, new apf.model()));
@@ -55533,6 +73301,30 @@ apf.dbg = function(struct, tagName){
 	                .node();
 	            model.appendXml(bp);
             }
+=======
+            
+            this[name] = apf.setReference(value,
+                apf.nameserver.register("model", value, new apf.model()));
+            
+            // set the root node for this model
+            this[name].id = this[name].name = value;
+            this[name].load(xml);
+            
+        }
+    };
+
+    this.$createStatePropHandler = function(name) {
+        return function(value) {
+            if (!value) return;
+            
+            this[name] = apf.setReference(value,
+                    apf.nameserver.register("state", value, new apf.state()));
+            
+            // set the root node for this model
+            this[name].id = this[name].name = value;
+            this[name].deactivate();
+            
+>>>>>>> hotfix/0.5.1
         }
     };
 
@@ -55567,6 +73359,7 @@ apf.dbg = function(struct, tagName){
         this.$debugger && this.$debugger.suspend();
     };
     
+<<<<<<< HEAD
     this.evaluate = function(expression, frame, global, disableBreak, callback){
         this.$debugger && this.$debugger.evaluate(expression, frame, global, disableBreak, callback);
     };
@@ -56080,6 +73873,849 @@ apf.dropdown = function(struct, tagName){
     this.slideToggle = function(e, userAction){
         if (!e) e = event;
         if (userAction && this.disabled)
+=======
+    this.$propHandlers["model-sources"] = this.$createModelPropHandler("$mdlSources", "<sources />");
+    this.$propHandlers["model-stack"] = this.$createModelPropHandler("$mdlStack", "<frames />");
+    this.$propHandlers["model-breakpoints"] = this.$createModelPropHandler("$mdlBreakpoints", "<breakpoints />");
+
+    this.$propHandlers["state-running"] = this.$createStatePropHandler("$stRunning");
+    this.$propHandlers["state-attached"] = this.$createStatePropHandler("$stAttached");
+    
+    this.$propHandlers["activeframe"] = function(value) {
+        if (this.$debugger) {
+            this.$ignoreFrameEvent = true;
+            this.$debugger.setFrame(value);
+            this.$ignoreFrameEvent = false;
+        }
+        this.dispatchEvent("changeframe", {data: value});
+    };
+
+    this.attach = function(host, tab) {
+        var _self = this;
+
+        host.$attach(this, tab, function(err, dbgImpl) {
+            _self.$host = host;
+            _self.$debugger = dbgImpl;
+            dbgImpl.addEventListener("afterCompile", _self.$onAfterCompile.bind(_self));
+            
+            _self.$stAttached.activate();
+            _self.$stRunning.setProperty("active", dbgImpl.isRunning());
+            
+            dbgImpl.addEventListener("changeRunning", _self.$onChangeRunning.bind(_self));
+            dbgImpl.addEventListener("break", _self.$onBreak.bind(_self));
+            dbgImpl.addEventListener("detach", _self.$onDetach.bind(_self));
+            dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));
+            
+            _self.$loadSources(function() {           
+	            dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {      
+	                _self.$debugger.backtrace(_self.$mdlStack, function() {              
+	                    var frame = _self.$mdlStack.queryNode("frame[1]");
+	                    if (frame) {
+	                        var scriptId = frame.getAttribute("scriptid");
+	                        var scriptName = _self.$mdlSources.queryValue("file[@scriptid='" + scriptId + "']/@scriptname");
+	                        
+	                        if (scriptName) {
+	                            var line = frame.getAttribute("line");
+	                            var bp = _self.$mdlBreakpoints.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + line + "']");
+	                        }
+	                        if (!scriptName || !bp) {
+	                           _self.$debugger.continueScript();
+	                        }
+	                    }
+                    });
+	            });
+            });
+        });
+    };
+    
+    this.$onChangeRunning = function() {
+        var isRunning = this.$debugger && this.$debugger.isRunning();
+        if (this.$stRunning.active && !isRunning)
+            this.$onBreak();
+        
+        this.$stRunning.setProperty("active", isRunning);
+        
+        //if (isRunning)
+            //this.$mdlStack.load("<frames />");
+    };
+    
+    this.$onBreak = function() {
+        var _self = this;
+        if (!this.$debugger || this.$debugger.isRunning())
+            return;
+            
+        this.$debugger.backtrace(this.$mdlStack, function() {
+            _self.dispatchEvent("break");
+        });
+    };
+    
+    this.$onAfterCompile = function(e) {
+        var id = e.script.getAttribute("id");
+        var oldNode = this.$mdlSources.queryNode("//file[@id='" + id + "']");
+        if (oldNode)
+            this.$mdlSources.removeXml(oldNode);
+        this.$mdlSources.appendXml(e.script);
+    };
+    
+    this.$onDetach = function() {
+        if (this.$debugger) {
+	        this.$debugger.destroy();
+	        this.$debugger = null;
+        }
+        
+        this.$host = null;
+        
+        this.$mdlSources.load("<sources />");
+        this.$mdlStack.load("<frames />");
+        this.$stAttached.deactivate();
+        this.setProperty("activeframe", null);
+    };   
+
+    this.$onChangeFrame = function() {
+        if (!this.$ignoreFrameEvent) {
+            this.setProperty("activeframe", this.$debugger.getActiveFrame());
+        }
+    };
+    
+    this.changeFrame = function(frame) {
+        this.$debugger.setFrame(frame);
+    };
+    
+    this.detach = function(callback) {
+        this.continueScript();
+        if (this.$host)
+            this.$host.$detach(this.$debugger, callback);
+        else 
+            this.$onDetach();
+    };
+
+    this.$loadSources = function(callback) {
+        this.$debugger.scripts(this.$mdlSources, callback);        
+    };
+    
+    this.loadScript = function(script, callback) {
+        this.$debugger.loadScript(script, callback);
+    };
+
+    this.loadObjects = function(item, callback) {
+        this.$debugger.loadObjects(item, callback);
+    };
+    
+    this.loadFrame = function(frame, callback) {
+        this.$debugger.loadFrame(frame, callback);
+    };
+    
+    this.toggleBreakpoint = function(script, row) {
+        var model = this.$mdlBreakpoints;
+        if (this.$debugger)
+            this.$debugger.toggleBreakpoint(script, row, model);
+        else {
+            var scriptName = script.getAttribute("scriptname");
+            var bp = model.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + row + "']");
+            if (bp)
+                model.removeXml(bp)
+            else {
+	            var bp = apf.n("<breakpoint/>")
+	                .attr("script", scriptName)
+	                .attr("line", row)
+	                .attr("text", script.getAttribute("path") + ":" + row)
+	                .attr("lineoffset", 0)
+	                .node();
+	            model.appendXml(bp);
+            }
+        }
+    };
+
+    this.continueScript = function(callback) {
+        this.dispatchEvent("beforecontinue");
+        
+        if (this.$debugger)
+            this.$debugger.continueScript(callback);
+        else
+            callback && callback();
+    };
+
+    this.stepInto = function() {
+        this.dispatchEvent("beforecontinue");
+        
+        this.$debugger && this.$debugger.stepInto();
+    };
+
+    this.stepNext = function() {
+        this.dispatchEvent("beforecontinue");
+        
+        this.$debugger && this.$debugger.stepNext();
+    };
+
+    this.stepOut = function() {
+        this.dispatchEvent("beforecontinue");
+        
+        this.$debugger && this.$debugger.stepOut();
+    };    
+
+    this.suspend = function() {
+        this.$debugger && this.$debugger.suspend();
+    };
+    
+    this.evaluate = function(expression, frame, global, disableBreak, callback){
+        this.$debugger && this.$debugger.evaluate(expression, frame, global, disableBreak, callback);
+    };
+    
+    this.changeLive = function(scriptId, newSource, previewOnly, callback) {
+        this.$debugger && this.$debugger.changeLive(scriptId, newSource, previewOnly, callback);
+    };
+    
+}).call(apf.dbg.prototype = new apf.AmlElement());
+
+apf.aml.setElement("debugger", apf.dbg);
+
+
+window.adbg = {
+    exec : function(method, args, callback, options) {
+         if (method == "loadScript") {
+             var dbg = args[0];
+             var script = args[1];
+             dbg.loadScript(script, function(source) {
+                 if (options && options.callback) {
+                     options.callback(apf.escapeXML(source), apf.SUCCESS);
+                 } else {
+//                     callback("<file>" + apf.escapeXML(source) + "</file>", apf.SUCCESS);
+                     //TODO: ugly text() bug workaround
+                     callback("<file><![CDATA[" + source.replace("]]>", "]] >") + "]]></file>", apf.SUCCESS);
+                 }
+             });
+         }
+         else if (method == "loadObjects") {
+             var dbg = args[0];
+             var item = args[1];
+             
+             dbg.loadObjects(item, function(xml) {
+                 if (options && options.callback) {
+                     options.callback(xml, apf.SUCCESS);
+                 } else {
+                     callback(xml, apf.SUCCESS);
+                 }
+             });
+         }
+         else if (method == "loadFrame") {
+             var dbg = args[0];
+             var frame = args[1];
+             
+             dbg.loadFrame(frame, function(xml) {
+                 if (options && options.callback) {
+                     options.callback(xml, apf.SUCCESS);
+                 } else {
+                     callback(xml, apf.SUCCESS);
+                 }
+             });
+         }
+     }
+ };
+(apf.$asyncObjects || (apf.$asyncObjects = {}))["adbg"] = 1;
+
+return apf.dbg;
+});
+
+
+/*FILEHEAD(elements/debughost.js)SIZE(4814)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
+
+
+if (apf.hasRequireJS) require.def("apf/elements/debughost",
+    ["apf/elements/dbg/chromedebughost",
+     "apf/elements/dbg/v8debughost", 
+     "apf/elements/dbg/v8websocketdebughost"],
+    function(ChromeDebugHost, V8DebugHost, V8WebSocketDebugHost) {
+    
+apf.debughost = function(struct, tagName){
+    this.$init(tagName || "debughost", apf.NODE_HIDDEN, struct);
+};
+
+(function(){
+
+    this.port = 9222;
+    this.server = "localhost";
+    this.type = "chrome";
+    this.autoinit = false;
+    this.$modelTabs = null;
+    this.$stateConnected = null;
+    
+    this.$host = null;
+    
+    this.$booleanProperties["autostart"] = true;
+    
+    this.$supportedProperties.push("port", "server", "type", "autoinit",
+        "model-tabs", "state-connected", "strip");
+
+    this.$propHandlers["model-tabs"] = function(value) {
+        if (!value) return;
+        
+        this.$modelTabs = apf.nameserver.get("model", value) || 
+            apf.setReference(value, apf.nameserver.register("model", value, new apf.model()));
+        
+        // set the root node for this model
+        this.$modelTabs.id = this.$modelTabs.name = value;
+        this.$modelTabs.load("<tabs/>");
+        
+    };
+
+    this.$propHandlers["state-connected"] = function(value) {
+        if (!value) return;
+        
+        this.$stateConnected = apf.nameserver.get("state", value) || 
+            apf.setReference(value, apf.nameserver.register("state", value, new apf.state()));
+        
+        // set the root node for this model
+        this.$stateConnected.id = this.$stateConnected.name = value;
+        this.$stateConnected.deactivate();
+        
+    };
+    
+    this.init = function() {
+        if (this.$host) {
+            return;
+        }
+        
+        if (this.type == "chrome" || this.type == "v8" || this.type == "v8-ws") {
+            if (!apf.debughost.$o3obj && this.type !== "v8-ws") {
+                apf.debughost.$o3obj = window.o3Obj || o3.create("8A66ECAC-63FD-4AFA-9D42-3034D18C88F4", { 
+                    oninstallprompt: function() { alert("can't find o3 plugin"); },
+                    product: "O3Demo"
+                }); 
+            }
+
+            if (this.type == "chrome") {
+                this.$host = new ChromeDebugHost(this.server, this.port, apf.debughost.$o3obj);
+            } else if (this.type == "v8") {
+                this.$host = new V8DebugHost(this.server, this.port, apf.debughost.$o3obj);
+            } else if (this.type == "v8-ws") {
+                var socket = this.dispatchEvent("socketfind");
+                if (!socket)
+                    throw new Error("no socket found!")
+                this.$host = new V8WebSocketDebugHost(socket);
+            } else if (this.type == "chrome-ws") {
+                var socket = this.dispatchEvent("socketfind");
+                if (!socket)
+                    throw new Error("no socket found!")
+                this.$host = new ChromeDebugHost(null, null, null, socket);
+            }
+                
+            var self = this;
+            this.$host.addEventListener("connect", function() {
+                self.dispatchEvent("connect");
+                self.$stateConnected.activate();
+            });
+            this.$host.addEventListener("disconnect", function() {
+                self.dispatchEvent("disconnect");
+                self.$stateConnected.deactivate();
+            });
+            
+            this.loadTabs();
+        }
+    };
+    
+    this.loadTabs = function() {
+        if (!this.$host)
+            this.init();
+        
+        var self = this;
+        this.$host.loadTabs(this.$modelTabs, function() {
+            self.$dispatchEvent("tabsloaded");
+        });        
+    }
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e) {
+        if (this.autoinit)
+            this.init();
+    });
+    
+    this.$attach = function(dbg, tab, callback) {        
+        if (!this.$host) 
+            this.init();
+        
+        if (tab) {
+            var id = tab.getAttribute("id");
+        } else {
+            var id = null;
+        }
+        
+        var _self = this;
+        this.$host.attach(id, function(err, dbg) {
+            dbg.setStrip(_self.strip || "");
+            callback(err, dbg);
+        });
+    };
+
+    this.$detach = function(dbgImpl, callback) {
+        if (!this.$host) 
+            return;
+        
+        this.$host.detach(dbgImpl, callback);
+    };
+    
+    this.disconnect = function() {
+        if (!this.$host) 
+>>>>>>> hotfix/0.5.1
+            return;
+        
+        this.$host.disconnect();
+        this.$host = null;
+    };
+    
+}).call(apf.debughost.prototype = new apf.AmlElement());
+
+<<<<<<< HEAD
+        if (this.isOpen)
+            this.slideUp();
+        else
+            this.slideDown(e);
+    };
+
+    /**
+     * Shows the container with the list elements using a slide effect.
+     * @private
+     */
+    this.slideDown = function(e){
+        if (this.dispatchEvent("slidedown") === false)
+            return false;
+        
+        this.isOpen = true;
+
+        this.$propHandlers["maxitems"].call(this, this.xmlRoot && this.each 
+            ? this.getTraverseNodes().length : this.childNodes.length); //@todo apf3.0 count element nodes
+        
+        this.oSlider.style.display = "block";
+        if (!this.ignoreOverflow) {
+            this.oSlider.style[apf.supportOverflowComponent
+                ? "overflowY"
+                : "overflow"] = "visible";
+            this.$container.style.overflowY = "hidden";
+        }
+        
+        this.oSlider.style.display = "";
+
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Down");
+        
+        //var pos = apf.getAbsolutePosition(this.$ext);
+        this.oSlider.style.height = (this.sliderHeight - 1)     + "px";
+        this.oSlider.style.width  = (this.$ext.offsetWidth - 2 - this.widthdiff) + "px";
+
+        var _self = this;
+        var _popupCurEl = apf.popup.getCurrentElement();
+        apf.popup.show(this.$uniqueId, {
+            x             : 0,
+            y             : this.$ext.offsetHeight,
+            animate       : true,
+            container     : this.$getLayoutNode("container", "contents", this.oSlider),
+            ref           : this.$ext,
+            width         : this.$ext.offsetWidth - this.widthdiff,
+            height        : this.containerHeight,
+            allowTogether : (_popupCurEl && apf.isChildOf(_popupCurEl.$ext, _self.$ext)),
+            callback      : function(container){
+                if (!_self.ignoreOverflow) {
+                    _self.$container.style.overflowY = "auto";
+                }
+            }
+        });
+    };
+    
+    /**
+     * Hides the container with the list elements using a slide effect.
+     * @private
+     */
+    this.slideUp = function(){
+        if (this.isOpen == 2) return false;
+        if (this.dispatchEvent("slideup") === false) return false;
+        
+        this.isOpen = false;
+        if (this.selected) {
+            var htmlNode = apf.xmldb.findHtmlNode(this.selected, this);
+            if(htmlNode) this.$setStyleClass(htmlNode, '', ["hover"]);
+        }
+        
+        this.$setStyleClass(this.$ext, '', [this.$baseCSSname + "Down"]);
+        apf.popup.hide();
+        return false;
+    };
+    
+    /**** Private methods and event handlers ****/
+
+    //@todo apf3.0 why is this function called 6 times on init.
+    this.$setLabel = function(value){
+        
+        this.oLabel.innerHTML = value || this["initial-message"] || "";
+        
+
+        this.$setStyleClass(this.$ext, value ? "" : this.$baseCSSname + "Initial",
+            !value ? [] : [this.$baseCSSname + "Initial"]);
+    };
+
+    this.addEventListener("afterselect", function(e){
+        if (!e) e = event;
+        
+        this.slideUp();
+        if (!this.isOpen)
+            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Over"]);
+        
+        this.$setLabel(e.selection.length
+          ? this.$applyBindRule("caption", this.selected)
+          : "");
+    });
+    
+    function setMaxCount() {
+        if (this.isOpen == 2)
+            this.slideDown();
+    }
+
+    this.addEventListener("afterload", setMaxCount);
+    this.addEventListener("xmlupdate", function(){
+        setMaxCount.call(this);
+        this.$setLabel(this.$applyBindRule("caption", this.selected));
+    });
+    
+    // Private functions
+    this.$blur = function(){
+        this.slideUp();
+        //this.$ext.dispatchEvent("mouseout")
+        if (!this.isOpen)
+            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Over"])
+        
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
+    };
+    
+    /*this.$focus = function(){
+        apf.popup.forceHide();
+        this.$setStyleClass(this.oFocus || this.$ext, this.$baseCSSname + "Focus");
+    }*/
+    
+    this.$setClearMessage = function(msg){
+        this.$setLabel(msg);
+    };
+    
+    this.$removeClearMessage = function(){
+        this.$setLabel("");
+    };
+
+    this.addEventListener("popuphide", this.slideUp);
+    
+    /**** Keyboard Support ****/
+    
+    
+    this.addEventListener("keydown", function(e){
+        var key      = e.keyCode;
+        //var ctrlKey  = e.ctrlKey; << unused
+        //var shiftKey = e.shiftKey;
+        
+        if (!this.xmlRoot) return;
+        
+=======
+apf.aml.setElement("debughost", apf.debughost);
+return apf.debughost;
+
+});
+
+
+/*FILEHEAD(elements/defaults.js)SIZE(1838)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.4
+ */
+apf.defaults = function(struct, tagName){
+    this.$init(tagName || "services", apf.NODE_HIDDEN, struct);
+};
+
+(function(){
+    this.$parsePrio = "002";
+    
+    this.$propHandlers["for"] = function(value){
+        if (this.$lastFor)
+            apf.nameserver.remove("defaults_" + this.$lastFor, this);
+
+        apf.nameserver.add("defaults_" + value, this);
+        this.$lastFor = value;
+    }
+    
+    //@todo apf3.x how should this work?
+    this.addEventListener("DOMNodeRemovedFromDocument", function(e){
+        apf.nameserver.remove("defaults_" + this.$lastFor, this);
+    });
+    
+}).call(apf.defaults.prototype = new apf.AmlElement());
+
+apf.aml.setElement("defaults", apf.defaults);
+
+
+
+
+/*FILEHEAD(elements/divider.js)SIZE(2918)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+/**
+ * Element displaying a divider. For use in toolbars, menu's and such.
+ * @define divider
+ * @constructor
+ */
+apf.divider = function(struct, tagName){
+    this.$init(tagName || "divider", apf.NODE_VISIBLE, struct);
+};
+
+(function() {
+    this.$focussable = false;
+
+    this.implement(apf.ChildValue);
+    this.$childProperty = "caption";
+    
+    //@todo apf3.0 fix this
+    this.addEventListener("AMLReparent", function(beforeNode, pNode, withinParent){
+        if (!this.$amlLoaded)
+            return;
+        
+        if (!withinParent && this.skinName != pNode.skinName) {
+            //@todo for now, assuming dom garbage collection doesn't leak
+            this.loadAml();
+        }
+    });
+    
+    /** 
+     * @attribute {String} caption the text displayed in the area defined by this 
+     * element. 
+     */
+    this.$supportedProperties.push("caption", "value", "for", "textalign");
+    this.$propHandlers["caption"] = function(value){
+        if (this.$caption) {
+            this.$setStyleClass(this.$ext, this.$baseCSSname + "Caption");
+            this.$caption.innerHTML = value;
+        }
+        else {
+            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Caption"]);
+        }
+    };
+    
+    this.$canLeechSkin = true;
+    
+    /**
+     * @private
+     */
+    this.$draw = function() {
+        if (this.parentNode.isPaged && this.parentNode.$buttons)
+            this.$pHtmlNode = this.parentNode.$buttons;
+        
+        if (this.$isLeechingSkin) {
+            this.$ext = apf.insertHtmlNode(
+                this.parentNode.$getLayoutNode("divider"), this.$pHtmlNode);
+        }
+        else {
+            this.$ext     = this.$getExternal("main");
+            this.$caption = this.$getLayoutNode("main", "caption", this.$ext);
+        }
+    };
+}).call(apf.divider.prototype = new apf.Presentation);
+
+apf.aml.setElement("divider", apf.divider);
+
+
+
+/*FILEHEAD(elements/dropdown.js)SIZE(15385)TIME(Fri, 15 Jul 2011 15:38:55 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * Element allowing a user to select a value from a list, which is 
+ * displayed when the user clicks a button.
+ * Example:
+ * A simple dropdown with inline items.
+ * <code>
+ *  <a:dropdown>
+ *      <a:item>The Netherlands</a:item>
+ *      <a:item>United States of America</a:item>
+ *      <a:item>United Kingdom</a:item>
+ *      ...
+ *  </a:dropdown>
+ * </code>
+ * Example:
+ * A databound dropdown with items loaded from an xml file.
+ * <code>
+ *  <a:dropdown model="friends.xml" each="[friend]" caption="[@name]" />
+ * </code>
+ * Example:
+ * A databound dropdown using the bindings element
+ * <code>
+ *  <a:dropdown model="friends.xml">
+ *      <a:bindings>
+ *          <a:caption  match = "[@name]" />
+ *          <a:css      match = "[self::node()[@type='best']]" value="bestfriend" />
+ *          <a:each     match = "[friend]" />
+ *      </a:bindings>
+ *  </a:dropdown>
+ * </code>
+ * Example:
+ * A small form.
+ * <code>
+ *  <a:model id="mdlForm" submission="save_form.asp">
+ *      <data>
+ *          <name>Mike</name>
+ *          <city>amsterdam</city>
+ *      </data>
+ *  </a:model>
+ * 
+ *  <a:bar model="mdlForm">
+ *      <a:label>Name</a:label>
+ *      <a:textbox value="[name]" />
+ *    
+ *      <a:label>City</a:label>
+ *      <a:dropdown value="[mdlForm::city]" model="cities.xml">
+ *          <a:bindings>
+ *              <a:caption match="[text()]" />
+ *              <a:value match="[@value]" />
+ *              <a:each match="[city]" />
+ *          </a:bindings>
+ *      </a:dropdown>
+ *    
+ *      <a:button default="true" action="submit">Submit</a:button>
+ *  </a:bar>
+ * </code>
+ *
+ * @event slidedown Fires when the calendar slides open.
+ *   cancelable: Prevents the calendar from sliding open
+ * @event slideup   Fires when the calendar slides up.
+ *   cancelable: Prevents the calendar from sliding up
+ *
+ * @constructor
+ * @define dropdown
+ * @allowchild item, {smartbinding}
+ * @addnode elements
+ *
+ * @inherits apf.BaseList
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.4
+ */
+apf.dropdown = function(struct, tagName){
+    this.$init(tagName || "dropdown", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.$animType        = 1;
+    this.$animSteps       = 5;
+    this.$animSpeed       = 20;
+    this.$itemSelectEvent = "onmouseup";
+    
+    /**** Properties and Attributes ****/
+    
+    this.dragdrop      = false;
+    this.reselectable  = true;
+    this.$focussable   = apf.KEYBOARD;
+    this.autoselect    = false;
+    this.multiselect   = false;
+    this.disableremove = true;
+    this.delayedselect = false;
+    this.maxitems      = 5;
+    
+    this.$booleanProperties["disableremove"] = true;
+    this.$supportedProperties.push("maxitems", "disableremove", 
+        "initial-message", "fill");
+    
+    /**
+     * @attribute {String} initial-message the message displayed by this element
+     * when it doesn't have a value set. This property is inherited from parent 
+     * nodes. When none is found it is looked for on the appsettings element. 
+     *
+     * @attribute {Number} maxitems the number of items that are shown at the 
+     * same time in the container.
+     */
+    this.$propHandlers["maxitems"] = function(value){
+        this.sliderHeight    = value 
+            ? (Math.min(this.maxitems || 100, value) * this.itemHeight)
+            : 10;
+        this.containerHeight = value
+            ? (Math.min(this.maxitems || 100, value) * this.itemHeight)
+            : 10;
+        /*if (this.containerHeight > 20)
+            this.containerHeight = Math.ceil(this.containerHeight * 0.9);*/
+    };
+    
+    this.addEventListener("prop.class", function(e){
+        this.$setStyleClass(this.oSlider, e.value);
+    });
+    
+    /**** Public methods ****/
+    
+    /**
+     * Toggles the visibility of the container with the list elements. It opens
+     * or closes it using a slide effect.
+     * @private
+     */
+    this.slideToggle = function(e, userAction){
+        if (!e) e = event;
+        if (userAction && this.disabled)
             return;
 
         if (this.isOpen)
@@ -56225,6 +74861,7 @@ apf.dropdown = function(struct, tagName){
         
         if (!this.xmlRoot) return;
         
+>>>>>>> hotfix/0.5.1
         var node;
         
         switch (key) {
@@ -56243,6 +74880,7 @@ apf.dropdown = function(struct, tagName){
                     
                 node = this.getNextTraverseSelected(this.caret
                     || this.selected, false);
+<<<<<<< HEAD
 
                 if (node)
                     this.select(node);
@@ -56286,6 +74924,51 @@ apf.dropdown = function(struct, tagName){
                         return;
                     }
                 }
+=======
+
+                if (node)
+                    this.select(node);
+            break;
+            case 40:
+                //DOWN
+                if (e.altKey) {
+                    this.slideToggle(e.htmlEvent);
+                    return;
+                }
+                
+                if (!this.selected) {
+                    node = this.getFirstTraverseNode();
+                    if (!node) 
+                        return;
+                } 
+                else
+                    node = this.getNextTraverseSelected(this.selected, true);
+                
+                if (node)
+                    this.select(node);
+                
+            break;
+            default:
+                if (key == 9 || !this.xmlRoot) return;	
+            
+                //if(key > 64 && key < 
+                if (!this.lookup || new Date().getTime() - this.lookup.date.getTime() > 1000)
+                    this.lookup = {
+                        str  : "",
+                        date : new Date()
+                    };
+
+                this.lookup.str += String.fromCharCode(key);
+                
+                var caption, nodes = this.getTraverseNodes();
+                for (var i = 0; i < nodes.length; i++) {
+                    caption = this.$applyBindRule("caption", nodes[i]);
+                    if (caption && caption.indexOf(this.lookup.str) > -1) {
+                        this.select(nodes[i]);
+                        return;
+                    }
+                }
+>>>>>>> hotfix/0.5.1
             return;
         }
 
@@ -56375,7 +75058,11 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/editor.js)SIZE(18601)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/editor.js)SIZE(18601)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56401,7 +75088,11 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/errorbox.js)SIZE(6106)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/errorbox.js)SIZE(6106)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56590,7 +75281,11 @@ apf.errorbox = function(struct, tagName){
 apf.aml.setElement("errorbox", apf.errorbox);
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/event.js)SIZE(2115)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/event.js)SIZE(2115)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56620,6 +75315,36 @@ apf.aml.setElement("errorbox", apf.errorbox);
  * position specified by the position attribute. After the timeout has passed
  * the popup will dissapear automatically. When the mouse hovers over the popup
  * it doesn't dissapear.
+<<<<<<< HEAD
+ *
+ * @event click Fires when the user clicks on the representation of this event.
+ */
+apf.event = function(struct, tagName){
+    this.$init(tagName || "event", apf.NODE_HIDDEN, struct);
+};
+
+(function() {
+    this.$hasInitedWhen = false;
+
+    this.$booleanProperties["repeat"] = true;
+    this.$supportedProperties.push("when", "message", "icon", "repeat");
+
+    this.$propHandlers["when"] = function(value) {
+        if (this.$hasInitedWhen && value && this.parentNode && this.parentNode.popup) {
+            var _self = this;
+            $setTimeout(function() {
+                _self.parentNode.popup(_self.message, _self.icon, _self);
+            });
+        }
+        this.$hasInitedWhen = true;
+
+        if (this.repeat)
+            delete this.when;
+    };
+
+    this.$loadAml = function(x) {};
+}).call(apf.event.prototype = new apf.AmlElement());
+=======
  *
  * @event click Fires when the user clicks on the representation of this event.
  */
@@ -56652,6 +75377,326 @@ apf.event = function(struct, tagName){
 apf.aml.setElement("event", apf.event);
 
 
+/*FILEHEAD(elements/filler.js)SIZE(1385)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+apf.filler = function(struct, tagName){
+    this.$init(tagName || "filler", apf.NODE_VISIBLE, struct);
+};
+
+(function() {
+    this.$focussable = false;
+    this.flex = 1;
+
+    this.$draw = function() {
+        this.$ext = this.$pHtmlNode.appendChild(this.$pHtmlNode.ownerDocument.createElement("div"));
+    };
+}).call(apf.filler.prototype = new apf.GuiElement());
+
+apf.aml.setElement("filler", apf.filler);
+
+
+
+/*FILEHEAD(elements/flashplayer.js)SIZE(4071)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(elements/flowchart.js)SIZE(50799)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(elements/flowchart2.js)SIZE(45889)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(elements/frame.js)SIZE(4989)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * Element displaying a frame with a caption, containing other elements. This
+ * element is called a fieldset in html.
+ * Example:
+ * <code>
+ *  <a:frame caption="Options">
+ *      <a:radiobutton value="1">Option 1</a:radiobutton>
+ *      <a:radiobutton value="2">Option 2</a:radiobutton>
+ *      <a:radiobutton value="3">Option 3</a:radiobutton>
+ *      <a:radiobutton value="4">Option 4</a:radiobutton>
+ *  </a:frame>
+ * </code>
+ *
+ * @constructor
+ * @define fieldset, frame
+ * @allowchild {elements}, {anyaml}
+ * @addnode elements:frame
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.9
+ *
+ * @inherits apf.Presentation
+ */
+apf.panel    = function(struct, tagName){
+    this.$init(tagName || "panel", apf.NODE_VISIBLE, struct);
+};
+
+apf.fieldset = function(struct, tagName){
+    this.$init(tagName || "fieldset", apf.NODE_VISIBLE, struct);
+};
+
+apf.frame    = function(struct, tagName){
+    this.$init(tagName || "submit", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.implement(apf.BaseStateButtons);
+
+    this.$focussable     = false;
+    
+    
+    
+    /**** Properties and Attributes ****/
+    
+    /**
+     * @attribute {String} caption the text of the caption. 
+     */
+    this.$supportedProperties.push("caption", "url");
+    this.$propHandlers["caption"] = function(value){
+        if (!this.oCaption) return;
+        
+        if (this.oCaption.nodeType == 1)
+            this.oCaption.innerHTML = value;
+        else
+            this.oCaption.nodeValue = value;
+    };
+    
+    /**
+     * @attribute {String} icon the location of the image.
+     */
+    this.$propHandlers["icon"] = function(value){
+        var oIcon = this.$getLayoutNode("main", "icon", this.$ext);
+        if (!oIcon) return;
+
+        if (oIcon.nodeType == 1)
+            oIcon.style.display = value ? "block" : "none";
+        apf.skins.setIcon(oIcon, value, this.iconPath);
+    };
+    
+    this.$propHandlers["url"] = function(value){
+        var node = this.oCaption;
+        if (node.tagName == "A" || node.nodeType != 1) 
+            node = node.parentNode;
+
+        node.innerHTML = "<a href='" + value + "' " 
+            + (value.match(/^http:\/\//) ? "target='_blank'" : "") + ">" 
+            + this.caption + "</a>";
+        this.oCaption = this.oCaption.firstChild;
+    };
+    
+    /** 
+     * Sets the text of the title of this element
+     * @param {String} value the text of the title.
+     */
+    this.setTitle = function(value){
+        this.setProperty("title", value);
+    };
+    
+    /**** Init ****/
+    
+    this.$draw = function(){
+        //Build Main Skin
+        this.$ext     = this.$getExternal(null, null, function(oExt){
+            this.$initButtons(oExt);
+        });
+        this.oCaption = this.$getLayoutNode("main", "caption", this.$ext);
+        this.$int     = this.$getLayoutNode("main", "container", this.$ext);
+        this.$buttons = this.$getLayoutNode("main", "buttons",  this.$ext);
+
+        /*if (this.oCaption) {
+            this.oCaption = this.oCaption.nodeType == 1 
+                ? this.oCaption 
+                : this.oCaption.parentNode;
+        }*/
+    };
+    
+    this.$loadAml = function(x){
+        // not implement now.
+    };
+    
+        
+}).call(apf.frame.prototype = new apf.Presentation());
+
+apf.panel.prototype    =
+apf.fieldset.prototype = apf.frame.prototype;
+
+apf.aml.setElement("panel", apf.panel);
+apf.aml.setElement("fieldset", apf.fieldset);
+apf.aml.setElement("frame", apf.frame);
+
+
+
+
+/*FILEHEAD(elements/gallery.js)SIZE(27418)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(elements/graph.js)SIZE(21525)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+>>>>>>> hotfix/0.5.1
+
+apf.aml.setElement("event", apf.event);
+
+
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/filler.js)SIZE(1385)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
@@ -56719,6 +75764,9 @@ apf.aml.setElement("filler", apf.filler);
 
 
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/flowchart.js)SIZE(50799)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/hbox.js)SIZE(40549)TIME(Fri, 15 Jul 2011 15:38:55 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56742,6 +75790,7 @@ apf.aml.setElement("filler", apf.filler);
  */
 
 
+<<<<<<< HEAD
 
 
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/flowchart2.js)SIZE(45889)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
@@ -57235,6 +76284,250 @@ apf.vbox = function(struct, tagName){
                 }
             }
         }
+=======
+/**
+ * @define vbox Container that stacks it's children vertically.
+ * @see element.hbox
+ * @define hbox Container that stacks it's children horizontally.
+ * Example:
+ * <code>
+ *  <a:hbox height="500" width="600">
+ *      <a:vbox height="500" width="500">
+ *          <a:bar height="250" caption="Top bar" />
+ *          <a:hbox width="500" height="250">
+ *              <a:bar width="150" caption="Bottom left bar"/>
+ *              <a:bar width="350" caption="Bottom Right bar"/>
+ *          </a:hbox>
+ *      </a:vbox>
+ *      <a:bar width="100" caption="Right bar"/>
+ *  </a:hbox>
+ * </code>
+ * Remarks:
+ * Firefox has some issues. 
+ * 1. Sometimes it's necessary to put a fixed width to have it calculate the right
+ * height value.
+ * 2. Using flex="1" on non fixed height/width tree's will give unexpected results.
+ * @addnode elements
+ * @constructor
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.9
+ */
+apf.hbox = function(struct, tagName){
+    this.$init(tagName || "hbox", apf.NODE_VISIBLE, struct);
+};
+apf.vbox = function(struct, tagName){
+    this.$init(tagName || "vbox", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    /**** Properties and Attributes ****/
+
+    this.$focussable = false;
+    this.$useLateDom = true; 
+    this.$box        = true;
+    this.$layout     = true;
+    
+    var MOZSTACK = "-moz-stack";
+    var input    = {"INPUT":1, "SELECT":1, "TEXTAREA":1}
+
+    /**
+     * @attribute {String}  padding      the space between each element. Defaults to 2.
+     * @attribute {Boolean} reverse      whether the sequence of the elements is in reverse order.
+     * @attribute {String}  edge         the space between the container and the elements, space seperated in pixels for each side. Similar to css in the sequence top right bottom left. Defaults to "5 5 5 5".
+     * Example:
+     * <code>
+     *  <a:vbox edge="10 10 40 10" />
+     * </code>
+     * @attribute {String} pack     
+     *   Possible values:
+     *   start
+     *   center
+     *   end
+     * @attribute {Boolean} align
+     *   Possible values:
+     *   start
+     *   center
+     *   end
+     *   stretch
+     */
+    this.$booleanProperties["splitters"] = true;
+    this.$supportedProperties.push("padding", "reverse", "edge", "pack", "align", "splitters");
+    
+    this.$propHandlers["padding"] = function(value){
+        this.padding = parseInt(value);
+        
+        var node, nodes = this.childNodes, elms = [];
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            if ((node = nodes[i]).nodeFunc == apf.NODE_VISIBLE && node.$amlLoaded && node.visible !== false)
+                elms.push(node);
+        }
+        
+        if (!elms.length)
+            return;
+
+        for (var last, b, el, i = elms.length - 2; i >= 0; i--) {
+            b = (el = elms[i]).margin && apf.getBox(el.margin) || [0,0,0,0];
+            
+            if ((!last || !last.$splitter) && !el.$splitter) {
+                b[this.$vbox ? 2 : 1] += this.padding;
+
+                if (!apf.hasFlexibleBox && i != 0 && this.align == "stretch" && this.$vbox)
+                    b[0] += this.padding;
+            }
+            
+            el.$ext.style.margin = b.join("px ") + "px";
+            last = el;
+        }
+        b = (el = elms[elms.length - 1]).margin && apf.getBox(el.margin) || [0,0,0,0];
+        el.$ext.style.margin = b.join("px ") + "px";
+        
+        if (!apf.hasFlexibleBox)
+            this.$resize();
+    }
+    
+    this.$propHandlers["reverse"]  = function(value){
+        if (apf.hasFlexibleBox)
+            this.$int.style[apf.CSSPREFIX + "BoxDirection"] = value ? "reverse" : "normal";
+        else {
+            //@todo
+        }
+    };
+    
+    this.$propHandlers["edge"]  = function(value){
+        var el = !apf.hasFlexibleBox && this.$vbox ? this.$ext : this.$int;
+        el.style.padding = (this.$edge = apf.getBox(value)).join("px ") + "px";
+        
+        if (!apf.hasFlexibleBox)
+            this.$resize();
+    };
+    
+    this.$propHandlers["pack"]  = function(value){
+        if (apf.hasFlexibleBox)
+            this.$int.style[apf.CSSPREFIX + "BoxPack"] = value || "start";
+        else if (this.$amlLoaded) {
+            if (this.$vbox) {
+                this.$int.style.verticalAlign = value == "center" ? "middle" : (value == "end" ? "bottom" : "top");
+            }    
+            else {
+                this.$int.style.textAlign = "";
+                
+                var nodes = this.childNodes;
+                for (var i = 0, l = nodes.length; i < l; i++) {
+                    if ((node = nodes[i]).nodeFunc != apf.NODE_VISIBLE || !node.$amlLoaded) //|| node.visible === false 
+                        continue;
+
+                    node.$ext.style.textAlign = apf.getStyle(node.$ext, "textAlign") || "left";
+                }
+                
+                this.$int.style.textAlign = value == "center" ? "center" : (value == "end" ? "right" : "left");
+            }
+        }
+    };
+    
+    //@todo change overflow when height/width changes depending on $vbox
+    
+    this.$propHandlers["align"] = function(value){
+        if (apf.hasFlexibleBox) {
+            this.$int.style[apf.CSSPREFIX + "BoxAlign"] = value || "stretch";
+            
+            if (apf.isGecko)
+                this.$int.style.overflow = "visible";
+
+            //@todo this should probably be reinstated
+            var stretch = !value || value == "stretch";
+            var nodes = this.childNodes;
+            var size  = this.$vbox ? "width" : "height";
+            
+            var isInFixed = false, loopNode = this;
+            while(!isInFixed && loopNode) {
+                isInFixed = loopNode[size] || loopNode.anchors || (loopNode.$vbox ? loopNode.top && loopNode.bottom : loopNode.left && loopNode.right);
+                if (!loopNode.flex)
+                    break;
+                loopNode = loopNode.parentNode || loopNode.$parentNode;
+            }
+            
+            for (var i = 0, l = nodes.length; i < l; i++) {
+                if (!(node = nodes[i]).$ext || node.$ext.nodeType != 1)
+                    continue;
+
+                //(this[size] || this.anchors || (this.$vbox ? this.top && this.bottom : this.left && this.right)
+                if (stretch && !node[size]) //(node.$altExt || 
+                    node.$ext.style[size] = apf.isGecko && (this.flex || node.flex) 
+                        ? (isInFixed ? "1px" : "auto")
+                        : (apf.isWebkit && input[node.$ext.tagName] 
+                            ? "100%" 
+                            : (apf.isWebkit && node[this.$vbox ? "minwidth" : "minheight"] && this.flex //nasty bug fix
+                                ? "0px"
+                                : "auto"));//(apf.isWebkit && node.flex && size == "height" ? "100%" : "auto"); // && (this.flex && node.flex)
+                else if (node[size])
+                    handlers["true"][size].call(node, node[size]);
+            }
+        }
+        else if (this.$amlLoaded) {
+            var stretch = !value || value == "stretch";
+            
+            if (!this.$vbox) {
+                var nodes = this.childNodes;
+                for (var i = 0, l = nodes.length; i < l; i++) {
+                    if ((node = nodes[i]).nodeFunc != apf.NODE_VISIBLE || !node.$amlLoaded) //|| node.visible === false 
+                        continue;
+                    
+                    node.$ext.style.verticalAlign = value == "center" ? "middle" : (value == "end" ? "bottom" : "top");
+                }
+            }
+            else {
+                var el = !apf.hasFlexibleBox && this.$vbox ? this.$ext : this.$int;
+                el.style.textAlign = "";
+                
+                var nodes = this.childNodes;
+                for (var i = 0, l = nodes.length; i < l; i++) {
+                    if ((node = nodes[i]).nodeFunc != apf.NODE_VISIBLE || !node.$amlLoaded) //|| node.visible === false 
+                        continue;
+
+                    if (node.visible !== false) {
+                        node.$ext.style.display   = value == "stretch" ? "block" : apf.INLINE;
+                        node.$br.style.display    = value == "stretch" ? "none" : "";
+                        
+                        if (apf.needZoomForLayout)
+                            node.$ext.style.zoom = 1;
+                    }
+                    node.$ext.style.textAlign = apf.getStyle(node.$ext, "textAlign") || "left";
+                }
+                
+                el.style.textAlign = value == "center" ? "center" : (value == "end" ? "right" : "left");
+            }
+        }
+    };
+    
+    function visibleHandler(e){
+        
+        if (this.parentNode.splitters && !this.$splitter) {
+            if (!e.value) {
+                if (this.nextSibling && this.nextSibling.$splitter)
+                    this.nextSibling.removeNode();
+                else if (this.previousSibling && this.previousSibling.$splitter)
+                    this.previousSibling.removeNode();
+            }
+            else {
+                var isLast = isLastVisibleChild(this);
+                if (!isLast) {
+                    if (!this.nextSibling.$splitter && !this.nextSibling.nosplitter) {
+                        this.parentNode.insertBefore(
+                            this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                            this.nextSibling);
+                    }
+                }
+                else if (this.previousSibling && !this.previousSibling.$splitter
+                   && !this.previousSibling.nosplitter) {
+                    this.parentNode.insertBefore(
+                        this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                        this);
+                }
+            }
+        }
+>>>>>>> hotfix/0.5.1
         
         
         //@todo this can be more optimized by calcing if it WAS the last vis child.
@@ -57566,6 +76859,7 @@ apf.vbox = function(struct, tagName){
                         this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
                         amlNode.nextSibling);
                 }
+<<<<<<< HEAD
             }
             
         
@@ -57668,6 +76962,110 @@ apf.vbox = function(struct, tagName){
             
             if (e.currentTarget.$altExt) {
                 
+=======
+            }
+            
+        
+            delete this.$noResize;
+            
+            if (!apf.hasFlexibleBox && isLast)
+                this.$resize();
+        }
+    }
+    
+    this.unregister = function(amlNode){
+        amlNode.$propHandlers["left"]   = 
+        amlNode.$propHandlers["top"]    = 
+        amlNode.$propHandlers["right"]  = 
+        amlNode.$propHandlers["bottom"] = null;
+        
+        var propHandlers = handlers[apf.hasFlexibleBox];
+        for (var prop in propHandlers) {
+            delete amlNode.$propHandlers[prop];
+        }
+        
+        //Clear css properties and set layout
+        if (amlNode.nodeFunc == apf.NODE_VISIBLE) {
+            if (amlNode.flex) {
+                var flex = amlNode.flex;
+                propHandlers.flex.call(amlNode, 0);
+                amlNode.flex = flex;
+            }
+            
+            if (apf.hasFlexibleBox) {
+                amlNode.$ext.style[apf.CSSPREFIX + "BoxSizing"] = "";
+                
+                if (apf.isGecko) {
+                    this.$int.style.overflow = "visible";
+                
+                    if (amlNode.$ext.style.display == "block")
+                        amlNode.$ext.style.display = "";
+                }
+            }
+            else {
+                amlNode.$ext.style.verticalAlign = "";
+                amlNode.$ext.style.textAlign = "";
+                amlNode.$ext.style.whiteSpace = "";
+                //amlNode.$ext.style[apf.CSSFLOAT] = "";
+                
+                if (amlNode.$br) {
+                    amlNode.$br.parentNode.removeChild(amlNode.$br);
+                    delete amlNode.$br;
+                    //amlNode.$ext.style.fontSize = "";
+                }
+                
+                amlNode.removeEventListener("resize", resizeHandler);
+            }
+            
+            amlNode.removeEventListener("prop.visible", visibleHandler);
+            
+            amlNode.$ext.style.display = amlNode.visible ? "block" : "none";
+            
+            if (amlNode.margin)
+                amlNode.$ext.style.margin = "";
+            
+            if (amlNode.width)
+                amlNode.$ext.style.width = "";
+
+            
+            if (this.splitters && !amlNode.$splitter) {
+                if (amlNode.nextSibling && amlNode.nextSibling.$splitter)
+                    amlNode.nextSibling.removeNode();
+                if (isLastVisibleChild(amlNode) && amlNode.previousSibling 
+                  && amlNode.previousSibling.$splitter)
+                    amlNode.previousSibling.removeNode();
+            }
+            
+        }
+    }
+    /*
+         this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        this.register(this.parentNode);
+    });
+    */
+    
+    /**** DOM Hooks ****/
+    
+    this.addEventListener("DOMNodeRemoved", function(e){
+        if (e.$doOnlyAdmin || e.currentTarget == this)
+            return;
+
+        if (e.relatedNode == this){
+            this.unregister(e.currentTarget);
+            //e.currentTarget.$setLayout();
+        }
+    });
+
+    this.addEventListener("DOMNodeInserted", function(e){
+        if (e.currentTarget == this || e.currentTarget.nodeType != 1)
+            return;
+
+        if (e.relatedNode == this && !e.$isMoveWithinParent) {
+            e.currentTarget.$setLayout(this.localName, true);
+            
+            if (e.currentTarget.$altExt) {
+                
+>>>>>>> hotfix/0.5.1
                 return false;
             }
         }
@@ -57931,10 +77329,39 @@ apf.hbox.prototype = apf.vbox.prototype;
 
 apf.aml.setElement("hbox", apf.hbox);
 apf.aml.setElement("vbox", apf.vbox);
+<<<<<<< HEAD
 
+=======
+>>>>>>> hotfix/0.5.1
 
 
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/iconmap.js)SIZE(3244)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+
+<<<<<<< HEAD
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+=======
+/*FILEHEAD(elements/iconmap.js)SIZE(3244)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57959,8 +77386,12 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/img.js)SIZE(7692)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+
+/*FILEHEAD(elements/img.js)SIZE(7692)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58206,7 +77637,11 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/item.js)SIZE(23234)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/item.js)SIZE(23234)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58382,9 +77817,117 @@ apf.item  = function(struct, tagName){
             
         if (!value) {
             this.$group = null;
+<<<<<<< HEAD
+=======
             return;
         }
         
+        var group = typeof value == "string"
+            ? 
+            
+            apf.nameserver.get("radiogroup", value)
+            
+            : value;
+        if (!group) {
+            
+            group = apf.nameserver.register("radiogroup", value, 
+                new apf.$group());
+            group.setAttribute("id", value);
+            group.dispatchEvent("DOMNodeInsertedIntoDocument");
+            group.parentNode = this;
+            
+        }
+        this.$group = group;
+        
+        this.$group.$addRadio(this);
+    };
+
+    
+    /**
+     * @attribute {String} hotkey the key combination a user can press
+     * to active the function of this element. Use any combination of
+     * Ctrl, Shift, Alt, F1-F12 and alphanumerical characters. Use a
+     * space, a minus or plus sign as a seperator.
+     * Example:
+     * <code>
+     *  <a:item hotkey="Ctrl+Q">Quit</a:item>
+     * </code>
+     */
+    this.$propHandlers["hotkey"] = function(value){
+        if (this.$hotkey)
+            apf.setNodeValue(this.$hotkey, apf.isMac ? apf.hotkeys.toMacNotation(value) : value);
+
+        if (this.$lastHotkey)
+            apf.hotkeys.remove(this.$lastHotkey);
+
+        if (value) {
+            this.$lastHotkey = value;
+            var _self = this;
+            apf.hotkeys.register(value, function(){
+                if (_self.disabled || !_self.visible)
+                    return;
+                
+                //hmm not very scalable...
+                var buttons = apf.document.getElementsByTagNameNS(apf.ns.aml, "button");
+                for (var i = 0; i < buttons.length; i++) {
+                    if (buttons[i].submenu == _self.parentNode.name) {
+                        var btn = buttons[i];
+                        btn.$setState("Over", {});
+
+                        $setTimeout(function(){
+                            btn.$setState("Out", {});
+                        }, 200);
+
+                        break;
+                    }
+                }
+
+                _self.$down();
+                _self.$up();
+                _self.$click();
+            });
+        }
+    }
+    
+    /**
+     * @attribute {String} icon the url of the image used as an icon or
+     * a reference to an iconmap.
+     */
+    this.$propHandlers["icon"] = function(value){
+        if (this.$icon)
+            apf.skins.setIcon(this.$icon, value, this.parentNode.iconPath);
+    }
+    
+    /**
+     * @attribute {String} caption the text displayed on the item.
+     */
+    this.$propHandlers["caption"] = function(value){
+        if (this.$caption)
+            apf.setNodeValue(this.$caption, value);
+    }
+    
+    /**
+     * @attribute {String} type the function of this item
+     * Possible values:
+     * item
+     * check
+     * radio
+     */
+    this.$propHandlers["type"] = function(value){
+        apf.setStyleClass(this.$ext, value, ["item", "check", "radio"]);
+    }
+    
+    this.$values = [1, 0];
+    this.$propHandlers["values"] = function(value){
+        this.$values = value && value.split("|");
+    }
+    
+    this.$propHandlers["value"] = function(value){
+        if (this.type != "check")
+>>>>>>> hotfix/0.5.1
+            return;
+        
+<<<<<<< HEAD
         var group = typeof value == "string"
             ? 
             
@@ -58673,6 +78216,192 @@ apf.item  = function(struct, tagName){
                 timer = null;
             }, 210);
         }
+=======
+        this.setProperty("checked", this.$values.indexOf(value) == 0);
+    }
+    
+    /**
+     * @attribute {Boolean} checked whether the item is checked.
+     */
+    this.$propHandlers["checked"] = function(value){
+        if (this.type != "check")
+            return;
+
+        if (apf.isTrue(value))
+            apf.setStyleClass(this.$ext, "checked");
+        else
+            apf.setStyleClass(this.$ext, "", ["checked"]);
+        
+        if (this.$values && this.$values[value ? 0 : 1] != this.value)
+            return this.setProperty("value", this.$values[value ? 0 : 1]);
+    }
+    
+    this.select = function(){
+        this.parentNode.select(this.group, this.value || this.caption);
+    }
+    
+    this.check = function(){
+        this.setProperty("checked", true);
+    }
+    this.uncheck = function(){
+        this.setProperty("checked", false);
+    }
+    
+    this.$check = function(){
+        apf.setStyleClass(this.$ext, "selected");
+    }
+    
+    this.$uncheck = function(){
+        apf.setStyleClass(this.$ext, "", ["selected"]);
+    }
+
+    /**
+     * @attribute {Boolean} selected whether the item is selected.
+     */
+    this.$propHandlers["selected"] = function(value){
+        if (this.type != "radio")
+            return;
+
+        if (this.$group)
+            this.$group.setProperty("value", this.value);
+
+        if (apf.isTrue(value))
+            this.$check()
+        else
+            this.$uncheck();
+    }
+    
+    /**
+     * @attribute {Boolean} disabled whether the item is active.
+     */
+    this.$propHandlers["disabled"] = function(value){
+        if (apf.isTrue(value) || value == -1)
+            apf.setStyleClass(this.$ext, "disabled");
+        else
+            apf.setStyleClass(this.$ext, "", ["disabled"]);
+    }
+
+    /**** Dom Hooks ****/
+
+    //@todo apf3.0
+    this.addEventListener("AMLReparent", function(beforeNode, pNode, withinParent){
+        if (!this.$amlLoaded)
+            return;
+
+        if (!withinParent && this.skinName != pNode.skinName) {
+            //@todo for now, assuming dom garbage collection doesn't leak
+            this.loadAml();
+        }
+    });
+
+    /**** Events ****/
+
+    this.$down = function(){
+
+    };
+
+    this.$up = function(){
+        if (this.type == "radio")
+            this.parentNode.select(this.group, this.value || this.caption);
+
+        else if (this.type == "check") {
+            this.setProperty("checked", !this.checked);
+            //this.$handlePropSet("checked", !this.checked);
+        }
+
+        if (this.submenu) {
+            this.$over(null, true);
+            return;
+        }
+
+        this.parentNode.$hideTree = true;
+        
+        //@todo This statement makes the menu loose focus.
+        this.parentNode.hide();//true not focus?/
+
+        this.parentNode.dispatchEvent("itemclick", {
+            value       : this.value || this.caption,
+            relatedNode : this,
+            checked     : this.checked,
+            selected    : this.selected
+        });
+
+        //@todo Anim effect here?
+        
+        this.dispatchEvent("click", {
+            xmlContext : this.parentNode.xmlReference,
+            opener     : this.parentNode.opener
+        });
+    };
+
+    this.$click = function(){
+        
+    };
+
+    var timer;
+    this.$out = function(e){
+        if (apf.isChildOf(this.$ext, e.toElement || e.explicitOriginalTarget)
+          || apf.isChildOf(this.$ext, e.srcElement || e.target))  //@todo test FF
+            return;
+
+        clearTimeout(timer);
+        if (!this.submenu || this.$submenu(true)) {
+            apf.setStyleClass(this.$ext, "", ['hover']);
+
+            var sel = this.parentNode.$selected;
+            if (sel && sel != this)
+                apf.setStyleClass(sel.$ext, "", ["hover"]);
+
+            this.parentNode.$selected = null;
+        }
+    };
+
+    this.$over = function(e, force){
+        if (this.parentNode.$selected == this && e)
+            return;
+
+        if (this.parentNode.$selected)
+            apf.setStyleClass(this.parentNode.$selected.$ext, "", ["hover"]);
+
+        apf.setStyleClass(this.$ext, "hover");
+        this.parentNode.$selected = this;
+
+        if (!force && (apf.isChildOf(this.$ext, e.toElement || e.explicitOriginalTarget)
+          || apf.isChildOf(this.$ext, e.fromElement || e.target)))  //@todo test FF
+            return;
+
+        var _self = this, ps = this.parentNode.$showingSubMenu;
+        if (ps && ps.name == this.submenu) {
+            this.parentNode.$selected = null;
+            this.parentNode.$showingSubMenu = null;
+            _self.$submenu();
+            return;
+        }
+            
+        clearTimeout(timer);
+        
+        function submenu(){
+            if (ps && ps.visible) {
+                ps.hide();
+                
+                if (_self.parentNode.$showingSubMenu == ps)
+                    _self.parentNode.$showingSubMenu = null;
+            }
+    
+            if (_self.submenu && _self.parentNode.opener 
+              && _self.parentNode.opener.visible)
+                _self.$submenu();
+        }
+
+        if (force)
+            submenu();
+        else {
+            timer = $setTimeout(function(){
+                submenu();
+                timer = null;
+            }, 210);
+        }
+>>>>>>> hotfix/0.5.1
     };
 
     this.$submenu = function(hide, force){
@@ -58879,7 +78608,11 @@ apf.item  = function(struct, tagName){
 apf.aml.setElement("item",  apf.item);
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/junction.js)SIZE(2555)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/junction.js)SIZE(2555)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58966,7 +78699,11 @@ apf.aml.setElement("junction", apf.junction);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/label.js)SIZE(4978)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/label.js)SIZE(4978)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59124,7 +78861,11 @@ apf.aml.setElement("label", apf.label);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/lineselect.js)SIZE(4747)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/lineselect.js)SIZE(4747)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59150,7 +78891,11 @@ apf.aml.setElement("label", apf.label);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/list.js)SIZE(14336)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/list.js)SIZE(14336)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59509,7 +79254,11 @@ apf.aml.setElement("list",      apf.list);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/loader.js)SIZE(2153)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/loader.js)SIZE(2153)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59580,7 +79329,11 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/loadindicator.js)SIZE(5234)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/loadindicator.js)SIZE(5234)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59606,7 +79359,11 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/map.js)SIZE(21831)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/map.js)SIZE(21831)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59632,7 +79389,32 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/markupedit.js)SIZE(57357)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/markupedit.js)SIZE(55951)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59658,7 +79440,11 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/menu.js)SIZE(18765)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/menu.js)SIZE(18765)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60220,7 +80006,11 @@ apf.menu = function(struct, tagName){
 apf.aml.setElement("menu", apf.menu);
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/method.js)SIZE(3973)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/method.js)SIZE(3973)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60328,7 +80118,11 @@ apf.method = function(struct, tagName){
 apf.aml.setElement("method", apf.method);
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/modalwindow.js)SIZE(24784)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/modalwindow.js)SIZE(24784)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61058,7 +80852,11 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/model.js)SIZE(42549)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+=======
+/*FILEHEAD(elements/model.js)SIZE(42549)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62173,7 +81971,11 @@ apf.aml.setElement("model", apf.model);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/notifier.js)SIZE(15296)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/notifier.js)SIZE(15296)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62199,7 +82001,11 @@ apf.aml.setElement("model", apf.model);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/page.js)SIZE(18211)TIME(Tue, 19 Jul 2011 17:18:06 GMT)*/
+=======
+/*FILEHEAD(elements/page.js)SIZE(18211)TIME(Tue, 19 Jul 2011 12:01:49 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62720,7 +82526,11 @@ apf.aml.setElement("page", apf.page);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/pager.js)SIZE(9037)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/pager.js)SIZE(9037)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62968,7 +82778,11 @@ apf.aml.setElement("current", apf.BindingRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/palette.js)SIZE(5945)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/palette.js)SIZE(5945)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62993,7 +82807,11 @@ apf.aml.setElement("current", apf.BindingRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/param.js)SIZE(1681)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/param.js)SIZE(1681)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63036,7 +82854,11 @@ apf.aml.setElement("variable", apf.param); //backwards compatibility
 apf.aml.setElement("param", apf.param);
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/persist.js)SIZE(17598)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/persist.js)SIZE(17598)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63062,7 +82884,11 @@ apf.aml.setElement("param", apf.param);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/portal.js)SIZE(25076)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/portal.js)SIZE(25076)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63087,7 +82913,11 @@ apf.aml.setElement("param", apf.param);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/progressbar.js)SIZE(8709)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/progressbar.js)SIZE(8709)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63113,7 +82943,11 @@ apf.aml.setElement("param", apf.param);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/propedit.js)SIZE(46649)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/propedit.js)SIZE(46649)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64246,7 +84080,11 @@ apf.aml.setElement("color",       apf.BindingRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/radiobutton.js)SIZE(16930)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/radiobutton.js)SIZE(16930)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64796,7 +84634,11 @@ apf.aml.setElement("group", apf.$group);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/remote.js)SIZE(20984)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/remote.js)SIZE(20984)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64822,7 +84664,11 @@ apf.aml.setElement("group", apf.$group);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc.js)SIZE(21108)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/rpc.js)SIZE(21108)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65445,7 +85291,11 @@ apf.aml.setElement("rpc", apf.rpc);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/script.js)SIZE(3679)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/script.js)SIZE(3679)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65560,7 +85410,11 @@ apf.aml.setElement("script", apf.script);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/scrollbar.js)SIZE(25305)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/scrollbar.js)SIZE(25305)TIME(Fri, 15 Jul 2011 15:38:56 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66251,7 +86105,11 @@ apf.aml.setElement("scrollbar", apf.scrollbar);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/services.js)SIZE(1488)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/services.js)SIZE(1488)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66298,7 +86156,11 @@ apf.aml.setElement("services", apf.services);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/skin.js)SIZE(9963)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/skin.js)SIZE(9963)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66550,7 +86412,11 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/slider.js)SIZE(32386)TIME(Tue, 19 Jul 2011 17:18:06 GMT)*/
+=======
+/*FILEHEAD(elements/slider.js)SIZE(32386)TIME(Tue, 19 Jul 2011 12:01:49 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66575,7 +86441,11 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/slideshow.js)SIZE(47089)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/slideshow.js)SIZE(47089)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66600,7 +86470,11 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/smartbinding.js)SIZE(33619)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/smartbinding.js)SIZE(33619)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67448,7 +87322,11 @@ apf.aml.setElement("smartbinding", apf.smartbinding);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/source.js)SIZE(1566)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/source.js)SIZE(1566)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67503,7 +87381,11 @@ apf.aml.setElement("source", apf.source);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/spinner.js)SIZE(17516)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/spinner.js)SIZE(17516)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68048,7 +87930,11 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/splitbutton.js)SIZE(4573)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/splitbutton.js)SIZE(4573)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68186,7 +88072,11 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/splitter.js)SIZE(14901)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/splitter.js)SIZE(14901)TIME(Fri, 15 Jul 2011 15:38:56 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68562,7 +88452,11 @@ apf.aml.setElement("splitter", apf.splitter);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/state-group.js)SIZE(3131)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/state-group.js)SIZE(3131)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68655,7 +88549,11 @@ apf.aml.setElement("state-group", apf.stateGroup);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/state.js)SIZE(11225)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/state.js)SIZE(11225)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68980,7 +88878,11 @@ apf.aml.setElement("state", apf.state);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/statusbar.js)SIZE(3824)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/statusbar.js)SIZE(3824)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69100,7 +89002,11 @@ apf.aml.setElement("statusbar", apf.statusbar);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/style.js)SIZE(1888)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/style.js)SIZE(1888)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69160,7 +89066,11 @@ apf.xhtml.setElement("style",  apf.style);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/submitform.js)SIZE(30092)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/submitform.js)SIZE(30092)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69186,7 +89096,11 @@ apf.xhtml.setElement("style",  apf.style);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/tab.js)SIZE(2990)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/tab.js)SIZE(2990)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69285,7 +89199,11 @@ apf.aml.setElement("tab",    apf.tab);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/table.js)SIZE(17679)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/table.js)SIZE(17679)TIME(Fri, 15 Jul 2011 15:38:56 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69762,7 +89680,11 @@ apf.aml.setElement("table", apf.table);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/teleport.js)SIZE(1019)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/teleport.js)SIZE(1019)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69791,7 +89713,11 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/template.js)SIZE(2498)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/template.js)SIZE(2498)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69817,7 +89743,11 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/text.js)SIZE(12317)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/text.js)SIZE(12317)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70169,7 +90099,11 @@ apf.aml.setElement("text", apf.text);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/textbox.js)SIZE(27544)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/textbox.js)SIZE(27544)TIME(Fri, 15 Jul 2011 15:38:56 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70980,7 +90914,11 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/toc.js)SIZE(8342)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/toc.js)SIZE(8342)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71006,7 +90944,11 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/toolbar.js)SIZE(2787)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/toolbar.js)SIZE(2787)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71100,7 +91042,11 @@ apf.aml.setElement("toolbar", apf.toolbar);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/tree.js)SIZE(17313)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+=======
+/*FILEHEAD(elements/tree.js)SIZE(17313)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71511,7 +91457,11 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/upload.js)SIZE(28994)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/upload.js)SIZE(28994)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71536,7 +91486,11 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/vectorflow.js)SIZE(65716)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/vectorflow.js)SIZE(65716)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71562,7 +91516,11 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video.js)SIZE(20319)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/video.js)SIZE(20319)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71588,7 +91546,11 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/viewport.js)SIZE(1796)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/viewport.js)SIZE(1796)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71614,7 +91576,11 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/webdav.js)SIZE(49942)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+=======
+/*FILEHEAD(elements/webdav.js)SIZE(49956)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72665,7 +92631,11 @@ apf.webdav = function(struct, tagName){
                         return this.v;
                     },
                     data : data.data,
+<<<<<<< HEAD
                     v    : (data.data.type == "file" ? 1 : 0) + "" + data.data.name
+=======
+                    v    : (data.data.type == "file" ? 1 : 0) + "" + data.data.name.toLowerCase()
+>>>>>>> hotfix/0.5.1
                 });
         }
         
@@ -72893,7 +92863,11 @@ apf.webdav.STATUS_CODES = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/xmpp.js)SIZE(101265)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/xmpp.js)SIZE(101265)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72919,7 +92893,11 @@ apf.webdav.STATUS_CODES = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker/undodata.js)SIZE(11852)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/actiontracker/undodata.js)SIZE(11852)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73060,7 +93038,11 @@ apf.UndoData = function(settings, at){
 };
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73316,7 +93298,11 @@ apf.actiontracker.actions = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/audio/type_flash.js)SIZE(12951)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/audio/type_flash.js)SIZE(12951)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73341,7 +93327,11 @@ apf.actiontracker.actions = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/audio/type_native.js)SIZE(11013)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/audio/type_native.js)SIZE(11013)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73366,7 +93356,11 @@ apf.actiontracker.actions = {
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/chromedebughost.js)SIZE(4101)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+=======
+/*FILEHEAD(elements/dbg/chromedebughost.js)SIZE(4101)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 
 if (apf.hasRequireJS) require.def("apf/elements/dbg/chromedebughost",
@@ -73503,7 +93497,11 @@ return ChromeDebugHost;
 });
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8debugger.js)SIZE(16896)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+=======
+/*FILEHEAD(elements/dbg/v8debugger.js)SIZE(16896)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 
 if (apf.hasRequireJS) require.def("apf/elements/dbg/v8debugger",
@@ -73985,7 +93983,11 @@ return V8Debugger;
 });
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8debughost.js)SIZE(2485)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+=======
+/*FILEHEAD(elements/dbg/v8debughost.js)SIZE(2485)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 
 if (apf.hasRequireJS) require.def("apf/elements/dbg/v8debughost",
@@ -74078,7 +94080,11 @@ return V8DebugHost;
 });
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8websocketdebughost.js)SIZE(1852)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+=======
+/*FILEHEAD(elements/dbg/v8websocketdebughost.js)SIZE(1852)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 
 if (apf.hasRequireJS) require.def("apf/elements/dbg/v8websocketdebughost",
@@ -74149,7 +94155,11 @@ return V8WebSocketDebugHost;
 });
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/modalwindow/widget.js)SIZE(7077)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/modalwindow/widget.js)SIZE(7077)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74175,7 +94185,11 @@ return V8WebSocketDebugHost;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/cgi.js)SIZE(7168)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/rpc/cgi.js)SIZE(7168)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74388,7 +94402,11 @@ apf.cgi = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/header.js)SIZE(3062)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/rpc/header.js)SIZE(3062)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74414,7 +94432,11 @@ apf.cgi = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/jphp.js)SIZE(5874)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/rpc/jphp.js)SIZE(5874)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74440,7 +94462,11 @@ apf.cgi = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/jsonrpc.js)SIZE(3125)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/rpc/jsonrpc.js)SIZE(3125)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74466,7 +94492,11 @@ apf.cgi = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/rdb.js)SIZE(8293)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/rpc/rdb.js)SIZE(8293)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74492,7 +94522,11 @@ apf.cgi = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/rest.js)SIZE(3962)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/rpc/rest.js)SIZE(3962)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74619,7 +94653,11 @@ apf.rest = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/soap.js)SIZE(10943)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/rpc/soap.js)SIZE(10943)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74645,7 +94683,11 @@ apf.rest = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/xmlrpc.js)SIZE(11154)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/rpc/xmlrpc.js)SIZE(11154)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74671,7 +94713,11 @@ apf.rest = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/yql.js)SIZE(3962)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/rpc/yql.js)SIZE(3962)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74697,7 +94743,11 @@ apf.rest = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/textbox/autocomplete.js)SIZE(7030)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/textbox/autocomplete.js)SIZE(7030)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74723,12 +94773,20 @@ apf.rest = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/textbox/autocomplete2.js)SIZE(14483)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/textbox/autocomplete2.js)SIZE(14483)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/textbox/masking.js)SIZE(13243)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/textbox/masking.js)SIZE(13243)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75174,7 +95232,11 @@ apf.textbox.masking = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/upload/flash.js)SIZE(9564)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/upload/flash.js)SIZE(9564)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75199,7 +95261,11 @@ apf.textbox.masking = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/upload/html4.js)SIZE(9512)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/upload/html4.js)SIZE(9512)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75224,7 +95290,11 @@ apf.textbox.masking = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/upload/html5.js)SIZE(8910)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/upload/html5.js)SIZE(8910)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75249,7 +95319,11 @@ apf.textbox.masking = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_flv.js)SIZE(17057)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/video/type_flv.js)SIZE(17057)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75274,7 +95348,11 @@ apf.textbox.masking = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_native.js)SIZE(10825)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/video/type_native.js)SIZE(10825)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75299,7 +95377,11 @@ apf.textbox.masking = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_qt.js)SIZE(23357)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/video/type_qt.js)SIZE(23357)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75325,7 +95407,11 @@ apf.textbox.masking = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_silverlight.js)SIZE(15347)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/video/type_silverlight.js)SIZE(15347)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75351,7 +95437,11 @@ apf.textbox.masking = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_vlc.js)SIZE(12493)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/video/type_vlc.js)SIZE(12493)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75377,7 +95467,11 @@ apf.textbox.masking = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_wmp.js)SIZE(12632)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/video/type_wmp.js)SIZE(12632)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75403,7 +95497,11 @@ apf.textbox.masking = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/xmpp/muc.js)SIZE(18991)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/xmpp/muc.js)SIZE(18991)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75429,7 +95527,11 @@ apf.textbox.masking = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/xmpp/rdb.js)SIZE(21319)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/xmpp/rdb.js)SIZE(21319)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75455,7 +95557,11 @@ apf.textbox.masking = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/xmpp/roster.js)SIZE(13725)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(elements/xmpp/roster.js)SIZE(13725)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75481,7 +95587,11 @@ apf.textbox.masking = function(){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/processinginstructions/livemarkup.js)SIZE(4492)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(processinginstructions/livemarkup.js)SIZE(4492)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75613,7 +95723,11 @@ apf.aml.setProcessingInstruction("livemarkup", apf.LiveMarkupPi);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/jpack_end.js)SIZE(1318)TIME(Wed, 20 Jul 2011 14:48:01 GMT)*/
+=======
+/*FILEHEAD(jpack_end.js)SIZE(1294)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 
 
@@ -75659,10 +95773,13 @@ if (window.require && typeof require.def == "function") {
     }
     else 
         apf.start();
+<<<<<<< HEAD
     
     
     
     
+=======
+>>>>>>> hotfix/0.5.1
 }
 else
     apf.start();
@@ -75670,7 +95787,11 @@ else
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/apf-node.js)SIZE(1241)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(apf-node.js)SIZE(1241)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75695,7 +95816,11 @@ else
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/apf-o3.js)SIZE(14014)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+=======
+/*FILEHEAD(apf-o3.js)SIZE(14014)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75721,7 +95846,11 @@ else
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/loader-o3.js)SIZE(7470)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(loader-o3.js)SIZE(7470)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75747,7 +95876,11 @@ else
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/loader.js)SIZE(15641)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(loader.js)SIZE(15641)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75780,7 +95913,11 @@ else
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/loader2.js)SIZE(18652)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+=======
+/*FILEHEAD(loader2.js)SIZE(18652)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+>>>>>>> hotfix/0.5.1
 
 /*
  * See the NOTICE file distributed with this work for additional
