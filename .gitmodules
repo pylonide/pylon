@@ -22,7 +22,12 @@
 [submodule "support/gnu-builds"]
 	path = support/gnu-builds
 	url = git://github.com/ajaxorg/gnu-builds.git
-
 [submodule "support/socket.io"]
-    path = support/socket.io
-    url = git://github.com/ajaxorg/socket.io.git
+	path = support/socket.io
+	url = git://github.com/ajaxorg/socket.io.git
+[submodule "support/socket.io-client"]
+	path = support/socket.io-client
+	url = git://github.com/ajaxorg/socket.io-client.git
+[submodule "support/uglify-js"]
+	path = support/uglify-js
+	url = git://github.com/ajaxorg/UglifyJS.git

@@ -72,7 +72,7 @@ sys.inherits(ShellPlugin, Plugin);
         var commands = {},
             _self    = this;
 
-        Async.list(Object.keys(this.workspace.exts))
+        Async.list(Object.keys(this.workspace.plugins))
              .each(function(sName, next) {
                  var oExt = _self.workspace.getExt(sName);
                  if (oExt["$commandHints"]) {
