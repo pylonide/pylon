@@ -249,8 +249,9 @@ var apf = {
         // http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
         // http://sla.ckers.org/forum/read.php?24,31765,33730
         var sAgent = navigator.userAgent.toLowerCase() || "",
+            isSafInf = (sAgent.indexOf('safari') != -1) && /a/.__proto__=='//', // Safari versions < 5.1 (before Lion release)
             // 1->IE, 0->FF, 2->GCrome, 3->Safari, 4->Opera, 5->Konqueror 
-            b      = (typeof/./)[0]=='f'?+'1\0'?3:2:+'1\0'?5:1-'\0'?1:+{valueOf:function(x){return!x}}?4:0;
+            b      = (typeof/./)[0]=='f'?+'1\0'?3:2:+'1\0'?5:1-'\0'?1:isSafInf?3:+{valueOf:function(x){return!x}}?4:0;
 
        /*
         * Fix for firefox older than 2

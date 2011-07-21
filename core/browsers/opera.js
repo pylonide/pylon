@@ -83,7 +83,7 @@ apf.runOpera = function (){
     Document.prototype.selectSingleNode     =
     XMLDocument.prototype.selectSingleNode  =
     HTMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
-        var nodeList = this.selectNodes(sExpr + "[1]", contextNode ? contextNode : null);
+        var nodeList = this.selectNodes("(" + sExpr + ")[1]", contextNode ? contextNode : null);
         return nodeList.length > 0 ? nodeList[0] : null;
     };
     
