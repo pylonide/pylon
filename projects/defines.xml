@@ -1269,6 +1269,11 @@
               short=""
               desc=""
               requires="__AMLBASELIST|__WITH_POPUP"/>
+            <p:define name="__AMLDEBUGGER"
+              match="a:debugger"
+              short=""
+              desc=""
+              requires=""/>
             <p:define name="__AMLEDITOR"
               match="a:editor"
               short="editor element"
