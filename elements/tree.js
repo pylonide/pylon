@@ -274,7 +274,9 @@ apf.tree = function(struct, tagName){
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  this.hasPassedDown = true;\
-                 if (!o.renaming && o.hasFocus() && isSelected == 1) \
+                 if (event.button == 2) \
+                    o.stopRename();\
+                 else if (!o.renaming && o.hasFocus() && isSelected == 1) \
                     this.dorename = true;\
                  if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
                      o.select(this, event.ctrlKey, event.shiftKey, event.button);\

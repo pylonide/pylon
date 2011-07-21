@@ -396,9 +396,9 @@ apf.Rename.initEditableArea = function(){
                     var sel = window.getSelection();
                     sel.removeAllRanges()
                     var r = document.createRange();
-                    r.setStart(div.firstChild, 0);
-                    var lastIndex = this.value.lastIndexOf(".");
-                    r.setEnd(div.firstChild, lastIndex > -1 ? lastIndex : this.value.length);
+                    r.setStart(this.firstChild, 0);
+                    var lastIndex = this.firstChild.nodeValue.lastIndexOf(".");
+                    r.setEnd(this.firstChild, lastIndex > -1 ? lastIndex : this.value.length);
                     sel.addRange(r)
                 }
                 else {

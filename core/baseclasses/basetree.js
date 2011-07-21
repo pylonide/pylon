@@ -746,15 +746,16 @@ apf.BaseTree = function(){
         if (!len || len > 20) {
             this.$getNewContext("loading");
             apf.insertHtmlNode(this.$getLayoutNode("loading"), container);
-            
-            var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
-            this.$setStyleClass(htmlNode, "loading");
         }
     };
     
     //???
     this.$removeLoading = function(xmlNode){
         if (!xmlNode) return;
+        
+        if (this.$timers)
+            clearTimeout(this.$timers[xmlNode.getAttribute(apf.xmldb.xmlIdTag)]);
+        
         var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this); 
         if (htmlNode) {
             this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
@@ -774,6 +775,11 @@ apf.BaseTree = function(){
 
         if (rule && xmlContext) {
             this.$setLoadStatus(xmlNode, "loading");
+            
+            var _self = this;
+            (this.$timers || (this.$timers = {}))[xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = setTimeout(function(){;
+                _self.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), "loading");
+            }, 100);
             
             if (rule.get) {
                 // #ifdef __WITH_OFFLINE_TRANSACTIONS
