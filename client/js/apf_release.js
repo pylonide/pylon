@@ -2973,8 +2973,8 @@ apf.importCssString("#txt_rename{white-space:nowrap}");this.$txt.onselectstart=f
 };this.$txt.onmouseover=this.$txt.onmouseout=this.$txt.oncontextmenu=this.$txt.onmouseup=this.$txt.ondblclick=this.$txt.onmousedown=function(e){apf.stopPropagation(e||event);
 };this.$txt.onkeyup=function(e){if(!this.host.$autocomplete){return;}this.host.$lookup(this[apf.hasContentEditable?"innerHTML":"value"]);
 };var sel;this.$txt.select=function(){if(!apf.hasMsRangeObject){if(window.getSelection&&document.createRange){var sel=window.getSelection();
-sel.removeAllRanges();var r=document.createRange();r.setStart(div.firstChild,0);
-var lastIndex=this.value.lastIndexOf(".");r.setEnd(div.firstChild,lastIndex>-1?lastIndex:this.value.length);
+sel.removeAllRanges();var r=document.createRange();r.setStart(this.firstChild,0);
+var lastIndex=this.firstChild.nodeValue.lastIndexOf(".");r.setEnd(this.firstChild,lastIndex>-1?lastIndex:this.value.length);
 sel.addRange(r);}else{(sel||(sel=new apf.selection())).selectNode(this);}return;
 }var r=document.selection.createRange();try{r.moveToElementText(this);if(apf.isFalse(this.host.$getOption("main","selectrename"))||typeof this.host.$renameStartCollapse!="undefined"){r.collapse(this.host.$renameStartCollapse);
 }}catch(e){}r.select();};if(apf.hasFocusBug){this.$txt.onfocus=function(){if(apf.window){apf.window.$focusfix2();
@@ -3084,7 +3084,7 @@ oItem.setAttribute("id",Lid);elSelect.setAttribute("onmouseover","var o = apf.lo
 elSelect.setAttribute("onselectstart","return false;");elSelect.setAttribute("style",(elSelect.getAttribute("style")||"")+";user-select:none;-moz-user-select:none;-webkit-user-select:none;");
 if(this.hasFeature(apf.__RENAME__)||this.hasFeature(apf.__DRAGDROP__)){elSelect.setAttribute("ondblclick","var o = apf.lookup("+this.$uniqueId+"); o.stopRename(); o.choose()");
 elSelect.setAttribute("onmouseout","var o = apf.lookup("+this.$uniqueId+");            	  o.$setStyleClass(this, '', ['hover'], true);                this.hasPassedDown = false;");
-elSelect.setAttribute(this.itemSelectEvent||"onmousedown","var o = apf.lookup("+this.$uniqueId+");                 var xmlNode = apf.xmldb.findXmlNode(this);                 var isSelected = o.isSelected(xmlNode);                 this.hasPassedDown = true;                 if (!o.renaming && o.hasFocus() && isSelected == 1)                     this.dorename = true;                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)                     o.select(this, event.ctrlKey, event.shiftKey, -1)");
+elSelect.setAttribute(this.itemSelectEvent||"onmousedown","var o = apf.lookup("+this.$uniqueId+");                 var xmlNode = apf.xmldb.findXmlNode(this);                 var isSelected = o.isSelected(xmlNode);                 this.hasPassedDown = true;                 if (event.button == 2)                     o.stopRename();                 else if (!o.renaming && o.hasFocus() && isSelected == 1)                     this.dorename = true;                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)                     o.select(this, event.ctrlKey, event.shiftKey, -1)");
 elSelect.setAttribute("onmouseup","if (!this.hasPassedDown) return;                var o = apf.lookup("+this.$uniqueId+");if (o.hasFeature(apf.__RENAME__) && this.dorename)                    o.startDelayedRename(event, null, true);this.dorename = false;                 var xmlNode = apf.xmldb.findXmlNode(this);                 var isSelected = o.isSelected(xmlNode);                 if (o.hasFeature(apf.__DRAGDROP__))                     o.select(this, event.ctrlKey, event.shiftKey, -1)");
 }else{elSelect.setAttribute("onmouseout","apf.setStyleClass(this, '', ['hover']);");
 elSelect.setAttribute("ondblclick","var o = apf.lookup("+this.$uniqueId+"); o.choose(null, true)");
@@ -3542,12 +3542,13 @@ this.$updateNode(oldXmlParent,apf.xmldb.getHtmlNode(oldXmlParent,this));var next
 if(next=this.getNextTraverse(xmlNode,true)){this.$fixItem(next,apf.xmldb.getHtmlNode(next,this));
 }};this.$setLoading=function(xmlNode,container){this.$setLoadStatus(xmlNode,"potential");
 var len=this.getTraverseNodes(xmlNode).length;if(!len||len>20){this.$getNewContext("loading");
-apf.insertHtmlNode(this.$getLayoutNode("loading"),container);var htmlNode=apf.xmldb.getHtmlNode(xmlNode,this);
-this.$setStyleClass(htmlNode,"loading");}};this.$removeLoading=function(xmlNode){if(!xmlNode){return;
+apf.insertHtmlNode(this.$getLayoutNode("loading"),container);}};this.$removeLoading=function(xmlNode){if(!xmlNode){return;
+}if(this.$timers){clearTimeout(this.$timers[xmlNode.getAttribute(apf.xmldb.xmlIdTag)]);
 }var htmlNode=apf.xmldb.getHtmlNode(xmlNode,this);if(htmlNode){this.$getLayoutNode("item","container",htmlNode).innerHTML="";
 this.$setStyleClass(htmlNode,"",["loading"]);}};this.$extend=function(xmlNode,container,immediate,callback){if(!this.$hasLoadStatus(xmlNode,"potential")){return;
 }var rule=this.$getBindRule("insert",xmlNode),xmlContext=rule&&rule.match?(rule.cmatch||rule.compile("match"))(xmlNode):xmlNode;
-if(rule&&xmlContext){this.$setLoadStatus(xmlNode,"loading");if(rule.get){this.getModel().$insertFrom(rule.getAttribute("get"),{xmlNode:xmlContext,insertPoint:xmlContext,amlNode:this,callback:callback});
+if(rule&&xmlContext){this.$setLoadStatus(xmlNode,"loading");var _self=this;(this.$timers||(this.$timers={}))[xmlNode.getAttribute(apf.xmldb.xmlIdTag)]=setTimeout(function(){_self.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode,_self),"loading");
+},100);if(rule.get){this.getModel().$insertFrom(rule.getAttribute("get"),{xmlNode:xmlContext,insertPoint:xmlContext,amlNode:this,callback:callback});
 }else{if(this.$applyBindRule("insert",xmlNode)){this.insert(data,{insertPoint:xmlContext});
 }}}else{if(!this.prerender){this.$setLoadStatus(xmlNode,"loaded");this.$removeLoading(xmlNode);
 xmlUpdateHandler.call(this,{action:"insert",xmlNode:xmlNode,result:this.$addNodes(xmlNode,container,true,null,null,null,"extend"),anim:!immediate});
@@ -7588,7 +7589,7 @@ this.$setStyleClass(oItem,"checked");}else{if(this.isChecked(xmlNode)){this.$set
 if(elIcon&&elIcon!=elOpenClose){if(ocAction!="ondblclick"){elIcon.setAttribute(ocAction,"var o = apf.lookup("+this.$uniqueId+");"+(ocAction=="onmousedown"?"o.select(this, event.ctrlKey, event.shiftKey, event.button);":"")+(true?"o.slideToggle(this, null, null, true);":""));
 }if(ocAction!="onmousedown"){elIcon.setAttribute("onmousedown","apf.lookup("+this.$uniqueId+").select(this, event.ctrlKey, event.shiftKey, event.button);");
 }elIcon.setAttribute("ondblclick","var o = apf.lookup("+this.$uniqueId+");              o.choose(null, true);o.stopRename();"+(true&&!ocAction=="ondblclick"?"o.slideToggle(this, null, null, true);":"")+"apf.cancelBubble(event,o);");
-}var elSelect=this.$getLayoutNode("item","select"),strMouseDown;if(this.hasFeature(apf.__RENAME__)||this.hasFeature(apf.__DRAGDROP__)){strMouseDown="var o = apf.lookup("+this.$uniqueId+");                 var xmlNode = apf.xmldb.findXmlNode(this);                 var isSelected = o.isSelected(xmlNode);                 this.hasPassedDown = true;                 if (!o.renaming && o.hasFocus() && isSelected == 1)                     this.dorename = true;                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)                     o.select(this, event.ctrlKey, event.shiftKey, event.button);                 apf.cancelBubble(event, o);";
+}var elSelect=this.$getLayoutNode("item","select"),strMouseDown;if(this.hasFeature(apf.__RENAME__)||this.hasFeature(apf.__DRAGDROP__)){strMouseDown="var o = apf.lookup("+this.$uniqueId+");                 var xmlNode = apf.xmldb.findXmlNode(this);                 var isSelected = o.isSelected(xmlNode);                 this.hasPassedDown = true;                 if (event.button == 2)                     o.stopRename();                 else if (!o.renaming && o.hasFocus() && isSelected == 1)                     this.dorename = true;                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)                     o.select(this, event.ctrlKey, event.shiftKey, event.button);                 apf.cancelBubble(event, o);";
 elSelect.setAttribute("onmouseout","this.hasPassedDown = false;"+(elSelect.getAttribute("onmouseout")||""));
 elSelect.setAttribute("onmouseup","if (!this.hasPassedDown) return;                var o = apf.lookup("+this.$uniqueId+");if (this.dorename && !o.mode)                    o.startDelayedRename(event, null, true);this.dorename = false;                 var xmlNode = apf.xmldb.findXmlNode(this);                 var isSelected = o.isSelected(xmlNode);                 if (o.hasFeature(apf.__DRAGDROP__))                     o.select(this, event.ctrlKey, event.shiftKey, event.button);");
 }else{strMouseDown="o.select(this, event.ctrlKey, event.shiftKey, event.button);                            apf.cancelBubble(event, o);";

@@ -107,6 +107,37 @@ return ext.register("ext/code/code", {
     markup  : markup,
 
     nodes : [],
+    
+    getState : function(doc){
+        return;
+        
+        var doc   = doc ? doc.acedoc : this.getDocument();
+        if (!doc) return;
+        var sel   = doc.getSelection();
+        var range = sel.getRange();
+        
+        return {
+            scrolltop : doc.getScrollTopRow(),
+            selection : {
+                start : apf.extend({}, range.start),
+                end   : apf.extend({}, range.end)
+            }
+        };
+    },
+    
+    setState : function(obj, doc){
+        var doc   = doc ? doc.acedoc : this.getDocument();
+        if (!doc) return;
+        
+        var sel   = doc.getSelection();
+        var range = this.createRange();
+        
+        range.setStart(obj.selection.start.row, obj.selection.start.column);
+        range.setEnd(obj.selection.end.row, obj.selection.end.column);
+        
+        doc.setScrollTopRow(obj.scrolltop);
+        selection.setSelectionRange(range);
+    },
 
     getSyntax : function(node) {
         if(!node) return "";

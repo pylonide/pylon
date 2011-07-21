@@ -181,30 +181,30 @@ return ext.register("ext/tree/tree", {
         trFiles.addEventListener("beforecopy", function(e) {
             if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
             
+            var args     = e.args[0].args,
+                filename = args[1].getAttribute("name");
+
+            var count = 0;
+            filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1));
+            while (args[0].selectSingleNode("node()[@name='" + filename.replace(/'/g, "\\'") + "']")) {
+                filename = filename.replace(/\.(\d+)$/, "") + "." + ++count;
+            }
+            args[1].setAttribute("newname", filename);
+            
             setTimeout(function () {
-                var args     = e.args[0].args,
-                    filename = args[1].getAttribute("name");
-                
-                while (args[1].parentNode.selectSingleNode("node()[@name='" + filename.replace(/'/g, "\\'") + "']")) {
-                    filename = filename.replace(/_(\d+)$/, function(m, d){
-                        return "_" + parseInt(d ? d : 0) + 1;
-                    });
-                }
-                
                 fs.beforeRename(args[1], null, args[0].getAttribute("path").replace(/[\/]+$/, "") + "/" + filename);
+                args[1].removeAttribute("newname");
             });
         });
        
         trFiles.addEventListener("beforestoprename", function(e) {
-            if (!ide.onLine && !ide.offlineFileSystemSupport) 
-                return false;
+            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
 
             return fs.beforeStopRename(e.value);
         });
  
         trFiles.addEventListener("beforerename", function(e){
-            if (!ide.onLine && !ide.offlineFileSystemSupport) 
-                return false;
+            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
             
             if(trFiles.$model.data.firstChild == trFiles.selected)
                 return false;
@@ -220,14 +220,11 @@ return ext.register("ext/tree/tree", {
                 exists = true;
                 break;
             }
-            if (exists) {
-                util.alert("Error", 
-                    "Unable to move", 
-                    "Couldn't move to this destination because there's already\
-                     a node with the same name");
-                //trFiles.getActionTracker().undo();
+            /*if (exists) {
+                util.alert("Error", "Unable to move", "Couldn't move to this destination because there's already a node with the same name");
+                trFiles.getActionTracker().undo();
                 return false;
-            }
+            }*/
             
             //setTimeout(function(){
                 fs.beforeRename(e.args[0], e.args[1]);
@@ -245,13 +242,6 @@ return ext.register("ext/tree/tree", {
                 }
             });
         });
-        
-//        trFiles.getActionTracker().addEventListener("error", function(e){
-//            if (e.status == 412) {
-//                util.alert("Error", "Unable to move", "Couldn't move to this destination because there's already a node with the same name");
-//                return false;
-//            }
-//        });
         
         var cancelWhenOffline = function(){
             if (!ide.onLine && !ide.offlineFileSystemSupport) return false;

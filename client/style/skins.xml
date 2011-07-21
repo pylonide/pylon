@@ -6889,6 +6889,12 @@
             padding          : 0;
             overflow         : hidden;
             border-right     : 1px solid #f5f5f5;
+            
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .hboxTrFiles {
@@ -7069,12 +7075,16 @@
             white-space: nowrap;
         }
         
-        .filemgr-tree .loading .item LABEL {
-            background-image : url(images/file-tree-load-spinner.gif);
+        .filemgr-tree .loading .item {
+            background : url(images/file-tree-load-spinner.gif) no-repeat 16px 1px;
         }
         
-        .filemgr-tree .loading.selected .item LABEL {
-            background-image : url(images/file-tree-load-spinner-selected.gif);
+        .filemgr-tree .loading .item LABEL {
+            background-position : -1000px 0;
+        }
+        
+        .filemgr-tree .loading.selected .item {
+            background : url(images/file-tree-load-spinner-selected.gif) no-repeat 16px 1px;
         }
         
         .filemgr-tree .ldng,
@@ -7099,6 +7109,12 @@
             word-break: keep-all;
             cursor: text;
             outline : none;
+            
+            -webkit-user-select: text;
+            -khtml-user-select: text;
+            -moz-user-select: text;
+            -o-user-select: text;
+            user-select: text;
         }
         
         .filemgr-dragtree {

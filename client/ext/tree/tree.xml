@@ -54,16 +54,9 @@
                 return true;
         };
 
-        function copy(a, b) {
-            davProject.copy(a, b + /\/[^\/]*$/.exec(a));
-        };
-
-        function move(a, b) {
-            davProject.move(a, b + /\/[^\/]*$/.exec(a), false, false, function() {
-                trFiles.enable();
-                trFiles.focus();
-            });
-        };
+        function createPath(a, b){
+            return b + "/" + a.replace(/\/?([^\/]*)$/, "$1");
+        }
     ]]></a:script>
     <a:window id="winFilesViewer"
       flex     = "1"
@@ -97,9 +90,17 @@
             <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
             <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
             <a:rename match="[file|folder[not(@path='/workspace')]]" set="{davProject.rename([@name], [@oldpath])}" />
-            <a:move set="{move([@path], [../@path])}"/>
+            <a:move set="{
+                davProject.move([@path], createPath([@path], [../@path]));
+                trFiles.enable();
+                trFiles.focus();
+            }"/>
             <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
-            <a:copy match="[file|folder]" set="{copy([@path], [../@path])}"/>
+            <a:copy match="[file|folder]" set="{
+                davProject.copy([@path], createPath([@newname] || [@path], [../@path]))
+            }" undo="{
+                alert('TODO!!');
+            }"/>
 
             <a:drag match="[folder|file]" />
             <a:drop match="[folder|file]" target="[folder]"

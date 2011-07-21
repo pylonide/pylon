@@ -280,10 +280,14 @@ return ext.register("ext/filesystem/filesystem", {
         this.model = new apf.model();
         this.model.setAttribute("whitespace", false);
         
+        var processing = {};
         this.model.addEventListener("update", function(e){
             //resort on move, copy, rename, add
             if (e.action == "attribute" || e.action == "add" || e.action == "move") {
                 var xmlNode = e.xmlNode, pNode = xmlNode.parentNode;
+                if (processing[xmlNode.getAttribute("a_id")])
+                    return;
+                processing[xmlNode.getAttribute("a_id")] = true;
                 
                 var sort = new apf.Sort();
                 sort.set({xpath: "@name", method: "filesort"});
@@ -350,6 +354,7 @@ return ext.register("ext/filesystem/filesystem", {
             apf.xmldb.setAttribute(node, "loading", "true");
             ide.addEventListener("afteropenfile", function(e) {
                 apf.xmldb.setAttribute(e.node, "loading", "");
+                ide.removeEventListener("afteropenfile", arguments.callee);
             });
             
             if (doc.hasValue()) {

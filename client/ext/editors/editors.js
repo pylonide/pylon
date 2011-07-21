@@ -435,6 +435,11 @@ return ext.register("ext/editors/editors", {
                 var nodes  = model.queryNodes("auto/files/file");
                 for (var doc, i = 0, l = nodes.length; i < l; i++) {
                     doc = ide.createDocument(nodes[i]);
+                    
+                    var state = nodes[i].getAttribute("state");
+                    if (state)
+                        doc.state = apf.unserialize(state);
+                    
                     ide.dispatchEvent("openfile", {
                         doc    : doc,
                         init   : true,
@@ -472,6 +477,10 @@ return ext.register("ext/editors/editors", {
                     var copy = apf.xmldb.cleanNode(file.cloneNode(false));
                     copy.removeAttribute("changed");
                     pNode.appendChild(copy);
+                    
+                    var state = pages[i].$editor.getState(pages[i].$doc);
+                    if (state)
+                        copy.setAttribute("state", apf.serialize(state));
                 }
             }
 
