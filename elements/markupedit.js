@@ -851,9 +851,11 @@ apf.markupedit = function(struct, tagName){
         apf.insertHtmlNode(this.$getLayoutNode("loading"), container);
     };
     
-    this.$removeLoading = function(htmlNode){
-        if (!htmlNode) return;
-        this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
+    this.$removeLoading = function(xmlNode){
+        if (!xmlNode) return;
+        var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this); 
+        if (htmlNode)
+            this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
     };
     
     //check databinding for how this is normally implemented
@@ -888,7 +890,7 @@ apf.markupedit = function(struct, tagName){
         }
         else if (!this.prerender) {
             this.$setLoadStatus(xmlNode, "loaded");
-            this.$removeLoading(apf.xmldb.findHtmlNode(xmlNode, this));
+            this.$removeLoading(xmlNode);
             
             this.$noanim = true;
             xmlUpdateHandler.call(this, {

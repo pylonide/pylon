@@ -1058,7 +1058,7 @@ apf.webdav = function(struct, tagName){
                         return this.v;
                     },
                     data : data.data,
-                    v    : (data.data.type == "file" ? 1 : 0) + "" + data.data.name
+                    v    : (data.data.type == "file" ? 1 : 0) + "" + data.data.name.toLowerCase()
                 });
         }
         

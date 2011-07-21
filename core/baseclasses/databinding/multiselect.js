@@ -741,7 +741,7 @@ apf.MultiselectBinding = function(){
                 return;
             
             if (this.$hasLoadStatus(xmlNode) && this.$removeLoading)
-                this.$removeLoading(htmlNode);
+                this.$removeLoading(xmlNode);
 
             if (this.$container.firstChild && !apf.xmldb.getNode(this.$container.firstChild)) {
                 //Appearantly the content was cleared

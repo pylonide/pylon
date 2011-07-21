@@ -42,10 +42,6 @@ if (window.require && typeof require.def == "function") {
     }
     else 
         apf.start();
-    
-    
-    
-    
 }
 else
     apf.start();

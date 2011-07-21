@@ -746,13 +746,20 @@ apf.BaseTree = function(){
         if (!len || len > 20) {
             this.$getNewContext("loading");
             apf.insertHtmlNode(this.$getLayoutNode("loading"), container);
+            
+            var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
+            this.$setStyleClass(htmlNode, "loading");
         }
     };
     
     //???
-    this.$removeLoading = function(htmlNode){
-        if (!htmlNode) return;
-        this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
+    this.$removeLoading = function(xmlNode){
+        if (!xmlNode) return;
+        var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this); 
+        if (htmlNode) {
+            this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
+            this.$setStyleClass(htmlNode, "", ["loading"]);
+        }
     };
     
     //check databinding for how this is normally implemented
@@ -791,7 +798,7 @@ apf.BaseTree = function(){
         }
         else if (!this.prerender) {
             this.$setLoadStatus(xmlNode, "loaded");
-            this.$removeLoading(apf.xmldb.getHtmlNode(xmlNode, this));
+            this.$removeLoading(xmlNode);
             xmlUpdateHandler.call(this, {
                 action  : "insert", 
                 xmlNode : xmlNode, 

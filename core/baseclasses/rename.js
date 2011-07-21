@@ -125,7 +125,7 @@ apf.Rename = function(){
 
         if (!xmlNode) return;
 
-        this.$executeSingleValue("rename", "caption", xmlNode, value);
+        return this.$executeSingleValue("rename", "caption", xmlNode, value);
     };
 
     /**
@@ -135,11 +135,12 @@ apf.Rename = function(){
      *
      */
     this.startDelayedRename = function(e, time, userAction){
+        clearTimeout(this.renameTimer);
+        
         if (e && (e.button == 2 || e.ctrlKey || e.shiftKey) 
           || userAction && this.disabled)
             return;
 
-        clearTimeout(this.renameTimer);
         this.renameTimer = $setTimeout('apf.lookup('
             + this.$uniqueId + ').startRename()', time || 400);
     };
@@ -268,10 +269,11 @@ apf.Rename = function(){
             this.$stopAction("rename");
         }
         else {
-            if (this.$replacedNode)
-                this.$replacedNode.innerHTML = value.replace(/</g, "&lt;").replace(/\r?\n/g, "<br />");
             //this.$selected.innerHTML = this.$txt.innerHTML;
-            this.rename(this.$renameSubject, value);
+            if (this.rename(this.$renameSubject, value) !== false) {
+                if (this.$replacedNode)
+                    this.$replacedNode.innerHTML = value.replace(/</g, "&lt;").replace(/\r?\n/g, "<br />");
+            }
         }
 
         if (!this.renaming) {
@@ -373,6 +375,7 @@ apf.Rename.initEditableArea = function(){
         this.$txt.oncontextmenu =
         //this.$txt.onkeydown   = 
         this.$txt.onmouseup   = 
+        this.$txt.ondblclick  =
         this.$txt.onmousedown = function(e){ 
             apf.stopPropagation(e || event)
         };
@@ -389,7 +392,18 @@ apf.Rename.initEditableArea = function(){
         var sel;
         this.$txt.select = function(){
             if (!apf.hasMsRangeObject) {
-                (sel || (sel = new apf.selection())).selectNode(this);
+                if (window.getSelection && document.createRange) {
+                    var sel = window.getSelection();
+                    sel.removeAllRanges()
+                    var r = document.createRange();
+                    r.setStart(div.firstChild, 0);
+                    var lastIndex = this.value.lastIndexOf(".");
+                    r.setEnd(div.firstChild, lastIndex > -1 ? lastIndex : this.value.length);
+                    sel.addRange(r)
+                }
+                else {
+                    (sel || (sel = new apf.selection())).selectNode(this);
+                }
                 return;
             }
     

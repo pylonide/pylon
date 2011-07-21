@@ -803,8 +803,8 @@ apf.actiontracker = function(struct, tagName){
                     + (extra.url ? "Url:" + extra.url + "\n\n" : "")
                     + extra.message));
 
-                if ((UndoObj && UndoObj.xmlActionNode || extra.amlNode || apf)
-                  .dispatchEvent("error", apf.extend({
+                //(UndoObj && UndoObj.xmlActionNode || extra.amlNode || apf)
+                if (this.dispatchEvent("error", apf.extend({
                     error   : oError,
                     state   : state,
                     bubbles : true

@@ -1045,7 +1045,8 @@ apf.window = function(){
                 canSelect = false;
         }
         
-        if (!canSelect && e.button != 2) { // && !cEditable
+        // && e.button != 2
+        if (!canSelect) { // && !cEditable
             if (e.preventDefault)
                 e.preventDefault();
            
