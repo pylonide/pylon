@@ -3,7 +3,7 @@
 
 
 
-/*FILEHEAD(apf.js)SIZE(95813)TIME(Fri, 22 Jul 2011 08:28:03 GMT)*/
+/*FILEHEAD(apf.js)SIZE(95813)TIME(Fri, 22 Jul 2011 10:40:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13516,7 +13516,7 @@ apf.skins = {
 
 
 
-/*FILEHEAD(core/lib/sort.js)SIZE(8239)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
+/*FILEHEAD(core/lib/sort.js)SIZE(8413)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13545,6 +13545,7 @@ apf.skins = {
  * Object handling sorting in a similar way as xslt.
  *
  * @constructor
+ * @todo use a struct instead of lots of local variables, and stop using eval
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -13554,6 +13555,7 @@ apf.skins = {
  */
 apf.Sort = function(xmlNode){
     var settings = {};
+    //order, xpath, type, method, getNodes, dateFormat, dateReplace, sort_dateFmtStr, getValue;
     
     //use this function to parse the each node
     this.parseXml = function(xmlNode, clear){
@@ -24963,7 +24965,7 @@ apf.config.$inheritProperties["validgroup"] = 1;
 
 
 
-/*FILEHEAD(core/baseclasses/databinding.js)SIZE(58715)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
+/*FILEHEAD(core/baseclasses/databinding.js)SIZE(60133)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25734,10 +25736,6 @@ apf.DataBinding = function(){
     this.insert = function(xmlNode, options){
         if (typeof xmlNode == "string") {
             if (xmlNode.charAt(0) == "<") {
-                
-                if (options.whitespace === false)
-                    xmlNode = xmlNode.replace(/>[\s\n\r]*</g, "><");
-                
                 xmlNode = apf.getXmlDom(xmlNode).documentElement;
             }
             else {
@@ -26465,7 +26463,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(core/baseclasses/databinding/multiselect.js)SIZE(46988)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+/*FILEHEAD(core/baseclasses/databinding/multiselect.js)SIZE(45880)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -26642,39 +26640,6 @@ apf.MultiselectBinding = function(){
         return this.$sort.get();
     };
     
-
-    /**
-     * Optimizes load time when the xml format is very simple.
-     */
-    this.$propHandlers["simpledata"] = function(value){
-        if (value) {
-            this.getTraverseNodes = function(xmlNode){
-                return (xmlNode || this.xmlRoot).childNodes;
-            };
-        
-            this.getFirstTraverseNode = function(xmlNode){
-                return (xmlNode || this.xmlRoot).childNodes[0];
-            };
-        
-            this.getLastTraverseNode = function(xmlNode){
-                var nodes = (xmlNode || this.xmlRoot).childNodes;
-                return nodes[nodes.length - 1];
-            };
-        
-            this.getTraverseParent = function(xmlNode){
-                if (!xmlNode.parentNode || xmlNode == this.xmlRoot) 
-                    return false;
-                    
-                return xmlNode.parentNode;
-            };
-        }
-        else {
-            delete this.getTraverseNodes;
-            delete this.getFirstTraverseNode;
-            delete this.getLastTraverseNode;
-            delete this.getTraverseParent;
-        }
-    }
 
     /**
      * Retrieves a nodelist containing the {@link term.datanode data nodes} which
@@ -26932,7 +26897,7 @@ apf.MultiselectBinding = function(){
             return this.clear(null, null, true); //@todo apf3.0 this should clear and set a listener
 
         //Traverse through XMLTree
-        var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot, null, "load");
+        var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot);
 
         //Build HTML
         this.$fill(nodes);
@@ -27161,7 +27126,7 @@ apf.MultiselectBinding = function(){
                 return;
             
             if (this.$hasLoadStatus(xmlNode) && this.$removeLoading)
-                this.$removeLoading(xmlNode);
+                this.$removeLoading(htmlNode);
 
             if (this.$container.firstChild && !apf.xmldb.getNode(this.$container.firstChild)) {
                 //Appearantly the content was cleared
@@ -29728,7 +29693,7 @@ apf.ChildValue = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/dataaction.js)SIZE(27055)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+/*FILEHEAD(core/baseclasses/dataaction.js)SIZE(27010)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30137,12 +30102,10 @@ apf.DataAction = function(){
         }
 
         //Use Action Tracker
-        var result = this.$executeAction(atAction, args, atName, xmlNode);
+        this.$executeAction(atAction, args, atName, xmlNode);
         
         if (shouldLoad)
             this.load(xmlNode.selectSingleNode(xpath));
-        
-        return result;
     };
     
     /**
@@ -30605,7 +30568,7 @@ apf.GuiElement.propHandlers["caching"] = function(value) {
 
 
 
-/*FILEHEAD(core/baseclasses/rename.js)SIZE(14985)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+/*FILEHEAD(core/baseclasses/rename.js)SIZE(14376)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30734,7 +30697,7 @@ apf.Rename = function(){
 
         if (!xmlNode) return;
 
-        return this.$executeSingleValue("rename", "caption", xmlNode, value);
+        this.$executeSingleValue("rename", "caption", xmlNode, value);
     };
 
     /**
@@ -30744,12 +30707,11 @@ apf.Rename = function(){
      *
      */
     this.startDelayedRename = function(e, time, userAction){
-        clearTimeout(this.renameTimer);
-        
         if (e && (e.button == 2 || e.ctrlKey || e.shiftKey) 
           || userAction && this.disabled)
             return;
 
+        clearTimeout(this.renameTimer);
         this.renameTimer = $setTimeout('apf.lookup('
             + this.$uniqueId + ').startRename()', time || 400);
     };
@@ -30878,11 +30840,10 @@ apf.Rename = function(){
             this.$stopAction("rename");
         }
         else {
+            if (this.$replacedNode)
+                this.$replacedNode.innerHTML = value.replace(/</g, "&lt;").replace(/\r?\n/g, "<br />");
             //this.$selected.innerHTML = this.$txt.innerHTML;
-            if (this.rename(this.$renameSubject, value) !== false) {
-                if (this.$replacedNode)
-                    this.$replacedNode.innerHTML = value.replace(/</g, "&lt;").replace(/\r?\n/g, "<br />");
-            }
+            this.rename(this.$renameSubject, value);
         }
 
         if (!this.renaming) {
@@ -30984,7 +30945,6 @@ apf.Rename.initEditableArea = function(){
         this.$txt.oncontextmenu =
         //this.$txt.onkeydown   = 
         this.$txt.onmouseup   = 
-        this.$txt.ondblclick  =
         this.$txt.onmousedown = function(e){ 
             apf.stopPropagation(e || event)
         };
@@ -31001,18 +30961,7 @@ apf.Rename.initEditableArea = function(){
         var sel;
         this.$txt.select = function(){
             if (!apf.hasMsRangeObject) {
-                if (window.getSelection && document.createRange) {
-                    var sel = window.getSelection();
-                    sel.removeAllRanges()
-                    var r = document.createRange();
-                    r.setStart(div.firstChild, 0);
-                    var lastIndex = this.value.lastIndexOf(".");
-                    r.setEnd(div.firstChild, lastIndex > -1 ? lastIndex : this.value.length);
-                    sel.addRange(r)
-                }
-                else {
-                    (sel || (sel = new apf.selection())).selectNode(this);
-                }
+                (sel || (sel = new apf.selection())).selectNode(this);
                 return;
             }
     
@@ -34638,7 +34587,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/basetree.js)SIZE(49306)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+/*FILEHEAD(core/baseclasses/basetree.js)SIZE(48288)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34819,35 +34768,11 @@ apf.BaseTree = function(){
             this.select(xmlNode);
     }
     
-    this.expandList = function(pathList, user_callback){
-        var pathLut = {};
-        function check(path, callback){
-            pathLut[path] = true;
-            
-            var found;
-            for(var i = 0, l = pathList.length; i < l; i++) {
-                var ipath = pathList[i];
-                if (ipath) {
-                    if (ipath == path)
-                        delete pathList[i];
-                    
-                    var t = ipath.split("/"); t.pop();
-                    var parent = t.join("/");
-                    if (parent == path) {
-                        callback(ipath);
-                        found = true;
-                    }
-                }
-            }
-
-            if (!found)
-                user_callback();
-        };
-        
+    this.expandList = function(pathList, callback){
         pathList.sort();
-        var cb, root = this.xmlRoot, _self = this;
-        check("", 
-            cb = function(item){
+        var root = this.xmlRoot, _self = this;
+        apf.asyncForEach(pathList,
+            function(item, next){
                 var paths = item.split("/");
                 var lastNode = root;//root.selectSingleNode(paths.shift());
 
@@ -34879,15 +34804,17 @@ apf.BaseTree = function(){
                         },100);  
                     }, function(err){
                         //if (!err) {
-                            //next();
+                            next();
                         //}
-                        check(item, cb);
                     }
                 );
+            },
+            function(err){
+                if (callback) 
+                    callback();
             }
         );
     }
-    
     
     /**
      * @notimplemented
@@ -35159,12 +35086,10 @@ apf.BaseTree = function(){
                 this.$setStyleClass(htmlNode,  "root");
                 this.$setStyleClass(container, "root");
             }
-
+            
             var next;
-            if (action != "load" && action != "extend") {
-                if (!beforeNode && (next = this.getNextTraverse(xmlNode)))
-                    beforeNode = apf.xmldb.getHtmlNode(next, this);
-            }
+            if (!beforeNode && (next = this.getNextTraverse(xmlNode)))
+                beforeNode = apf.xmldb.getHtmlNode(next, this);
             if (beforeNode && beforeNode.parentNode != htmlParentNode)
                 beforeNode = null;
         
@@ -35386,20 +35311,13 @@ apf.BaseTree = function(){
         if (!len || len > 20) {
             this.$getNewContext("loading");
             apf.insertHtmlNode(this.$getLayoutNode("loading"), container);
-            
-            var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
-            this.$setStyleClass(htmlNode, "loading");
         }
     };
     
     //???
-    this.$removeLoading = function(xmlNode){
-        if (!xmlNode) return;
-        var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this); 
-        if (htmlNode) {
-            this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
-            this.$setStyleClass(htmlNode, "", ["loading"]);
-        }
+    this.$removeLoading = function(htmlNode){
+        if (!htmlNode) return;
+        this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
     };
     
     //check databinding for how this is normally implemented
@@ -35432,11 +35350,11 @@ apf.BaseTree = function(){
         }
         else if (!this.prerender) {
             this.$setLoadStatus(xmlNode, "loaded");
-            this.$removeLoading(xmlNode);
+            this.$removeLoading(apf.xmldb.getHtmlNode(xmlNode, this));
             xmlUpdateHandler.call(this, {
                 action  : "insert", 
                 xmlNode : xmlNode, 
-                result  : this.$addNodes(xmlNode, container, true, null, null, null, "extend"), //checkChildren ???
+                result  : this.$addNodes(xmlNode, container, true), //checkChildren ???
                 anim    : !immediate
             });
         }
@@ -40781,7 +40699,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/window.js)SIZE(50526)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+/*FILEHEAD(core/window.js)SIZE(50515)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -41603,8 +41521,7 @@ apf.window = function(){
                 canSelect = false;
         }
         
-        // && e.button != 2
-        if (!canSelect) { // && !cEditable
+        if (!canSelect && e.button != 2) { // && !cEditable
             if (e.preventDefault)
                 e.preventDefault();
            
@@ -43224,7 +43141,7 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(core/browsers/opera.js)SIZE(6583)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+/*FILEHEAD(core/browsers/opera.js)SIZE(6576)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43311,7 +43228,7 @@ apf.runOpera = function (){
     Document.prototype.selectSingleNode     =
     XMLDocument.prototype.selectSingleNode  =
     HTMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
-        var nodeList = this.selectNodes("(" + sExpr + ")[1]", contextNode ? contextNode : null);
+        var nodeList = this.selectNodes(sExpr + "[1]", contextNode ? contextNode : null);
         return nodeList.length > 0 ? nodeList[0] : null;
     };
     
@@ -43410,7 +43327,7 @@ apf.runOpera = function (){
 
 
 
-/*FILEHEAD(core/browsers/webkit.js)SIZE(7777)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+/*FILEHEAD(core/browsers/webkit.js)SIZE(7728)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43481,8 +43398,8 @@ apf.runWebkit = function(){
     
     //XMLDocument.selectSingleNode
     HTMLDocument.prototype.selectSingleNode = XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
-        var nodeList = this.selectNodes("(" + sExpr + ")[1]", contextNode ? contextNode : null);
-        return nodeList.length > 0 ? nodeList[0] : null;
+        var nodeList = this.selectNodes(sExpr, contextNode || null);
+        return nodeList[0] || null;
     };
     
     //Element.selectSingleNode
@@ -48367,7 +48284,7 @@ apf.aml.setElement("actions", apf.actions);
 
 
 
-/*FILEHEAD(elements/actiontracker.js)SIZE(36296)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+/*FILEHEAD(elements/actiontracker.js)SIZE(36292)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48850,8 +48767,8 @@ apf.actiontracker = function(struct, tagName){
                     + (extra.url ? "Url:" + extra.url + "\n\n" : "")
                     + extra.message));
 
-                //(UndoObj && UndoObj.xmlActionNode || extra.amlNode || apf)
-                if (this.dispatchEvent("error", apf.extend({
+                if ((UndoObj && UndoObj.xmlActionNode || extra.amlNode || apf)
+                  .dispatchEvent("error", apf.extend({
                     error   : oError,
                     state   : state,
                     bubbles : true
@@ -55283,29 +55200,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/debugger.js)SIZE(10804)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
+/*FILEHEAD(elements/debugger.js)SIZE(9859)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 if (apf.hasRequireJS) require.def("apf/elements/debugger",
     [], function() {
@@ -55592,9 +55487,7 @@ window.adbg = {
 return apf.dbg;
 });
 
-
-/*FILEHEAD(elements/debughost.js)SIZE(4814)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
-
+/*FILEHEAD(elements/debughost.js)SIZE(4767)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 if (apf.hasRequireJS) require.def("apf/elements/debughost",
     ["apf/elements/dbg/chromedebughost",
@@ -55742,7 +55635,6 @@ apf.aml.setElement("debughost", apf.debughost);
 return apf.debughost;
 
 });
-
 
 /*FILEHEAD(elements/defaults.js)SIZE(1838)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
 
@@ -59598,7 +59490,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/markupedit.js)SIZE(55951)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+/*FILEHEAD(elements/markupedit.js)SIZE(57357)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61024,7 +60916,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(elements/model.js)SIZE(42549)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
+/*FILEHEAD(elements/model.js)SIZE(43289)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61162,11 +61054,10 @@ apf.model = function(struct, tagName){
         session    : 1
     }, this.$attrExcludePropBind);
 
-    this.$booleanProperties["whitespace"] = true;
-    this.$booleanProperties["autoinit"]   = true;
-    this.$booleanProperties.enablereset   = true;
+    this.$booleanProperties["autoinit"] = true;
+    this.$booleanProperties.enablereset  = true;
     this.$supportedProperties = ["submission", "src", "session", "autoinit", 
-        "enablereset", "remote", "whitespace"];
+        "enablereset", "remote"];
     
     this.$propHandlers["src"] = 
     this.$propHandlers["get"] = function(value, prop){
@@ -61626,9 +61517,6 @@ apf.model = function(struct, tagName){
                             strXml = strXml.replace(/xmlns=\"[^"]*\"/g, "");
                     }
                     
-                    if (this.whitespace === false)
-                        strXml = strXml.replace(/>[\s\n\r]*</g, "><");
-                    
                     return this.load(apf.getXmlDom(strXml).documentElement);
                 }
                 // we also support JSON data loading in a model CDATA section
@@ -61982,9 +61870,6 @@ apf.model = function(struct, tagName){
             if (typeof options.clearContents == "undefined" && extra.userdata) 
                 options.clearContents = apf.isTrue(extra.userdata[1]); //@todo is this still used?
 
-            if (options.whitespace == undefined)
-                options.whitespace = _self.whitespace;
-
             //Call insert function
             (options.amlNode || _self).insert(data, options);
 
@@ -62014,10 +61899,6 @@ apf.model = function(struct, tagName){
                     xmlNode = xmlNode.substr(xmlNode.indexOf(">")+1);
                 if (!apf.supportNamespaces)
                     xmlNode = xmlNode.replace(/xmlns\=\"[^"]*\"/g, "");
-                
-                if (this.whitespace === false)
-                    xmlNode = xmlNode.replace(/>[\s\n\r]*</g, "><");
-                
                 xmlNode = apf.getXmlDom(xmlNode).documentElement;
             }
             
@@ -71066,7 +70947,7 @@ apf.aml.setElement("toolbar", apf.toolbar);
 
 
 
-/*FILEHEAD(elements/tree.js)SIZE(17313)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
+/*FILEHEAD(elements/tree.js)SIZE(17309)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71468,7 +71349,7 @@ apf.tree = function(struct, tagName){
     
     this.$draw = function(){
         this.$drawBase();
-    };    
+    };
 }).call(apf.tree.prototype = new apf.BaseTree());
 
 apf.aml.setElement("tree", apf.tree);
@@ -71580,7 +71461,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/webdav.js)SIZE(49956)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+/*FILEHEAD(elements/webdav.js)SIZE(49163)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72623,27 +72504,8 @@ apf.webdav = function(struct, tagName){
             this.$regVar("authenticated", true);
         // start from 1 (one), because the first element contains PROP info on the path
         var start = (extra.headers && typeof extra.headers.Depth != "undefined" && extra.headers.Depth == 0) ? 0 : 1;
-        for (var sa = [], data, i = start, j = aResp.length; i < j; i++) {
-            parseItem.call(this, aResp[i], data = {});
-            if (data.data) 
-                sa.push({
-                    toString: function(){
-                        return this.v;
-                    },
-                    data : data.data,
-                    v    : (data.data.type == "file" ? 1 : 0) + "" + data.data.name.toLowerCase()
-                });
-        }
-        
-        sa.sort();
-        
-        for (var i = 0, l = sa.length; i < l; i++) {
-            aOut.push(sa[i].data.xml);
-        }
-        
-//        var start = (extra.headers && typeof extra.headers.Depth != "undefined" && extra.headers.Depth == 0) ? 0 : 1;
-//        for (var i = start, j = aResp.length; i < j; i++)
-//            aOut.push(parseItem.call(this, aResp[i]));
+        for (var i = start, j = aResp.length; i < j; i++)
+            aOut.push(parseItem.call(this, aResp[i]));
 
         callback && callback.call(this, "<files>" + aOut.join("") + "</files>", state, extra);
     }
@@ -72656,7 +72518,7 @@ apf.webdav = function(struct, tagName){
      * @type  {String}
      * @private
      */
-    function parseItem(oNode, extra) {
+    function parseItem(oNode) {
         var NS      = apf.webdav.NS,
             sPath   = decodeURIComponent($xmlns(oNode, "href", NS.D)[0].firstChild
                       .nodeValue.replace(/[\\\/]+$/, "")),
@@ -72686,9 +72548,6 @@ apf.webdav = function(struct, tagName){
             lockable    : ($xmlns(oNode, "locktype", NS.D).length > 0),
             executable  : (aExec.length > 0 && aExec[0].firstChild.nodeValue == "T")
         });
-        
-        if (extra)
-            extra.data = oItem;
         
         return oItem.xml = "<" + sType + " path='" + sPath + "'  type='" + sType
             + "' size='" + oItem.size + "' name='" + oItem.name + "' contenttype='"
@@ -73332,8 +73191,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(elements/dbg/chromedebughost.js)SIZE(4101)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
-
+/*FILEHEAD(elements/dbg/chromedebughost.js)SIZE(4054)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 if (apf.hasRequireJS) require.def("apf/elements/dbg/chromedebughost",
     ["debug/ChromeDebugMessageStream", 
@@ -73468,9 +73326,7 @@ return ChromeDebugHost;
 
 });
 
-
-/*FILEHEAD(elements/dbg/v8debugger.js)SIZE(16896)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
-
+/*FILEHEAD(elements/dbg/v8debugger.js)SIZE(16849)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 if (apf.hasRequireJS) require.def("apf/elements/dbg/v8debugger",
     ["debug/Breakpoint"],
@@ -73950,9 +73806,7 @@ return V8Debugger;
 
 });
 
-
-/*FILEHEAD(elements/dbg/v8debughost.js)SIZE(2485)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
-
+/*FILEHEAD(elements/dbg/v8debughost.js)SIZE(2438)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 if (apf.hasRequireJS) require.def("apf/elements/dbg/v8debughost",
     ["debug/StandaloneV8DebuggerService",
@@ -74043,9 +73897,7 @@ return V8DebugHost;
 
 });
 
-
-/*FILEHEAD(elements/dbg/v8websocketdebughost.js)SIZE(1852)TIME(Thu, 21 Jul 2011 10:30:12 GMT)*/
-
+/*FILEHEAD(elements/dbg/v8websocketdebughost.js)SIZE(1805)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 if (apf.hasRequireJS) require.def("apf/elements/dbg/v8websocketdebughost",
     ["debug/WSV8DebuggerService",
@@ -74113,7 +73965,6 @@ var V8WebSocketDebugHost = function(socket) {
 
 return V8WebSocketDebugHost;
 });
-
 
 /*FILEHEAD(elements/modalwindow/widget.js)SIZE(7077)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
 
@@ -75579,7 +75430,7 @@ apf.aml.setProcessingInstruction("livemarkup", apf.LiveMarkupPi);
 
 
 
-/*FILEHEAD(jpack_end.js)SIZE(1294)TIME(Thu, 21 Jul 2011 12:23:45 GMT)*/
+/*FILEHEAD(jpack_end.js)SIZE(1043)TIME(Fri, 22 Jul 2011 10:36:53 GMT)*/
 
 
 
@@ -75607,24 +75458,13 @@ else*/
 
 //Start
 if (window.require && typeof require.def == "function") {
-    var deps = [];
-    
-    deps.push("apf/elements/codeeditor");
-    
-    
-    
-    deps.push("apf/elements/debugger", "apf/elements/debughost");
-    
-    
-    if (deps.length) {
-        require(
-            deps
-        , function() {
-            apf.start();
-        });
-    }
-    else 
-        apf.start();
+    require([
+        "apf/elements/codeeditor",
+        "apf/elements/debugger",
+        "apf/elements/debughost"
+    ], function() {
+        apf.start()
+    });
 }
 else
     apf.start();
