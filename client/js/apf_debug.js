@@ -3,7 +3,7 @@
 
 
 
-/*FILEHEAD(apf.js)SIZE(97236)TIME(Thu, 21 Jul 2011 14:09:02 GMT)*/
+/*FILEHEAD(apf.js)SIZE(95813)TIME(Fri, 22 Jul 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -244,162 +244,102 @@ VERSION:'3.0beta',
     browserDetect : function(){
         if (this.$bdetect)
             return;
-        this.$bdetect = true;
-
-        // Browser Detection, using feature inference methods where possible:
-        // http://www.thespanner.co.uk/2009/01/29/detecting-browsers-javascript-hacks/
-        // http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
-        // http://sla.ckers.org/forum/read.php?24,31765,33730
-        var sAgent = navigator.userAgent.toLowerCase() || "",
-            isSafInf = (sAgent.indexOf('safari') != -1) && /a/.__proto__=='//', // Safari versions < 5.1 (before Lion release)
-            // 1->IE, 0->FF, 2->GCrome, 3->Safari, 4->Opera, 5->Konqueror 
-            b      = (typeof/./)[0]=='f'?+'1\0'?3:2:+'1\0'?5:1-'\0'?1:isSafInf?3:+{valueOf:function(x){return!x}}?4:0;
-
-       /*
-        * Fix for firefox older than 2
-        * Older versions of firefox have (typeof/./) = function
-        * So firefox to be treated as Chrome, since the above expresion will return 2
-        * Newer versions have (typeof/./) = object
-        * 
-        */
-        if((typeof/./)[0]=='f' && parseFloat((sAgent.match(/(?:firefox|minefield)\/([\d\.]+)/i) || {})[1]) <= 2)
-            b = 0;
-
-        // fix voor https://github.com/ajaxorg/apf/issues/8
-        if (b === 4 && sAgent.indexOf("chrome") > -1)
-            b = 2;
-
-        /**
-         * Specifies whether the application is running in the Opera browser.
-         * @type {Boolean}
-         */
-        this.isOpera       = b === 4 || b === 5;//(self.opera && Object.prototype.toString.call(self.opera) == "[object Opera]");
-        //b = 5 for Opera 9
         
-        /**
-         * Specifies whether the application is running in the Konqueror browser.
-         * @type {Boolean}
+        /** Browser -  platform and feature detection, based on prototype's and mootools 1.3.
+         *
+         * Major browser/engines flags
+         *
+         * 'Browser.name' reports the name of the Browser as string, identical to the property names of the following Boolean values:
+         *  - Browser.ie - (boolean) True if the current browser is Internet Explorer.
+         *  - Browser.firefox - (boolean) True if the current browser is Firefox.
+         *  - Browser.safari - (boolean) True if the current browser is Safari.
+         *  - Browser.chrome - (boolean) True if the current browser is Chrome.
+         *  - Browser.opera - (boolean) True if the current browser is Opera.
+         *
+         * In addition to one of the above properties a second property consisting of the name
+         * and the major version is provided ('Browser.ie6', 'Browser.chrome15', ...).
+         * If 'Browser.chrome' is True, all other possible properties, like 'Browser.firefox', 'Browser.ie', ... , will be undefined.
+         *
+         * 'Browser.version' reports the version of the Browser as number.
+         *
+         * 'Browser.Plaform' reports the platform name:
+         *  - Browser.Platform.mac - (boolean) True if the platform is Mac.
+         *  - Browser.Platform.win - (boolean) True if the platform is Windows.
+         *  - Browser.Platform.linux - (boolean) True if the platform is Linux.
+         *  - Browser.Platform.ios - (boolean) True if the platform is iOS.
+         *  - Browser.Platform.android - (boolean) True if the platform is Android
+         *  - Browser.Platform.webos - (boolean) True if the platform is WebOS
+         *  - Browser.Platform.other - (boolean) True if the platform is neither Mac, Windows, Linux, Android, WebOS nor iOS.
+         *  - Browser.Platform.name - (string) The name of the platform.
          */
-        this.isKonqueror   = b === 5;//sAgent.indexOf("konqueror") != -1;
+        var Browser = this.$bdetect = (function() {
+            
+            var ua       = navigator.userAgent.toLowerCase(),
+                platform = navigator.platform.toLowerCase(),
+                UA       = ua.match(/(opera|ie|firefox|chrome|version)[\s\/:]([\w\d\.]+)?.*?(safari|version[\s\/:]([\w\d\.]+)|$)/) || [null, 'unknown', 0],
+                mode     = UA[1] == 'ie' && document.documentMode;
+
+            var b = {
+
+                name: (UA[1] == 'version') ? UA[3] : UA[1],
+
+                version: mode || parseFloat((UA[1] == 'opera' && UA[4]) ? UA[4] : UA[2]),
+
+                Platform: {
+                    name: ua.match(/ip(?:ad|od|hone)/) ? 'ios' : (ua.match(/(?:webos|android)/) || platform.match(/mac|win|linux/) || ['other'])[0]
+                },
+
+                Features: {
+                    xpath: !!(document.evaluate),
+                    air:   !!(window.runtime),
+                    query: !!(document.querySelector),
+                    json:  !!(window.JSON)
+                },
+
+                Plugins: {}
+            };
+
+            b[b.name] = true;
+            b[b.name + parseInt(b.version, 10)] = true;
+            b.Platform[b.Platform.name] = true;
+            
+            return b;
+            
+        })();
+
+        var UA = navigator.userAgent.toLowerCase();
         
-        /**
-         * Specifies whether the application is running in the Safari browser.
-         * @type {Boolean}
-         */
-        this.isSafari      = b === 3;//a/.__proto__ == "//";
+        this.isGecko       = !!Browser.firefox;
+        this.isChrome      = !!Browser.chrome;
+        this.isSafari      = !!Browser.safari;
+        this.isSafariOld   = Browser.safari && Browser.version === 2.4;
+        this.isWebkit      = this.isSafari || this.isChrome || UA.indexOf("konqueror") != -1;
+        this.isOpera       = !!Browser.opera;
+        this.isIE          = !!Browser.ie;
         
-        /**
-         * Specifies whether the application is running in the Safari browser version 2.4 or below.
-         * @type {Boolean}
-         */
-        this.isSafariOld   = false;
-
-        /**
-         * Specifies whether the application is running on the Iphone.
-         * @type {Boolean}
-         */
-        this.isIphone      = sAgent.indexOf("iphone") != -1 || sAgent.indexOf("aspen simulator") != -1;
-
-        /**
-         * Specifies whether the application is running in the Chrome browser.
-         * @type {Boolean}
-         */
-        this.isChrome      = b === 2;//Boolean(/source/.test((/a/.toString + ""))) || sAgent.indexOf("chrome") != -1;
+        this.isWin         = Browser.Platform.win;
+        this.isMac         = Browser.Platform.mac;
+        this.isLinux       = Browser.Platform.linux;
+        this.isIphone      = Browser.Platform.ios || UA.indexOf("aspen simulator") != -1;
+        this.isAIR         = Browser.Features.air;
         
-        /**
-         * Specifies whether the application is running in a Webkit-based browser
-         * @type {Boolean}
-         */
-        this.isWebkit      = this.isSafari || this.isChrome || this.isKonqueror;
-
-        if (this.isWebkit) {
-            var matches   = sAgent.match(/applewebkit\/(\d+)/);
-            if (matches) {
-                this.webkitRev   = parseInt(matches[1])
-                this.isSafariOld = parseInt(matches[1]) < 420;
-            }
-        }
-        
-        /**
-         * Specifies whether the application is running in the AIR runtime.
-         * @type {Boolean}
-         */
-        this.isAIR         = sAgent.indexOf("adobeair") != -1;
-
-        /**
-         * Specifies whether the application is running in a Gecko based browser.
-         * @type {Boolean}
-         */
-        this.isGecko       = b===0;//(function(o) { o[o] = o + ""; return o[o] != o + ""; })(new String("__count__"));
-
-        /**
-         * Specifies whether the application is running in the Firefox browser version 3.
-         * @type {Boolean}
-         */
-        this.isGecko3      = this.isGecko;// && (function x(){})[-5] == "x";
-        this.isGecko35     = this.isGecko && (/a/[-1] && Object.getPrototypeOf) ? true : false;
-        this.versionGecko  = this.isGecko ? parseFloat(sAgent.match(/(?:gecko)\/([\d\.]+)/i)[1]) : -1;
-        var m = sAgent.match(/(?:firefox(-[\d.]+)?|minefield)\/([\d.]+)/i);
-        this.versionFF     = this.isGecko && m && m.length ? parseFloat(m[2]) : 4.0;
-        this.versionSafari = this.isSafari && (!this.isAIR || !this.isChrome) ? parseFloat(sAgent.match(/(?:version)\/([\d\.]+)/i)[1]) : -1;
-        this.versionChrome = this.isChrome ? parseFloat(sAgent.match(/(?:chrome)\/([\d\.]+)/i)[1]) : -1;
-        this.versionOpera  = this.isOpera 
-            ? parseFloat(sAgent.match(b === 4 
-                ? /(?:version)\/([\d\.]+)/i 
-                : /(?:opera)\/([\d\.]+)/i)[1]) 
-            : -1;
-
-        var found;
-        /**
-         * Specifies whether the application is running in the Internet Explorer browser, any version.
-         * @type {Boolean}
-         */
-        this.isIE         = b === 1;//! + "\v1";
-        if (this.isIE)
-            this.isIE = parseFloat(sAgent.match(/msie ([\d\.]*)/)[1]);
-        
-        /**
-         * Specifies whether the application is running in the Internet Explorer browser version 8.
-         * @type {Boolean}
-         */
-        this.isIE8        = this.isIE == 8 && (found = true);
-        
-        /**
-         * Specifies whether the application is running in the Internet Explorer browser version 7.
-         * @type {Boolean}
-         */
-        this.isIE7        = !found && this.isIE == 7 && (found = true);
-
-        //Mode detection
-        if (document.documentMode == 7) { //this.isIE == 7 && 
-            apf.isIE7        = true;
-            apf.isIE8        = false;
-            apf.isIE7Emulate = true;
-            apf.isIE         = 7;
-        }
-        
-        /**
-         * Specifies whether the application is running in the Internet Explorer browser version 6.
-         * @type {Boolean}
-         */
-        this.isIE6       = !found && this.isIE == 6 && (found = true);
-
-        var os           = (navigator.platform.match(/mac|win|linux/i) || ["other"])[0].toLowerCase();
-        /**
-         * Specifies whether the application is running on the Windows operating system.
-         * @type {Boolean}
-         */
-        this.isWin       = (os == "win");
-        /**
-         * Specifies whether the application is running in the OSX operating system..
-         * @type {Boolean}
-         */
-        this.isMac       = (os == "mac");
-        /**
-         * Specifies whether the application is running in the OSX operating system..
-         * @type {Boolean}
-         */
-        this.isLinux     = (os == "linux");
+        /** @deprecated, cleanup in apf modules */
+        this.versionWebkit = this.isWebkit ? Browser.version : null;
+        this.versionGecko  = this.isGecko ? Browser.version : null;
+        /** @deprecated, cleanup in apf modules */
+        this.isGecko3      = Browser.firefox3;
+        this.isGecko35     = this.isGecko3 && Browser.version >= 3.5;
+        /** @deprecated, cleanup in apf modules */
+        this.versionFF     = this.isGecko ? Browser.version : null;
+        this.versionSafari = this.isSafari ? Browser.version : null;
+        this.versionChrome = this.isChrome ? Browser.version : null;
+        this.versionOpera  = this.isOpera ? Browser.version : null;
+        /** bad logic, needs review among apf modules */
+        this.isIE6         = this.isIE && Browser.ie6;
+        this.isIE7         = this.isIE && Browser.ie7;
+        this.isIE8         = this.isIE && Browser.ie8;
+        this.isIE7Emulate  = this.isIE && document.documentMode && Browser.ie7;
+        this.isIE          = this.isIE ? Browser.version : null;
 
         
 
@@ -419,7 +359,8 @@ VERSION:'3.0beta',
         this.cannotSizeIframe          = apf.isIE;
         this.hasConditionCompilation   = apf.isIE;
         this.supportOverflowComponent  = apf.isIE;
-        this.hasFlexibleBox            = apf.versionGecko > 2 || apf.webkitRev > 2; //@todo check this
+        // http://robertnyman.com/2010/12/02/css3-flexible-box-layout-module-aka-flex-box-introduction-and-demostest-cases/
+        this.hasFlexibleBox            = apf.versionGecko >= 3 || (apf.isWebkit && apf.versionWebkit >= 3.2);
         this.hasEventSrcElement        = apf.isIE;
         this.canHaveHtmlOverSelects    = !apf.isIE6 && !apf.isIE5;
         this.hasInnerText              = apf.isIE;
