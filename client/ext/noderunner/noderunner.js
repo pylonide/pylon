@@ -77,10 +77,19 @@ return ext.register("ext/noderunner/noderunner", {
                 stProcessRunning.deactivate();
                 stDebugProcessRunning.deactivate();
                 break;
+                
+            case "node-exit-with-error":
+                stProcessRunning.deactivate();
+                stDebugProcessRunning.deactivate();
+
+                // TODO: is this the way to report an errror?
+                txtOutput.addValue("<div class='item console_log' style='font-weight:bold;color:#ff0000'>[C9 Server Exception: " 
+                        + message.errorMessage + "</div>");
+                break;
 
             case "state":
-                stDebugProcessRunning.setProperty("active", message.debugClient);
-                stProcessRunning.setProperty("active", e.message.processRunning);
+                stDebugProcessRunning.setProperty("active", message.nodeDebugClient);
+                stProcessRunning.setProperty("active", e.message.nodeProcessRunning || e.message.pythonProcessRunning);
                 dbgNode.setProperty("strip", message.workspaceDir + "/");
                 ide.dispatchEvent("noderunnerready");
                 break;
@@ -142,9 +151,9 @@ return ext.register("ext/noderunner/noderunner", {
 
         var page = ide.getActivePageModel();
         var command = {
-            "command" : debug ? "RunDebugBrk" : "Run",
+            "command" : apf.isTrue(debug) ? "RunDebugBrk" : "Run",
             "file"    : path.replace(/^\/+/, ""),
-            //"runner"  : ddRunnerSelector.value, // Explicit addition; trying to affect as less logic as possible for now...
+            "runner"  : "node", //ddRunnerSelector.value, // Explicit addition; trying to affect as less logic as possible for now...
             "args"    : args || "",
             "env"     : {
                 "C9_SELECTED_FILE": page ? page.getAttribute("path").slice(ide.davPrefix.length) : ""
@@ -162,7 +171,10 @@ return ext.register("ext/noderunner/noderunner", {
         if (!stProcessRunning.active)
             return;
 
-        ide.socket.send(JSON.stringify({"command": "kill"}));
+        ide.socket.send(JSON.stringify({
+            "command": "kill",
+            "runner"  : "node" //ddRunnerSelector.value // Explicit addition; trying to affect as less logic as possible for now...
+        }));
     },
 
     enable : function(){

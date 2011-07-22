@@ -4294,7 +4294,7 @@ return ext.register("ext/noderunner/noderunner", {
                 break;
 
             case "state":
-                stDebugProcessRunning.setProperty("active", message.debugClient);
+                stDebugProcessRunning.setProperty("active", message.nodeDebugClient);
                 dbgNode.setProperty("strip", message.workspaceDir + "/");
                 ide.dispatchEvent("noderunnerready");
                 break;

@@ -77,7 +77,7 @@ return ext.register("ext/run/run", {
 
     addConfig : function() {
         var file = ide.getActivePageModel();
-		var extension = "";
+        var extension = "";
 
         if (!file || (file.getAttribute("contenttype") || "").indexOf("application/javascript") != 0 && (file.getAttribute("contenttype") || "").indexOf("text/x-script.python") != 0) {
             var path = "";
@@ -91,7 +91,7 @@ return ext.register("ext/run/run", {
         var cfg = apf.n("<config />")
             .attr("path", path)
             .attr("name", name)
-			.attr("extension", extension)
+            .attr("extension", extension)
             .attr("args", "").node();
 
         mdlRunConfigurations.appendXml(cfg);

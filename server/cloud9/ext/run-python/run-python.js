@@ -23,7 +23,7 @@ sys.inherits(PythonRuntimePlugin, Plugin);
     this.init = function() {
         var _self = this;
         this.workspace.getExt("state").on("statechange", function(state) {
-            state.processRunning = !!_self.child;
+            state.pythonProcessRunning = !!_self.child;
         });
     };
 
