@@ -50,9 +50,8 @@ apf.debughost = function(struct, tagName){
     };
     
     this.init = function() {
-        if (this.$host) {
+        if (this.$host)
             return;
-        }
         
         if (this.type == "chrome" || this.type == "v8" || this.type == "v8-ws") {
             if (!apf.debughost.$o3obj && this.type !== "v8-ws") {
@@ -64,14 +63,17 @@ apf.debughost = function(struct, tagName){
 
             if (this.type == "chrome") {
                 this.$host = new ChromeDebugHost(this.server, this.port, apf.debughost.$o3obj);
-            } else if (this.type == "v8") {
+            }
+            else if (this.type == "v8") {
                 this.$host = new V8DebugHost(this.server, this.port, apf.debughost.$o3obj);
-            } else if (this.type == "v8-ws") {
+            }
+            else if (this.type == "v8-ws") {
                 var socket = this.dispatchEvent("socketfind");
                 if (!socket)
                     throw new Error("no socket found!")
                 this.$host = new V8WebSocketDebugHost(socket);
-            } else if (this.type == "chrome-ws") {
+            }
+            else if (this.type == "chrome-ws") {
                 var socket = this.dispatchEvent("socketfind");
                 if (!socket)
                     throw new Error("no socket found!")
@@ -111,11 +113,7 @@ apf.debughost = function(struct, tagName){
         if (!this.$host) 
             this.init();
         
-        if (tab) {
-            var id = tab.getAttribute("id");
-        } else {
-            var id = null;
-        }
+        var id = tab ? tab.getAttribute("id") : null;
         
         var _self = this;
         this.$host.attach(id, function(err, dbg) {

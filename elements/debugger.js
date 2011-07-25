@@ -95,24 +95,24 @@ apf.dbg = function(struct, tagName){
             dbgImpl.addEventListener("detach", _self.$onDetach.bind(_self));
             dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));
             
-            _self.$loadSources(function() {           
-	            dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {      
-	                _self.$debugger.backtrace(_self.$mdlStack, function() {              
-	                    var frame = _self.$mdlStack.queryNode("frame[1]");
-	                    if (frame) {
-	                        var scriptId = frame.getAttribute("scriptid");
-	                        var scriptName = _self.$mdlSources.queryValue("file[@scriptid='" + scriptId + "']/@scriptname");
-	                        
-	                        if (scriptName) {
-	                            var line = frame.getAttribute("line");
-	                            var bp = _self.$mdlBreakpoints.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + line + "']");
-	                        }
-	                        if (!scriptName || !bp) {
-	                           _self.$debugger.continueScript();
-	                        }
-	                    }
+            _self.$loadSources(function() {
+                dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {
+                    _self.$debugger.backtrace(_self.$mdlStack, function() {
+                        var frame = _self.$mdlStack.queryNode("frame[1]");
+                        if (frame) {
+                            var scriptId = frame.getAttribute("scriptid");
+                            var scriptName = _self.$mdlSources.queryValue("file[@scriptid='" + scriptId + "']/@scriptname");
+                            
+                            if (scriptName) {
+                                var line = frame.getAttribute("line");
+                                var bp = _self.$mdlBreakpoints.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + line + "']");
+                            }
+                            if (!scriptName || !bp) {
+                               _self.$debugger.continueScript();
+                            }
+                        }
                     });
-	            });
+                });
             });
         });
     };
@@ -204,13 +204,13 @@ apf.dbg = function(struct, tagName){
             if (bp)
                 model.removeXml(bp)
             else {
-	            var bp = apf.n("<breakpoint/>")
-	                .attr("script", scriptName)
-	                .attr("line", row)
-	                .attr("text", script.getAttribute("path") + ":" + row)
-	                .attr("lineoffset", 0)
-	                .node();
-	            model.appendXml(bp);
+                var bp = apf.n("<breakpoint/>")
+                    .attr("script", scriptName)
+                    .attr("line", row)
+                    .attr("text", script.getAttribute("path") + ":" + row)
+                    .attr("lineoffset", 0)
+                    .node();
+                model.appendXml(bp);
             }
         }
     };
