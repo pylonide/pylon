@@ -109,11 +109,12 @@ apf.BaseTree = function(){
     this.$booleanProperties["startcollapsed"] = true;
     this.$booleanProperties["nocollapse"]     = true;
     this.$booleanProperties["singleopen"]     = true;
+    this.$booleanProperties["animation"]      = true;
     this.$booleanProperties["prerender"]      = true;
     this.$booleanProperties["removecontainer"] = true;
     
     this.$supportedProperties.push("openadd", "startcollapsed", "nocollapse",
-        "singleopen", "prerender", "removecontainer");
+        "singleopen", "prerender", "removecontainer", "animation");
     
     this.openadd        = true;
     this.startcollapsed = 1;
@@ -361,38 +362,52 @@ apf.BaseTree = function(){
         container.style.overflow = "hidden";
         container.style.height = prevHeight;
         
-        apf.tween.single(container, {
-            type    : 'scrollheight', 
-            from    : container.offsetHeight, 
-            to      : height, 
-            anim    : this.$animType, 
-            steps   : this.$animOpenStep,
-            interval: this.$animSpeed,
-            onfinish: function(container){
-                if (xmlNode && _self.$hasLoadStatus(xmlNode, "potential")) {
-                    $setTimeout(function(){
-                        if (container != this.$container) {
-                            container.style.height = container.scrollHeight + "px";
-                            container.style.overflow = "hidden";
-                        }
-                        _self.$extend(xmlNode, container, null, callback);
-                    });
+        function finishSlide() {
+            if (xmlNode && _self.$hasLoadStatus(xmlNode, "potential")) {
+                $setTimeout(function(){
                     if (container != this.$container) {
-                        if (!apf.isIE7) {
-                            container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
-                        }
-                        container.style.overflow = "visible";
+                        container.style.height = container.scrollHeight + "px";
+                        container.style.overflow = "hidden";
                     }
-                }
-                else if (container != this.$container) {
-                    container.style.overflow = "visible";
+                    _self.$extend(xmlNode, container, null, callback);
+                });
+                if (container != this.$container) {
                     if (!apf.isIE7) {
                         container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
                     }
+                    container.style.overflow = "visible";
                 }
-                _self.dispatchEvent("expand", {xmlNode: xmlNode});
             }
-        });
+            else if (container != this.$container) {
+                container.style.overflow = "visible";
+                if (!apf.isIE7) {
+                    container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
+                }
+            }
+            _self.dispatchEvent("expand", {xmlNode: xmlNode});
+        }
+        
+        if(!this.getAttribute("animation")) {
+            var diff = apf.getHeightDiff(container),
+                oInt = container;
+
+            container.style.height = Math.max((height), 0) + "px";
+            oInt.scrollTop         = oInt.scrollHeight - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
+            finishExpand();
+        }
+        else {
+            apf.tween.single(container, {
+                type    : 'scrollheight', 
+                from    : container.offsetHeight, 
+                to      : height, 
+                anim    : this.$animType, 
+                steps   : this.$animOpenStep,
+                interval: this.$animSpeed,
+                onfinish: function(container){
+                    finishSlide();
+                }
+            });
+        }
     };
 
     /**
