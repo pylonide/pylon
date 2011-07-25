@@ -118,7 +118,7 @@ return ext.register("ext/debugger/debugger", {
     init : function(amlNode){
         var _self = this;
        
-        while(tbDebug.childNodes.length) {
+        while (tbDebug.childNodes.length) {
             var button = tbDebug.firstChild;
             
             if (button.nodeType == 1 && button.getAttribute("id") == "btnDebug")

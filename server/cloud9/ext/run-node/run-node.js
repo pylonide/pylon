@@ -34,13 +34,13 @@ sys.inherits(NodeRuntimePlugin, Plugin);
     this.CHROME_DEBUG_PORT = 9222;
 
     this.command = function(user, message, client) {
-        if (!(/node/.test(message.runner)))
+        var cmd = (message.command || "").toLowerCase();
+        if (!(/node/.test(message.runner)) && !(cmd.indexOf("debug") > -1 && cmd.indexOf("node") > -1))
             return false;
 
         var _self = this;
 
-        var cmd = (message.command || "").toLowerCase(),
-            res = true;
+        var res = true;
         switch (cmd) {
             case "run":
                 this.$run(message, client);
@@ -74,19 +74,19 @@ sys.inherits(NodeRuntimePlugin, Plugin);
                 break;
             case "rundebugchrome":
                 if (this.chromeDebugProxy) {
-                    this.ide.error("Chrome debugger already running!", 7, message);
+                    this.$error("Chrome debugger already running!", 7, message);
                     break;
                 }
                 this.chromeDebugProxy = new ChromeDebugProxy(this.CHROME_DEBUG_PORT);
                 this.chromeDebugProxy.connect();
 
-                this.chromeDebugProxy.addEventListener("connection", function() {
+                this.chromeDebugProxy.on("connection", function() {
                     _self.ide.broadcast('{"type": "chrome-debug-ready"}', _self.name);
                 });
                 break;
             case "debugnode":
                 if (!this.nodeDebugProxy)
-                    this.ide.error("No debug session running!", 6, message);
+                    this.$error("No debug session running!", 6, message);
                 else
                     this.nodeDebugProxy.send(message.body);
                 break;
@@ -103,13 +103,24 @@ sys.inherits(NodeRuntimePlugin, Plugin);
         }
         return res;
     };
+    
+    this.$error = function(message, code, data) {
+        this.ide.broadcast(JSON.stringify({
+            "type": "error",
+            "message": message,
+            "code": code || 0,
+            "data": data || ""
+        }), this.name);
+    };
 
     this.$kill = function() {
         var child = this.child;
         if (!child)
             return;
         try {
+            child.removeAllListeners("exit");
             child.kill();
+            this.$procExit();
             // check after 2sec if the process is really dead
             // If not kill it harder
             setTimeout(function() {
@@ -124,18 +135,18 @@ sys.inherits(NodeRuntimePlugin, Plugin);
         var _self = this;
 
         if (this.child)
-            return _self.ide.error("Child process already running!", 1, message);
+            return _self.$error("Child process already running!", 1, message);
 
         var file = _self.ide.workspaceDir + "/" + message.file;
         
         Path.exists(file, function(exists) {
            if (!exists)
-               return _self.ide.error("File does not exist: " + message.file, 2, message);
+               return _self.$error("File does not exist: " + message.file, 2, message);
             
            var cwd = _self.ide.workspaceDir + "/" + (message.cwd || "");
            Path.exists(cwd, function(exists) {
                if (!exists)
-                   return _self.ide.error("cwd does not exist: " + message.cwd, 3, message);
+                   return _self.$error("cwd does not exist: " + message.cwd, 3, message);
                 // lets check what we need to run
                 var args = (message.preArgs || []).concat(file).concat(message.args || []);
                 _self.$runProc(_self.ide.nodeCmd, args, cwd, message.env || {}, message.debug || false);
@@ -152,7 +163,7 @@ sys.inherits(NodeRuntimePlugin, Plugin);
                 env[key] = process.env[key];
         }
 
-        console.log("Executing node "+proc+" "+args.join(" ")+" "+cwd); 
+        console.log("Executing node " + proc + " " + args.join(" ") + " " + cwd); 
 
         var child = _self.child = Spawn(proc, args, {cwd: cwd, env: env});
         _self.debugClient = args.join(" ").search(/(?:^|\b)\-\-debug\b/) != -1;
@@ -174,14 +185,19 @@ sys.inherits(NodeRuntimePlugin, Plugin);
         }
 
         child.on("exit", function(code) {
-            _self.ide.broadcast(JSON.stringify({"type": "node-exit"}), _self.name);
-
-            _self.debugClient = false;
-            delete _self.child;
-            delete _self.nodeDebugProxy;
+            _self.$procExit();
         });
 
         return child;
+    };
+    
+    this.$procExit = function(noBroadcast) {
+        if (!noBroadcast)
+            this.ide.broadcast(JSON.stringify({"type": "node-exit"}), this.name);
+
+        this.debugClient = false;
+        delete this.child;
+        delete this.nodeDebugProxy;
     };
 
     this.$startDebug = function(message) {
@@ -194,11 +210,11 @@ sys.inherits(NodeRuntimePlugin, Plugin);
          2. the value of this.debugClient is changed upon events, thus
             making this inspection suseptible to race condition
         if (!this.debugClient)
-            return this.error("No debuggable application running", 4, message);
+            return this.$error("No debuggable application running", 4, message);
         */
 
         if (this.nodeDebugProxy)
-            return this.ide.error("Debug session already running", 5, message);
+            return this.$error("Debug session already running", 4, message);
 
         this.nodeDebugProxy = new NodeDebugProxy(this.NODE_DEBUG_PORT);
         this.nodeDebugProxy.on("message", function(body) {
@@ -226,9 +242,7 @@ sys.inherits(NodeRuntimePlugin, Plugin);
                 // in this case the debugger process is still running. We need to 
                 // kill that process, while not interfering with other parts of the source.
                 _self.$kill();
-                _self.debugClient = false;
-                delete _self.child;
-                delete _self.nodeDebugProxy;
+                _self.$procExit(true);
             }
             if (_self.nodeDebugProxy === this)
                 delete _self.nodeDebugProxy;
