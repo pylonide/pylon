@@ -3773,7 +3773,7 @@
             height: 13px;
         }
         .menu div.hover {
-            background-color : #292929;
+            background-color : #393939;
         }
 
         .menu div.menu_divider{
@@ -6992,14 +6992,14 @@
 
         .filemgr-tree .item-fix {
             position:relative;
-            height:20px;
+            height:18px;
             border-top:1px solid transparent;
             border-bottom:1px solid transparent;
             /*width:100%;*/
         }
         
         .filemgr-tree .item-fix .item {
-            height:20px;
+            height:18px;
             padding:0 0 0 15px;
             position:relative;
             overflow:hidden;
@@ -7056,8 +7056,8 @@
             display:block;
             position:relative;
             overflow:hidden;
-            height:20px;
-            background-position:0 0;
+            height:18px;
+            background-position:0 1px;
             background-repeat:no-repeat;
             padding-left:20px;
         }
@@ -7069,8 +7069,8 @@
             display:block;
             position:relative;
             overflow:hidden;
-            height:19px;
-            padding:1px 0 0 0;
+            height:16px;
+            padding:1px 0 0 2px;
             text-decoration:none;
             white-space: nowrap;
         }
@@ -7096,8 +7096,8 @@
             border:1px solid #2084d6;
             height:16px;
             background-color: #d7e7f4;
-            padding-left:4px;
-            margin-top:1px;
+            padding-left:1px;
+            margin-top:0px;
             
             font-family : Tahoma, Arial;
             font-size   : 11px;
@@ -7159,8 +7159,8 @@
     ]]></a:style>
     <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
         .filemgr-tree .item LABEL .caption {
-            height:18px;
-            padding:2px 0 0 0;
+            height:16px;
+            padding:2px 0 0 2px;
         }
         
         #txt_rename {

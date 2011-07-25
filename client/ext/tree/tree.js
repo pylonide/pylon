@@ -170,7 +170,25 @@ return ext.register("ext/tree/tree", {
         
         trFiles.setAttribute("model", fs.model);
         
-        trFiles.addEventListener("afterchoose", this.$afterselect = function(e) {
+        trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
+            var settings = require("ext/settings/settings");
+            if (settings.model) {
+                var settings          = settings.model.data;
+                var treeSelectionNode = settings.selectSingleNode("auto/tree_selection");
+                var nodeSelected      = trFiles.selected.getAttribute("path");
+                var nodeType          = trFiles.selected.getAttribute("type");
+                if(treeSelectionNode) {
+                    apf.xmldb.setAttribute(treeSelectionNode, "path", nodeSelected);
+                    apf.xmldb.setAttribute(treeSelectionNode, "type", nodeType);
+                }
+                else
+                    apf.xmldb.appendChild(settings.selectSingleNode("auto"), 
+                        apf.getXml('<tree_selection path="' + nodeSelected + '" type="' + nodeType + '" />')
+                    );
+            }
+        }); 
+        
+        trFiles.addEventListener("afterchoose", this.$afterselect = function(e) {            
             var node = this.selected;
             if (!node || node.tagName != "file" || this.selection.length > 1 || !ide.onLine && !ide.offlineFileSystemSupport) //ide.onLine can be removed after update apf
                     return;
@@ -288,6 +306,18 @@ return ext.register("ext/tree/tree", {
         });
 
         ide.addEventListener("loadsettings", function(e){
+            function treeSelect(){
+                var treeSelection = model.queryNode("auto/tree_selection");
+                if(treeSelection) {
+                    trFiles.select(trFiles.$model.queryNode('//node()[@path="' 
+                        + model.queryValue('auto/tree_selection/@path') + '" and @type="' 
+                        + model.queryValue('auto/tree_selection/@type') + '"]'))
+                }
+                else {
+                    trFiles.select(trFiles.$model.queryNode("node()"));
+                }
+            };
+            
             var model = e.model;
             var strSettings = model.queryValue("auto/tree");
             if (strSettings) {
@@ -300,6 +330,7 @@ return ext.register("ext/tree/tree", {
                         trFiles.addEventListener("afterload", function(){
                             trFiles.expandList(_self.currentSettings, function(){
                                 _self.loading = false;
+                                treeSelect();
                             });
                             
                             trFiles.removeEventListener("load", arguments.callee);
@@ -312,6 +343,7 @@ return ext.register("ext/tree/tree", {
                     else {
                         trFiles.expandList(_self.currentSettings, function(){
                             _self.loading = false;
+                            treeSelect();
                         });
                     }
                 }catch(err){

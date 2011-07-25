@@ -215,10 +215,10 @@ return ext.register("ext/quicksearch/quicksearch", {
         var settings = require("ext/settings/settings");
         if (settings.model) {
             var history = settings.model;
-            search = apf.createNodeFromXpath(history.data, "search");
+            var search = apf.createNodeFromXpath(history.data, "search");
             
             if (!search.firstChild || search.firstChild.getAttribute("key") != txt) {
-                keyEl = apf.getXml("<word />");
+                var keyEl = apf.getXml("<word />");
                 keyEl.setAttribute("key", txt);
                 apf.xmldb.appendChild(search, keyEl, search.firstChild);
             }
