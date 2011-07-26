@@ -110,33 +110,31 @@ return ext.register("ext/code/code", {
     
     getState : function(doc){
         return;
+        var doc = doc ? doc.acesession : this.getDocument();
+        if (!doc || typeof doc.getSelection != "function") 
+            return;
         
-        var doc   = doc ? doc.acedoc : this.getDocument();
-        if (!doc) return;
         var sel   = doc.getSelection();
         var range = sel.getRange();
-        
         return {
-            scrolltop : doc.getScrollTopRow(),
-            selection : {
-                start : apf.extend({}, range.start),
-                end   : apf.extend({}, range.end)
-            }
+            scrolltop  : ceEditor.$editor.renderer.getScrollTop(),
+            scrollleft : ceEditor.$editor.renderer.getScrollLeft(),
+            selection  : range
         };
     },
     
-    setState : function(obj, doc){
-        var doc   = doc ? doc.acedoc : this.getDocument();
-        if (!doc) return;
+    setState : function(doc){
         
-        var sel   = doc.getSelection();
-        var range = this.createRange();
+        return;
+        var aceDoc = doc ? doc.acesession : this.getDocument();
+        if (!aceDoc || typeof aceDoc.getSelection != "function") 
+            return;
         
-        range.setStart(obj.selection.start.row, obj.selection.start.column);
-        range.setEnd(obj.selection.end.row, obj.selection.end.column);
-        
-        doc.setScrollTopRow(obj.scrolltop);
-        selection.setSelectionRange(range);
+        var state = doc.state;
+        var sel   = aceDoc.getSelection();
+        sel.setSelectionRange(state.selection, false);
+        ceEditor.$editor.renderer.scrollToY(state.scrolltop)
+        ceEditor.$editor.renderer.scrollToX(state.scrollleft)
     },
 
     getSyntax : function(node) {

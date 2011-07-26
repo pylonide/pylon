@@ -1,9 +1,9 @@
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/jpack_begin.js)SIZE(0)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/jpack_begin.js)SIZE(0)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/apf.js)SIZE(97005)TIME(Thu, 24 Mar 2011 14:09:41 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/apf.js)SIZE(97236)TIME(Thu, 21 Jul 2011 15:42:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -251,8 +251,9 @@ VERSION:'3.0beta',
         // http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
         // http://sla.ckers.org/forum/read.php?24,31765,33730
         var sAgent = navigator.userAgent.toLowerCase() || "",
+            isSafInf = (sAgent.indexOf('safari') != -1) && /a/.__proto__=='//', // Safari versions < 5.1 (before Lion release)
             // 1->IE, 0->FF, 2->GCrome, 3->Safari, 4->Opera, 5->Konqueror 
-            b      = (typeof/./)[0]=='f'?+'1\0'?3:2:+'1\0'?5:1-'\0'?1:+{valueOf:function(x){return!x}}?4:0;
+            b      = (typeof/./)[0]=='f'?+'1\0'?3:2:+'1\0'?5:1-'\0'?1:isSafInf?3:+{valueOf:function(x){return!x}}?4:0;
 
        /*
         * Fix for firefox older than 2
@@ -264,27 +265,28 @@ VERSION:'3.0beta',
         if((typeof/./)[0]=='f' && parseFloat((sAgent.match(/(?:firefox|minefield)\/([\d\.]+)/i) || {})[1]) <= 2)
             b = 0;
 
-        if (b == 2 && sAgent.indexOf("chrome") == -1) 
-            b = 3;
+        // fix voor https://github.com/ajaxorg/apf/issues/8
+        if (b === 4 && sAgent.indexOf("chrome") > -1)
+            b = 2;
 
         /**
          * Specifies whether the application is running in the Opera browser.
          * @type {Boolean}
          */
-        this.isOpera       = b===4 || b===5;//(self.opera && Object.prototype.toString.call(self.opera) == "[object Opera]");
+        this.isOpera       = b === 4 || b === 5;//(self.opera && Object.prototype.toString.call(self.opera) == "[object Opera]");
         //b = 5 for Opera 9
         
         /**
          * Specifies whether the application is running in the Konqueror browser.
          * @type {Boolean}
          */
-        this.isKonqueror   = b===5;//sAgent.indexOf("konqueror") != -1;
+        this.isKonqueror   = b === 5;//sAgent.indexOf("konqueror") != -1;
         
         /**
          * Specifies whether the application is running in the Safari browser.
          * @type {Boolean}
          */
-        this.isSafari      = b===3;//a/.__proto__ == "//";
+        this.isSafari      = b === 3;//a/.__proto__ == "//";
         
         /**
          * Specifies whether the application is running in the Safari browser version 2.4 or below.
@@ -302,7 +304,7 @@ VERSION:'3.0beta',
          * Specifies whether the application is running in the Chrome browser.
          * @type {Boolean}
          */
-        this.isChrome      = b===2;//Boolean(/source/.test((/a/.toString + ""))) || sAgent.indexOf("chrome") != -1;
+        this.isChrome      = b === 2;//Boolean(/source/.test((/a/.toString + ""))) || sAgent.indexOf("chrome") != -1;
         
         /**
          * Specifies whether the application is running in a Webkit-based browser
@@ -339,10 +341,10 @@ VERSION:'3.0beta',
         this.versionGecko  = this.isGecko ? parseFloat(sAgent.match(/(?:gecko)\/([\d\.]+)/i)[1]) : -1;
         var m = sAgent.match(/(?:firefox(-[\d.]+)?|minefield)\/([\d.]+)/i);
         this.versionFF     = this.isGecko && m && m.length ? parseFloat(m[2]) : 4.0;
-        this.versionSafari = this.isSafari && !this.isAIR ? parseFloat(sAgent.match(/(?:version)\/([\d\.]+)/i)[1]) : -1;
+        this.versionSafari = this.isSafari && (!this.isAIR || !this.isChrome) ? parseFloat(sAgent.match(/(?:version)\/([\d\.]+)/i)[1]) : -1;
         this.versionChrome = this.isChrome ? parseFloat(sAgent.match(/(?:chrome)\/([\d\.]+)/i)[1]) : -1;
         this.versionOpera  = this.isOpera 
-            ? parseFloat(sAgent.match(b===4 
+            ? parseFloat(sAgent.match(b === 4 
                 ? /(?:version)\/([\d\.]+)/i 
                 : /(?:opera)\/([\d\.]+)/i)[1]) 
             : -1;
@@ -352,7 +354,7 @@ VERSION:'3.0beta',
          * Specifies whether the application is running in the Internet Explorer browser, any version.
          * @type {Boolean}
          */
-        this.isIE         = b===1;//! + "\v1";
+        this.isIE         = b === 1;//! + "\v1";
         if (this.isIE)
             this.isIE = parseFloat(sAgent.match(/msie ([\d\.]*)/)[1]);
         
@@ -1819,7 +1821,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/class.js)SIZE(44597)TIME(Tue, 15 Feb 2011 10:40:10 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/class.js)SIZE(44597)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2915,7 +2917,7 @@ apf.Init.run("class");
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/color.js)SIZE(10887)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/color.js)SIZE(10887)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3150,7 +3152,7 @@ apf.color = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/abstractevent.js)SIZE(4316)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/abstractevent.js)SIZE(4316)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3287,7 +3289,7 @@ apf.AbstractEvent.stop = function(event) {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/async.js)SIZE(4124)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/async.js)SIZE(4124)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3431,7 +3433,7 @@ apf.asyncChain = function(funcs) {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/cookie.js)SIZE(3073)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/cookie.js)SIZE(3073)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3457,7 +3459,7 @@ apf.asyncChain = function(funcs) {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/ecmaext.js)SIZE(25941)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/ecmaext.js)SIZE(25941)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4241,7 +4243,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/flash.js)SIZE(22995)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/flash.js)SIZE(22995)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4267,7 +4269,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/hook.js)SIZE(10100)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/hook.js)SIZE(10100)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4293,7 +4295,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/hotkey.js)SIZE(6278)TIME(Wed, 06 Apr 2011 09:56:34 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/hotkey.js)SIZE(6278)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 
 //@todo maybe generalize this to pub/sub event system??
@@ -4516,7 +4518,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/iepngfix.js)SIZE(3570)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/iepngfix.js)SIZE(3570)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4542,7 +4544,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/json.js)SIZE(26243)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/json.js)SIZE(26243)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5257,7 +5259,7 @@ apf.unserialize = function(str){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/nameserver.js)SIZE(5807)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/nameserver.js)SIZE(5807)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5447,7 +5449,7 @@ apf.Init.run("nameserver");
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/o3.js)SIZE(8157)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/o3.js)SIZE(8157)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5472,7 +5474,7 @@ apf.Init.run("nameserver");
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/plane.js)SIZE(7451)TIME(Thu, 18 Nov 2010 16:23:56 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/plane.js)SIZE(7451)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5670,7 +5672,7 @@ apf.plane = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/popup.js)SIZE(11754)TIME(Mon, 07 Mar 2011 10:08:50 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/popup.js)SIZE(11754)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6025,7 +6027,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/silverlight.js)SIZE(25659)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/silverlight.js)SIZE(25659)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6051,7 +6053,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/style.js)SIZE(18143)TIME(Wed, 06 Apr 2011 09:56:34 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/style.js)SIZE(18143)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6538,7 +6540,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/syntax.js)SIZE(12610)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/syntax.js)SIZE(12610)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6563,7 +6565,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/textdiff.js)SIZE(89290)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/textdiff.js)SIZE(89290)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6589,7 +6591,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/utilities.js)SIZE(19540)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/utilities.js)SIZE(19540)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7135,7 +7137,7 @@ apf.selectTextHtml = function(oHtml){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/visibilitymanager.js)SIZE(3663)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/visibilitymanager.js)SIZE(4929)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7231,9 +7233,9 @@ apf.visibilitymanager = function(){
     }
     
     this.permanent = function(amlNode, show, hide){
-        var state = amlNode.$ext.offsetHeight && amlNode.$ext.offsetWidth;
+        var state = amlNode.$ext.offsetHeight || amlNode.$ext.offsetWidth;
         function check(e){
-            var newState = amlNode.$ext.offsetHeight && amlNode.$ext.offsetWidth;
+            var newState = amlNode.$ext.offsetHeight || amlNode.$ext.offsetWidth;
             if (newState == state)
                 return;
             
@@ -7244,19 +7246,60 @@ apf.visibilitymanager = function(){
         }
 
         //Set events on the parent tree
-        var p = amlNode;
+        /*var p = amlNode;
         while (p) {
             p.addEventListener("prop.visible", check);
             p = p.parentNode || p.$parentNode;
+        }*/
+        
+        function cleanup(setInsertion){
+            var p = amlNode;
+            while (p) {
+                p.removeEventListener("prop.visible", check);
+                p.removeEventListener("DOMNodeRemoved", remove); 
+                p.removeEventListener("DOMNodeRemovedFromDocument", remove); 
+                if (setInsertion)
+                    p.addEventListener("DOMNodeInserted", add);
+                p = p.parentNode || p.$parentNode;
+            }
+            
+            check();
         }
 
+        function remove(e){
+            if (e.currentTarget != this)
+                return;
+            
+            cleanup(e.name == "DOMNodeRemoved");
+        }
+
+        function add(){
+            //Set events on the parent tree
+            var p = amlNode;
+            while (p) {
+                p.addEventListener("prop.visible", check);
+                p.addEventListener("DOMNodeRemoved", remove); 
+                p.addEventListener("DOMNodeRemovedFromDocument", remove); 
+                p.removeEventListener("DOMNodeInserted", add);
+                p = p.parentNode || p.$parentNode;
+            }
+            
+            check();
+        }
+        
+        add();
+
         return state;
+    }
+    
+    this.removePermanent = function(amlNode){
+        
     }
 };
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/xml.js)SIZE(45361)TIME(Mon, 21 Feb 2011 10:30:58 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/xml.js)SIZE(45361)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8612,7 +8655,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/xmldiff.js)SIZE(36580)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/xmldiff.js)SIZE(36580)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9499,7 +9542,7 @@ apf.xmlDiff = function (doc1, doc2){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/zmanager.js)SIZE(2524)TIME(Mon, 07 Mar 2011 10:08:50 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/zmanager.js)SIZE(2524)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9580,7 +9623,7 @@ apf.zmanager = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/history.js)SIZE(9996)TIME(Mon, 07 Mar 2011 10:08:50 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/history.js)SIZE(9996)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9859,7 +9902,7 @@ apf.history = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/config.js)SIZE(8175)TIME(Thu, 18 Nov 2010 16:23:56 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/config.js)SIZE(8175)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10024,7 +10067,7 @@ if (apf.history)
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline.js)SIZE(20264)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline.js)SIZE(20264)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10054,7 +10097,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/application.js)SIZE(11733)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/application.js)SIZE(11733)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10080,7 +10123,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/gears.js)SIZE(4771)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/gears.js)SIZE(4771)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10106,7 +10149,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/detector.js)SIZE(4827)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/detector.js)SIZE(4827)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10132,7 +10175,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/models.js)SIZE(5471)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/models.js)SIZE(5471)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10158,7 +10201,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/queue.js)SIZE(7008)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/queue.js)SIZE(7008)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10184,7 +10227,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/state.js)SIZE(7978)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/state.js)SIZE(7978)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10210,7 +10253,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/transactions.js)SIZE(9780)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/transactions.js)SIZE(9780)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10236,7 +10279,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/data.js)SIZE(16420)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/data.js)SIZE(16420)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10639,7 +10682,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/date.js)SIZE(40737)TIME(Mon, 07 Mar 2011 10:08:50 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/date.js)SIZE(40737)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11705,7 +11748,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/draw.js)SIZE(66997)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/draw.js)SIZE(66997)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11729,33 +11772,7 @@ apf.setModel = function(instruction, amlNode){
  */
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/flow.js)SIZE(71086)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/flow2.js)SIZE(70664)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/flow.js)SIZE(71086)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11781,7 +11798,33 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/geolocation.js)SIZE(11303)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/flow2.js)SIZE(70664)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/geolocation.js)SIZE(11303)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11807,7 +11850,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/html.js)SIZE(15348)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/html.js)SIZE(15348)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12167,7 +12210,7 @@ apf.htmlCleaner = (function() {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/language.js)SIZE(8586)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/language.js)SIZE(8586)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12193,7 +12236,7 @@ apf.htmlCleaner = (function() {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/layout.js)SIZE(14004)TIME(Thu, 18 Nov 2010 16:23:56 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/layout.js)SIZE(14004)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12619,7 +12662,7 @@ apf.getWindowHeight = function(){
     return apf.isIE ? document.documentElement.offsetHeight - apf.windowVerBorder : window.innerHeight;
 }
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/printer.js)SIZE(5120)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/printer.js)SIZE(5120)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12645,7 +12688,7 @@ apf.getWindowHeight = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/queue.js)SIZE(2950)TIME(Mon, 23 May 2011 08:23:54 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/queue.js)SIZE(2950)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12752,7 +12795,7 @@ apf.queue = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/resize.js)SIZE(13139)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/resize.js)SIZE(13139)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13148,7 +13191,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/resize2.js)SIZE(10417)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/resize2.js)SIZE(10417)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13173,7 +13216,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/selection.js)SIZE(32184)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/selection.js)SIZE(32184)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13198,7 +13241,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/skins.js)SIZE(12705)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/skins.js)SIZE(12705)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13532,7 +13575,7 @@ apf.skins = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/sort.js)SIZE(8413)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/sort.js)SIZE(8239)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13561,7 +13604,6 @@ apf.skins = {
  * Object handling sorting in a similar way as xslt.
  *
  * @constructor
- * @todo use a struct instead of lots of local variables, and stop using eval
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -13571,7 +13613,6 @@ apf.skins = {
  */
 apf.Sort = function(xmlNode){
     var settings = {};
-    //order, xpath, type, method, getNodes, dateFormat, dateReplace, sort_dateFmtStr, getValue;
     
     //use this function to parse the each node
     this.parseXml = function(xmlNode, clear){
@@ -13762,7 +13803,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage.js)SIZE(9036)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage.js)SIZE(9036)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13788,7 +13829,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/tween.js)SIZE(35419)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/tween.js)SIZE(35419)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14762,12 +14803,12 @@ return {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/uirecorder.js)SIZE(86788)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/uirecorder.js)SIZE(86788)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/vector.js)SIZE(46289)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/vector.js)SIZE(46289)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14793,7 +14834,7 @@ return {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/xmldb.js)SIZE(40521)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/xmldb.js)SIZE(40521)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15812,7 +15853,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/draw/canvas.js)SIZE(21818)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/draw/canvas.js)SIZE(21818)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15836,7 +15877,7 @@ apf.xmldb = new (function(){
  */
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/draw/chartdraw.js)SIZE(47182)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/draw/chartdraw.js)SIZE(47182)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15861,7 +15902,7 @@ apf.xmldb = new (function(){
  
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/draw/vml.js)SIZE(20284)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/draw/vml.js)SIZE(20284)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15885,32 +15926,7 @@ apf.xmldb = new (function(){
  */
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/air.file.js)SIZE(10053)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/air.js)SIZE(9669)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/air.file.js)SIZE(10053)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15935,7 +15951,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/air.sql.js)SIZE(11835)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/air.js)SIZE(9669)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15960,7 +15976,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/cookie.js)SIZE(10313)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/air.sql.js)SIZE(11835)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15985,8 +16001,7 @@ apf.xmldb = new (function(){
 
 
 
-
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/flash.js)SIZE(15458)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/cookie.js)SIZE(10313)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16012,7 +16027,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/gears.js)SIZE(12312)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/flash.js)SIZE(15458)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16038,7 +16053,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/html5.js)SIZE(8228)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/gears.js)SIZE(12312)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16064,7 +16079,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/memory.js)SIZE(10208)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/html5.js)SIZE(8228)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16090,7 +16105,33 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/http.js)SIZE(37750)TIME(Wed, 06 Apr 2011 09:56:33 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/memory.js)SIZE(10208)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/http.js)SIZE(37750)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16943,7 +16984,7 @@ apf.http = function(){
 apf.Init.run("http");
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/iframe.js)SIZE(5720)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/iframe.js)SIZE(5720)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16968,7 +17009,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/socket.js)SIZE(19222)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/socket.js)SIZE(19222)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16994,7 +17035,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16761)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16761)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17413,7 +17454,7 @@ apf.AmlNamespace.prototype = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml.js)SIZE(1478)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml.js)SIZE(1478)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17456,7 +17497,7 @@ apf.aml = new apf.AmlNamespace();
 apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/node.js)SIZE(22071)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/node.js)SIZE(21515)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17818,7 +17859,7 @@ apf.AmlNode = function(){
             return; //We don't update the tree if this is a doc fragment
 
         //@todo review this...
-        if (initialAppend) {
+        if (initialAppend && !amlNode.render) { // && (nNodes = node.childNodes).length ??
             (this.ownerDocument || this).$domParser.$continueParsing(amlNode, {delay: true});
         }
 
@@ -18011,7 +18052,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/element.js)SIZE(21829)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/element.js)SIZE(21829)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18602,7 +18643,7 @@ apf.AmlElement = function(struct, tagName){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/characterdata.js)SIZE(2018)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/characterdata.js)SIZE(2018)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18666,7 +18707,7 @@ apf.AmlCharacterData = function(){
 apf.AmlCharacterData.prototype = new apf.AmlNode();
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/text.js)SIZE(4136)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/text.js)SIZE(4136)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18766,7 +18807,7 @@ apf.AmlText = function(isPrototype){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/attr.js)SIZE(4716)TIME(Sat, 19 Feb 2011 16:24:28 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/attr.js)SIZE(4716)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18891,7 +18932,7 @@ apf.AmlAttr = function(ownerElement, name, value){
 }).call(apf.AmlAttr.prototype = new apf.AmlNode());
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/cdatasection.js)SIZE(1300)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/cdatasection.js)SIZE(1300)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18928,7 +18969,7 @@ apf.AmlCDATASection.prototype.serialize = function(){
 };
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/comment.js)SIZE(1509)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/comment.js)SIZE(1509)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18974,7 +19015,7 @@ apf.AmlComment = function(isPrototype){
 }).call(apf.AmlComment.prototype = new apf.AmlCharacterData());
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/configuration.js)SIZE(1384)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/configuration.js)SIZE(1384)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19015,7 +19056,7 @@ apf.AmlConfiguration = function(isPrototype){
 }).call(apf.AmlConfiguration.prototype = new apf.Class());
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/document.js)SIZE(9454)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/document.js)SIZE(9454)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19224,7 +19265,7 @@ apf.AmlDocument = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/documentfragment.js)SIZE(1286)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/documentfragment.js)SIZE(1286)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19258,7 +19299,7 @@ apf.AmlDocumentFragment.prototype.nodeType =
     apf.AmlDocumentFragment.prototype.NODE_DOCUMENT_FRAGMENT;
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/event.js)SIZE(2086)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/event.js)SIZE(2086)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19329,7 +19370,7 @@ apf.AmlEvent.prototype = {
 };
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/namednodemap.js)SIZE(3407)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/namednodemap.js)SIZE(3407)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19440,7 +19481,7 @@ apf.AmlNamedNodeMap = function(host){
 }).call(apf.AmlNamedNodeMap.prototype = {}); //apf.isIE < 8 ? {} : []
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/processinginstruction.js)SIZE(4311)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/processinginstruction.js)SIZE(4311)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19549,7 +19590,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 }).call(apf.AmlProcessingInstruction.prototype = new apf.AmlNode());
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/range.js)SIZE(15809)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/range.js)SIZE(15809)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19574,7 +19615,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/selection.js)SIZE(8861)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/selection.js)SIZE(8861)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19838,7 +19879,7 @@ apf.AmlSelection = function(doc){
 }).call(apf.AmlSelection.prototype = new apf.Class());
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/textrectangle.js)SIZE(1662)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/textrectangle.js)SIZE(1662)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19882,7 +19923,7 @@ apf.AmlTextRectangle = function(host){
 apf.AmlTextRectangle.prototype = new apf.Class();
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml.js)SIZE(1530)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml.js)SIZE(1530)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19933,7 +19974,7 @@ if (apf.getTextNode(x)) {
 
 */
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/element.js)SIZE(5022)TIME(Tue, 04 Jan 2011 14:51:55 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/element.js)SIZE(5022)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20090,7 +20131,7 @@ apf.xhtml.setElement("@default", apf.XhtmlElement);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/body.js)SIZE(1783)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/body.js)SIZE(1783)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20141,7 +20182,7 @@ apf.xhtml.setElement("body", apf.XhtmlBodyElement);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/html.js)SIZE(2693)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/html.js)SIZE(2693)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20222,7 +20263,7 @@ apf.xhtml.setElement("html", apf.XhtmlHtmlElement);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/ignore.js)SIZE(1360)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/ignore.js)SIZE(1360)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20258,7 +20299,7 @@ apf.xhtml.setElement("head",     apf.XhtmlIgnoreElement);
 apf.xhtml.setElement("meta",     apf.XhtmlIgnoreElement);
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/input.js)SIZE(2187)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/input.js)SIZE(2187)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20319,7 +20360,7 @@ apf.XhtmlInputElement = function(struct, tagName){
 apf.xhtml.setElement("input", apf.XhtmlInputElement);
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/option.js)SIZE(1537)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/option.js)SIZE(1537)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20362,7 +20403,7 @@ apf.XhtmlOptionElement = function(struct, tagName){
 apf.xhtml.setElement("option", apf.XhtmlOptionElement);
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/skipchildren.js)SIZE(2342)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/skipchildren.js)SIZE(2342)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20424,7 +20465,7 @@ apf.xhtml.setElement("table", apf.XhtmlSkipChildrenElement);
 apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd.js)SIZE(12998)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd.js)SIZE(12998)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20790,7 +20831,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/element.js)SIZE(1869)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/element.js)SIZE(1869)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20815,7 +20856,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/enumeration.js)SIZE(1844)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/enumeration.js)SIZE(1844)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20840,7 +20881,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/fractiondigits.js)SIZE(1620)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/fractiondigits.js)SIZE(1620)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20865,7 +20906,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/length.js)SIZE(1527)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/length.js)SIZE(1527)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20890,7 +20931,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/list.js)SIZE(1215)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/list.js)SIZE(1215)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20915,7 +20956,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxexclusive.js)SIZE(1553)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxexclusive.js)SIZE(1553)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20940,7 +20981,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxinclusive.js)SIZE(1568)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxinclusive.js)SIZE(1568)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20965,7 +21006,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxlength.js)SIZE(1597)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxlength.js)SIZE(1597)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20990,7 +21031,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxscale.js)SIZE(1436)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxscale.js)SIZE(1436)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21015,7 +21056,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/minexclusive.js)SIZE(1556)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/minexclusive.js)SIZE(1556)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21040,7 +21081,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/mininclusive.js)SIZE(1567)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/mininclusive.js)SIZE(1567)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21065,7 +21106,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/minlength.js)SIZE(1610)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/minlength.js)SIZE(1610)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21090,7 +21131,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/minscale.js)SIZE(1436)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/minscale.js)SIZE(1436)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21115,7 +21156,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/pattern.js)SIZE(1537)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/pattern.js)SIZE(1537)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21140,7 +21181,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/restriction.js)SIZE(1644)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/restriction.js)SIZE(1644)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21165,7 +21206,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/schema.js)SIZE(1124)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/schema.js)SIZE(1124)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21190,7 +21231,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/simpletype.js)SIZE(2201)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/simpletype.js)SIZE(2201)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21215,7 +21256,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/totaldigits.js)SIZE(1564)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/totaldigits.js)SIZE(1564)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21240,7 +21281,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/union.js)SIZE(2331)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/union.js)SIZE(2331)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21265,7 +21306,7 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/html5.js)SIZE(3232)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/html5.js)SIZE(3232)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21368,7 +21409,7 @@ if (tagName == "input") {
 //#-endif*/
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xforms.js)SIZE(4191)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xforms.js)SIZE(4191)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21401,7 +21442,7 @@ if (tagName == "input") {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xinclude.js)SIZE(1325)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xinclude.js)SIZE(1325)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21443,7 +21484,7 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xinclude/fallback.js)SIZE(1322)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xinclude/fallback.js)SIZE(1322)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21468,7 +21509,7 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xinclude/include.js)SIZE(7025)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xinclude/include.js)SIZE(7025)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21651,7 +21692,7 @@ apf.aml.setElement("include", apf.XiInclude);
 }).call(apf.XiInclude.prototype = new apf.AmlElement());
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xslt/xslt.js)SIZE(13722)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xslt/xslt.js)SIZE(13722)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21677,7 +21718,7 @@ apf.aml.setElement("include", apf.XiInclude);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit.js)SIZE(34022)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit.js)SIZE(34637)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21704,7 +21745,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/richtext.js)SIZE(53610)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/richtext.js)SIZE(53610)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21730,7 +21771,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21756,7 +21797,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/blockquote.js)SIZE(1594)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/blockquote.js)SIZE(1594)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21782,7 +21823,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/charmap.js)SIZE(6951)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/charmap.js)SIZE(6951)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21808,7 +21849,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/clipboard.js)SIZE(13429)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/clipboard.js)SIZE(13429)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21834,7 +21875,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/code.js)SIZE(11899)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/code.js)SIZE(11899)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21860,7 +21901,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/color.js)SIZE(7167)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/color.js)SIZE(7167)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21886,7 +21927,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/datetime.js)SIZE(3585)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/datetime.js)SIZE(3585)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21912,7 +21953,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/directions.js)SIZE(1579)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/directions.js)SIZE(1579)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21938,7 +21979,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/emotions.js)SIZE(4322)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/emotions.js)SIZE(4322)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21964,7 +22005,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/fontbase.js)SIZE(8575)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/fontbase.js)SIZE(8575)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21990,7 +22031,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/fontstyle.js)SIZE(25741)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/fontstyle.js)SIZE(25741)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22017,7 +22058,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/help.js)SIZE(1485)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/help.js)SIZE(1485)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22043,7 +22084,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/hr.js)SIZE(1593)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/hr.js)SIZE(1593)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22069,7 +22110,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/image.js)SIZE(5033)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/image.js)SIZE(5033)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22095,7 +22136,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/links.js)SIZE(7721)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/links.js)SIZE(7721)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22121,7 +22162,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/list.js)SIZE(4641)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/list.js)SIZE(4641)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22147,7 +22188,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/media.js)SIZE(1489)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/media.js)SIZE(1489)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22173,7 +22214,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/printing.js)SIZE(2098)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/printing.js)SIZE(2098)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22199,7 +22240,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/search.js)SIZE(10436)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/search.js)SIZE(10436)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22225,7 +22266,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/spell.js)SIZE(11849)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/spell.js)SIZE(11849)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22251,7 +22292,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/subsup.js)SIZE(1935)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/subsup.js)SIZE(1935)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22277,7 +22318,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/tables.js)SIZE(27128)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/tables.js)SIZE(27128)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22303,7 +22344,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/visualaid.js)SIZE(1736)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/visualaid.js)SIZE(1736)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22329,7 +22370,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/anchoring.js)SIZE(19356)TIME(Mon, 01 Nov 2010 09:31:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/anchoring.js)SIZE(19356)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22827,7 +22868,7 @@ apf.Anchoring = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable.js)SIZE(20162)TIME(Thu, 18 Nov 2010 16:23:56 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable.js)SIZE(20162)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22853,7 +22894,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/guielement.js)SIZE(33083)TIME(Thu, 17 Feb 2011 14:05:08 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/guielement.js)SIZE(33087)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23260,7 +23301,21 @@ apf.GuiElement = function(){
             if (this.maxheight == undefined)
                 this.maxheight  = apf.getCoord(hasPres && parseInt(this.$getOption(type, "maxheight")), 10000);
 
+            //--#ifdef __WITH_CONTENTEDITABLE
+            //@todo slow??
+            var diff = apf.getDiff(this.$ext);
+            this.$ext.style.minWidth = Math.max(0, this.minwidth - diff[0]) + "px";
+            this.$ext.style.minHeight = Math.max(0, this.minheight - diff[1]) + "px";
+            this.$ext.style.maxWidth = Math.max(0, this.maxwidth - diff[0]) + "px";
+            this.$ext.style.maxHeight = Math.max(0, this.maxheight - diff[1]) + "px";
             
+            if (this.$altExt && apf.isGecko) {
+                this.$altExt.style.minHeight = this.$ext.style.minHeight;
+                this.$altExt.style.maxHeight = this.$ext.style.maxHeight;
+                this.$altExt.style.minWidth = this.$ext.style.minWidth;
+                this.$altExt.style.maxWidth = this.$ext.style.maxWidth;
+            }
+            //--#endif
         }
         
         if (this.$loadAml)
@@ -23627,7 +23682,7 @@ apf.GuiElement.propHandlers = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/presentation.js)SIZE(20749)TIME(Mon, 07 Mar 2011 10:08:50 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/presentation.js)SIZE(20749)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24227,7 +24282,7 @@ apf.config.$inheritProperties["skinset"] = 1;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/validation.js)SIZE(27683)TIME(Mon, 07 Mar 2011 10:08:50 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/validation.js)SIZE(27683)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24967,7 +25022,7 @@ apf.config.$inheritProperties["validgroup"] = 1;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding.js)SIZE(60133)TIME(Mon, 01 Nov 2010 09:31:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding.js)SIZE(58715)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25738,6 +25793,10 @@ apf.DataBinding = function(){
     this.insert = function(xmlNode, options){
         if (typeof xmlNode == "string") {
             if (xmlNode.charAt(0) == "<") {
+                
+                if (options.whitespace === false)
+                    xmlNode = xmlNode.replace(/>[\s\n\r]*</g, "><");
+                
                 xmlNode = apf.getXmlDom(xmlNode).documentElement;
             }
             else {
@@ -26465,7 +26524,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(45794)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(47033)TIME(Tue, 26 Jul 2011 12:19:57 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -26644,6 +26703,39 @@ apf.MultiselectBinding = function(){
     
 
     /**
+     * Optimizes load time when the xml format is very simple.
+     */
+    this.$propHandlers["simpledata"] = function(value){
+        if (value) {
+            this.getTraverseNodes = function(xmlNode){
+                return (xmlNode || this.xmlRoot).childNodes;
+            };
+        
+            this.getFirstTraverseNode = function(xmlNode){
+                return (xmlNode || this.xmlRoot).childNodes[0];
+            };
+        
+            this.getLastTraverseNode = function(xmlNode){
+                var nodes = (xmlNode || this.xmlRoot).childNodes;
+                return nodes[nodes.length - 1];
+            };
+        
+            this.getTraverseParent = function(xmlNode){
+                if (!xmlNode.parentNode || xmlNode == this.xmlRoot) 
+                    return false;
+                    
+                return xmlNode.parentNode;
+            };
+        }
+        else {
+            delete this.getTraverseNodes;
+            delete this.getFirstTraverseNode;
+            delete this.getLastTraverseNode;
+            delete this.getTraverseParent;
+        }
+    }
+
+    /**
      * Retrieves a nodelist containing the {@link term.datanode data nodes} which
      * are rendered by this element (see each nodes, see
      * {@link baseclass.multiselectbinding.binding.each}).
@@ -26772,8 +26864,9 @@ apf.MultiselectBinding = function(){
         var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.xmlRoot);
         while (nodes[i] && nodes[i] != xmlNode)
             i++;
-
-        return nodes[i + (up ? -1 * count : count)];
+        
+        var ind = i + (up ? -1 * count : count);
+        return nodes[ind < 0 ? 0 : ind];
     };
 
     /**
@@ -26899,7 +26992,7 @@ apf.MultiselectBinding = function(){
             return this.clear(null, null, true); //@todo apf3.0 this should clear and set a listener
 
         //Traverse through XMLTree
-        var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot);
+        var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot, null, "load");
 
         //Build HTML
         this.$fill(nodes);
@@ -27128,7 +27221,7 @@ apf.MultiselectBinding = function(){
                 return;
             
             if (this.$hasLoadStatus(xmlNode) && this.$removeLoading)
-                this.$removeLoading(htmlNode);
+                this.$removeLoading(xmlNode);
 
             if (this.$container.firstChild && !apf.xmldb.getNode(this.$container.firstChild)) {
                 //Appearantly the content was cleared
@@ -27327,6 +27420,7 @@ apf.MultiselectBinding = function(){
         
         var cId, cItem;
         if (this.$isTreeArch && this.caching 
+          && (!this.$bindings || !this.$bindings.each || !this.$bindings.each.filter)
           && (cItem = this.cache[(cId = xmlNode.getAttribute(apf.xmldb.xmlIdTag))])) {
             if (this.$subTreeCacheContext || this.$needsDepth) {
                 //@todo
@@ -27606,7 +27700,7 @@ apf.MultiselectBinding = function(){
 }).call(apf.MultiselectBinding.prototype = new apf.DataBinding());
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding/standard.js)SIZE(6499)TIME(Mon, 01 Nov 2010 09:31:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding/standard.js)SIZE(6499)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27776,7 +27870,7 @@ apf.StandardBinding.prototype = new apf.DataBinding();
 apf.Init.run("standardbinding");
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/multiselect.js)SIZE(73638)TIME(Tue, 15 Feb 2011 11:30:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/multiselect.js)SIZE(73638)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29588,7 +29682,7 @@ apf.MultiSelectServer = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/childvalue.js)SIZE(3934)TIME(Mon, 07 Mar 2011 10:05:08 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/childvalue.js)SIZE(3934)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29694,7 +29788,7 @@ apf.ChildValue = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dataaction.js)SIZE(27010)TIME(Mon, 07 Mar 2011 10:08:50 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dataaction.js)SIZE(27055)TIME(Thu, 21 Jul 2011 10:05:47 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30103,10 +30197,12 @@ apf.DataAction = function(){
         }
 
         //Use Action Tracker
-        this.$executeAction(atAction, args, atName, xmlNode);
+        var result = this.$executeAction(atAction, args, atName, xmlNode);
         
         if (shouldLoad)
             this.load(xmlNode.selectSingleNode(xpath));
+        
+        return result;
     };
     
     /**
@@ -30207,7 +30303,7 @@ apf.config.$inheritProperties["create-model"] = 1;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/cache.js)SIZE(12760)TIME(Mon, 01 Nov 2010 09:31:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/cache.js)SIZE(12760)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30569,7 +30665,7 @@ apf.GuiElement.propHandlers["caching"] = function(value) {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/rename.js)SIZE(14376)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/rename.js)SIZE(15002)TIME(Tue, 26 Jul 2011 12:19:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30698,7 +30794,7 @@ apf.Rename = function(){
 
         if (!xmlNode) return;
 
-        this.$executeSingleValue("rename", "caption", xmlNode, value);
+        return this.$executeSingleValue("rename", "caption", xmlNode, value);
     };
 
     /**
@@ -30708,11 +30804,12 @@ apf.Rename = function(){
      *
      */
     this.startDelayedRename = function(e, time, userAction){
+        clearTimeout(this.renameTimer);
+        
         if (e && (e.button == 2 || e.ctrlKey || e.shiftKey) 
           || userAction && this.disabled)
             return;
 
-        clearTimeout(this.renameTimer);
         this.renameTimer = $setTimeout('apf.lookup('
             + this.$uniqueId + ').startRename()', time || 400);
     };
@@ -30841,10 +30938,11 @@ apf.Rename = function(){
             this.$stopAction("rename");
         }
         else {
-            if (this.$replacedNode)
-                this.$replacedNode.innerHTML = value.replace(/</g, "&lt;").replace(/\r?\n/g, "<br />");
             //this.$selected.innerHTML = this.$txt.innerHTML;
-            this.rename(this.$renameSubject, value);
+            if (this.rename(this.$renameSubject, value) !== false) {
+                if (this.$replacedNode)
+                    this.$replacedNode.innerHTML = value.replace(/</g, "&lt;").replace(/\r?\n/g, "<br />");
+            }
         }
 
         if (!this.renaming) {
@@ -30946,6 +31044,7 @@ apf.Rename.initEditableArea = function(){
         this.$txt.oncontextmenu =
         //this.$txt.onkeydown   = 
         this.$txt.onmouseup   = 
+        this.$txt.ondblclick  =
         this.$txt.onmousedown = function(e){ 
             apf.stopPropagation(e || event)
         };
@@ -30962,7 +31061,18 @@ apf.Rename.initEditableArea = function(){
         var sel;
         this.$txt.select = function(){
             if (!apf.hasMsRangeObject) {
-                (sel || (sel = new apf.selection())).selectNode(this);
+                if (window.getSelection && document.createRange) {
+                    var sel = window.getSelection();
+                    sel.removeAllRanges()
+                    var r = document.createRange();
+                    r.setStart(this.firstChild, 0);
+                    var lastIndex = this.firstChild.nodeValue.lastIndexOf(".");
+                    r.setEnd(this.firstChild, lastIndex > -1 ? lastIndex : this.value.length);
+                    sel.addRange(r)
+                }
+                else {
+                    (sel || (sel = new apf.selection())).selectNode(this);
+                }
                 return;
             }
     
@@ -31013,7 +31123,7 @@ apf.Rename.initEditableArea = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/a11y.js)SIZE(5144)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/a11y.js)SIZE(5144)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31040,7 +31150,7 @@ apf.__ALIGNMENT__ = 1 << 29;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basebutton.js)SIZE(10335)TIME(Thu, 17 Mar 2011 11:50:45 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basebutton.js)SIZE(10335)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31358,7 +31468,7 @@ apf.BaseButton = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/baselist.js)SIZE(38995)TIME(Mon, 01 Nov 2010 09:31:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/baselist.js)SIZE(38108)TIME(Tue, 26 Jul 2011 12:19:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31955,7 +32065,9 @@ apf.BaseList = function(){
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  this.hasPassedDown = true;\
-                 if (!o.renaming && o.hasFocus() && isSelected == 1) \
+                 if (event.button == 2) \
+                    o.stopRename();\
+                 else if (!o.renaming && o.hasFocus() && isSelected == 1) \
                     this.dorename = true;\
                  if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
                      o.select(this, event.ctrlKey, event.shiftKey, -1)');
@@ -32299,7 +32411,7 @@ apf.BaseList = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basesimple.js)SIZE(1729)TIME(Mon, 01 Nov 2010 09:31:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basesimple.js)SIZE(1729)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -32356,7 +32468,7 @@ apf.BaseSimple = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basestatebuttons.js)SIZE(27242)TIME(Mon, 01 Nov 2010 09:31:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basestatebuttons.js)SIZE(27242)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33022,7 +33134,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(56620)TIME(Fri, 15 Apr 2011 12:16:16 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(57119)TIME(Tue, 19 Jul 2011 17:18:06 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33156,8 +33268,8 @@ apf.BaseTab = function(){
      * </code>
      */
     this.$propHandlers["activepage"]   = function(next, prop, force, callback, noEvent){
-        if (!this.inited || apf.isNot(next)) return;
-
+        if (!this.inited || apf.isNot(next) || next == -1) return;
+        
         if (!callback) {
             callback = this.$lastCallback;
             delete this.$lastCallback;
@@ -33405,7 +33517,11 @@ apf.BaseTab = function(){
         }
         else if (type == "remove") {
             anim.onfinish = function(){
-                callback();
+            	if (node.dispatchEvent("afterclose") !== false)
+                	callback();
+                    
+                html.style.marginLeft = 0;
+                apf.setOpacity(html, 1);
                 
                 if (_self.$waitForMouseOut == 2) {
                     apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
@@ -33414,8 +33530,6 @@ apf.BaseTab = function(){
                 }
                 else if (isLast)
                     delete _self.$waitForMouseOut;
-                
-                node.dispatchEvent("afterclose");
             }
             anim.onstop = function(){
                 apf.setOpacity(html, 1);
@@ -33428,7 +33542,7 @@ apf.BaseTab = function(){
                 from  : html.offsetWidth - apf.getWidthDiff(html),
                 to    : 0
             });
-            var over = apf.getWidthDiff(html) + this.$btnMargin;
+            var over = apf.getWidthDiff(html) + (this.$btnMargin || 0);
             if (over)
                 anim.tweens.push({
                     oHtml : html,
@@ -33507,7 +33621,7 @@ apf.BaseTab = function(){
                 oHtml : html, 
                 type  : "width", 
                 from  : html.offsetWidth - wd,
-                to    : s - wd - this.$btnMargin
+                to    : s - wd - (this.$btnMargin || 0)
             });
         }
         html = pg[l - 1].$button, wd = apf.getWidthDiff(html);
@@ -33516,20 +33630,25 @@ apf.BaseTab = function(){
             type  : "width", 
             from  : html.offsetWidth - wd, // - (add ? 3 : 0)
             to    : Math.max(this.$minBtnWidth, 
-                Math.min(cw, this.$maxBtnWidth)) - this.$btnMargin - wd
+                Math.min(cw, this.$maxBtnWidth)) - (this.$btnMargin || 0) - wd
         });
     }
     
     var round = [Math.floor, Math.ceil];
     function scalersz(e, excl){
-        if (!this.length || this.$waitForMouseOut 
+        if (!this.length && !this.getPages().length || this.$waitForMouseOut 
           || this.$control && this.$control.state == apf.tween.RUNNING) {
             //@todo queue call here to after anim
             return;
         }
+        
+        var page = this.getPage();
+
+        if (!page)
+            return;
 
         if (this.$btnMargin == undefined)
-            this.$btnMargin = apf.getMargin(this.getPage().$button)[0];
+            this.$btnMargin = apf.getMargin(page.$button)[0];
 
         var pg = this.getPages();
         if (excl)
@@ -33826,8 +33945,8 @@ apf.BaseTab = function(){
         
         {
             //page.removeNode();
-            page.destroy(true, true);
-            page.dispatchEvent("afterclose");
+            if (page.dispatchEvent("afterclose") !== false)
+            	page.destroy(true, true);
 
             
             //@todo this is wrong, we can also use removeChild
@@ -34214,42 +34333,44 @@ apf.BaseTab = function(){
           || amlNode.localName != "page")
             return;
         
-        var ln = amlNode.nextSibling;
-        while (ln && (!ln.$first || !ln.visible))
-            ln = ln.nextSibling;
-        var rn = amlNode.previousSibling;
-        while (rn && (!rn.$last || !rn.visible))
-            rn = rn.previousSibling;
-
-        if (this.firstChild == amlNode && ln)
-            ln && ln.$first();
-        if (this.lastChild == amlNode && rn)
-            rn && rn.$last();
-
-        if (this.$activepage == amlNode) {
-            if (ln || rn)
-                this.set(ln || rn);
-            else {
-                amlNode.$deactivate();
-                
-                
-                //this.setScrollerState();
-                
-                this.$activepage  =
-                this.activepage   =
-                this.activepagenr = null;
-                this.setProperty("activepage", null);
+        if ((this.activepage || this.activepage == 0) && this.activepage != -1) {
+            var ln = amlNode.nextSibling;
+            while (ln && (!ln.$first || !ln.visible))
+                ln = ln.nextSibling;
+            var rn = amlNode.previousSibling;
+            while (rn && (!rn.$last || !rn.visible))
+                rn = rn.previousSibling;
+    
+            if (this.firstChild == amlNode && ln)
+                ln && ln.$first();
+            if (this.lastChild == amlNode && rn)
+                rn && rn.$last();
+    
+            if (this.$activepage == amlNode) {
+                if (ln || rn)
+                    this.set(ln || rn);
+                else {
+                    amlNode.$deactivate();
+                    
+                    
+                    //this.setScrollerState();
+                    
+                    this.$activepage  =
+                    this.activepage   =
+                    this.activepagenr = null;
+                    this.setProperty("activepage", null);
+                }
             }
-        }
-        else {
-            
-            //if (this.$scroll) 
-                //this.setScrollerState();
-            
-            
-            if (this.$scale) 
-                this.$scaleinit();
-            
+            else {
+                
+                //if (this.$scroll) 
+                    //this.setScrollerState();
+                
+                
+                if (this.$scale) 
+                    this.$scaleinit();
+                
+            }
         }
         
         
@@ -34259,7 +34380,7 @@ apf.BaseTab = function(){
 
     this.addEventListener("DOMNodeInserted",function(e){
         var amlNode = e.currentTarget;
-        
+
         if (amlNode.localName != "page" || e.relatedNode != this || amlNode.nodeType != 1)
             return;
 
@@ -34290,7 +34411,7 @@ apf.BaseTab = function(){
                 this.setProperty("activepagenr", info.position);
             }
         }
-        else if (!this.$activepage)
+        else if (!this.activepage && !this.$activepage)
             this.set(amlNode);
         
         
@@ -34537,7 +34658,7 @@ apf.BaseTab = function(){
                 ? this.activepage
                 : this.activepagenr) || 0;
             page = this.getPage(this.activepage);
-            if (page.render != "runtime" || page.$rendered)
+            if (!page.render || page.$rendered)
                 this.$propHandlers.activepage.call(this, this.activepage);
         }
         else {
@@ -34579,7 +34700,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(48162)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(50047)TIME(Tue, 26 Jul 2011 12:19:57 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34690,11 +34811,12 @@ apf.BaseTree = function(){
     this.$booleanProperties["startcollapsed"] = true;
     this.$booleanProperties["nocollapse"]     = true;
     this.$booleanProperties["singleopen"]     = true;
+    this.$booleanProperties["animation"]      = true;
     this.$booleanProperties["prerender"]      = true;
     this.$booleanProperties["removecontainer"] = true;
     
     this.$supportedProperties.push("openadd", "startcollapsed", "nocollapse",
-        "singleopen", "prerender", "removecontainer");
+        "singleopen", "prerender", "removecontainer", "animation");
     
     this.openadd        = true;
     this.startcollapsed = 1;
@@ -34760,11 +34882,35 @@ apf.BaseTree = function(){
             this.select(xmlNode);
     }
     
-    this.expandList = function(pathList, callback){
+    this.expandList = function(pathList, user_callback){
+        var pathLut = {};
+        function check(path, callback){
+            pathLut[path] = true;
+            
+            var found;
+            for(var i = 0, l = pathList.length; i < l; i++) {
+                var ipath = pathList[i];
+                if (ipath) {
+                    if (ipath == path)
+                        delete pathList[i];
+                    
+                    var t = ipath.split("/"); t.pop();
+                    var parent = t.join("/");
+                    if (parent == path) {
+                        callback(ipath);
+                        found = true;
+                    }
+                }
+            }
+
+            if (!found)
+                user_callback();
+        };
+        
         pathList.sort();
-        var root = this.xmlRoot, _self = this;
-        apf.asyncForEach(pathList,
-            function(item, next){
+        var cb, root = this.xmlRoot, _self = this;
+        check("", 
+            cb = function(item){
                 var paths = item.split("/");
                 var lastNode = root;//root.selectSingleNode(paths.shift());
 
@@ -34796,17 +34942,15 @@ apf.BaseTree = function(){
                         },100);  
                     }, function(err){
                         //if (!err) {
-                            next();
+                            //next();
                         //}
+                        check(item, cb);
                     }
                 );
-            },
-            function(err){
-                if (callback) 
-                    callback();
             }
         );
     }
+    
     
     /**
      * @notimplemented
@@ -34920,38 +35064,52 @@ apf.BaseTree = function(){
         container.style.overflow = "hidden";
         container.style.height = prevHeight;
         
-        apf.tween.single(container, {
-            type    : 'scrollheight', 
-            from    : container.offsetHeight, 
-            to      : height, 
-            anim    : this.$animType, 
-            steps   : this.$animOpenStep,
-            interval: this.$animSpeed,
-            onfinish: function(container){
-                if (xmlNode && _self.$hasLoadStatus(xmlNode, "potential")) {
-                    $setTimeout(function(){
-                        if (container != this.$container) {
-                            container.style.height = container.scrollHeight + "px";
-                            container.style.overflow = "hidden";
-                        }
-                        _self.$extend(xmlNode, container, null, callback);
-                    });
+        function finishSlide() {
+            if (xmlNode && _self.$hasLoadStatus(xmlNode, "potential")) {
+                $setTimeout(function(){
                     if (container != this.$container) {
-                        if (!apf.isIE7) {
-                            container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
-                        }
-                        container.style.overflow = "visible";
+                        container.style.height = container.scrollHeight + "px";
+                        container.style.overflow = "hidden";
                     }
-                }
-                else if (container != this.$container) {
-                    container.style.overflow = "visible";
+                    _self.$extend(xmlNode, container, null, callback);
+                });
+                if (container != this.$container) {
                     if (!apf.isIE7) {
                         container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
                     }
+                    container.style.overflow = "visible";
                 }
-                _self.dispatchEvent("expand", {xmlNode: xmlNode});
             }
-        });
+            else if (container != this.$container) {
+                container.style.overflow = "visible";
+                if (!apf.isIE7) {
+                    container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
+                }
+            }
+            _self.dispatchEvent("expand", {xmlNode: xmlNode});
+        }
+        
+        if(!this.getAttribute("animation")) {
+            var diff = apf.getHeightDiff(container),
+                oInt = container;
+
+            container.style.height = Math.max((height), 0) + "px";
+            oInt.scrollTop         = oInt.scrollHeight - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
+            finishSlide();
+        }
+        else {
+            apf.tween.single(container, {
+                type    : 'scrollheight', 
+                from    : container.offsetHeight, 
+                to      : height, 
+                anim    : this.$animType, 
+                steps   : this.$animOpenStep,
+                interval: this.$animSpeed,
+                onfinish: function(container){
+                    finishSlide();
+                }
+            });
+        }
     };
 
     /**
@@ -35078,10 +35236,12 @@ apf.BaseTree = function(){
                 this.$setStyleClass(htmlNode,  "root");
                 this.$setStyleClass(container, "root");
             }
-            
+
             var next;
-            if (!beforeNode && (next = this.getNextTraverse(xmlNode)))
-                beforeNode = apf.xmldb.getHtmlNode(next, this);
+            if (action != "load" && action != "extend") {
+                if (!beforeNode && (next = this.getNextTraverse(xmlNode)))
+                    beforeNode = apf.xmldb.getHtmlNode(next, this);
+            }
             if (beforeNode && beforeNode.parentNode != htmlParentNode)
                 beforeNode = null;
         
@@ -35307,9 +35467,17 @@ apf.BaseTree = function(){
     };
     
     //???
-    this.$removeLoading = function(htmlNode){
-        if (!htmlNode) return;
-        this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
+    this.$removeLoading = function(xmlNode){
+        if (!xmlNode) return;
+        
+        if (this.$timers)
+            clearTimeout(this.$timers[xmlNode.getAttribute(apf.xmldb.xmlIdTag)]);
+        
+        var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this); 
+        if (htmlNode) {
+            this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
+            this.$setStyleClass(htmlNode, "", ["loading"]);
+        }
     };
     
     //check databinding for how this is normally implemented
@@ -35324,6 +35492,11 @@ apf.BaseTree = function(){
 
         if (rule && xmlContext) {
             this.$setLoadStatus(xmlNode, "loading");
+            
+            var _self = this;
+            (this.$timers || (this.$timers = {}))[xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = setTimeout(function(){;
+                _self.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), "loading");
+            }, 100);
             
             if (rule.get) {
                 
@@ -35342,11 +35515,11 @@ apf.BaseTree = function(){
         }
         else if (!this.prerender) {
             this.$setLoadStatus(xmlNode, "loaded");
-            this.$removeLoading(apf.xmldb.getHtmlNode(xmlNode, this));
+            this.$removeLoading(xmlNode);
             xmlUpdateHandler.call(this, {
                 action  : "insert", 
                 xmlNode : xmlNode, 
-                result  : this.$addNodes(xmlNode, container, true), //checkChildren ???
+                result  : this.$addNodes(xmlNode, container, true, null, null, null, "extend"), //checkChildren ???
                 anim    : !immediate
             });
         }
@@ -35809,6 +35982,9 @@ apf.BaseTree = function(){
         this.$ext.onmouseover = function(e){
             _self.dispatchEvent("mouseover", {htmlEvent : e || event});
         };
+        this.$ext.onmouseout = function(e){
+            _self.dispatchEvent("mouseout", {htmlEvent : e || event});
+        };
         this.$ext.onmousemove = function(e){
             _self.dispatchEvent("mousemove", {htmlEvent : e || event});
         };
@@ -35834,7 +36010,7 @@ apf.BaseTree = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/delayedrender.js)SIZE(5243)TIME(Mon, 01 Nov 2010 09:31:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/delayedrender.js)SIZE(5243)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35981,7 +36157,7 @@ apf.config.$inheritProperties["render-delay"] = 1;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dragdrop.js)SIZE(53452)TIME(Wed, 06 Apr 2011 09:56:33 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dragdrop.js)SIZE(53452)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37391,7 +37567,7 @@ apf.DragServer.Init();
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/focussable.js)SIZE(3405)TIME(Tue, 15 Feb 2011 10:46:12 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/focussable.js)SIZE(3405)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37499,7 +37675,7 @@ apf.Focussable = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/interactive.js)SIZE(30016)TIME(Mon, 23 May 2011 08:23:54 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/interactive.js)SIZE(30016)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38345,7 +38521,7 @@ apf.Init.run("interactive");
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/media.js)SIZE(18898)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/media.js)SIZE(18898)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38373,7 +38549,7 @@ apf.__MEDIA__ = 1 << 20;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/multicheck.js)SIZE(16594)TIME(Wed, 16 Feb 2011 10:04:10 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/multicheck.js)SIZE(16594)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38835,7 +39011,7 @@ apf.MultiCheck = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/teleport.js)SIZE(8790)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/teleport.js)SIZE(8790)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39063,7 +39239,7 @@ apf.__TELEPORT__ = 1 << 28;
 apf.Init.run("teleport");
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/transaction.js)SIZE(23494)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/transaction.js)SIZE(23494)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39658,7 +39834,7 @@ apf.GuiElement.propHandlers["transaction"] = function(value){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/virtualviewport.js)SIZE(28823)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/virtualviewport.js)SIZE(28823)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40416,7 +40592,7 @@ apf.VirtualViewport = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/xforms.js)SIZE(9367)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/xforms.js)SIZE(9367)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40444,7 +40620,7 @@ apf.__XFORMS__ = 1 << 17;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/clipboard.js)SIZE(2951)TIME(Tue, 15 Feb 2011 10:40:10 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/clipboard.js)SIZE(2951)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40535,7 +40711,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/commands.js)SIZE(30488)TIME(Mon, 01 Nov 2010 09:31:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/commands.js)SIZE(30488)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40561,7 +40737,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/interactive.js)SIZE(57362)TIME(Thu, 18 Nov 2010 16:23:56 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/interactive.js)SIZE(57362)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40586,7 +40762,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/selectrect.js)SIZE(5678)TIME(Mon, 01 Nov 2010 09:31:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/selectrect.js)SIZE(5678)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40611,58 +40787,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/visualconnect.js)SIZE(36914)TIME(Mon, 01 Nov 2010 09:31:04 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/visualselect.js)SIZE(18159)TIME(Mon, 01 Nov 2010 09:31:04 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/window-o3.js)SIZE(5461)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/visualconnect.js)SIZE(36914)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40688,7 +40813,58 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/window.js)SIZE(50515)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/visualselect.js)SIZE(18159)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/window-o3.js)SIZE(5461)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/window.js)SIZE(50515)TIME(Tue, 26 Jul 2011 12:19:57 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -42001,11 +42177,11 @@ apf.sanitizeTextbox = function(oTxt){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/gears.js)SIZE(1391)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/gears.js)SIZE(1391)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/gecko.js)SIZE(6753)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/gecko.js)SIZE(6753)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -42194,7 +42370,7 @@ apf.runGecko = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/ie.js)SIZE(14081)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/ie.js)SIZE(14081)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -42564,7 +42740,7 @@ apf.runIE = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/iphone.js)SIZE(11827)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/iphone.js)SIZE(11827)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -42589,7 +42765,7 @@ apf.runIE = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/non_ie.js)SIZE(24968)TIME(Tue, 15 Mar 2011 11:02:08 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/non_ie.js)SIZE(24968)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43125,12 +43301,12 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/o3.js)SIZE(9017)TIME(Mon, 23 May 2011 08:23:54 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/o3.js)SIZE(9017)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/opera.js)SIZE(6576)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/opera.js)SIZE(6583)TIME(Thu, 21 Jul 2011 15:42:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43217,7 +43393,7 @@ apf.runOpera = function (){
     Document.prototype.selectSingleNode     =
     XMLDocument.prototype.selectSingleNode  =
     HTMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
-        var nodeList = this.selectNodes(sExpr + "[1]", contextNode ? contextNode : null);
+        var nodeList = this.selectNodes("(" + sExpr + ")[1]", contextNode ? contextNode : null);
         return nodeList.length > 0 ? nodeList[0] : null;
     };
     
@@ -43316,7 +43492,7 @@ apf.runOpera = function (){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/webkit.js)SIZE(7728)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/webkit.js)SIZE(7777)TIME(Thu, 21 Jul 2011 15:42:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43387,8 +43563,8 @@ apf.runWebkit = function(){
     
     //XMLDocument.selectSingleNode
     HTMLDocument.prototype.selectSingleNode = XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
-        var nodeList = this.selectNodes(sExpr, contextNode || null);
-        return nodeList[0] || null;
+        var nodeList = this.selectNodes("(" + sExpr + ")[1]", contextNode ? contextNode : null);
+        return nodeList.length > 0 ? nodeList[0] : null;
     };
     
     //Element.selectSingleNode
@@ -43476,11 +43652,11 @@ apf.runWebkit = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/node/XMLHttpRequest.js)SIZE(6419)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/node/XMLHttpRequest.js)SIZE(6419)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/barrett.js)SIZE(2650)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/barrett.js)SIZE(2650)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /**
  * Crypt.Barrett, a class for performing Barrett modular reduction computations in
@@ -43501,7 +43677,7 @@ apf.runWebkit = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/base64.js)SIZE(6758)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/base64.js)SIZE(6758)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43714,7 +43890,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/bigint.js)SIZE(20439)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/bigint.js)SIZE(20439)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /**
  * BigInt, a suite of routines for performing multiple-precision arithmetic in
@@ -43768,7 +43944,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/blowfish.js)SIZE(26046)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/blowfish.js)SIZE(26046)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43794,7 +43970,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/md4.js)SIZE(9799)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/md4.js)SIZE(9799)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43820,7 +43996,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/md5.js)SIZE(10997)TIME(Thu, 18 Nov 2010 16:17:43 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/md5.js)SIZE(10997)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44078,7 +44254,7 @@ apf.crypto.MD5 = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/rsa.js)SIZE(5048)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/rsa.js)SIZE(5048)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /**
  * RSA, a suite of routines for performing RSA public-key computations in
@@ -44100,7 +44276,7 @@ apf.crypto.MD5 = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/sha1.js)SIZE(5258)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/sha1.js)SIZE(5258)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44283,7 +44459,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/debug/debug.js)SIZE(9811)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/debug/debug.js)SIZE(9811)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44309,7 +44485,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/debug/debugwin.js)SIZE(42735)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/debug/debugwin.js)SIZE(42735)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44335,12 +44511,12 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/debug/profiler.js)SIZE(24827)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/debug/profiler.js)SIZE(24827)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/parsers/js.js)SIZE(9016)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/parsers/js.js)SIZE(9016)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44575,7 +44751,7 @@ apf.JsParser = new (function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/parsers/livemarkup.js)SIZE(112800)TIME(Thu, 18 Nov 2010 16:23:56 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/parsers/livemarkup.js)SIZE(112942)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46813,6 +46989,7 @@ apf.lm_exec = new (function(){
     
     function _valed(n, m, x, options, editMode){   // wrap a value with editable div
         var res = (n?__val(n,m):__valm(m,x));
+
         if (options && options.multiline && options.editor != "richtext")
             res = res.replace(/\n/g, "<br />");
         
@@ -46822,7 +46999,9 @@ apf.lm_exec = new (function(){
                 ? ((m.substr(0,1) != "/" 
                     ? apf.xmlToXpath(n, null, false) 
                     : "") + "/" + m).replace(/([\[\{\}\]])/g, "\\$1")
-                : "") + '"' 
+                : (self[m] 
+                    ? (m + ".queryNode('" + x.replace(/'/g, "\\'") + "')").replace(/([\[\{\}\]])/g, "\\$1")
+                    : "")) + '"' 
               + (options
                 ? ' options="' + apf.serialize(options).escapeHTML()
                                   .replace(/"/g, "&quot;")
@@ -47019,7 +47198,7 @@ apf.lm_exec = new (function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/parsers/url.js)SIZE(4570)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/parsers/url.js)SIZE(4570)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47141,7 +47320,7 @@ apf.url.options = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/parsers/xpath.js)SIZE(21971)TIME(Wed, 06 Apr 2011 08:48:01 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/parsers/xpath.js)SIZE(21971)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
 
 
 /**
@@ -47767,7 +47946,7 @@ apf.CodeCompilation = function(code){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingrule.js)SIZE(8931)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingrule.js)SIZE(8931)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48016,7 +48195,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/accordion.js)SIZE(22288)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/accordion.js)SIZE(22288)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48041,7 +48220,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actionrule.js)SIZE(4035)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actionrule.js)SIZE(4035)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48166,7 +48345,7 @@ apf.aml.setElement("change", apf.ActionRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actions.js)SIZE(3251)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actions.js)SIZE(3251)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48270,7 +48449,7 @@ apf.aml.setElement("actions", apf.actions);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker.js)SIZE(36292)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker.js)SIZE(36296)TIME(Thu, 21 Jul 2011 09:59:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48753,8 +48932,8 @@ apf.actiontracker = function(struct, tagName){
                     + (extra.url ? "Url:" + extra.url + "\n\n" : "")
                     + extra.message));
 
-                if ((UndoObj && UndoObj.xmlActionNode || extra.amlNode || apf)
-                  .dispatchEvent("error", apf.extend({
+                //(UndoObj && UndoObj.xmlActionNode || extra.amlNode || apf)
+                if (this.dispatchEvent("error", apf.extend({
                     error   : oError,
                     state   : state,
                     bubbles : true
@@ -48868,7 +49047,7 @@ apf.aml.setElement("actiontracker", apf.actiontracker);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/application.js)SIZE(1834)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/application.js)SIZE(1834)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48923,7 +49102,7 @@ apf.aml.setElement("application", apf.application);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/appsettings.js)SIZE(9304)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/appsettings.js)SIZE(9304)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49084,7 +49263,7 @@ apf.appsettings = function(struct, tagName){
 apf.aml.setElement("appsettings", apf.appsettings);
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/audio.js)SIZE(12958)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/audio.js)SIZE(12958)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49110,7 +49289,7 @@ apf.aml.setElement("appsettings", apf.appsettings);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/auth.js)SIZE(23999)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/auth.js)SIZE(23999)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49715,7 +49894,7 @@ apf.aml.setElement("auth", apf.auth);
 }).call(apf.auth.prototype = new apf.AmlElement());
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/axis.js)SIZE(14009)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/axis.js)SIZE(14009)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49740,7 +49919,7 @@ apf.aml.setElement("auth", apf.auth);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bar.js)SIZE(4205)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bar.js)SIZE(4205)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49868,7 +50047,7 @@ apf.aml.setElement("section", apf.section);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingcolorrule.js)SIZE(2906)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingcolorrule.js)SIZE(2906)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49939,7 +50118,7 @@ apf.aml.setElement("color", apf.BindingColorRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingcolumnrule.js)SIZE(20506)TIME(Thu, 18 Nov 2010 16:23:56 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingcolumnrule.js)SIZE(20506)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50479,7 +50658,7 @@ apf.aml.setElement("column", apf.BindingColumnRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingdndrule.js)SIZE(3737)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingdndrule.js)SIZE(3737)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50597,7 +50776,7 @@ apf.aml.setElement("drop", apf.BindingDndRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingeachrule.js)SIZE(11218)TIME(Fri, 15 Apr 2011 12:18:57 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingeachrule.js)SIZE(11503)TIME(Tue, 19 Jul 2011 17:18:06 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50806,25 +50985,37 @@ apf.BindingEachRule = function(struct, tagName){
         }
         
         var filter = "(" + search.join(") and (") + ")";
-        var groups = (this["filter-groups"] || "").split("|");
+        var groups = this["filter-groups"] ? this["filter-groups"].split("|") : [];
         
         each = each.split("|");
         var newEach = [];
         for (i = 0, l = each.length; i < l; i++) {
             if (!groups.contains(each[i]))
-                newEach.push("(" + each[i] + ")[" + filter + "]");
-        }
-        for (i = 0; i < groups.length; i++) {
-            newEach.push(groups[i]);
+                newEach.push(each[i] + "[" + filter + "]");
         }
         
+        var subEach = newEach.join("|");
+        
+        for (i = 0; i < groups.length; i++) {
+            newEach.push(groups[i] + "[" + subEach + "]");
+        }
+
         return newEach.join("|");
     }
+    
+    /**
+     *      <a:each 
+     *         match="[group|item]"
+     *         filter="{tb.value}"
+     *         filter-fields="@caption"
+     *         filter-groups="group"
+     *      /> 
+     */
     
     this.$propHandlers["filter"]  = function(value, prop){
         if (!this.$amlLoaded)
             return;
-        
+
         this.$updateEach(this.$getFilteredMatch(value));
     }
     this.$propHandlers["filter-fields"]  = function(value, prop){
@@ -50915,7 +51106,7 @@ apf.aml.setElement("each", apf.BindingEachRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingloadrule.js)SIZE(1529)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingloadrule.js)SIZE(1529)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50964,7 +51155,7 @@ apf.aml.setElement("insert", apf.BindingLoadRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingquicksandrule.js)SIZE(12333)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingquicksandrule.js)SIZE(12333)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51271,7 +51462,7 @@ apf.aml.setElement("quicksand", apf.BindingQuicksandRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindings.js)SIZE(8618)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindings.js)SIZE(8618)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51546,7 +51737,7 @@ apf.aml.setElement("bindings", apf.bindings);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingseriesrule.js)SIZE(1944)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingseriesrule.js)SIZE(1944)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51608,7 +51799,7 @@ apf.aml.setElement("series", apf.BindingSeriesRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/body.js)SIZE(1861)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/body.js)SIZE(1861)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51664,7 +51855,7 @@ apf.aml.setElement("config", apf.AmlConfig);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/browser.js)SIZE(6175)TIME(Wed, 06 Apr 2011 09:56:34 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/browser.js)SIZE(6175)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51867,7 +52058,7 @@ apf.aml.setElement("browser", apf.browser);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/button.js)SIZE(30911)TIME(Wed, 16 Mar 2011 15:37:43 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/button.js)SIZE(30911)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52745,7 +52936,7 @@ apf.button.actions  = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/caldropdown.js)SIZE(36358)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/caldropdown.js)SIZE(36358)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52771,7 +52962,7 @@ apf.button.actions  = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/calendar.js)SIZE(29646)TIME(Thu, 18 Nov 2010 16:20:47 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/calendar.js)SIZE(29646)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52796,7 +52987,7 @@ apf.button.actions  = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/calendarlist.js)SIZE(15123)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/calendarlist.js)SIZE(15123)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52822,7 +53013,7 @@ apf.button.actions  = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/chart.js)SIZE(9687)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/chart.js)SIZE(9687)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52847,7 +53038,7 @@ apf.button.actions  = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/checkbox.js)SIZE(8077)TIME(Mon, 07 Mar 2011 10:08:50 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/checkbox.js)SIZE(8077)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53115,7 +53306,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/codeeditor.js)SIZE(20523)TIME(Mon, 07 Mar 2011 10:08:50 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/codeeditor.js)SIZE(20739)TIME(Tue, 19 Jul 2011 17:18:06 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53140,7 +53331,611 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/collection.js)SIZE(2383)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/**
+ * Element allowing the user to type code.
+ *
+ * @constructor
+ * @define codeeditor
+ * @addnode elements
+ *
+ * @inherits apf.StandardBinding
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @author      Fabian Jakobs (fabian AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.1
+ */
+
+if (!apf.hasRequireJS)
+    apf.aml.setElement("codeeditor", apf.textbox);
+else
+    define(function(require, exports, module) {
+        
+require("pilot/fixoldbrowsers");
+var Editor = require("ace/editor").Editor;
+var EditSession = require("ace/edit_session").EditSession;
+var VirtualRenderer = require("ace/virtual_renderer").VirtualRenderer;
+var UndoManager = require("ace/undomanager").UndoManager;
+var Range = require("ace/range").Range;
+
+apf.codeeditor = function(struct, tagName) {
+    this.$init(tagName || "codeeditor", apf.NODE_VISIBLE, struct);
+
+    this.documents = [];
+    this.$cache    = {};
+
+    //this.setProperty("overwrite", false);
+    this.setProperty("line", 1);
+    this.setProperty("col", 1);
+};
+
+(function() {
+    this.implement(
+        
+        apf.DataAction
+        
+    );
+
+    this.$focussable       = true; // This object can get the focus
+    this.$childProperty    = "value";
+    this.$isTextInput      = true;
+
+    this.value             = "";
+    this.multiline         = true;
+    this.caching           = true;
+
+    this.$booleanProperties["activeline"]      = true;
+    this.$booleanProperties["caching"]         = true;
+    this.$booleanProperties["readonly"]        = true;
+    this.$booleanProperties["activeline"]      = true;
+    this.$booleanProperties["showinvisibles"]  = true;
+    this.$booleanProperties["showprintmargin"] = true;
+    this.$booleanProperties["overwrite"]       = true;
+    this.$booleanProperties["softtabs"]        = true;
+    this.$booleanProperties["gutter"]          = true;
+    this.$booleanProperties["highlightselectedword"] = true;
+    this.$booleanProperties["autohidehorscrollbar"]  = true;
+    
+    this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
+        "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
+        "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
+        "theme", "gutter", "highlightselectedword", "autohidehorscrollbar");
+
+    var cacheId = 0;
+    this.$getCacheKey = function(value) {
+        if (typeof value == "string") {
+            var key = this.xmlRoot
+                ? this.xmlRoot.getAttribute(apf.xmldb.xmlIdTag)
+                : value;
+        }
+        else if (value.nodeType) {
+            var key = value.getAttribute(apf.xmldb.xmlIdTag);
+        }
+        
+        return key;
+    };
+    
+    this.clearCacheItem = function(xmlNode) {
+        if (!this.caching)
+            return;
+        
+        var key = this.$getCacheKey(xmlNode);
+        if (key)
+            delete this.$cache[key];                    
+    };
+    
+    this.addEventListener("unloadmodel", function(e) {
+        this.syncValue();
+    });
+    
+    /**
+     * @attribute {String} value the text of this element
+     * @todo apf3.0 check use of this.$propHandlers["value"].call
+     */
+    this.$propHandlers["value"] = function(value){ //@todo apf3.0 add support for the range object as a value
+        var doc, key,
+            _self = this;
+
+        if (this.caching)
+            key = this.$getCacheKey(value);
+
+        //Assuming document
+        if (value instanceof EditSession)
+            doc = value;
+
+        if (!doc && key)
+            doc = this.$cache[key];
+
+        if (!doc) {
+            if (value.nodeType) {
+                apf.xmldb.addNodeListener(value.nodeType == 1
+                    ? value : value.parentNode, this);
+            }
+
+            doc = new EditSession(typeof value == "string"
+              ? value
+              : (value.nodeType > 1 && value.nodeType < 5 //@todo replace this by a proper function
+                    ? value.nodeValue
+                    : value.firstChild && value.firstChild.nodeValue || ""));
+
+            doc.cacheId = key;
+            doc.setUndoManager(new UndoManager());
+
+            if (key)
+                this.$cache[key] = doc;
+        }
+        //@todo value can also be an xml node and should be updated in a similar fashion as above
+        else if (typeof value == "string" && !doc.hasValue) {
+            //@todo big hack!
+            doc.setValue(value);
+            this.$editor.moveCursorTo(0, 0);
+            doc.hasValue = true;
+        }
+
+        //apf.queue.add("ce" + _self.$uniqueId, function() {
+            _self.$getMode(_self.syntax, function(mode) {
+                doc.setMode(mode);
+            });
+            doc.setTabSize(parseInt(_self.tabsize, 10));
+            doc.setUseSoftTabs(_self.softtabs);
+            doc.setUseWrapMode(_self.wrapmode);
+            doc.setWrapLimitRange(_self.wraplimitmin, _self.wraplimitmax);
+
+            _self.$removeDocListeners && _self.$removeDocListeners();
+            _self.$removeDocListeners = _self.$addDocListeners(doc);
+
+            _self.$editor.setShowPrintMargin(_self.showprintmargin);
+            _self.$editor.setSession(doc);
+
+            _self.$updateMarker();
+            _self.$updateBreakpoints(doc);
+        //})
+    };
+
+    this.$addDocListeners = function(doc) {
+        var _self = this;
+        var onCursorChange = function() {
+            var cursor = doc.getSelection().getCursor();
+            _self.setProperty("line", cursor.row+1);
+            _self.setProperty("col", cursor.column+1);
+        };
+
+        doc.getSelection().addEventListener("changeCursor", onCursorChange);
+
+        onCursorChange();
+
+        return function() {
+            doc.getSelection().removeEventListener("changeCursor", onCursorChange);
+        };
+    };
+
+    //@todo fix that this is not called three times
+    this.$updateMarker = function(removeOnly) {
+        if (this.$marker) {
+            this.$editor.renderer.removeGutterDecoration(this.$lastRow[0], this.$lastRow[1]);
+            this.$editor.getSession().removeMarker(this.$marker);
+            this.$marker = null;
+            
+            if (removeOnly)
+                return;
+        }
+
+        if (!this.$debugger)
+            return;
+
+        var frame = this.$debugger.activeframe;
+        if (!frame)
+            return;
+
+        var script = this.xmlRoot;
+        if (script.getAttribute("scriptid") !== frame.getAttribute("scriptid"))
+            return;
+
+        var head  = this.$debugger.$mdlStack.queryNode("frame[1]");
+        var isTop = frame == head;
+        
+        var lineOffset = parseInt(script.getAttribute("lineoffset") || "0", 10);
+        var row = parseInt(frame.getAttribute("line"), 10) - lineOffset;
+        var range = new Range(row, 0, row+1, 0);
+
+        this.$marker = this.$editor.getSession().addMarker(range, isTop ? "ace_step" : "ace_stack", "line");
+        var type = isTop ? "arrow" : "stack";
+        this.$lastRow = [row, type];
+        this.$editor.renderer.addGutterDecoration(row, type);
+        
+        this.$editor.gotoLine(row + 1, parseInt(frame.getAttribute("column"), 10));
+        //this.$editor.moveCursorTo(row, parseInt(frame.getAttribute("column")));
+    };
+
+    this.$updateBreakpoints = function(doc) {
+        doc = doc || this.$editor.getSession();
+
+        doc.setBreakpoints([]);
+        if (!this.$breakpoints)
+            return;
+
+        if (this.xmlRoot) {
+            var scriptName = this.xmlRoot.getAttribute("scriptname");
+            if (!scriptName)
+                return;
+
+            var breakpoints = this.$breakpoints.queryNodes("//breakpoint[@script='" + scriptName + "']"); 
+
+            var rows = [];
+            for (var i=0; i<breakpoints.length; i++) {
+                rows.push(parseInt(breakpoints[i].getAttribute("line"), 10) - parseInt(breakpoints[i].getAttribute("lineoffset"), 10));
+            }
+            if (rows.length)
+                doc.setBreakpoints(rows);
+        }
+    };
+
+    this.$toggleBreakpoint = function(row) {
+        this.$debugger.toggleBreakpoint(this.xmlRoot, row);
+    };
+
+    this.$propHandlers["theme"] = function(value) {
+        this.$editor.setTheme(value);
+    };
+
+    this.$propHandlers["syntax"] = function(value) {
+        var _self = this;
+        this.$getMode(value, function(mode) {
+            _self.$editor.getSession().setMode(mode);
+        });
+    };
+
+    this.$modes = {};
+
+    this.$getMode = function(syntax, callback) {
+        syntax = (syntax || "text").toLowerCase();
+        if (syntax.indexOf("/") == -1)
+            syntax = "ace/mode/" + syntax;
+        if (this.$modes[syntax])
+            return callback(this.$modes[syntax]);
+
+        var _self = this;
+        require([syntax], function(modeModule) {
+            
+            _self.$modes[syntax] = new modeModule.Mode();
+            callback(_self.$modes[syntax]);
+        });
+    };
+
+    this.$propHandlers["activeline"] = function(value) {
+        this.$editor.setHighlightActiveLine(value);
+    };
+
+    this.$propHandlers["selectstyle"] = function(value) {
+        this.$editor.setSelectionStyle(value);
+    };
+
+    this.$propHandlers["showprintmargin"] = function(value, prop, initial) {
+        this.$editor.setShowPrintMargin(value);
+    };
+
+    this.$propHandlers["printmargincolumn"] = function(value, prop, initial) {
+        this.$editor.setPrintMarginColumn(value);
+    };
+
+    this.$propHandlers["showinvisibles"] = function(value, prop, initial) {
+        this.$editor.setShowInvisibles(value);
+    };
+
+    this.$propHandlers["overwrite"] = function(value, prop, initial) {
+        this.$editor.setOverwrite(value);
+    };
+
+    this.$propHandlers["readonly"] = function(value, prop, initial) {
+        this.$editor.setReadOnly(value);
+    };
+
+    this.$propHandlers["tabsize"] = function(value, prop, initial) {
+        this.$editor.getSession().setTabSize(parseInt(value, 10));
+    };
+
+    this.$propHandlers["softtabs"] = function(value, prop, initial) {
+        this.$editor.getSession().setUseSoftTabs(value);
+    };
+
+    this.$propHandlers["scrollspeed"] = function(value, prop, initial) {
+        this.$editor.setScrollSpeed(value || 2);
+    };
+    
+    this.$propHandlers["gutter"] = function(value, prop, initial) {
+        this.$editor.renderer.setShowGutter(value);
+    };
+    
+    this.$propHandlers["fontsize"] = function(value, prop, initial) {
+        this.$ext.style.fontSize = value + "px";
+    };
+    this.$propHandlers["wrapmode"] = function(value, prop, initial) {
+        this.$editor.getSession().setUseWrapMode(value);
+    };
+    this.$propHandlers["wraplimitmin"] = function(value, prop, initial) {
+        this.$editor.getSession().setWrapLimitRange(value, this.wraplimitmax);
+        if (value) this.setProperty("wrapmode", true);
+    };
+    this.$propHandlers["wraplimitmax"] = function(value, prop, initial) {
+        this.$editor.getSession().setWrapLimitRange(this.wraplimitmin, value);
+        if (value) this.setProperty("wrapmode", true);
+    };
+    this.$propHandlers["highlightselectedword"] = function(value, prop, initial) {
+        this.$editor.setHighlightSelectedWord(value);
+    };
+    this.$propHandlers["autohidehorscrollbar"] = function(value, prop, initial) {
+        this.$editor.renderer.setHScrollBarAlwaysVisible(!value);
+    };
+    
+    this.$propHandlers["model-breakpoints"] = function(value, prop, inital) {
+        this.$debuggerBreakpoints = false;
+        
+        if (this.$breakpoints)
+            this.$breakpoints.removeEventListener("update", this.$onBreakpoint);
+
+        this.$breakpoints = value;
+
+        if (!this.$breakpoints) {
+            this.$updateBreakpoints();
+            return;
+        }
+
+        var _self = this;
+        _self.$updateBreakpoints();
+        this.$onBreakpoint = function() {
+            _self.$updateBreakpoints();
+        };
+        this.$breakpoints.addEventListener("update", this.$onBreakpoint);
+        this.$updateBreakpoints();
+    };
+    
+    this.$propHandlers["debugger"] = function(value, prop, inital) {
+        if (this.$debugger) {
+            this.$debugger.removeEventListener("changeframe", this.$onChangeActiveFrame);
+            this.$debugger.removeEventListener("break", this.$onChangeActiveFrame);
+            this.$debugger.removeEventListener("beforecontinue", this.$onBeforeContinue);
+        }
+        
+        if (typeof value === "string") {
+            
+            this.$debugger = apf.nameserver.get("debugger", value);
+            
+        } else {
+            this.$debugger = value;
+        }
+
+        if (!this.$breakpoints || this.$debuggerBreakpoints) {
+            this.setProperty("model-breakpoints", this.$debugger ? this.$debugger.$mdlBreakpoints : null);
+            this.$debuggerBreakpoints = true;
+        }
+
+        if (!this.$debugger) {
+            this.$updateMarker();
+            return;
+        }
+            
+        this.$updateMarker();
+        var _self = this;
+        this.$onChangeActiveFrame = function(e) {
+            _self.$updateMarker();
+        };
+        this.$onBeforeContinue = function() {
+            _self.$updateMarker(true);
+        };
+        this.$debugger.addEventListener("changeframe", this.$onChangeActiveFrame);
+        this.$debugger.addEventListener("break", this.$onChangeActiveFrame);
+        this.$debugger.addEventListener("beforecontinue", this.$onBeforeContinue);
+    };
+
+    var propModelHandler = this.$propHandlers["model"];
+    this.$propHandlers["model"] = function(value) {
+        propModelHandler.call(this, value);
+
+        this.$updateMarker();
+        this.$updateBreakpoints();
+    };
+
+    this.addEventListener("xmlupdate", function(e){
+        var id = e.xmlNode.getAttribute(apf.xmldb.xmlIdTag);
+        if (this.$cache[id]) {
+            //@todo Update document
+        }
+    });
+
+    /**** Public Methods ****/
+
+    
+
+    /**
+     * Sets the value of this element. This should be one of the values
+     * specified in the values attribute.
+     * @param {String} value the new value of this element
+     */
+    this.setValue = function(value){
+        return this.setProperty("value", value, false, true);
+    };
+
+    //@todo cleanup and put initial-message behaviour in one location
+    this.clear = function(){
+        this.$propHandlers["value"].call(this, "", null, true);
+
+        this.dispatchEvent("clear");//@todo this should work via value change
+    };
+
+    /**
+     * Returns the current value of this element.
+     * @return {String}
+     */
+    this.getValue = function(){
+        return this.$editor.getSession().getValue(); //@todo very inefficient
+    };
+
+    this.getDocument = 
+    this.getSession = function() {
+        return this.$editor.getSession();        
+    };
+
+    this.getSelection = function() {
+        return this.$editor.getSession().getSelection();        
+    };
+    
+    this.getLastSearchOptions = function() {
+        return this.$editor.getLastSearchOptions();
+    };
+    
+    
+
+    /**
+     * Selects the text in this element.
+     */
+    this.select   = function(){
+
+    };
+
+    /**
+     * Deselects the text in this element.
+     */
+    this.deselect = function(){
+        this.$editor.clearSelection();
+    };
+
+    this.scrollTo = function(){ };
+
+    this.getDefaults = function() {
+        return this.$defaults;
+    };
+
+    /**** Private Methods *****/
+
+    this.$focus = function(e){
+        if (!this.$ext || this.$ext.disabled)
+            return;
+
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
+
+        this.$editor.focus();
+    };
+
+    this.syncValue = function() {
+        var doc = this.$editor.getSession();
+        if (!doc.cacheId || doc.cacheId == this.$getCacheKey(this.value)) {
+            var value = this.getValue();
+            if (this.value != value)
+                this.setProperty("value", value);
+                //this.change(value);
+        }
+    };
+
+    this.$blur = function(e) {
+        if (!this.$ext)
+            return;
+
+        this.syncValue();
+    
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
+        this.$editor.blur();
+    };
+
+    //@todo
+    this.addEventListener("keydown", function(e){
+        
+    }, true);
+
+    /**** Init ****/
+
+    this.$isTextInput = function(e){
+        return true;
+    };
+
+    this.$draw = function(){
+        //Build Main Skin
+        this.$ext   = this.$getExternal();
+        this.$input = this.$getLayoutNode("main", "content", this.$ext);
+
+        this.addEventListener("resize", function(e){
+            this.$editor.resize();
+        });
+
+        this.$editor = new Editor(new VirtualRenderer(this.$input));
+        // read defaults...
+        var ed  = this.$editor;
+
+        var _self = this;
+        ed.addEventListener("changeOverwrite", function(e) {
+            _self.setProperty("overwrite", e.data);
+        });
+
+        ed.addEventListener("gutterclick", function(e) {
+            _self.dispatchEvent("gutterclick", e);
+            if (_self.$debugger) {
+                _self.$toggleBreakpoint(e.row);
+            }
+        });
+
+        ed.addEventListener("gutterdblclick", function(e) {
+            _self.dispatchEvent("gutterdblclick", e);
+        });
+
+        apf.sanitizeTextbox(ed.renderer.container.getElementsByTagName("textarea")[0]);
+    };
+    
+    this.$loadAml = function(){
+        var ed  = this.$editor,
+            doc = ed.getSession();
+        
+        if (this.syntax === undefined)
+            this.syntax = "Text";
+        if (this.tabsize === undefined)
+            this.tabsize = doc.getTabSize(); //4
+        if (this.softtabs === undefined)
+            this.softtabs = doc.getUseSoftTabs(); //true
+        if (this.scrollspeed === undefined)
+            this.scrollspeed = ed.getScrollSpeed();
+        if (this.selectstyle === undefined)
+            this.selectstyle = ed.getSelectionStyle();//"line";
+        if (this.activeline === undefined)
+            this.activeline = ed.getHighlightActiveLine();//true;
+        if (this.readonly === undefined)
+            this.readonly = ed.getReadOnly();//false;
+        if (this.showinvisibles === undefined)
+            this.showinvisibles = ed.getShowInvisibles();//false;
+        if (this.showprintmargin === undefined)
+            this.showprintmargin = ed.getShowPrintMargin();//false;
+        if (this.printmargincolumn === undefined)
+            this.printmargincolumn = ed.getPrintMarginColumn();//80;
+        if (this.overwrite === undefined)
+            this.overwrite = ed.getOverwrite();//false
+        
+        if (this.fontsize === undefined)
+            this.fontsize = 12;
+        var wraplimit = doc.getWrapLimitRange();
+        if (this.wraplimitmin === undefined)
+            this.wraplimitmin = wraplimit.min;
+        if (this.wraplimitmax === undefined)
+            this.wraplimitmax = wraplimit.max;
+        if (this.wrapmode === undefined)
+            this.wrapmode = doc.getUseWrapMode(); //false
+        if (this.gutter === undefined)
+            this.gutter = ed.renderer.getShowGutter();
+        if (this.highlightselectedword === undefined)
+            this.highlightselectedword = ed.getHighlightSelectedWord();
+        if (this.autohidehorscrollbar)
+            this.autohidehorscrollbar = !ed.renderer.getHScrollBarAlwaysVisible();
+    };
+
+
+}).call(apf.codeeditor.prototype = new apf.StandardBinding());
+
+
+apf.config.$inheritProperties["initial-message"] = 1;
+
+apf.aml.setElement("codeeditor", apf.codeeditor);
+
+});
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/collection.js)SIZE(2383)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53165,7 +53960,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/colorpicker.js)SIZE(12736)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/colorpicker.js)SIZE(12736)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53191,7 +53986,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/colorpicker2.js)SIZE(11113)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/colorpicker2.js)SIZE(11113)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53217,7 +54012,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/comment.js)SIZE(1324)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/comment.js)SIZE(1324)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53259,7 +54054,7 @@ apf.aml.setElement("comment", apf.comment);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/contextmenu.js)SIZE(2557)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/contextmenu.js)SIZE(2557)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53336,7 +54131,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/datagrid.js)SIZE(53258)TIME(Wed, 06 Apr 2011 09:56:34 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/datagrid.js)SIZE(53258)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54570,7 +55365,29 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/debugger.js)SIZE(9859)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/debugger.js)SIZE(10843)TIME(Tue, 26 Jul 2011 12:19:57 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
 
 if (apf.hasRequireJS) require.def("apf/elements/debugger",
     [], function() {
@@ -54647,24 +55464,24 @@ apf.dbg = function(struct, tagName){
             dbgImpl.addEventListener("detach", _self.$onDetach.bind(_self));
             dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));
             
-            _self.$loadSources(function() {           
-	            dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {      
-	                _self.$debugger.backtrace(_self.$mdlStack, function() {              
-	                    var frame = _self.$mdlStack.queryNode("frame[1]");
-	                    if (frame) {
-	                        var scriptId = frame.getAttribute("scriptid");
-	                        var scriptName = _self.$mdlSources.queryValue("file[@scriptid='" + scriptId + "']/@scriptname");
-	                        
-	                        if (scriptName) {
-	                            var line = frame.getAttribute("line");
-	                            var bp = _self.$mdlBreakpoints.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + line + "']");
-	                        }
-	                        if (!scriptName || !bp) {
-	                           _self.$debugger.continueScript();
-	                        }
-	                    }
+            _self.$loadSources(function() {
+                dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {
+                    _self.$debugger.backtrace(_self.$mdlStack, function() {
+                        var frame = _self.$mdlStack.queryNode("frame[1]");
+                        if (frame) {
+                            var scriptId = frame.getAttribute("scriptid");
+                            var scriptName = _self.$mdlSources.queryValue("file[@scriptid='" + scriptId + "']/@scriptname");
+                            
+                            if (scriptName) {
+                                var line = frame.getAttribute("line");
+                                var bp = _self.$mdlBreakpoints.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + line + "']");
+                            }
+                            if (!scriptName || !bp) {
+                               _self.$debugger.continueScript();
+                            }
+                        }
                     });
-	            });
+                });
             });
         });
     };
@@ -54756,13 +55573,13 @@ apf.dbg = function(struct, tagName){
             if (bp)
                 model.removeXml(bp)
             else {
-	            var bp = apf.n("<breakpoint/>")
-	                .attr("script", scriptName)
-	                .attr("line", row)
-	                .attr("text", script.getAttribute("path") + ":" + row)
-	                .attr("lineoffset", 0)
-	                .node();
-	            model.appendXml(bp);
+                var bp = apf.n("<breakpoint/>")
+                    .attr("script", scriptName)
+                    .attr("line", row)
+                    .attr("text", script.getAttribute("path") + ":" + row)
+                    .attr("lineoffset", 0)
+                    .node();
+                model.appendXml(bp);
             }
         }
     };
@@ -54857,7 +55674,10 @@ window.adbg = {
 return apf.dbg;
 });
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/debughost.js)SIZE(4767)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/debughost.js)SIZE(4775)TIME(Tue, 26 Jul 2011 12:19:57 GMT)*/
+
 
 if (apf.hasRequireJS) require.def("apf/elements/debughost",
     ["apf/elements/dbg/chromedebughost",
@@ -54910,9 +55730,8 @@ apf.debughost = function(struct, tagName){
     };
     
     this.init = function() {
-        if (this.$host) {
+        if (this.$host)
             return;
-        }
         
         if (this.type == "chrome" || this.type == "v8" || this.type == "v8-ws") {
             if (!apf.debughost.$o3obj && this.type !== "v8-ws") {
@@ -54924,14 +55743,17 @@ apf.debughost = function(struct, tagName){
 
             if (this.type == "chrome") {
                 this.$host = new ChromeDebugHost(this.server, this.port, apf.debughost.$o3obj);
-            } else if (this.type == "v8") {
+            }
+            else if (this.type == "v8") {
                 this.$host = new V8DebugHost(this.server, this.port, apf.debughost.$o3obj);
-            } else if (this.type == "v8-ws") {
+            }
+            else if (this.type == "v8-ws") {
                 var socket = this.dispatchEvent("socketfind");
                 if (!socket)
                     throw new Error("no socket found!")
                 this.$host = new V8WebSocketDebugHost(socket);
-            } else if (this.type == "chrome-ws") {
+            }
+            else if (this.type == "chrome-ws") {
                 var socket = this.dispatchEvent("socketfind");
                 if (!socket)
                     throw new Error("no socket found!")
@@ -54971,11 +55793,7 @@ apf.debughost = function(struct, tagName){
         if (!this.$host) 
             this.init();
         
-        if (tab) {
-            var id = tab.getAttribute("id");
-        } else {
-            var id = null;
-        }
+        var id = tab ? tab.getAttribute("id") : null;
         
         var _self = this;
         this.$host.attach(id, function(err, dbg) {
@@ -55006,7 +55824,9 @@ return apf.debughost;
 
 });
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/defaults.js)SIZE(1838)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/defaults.js)SIZE(1838)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55064,7 +55884,7 @@ apf.aml.setElement("defaults", apf.defaults);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/divider.js)SIZE(2918)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/divider.js)SIZE(2918)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55153,7 +55973,7 @@ apf.aml.setElement("divider", apf.divider);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dropdown.js)SIZE(15380)TIME(Fri, 29 Apr 2011 09:43:22 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dropdown.js)SIZE(15385)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55294,9 +56114,9 @@ apf.dropdown = function(struct, tagName){
             this.containerHeight = Math.ceil(this.containerHeight * 0.9);*/
     };
     
-    this.$propHandlers["class"] = function(value){
-        this.$setStyleClass(this.oSlider, value);
-    };
+    this.addEventListener("prop.class", function(e){
+        this.$setStyleClass(this.oSlider, e.value);
+    });
     
     /**** Public methods ****/
     
@@ -55603,7 +56423,7 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/editor.js)SIZE(18601)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/editor.js)SIZE(18601)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55629,7 +56449,7 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/errorbox.js)SIZE(6106)TIME(Tue, 15 Feb 2011 10:49:35 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/errorbox.js)SIZE(6106)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55818,7 +56638,7 @@ apf.errorbox = function(struct, tagName){
 apf.aml.setElement("errorbox", apf.errorbox);
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/event.js)SIZE(2115)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/event.js)SIZE(2115)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55880,7 +56700,7 @@ apf.event = function(struct, tagName){
 apf.aml.setElement("event", apf.event);
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/filler.js)SIZE(1385)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/filler.js)SIZE(1385)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55921,7 +56741,7 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/flashplayer.js)SIZE(4071)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/flashplayer.js)SIZE(4071)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55946,33 +56766,7 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/flowchart.js)SIZE(50799)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/flowchart2.js)SIZE(45889)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/flowchart.js)SIZE(50799)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55998,7 +56792,33 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/frame.js)SIZE(4989)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/flowchart2.js)SIZE(45889)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/frame.js)SIZE(4989)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56147,7 +56967,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/gallery.js)SIZE(27418)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/gallery.js)SIZE(27418)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56172,7 +56992,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/graph.js)SIZE(21525)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/graph.js)SIZE(21525)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56197,7 +57017,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/hbox.js)SIZE(39238)TIME(Mon, 07 Mar 2011 10:08:50 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/hbox.js)SIZE(40549)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56757,7 +57577,7 @@ apf.vbox = function(struct, tagName){
                 propHandlers.margin.call(amlNode, amlNode.margin);
             if (amlNode.flex)
                 propHandlers.flex.call(amlNode, amlNode.flex);    
-
+                
             //Ie somehow sets the visible flags in between registration
             var isLast = isLastVisibleChild(amlNode); //apf.isIE ? this.lastChild == amlNode : 
             if (isLast || insert) {
@@ -56766,15 +57586,34 @@ apf.vbox = function(struct, tagName){
                 
                 if (!apf.hasFlexibleBox)
                     this.$propHandlers["pack"].call(this, this.pack);
-                
-                if (insert && amlNode.visible !== false) 
+                    
+                if (amlNode.visible !== false) //insert && - removed because for new nodes that are being attached to the tree insert is not set
                     visibleHandler.call(amlNode, {value: true});
+                
+                //@todo this needs more work
+                if (insert && amlNode.previousSibling) {
+                    var prev = amlNode.previousSibling;
+                    while (prev && (prev.nodeType != 1 || prev.localName == "splitter"))
+                        prev = prev.previousSibling;
+                    if (prev)
+                        visibleHandler.call(prev, {value: true});
+                }
             }
             
             else if (this.splitters && !amlNode.$splitter && amlNode.visible !== false && !amlNode.nosplitter) {
-                this.insertBefore(
-                    this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
-                    amlNode.nextSibling);
+                if (amlNode.$ext.nextSibling != (amlNode.nextSibling && (amlNode.nextSibling.$altExt || amlNode.nextSibling.$ext))) {
+                    var _self = this;
+                    setTimeout(function(){
+                        _self.insertBefore(
+                            _self.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                            amlNode.nextSibling);
+                    });
+                }
+                else {
+                    this.insertBefore(
+                        this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                        amlNode.nextSibling);
+                }
             }
             
         
@@ -56798,8 +57637,11 @@ apf.vbox = function(struct, tagName){
         
         //Clear css properties and set layout
         if (amlNode.nodeFunc == apf.NODE_VISIBLE) {
-            if (amlNode.flex)
+            if (amlNode.flex) {
+                var flex = amlNode.flex;
                 propHandlers.flex.call(amlNode, 0);
+                amlNode.flex = flex;
+            }
             
             if (apf.hasFlexibleBox) {
                 amlNode.$ext.style[apf.CSSPREFIX + "BoxSizing"] = "";
@@ -56835,11 +57677,14 @@ apf.vbox = function(struct, tagName){
             
             if (amlNode.width)
                 amlNode.$ext.style.width = "";
+
             
-            
-            if (this.splitters && !amlNode.$splitter 
-              && amlNode.nextSibling && amlNode.nextSibling.$splitter) {
-                amlNode.nextSibling.removeNode();
+            if (this.splitters && !amlNode.$splitter) {
+                if (amlNode.nextSibling && amlNode.nextSibling.$splitter)
+                    amlNode.nextSibling.removeNode();
+                if (isLastVisibleChild(amlNode) && amlNode.previousSibling 
+                  && amlNode.previousSibling.$splitter)
+                    amlNode.previousSibling.removeNode();
             }
             
         }
@@ -57137,7 +57982,7 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/iconmap.js)SIZE(3244)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/iconmap.js)SIZE(3244)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57163,7 +58008,7 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/img.js)SIZE(7692)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/img.js)SIZE(7692)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57409,7 +58254,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/item.js)SIZE(23234)TIME(Wed, 16 Mar 2011 13:48:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/item.js)SIZE(23234)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58082,7 +58927,7 @@ apf.item  = function(struct, tagName){
 apf.aml.setElement("item",  apf.item);
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/junction.js)SIZE(2555)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/junction.js)SIZE(2555)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58169,7 +59014,7 @@ apf.aml.setElement("junction", apf.junction);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/label.js)SIZE(4978)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/label.js)SIZE(4978)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58327,7 +59172,7 @@ apf.aml.setElement("label", apf.label);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/lineselect.js)SIZE(4747)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/lineselect.js)SIZE(4747)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58353,7 +59198,7 @@ apf.aml.setElement("label", apf.label);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/list.js)SIZE(14336)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/list.js)SIZE(14336)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58712,7 +59557,7 @@ apf.aml.setElement("list",      apf.list);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/loader.js)SIZE(2153)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/loader.js)SIZE(2153)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58783,7 +59628,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/loadindicator.js)SIZE(5234)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/loadindicator.js)SIZE(5234)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58809,7 +59654,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/map.js)SIZE(21831)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/map.js)SIZE(21831)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58835,7 +59680,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/markupedit.js)SIZE(57357)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/markupedit.js)SIZE(55951)TIME(Thu, 21 Jul 2011 08:53:19 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58861,7 +59706,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/menu.js)SIZE(18765)TIME(Mon, 07 Mar 2011 10:08:50 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/menu.js)SIZE(18765)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59423,7 +60268,7 @@ apf.menu = function(struct, tagName){
 apf.aml.setElement("menu", apf.menu);
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/method.js)SIZE(3973)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/method.js)SIZE(3973)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59531,7 +60376,7 @@ apf.method = function(struct, tagName){
 apf.aml.setElement("method", apf.method);
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/modalwindow.js)SIZE(24784)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/modalwindow.js)SIZE(24784)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60261,7 +61106,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/model.js)SIZE(43289)TIME(Thu, 18 Nov 2010 16:20:47 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/model.js)SIZE(42549)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60399,10 +61244,11 @@ apf.model = function(struct, tagName){
         session    : 1
     }, this.$attrExcludePropBind);
 
-    this.$booleanProperties["autoinit"] = true;
-    this.$booleanProperties.enablereset  = true;
+    this.$booleanProperties["whitespace"] = true;
+    this.$booleanProperties["autoinit"]   = true;
+    this.$booleanProperties.enablereset   = true;
     this.$supportedProperties = ["submission", "src", "session", "autoinit", 
-        "enablereset", "remote"];
+        "enablereset", "remote", "whitespace"];
     
     this.$propHandlers["src"] = 
     this.$propHandlers["get"] = function(value, prop){
@@ -60862,6 +61708,9 @@ apf.model = function(struct, tagName){
                             strXml = strXml.replace(/xmlns=\"[^"]*\"/g, "");
                     }
                     
+                    if (this.whitespace === false)
+                        strXml = strXml.replace(/>[\s\n\r]*</g, "><");
+                    
                     return this.load(apf.getXmlDom(strXml).documentElement);
                 }
                 // we also support JSON data loading in a model CDATA section
@@ -61215,6 +62064,9 @@ apf.model = function(struct, tagName){
             if (typeof options.clearContents == "undefined" && extra.userdata) 
                 options.clearContents = apf.isTrue(extra.userdata[1]); //@todo is this still used?
 
+            if (options.whitespace == undefined)
+                options.whitespace = _self.whitespace;
+
             //Call insert function
             (options.amlNode || _self).insert(data, options);
 
@@ -61244,6 +62096,10 @@ apf.model = function(struct, tagName){
                     xmlNode = xmlNode.substr(xmlNode.indexOf(">")+1);
                 if (!apf.supportNamespaces)
                     xmlNode = xmlNode.replace(/xmlns\=\"[^"]*\"/g, "");
+                
+                if (this.whitespace === false)
+                    xmlNode = xmlNode.replace(/>[\s\n\r]*</g, "><");
+                
                 xmlNode = apf.getXmlDom(xmlNode).documentElement;
             }
             
@@ -61365,7 +62221,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/notifier.js)SIZE(15296)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/notifier.js)SIZE(15296)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61391,7 +62247,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/page.js)SIZE(18160)TIME(Wed, 06 Apr 2011 09:56:34 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/page.js)SIZE(18211)TIME(Tue, 19 Jul 2011 17:18:06 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61630,15 +62486,14 @@ apf.page = function(struct, tagName){
 
     //beforeNode, pNode, withinParent
     this.addEventListener("DOMNodeInserted", function(e){
-        if (e && e.currentTarget != this || !this.$amlLoaded 
-          || !e.$oldParent)
+        if (e && e.currentTarget != this || !this.$amlLoaded) //|| !e.$oldParent
             return;
-
+            
         if (!e.$isMoveWithinParent 
           && this.skinName != this.parentNode.skinName) {
             this.$destroy(); //clean up button
         }
-        else if (this.$button && e.$oldParent.$hasButtons)
+        else if (this.$button && (!e.$oldParent || e.$oldParent.$hasButtons) && this.parentNode.$buttons)
             this.parentNode.$buttons.insertBefore(this.$button,
                 e.$beforeNode && e.$beforeNode.$button || null);
     }, true);
@@ -61678,7 +62533,7 @@ apf.page = function(struct, tagName){
         //if (this.disabled)
             //return false;
 
-        this.$active = false
+        this.$active = false;
 
         if (this.parentNode.$hasButtons) {
             if (this.$position > 0)
@@ -61913,7 +62768,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/pager.js)SIZE(9037)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/pager.js)SIZE(9037)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62161,7 +63016,7 @@ apf.aml.setElement("current", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/palette.js)SIZE(5945)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/palette.js)SIZE(5945)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62186,7 +63041,7 @@ apf.aml.setElement("current", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/param.js)SIZE(1681)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/param.js)SIZE(1681)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62229,7 +63084,7 @@ apf.aml.setElement("variable", apf.param); //backwards compatibility
 apf.aml.setElement("param", apf.param);
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/persist.js)SIZE(17598)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/persist.js)SIZE(17598)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62255,7 +63110,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/portal.js)SIZE(25076)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/portal.js)SIZE(25076)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62280,7 +63135,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/progressbar.js)SIZE(8709)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/progressbar.js)SIZE(8709)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62306,7 +63161,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/propedit.js)SIZE(46649)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/propedit.js)SIZE(46649)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63439,7 +64294,7 @@ apf.aml.setElement("color",       apf.BindingRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/radiobutton.js)SIZE(16930)TIME(Mon, 07 Mar 2011 10:08:50 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/radiobutton.js)SIZE(16930)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63989,7 +64844,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/remote.js)SIZE(20984)TIME(Mon, 07 Mar 2011 10:08:50 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/remote.js)SIZE(20984)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64015,7 +64870,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc.js)SIZE(21108)TIME(Tue, 08 Mar 2011 12:49:54 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc.js)SIZE(21108)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64638,7 +65493,7 @@ apf.aml.setElement("rpc", apf.rpc);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/script.js)SIZE(3679)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/script.js)SIZE(3679)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64753,7 +65608,7 @@ apf.aml.setElement("script", apf.script);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/scrollbar.js)SIZE(24972)TIME(Thu, 21 Apr 2011 09:54:45 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/scrollbar.js)SIZE(25305)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65315,9 +66170,10 @@ apf.scrollbar = function(struct, tagName){
 
             if (this.setCapture)
                 this.setCapture();
-    
+
             _self.$setStyleClass(_self.$ext, _self.$baseCSSname + "Down");
-    
+            _self.dispatchEvent("mousedown", {});
+
             document.onmousemove = function(e){
                 if (!e) 
                     e = event;
@@ -65351,7 +66207,7 @@ apf.scrollbar = function(struct, tagName){
                     this.releaseCapture();
                 
                 _self.$setStyleClass(_self.$ext, "", [_self.$baseCSSname + "Down"]);
-                
+                _self.dispatchEvent("mouseup", {});
                 document.onmouseup   = 
                 document.onmousemove = null;
             };
@@ -65417,6 +66273,14 @@ apf.scrollbar = function(struct, tagName){
             if (_self.$slideFast)
                 _self.$slideFast.style.display = "none";
         };
+
+        this.$ext.onmouseover = function(e){
+            _self.dispatchEvent("mouseover", {htmlEvent : e || event});
+        };
+
+        this.$ext.onmouseout = function(e){
+            _self.dispatchEvent("mouseout", {htmlEvent : e || event});
+        };
     }
     
     this.$loadAml = function(){
@@ -65435,7 +66299,7 @@ apf.aml.setElement("scrollbar", apf.scrollbar);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/services.js)SIZE(1488)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/services.js)SIZE(1488)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65482,7 +66346,7 @@ apf.aml.setElement("services", apf.services);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/skin.js)SIZE(9963)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/skin.js)SIZE(9963)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65734,7 +66598,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/slider.js)SIZE(32197)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/slider.js)SIZE(32386)TIME(Tue, 19 Jul 2011 17:18:06 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65759,7 +66623,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/slideshow.js)SIZE(47089)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/slideshow.js)SIZE(47089)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65784,7 +66648,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/smartbinding.js)SIZE(33619)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/smartbinding.js)SIZE(33619)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66632,7 +67496,7 @@ apf.aml.setElement("smartbinding", apf.smartbinding);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/source.js)SIZE(1566)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/source.js)SIZE(1566)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66687,7 +67551,7 @@ apf.aml.setElement("source", apf.source);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/spinner.js)SIZE(17516)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/spinner.js)SIZE(17516)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67232,7 +68096,7 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/splitbutton.js)SIZE(4573)TIME(Mon, 07 Mar 2011 10:08:50 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/splitbutton.js)SIZE(4573)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67370,7 +68234,7 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/splitter.js)SIZE(14439)TIME(Wed, 06 Apr 2011 09:56:34 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/splitter.js)SIZE(14901)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67404,6 +68268,8 @@ apf.splitter = function(struct, tagName){
 };
 
 (function() {
+    this.$scale = 0; // 0 both, 1 left/top, 2 right/bottom 
+    
     this.$focussable = false; // This object can get the focus
     this.$splitter   = true;
     
@@ -67412,6 +68278,12 @@ apf.splitter = function(struct, tagName){
     this.$propHandlers["realtime"] = function(value){
         this.$setStyleClass(this.$ext, value && (this.$baseCSSname + "Realtime") || "", 
             [this.$baseCSSname + "Realtime"]);
+    }
+    
+    this.$propHandlers["scale"] = function(value){
+        this.$scale = value == "left" || value == "top"
+            ? 1 : (value == "right" || "bottom " 
+                ? 2 : 0);
     }
     
     this.$propHandlers["type"] = function(value){
@@ -67492,14 +68364,16 @@ apf.splitter = function(struct, tagName){
                     newPos -= this.$ext[offsetSize];
 
                 //var totalFlex = this.$previous.flex + this.$next.flex - (finalPass && !this.realtime ? this.parentNode.padding : 0);
-                this.$previous[method]("flex", newPos);
-                this.$next[method]("flex", this.$totalFlex - newPos);
+                if (!this.$scale || this.$scale == 1)
+                    this.$previous[method]("flex", newPos);
+                if (!this.$scale || this.$scale == 2)
+                    this.$next[method]("flex", this.$totalFlex - newPos);
             }
             //Fixed
             else {
-                if (!this.$next.flex)
+                if (!this.$next.flex && (!this.$scale || this.$scale == 2))
                     this.$next[method](osize, max - newPos);
-                if (!this.$previous.flex)
+                if (!this.$previous.flex && (!this.$scale || this.$scale == 1))
                     this.$previous[method](osize, newPos);
             }
         }
@@ -67572,14 +68446,14 @@ apf.splitter = function(struct, tagName){
                 pHtml.style.position = "relative";
                 changedPosition = true;
             }
-            
+
             _self.$totalFlex = 0;
             with (_self.$info) {
                 var posPrev = apf.getAbsolutePosition(_self.$previous.$ext, _self.parentNode.$int);
-                var min = posPrev[d1] || 0;
+                var min = _self.$scale ? 0 : posPrev[d1] || 0;
                 var posNext = apf.getAbsolutePosition(_self.$next.$ext, _self.parentNode.$int);
                 var max = posNext[d1] + _self.$next.$ext[offsetSize] - this[offsetSize];
-            
+                
                 //Set flex to pixel sizes
                 if ((_self.$previous.flex || _self.$previous.flex === 0) 
                   && (_self.$next.flex || _self.$next.flex === 0)) {
@@ -67736,7 +68610,7 @@ apf.aml.setElement("splitter", apf.splitter);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/state-group.js)SIZE(3131)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/state-group.js)SIZE(3131)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67829,7 +68703,7 @@ apf.aml.setElement("state-group", apf.stateGroup);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/state.js)SIZE(11225)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/state.js)SIZE(11225)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68154,7 +69028,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/statusbar.js)SIZE(3824)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/statusbar.js)SIZE(3824)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68274,7 +69148,7 @@ apf.aml.setElement("statusbar", apf.statusbar);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/style.js)SIZE(1888)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/style.js)SIZE(1888)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68334,7 +69208,7 @@ apf.xhtml.setElement("style",  apf.style);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/submitform.js)SIZE(30092)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/submitform.js)SIZE(30092)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68360,7 +69234,7 @@ apf.xhtml.setElement("style",  apf.style);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/tab.js)SIZE(2990)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/tab.js)SIZE(2990)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68459,7 +69333,7 @@ apf.aml.setElement("tab",    apf.tab);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/table.js)SIZE(17679)TIME(Thu, 21 Apr 2011 09:54:45 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/table.js)SIZE(17679)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68936,7 +69810,7 @@ apf.aml.setElement("table", apf.table);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/teleport.js)SIZE(1019)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/teleport.js)SIZE(1019)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68965,7 +69839,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/template.js)SIZE(2498)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/template.js)SIZE(2498)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68991,7 +69865,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/text.js)SIZE(12317)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/text.js)SIZE(12317)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69343,7 +70217,7 @@ apf.aml.setElement("text", apf.text);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/textbox.js)SIZE(27439)TIME(Tue, 15 Mar 2011 14:31:53 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/textbox.js)SIZE(27544)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69462,6 +70336,7 @@ apf.textbox  = function(struct, tagName){
 
     //this.realtime        = false;
     this.value             = "";
+    this.readonly          = false;
     this.$isTextInput      = true;
     this.multiline         = false;
 
@@ -69470,6 +70345,7 @@ apf.textbox  = function(struct, tagName){
      * updated as the user types it, or only when this element looses focus or
      * the user presses enter.
      */
+    this.$booleanProperties["readonly"]    = true;
     this.$booleanProperties["focusselect"] = true;
     this.$booleanProperties["realtime"]    = true;
     this.$supportedProperties.push("value", "mask", "initial-message",
@@ -69895,6 +70771,11 @@ apf.textbox  = function(struct, tagName){
             typedBefore = false;
         
         
+        if (this.localName == "codeeditor") {
+            this.skin = "textarea";
+            this.$loadSkin();
+        }
+        
         
         //Build Main Skin
         this.$ext = this.$getExternal(null, null, function(oExt){
@@ -69980,7 +70861,7 @@ apf.textbox  = function(struct, tagName){
                 $setTimeout("var o = apf.lookup(" + _self.$uniqueId + ");\
                     o.change(o.getValue())");
 
-            if (_self.multiline == "optional" && e.keyCode == 13 && !e.shiftKey
+            if (_self.readonly || _self.multiline == "optional" && e.keyCode == 13 && !e.shiftKey
               || e.ctrlKey && (e.keyCode == 66 || e.keyCode == 73
               || e.keyCode == 85)) {
                 e.returnValue = false;
@@ -70147,7 +71028,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/toc.js)SIZE(8342)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/toc.js)SIZE(8342)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70173,7 +71054,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/toolbar.js)SIZE(2787)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/toolbar.js)SIZE(2787)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70267,7 +71148,7 @@ apf.aml.setElement("toolbar", apf.toolbar);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/tree.js)SIZE(17309)TIME(Mon, 07 Mar 2011 10:08:50 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/tree.js)SIZE(17397)TIME(Tue, 26 Jul 2011 12:19:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70528,7 +71409,9 @@ apf.tree = function(struct, tagName){
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  this.hasPassedDown = true;\
-                 if (!o.renaming && o.hasFocus() && isSelected == 1) \
+                 if (event.button == 2) \
+                    o.stopRename();\
+                 else if (!o.renaming && o.hasFocus() && isSelected == 1) \
                     this.dorename = true;\
                  if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
                      o.select(this, event.ctrlKey, event.shiftKey, event.button);\
@@ -70669,7 +71552,7 @@ apf.tree = function(struct, tagName){
     
     this.$draw = function(){
         this.$drawBase();
-    };
+    };    
 }).call(apf.tree.prototype = new apf.BaseTree());
 
 apf.aml.setElement("tree", apf.tree);
@@ -70678,7 +71561,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/upload.js)SIZE(28994)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/upload.js)SIZE(28994)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70703,33 +71586,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/vectorflow.js)SIZE(65716)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video.js)SIZE(20319)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/vectorflow.js)SIZE(65716)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70755,7 +71612,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/viewport.js)SIZE(1796)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video.js)SIZE(20319)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70781,7 +71638,33 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/webdav.js)SIZE(49145)TIME(Fri, 15 Apr 2011 12:18:57 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/viewport.js)SIZE(1796)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/webdav.js)SIZE(49956)TIME(Thu, 21 Jul 2011 11:15:11 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71452,7 +72335,7 @@ apf.webdav = function(struct, tagName){
             bLock && unregisterLock.call(this, sFrom);
             var iStatus = parseInt(extra.status);
             if (iStatus == 400 || iStatus == 403 || iStatus == 409 || iStatus == 412
-              || iStatus == 423 || iStatus == 424 || iStatus == 502 || iStatus == 500) {
+              || iStatus == 423 || iStatus == 424 || iStatus == 501 || iStatus == 502 || iStatus == 500) {
                 var oError = WebDAVError.call(this, "Unable to move file '" + sFrom
                              + "' to '" + sTo + "'. Server says: "
                              + apf.webdav.STATUS_CODES[String(iStatus)]);
@@ -71824,8 +72707,27 @@ apf.webdav = function(struct, tagName){
             this.$regVar("authenticated", true);
         // start from 1 (one), because the first element contains PROP info on the path
         var start = (extra.headers && typeof extra.headers.Depth != "undefined" && extra.headers.Depth == 0) ? 0 : 1;
-        for (var i = start, j = aResp.length; i < j; i++)
-            aOut.push(parseItem.call(this, aResp[i]));
+        for (var sa = [], data, i = start, j = aResp.length; i < j; i++) {
+            parseItem.call(this, aResp[i], data = {});
+            if (data.data) 
+                sa.push({
+                    toString: function(){
+                        return this.v;
+                    },
+                    data : data.data,
+                    v    : (data.data.type == "file" ? 1 : 0) + "" + data.data.name.toLowerCase()
+                });
+        }
+        
+        sa.sort();
+        
+        for (var i = 0, l = sa.length; i < l; i++) {
+            aOut.push(sa[i].data.xml);
+        }
+        
+//        var start = (extra.headers && typeof extra.headers.Depth != "undefined" && extra.headers.Depth == 0) ? 0 : 1;
+//        for (var i = start, j = aResp.length; i < j; i++)
+//            aOut.push(parseItem.call(this, aResp[i]));
 
         callback && callback.call(this, "<files>" + aOut.join("") + "</files>", state, extra);
     }
@@ -71838,7 +72740,7 @@ apf.webdav = function(struct, tagName){
      * @type  {String}
      * @private
      */
-    function parseItem(oNode) {
+    function parseItem(oNode, extra) {
         var NS      = apf.webdav.NS,
             sPath   = decodeURIComponent($xmlns(oNode, "href", NS.D)[0].firstChild
                       .nodeValue.replace(/[\\\/]+$/, "")),
@@ -71868,6 +72770,9 @@ apf.webdav = function(struct, tagName){
             lockable    : ($xmlns(oNode, "locktype", NS.D).length > 0),
             executable  : (aExec.length > 0 && aExec[0].firstChild.nodeValue == "T")
         });
+        
+        if (extra)
+            extra.data = oItem;
         
         return oItem.xml = "<" + sType + " path='" + sPath + "'  type='" + sType
             + "' size='" + oItem.size + "' name='" + oItem.name + "' contenttype='"
@@ -72038,7 +72943,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/xmpp.js)SIZE(101265)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/xmpp.js)SIZE(101265)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72064,7 +72969,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker/undodata.js)SIZE(11852)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker/undodata.js)SIZE(11852)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72205,7 +73110,7 @@ apf.UndoData = function(settings, at){
 };
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Mon, 01 Nov 2010 09:31:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72461,7 +73366,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/audio/type_flash.js)SIZE(12951)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/audio/type_flash.js)SIZE(12951)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72486,7 +73391,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/audio/type_native.js)SIZE(11013)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/audio/type_native.js)SIZE(11013)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72511,7 +73416,8 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/chromedebughost.js)SIZE(4054)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/chromedebughost.js)SIZE(4101)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+
 
 if (apf.hasRequireJS) require.def("apf/elements/dbg/chromedebughost",
     ["debug/ChromeDebugMessageStream", 
@@ -72646,7 +73552,9 @@ return ChromeDebugHost;
 
 });
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8debugger.js)SIZE(16849)TIME(Mon, 07 Mar 2011 10:08:50 GMT)*/
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8debugger.js)SIZE(18531)TIME(Tue, 26 Jul 2011 12:19:57 GMT)*/
+
 
 if (apf.hasRequireJS) require.def("apf/elements/dbg/v8debugger",
     ["debug/Breakpoint"],
@@ -72686,17 +73594,16 @@ var V8Debugger = function(dbg, host) {
     this.stripPrefix = "";
 
     this.setStrip = function(stripPrefix) {
-        this.stripPrefix = stripPrefix
+        this.stripPrefix = stripPrefix;
     };
 
     this.$strip = function(str) {
         if (!this.stripPrefix)
             return str;
 
-        if (str.indexOf(this.stripPrefix) == 0)
-            return str.slice(this.stripPrefix.length)
-        else
-            return str;
+        return str.indexOf(this.stripPrefix) === 0
+            ? str.slice(this.stripPrefix.length)
+            : str;
     };
 
     this.isRunning = function() {
@@ -72707,11 +73614,10 @@ var V8Debugger = function(dbg, host) {
         var _self = this;
         this.$debugger.scripts(4, null, false, function(scripts) {
             var xml = [];
-            for (var i = 0; i < scripts.length; i++) {
+            for (var i = 0, l = scripts.length; i < l; i++) {
                 var script = scripts[i];
-                if (script.name && script.name.indexOf("chrome-extension://") == 0) {
+                if (script.name && script.name.indexOf("chrome-extension://") === 0)
                     continue;
-                }
                 xml.push(_self.$getScriptXml(script));
             }
             model.load("<sources>" + xml.join("") + "</sources>");
@@ -72720,11 +73626,13 @@ var V8Debugger = function(dbg, host) {
     };
 
     this.$getScriptXml = function(script) {
-        return ["<file scriptid='", script.id,
+        return [
+            "<file scriptid='", script.id,
             "' scriptname='", apf.escapeXML(script.name || "anonymous"),
             "' text='", this.$strip(apf.escapeXML(script.text || "anonymous")),
             "' lineoffset='", script.lineOffset,
-            "' debug='true' />"].join("")
+            "' debug='true' />"
+        ].join("");
     };
 
     function getId(frame){
@@ -72746,7 +73654,7 @@ var V8Debugger = function(dbg, host) {
 
         //@todo check for ref?? might fail for 2 functions in the same file with the same name in a different context
         return true;
-    }
+    };
 
     /**
      * Assumptions:
@@ -72759,31 +73667,33 @@ var V8Debugger = function(dbg, host) {
         xmlFrame.setAttribute("line", frame.line);
         xmlFrame.setAttribute("column", frame.column);
 
-        var vars = xmlFrame.selectNodes("vars/item");
+        var i, j, l;
+        var vars  = xmlFrame.selectNodes("vars/item");
         var fVars = frame.arguments;
-        for (var i = 1, j = 0; j < fVars.length; j++) { //i = 1 to skin this
+        for (i = 1, j = 0, l = fVars.length; j < l; j++) { //i = 1 to skin this
             if (fVars[j].name)
                 this.$updateVar(vars[i++], fVars[j]);
         }
-        var fVars = frame.locals;
-        for (var j = 0; j < frame.locals.length; j++) {
+        fVars = frame.locals;
+        for (j = 0, l = frame.locals.length; j < l; j++) {
             if (fVars[j].name !== ".arguments")
                 this.$updateVar(vars[i++], fVars[j]);
         }
 
         //@todo not caring about globals/scopes right now
-    },
+    };
 
     this.$updateVar = function(xmlVar, fVar){
         xmlVar.setAttribute("value", this.$valueString(fVar.value));
         xmlVar.setAttribute("type", fVar.value.type);
         xmlVar.setAttribute("ref", fVar.value.ref);
         apf.xmldb.setAttribute(xmlVar, "children", hasChildren[fVar.value.type] ? "true" : "false");
-    }
+    };
 
     this.$buildFrame = function(frame, ref, xml){
         var script = ref(frame.script.ref);
-        xml.push("<frame index='", frame.index,
+        xml.push(
+            "<frame index='", frame.index,
             "' name='", apf.escapeXML(apf.escapeXML(this.$frameToString(frame))),
             "' column='", frame.column,
             "' id='", getId(frame),
@@ -72791,7 +73701,8 @@ var V8Debugger = function(dbg, host) {
             "' line='", frame.line,
             "' script='", this.$strip(script.name),
             "' scriptid='", frame.func.scriptId, //script.id,
-            "'>");
+            "'>"
+        );
         xml.push("<vars>");
 
         var receiver = {
@@ -72800,11 +73711,12 @@ var V8Debugger = function(dbg, host) {
         };
         xml.push(this.$serializeVariable(receiver));
 
-        for (var j = 0; j < frame.arguments.length; j++) {
+        var j, l;
+        for (j = 0, l = frame.arguments.length; j < l; j++) {
             if (frame.arguments[j].name)
                 xml.push(this.$serializeVariable(frame.arguments[j]));
         }
-        for (var j = 0; j < frame.locals.length; j++) {
+        for (j = 0, l = frame.locals.length; j < l; j++) {
             if (frame.locals[j].name !== ".arguments")
                 xml.push(this.$serializeVariable(frame.locals[j]));
         }
@@ -72813,14 +73725,14 @@ var V8Debugger = function(dbg, host) {
 
         xml.push("<scopes>");
         var scopes = frame.scopes;
-        for (var j = 0; j < scopes.length; j++) {
+        for (j = 0, l = scopes.length; j < l; j++) {
             var scope = scopes[j];
             xml.push("<scope index='",scope.index, "' type='", scope.type, "' />");
         }
         xml.push("</scopes>");
 
         xml.push("</frame>");
-    }
+    };
 
     this.backtrace = function(model, callback) {
         var _self = this;
@@ -72834,20 +73746,19 @@ var V8Debugger = function(dbg, host) {
                 return {};
             }
 
+            var i, l;
             var frames    = body.frames;        
             var xmlFrames = model.queryNodes("frame");
             if (xmlFrames.length && _self.$isEqual(xmlFrames, frames)) {
-                for (var i = 0; i < frames.length; i++) {
+                for (i = 0, l = frames.length; i < l; i++)
                     _self.$updateFrame(xmlFrames[i], frames[i]);
-                }
                 _self.setFrame(xmlFrames[0]);
             }
             else {
                 var xml = [];
                 if (frames) {
-                    for (var i = 0; i < frames.length; i++) {
+                    for (i = 0, l = frames.length; i < l; i++)
                         _self.$buildFrame(frames[i], ref, xml);
-                    }
                 }
                 model.load("<frames>" + xml.join("") + "</frames>");
                 _self.setFrame(model.data.firstChild);
@@ -72857,29 +73768,28 @@ var V8Debugger = function(dbg, host) {
     };
 
     this.loadScript = function(script, callback) {
-        var id = script.getAttribute("scriptid");
+        var id    = script.getAttribute("scriptid");
         var _self = this;
         this.$debugger.scripts(4, [id], true, function(scripts) {
-            if (scripts.length) {
-                var script = scripts[0];
-                callback(script.source);
-            }
+            if (!scripts.length)
+                return;
+            var script = scripts[0];
+            callback(script.source);
         });
     };
 
     this.loadObjects = function(item, callback) {
-        var ref = item.getAttribute("ref");
+        var ref   = item.getAttribute("ref");
         var _self = this;
         this.$debugger.lookup([ref], false, function(body) {
-            var refs = [];
+            var refs  = [];
             var props = body[ref].properties;
-            for (var i=0; i<props.length; i++) {
+            for (var i = 0, l = props.length; i < l; i++)
                 refs.push(props[i].ref);
-            }
 
             _self.$debugger.lookup(refs, false, function(body) {
                 var xml = ["<item>"];
-                for (var i=0; i<props.length; i++) {
+                for (var i = 0, l = props.length; i < l; i++) {
                     props[i].value = body[props[i].ref];
                     xml.push(_self.$serializeVariable(props[i]));
                 }
@@ -72893,26 +73803,25 @@ var V8Debugger = function(dbg, host) {
         //var xml = "<vars><item name='juhu' value='42' type='number'/></vars>"
         var scopes = frame.getElementsByTagName("scope");
 
-        var frameIndex = parseInt(frame.getAttribute("index"));
+        var frameIndex = parseInt(frame.getAttribute("index"), 10);
 
-        var _self = this;
+        var _self     = this;
         var processed = 0;
-        var expected = 0;
-        var xml = ["<vars>"];
+        var expected  = 0;
+        var xml       = ["<vars>"];
 
-        for (var i=0; i<scopes.length; i++) {
+        for (var i = 0, l = scopes.length; i < l; i++) {
             var scope = scopes[i];
-            var type = parseInt(scope.getAttribute("type"));
+            var type = parseInt(scope.getAttribute("type"), 10);
 
             // ignore local and global scope
             if (type > 1) {
                 expected += 1;
-                var index = parseInt(scope.getAttribute("index"));
+                var index = parseInt(scope.getAttribute("index"), 10);
                 this.$debugger.scope(index, frameIndex, true, function(body) {
                     var props = body.object.properties;
-                    for (j=0; j<props.length; j++) {
-                        xml.push(_self.$serializeVariable(props[j]))
-                    }
+                    for (j = 0, l2 = props.length; j < l2; j++)
+                        xml.push(_self.$serializeVariable(props[j]));
                     processed += 1;
                     if (processed == expected) {
                         xml.push("</vars>");
@@ -72921,7 +73830,7 @@ var V8Debugger = function(dbg, host) {
                 });
             }
         }
-        if (expected == 0)
+        if (expected === 0)
             return callback("<vars />");
     };
 
@@ -72941,11 +73850,18 @@ var V8Debugger = function(dbg, host) {
         var breakpoints = model.queryNodes("breakpoint");
         _self.$debugger.listbreakpoints(function(v8Breakpoints) {
             if (v8Breakpoints.breakpoints) {
-                for (var id in _self.$breakpoints)
-                    _self.$breakpoints[id].destroy();
+                var bp;
+                for (var bId in _self.$breakpoints) {
+                    bp = _self.$breakpoints[bId];
+                    bp.destroy();
+                    if (bp.xml) {
+                        apf.xmldb.removeNode(bp.xml);
+                        delete bp.xml;
+                    }
+                }
                 _self.$breakpoints = {};
                 
-                for (var i=0,l=v8Breakpoints.breakpoints.length; i<l; i++) {
+                for (var i = 0, l = v8Breakpoints.breakpoints.length; i < l; i++) {
                     if (v8Breakpoints.breakpoints[i].type == "scriptId")
                         continue;
                         
@@ -72955,63 +73871,102 @@ var V8Debugger = function(dbg, host) {
                     _self.$breakpoints[id] = breakpoint;
                     
                     model.removeXml("breakpoint[@script='" + breakpoint.source + "' and @line='" + breakpoint.line + "']");
-                    model.appendXml(_self.$getBreakpointXml(breakpoint, 0));
+                    breakpoint.xml = model.appendXml(_self.$getBreakpointXml(breakpoint, 0));
                 }
             }
     
             var modelBps = model.queryNodes("breakpoint") || [];
-            
             apf.asyncForEach(Array.prototype.slice.call(modelBps, 0), function(modelBp, next) {
                 var script = modelBp.getAttribute("script");
-                var line = modelBp.getAttribute("line");
-                var id = script + "|" + line;
-                var bp = _self.$breakpoints[id];
+                var line   = modelBp.getAttribute("line");
+                var id     = script + "|" + line;
+                var bp     = _self.$breakpoints[id];
+                
+                if (modelBp.parentNode)
+                    apf.xmldb.removeNode(modelBp);
                 if (!bp) {
-                    bp = _self.$breakpoints[id] = new Breakpoint(script, line, modelBp.getAttribute("column"));
-                    bp.condition = modelBp.getAttribute("condition");
-                    bp.ignoreCount = parseInt(modelBp.getAttribute("ignorecount") || 0);
-                    bp.enabled = modelBp.getAttribute("enabled") == "true";
-                    bp.attach(_self.$debugger, function() {
-		                if (modelBp.parentNode) model.removeXml(modelBp);
-		                model.appendXml(_self.$getBreakpointXml(bp, 0));
-		                next();
-                    });
+                    bp = _self.$addBreakpoint({
+                        id: id,
+                        name: script,
+                        row: line,
+                        col: modelBp.getAttribute("column"),
+                        lineOffset: 0,
+                        scriptId: null,
+                        data: {
+                            condition:   modelBp.getAttribute("condition"),
+                            ignoreCount: parseInt(modelBp.getAttribute("ignorecount") || 0, 10),
+                            enabled:     (modelBp.getAttribute("enabled") == "true")
+                        }
+                    }, model, next);
                 }
                 else {
-	                if (modelBp.parentNode) model.removeXml(modelBp);
-	                model.appendXml(_self.$getBreakpointXml(bp, 0));
-	                next();
+                    model.appendXml(_self.$getBreakpointXml(bp, 0));
+                    next();
                 }
             }, callback);
         });
     };
     
     this.toggleBreakpoint = function(script, relativeRow, model) {
-        var _self = this;
-
-        var name = script.getAttribute("scriptname");
-
-        var lineOffset = parseInt(script.getAttribute("lineoffset") || "0");
-        var row = lineOffset + relativeRow;
-        var id = name + "|" + row;
-
+        var name       = script.getAttribute("scriptname");
+        var lineOffset = parseInt(script.getAttribute("lineoffset") || "0", 10);
+        var row        = lineOffset + relativeRow;
+        var id         = name + "|" + row;
         var breakpoint = this.$breakpoints[id];
+        var _self      = this;
+        
         if (breakpoint) {
-            delete this.$breakpoints[id];
-            breakpoint.clear(function() {
-                model.removeXml(model.queryNode("breakpoint[@id=" + breakpoint.$id + "]"));
-            });
-        } else {
-            breakpoint = this.$breakpoints[id] = new Breakpoint(name, row);
-            breakpoint.attach(this.$debugger, function() {
-                model.appendXml(_self.$getBreakpointXml(breakpoint, lineOffset, script.getAttribute("scriptid")));
-            });
+            try {
+                breakpoint.clear(function() {
+                    _self.$removeBreakpoint(breakpoint, model);
+                });
+            }
+            catch(ex) {
+                // aie! failed, remove it to be sure.
+                _self.$removeBreakpoint(breakpoint, model);
+            }
         }
+        else {
+            breakpoint = this.$addBreakpoint({
+                id: id,
+                name: name,
+                row: row,
+                col: 0,
+                lineOffset: lineOffset,
+                scriptId: script.getAttribute("scriptid")
+            }, model);
+        }
+    };
+    
+    this.$removeBreakpoint = function(bp, model) {
+        if (bp.$id) {
+            var node,
+                xpath = "breakpoint[@id=" + bp.$id + "]";
+            while (node = model.queryNode(xpath))
+                apf.xmldb.removeNode(node);
+        }
+        delete this.$breakpoints[bp.id];
+    };
+    
+    this.$addBreakpoint = function(options, model, callback) {
+        //id, name, row, col, lineOffset, scriptId, dbg, data
+        var bp = this.$breakpoints[options.id] = new Breakpoint(options.name, options.row, options.col, options.dbg);
+        bp.id = options.id;
+        if (options.data)
+            apf.extend(bp, options.data);
+        var _self = this;
+        bp.attach(this.$debugger, function() {
+            // TODO: error handling
+            model.appendXml(_self.$getBreakpointXml(bp, options.lineOffset, options.scriptId));
+            callback && callback();
+        });
+        return bp;
     };
     
     this.$getBreakpointXml = function(breakpoint, lineOffset, scriptId) {
         var xml = [];
-        xml.push("<breakpoint",
+        xml.push(
+            "<breakpoint",
             " id='", breakpoint.$id,
             "' text='", this.$strip(apf.escapeXML(breakpoint.source)), ":", breakpoint.line,
             "' script='", apf.escapeXML(breakpoint.source),
@@ -73021,9 +73976,10 @@ var V8Debugger = function(dbg, host) {
             "' condition='", apf.escapeXML(breakpoint.condition || ""),
             "' ignorecount='", breakpoint.ignoreCount || 0,
             "' enabled='", breakpoint.enabled,
-            "' />")
+            "' />"
+        );
 
-        return(xml.join(""));
+        return xml.join("");
     };
 
     this.continueScript = function(callback) {
@@ -73059,14 +74015,16 @@ var V8Debugger = function(dbg, host) {
                     "\" value='", error.message, "' />");
             }
             else {
-                str.push("<item name=\"", apf.escapeXML(name),
-                  "\" value='", apf.escapeXML(body.text), //body.value ||
-                  "' type='", body.type,
-                  "' ref='", body.handle,
-                  body.constructorFunction ? "' constructor='" + body.constructorFunction.ref : "",
-                  body.prototypeObject ? "' prototype='" + body.prototypeObject.ref : "",
-                  body.properties && body.properties.length ? "' children='true" : "",
-                  "' />");
+                str.push(
+                    "<item name=\"", apf.escapeXML(name),
+                    "\" value='", apf.escapeXML(body.text), //body.value ||
+                    "' type='", body.type,
+                    "' ref='", body.handle,
+                    body.constructorFunction ? "' constructor='" + body.constructorFunction.ref : "",
+                    body.prototypeObject ? "' prototype='" + body.prototypeObject.ref : "",
+                    body.properties && body.properties.length ? "' children='true" : "",
+                    "' />"
+              );
             }
             callback(apf.getXml(str.join("")), body, refs, error);
         });
@@ -73095,11 +74053,12 @@ var V8Debugger = function(dbg, host) {
     };
 
     this.$frameToString = function(frame) {
-        var str = [];
-        str.push(frame.func.name || frame.func.inferredName || "anonymous", "(");
-        var args = frame.arguments;
+        var str     = [];
+        var args    = frame.arguments;
         var argsStr = [];
-        for (var i=0; i<args.length; i++) {
+
+        str.push(frame.func.name || frame.func.inferredName || "anonymous", "(");
+        for (var i = 0, l = args.length; i < l; i++) {
             var arg = args[i];
             if (!arg.name)
                 continue;
@@ -73107,18 +74066,19 @@ var V8Debugger = function(dbg, host) {
         }
         str.push(argsStr.join(", "), ")");
         return str.join("");
-    }
+    };
 
     this.$serializeVariable = function(item, name) {
-        var str = [];
-        str.push("<item name='", apf.escapeXML(name || item.name),
+        var str = [
+            "<item name='", apf.escapeXML(name || item.name),
             "' value='", apf.escapeXML(this.$valueString(item.value)),
             "' type='", item.value.type,
             "' ref='", typeof item.value.ref == "number" ? item.value.ref : item.value.handle,
             hasChildren[item.value.type] ? "' children='true" : "",
-            "' />");
+            "' />"
+        ];
         return str.join("");
-    }
+    };
     
 }).call(V8Debugger.prototype = new apf.Class());
 
@@ -73126,7 +74086,10 @@ return V8Debugger;
 
 });
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8debughost.js)SIZE(2438)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8debughost.js)SIZE(2485)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+
 
 if (apf.hasRequireJS) require.def("apf/elements/dbg/v8debughost",
     ["debug/StandaloneV8DebuggerService",
@@ -73217,7 +74180,9 @@ return V8DebugHost;
 
 });
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8websocketdebughost.js)SIZE(1805)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8websocketdebughost.js)SIZE(1853)TIME(Tue, 26 Jul 2011 12:19:57 GMT)*/
+
 
 if (apf.hasRequireJS) require.def("apf/elements/dbg/v8websocketdebughost",
     ["debug/WSV8DebuggerService",
@@ -73286,7 +74251,9 @@ var V8WebSocketDebugHost = function(socket) {
 return V8WebSocketDebugHost;
 });
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/modalwindow/widget.js)SIZE(7077)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/modalwindow/widget.js)SIZE(7077)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73312,7 +74279,7 @@ return V8WebSocketDebugHost;
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/cgi.js)SIZE(7168)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/cgi.js)SIZE(7168)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73525,7 +74492,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/header.js)SIZE(3062)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/header.js)SIZE(3062)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73551,7 +74518,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/jphp.js)SIZE(5874)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/jphp.js)SIZE(5874)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73577,7 +74544,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/jsonrpc.js)SIZE(3125)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/jsonrpc.js)SIZE(3125)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73603,7 +74570,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/rdb.js)SIZE(8293)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/rdb.js)SIZE(8293)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73629,7 +74596,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/rest.js)SIZE(3962)TIME(Thu, 23 Dec 2010 15:44:20 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/rest.js)SIZE(3962)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73756,7 +74723,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/soap.js)SIZE(10943)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/soap.js)SIZE(10943)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73782,7 +74749,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/xmlrpc.js)SIZE(11154)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/xmlrpc.js)SIZE(11154)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73808,7 +74775,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/yql.js)SIZE(3962)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/yql.js)SIZE(3962)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73834,7 +74801,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/textbox/autocomplete.js)SIZE(7030)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/textbox/autocomplete.js)SIZE(7030)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73860,12 +74827,12 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/textbox/autocomplete2.js)SIZE(14483)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/textbox/autocomplete2.js)SIZE(14483)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/textbox/masking.js)SIZE(13243)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/textbox/masking.js)SIZE(13243)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74311,7 +75278,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/upload/flash.js)SIZE(9564)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/upload/flash.js)SIZE(9564)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74336,7 +75303,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/upload/html4.js)SIZE(9512)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/upload/html4.js)SIZE(9512)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74361,7 +75328,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/upload/html5.js)SIZE(8910)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/upload/html5.js)SIZE(8910)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74386,7 +75353,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_flv.js)SIZE(17057)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_flv.js)SIZE(17057)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74411,7 +75378,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_native.js)SIZE(10825)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_native.js)SIZE(10825)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74436,33 +75403,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_qt.js)SIZE(23357)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_silverlight.js)SIZE(15347)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_qt.js)SIZE(23357)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74488,7 +75429,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_vlc.js)SIZE(12493)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_silverlight.js)SIZE(15347)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74514,7 +75455,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_wmp.js)SIZE(12632)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_vlc.js)SIZE(12493)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74540,7 +75481,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/xmpp/muc.js)SIZE(18991)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_wmp.js)SIZE(12632)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74566,7 +75507,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/xmpp/rdb.js)SIZE(21319)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/xmpp/muc.js)SIZE(18991)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74592,7 +75533,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/xmpp/roster.js)SIZE(13725)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/xmpp/rdb.js)SIZE(21319)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74618,7 +75559,33 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/processinginstructions/livemarkup.js)SIZE(4492)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/xmpp/roster.js)SIZE(13725)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/processinginstructions/livemarkup.js)SIZE(4492)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74750,7 +75717,7 @@ apf.aml.setProcessingInstruction("livemarkup", apf.LiveMarkupPi);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/jpack_end.js)SIZE(1043)TIME(Mon, 01 Nov 2010 09:31:06 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/jpack_end.js)SIZE(1294)TIME(Wed, 20 Jul 2011 14:52:25 GMT)*/
 
 
 
@@ -74778,13 +75745,24 @@ else*/
 
 //Start
 if (window.require && typeof require.def == "function") {
-    require([
-        "apf/elements/codeeditor",
-        "apf/elements/debugger",
-        "apf/elements/debughost"
-    ], function() {
-        apf.start()
-    });
+    var deps = [];
+    
+    deps.push("apf/elements/codeeditor");
+    
+    
+    
+    deps.push("apf/elements/debugger", "apf/elements/debughost");
+    
+    
+    if (deps.length) {
+        require(
+            deps
+        , function() {
+            apf.start();
+        });
+    }
+    else 
+        apf.start();
 }
 else
     apf.start();
@@ -74792,7 +75770,7 @@ else
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/apf-node.js)SIZE(1241)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/apf-node.js)SIZE(1241)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74817,33 +75795,7 @@ else
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/apf-o3.js)SIZE(14014)TIME(Tue, 15 Feb 2011 10:40:04 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/loader-o3.js)SIZE(7470)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/apf-o3.js)SIZE(14014)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74869,7 +75821,33 @@ else
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/loader.js)SIZE(15641)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/loader-o3.js)SIZE(7470)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/loader.js)SIZE(15641)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74902,7 +75880,7 @@ else
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/loader2.js)SIZE(18652)TIME(Tue, 15 Feb 2011 10:40:05 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/loader2.js)SIZE(18652)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional

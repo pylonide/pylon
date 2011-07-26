@@ -7002,14 +7002,34 @@
             height:18px;
             padding:0 0 0 15px;
             position:relative;
-            overflow:hidden;
+            /*overflow:hidden;*/
         }
         
         .filemgr-tree .item-fix.selected {
             background : url(images/tree_selected.png) repeat 0 0;
         }
         
-        .filemgr-dragtree,
+        .filemgr-dragtree .item .caption,
+        .filemgr-tree .item-fix.dragAppend .item {
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+            border-radius: 10px;
+            filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#2890e5', endColorstr='#1f82d2');
+            -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#2890e5', endColorstr='#1f82d2')";
+            background : -webkit-gradient(linear, left top, left bottom, from(#2890e5), color-stop(1, #1f82d2));
+            background : -moz-linear-gradient(center bottom, #1f82d2 0%, #2890e5 100%) repeat scroll 0 0 transparent;
+            color: white;
+            margin-right: 5px;
+        }
+        
+        .filemgr-tree .item-fix.dragDenied {
+            
+        }
+        
+        .filemgr-tree .item-fix.dragInsert {
+            
+        }
+        
         .filemgr-treeFocus .item-fix.selected {
             border-top:1px solid #3a9bec;
             border-bottom:1px solid #185f97;
@@ -7020,7 +7040,8 @@
         }
         
         .filemgr-dragtree,
-        .filemgr-treeFocus .item-fix.selected .item LABEL .caption {
+        .filemgr-treeFocus .item-fix.selected .item LABEL .caption,
+        .filemgr-treeFocus .item-fix.dragAppend .item LABEL .caption {
             color:white;
         }
         
@@ -7055,7 +7076,7 @@
         .filemgr-tree .item LABEL {
             display:block;
             position:relative;
-            overflow:hidden;
+            /*overflow:hidden;*/
             height:18px;
             background-position:0 1px;
             background-repeat:no-repeat;
@@ -7093,9 +7114,10 @@
         }
         
         #txt_rename {
-            border:1px solid #2084d6;
+            /*border:1px solid #2084d6;
+            background-color: #d7e7f4;*/
+            
             height:16px;
-            background-color: #d7e7f4;
             padding-left:1px;
             margin-top:0px;
             
@@ -7115,16 +7137,27 @@
             -moz-user-select: text;
             -o-user-select: text;
             user-select: text;
+            
+            overflow: visible;
+            display: inline-block;
+            background-color: #EAF1F7;
+            border: 1px solid #90C3EF;
+            -moz-box-shadow: 0px 0px 6px #76839A;
+            -webkit-box-shadow: 0px 0px 6px #76839A;
+            box-shadow: 0px 0px 6px #76839A;
+        }
+        
+        #txt_rename::selection {
+            background: #90C3EF; 
+            }
+        #txt_rename::-moz-selection {
+            background: #90C3EF;
         }
         
         .filemgr-dragtree {
             overflow:hidden;
             height:22px;
-            border:2px solid rgba(255, 255, 255, 0.5);
-            -moz-box-shadow    : 0px 3px 5px 0px rgba(0, 0, 0, 0.5);
-            -webkit-box-shadow : 0px 3px 5px 0px rgba(0, 0, 0, 0.5);
-            box-shadow         : 0px 3px 5px 0px rgba(0, 0, 0, 0.5);
-            opacity: .4;
+            opacity: .6;
         }
         
         .filemgr-dragtree .item SPAN {
@@ -7150,8 +7183,10 @@
             display         : block;
             position        : relative;
             overflow        : hidden;
-            height          : 18px;
-            padding         : 2px 0 0 20px;
+            height          : 16px;
+            padding         : 0 5px 0;
+            margin-left     : 18px;
+            margin-top      : 3px;
             text-decoration : none;
             white-space     : nowrap;
             text-shadow : #8394a2 0px 1px 0px;
@@ -7168,8 +7203,8 @@
             padding-top:1px;
         }
         
-        .filemgr-dragtree .item LABEL .caption {
-            height          : 17px;
+        .filemgr-dragtree2 .item LABEL .caption {
+            height          : 16px;
             padding         : 3px 0 0 20px;
         }
     ]]></a:style>

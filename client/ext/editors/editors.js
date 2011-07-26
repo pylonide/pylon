@@ -211,10 +211,8 @@ return ext.register("ext/editors/editors", {
         }
 
         if (!editor.inited)
-            var editorPage = this.initEditor(editor);
-        else
-            editorPage = tabEditors.getPage(editor.path);
-
+            this.initEditor(editor);
+        
         //Create Fake Page
         if (init)
             tabEditors.setAttribute("buttons", "close");
@@ -236,7 +234,9 @@ return ext.register("ext/editors/editors", {
 
         if (init)
             tabEditors.setAttribute("buttons", "close,scale");
-
+        
+        var editorPage = tabEditors.getPage(tabEditors.activepage);
+        
         doc.addEventListener("setnode", function(e) {
             fake.$model.load(e.node);
             ide.dispatchEvent("afteropenfile", {doc: doc, node: e.node});
@@ -265,7 +265,7 @@ return ext.register("ext/editors/editors", {
         
         if (init && !active)
             return;
-
+        
         //Set active page
         tabEditors.set(filepath);
 
@@ -276,7 +276,10 @@ return ext.register("ext/editors/editors", {
         /*fake.addEventListener("afteropen", function(){
 
         });*/
-
+        
+        
+        editor.setState(doc);
+        
         editor.enable();
         //editor.$itmEditor.select();
         //editor.$rbEditor.select();

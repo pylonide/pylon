@@ -172,7 +172,7 @@ return ext.register("ext/tree/tree", {
         
         trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
             var settings = require("ext/settings/settings");
-            if (settings.model) {
+            if (settings.model && trFiles.selected) {
                 var settings          = settings.model.data;
                 var treeSelectionNode = settings.selectSingleNode("auto/tree_selection");
                 var nodeSelected      = trFiles.selected.getAttribute("path");

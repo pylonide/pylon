@@ -2549,7 +2549,8 @@ while(nodes[i]&&nodes[i]!=xmlNode){i++;}var node=(up==null)?nodes[i+count]||node
 return node||count&&(i<count||(i+1)>Math.floor(nodes.length/count)*count)?node:(up?nodes[nodes.length-1]:nodes[0]);
 };this.getNextTraverse=function(xmlNode,up,count){if(!count){count=1;}if(!xmlNode){xmlNode=this.selected;
 }var i=0;var nodes=this.getTraverseNodes(this.getTraverseParent(xmlNode)||this.xmlRoot);
-while(nodes[i]&&nodes[i]!=xmlNode){i++;}return nodes[i+(up?-1*count:count)];};this.getTraverseParent=function(xmlNode){if(!xmlNode.parentNode||xmlNode==this.xmlRoot){return false;
+while(nodes[i]&&nodes[i]!=xmlNode){i++;}var ind=i+(up?-1*count:count);return nodes[ind<0?0:ind];
+};this.getTraverseParent=function(xmlNode){if(!xmlNode.parentNode||xmlNode==this.xmlRoot){return false;
 }if(xmlNode.$regbase){return xmlNode.parentNode;}var x,id=xmlNode.getAttribute(apf.xmldb.xmlIdTag);
 if(!id){xmlNode.setAttribute(apf.xmldb.xmlIdTag,"temp");id="temp";}x=xmlNode.selectSingleNode("ancestor::node()[(("+this.each+")/@"+apf.xmldb.xmlIdTag+")='"+id+"']");
 if(id=="temp"){xmlNode.removeAttribute(apf.xmldb.xmlIdTag);}return x;};if(!this.$findHtmlNode){this.$findHtmlNode=function(id){return this.$pHtmlDoc.getElementById(id);
