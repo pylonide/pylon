@@ -59,7 +59,7 @@ return ext.register("ext/debugger/debugger", {
         ide.addEventListener("afteropenfile", function(e) {
             var doc = e.doc;
             var node = e.node;
-            if(!node)
+            if (!node)
                 return;
             var path = node.getAttribute("path");
 
@@ -187,7 +187,8 @@ return ext.register("ext/debugger/debugger", {
 
         if (file) {
             editors.jump(file, row, column, text, null, true);
-        } else {
+        }
+        else {
             var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
             if (!script)
                 return;

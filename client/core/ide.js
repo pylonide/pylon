@@ -208,6 +208,11 @@ define(function(require, exports, module) {
             //ide.socket.on("reconnect",  ide.socketReconnect);
             //ide.socket.on("reconnecting",  ide.socketReconnecting);
             ide.socket.on("disconnect", ide.socketDisconnect);
+            var _oldsend = ide.socket.send;
+            ide.socket.send = function(msg) {
+                // pass a lambda to enable socket.io ACK
+                _oldsend.call(ide.socket, msg, function() {});
+            };
         });
         
         ide.getActivePageModel = function() {
