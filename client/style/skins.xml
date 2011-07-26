@@ -1,5 +1,30 @@
 <?xml version='1.0'?>
 <a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+<a:checkbox name="cboffline">
+    <a:style><![CDATA[
+        .cboffline {
+            width: 55px;
+            height: 21px;
+            background: url(images/sync.png) no-repeat 0 -21px;
+        }
+
+        .cbofflineDown {
+            background-position : 0 0px;
+        }
+
+        .cbofflineChecked {
+            background-position : 0 0px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main>
+            <div class='cboffline'>
+            
+            </div>
+        </a:main>
+    </a:presentation>
+</a:checkbox>
 <a:bar name="bar">
     <a:style><![CDATA[
         .bar{
@@ -334,6 +359,10 @@
 
         .btnIconOnly .lbl SPAN {
             background-position: 1px 3px;
+        }
+        
+        .btnIconOnly.newFolder .lbl SPAN {
+            background-position: 1px 2px;
         }
         
         .smallCaption.btnIconOnly .lbl {
@@ -1461,6 +1490,7 @@
             overflow            : hidden;
             cursor              : pointer;
             position            : relative;
+            cursor              : default;
             -moz-user-select    : none; 
             -khtml-user-select  : none; 
             user-select         : none;
@@ -1470,6 +1500,11 @@
         
         .header-btnOver {
             background-position : 0 -15px;
+        }
+        
+        .header-btnDisabled {
+            background-position : 0 -30px;
+            cursor: default;
         }
     ]]></a:style>
 
@@ -3738,7 +3773,7 @@
             height: 13px;
         }
         .menu div.hover {
-            background-color : #292929;
+            background-color : #393939;
         }
 
         .menu div.menu_divider{
@@ -3875,14 +3910,14 @@
                 margin-right  : 6px;
                 position      : relative;
                 overflow      : hidden;
-                height        : 22px;
-                padding       : 8px 0 0 7px;
+                height        : 23px;
+                padding       : 7px 0 0 7px;
                 font-family   : Arial;
                 font-size     : 12px;
                 line-height   : 16px;
                 font-weight   : bold;
-                color         : #194e7d;
-                text-shadow   : #4a9be2 0px 1px 0px;
+                color         : #e8e8e8;
+                text-shadow   : #2a2c2d 0px 1px 0px;
             }
             
             .fm-window .fm-header .right {
@@ -3902,6 +3937,7 @@
                 top  : 30px;
                 right : 0;
                 bottom : 0;
+                background:url(images/panelBg.png) repeat-y right 0;
             }
         ]]></a:style>
         
@@ -5530,7 +5566,7 @@
         padding: 0;
         position : relative;
         vertical-align : bottom;
-        height : 18px;
+        height : 19px;
     }
 
     .tab_console .btncontainer .btntab {
@@ -5578,11 +5614,11 @@
         color       : #a2c890;
         cursor      : default;
         z-index     : 1;
-        background:url(images/console-tab-btn-curr.png) repeat-x 0 0;
-        border-top: 1px solid #4f4f4f;
-        z-index:101;
-        padding      : 2px 27px 2px 27px;
-        text-shadow   : rgba(0, 0, 0, 1) 0px 1px 0px;
+        background  : #1d1d1d url(images/console-tab-btn-curr.png) repeat-x 0 0;
+        border-top  : 1px solid #4f4f4f;
+        z-index     : 101;
+        padding     : 2px 27px 2px 27px;
+        text-shadow : rgba(0, 0, 0, 1) 0px 1px 0px;
     }
 
     .tab_console .scale .btntab .tab_console_middle {
@@ -5766,6 +5802,14 @@
     .editor_tab .btnsesssioncontainer .saving .sessiontab_icon {
         background-image: url(images/save-indicator-inactive-tab.gif);
     }
+    
+    .editor_tab .btnsesssioncontainer .loading_active .sessiontab_icon {
+        background-image: url(images/load-indicator-active-tab.gif);
+    }
+    
+    .editor_tab .btnsesssioncontainer .loading .sessiontab_icon {
+        background-image: url(images/load-indicator-inactive-tab.gif);
+    }
 
     .editor_tab .btnsesssioncontainer .session_btn .tab_middle .sessiontab_title {
         overflow : hidden;
@@ -5905,17 +5949,17 @@
     }
 
     .editor_tab .editor_bg .editor_bg_content {
-        width: 315px;
+        width: 430px;
         margin: 80px auto 0;
         background: url(images/empty_editor_icon.png) no-repeat center 0;
-        padding-top: 138px;
+        padding-top: 125px;
         text-align: center;
         color: #333333;
         text-shadow : rgba(255, 255, 255, .71) 1px 1px 1px;
         font-size: 18px;
     }
 
-    .editor_tab .editor_bg .editor_bg_content .editor_bg_message{
+    .editor_tab .editor_bg .editor_bg_content .editor_bg_message2 {
         background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(237,237,237)),color-stop(1, rgb(255,255,255)));
         background: -moz-linear-gradient(center bottom,rgb(237,237,237) 0%,rgb(255,255,255) 100%);
         -webkit-box-shadow: 1px 1px 3px #aaaaaa;
@@ -5931,7 +5975,15 @@
         -webkit-border-radius: 4px;
         -webkit-border-radius: 4px;
     }
-
+    
+    .editor_tab .editor_bg .editor_bg_content .editor_bg_message {
+        color: #489829;
+        font-family: georgia;
+        padding-top: 4px;
+        background: url(images/green-arrow-left.png) no-repeat 0 0;
+        text-shadow : rgba(240, 240, 240, .71) 1px 1px 1px;
+    }
+    
     .editor_tab .session_page {
         display : none;
         position : absolute;
@@ -5959,11 +6011,7 @@
             <div class="btnsesssioncontainer"> </div>
             <div class="editor_bg">
                 <div class="editor_bg_content">
-                    No files opened yet...
-                    <div class="editor_bg_message">
-                        To get started double-click a supported file
-                        from the Files-panel on the left...
-                    </div>
+                    <div class="editor_bg_message">Open a file or create a new one to get started</div>
                 </div>
             </div>
         </div>
@@ -6696,7 +6744,7 @@
 
         .searchbox_textboxFocus .btnclose {
             position : absolute;
-            right : 11px;
+            right : 8px;
             top : 5px;
             width : 14px;
             height : 14px;
@@ -6841,6 +6889,12 @@
             padding          : 0;
             overflow         : hidden;
             border-right     : 1px solid #f5f5f5;
+            
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .hboxTrFiles {
@@ -6938,14 +6992,14 @@
 
         .filemgr-tree .item-fix {
             position:relative;
-            height:20px;
+            height:18px;
             border-top:1px solid transparent;
             border-bottom:1px solid transparent;
             /*width:100%;*/
         }
         
         .filemgr-tree .item-fix .item {
-            height:20px;
+            height:18px;
             padding:0 0 0 15px;
             position:relative;
             overflow:hidden;
@@ -7002,8 +7056,8 @@
             display:block;
             position:relative;
             overflow:hidden;
-            height:20px;
-            background-position:0 0;
+            height:18px;
+            background-position:0 1px;
             background-repeat:no-repeat;
             padding-left:20px;
         }
@@ -7015,13 +7069,25 @@
             display:block;
             position:relative;
             overflow:hidden;
-            height:19px;
-            padding:1px 0 0 0;
+            height:16px;
+            padding:1px 0 0 2px;
             text-decoration:none;
             white-space: nowrap;
         }
         
-        .filemgr-tree .loading,
+        .filemgr-tree .loading .item {
+            background : url(images/file-tree-load-spinner.gif) no-repeat 16px 1px;
+        }
+        
+        .filemgr-tree .loading .item LABEL {
+            background-position : -1000px 0;
+        }
+        
+        .filemgr-tree .loading.selected .item {
+            background : url(images/file-tree-load-spinner-selected.gif) no-repeat 16px 1px;
+        }
+        
+        .filemgr-tree .ldng,
         .filemgr-tree .empty {
             display : none;
         }
@@ -7030,8 +7096,8 @@
             border:1px solid #2084d6;
             height:16px;
             background-color: #d7e7f4;
-            padding-left:4px;
-            margin-top:1px;
+            padding-left:1px;
+            margin-top:0px;
             
             font-family : Tahoma, Arial;
             font-size   : 11px;
@@ -7043,6 +7109,12 @@
             word-break: keep-all;
             cursor: text;
             outline : none;
+            
+            -webkit-user-select: text;
+            -khtml-user-select: text;
+            -moz-user-select: text;
+            -o-user-select: text;
+            user-select: text;
         }
         
         .filemgr-dragtree {
@@ -7087,8 +7159,8 @@
     ]]></a:style>
     <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
         .filemgr-tree .item LABEL .caption {
-            height:18px;
-            padding:2px 0 0 0;
+            height:16px;
+            padding:2px 0 0 2px;
         }
         
         #txt_rename {
@@ -7136,7 +7208,7 @@
             </div>
         </a:dragindicator>
         <a:loading>
-            <div class="loading">
+            <div class="ldng">
                 <span> </span>
                 <label>Loading...</label>
             </div>

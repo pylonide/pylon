@@ -107,6 +107,11 @@ return ext.register("ext/quicksearch/quicksearch", {
             this.position = next;
         }
     },
+    
+    handleQuicksearchEscape : function(e) {
+        if (e.keyCode == 27)
+            this.toggleDialog(-1);
+    },
 
     toggleDialog: function(force) {
         ext.initExtension(this);
@@ -130,7 +135,7 @@ return ext.register("ext/quicksearch/quicksearch", {
             var value = doc.getTextRange(range);
             
             if (!value && editor.ceEditor)
-                var value = editor.ceEditor.getLastSearchOptions().needle;
+                value = editor.ceEditor.getLastSearchOptions().needle;
             
             if (value)
                 txtQuickSearch.setValue(value);
@@ -197,7 +202,7 @@ return ext.register("ext/quicksearch/quicksearch", {
             wholeWord: false, 
             regExp: false, 
             scope: Search.ALL 
-        }
+        };
 
         if (this.$crtSearch != txt) {
             this.$crtSearch = txt;
@@ -210,10 +215,10 @@ return ext.register("ext/quicksearch/quicksearch", {
         var settings = require("ext/settings/settings");
         if (settings.model) {
             var history = settings.model;
-            search = apf.createNodeFromXpath(history.data, "search");
+            var search = apf.createNodeFromXpath(history.data, "search");
             
             if (!search.firstChild || search.firstChild.getAttribute("key") != txt) {
-                keyEl = apf.getXml("<word />");
+                var keyEl = apf.getXml("<word />");
                 keyEl.setAttribute("key", txt);
                 apf.xmldb.appendChild(search, keyEl, search.firstChild);
             }

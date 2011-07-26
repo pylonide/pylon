@@ -202,7 +202,7 @@ return ext.register("ext/settings/settings", {
             if(navbar.current && (navbar.current != this))
                 navbar.current.disable(false);
         }
-        
+        splitterPanelLeft.show();
         navbar.current = this;
     },
 
@@ -211,6 +211,8 @@ return ext.register("ext/settings/settings", {
             winSettings.hide();
         if (!noButton)
             this.button.setValue(false);
+
+        splitterPanelLeft.hide();
     },
 
     destroy : function(){

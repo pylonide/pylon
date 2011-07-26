@@ -33,8 +33,9 @@ apf.actiontracker.actions.aceupdate = function(undoObj, undo){
 
 var SupportedModes = {
     "application/javascript": "javascript",
-    "application/json": "javascript",
+    "application/json": "json",
     "text/css": "css",
+    "text/x-scss": "scss",
     "text/html": "html",
     "application/xhtml+xml": "html",
     "application/xml": "xml",
@@ -53,13 +54,17 @@ var SupportedModes = {
     "text/x-java-source": "java",
     "text/x-csharp": "csharp",
     "text/x-script.coffeescript": "coffee",
-    "text/x-web-textile": "textile"
+    "text/x-web-textile": "textile",
+    "text/x-script.ocaml": "ocaml",
+    "text/x-script.clojure": "clojure"
 };
 
 var contentTypes = {
     "js": "application/javascript",
     "json": "application/json",
     "css": "text/css",
+    "scss": "text/x-scss",
+    "sass": "text/x-sass",
     
     "xml": "application/xml",
     "rdf": "application/rdf+xml",
@@ -87,7 +92,11 @@ var contentTypes = {
     "cpp": "text/x-c",
     "cxx": "text/x-c",
     "h": "text/x-c",
-    "hh": "text/x-c"
+    "hh": "text/x-c",
+    
+    "clj": "text/x-script.clojure",
+    "ml": "text/x-script.ocaml",
+    "mli": "text/x-script.ocaml"
 };
 
 return ext.register("ext/code/code", {
@@ -98,6 +107,37 @@ return ext.register("ext/code/code", {
     markup  : markup,
 
     nodes : [],
+    
+    getState : function(doc){
+        return;
+        
+        var doc   = doc ? doc.acedoc : this.getDocument();
+        if (!doc) return;
+        var sel   = doc.getSelection();
+        var range = sel.getRange();
+        
+        return {
+            scrolltop : doc.getScrollTopRow(),
+            selection : {
+                start : apf.extend({}, range.start),
+                end   : apf.extend({}, range.end)
+            }
+        };
+    },
+    
+    setState : function(obj, doc){
+        var doc   = doc ? doc.acedoc : this.getDocument();
+        if (!doc) return;
+        
+        var sel   = doc.getSelection();
+        var range = this.createRange();
+        
+        range.setStart(obj.selection.start.row, obj.selection.start.column);
+        range.setEnd(obj.selection.end.row, obj.selection.end.column);
+        
+        doc.setScrollTopRow(obj.scrolltop);
+        selection.setSelectionRange(range);
+    },
 
     getSyntax : function(node) {
         if(!node) return "";

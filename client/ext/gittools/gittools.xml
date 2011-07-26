@@ -1,0 +1,28 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:tab id="tabGitTools" skin="docktab" visible="false">
+        <a:page caption="Git Tools">
+            <a:button
+              caption = "Git Blame"
+              margin  = "10 5 5 5"
+              width   = "100"
+              onclick = "require('ext/gittools/gittools').gitBlame()"
+            />
+            <a:slider id = "sliderGitLog"
+              margin = "5"
+              min = "0"
+              max = "50"
+              step = "10"
+              slide = "snap"
+              bubble = "false"
+              markers = "true"
+            />
+            <a:text id = "txtGitLog"
+              margin     = "5"
+              height     = "150"
+              scrolldown = "true"
+              textselect = "true"
+              focussable = "true"
+              class      = "console_text" />
+        </a:page>
+    </a:tab>
+</a:application>

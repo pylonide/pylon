@@ -10,7 +10,8 @@
       visible   = "true"
       flex      = "1"
       modal     = "false"
-      model     = "{require('ext/settings/settings').model}">
+      model     = "{require('ext/settings/settings').model}"
+      optimize  = "true">
         <a:hbox
           anchors  = "0 0 0 0"
           overflow = "hidden">

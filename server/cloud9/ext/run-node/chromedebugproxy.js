@@ -17,21 +17,19 @@ module.exports = DebugProxy = function(port) {
     this.connected = false;
 
     var socket = new NodeSocket("127.0.0.1", port);
-    socket.onend = function() {
+    socket.on("end", function() {
         this.connected = false;
         _self.emit("end");
-    };
+    });
 
     this.stream = new ChromeDebugMessageStream(socket);
 
-    this.stream.addEventListener('connect', function(msg) {
-        console.log("CONNECT");
+    this.stream.addEventListener("connect", function(msg) {
         _self.connected = true;
         _self.emit("connection");
     });
 
-    this.stream.addEventListener('message', function(msg) {
-        console.log("message " + msg);
+    this.stream.addEventListener("message", function(msg) {
         _self.emit("message", msg.data.getContent());
     });
 };

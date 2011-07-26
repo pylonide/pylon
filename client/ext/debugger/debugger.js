@@ -34,7 +34,8 @@ return ext.register("ext/debugger/debugger", {
     },
 
     nodes : [],
-    
+    hotitems: {},
+
     hook : function(){
         var _self = this;
         
@@ -48,7 +49,7 @@ return ext.register("ext/debugger/debugger", {
             return false;
         });
         
-        stDebugProcessRunning.addEventListener("activate", function() {            
+        stDebugProcessRunning.addEventListener("activate", function() {
             _self.enable();
         });
         stProcessRunning.addEventListener("deactivate", function() {
@@ -58,7 +59,7 @@ return ext.register("ext/debugger/debugger", {
         ide.addEventListener("afteropenfile", function(e) {
             var doc = e.doc;
             var node = e.node;
-            if(!node)
+            if (!node)
                 return;
             var path = node.getAttribute("path");
             
@@ -133,8 +134,22 @@ return ext.register("ext/debugger/debugger", {
     init : function(amlNode){
         var _self = this;
 
+        while (tbDebug.childNodes.length) {
+            var button = tbDebug.firstChild;
+
+            if (button.nodeType == 1 && button.getAttribute("id") == "btnDebug")
+                ide.barTools.insertBefore(button, btnRun);
+            else
+                ide.barTools.appendChild(button);
+        }
+
+        this.hotitems["resume"]   = [btnResume];
+        this.hotitems["stepinto"] = [btnStepInto];
+        this.hotitems["stepover"] = [btnStepOver];
+        this.hotitems["stepout"]  = [btnStepOut];
+
         this.paths = {};
-        
+
         mdlDbgSources.addEventListener("afterload", function() {
             _self.$syncTree();
         });
@@ -175,18 +190,18 @@ return ext.register("ext/debugger/debugger", {
         ide.addEventListener("afterfilesave", function(e) {
             var node = e.node;
             var doc = e.doc;
-            
+
             var scriptId = node.getAttribute("scriptid");
             if (!scriptId)
                 return;
-                
+
             var value = e.value || doc.getValue();
-            var NODE_PREFIX = "(function (exports, require, module, __filename, __dirname) { "
+            var NODE_PREFIX = "(function (exports, require, module, __filename, __dirname) { ";
             var NODE_POSTFIX = "\n});";
             dbg.changeLive(scriptId, NODE_PREFIX + value + NODE_POSTFIX, false, function(e) {
                 //console.log("v8 updated", e);
             });
-        })
+        });
     },
 
     showDebugFile : function(scriptId, row, column, text) {
@@ -194,7 +209,8 @@ return ext.register("ext/debugger/debugger", {
 
         if (file) {
             editors.jump(file, row, column, text, null, true);
-        } else {
+        }
+        else {
             var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
             if (!script)
                 return;
@@ -202,7 +218,7 @@ return ext.register("ext/debugger/debugger", {
             var name = script.getAttribute("scriptname");
             var value = name.split("/").pop();
 
-            if (name.indexOf(ide.workspaceDir) == 0) {
+            if (name.indexOf(ide.workspaceDir) === 0) {
                 var path = ide.davPrefix + name.slice(ide.workspaceDir.length);
                 // TODO this has to be refactored to support multiple tabs
                 var page = tabEditors.getPage(path);
@@ -252,7 +268,7 @@ return ext.register("ext/debugger/debugger", {
         for (var i=0,l=dbgFiles.length; i<l; i++) {
             var dbgFile = dbgFiles[i];
             var name = dbgFile.getAttribute("scriptname");
-            if (name.indexOf(workspaceDir) != 0)
+            if (name.indexOf(workspaceDir) !== 0)
                 continue;
             this.paths[name] = dbgFile;
         }

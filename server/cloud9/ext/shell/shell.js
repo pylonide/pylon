@@ -4,17 +4,18 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var Plugin = require("cloud9/plugin"),
-    Fs     = require("fs"),
-    Path   = require("path"),
-    Async  = require("asyncjs"),
-    sys    = require("sys");
+var Plugin = require("cloud9/plugin");
+var Fs     = require("fs");
+var Path   = require("path");
+var Async  = require("asyncjs");
+var sys    = require("sys");
+var util   = require("cloud9/util");
 
-var ShellPlugin = module.exports = function(ide) {
-    this.ide = ide;
+var ShellPlugin = module.exports = function(ide, workspace) {
+    Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
     this.name = "shell";
-}
+};
 
 sys.inherits(ShellPlugin, Plugin);
 
@@ -46,11 +47,11 @@ sys.inherits(ShellPlugin, Plugin);
 
     this["internal-isfile"] = function(message) {
         var file  = message.argv.pop(),
-            path  = message.cwd || this.ide.workspaceDir,
+            path  = message.cwd || this.workspace.workspaceDir,
             _self = this;
         path = Path.normalize(path + "/" + file.replace(/^\//g, ""));
 
-        if (path.indexOf(this.ide.workspaceDir) === -1) {
+        if (path.indexOf(this.workspace.workspaceDir) === -1) {
             this.sendResult();
             return;
         }
@@ -71,9 +72,9 @@ sys.inherits(ShellPlugin, Plugin);
         var commands = {},
             _self    = this;
 
-        Async.list(Object.keys(this.ide.exts))
+        Async.list(Object.keys(this.workspace.plugins))
              .each(function(sName, next) {
-                 var oExt = _self.ide.getExt(sName);
+                 var oExt = _self.workspace.getExt(sName);
                  if (oExt["$commandHints"]) {
                      oExt["$commandHints"](commands, message, next);
                  }
@@ -93,7 +94,7 @@ sys.inherits(ShellPlugin, Plugin);
 
                      function afterMeta() {
                          if (oExt.metadata && oExt.metadata.commands)
-                             _self.extend(commands, oExt.metadata.commands);
+                             util.extend(commands, oExt.metadata.commands);
                          next();
                      }
                  }
@@ -118,11 +119,11 @@ sys.inherits(ShellPlugin, Plugin);
 
     this.cd = function(message) {
         var to    = message.argv.pop(),
-            path  = message.cwd || this.ide.workspaceDir,
+            path  = message.cwd || this.workspace.workspaceDir,
             _self = this;
         if (to != "/") {
             path = Path.normalize(path + "/" + to.replace(/^\//g, ""));
-            if (path.indexOf(this.ide.workspaceDir) === -1)
+            if (path.indexOf(this.workspace.workspaceDir) === -1)
                 return this.sendResult();
             Fs.stat(path, function(err, stat) {
                 if (err) {

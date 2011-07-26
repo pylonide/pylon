@@ -6,7 +6,7 @@
                 position         : relative;
                 overflow-y       : hidden;
                 overflow-x       : hidden;
-                background-image : url(images/panelbg.png);
+                /*background-image : url(images/panelbg.png);*/
                 color            : #202020;
                 font-family      : Tahoma, Arial;
                 font-size        : 12px;

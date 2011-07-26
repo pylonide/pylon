@@ -1,5 +1,5 @@
 /**
- * Debugger Module for the Cloud9 IDE
+ * Node Runtime Module for the Cloud9 IDE
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -12,20 +12,21 @@ var Path             = require("path"),
     sys              = require("sys"),
     netutil          = require("cloud9/netutil");
 
-var DebuggerPlugin = module.exports = function(ide) {
+var NodeRuntimePlugin = module.exports = function(ide, workspace) {
     this.ide = ide;
+    this.workspace = workspace;
     this.hooks = ["command"];
-    this.name = "debugger";
+    this.name = "node-runtime";
 };
 
-sys.inherits(DebuggerPlugin, Plugin);
+sys.inherits(NodeRuntimePlugin, Plugin);
 
 (function() {
     this.init = function() {
         var _self = this;
-        this.ide.getExt("state").on("statechange", function(state) {
-            state.debugClient    = !!_self.debugClient;
-            state.processRunning = !!_self.child;
+        this.workspace.getExt("state").on("statechange", function(state) {
+            state.nodeDebugClient    = !!_self.debugClient;
+            state.nodeProcessRunning = !!_self.child;
         });
     };
 
@@ -33,10 +34,13 @@ sys.inherits(DebuggerPlugin, Plugin);
     this.CHROME_DEBUG_PORT = 9222;
 
     this.command = function(user, message, client) {
+        var cmd = (message.command || "").toLowerCase();
+        if (!(/node/.test(message.runner)) && !(cmd.indexOf("debug") > -1 && cmd.indexOf("node") > -1))
+            return false;
+
         var _self = this;
 
-        var cmd = (message.command || "").toLowerCase(),
-            res = true;
+        var res = true;
         switch (cmd) {
             case "run":
                 this.$run(message, client);
@@ -47,10 +51,8 @@ sys.inherits(DebuggerPlugin, Plugin);
                     message.preArgs = ["--debug=" + _self.NODE_DEBUG_PORT];
                     message.debug = true;
                     _self.$run(message, client);
-    
-                    setTimeout(function() {
-                        _self.$startDebug();
-                    }, 100);
+
+                    _self.$startDebug();
                 });
                 break;
             case "rundebugbrk":
@@ -60,27 +62,31 @@ sys.inherits(DebuggerPlugin, Plugin);
                     message.preArgs = ["--debug-brk=" + _self.NODE_DEBUG_PORT];
                     message.debug = true;
                     _self.$run(message, client);
-    
-                    setTimeout(function() {
-                        _self.$startDebug();
-                    }, 100);
+
+                    // in parallel (both operations translate to async processes):
+                    // * execute a node process that executes the source file (with debug)
+                    // * start a debug proxy process to handle communication with the debugger.
+                    //   note: the debug proxy has a builtin retry functionality, this will
+                    //         resolve incidents when the debugger is not ready yet for the
+                    //         proxy
+                    _self.$startDebug();
                 });
                 break;
             case "rundebugchrome":
                 if (this.chromeDebugProxy) {
-                    this.ide.error("Chrome debugger already running!", 7, message);
+                    this.$error("Chrome debugger already running!", 7, message);
                     break;
                 }
                 this.chromeDebugProxy = new ChromeDebugProxy(this.CHROME_DEBUG_PORT);
                 this.chromeDebugProxy.connect();
 
-                this.chromeDebugProxy.addEventListener("connection", function() {
+                this.chromeDebugProxy.on("connection", function() {
                     _self.ide.broadcast('{"type": "chrome-debug-ready"}', _self.name);
                 });
                 break;
             case "debugnode":
                 if (!this.nodeDebugProxy)
-                    this.ide.error("No debug session running!", 6, message);
+                    this.$error("No debug session running!", 6, message);
                 else
                     this.nodeDebugProxy.send(message.body);
                 break;
@@ -97,13 +103,24 @@ sys.inherits(DebuggerPlugin, Plugin);
         }
         return res;
     };
+    
+    this.$error = function(message, code, data) {
+        this.ide.broadcast(JSON.stringify({
+            "type": "error",
+            "message": message,
+            "code": code || 0,
+            "data": data || ""
+        }), this.name);
+    };
 
     this.$kill = function() {
         var child = this.child;
         if (!child)
             return;
         try {
+            child.removeAllListeners("exit");
             child.kill();
+            this.$procExit();
             // check after 2sec if the process is really dead
             // If not kill it harder
             setTimeout(function() {
@@ -118,25 +135,21 @@ sys.inherits(DebuggerPlugin, Plugin);
         var _self = this;
 
         if (this.child)
-            return _self.ide.error("Child process already running!", 1, message);
+            return _self.$error("Child process already running!", 1, message);
 
         var file = _self.ide.workspaceDir + "/" + message.file;
         
         Path.exists(file, function(exists) {
            if (!exists)
-               return _self.ide.error("File does not exist: " + message.file, 2, message);
+               return _self.$error("File does not exist: " + message.file, 2, message);
             
            var cwd = _self.ide.workspaceDir + "/" + (message.cwd || "");
            Path.exists(cwd, function(exists) {
                if (!exists)
-                   return _self.ide.error("cwd does not exist: " + message.cwd, 3, message);
+                   return _self.$error("cwd does not exist: " + message.cwd, 3, message);
                 // lets check what we need to run
-                if(file.match(/\.js$/)){
-                   var args = (message.preArgs || []).concat(file).concat(message.args || []);
-                   _self.$runProc(_self.ide.nodeCmd, args, cwd, message.env || {}, message.debug || false);
-                } else {
-                   _self.$runProc(file, message.args||[], cwd, message.env || {}, false);
-                }
+                var args = (message.preArgs || []).concat(file).concat(message.args || []);
+                _self.$runProc(_self.ide.nodeCmd, args, cwd, message.env || {}, message.debug || false);
            });
         });
     };
@@ -150,11 +163,11 @@ sys.inherits(DebuggerPlugin, Plugin);
                 env[key] = process.env[key];
         }
 
-        console.log("Executing node "+proc+" "+args.join(" ")+" "+cwd); 
+        console.log("Executing node " + proc + " " + args.join(" ") + " " + cwd); 
 
         var child = _self.child = Spawn(proc, args, {cwd: cwd, env: env});
         _self.debugClient = args.join(" ").search(/(?:^|\b)\-\-debug\b/) != -1;
-        _self.ide.getExt("state").publishState();
+        _self.workspace.getExt("state").publishState();
         _self.ide.broadcast(JSON.stringify({"type": "node-start"}), _self.name);
 
         child.stdout.on("data", sender("stdout"));
@@ -172,24 +185,36 @@ sys.inherits(DebuggerPlugin, Plugin);
         }
 
         child.on("exit", function(code) {
-            _self.ide.broadcast(JSON.stringify({"type": "node-exit"}), _self.name);
-
-            _self.debugClient = false;
-            delete _self.child;
-            delete _self.nodeDebugProxy;
+            _self.$procExit();
         });
 
         return child;
+    };
+    
+    this.$procExit = function(noBroadcast) {
+        if (!noBroadcast)
+            this.ide.broadcast(JSON.stringify({"type": "node-exit"}), this.name);
+
+        this.debugClient = false;
+        delete this.child;
+        delete this.nodeDebugProxy;
     };
 
     this.$startDebug = function(message) {
         var _self = this;
 
+        /*
+         this is not a good test, because:
+         1. the startDebug function is only used together with execution of
+            debug process
+         2. the value of this.debugClient is changed upon events, thus
+            making this inspection suseptible to race condition
         if (!this.debugClient)
-            return this.ide.error("No debuggable application running", 4, message);
+            return this.$error("No debuggable application running", 4, message);
+        */
 
         if (this.nodeDebugProxy)
-            return this.ide.error("Debug session already running", 5, message);
+            return this.$error("Debug session already running", 4, message);
 
         this.nodeDebugProxy = new NodeDebugProxy(this.NODE_DEBUG_PORT);
         this.nodeDebugProxy.on("message", function(body) {
@@ -204,10 +229,23 @@ sys.inherits(DebuggerPlugin, Plugin);
             _self.ide.broadcast('{"type": "node-debug-ready"}', _self.name);
         });
 
-        this.nodeDebugProxy.on("end", function() {
-            if (_self.nodeDebugProxy == this) {
-                delete _self.nodeDebugProxy;
+        this.nodeDebugProxy.on("end", function(err) {
+            // in case an error occured, send a message back to the client
+            if (err) {
+                // TODO: err should be an exception instance with more fields
+                // TODO: in theory a "node-start" event might be sent after this event (though
+                //       extremely unlikely). Deal with all this event mess
+                _self.send({"type": "node-exit-with-error", errorMessage: err}, null, _self.name);
+                // the idea is that if the "node-exit-with-error" event is dispatched, 
+                // then the "node-exit" event is not.
+                _self.child.removeAllListeners("exit");
+                // in this case the debugger process is still running. We need to 
+                // kill that process, while not interfering with other parts of the source.
+                _self.$kill();
+                _self.$procExit(true);
             }
+            if (_self.nodeDebugProxy === this)
+                delete _self.nodeDebugProxy;
         });
 
         this.nodeDebugProxy.connect();
@@ -215,7 +253,7 @@ sys.inherits(DebuggerPlugin, Plugin);
     
     this.dispose = function(callback) {
         this.$kill();
-        callback();
+        callback && callback();
     };
     
-}).call(DebuggerPlugin.prototype);
+}).call(NodeRuntimePlugin.prototype);

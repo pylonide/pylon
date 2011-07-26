@@ -21,23 +21,24 @@ define(function(require, exports, module) {
 
             //Set references to global elements - aka extension points
             //this.tbMain       = tbMain;
-            this.mnuFile      = mnuFile;
-            this.mnuEdit      = mnuEdit;
+            this.mnuFile        = mnuFile;
+            this.mnuEdit        = mnuEdit;
             //this.barMenu      = barMenu;
-            this.barTools     = barTools;
-            this.sbMain       = sbMain;
-            this.vbMain       = vbMain;
+            this.barTools       = barTools;
+            this.sbMain         = sbMain;
+            this.vbMain         = vbMain;
 
-            this.workspaceDir = window.cloud9config.workspaceDir.replace(/\/+$/, "");
-            this.davPrefix = window.cloud9config.davPrefix.replace(/\/+$/, "");
-            this.sessionId = window.cloud9config.sessionId;
-            this.workspaceId = window.cloud9config.workspaceId;
-            this.readonly = window.cloud9config.readonly;
-            this.projectName = window.cloud9config.projectName;
+            this.workspaceDir   = window.cloud9config.workspaceDir.replace(/\/+$/, "");
+            this.davPrefix      = window.cloud9config.davPrefix.replace(/\/+$/, "");
+            this.sessionId      = window.cloud9config.sessionId;
+            this.workspaceId    = window.cloud9config.workspaceId;
+            this.readonly       = window.cloud9config.readonly;
+            this.projectName    = window.cloud9config.projectName;
 
-            this.loggedIn = true;
+            this.loggedIn       = true;
 
-            this.onLine = false;
+            this.onLine         = false;
+            this.offlineFileSystemSupport = false;
 
             this.dispatchEvent("load");
 
@@ -107,8 +108,9 @@ define(function(require, exports, module) {
             // fire up the socket connection:
             var options = {
                 rememberTransport: false,
-                transports:  ["htmlfile", "xhr-multipart", "flashsocket", "xhr-polling", "jsonp-polling"],
+                //transports:  [/*"htmlfile", "xhr-multipart", "flashsocket", */"xhr-polling", "jsonp-polling"],
                 connectTimeout: 5000,
+                reconnect: false,
                 transportOptions: {
                     "xhr-polling": {
                         timeout: 60000
@@ -120,7 +122,7 @@ define(function(require, exports, module) {
             };
 
             ide.socketConnect = function() {
-                clearTimeout(ide.$retryTimer);
+                clearInterval(ide.$retryTimer);
 
                 ide.socket.send(JSON.stringify({
                     command: "attach",
@@ -136,16 +138,18 @@ define(function(require, exports, module) {
                 ide.$retryTimer = setInterval(function() {
                     if (++retries == 3)
                         ide.dispatchEvent("socketDisconnect");
-                    
-                    if (!ide.socket.connecting && !ide.testOffline && ide.loggedIn)
-                        ide.socket.connect();
+
+                    var sock = ide.socket.socket;
+                    if (!sock.connecting && !ide.testOffline && ide.loggedIn)
+                        sock.reconnect();
                 }, 500);
             };
 
             ide.socketMessage = function(message) {
                 try {
                     message = JSON.parse(message);
-                } catch(e) {
+                }
+                catch(e) {
                     return;
                 }
 
@@ -157,15 +161,9 @@ define(function(require, exports, module) {
                 });
             };
             
-            //@todo see if this can be moved to noderunner
-            ide.addEventListener("socketMessage", function(e){
-                if (e.message.type && e.message.type == "state")
-                    stProcessRunning.setProperty("active", e.message.processRunning);
-            });
-
             // for unknown reasons io is sometimes undefined
             try {
-                ide.socket = new io.Socket(null, options);
+                ide.socket = new io.connect(null, options);
             } catch (e) {
                 util.alert(
                     "Error starting up",
@@ -175,10 +173,11 @@ define(function(require, exports, module) {
                     }
                 );
                 
-                var socketIoScriptEl = Array.prototype.slice.call(document.getElementsByTagName("script"))
-                    .filter(function(script) {
+                var socketIoScriptEl = Array.prototype.slice.call(
+                    document.getElementsByTagName("script")).filter(function(script) {
                         return script.src && script.src.indexOf("socket.io.js") >= 0;
-                    })[0];
+                    }
+                )[0];
                 
                 if (socketIoScriptEl) {
                     apf.ajax(socketIoScriptEl.src, {
@@ -206,8 +205,14 @@ define(function(require, exports, module) {
             
             ide.socket.on("message",    ide.socketMessage);
             ide.socket.on("connect",    ide.socketConnect);
+            //ide.socket.on("reconnect",  ide.socketReconnect);
+            //ide.socket.on("reconnecting",  ide.socketReconnecting);
             ide.socket.on("disconnect", ide.socketDisconnect);
-            ide.socket.connect();
+            var _oldsend = ide.socket.send;
+            ide.socket.send = function(msg) {
+                // pass a lambda to enable socket.io ACK
+                _oldsend.call(ide.socket, msg, function() {});
+            };
         });
         
         ide.getActivePageModel = function() {

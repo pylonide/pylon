@@ -18,27 +18,27 @@ exports.main = function(options) {
         ip = options.ip,
         user = options.user,
         group = options.group;
-        
-    if (!Path.existsSync(projectDir)) 
+
+    if (!Path.existsSync(projectDir))
         throw new Error("Workspace directory does not exist: " + projectDir);
-        
+
     var ideProvider = function(projectDir, server) {
         var uid = "owner" + Math.random().toString().slice(2);
         // load plugins:
         var exts = {};
         Fs.readdirSync(Path.normalize(__dirname + "/ext")).forEach(function(name){
-            exts[name] = require("./ext/" + name);
+            if (name[0] !== ".")
+                exts[name] = require("./ext/" + name + "/" + name);
         });
-        
-        // create web socket
-        var socketOptions = {
-            transports:  ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling']
-        };
-        var socketIo = IO.listen(server, socketOptions);
-        socketIo.on("connection", function(client) {
+
+        var socketIo = IO.listen(server);
+        socketIo.enable("browser client minification");
+        socketIo.set("log level", 2);
+        socketIo.sockets.on("connection", function(client) {
+            ide.addUser(uid, User.OWNER_PERMISSIONS);
             ide.addClientConnection(uid, client, null);
         });
-        
+
         var name = projectDir.split("/").pop();
         var serverOptions = {
             workspaceDir: projectDir,
@@ -51,14 +51,14 @@ exports.main = function(options) {
             version: options.version
         };
         var ide = new IdeServer(serverOptions, server, exts);
-        
+
         return function(req, res, next) {
             req.session.uid = uid;
             ide.addUser(uid, User.OWNER_PERMISSIONS);
             ide.handle(req, res, next);
         };
     };
-    
+
     var server = Connect.createServer();
     //server.use(Connect.logger());
     server.use(Connect.conditionalGet());

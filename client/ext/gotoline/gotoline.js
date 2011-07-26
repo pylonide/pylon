@@ -129,7 +129,7 @@ return ext.register("ext/gotoline/gotoline", {
             var cursor = ace.getCursorPosition();
             
             //Set the current line
-            txtLineNr.setValue(cursor.row + 1);
+            txtLineNr.setValue(txtLineNr.getValue() || cursor.row + 1);
                 
             //Determine the position of the window
             var pos = ace.renderer.textToScreenCoordinates(cursor.row, cursor.column);

@@ -1,4 +1,45 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:bar id="tbDebug">
+        <!--a:button
+          icon="chromium_16.png"
+          caption="Debug Chrome"
+          onclick="require('ext/run/run').debugChrome()"
+          disabled="{stConnected.active}" /-->      
+        <a:splitbutton id="btnDebug"
+          icon     = "bug.png"
+          caption  = "debug"
+          onclick  = "require('ext/run/run').run(true)"
+          disabled = "{stProcessRunning.active and 1}"
+          submenu  = "mnuDebugCfg" />
+        <a:divider skin="c9-divider" />
+        <a:button id="btnResume" tooltip="Resume"
+          icon     = "play.png"
+          onclick  = "dbg.continueScript();"
+          skin     = "c9-toolbarbutton"
+          disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+        <a:button  tooltip="Suspend"
+          skin     = "c9-toolbarbutton"
+          icon     = "pause.png"
+          onclick  = "dbg.suspend();"
+          disabled = "{!stDebugProcessRunning.active or !stRunning.active}"/>
+        <a:divider skin="c9-divider" />
+        <a:button id="btnStepInto" tooltip="Step Into"
+          icon     = "stepinto.png" 
+          skin     = "c9-toolbarbutton"
+          onclick  = "dbg.stepInto();" 
+          disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+        <a:button id="btnStepOver" tooltip="Step Over"
+          icon     = "step.png"
+          skin     = "c9-toolbarbutton"
+          onclick  = "dbg.stepNext();"
+          disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+        <a:button id="btnStepOut" tooltip="Step Out"
+          icon     = "stepback.png" 
+          skin     = "c9-toolbarbutton"
+          onclick  = "dbg.stepOut();"
+          disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+    </a:bar>
+    
     <a:tab id="tabDebug" skin="docktab" visible="false" buttons="close" activepage="-1">
         <a:page id="dbgCallStack" caption="Call Stack" render="runtime">
             <a:datagrid
@@ -40,9 +81,9 @@
                         <a:divider skin2="c9-divider"/>
                         <a:dropdown id="lstScripts"
                           skin2       = "black_dropdown"
-                    	  margin     = "3 0 0 4"
+                          margin     = "3 0 0 4"
                           width      = "120"
-                    	  maxitems   = "10"
+                          maxitems   = "10"
                           model      = "mdlDbgSources"
                           disabled   = "{!stDebugProcessRunning.active and 1}" 
                           each       = "[file]"
@@ -102,6 +143,25 @@
               icon       = "debugger/brkp_obj.png">
                 <a:actions />
             </a:list>
+        </a:page>
+        <a:model id="mdlAceAnnotations"></a:model>
+        <a:page id="aceAnnotations" caption="Bugs" render="runtime">
+            <a:datagrid id="dgAceAnnotations"
+              anchors    = "0 0 0 0" 
+              border     = "0"
+              options    = "size|move"
+              prerender  = "false"
+              caching    = "false"
+              onafterchoose = "require('ext/debugger/debugger').goToAnnotation()"
+              model      = "mdlAceAnnotations"
+              loading-message = "Loading..."
+              empty-message = "None found">
+                <a:each match="[annotation]" sort="[@line]">
+                    <a:column type="icon" width="20" icon="debugger/[@type]_obj.gif" />
+                    <a:column caption="Line" value="[@line]" width="50" />
+                    <a:column caption="Description" value="[@text]" width="100%" />
+                </a:each>
+            </a:datagrid>
         </a:page>
     </a:tab>
 </a:application>

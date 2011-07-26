@@ -7,20 +7,21 @@ var connect = require("connect"),
     utils   = require("connect/lib/connect/utils");
 
 exports.staticProvider = function (root, mount) {
-    var staticGzip      = exports.staticGzip({
-                            root        : path.normalize(root),
-                            compress    : [
-                                "application/javascript",
-                                "application/xml",
-                                "text/css",
-                                "text/html"
-                            ]
-                        }),
-        staticProvider  = connect.staticProvider(path.normalize(root));
+    var staticGzip = exports.staticGzip({
+        root     : path.normalize(root),
+        compress : [
+            "application/javascript",
+            "application/xml",
+            "text/css",
+            "text/html"
+        ]
+    });
+
+    var staticProvider  = connect.staticProvider(path.normalize(root));
 
     return function (request, response, next) {
-        var url         = request.url,
-            pathname    = require("url").parse(url).pathname;
+        var url      = request.url;
+        var pathname = require("url").parse(url).pathname;
 
         if (pathname.indexOf(mount) === 0) {
             request.url = url.replace(mount, "") || "/";
@@ -59,7 +60,7 @@ exports.errorHandler = function() {
                 html = html
                     .toString('utf8')
                     .replace(/\<%errormsg%\>/g, err.toString());
-                
+
                 res.writeHead(err.code || 500, {"Content-Type": "text/html"});
                 return res.end(html);
             })
@@ -143,8 +144,17 @@ function gzipped(path, fn) {
     });
 };
 
+/**
+ * Escapes a command for its usage in CLI
+ */
+var escapeShell = function(cmd) {
+    return cmd.replace(/([\\"'`$\s])/g, "\\$1");
+}
+
 function gzip(src, dest, flags, bin) {
-    var cmd = bin + ' ' + flags + ' -c ' + src + ' > ' + dest;
+    var cmd = escapeShell(bin) + ' ' + flags + ' -c '
+        + escapeShell(src) + ' > ' + escapeShell(dest);
+
     exec(cmd, function(err, stdout, stderr){
         if (err) {
             console.error('\n' + err.stack);

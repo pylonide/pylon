@@ -104,7 +104,7 @@ return ext.register("ext/editors/editors", {
                         _self.afterswitch(e);
                     },
                     onclose : function(e){
-                        if (!ide.onLine) //For now prevent tabs from being closed
+                        if (!ide.onLine && !ide.offlineFileSystemSupport) //For now prevent tabs from being closed
                             return false;
                             
                         _self.close(e.page);
@@ -226,8 +226,10 @@ return ext.register("ext/editors/editors", {
                 page.$doc    = doc;
                 page.$editor = editor;
                 page.setAttribute("tooltip", "[@path]");
-                page.setAttribute("class", "{(parseInt([@saving]) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : '')}");
-                
+                page.setAttribute("class",
+                    "{parseInt([@saving]) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
+                    ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"
+                );
                 page.setAttribute("model", page.$model = model);
                 page.$model.load(xmlNode);
             });
@@ -377,12 +379,12 @@ return ext.register("ext/editors/editors", {
     hook : function(){
         panels.register(this);
         
-        window.onpopstate  = function(e){
+        window.onpopstate = function(e){
             var page = "/workspace" + e.state;
             if (tabEditors.activepage != page && tabEditors.getPage(page))
                 tabEditors.set(page);
-        }
-        
+        };
+
         apf.addEventListener("hashchange", function(e){
             var page = "/workspace" + e.page;
             if (tabEditors.activepage != page && tabEditors.getPage(page))
@@ -417,7 +419,7 @@ return ext.register("ext/editors/editors", {
 
         /**** Support for state preservation ****/
 
-        this.$settings = {}, _self = this;
+        this.$settings = {};
         ide.addEventListener("loadsettings", function(e){
             function checkExpand(path, doc) {
                 var parent_path = apf.getDirname(path).replace(/\/$/, "");
@@ -434,6 +436,11 @@ return ext.register("ext/editors/editors", {
                 var nodes  = model.queryNodes("auto/files/file");
                 for (var doc, i = 0, l = nodes.length; i < l; i++) {
                     doc = ide.createDocument(nodes[i]);
+                    
+                    var state = nodes[i].getAttribute("state");
+                    if (state)
+                        doc.state = apf.unserialize(state);
+                    
                     ide.dispatchEvent("openfile", {
                         doc    : doc,
                         init   : true,
@@ -471,6 +478,10 @@ return ext.register("ext/editors/editors", {
                     var copy = apf.xmldb.cleanNode(file.cloneNode(false));
                     copy.removeAttribute("changed");
                     pNode.appendChild(copy);
+                    
+                    var state = pages[i].$editor.getState(pages[i].$doc);
+                    if (state)
+                        copy.setAttribute("state", apf.serialize(state));
                 }
             }
 
@@ -497,14 +508,14 @@ return ext.register("ext/editors/editors", {
             .attr("contenttype", util.getContentType(name))
             .attr("path", path)
             .node();
-    
+
         this.jump(node, row, column, text);
     },
-    
+
     jump : function(fileEl, row, column, text, doc, page) {
         var path    = fileEl.getAttribute("path");
         var hasData = page && tabEditors.getPage(path).$doc ? true : false;
-    
+
         if (row !== undefined) {
             var jumpTo = function(){
                 setTimeout(function() {
@@ -514,8 +525,8 @@ return ext.register("ext/editors/editors", {
                         ceEditor.$editor.find(text);
                     ceEditor.focus();
                 }, 100);
-            }
-            
+            };
+
             if (hasData) {
                 tabEditors.set(path);
                 jumpTo();

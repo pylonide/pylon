@@ -107,14 +107,14 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
             if ((page = e.currentTarget) && page.parentNode == this && page.localName == "page" && page.fake) {
                 _self.addItem(page);
                 
-                var count = 0;
-                
-                apf.addListener(page.$button, "mousedown", function(e) {
-                    if (++count < 2)
-                        return setTimeout(function () { count = 0; }, 500);
-                    require("ext/panels/panels").toggleAll();
-                    count = 0;
-                });
+//                var count = 0;
+//                
+//                apf.addListener(page.$button, "mousedown", function(e) {
+//                    if (++count < 2)
+//                        return setTimeout(function () { count = 0; }, 500);
+//                    require("ext/panels/panels").toggleAll();
+//                    count = 0;
+//                });
             }
         })
     },
@@ -208,7 +208,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
     tab0: function() {return this.showTab(10);},
 
     showTab: function(nr) {
-        var item = this.nodes[nr + this.menuOffset];
+        var item = this.nodes[(nr - 1) + this.menuOffset];
         if (item && item.relPage) {
             tabEditors.set(item.relPage);
             return false;

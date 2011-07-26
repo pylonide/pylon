@@ -56,14 +56,14 @@
                 height: 20px;
                 display: block;
                 background-repeat:no-repeat;
-                background-position: 0 1px;
+                background-position: 2px 1px;
             }
 
             .btnsearchiconOver span {
-                background-position: 0 -20px;
+                background-position: 2px -20px;
             }
             .btnsearchiconDown span {
-                background-position: 0 -40px;
+                background-position: 2px -40px;
             }
         ]]></a:style>
         <a:presentation>

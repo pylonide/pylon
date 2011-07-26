@@ -112,15 +112,18 @@ return ext.register("ext/console/console", {
         var wsRe = new RegExp(lang.escapeRegExp(workspaceDir) + "\\/([^:]*)(:\\d+)(:\\d+)*", "g");
         // relative workspace files
         var wsrRe = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+(?:\.[\w\_\$]+))?(\:\d+)(\:\d+)*/g;
-        
+
         for (var i=0; i<lines.length; i++) {
             if (!lines[i]) continue;
-
             log.push("<div class='item'><span style='" + style + "'>" + lines[i]
-                .replace(/\s/g, "&nbsp;")
-                .replace(wsrRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>$1$2$3</a>")
                 .replace(wsRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>"+workspaceDir+"/$1$2$3</a>")
+                .replace(wsrRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>$1$2$3</a>")
+                .replace(/\s{2,}/g, function(str) {
+                    return lang.stringRepeat("&nbsp;", str.length)
+                })
                 .replace(/(((http:\/\/)|(www\.))[\w\d\.-]*(:\d+)?(\/[\w\d]+)?)/, "<a href='$1' target='_blank'>$1</a>")
+                // tty escape sequences (http://ascii-table.com/ansi-escape-sequences.php)
+                .replace(/(\u0007|\u001b)\[(K|2J)/g, "")
                 .replace(/\033\[(?:(\d+);)?(\d+)m/g, function(m, extra, color) {
                     style = "color:" + (colors[color] || "#eee");
                     if (extra == 1) {
@@ -921,35 +924,40 @@ return ext.register("ext/console/console", {
         }
     },
 
-    showObject : function(xmlNode, ref, expression){
+    showObject : function(xmlNode, ref, expression) {
         if (ref && ref.dataType == apf.ARRAY) {
-            require("ext/debugger/debugger").showDebugFile(ref[0], ref[1] + 1, 0, ref[4]);
+            require(["ext/debugger/debugger"], function(dbg) {
+                dbg.showDebugFile(ref[0], ref[1] + 1, 0, ref[4]);
+            });
         }
         else {
-            require("ext/quickwatch/quickwatch").toggleDialog(1);
+            require(["ext/quickwatch/quickwatch"], function(quickwatch) {
+                quickwatch.toggleDialog(1);
+                
+                if (xmlNode && typeof xmlNode == "string")
+                    xmlNode = apf.getXml(xmlNode);
 
-            if (xmlNode && typeof xmlNode == "string")
-                xmlNode = apf.getXml(xmlNode);
+                var name = xmlNode && xmlNode.getAttribute("name") || expression;
+                txtCurObject.setValue(name);
+                dgWatch.clear("loading");
 
-            var name = xmlNode && xmlNode.getAttribute("name") || expression;
-            txtCurObject.setValue(name);
-            dgWatch.clear("loading");
+                if (xmlNode) {
+                    setTimeout(function(){
+                        var model = dgWatch.getModel();
+                        var root  = apf.getXml("<data />");
+                        apf.xmldb.appendChild(root, xmlNode);
+                        model.load(root);
+                        //model.appendXml(xmlNode);
+                    }, 10);
+                }
+                else if (ref) {
 
-            if (xmlNode) {
-                setTimeout(function(){
-                    var model = dgWatch.getModel();
-                    var root  = apf.getXml("<data />");
-                    apf.xmldb.appendChild(root, xmlNode);
-                    model.load(root);
-                    //model.appendXml(xmlNode);
-                }, 10);
-            }
-            else if (ref) {
+                }
+                else {
+                    this.evaluate(expression);
+                }
+            });
 
-            }
-            else {
-                this.evaluate(expression);
-            }
         }
     },
 

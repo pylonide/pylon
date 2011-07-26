@@ -77,9 +77,19 @@ return ext.register("ext/noderunner/noderunner", {
                 stProcessRunning.deactivate();
                 stDebugProcessRunning.deactivate();
                 break;
+                
+            case "node-exit-with-error":
+                stProcessRunning.deactivate();
+                stDebugProcessRunning.deactivate();
+
+                // TODO: is this the way to report an errror?
+                txtOutput.addValue("<div class='item console_log' style='font-weight:bold;color:#ff0000'>[C9 Server Exception: " 
+                        + message.errorMessage + "</div>");
+                break;
 
             case "state":
-                stDebugProcessRunning.setProperty("active", message.debugClient);
+                stDebugProcessRunning.setProperty("active", message.nodeDebugClient);
+                stProcessRunning.setProperty("active", e.message.nodeProcessRunning || e.message.pythonProcessRunning);
                 dbgNode.setProperty("strip", message.workspaceDir + "/");
                 ide.dispatchEvent("noderunnerready");
                 break;
@@ -89,7 +99,12 @@ return ext.register("ext/noderunner/noderunner", {
                     6:
                     401: Authorization Required
                 */
-                if (message.code !== 6 && message.code != 401) {
+                // Command error
+                if (message.code === 9) {
+                    txtConsole.addValue("<div class='item console_log' style='font-weight:bold;color:yellow'>"
+                        + message.message + "</div>");
+                }
+                else if (message.code !== 6 && message.code != 401) {
                     //util.alert("Server Error", "Server Error " 
                     //    + (message.code || ""), message.message);
 
@@ -111,7 +126,6 @@ return ext.register("ext/noderunner/noderunner", {
                 
                 ide.socket.send('{"command": "state"}');
                 break;
-                
         }
     },
 
@@ -131,14 +145,15 @@ return ext.register("ext/noderunner/noderunner", {
         this.$run(true);
     },
 
-    run : function(path, args, debug) {        
-        if (stProcessRunning.active || !stServerConnected.active || !path || typeof path != "string")
+    run : function(path, args, debug) {      
+        if (stProcessRunning.active || !stServerConnected.active/* || (ddRunnerSelector.value=='gae' ? '' : !path)*/ || typeof path != "string")
             return false;
 
         var page = ide.getActivePageModel();
         var command = {
-            "command" : debug ? "RunDebugBrk" : "Run",
+            "command" : apf.isTrue(debug) ? "RunDebugBrk" : "Run",
             "file"    : path.replace(/^\/+/, ""),
+            "runner"  : "node", //ddRunnerSelector.value, // Explicit addition; trying to affect as less logic as possible for now...
             "args"    : args || "",
             "env"     : {
                 "C9_SELECTED_FILE": page ? page.getAttribute("path").slice(ide.davPrefix.length) : ""
@@ -154,9 +169,12 @@ return ext.register("ext/noderunner/noderunner", {
 
     stop : function() {
         if (!stProcessRunning.active)
-            return
+            return;
 
-        ide.socket.send(JSON.stringify({"command": "kill"}));
+        ide.socket.send(JSON.stringify({
+            "command": "kill",
+            "runner"  : "node" //ddRunnerSelector.value // Explicit addition; trying to affect as less logic as possible for now...
+        }));
     },
 
     enable : function(){

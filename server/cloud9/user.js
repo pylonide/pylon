@@ -123,14 +123,16 @@ User.VISITOR_PERMISSIONS = {
     this.error = function(description, code, message, client) {
         //console.log("Socket error: " + description, new Error().stack);
         var sid = (message || {}).sid || -1;
-        var error = JSON.stringify({
+        var error = {
             "type": "error",
             "sid": sid,
             "code": code,
             "message": description
-        });
+        };
+
+        // pass a lambda to enable socket.io ACK
         if (client)
-            client.send(error);
+            client.send(JSON.stringify(error), function() {});
         else
             this.broadcast(error);
     };
@@ -139,8 +141,9 @@ User.VISITOR_PERMISSIONS = {
         if (scope && this.$server_exclude[scope])
             return;
 
+        // pass a lambda to enable socket.io ACK
         for (var id in this.clients) 
-            this.clients[id].send(msg);
+            this.clients[id].send(msg, function() {});
     };
     
 }).call(User.prototype);

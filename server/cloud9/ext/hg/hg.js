@@ -5,10 +5,11 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var Plugin = require("cloud9/plugin");
+var Util   = require("cloud9/util");
 var sys    = require("sys");
 
-var ShellHgPlugin = module.exports = function(ide) {
-    this.ide = ide;
+var ShellHgPlugin = module.exports = module.exports = function(ide, workspace) {
+    Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
     this.name = "hg";
     this.banned = ["serve"];
@@ -17,14 +18,14 @@ var ShellHgPlugin = module.exports = function(ide) {
 sys.inherits(ShellHgPlugin, Plugin);
 
 (function() {
-    var hghelp     = "",
-        commandsMap = {
-            "default": {
-                "commands": {
-                    "[PATH]": {"hint": "path pointing to a folder or file. Autocomplete with [TAB]"}
-                }
+    var hghelp     = "";
+    var commandsMap = {
+        "default": {
+            "commands": {
+                "[PATH]": {"hint": "path pointing to a folder or file. Autocomplete with [TAB]"}
             }
-        };
+        }
+    };
 
     this.$commandHints = function(commands, message, callback) {
         var _self = this;
@@ -52,14 +53,14 @@ sys.inherits(ShellHgPlugin, Plugin);
         }
 
         function onfinish() {
-            _self.extend(commands, hghelp);
+            Util.extend(commands, hghelp);
             callback();
         }
     };
 
     this.augmentCommand = function(cmd, struct) {
         var map = commandsMap[cmd] || commandsMap["default"];
-        return this.extend(struct, map || {});
+        return Util.extend(struct, map || {});
     };
 
     this.command = function(user, message, client) {

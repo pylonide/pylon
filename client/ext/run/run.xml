@@ -62,11 +62,31 @@
                   disabled="{!lstRunCfg.selected}"/>
             </a:hbox>
             <a:divider />
-            <a:hbox align="center" margin="5 10" padding="10">
-                <a:label width="130" textalign="right">JavaScript file</a:label>
+            <a:hbox align="center" id="hbRunCfg" margin="5 10" padding="10">
+                <a:label width="130" textalign="right">File path</a:label>
                 <a:textbox id="txtRunCfgName" flex="1" value="[@path]" disabled="{!lstRunCfg.selected}"/>
-                <a:button icon="folder.png" disabled="true" tooltip="Browse ..."></a:button>
+                <a:button visible="false" icon="folder.png" disabled="true" tooltip="Browse ..."></a:button>
             </a:hbox>
+            <!--a:divider />
+            <a:hbox align="center" margin="5 10" padding="10">
+                <a:model id="mdlRunnerSelector">
+                    <data>
+                        <element caption="JavaScript" value="js" />
+                        <element caption="Python" value="py" />
+                    </data>
+                </a:model>
+                <a:label width="130" textalign="right">Runner</a:label>
+                <a:dropdown id="ddRunnerSelector"
+                    model="mdlRunnerSelector"
+                    flex="1"
+                    disabled="{!lstRunCfg.selected}"
+                    selected="{lstRunCfg.selected.attributes['extension'].value}">
+                    <a:each match="[element]">
+                        <a:caption match="[@caption]" />
+                        <a:value match="[@value]" />
+                    </a:each>
+                </a:dropdown>
+            </a:hbox-->
             <a:hbox align="center" margin="5 10" padding="10">
                 <a:label width="130" textalign="right">Command line arguments</a:label>
                 <a:textbox id="txtRunCfgName" flex="1" value="[@args]" disabled="{!lstRunCfg.selected}"/>
@@ -86,18 +106,8 @@
         
     <a:bar id="tbRun">
         <a:divider skin="c9-divider" />
-        <!--a:button
-          icon="chromium_16.png"
-          caption="Debug Chrome"
-          onclick="require('ext/run/run').debugChrome()"
-          disabled="{stConnected.active}" /-->      
-        <a:splitbutton id="btnDebug"
-          icon     = "bug.png"
-          caption  = "debug"
-          onclick  = "require('ext/run/run').run(true)"
-          disabled = "{stProcessRunning.active and 1}"
-          submenu  = "mnuDebugCfg" />
         <a:splitbutton
+          id       = "btnRun"
           icon     = "run.png"
           caption  = "run"
           onclick  = "require('ext/run/run').run(false)"
@@ -109,33 +119,6 @@
           skin     = "c9-toolbarbutton"
           onclick  = "require('ext/run/run').stop()"
           disabled = "{!stProcessRunning.active and 1}" />
-        <a:divider skin="c9-divider" />
-        <a:button id="btnResume" tooltip="Resume"
-          icon     = "play.png"
-          onclick  = "dbg.continueScript();"
-          skin     = "c9-toolbarbutton"
-          disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
-        <a:button  tooltip="Suspend"
-          skin     = "c9-toolbarbutton"
-          icon     = "pause.png"
-          onclick  = "dbg.suspend();"
-          disabled = "{!stDebugProcessRunning.active or !stRunning.active}"/>
-		<a:divider skin="c9-divider" />
-    	<a:button id="btnStepInto" tooltip="Step Into"
-    	  icon     = "stepinto.png" 
-          skin     = "c9-toolbarbutton"
-    	  onclick  = "dbg.stepInto();" 
-    	  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
-    	<a:button id="btnStepOver" tooltip="Step Over"
-    	  icon     = "step.png"
-          skin     = "c9-toolbarbutton"
-    	  onclick  = "dbg.stepNext();"
-    	  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
-    	<a:button id="btnStepOut" tooltip="Step Out"
-    	  icon     = "stepback.png" 
-          skin     = "c9-toolbarbutton"
-    	  onclick  = "dbg.stepOut();"
-    	  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
-  </a:bar>
+    </a:bar>
 
 </a:application>

@@ -28,24 +28,19 @@ return ext.register("ext/run/run", {
         "stepover" : {hint: "step over the current expression on the execution stack"},
         "stepout"  : {hint: "step out of the current function scope"}
     },
-    hotitems: {},
 
     nodes : [],
 
     init : function(amlNode){
         while(tbRun.childNodes.length) {
             var button = tbRun.firstChild;
-            ide.barTools.appendChild(button);
             
-            if (button.nodeType == 1)
+            ide.barTools.appendChild(button);
+            if (button.nodeType == 1) {
                 this.nodes.push(button);
+            }
         }
         
-        this.hotitems["resume"]   = [btnResume];
-        this.hotitems["stepinto"] = [btnStepInto];
-        this.hotitems["stepover"] = [btnStepOver];
-        this.hotitems["stepout"]  = [btnStepOut];
-
         var _self = this;
         mdlRunConfigurations.addEventListener("afterload", function(e) {
             _self.$updateMenu();
@@ -82,19 +77,21 @@ return ext.register("ext/run/run", {
 
     addConfig : function() {
         var file = ide.getActivePageModel();
+        var extension = "";
 
-        if (!file || (file.getAttribute("contenttype") || "").indexOf("application/javascript") != 0) {
+        if (!file || (file.getAttribute("contenttype") || "").indexOf("application/javascript") != 0 && (file.getAttribute("contenttype") || "").indexOf("text/x-script.python") != 0) {
             var path = "";
             var name = "server";
         }
         else {
-            path = file.getAttribute("path").slice(ide.davPrefix.length + 1);
-            name = file.getAttribute("name").replace(/\.js$/, "");
+            path  = file.getAttribute("path").slice(ide.davPrefix.length + 1);
+            name  = file.getAttribute("name").replace(/\.(js|py)$/, function(full, ext){ extension = ext; return ""; });
         }
 
         var cfg = apf.n("<config />")
             .attr("path", path)
             .attr("name", name)
+            .attr("extension", extension)
             .attr("args", "").node();
 
         mdlRunConfigurations.appendXml(cfg);
