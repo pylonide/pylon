@@ -393,7 +393,7 @@ apf.BaseTree = function(){
 
             container.style.height = Math.max((height), 0) + "px";
             oInt.scrollTop         = oInt.scrollHeight - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
-            finishExpand();
+            finishSlide();
         }
         else {
             apf.tween.single(container, {
