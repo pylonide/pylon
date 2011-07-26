@@ -348,8 +348,9 @@ apf.MultiselectBinding = function(){
         var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.xmlRoot);
         while (nodes[i] && nodes[i] != xmlNode)
             i++;
-
-        return nodes[i + (up ? -1 * count : count)];
+        
+        var ind = i + (up ? -1 * count : count);
+        return nodes[ind < 0 ? 0 : ind];
     };
 
     /**
