@@ -359,9 +359,15 @@ var V8Debugger = function(dbg, host) {
         var _self      = this;
         
         if (breakpoint) {
-            breakpoint.clear(function() {
+            try {
+                breakpoint.clear(function() {
+                    _self.$removeBreakpoint(breakpoint, model);
+                });
+            }
+            catch(ex) {
+                // aie! failed, remove it to be sure.
                 _self.$removeBreakpoint(breakpoint, model);
-            });
+            }
         }
         else {
             breakpoint = this.$addBreakpoint({
