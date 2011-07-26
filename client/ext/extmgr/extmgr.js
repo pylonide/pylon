@@ -20,15 +20,15 @@ return ext.register("ext/extmgr/extmgr", {
     hook : function(){
         var _self = this;
         this.nodes.push(
-            mnuPanels.insertBefore(new apf.divider(), mnuPanels.firstChild),
+            mnuWindows.insertBefore(new apf.divider(), mnuWindows.firstChild),
             
-            mnuPanels.insertBefore(new apf.item({
+            mnuWindows.insertBefore(new apf.item({
                 caption : "Extension Manager...",
                 onclick : function(){
                     ext.initExtension(_self);
                     winExt.show();
                 }
-            }), mnuPanels.firstChild)
+            }), mnuWindows.firstChild)
         );
     },
     

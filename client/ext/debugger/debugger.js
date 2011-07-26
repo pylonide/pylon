@@ -10,7 +10,6 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
-var panels = require("ext/panels/panels");
 var dock   = require("ext/dockpanel/dockpanel");
 var fs = require("ext/filesystem/filesystem");
 var noderunner = require("ext/noderunner/noderunner");
@@ -38,6 +37,8 @@ return ext.register("ext/debugger/debugger", {
     hotitems: {},
 
     hook : function(){
+        var _self = this;
+        
         ide.addEventListener("consolecommand.debug", function(e) {
             ide.socket.send(JSON.stringify({
                 command: "internal-isfile",
@@ -47,8 +48,7 @@ return ext.register("ext/debugger/debugger", {
             }));
             return false;
         });
-
-        var _self = this;
+        
         stDebugProcessRunning.addEventListener("activate", function() {
             _self.enable();
         });
@@ -62,65 +62,81 @@ return ext.register("ext/debugger/debugger", {
             if (!node)
                 return;
             var path = node.getAttribute("path");
-
+            
             node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
         });
-
-        var sectionStack = dock.getSection("debugger-stack");
-        var sectionRest = dock.getSection("debugger-rest");
         
-        dock.registerPage(sectionStack, null, function(){
-            ext.initExtension(_self);
-            return dbgCallStack;
-        }, {
+        var name = "ext/debugger/debugger"; //this.name
+        dock.register(name, "dbgCallStack", {
+            menu : "Debugger/Call Stack",
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
                 defaultState: { x: -6, y: -217 /*-46*/ },
                 activeState: { x: -6, y: -217 }
             }
+        }, function(type) {
+            ext.initExtension(_self);
+            return dbgCallStack;
         });
         
-        dock.registerPage(sectionRest, null, function(){
-            ext.initExtension(_self);
-            return dbInteractive;
-        }, {
+        dock.register(name, "dbInteractive", {
+            menu : "Debugger/Interactive",
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
                 defaultState: { x: -7, y: -310 /*-130*/ },
                 activeState: { x: -7, y: -310 }
             }
+        }, function(type) {
+            ext.initExtension(_self);
+            return dbInteractive;
         });
         
-        dock.registerPage(sectionRest, null, function(){
-            ext.initExtension(_self);
-            return dbgVariable;
-        }, {
+        dock.register(name, "dbgVariable", {
+            menu : "Debugger/Variables",
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
                 defaultState: { x: -6, y: -261 /*-174*/ },
                 activeState: { x: -6, y: -261 }
             }
+        }, function(type) {
+            ext.initExtension(_self);
+            return dbgVariable;
         });
         
-        dock.registerPage(sectionRest, null, function(){
-            ext.initExtension(_self);
-            return dbgBreakpoints;
-        }, {
+        dock.register(name, "dbgBreakpoints", {
+            menu : "Debugger/Breakpoints",
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
                 defaultState: { x: -6, y: -360 /*-88*/ },
                 activeState: { x: -6, y: -360 }
             }
+        }, function(type) {
+            ext.initExtension(_self);
+            return dbgBreakpoints;
         });
-        ext.initExtension(this);
+        
+        dock.addDockable({
+            hidden  : true,
+            buttons : [
+                { ext : [name, "dbgCallStack"] }
+            ]
+        });
+        dock.addDockable({
+            hidden  : true,
+            buttons : [
+                { ext : [name, "dbInteractive"] },
+                { ext : [name, "dbgVariable"] },
+                { ext : [name, "dbgBreakpoints"] }
+            ]
+        });
     },
 
     init : function(amlNode){
         var _self = this;
-       
+
         while (tbDebug.childNodes.length) {
             var button = tbDebug.firstChild;
-            
+
             if (button.nodeType == 1 && button.getAttribute("id") == "btnDebug")
                 ide.barTools.insertBefore(button, btnRun);
             else
@@ -154,15 +170,21 @@ return ext.register("ext/debugger/debugger", {
         dbg.addEventListener("changeframe", function(e) {
             e.data && _self.showDebugFile(e.data.getAttribute("scriptid"));
         });
-
-        lstBreakpoints.addEventListener("afterselect", function(e) {
-            if (e.selected && e.selected.getAttribute("scriptid"))
-                _self.showDebugFile(e.selected.getAttribute("scriptid"), parseInt(e.selected.getAttribute("line"), 10) + 1);
-            // TODO sometimes we don't have a scriptID
-        });
         
-        lstScripts.addEventListener("afterselect", function(e) {
-            e.selected && require("ext/debugger/debugger").showDebugFile(e.selected.getAttribute("scriptid"));
+        dbgBreakpoints.addEventListener("afterrender", function(){
+            lstBreakpoints.addEventListener("afterselect", function(e) {
+                if (e.selected && e.selected.getAttribute("scriptid"))
+                    _self.showDebugFile(e.selected.getAttribute("scriptid"), 
+                        parseInt(e.selected.getAttribute("line")) + 1);
+                // TODO sometimes we don't have a scriptID
+            });
+        });
+
+        dbgBreakpoints.addEventListener("dbInteractive", function(){
+            lstScripts.addEventListener("afterselect", function(e) {
+                e.selected && require("ext/debugger/debugger")
+                    .showDebugFile(e.selected.getAttribute("scriptid"));
+            });
         });
 
         ide.addEventListener("afterfilesave", function(e) {
