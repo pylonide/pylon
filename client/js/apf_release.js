@@ -3484,7 +3484,7 @@ container.style.overflow="hidden";}_self.$extend(xmlNode,container,null,callback
 if(!apf.isIE7){container.style.height=apf.hasHeightAutoDrawBug?"100%":"auto";}}}_self.dispatchEvent("expand",{xmlNode:xmlNode});
 }if(!this.getAttribute("animation")){var diff=apf.getHeightDiff(container),oInt=container;
 container.style.height=Math.max((height),0)+"px";oInt.scrollTop=oInt.scrollHeight-oInt.offsetHeight-diff-(apf.isGecko?16:0);
-finishExpand();}else{apf.tween.single(container,{type:"scrollheight",from:container.offsetHeight,to:height,anim:this.$animType,steps:this.$animOpenStep,interval:this.$animSpeed,onfinish:function(container){finishSlide();
+finishSlide();}else{apf.tween.single(container,{type:"scrollheight",from:container.offsetHeight,to:height,anim:this.$animType,steps:this.$animOpenStep,interval:this.$animSpeed,onfinish:function(container){finishSlide();
 }});}};this.slideClose=function(container,xmlNode,immediate){if(this.nocollapse){return;
 }if(!xmlNode){xmlNode=this.selected;}if(this.singleopen){var p=(this.getTraverseParent(xmlNode)||this.xmlRoot).getAttribute(apf.xmldb.xmlIdTag);
 lastOpened[p]=null;}if(!container){var htmlNode=apf.xmldb.getHtmlNode(xmlNode,this);
@@ -7891,8 +7891,8 @@ var line=modelBp.getAttribute("line");var id=script+"|"+line;var bp=_self.$break
 if(modelBp.parentNode){apf.xmldb.removeNode(modelBp);}if(!bp){bp=_self.$addBreakpoint({id:id,name:script,row:line,col:modelBp.getAttribute("column"),lineOffset:0,scriptId:null,data:{condition:modelBp.getAttribute("condition"),ignoreCount:parseInt(modelBp.getAttribute("ignorecount")||0,10),enabled:(modelBp.getAttribute("enabled")=="true")}},model,next);
 }else{model.appendXml(_self.$getBreakpointXml(bp,0));next();}},callback);});};this.toggleBreakpoint=function(script,relativeRow,model){var name=script.getAttribute("scriptname");
 var lineOffset=parseInt(script.getAttribute("lineoffset")||"0",10);var row=lineOffset+relativeRow;
-var id=name+"|"+row;var breakpoint=this.$breakpoints[id];var _self=this;if(breakpoint){breakpoint.clear(function(){_self.$removeBreakpoint(breakpoint,model);
-});}else{breakpoint=this.$addBreakpoint({id:id,name:name,row:row,col:0,lineOffset:lineOffset,scriptId:script.getAttribute("scriptid")},model);
+var id=name+"|"+row;var breakpoint=this.$breakpoints[id];var _self=this;if(breakpoint){try{breakpoint.clear(function(){_self.$removeBreakpoint(breakpoint,model);
+});}catch(ex){_self.$removeBreakpoint(breakpoint,model);}}else{breakpoint=this.$addBreakpoint({id:id,name:name,row:row,col:0,lineOffset:lineOffset,scriptId:script.getAttribute("scriptid")},model);
 }};this.$removeBreakpoint=function(bp,model){if(bp.$id){var node,xpath="breakpoint[@id="+bp.$id+"]";
 while(node=model.queryNode(xpath)){apf.xmldb.removeNode(node);}}delete this.$breakpoints[bp.id];
 };this.$addBreakpoint=function(options,model,callback){var bp=this.$breakpoints[options.id]=new Breakpoint(options.name,options.row,options.col,options.dbg);
