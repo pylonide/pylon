@@ -104,8 +104,9 @@ sys.inherits(ShellPlugin, Plugin);
              });
     };
 
-    this.pwd =
-    this.ls  = function(message) {
+    this.pwd   =
+    this.mkdir =
+    this.ls    = function(message) {
         var _self = this;
         this.spawnCommand(message.command, message.argv.slice(1), message.cwd, null, null, function(code, err, out) {
             _self.sendResult(0, message.command, {
@@ -135,18 +136,6 @@ sys.inherits(ShellPlugin, Plugin);
                 _self.sendResult(0, message.command, {cwd: path});
             });
         }
-    };
-
-    this.mkdir = function(message) {
-        var _self = this;
-        this.spawnCommand(message.command, message.argv.slice(1), message.cwd, null, null, function(code, err, out) {
-            _self.sendResult(0, message.command, {
-                code    : code,
-                argv    : message.argv,
-                err     : err,
-                out     : out
-            });
-        });
     };
 
     this.getListing = function(tail, path, dirmode, callback) {

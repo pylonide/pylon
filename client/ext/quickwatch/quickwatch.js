@@ -36,7 +36,7 @@ return ext.register("ext/quickwatch/quickwatch", {
                 if (!this.value.trim())
                     return dgWatch.clear();
 
-                require("ext/console/console").evaluate(this.value);
+                require("ext/debugger/inspector").evaluate(this.value);
             }
             else if (e.keyCode == 40 && dgWatch.length) {
                 var first = dgWatch.getFirstTraverseNode();
@@ -79,7 +79,7 @@ return ext.register("ext/quickwatch/quickwatch", {
             if (value) {
                 txtCurObject.setValue(value);
                 if (exec) {
-                    require("ext/console/console").evaluate(value);
+                    require("ext/debugger/inspector").evaluate(value);
                     txtCurObject.focus();
                 }
             }

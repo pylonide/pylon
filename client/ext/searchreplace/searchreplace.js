@@ -169,11 +169,9 @@ return ext.register("ext/searchreplace/searchreplace", {
             //     wholeWord: false,
             //     regExp: false
             // }
-            console.log(options);
             this.$editor.find(txt, options);
         }
         else {
-            console.log(options);
             this.$editor.find(txt, options);
         }
         chkSearchSelection.setAttribute("checked", false);

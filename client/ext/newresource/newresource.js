@@ -63,7 +63,6 @@ return ext.register("ext/newresource/newresource", {
                     _self.exists(path + "/" + filename, test);    
                 } else {
                     node.setAttribute('name', filename);
-                    console.log(node)
 //                    ide.dispatchEvent("openfile", {doc: ide.createDocument(node), type:'newfile'});
                 }
             };
