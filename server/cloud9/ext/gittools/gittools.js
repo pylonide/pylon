@@ -19,11 +19,13 @@ sys.inherits(GitToolsPlugin, Plugin);
 (function() {
 
     // TODO place these two functions in a separate file
+    // Could be useful for others
     this.getGitTopDir = function(dirPath, absoluteFilePath, callback) {
         var _self = this;
         this.getGitTopDirProc(dirPath, function(err, gitRoot) {
             if (err || !gitRoot)
-                return callback("no");
+                return callback("Error getting git top dir: " + err +
+                    " | " + absoluteFilePath + " | " + dirPath);
 
             gitRoot = gitRoot.replace("\n", "");
             var relativeFilePath = absoluteFilePath.substr(gitRoot.length + 1);
@@ -68,8 +70,8 @@ sys.inherits(GitToolsPlugin, Plugin);
         var _self = this;
 
         // Cleanup the file path
-        if (message.file.indexOf("/workspace/" >= 0))
-            message.file = message.file.substr(11);
+        //if (message.file.indexOf("/workspace/" >= 0))
+        //    message.file = message.file.substr(11);
 
         // Get the file's parent directory path
         var lastSlash = message.file.lastIndexOf("/");
@@ -95,6 +97,12 @@ sys.inherits(GitToolsPlugin, Plugin);
                 case "blame":
                     _self.gitBlame(message, relativeFilePath, gitRoot);
                     break;
+                case "log":
+                    _self.gitLog(message, relativeFilePath, gitRoot);
+                    break;
+                case "show":
+                    _self.gitShow(message, relativeFilePath, gitRoot, message.hash);
+                    break;
                 default:
                     console.log("Git Tools warning: subcommand `" + 
                         message.subcommand + "` not found");
@@ -106,7 +114,12 @@ sys.inherits(GitToolsPlugin, Plugin);
     };
 
     this.gitBlame = function(message, relativeFilePath, gitRoot) {
-        var argv  = ["blame", "-p", relativeFilePath];
+        var gitCommand = "blame";
+        var argv;
+        if (message.hash)
+            argv = [gitCommand, "-p", message.hash, "--", relativeFilePath];
+        else
+            argv = [gitCommand, "-p", relativeFilePath];
 
         var _self = this;
         this.spawnCommand("git", argv, gitRoot,
@@ -114,24 +127,77 @@ sys.inherits(GitToolsPlugin, Plugin);
                 _self.sendResult(0, message.command, {
                     code: 0,
                     err: err,
-                    gitcommand: "blame",
+                    gitcommand: gitCommand,
+                    file: message.file,
                     out: null
                 });
             },
-            function(out) { // Data
-                _self.sendResult(0, message.command, {
-                    code: 0,
-                    err: null,
-                    gitcommand: "blame",
-                    out: out
-                });
-            },
+            function(out) { }, // Data
             function(code, err, out) { // Exit
                 _self.sendResult(0, message.command, {
                     code: code,
                     err: null,
-                    gitcommand: "blame",
+                    gitcommand: gitCommand,
+                    file: message.file,
+                    out: out
+                });
+            }
+        );
+    };
+
+    this.gitLog = function(message, relativeFilePath, gitRoot) {
+        var gitCommand = "log";
+        var argv  = [gitCommand, "--format=raw", "--reverse", "--", relativeFilePath];
+
+        var _self = this;
+        this.spawnCommand("git", argv, gitRoot,
+            function(err) { // Error
+                _self.sendResult(0, message.command, {
+                    code: 0,
+                    err: err,
+                    gitcommand: gitCommand,
+                    file: message.file,
                     out: null
+                });
+            },
+            function(out) { }, // Data
+            function(code, err, out) { // Exit
+                _self.sendResult(0, message.command, {
+                    code: code,
+                    err: null,
+                    gitcommand: gitCommand,
+                    file: message.file,
+                    out: out
+                });
+            }
+        );
+    };
+    
+    this.gitShow = function(message, relativeFilePath, gitRoot, hash) {
+        var gitCommand = "show";
+        var argv  = [gitCommand, hash + ":" + relativeFilePath];
+
+        var _self = this;
+        this.spawnCommand("git", argv, gitRoot,
+            function(err) { // Error
+                _self.sendResult(0, message.command, {
+                    code: 0,
+                    err: err,
+                    gitcommand: gitCommand,
+                    hash: hash,
+                    file: message.file,
+                    out: null
+                });
+            },
+            function(out) { }, // Data
+            function(code, err, out) { // Exit
+                _self.sendResult(0, message.command, {
+                    code: code,
+                    err: null,
+                    gitcommand: gitCommand,
+                    hash: hash,
+                    file: message.file,
+                    out: out
                 });
             }
         );
