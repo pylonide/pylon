@@ -550,7 +550,6 @@ return ext.register("ext/console/console", {
             if (ins.indexOf("PATH]") != -1 && lastSearch && lastSearch.line == val && lastSearch.matches.length == 1)
                 ins = lastSearch.matches[0].replace(lastSearch.base, "");
             if (ins.indexOf("PATH]") != -1) {
-                console.log("REQUESTING AUTOCOMPLETE! ... ");
                 ide.socket.send(JSON.stringify({
                     command: "internal-autocomplete",
                     line   : val,

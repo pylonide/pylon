@@ -26,6 +26,23 @@ exports.init = function() {
     apf.addListener(winHints, "mousemove", mouseHandler.bind(this));
 };
 
+var fontSize;
+function getFontSize(txtNode) {
+    if (fontSize)
+        return fontSize;
+    var font = apf.getStyle(txtNode, "font");
+    var el = document.createElement("span");
+    el.style.font = font;
+    el.innerHTML = "W";
+    document.body.appendChild(el);
+    fontSize = {
+        width: el.offsetWidth,
+        height: el.offsetHeight
+    };
+    document.body.removeChild(el);
+    return fontSize;
+}
+
 exports.show = function(textbox, base, hints, cmdsLut, cursorPos) {
     var name = "console_hints";
     if (typeof textbox == "string")
@@ -83,7 +100,8 @@ exports.show = function(textbox, base, hints, cmdsLut, cursorPos) {
     }
 
     var pos = apf.getAbsolutePosition(textbox.$ext, winHints.parentNode);
-    winHints.style.left = Math.max(cursorPos * 5.5, 5) + "px";
+    var size = getFontSize(textbox.$ext);
+    winHints.style.left = Math.max(cursorPos * (size.width - 1.6) + 5, 5) + "px";
     //winHints.style.top = (pos[1] - winHints.offsetHeight) + "px";
 };
 
