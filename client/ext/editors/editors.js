@@ -230,6 +230,11 @@ return ext.register("ext/editors/editors", {
                 );
                 page.setAttribute("model", page.$model = model);
                 page.$model.load(xmlNode);
+                
+                //this is very bad, should be removed
+                setTimeout(function(){
+                    editor.setState(doc, doc.state);
+                }, 1000);
             });
 
         if (init)
@@ -277,8 +282,6 @@ return ext.register("ext/editors/editors", {
 
         });*/
         
-        
-        editor.setState(doc);
         
         editor.enable();
         //editor.$itmEditor.select();

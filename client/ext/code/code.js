@@ -109,7 +109,6 @@ return ext.register("ext/code/code", {
     nodes : [],
     
     getState : function(doc){
-        return;
         var doc = doc ? doc.acesession : this.getDocument();
         if (!doc || typeof doc.getSelection != "function") 
             return;
@@ -123,14 +122,11 @@ return ext.register("ext/code/code", {
         };
     },
     
-    setState : function(doc){
-        
-        return;
+    setState : function(doc, state){
         var aceDoc = doc ? doc.acesession : this.getDocument();
-        if (!aceDoc || typeof aceDoc.getSelection != "function") 
+        if (!aceDoc || !state || typeof aceDoc.getSelection != "function") 
             return;
         
-        var state = doc.state;
         var sel   = aceDoc.getSelection();
         sel.setSelectionRange(state.selection, false);
         ceEditor.$editor.renderer.scrollToY(state.scrolltop)
