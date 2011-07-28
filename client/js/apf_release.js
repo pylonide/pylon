@@ -2947,7 +2947,7 @@ if(!elCaption){return this.stopRename();}this.renaming=true;this.$renameSubject=
 var wdt=elCaption.offsetWidth;this.lastCursor=elCaption.style.cursor;elCaption.style.cursor="text";
 elCaption.parentNode.replaceChild(this.$txt,elCaption);elCaption.host=this;if(apf.isTrue(this.$getOption("main","scalerename"))){var diff=apf.getWidthDiff(this.$txt);
 this.$txt.style.width=(wdt-diff-3)+"px";}this.$replacedNode=elCaption;var xmlNode=this.$getCaptionXml?this.$getCaptionXml(this.$renameSubject):this.$getDataNode("caption",this.$renameSubject);
-value=startEmpty||!xmlNode?"":(xmlNode.nodeType!=1?unescape(xmlNode.nodeValue):(apf.isOnlyChild(xmlNode.firstChild,[3,4])?apf.queryValue(xmlNode):this.$applyBindRule("caption",this.$renameSubject)))||"";
+var value=startEmpty||!xmlNode?"":(xmlNode.nodeType!=1?unescape(xmlNode.nodeValue):(apf.isOnlyChild(xmlNode.firstChild,[3,4])?apf.queryValue(xmlNode):this.$applyBindRule("caption",this.$renameSubject)))||"";
 if(apf.hasContentEditable){if(this.$multiLineRename){this.$txt.innerHTML=apf.htmlCleaner.prepare(value.trim().replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br />"));
 }else{this.$txt.innerHTML=value.replace(/</g,"&lt;")||apf.hasContentEditableContainerBug&&"<br>"||"";
 }}else{this.$txt.value=value;}this.$txt.unselectable="Off";this.$txt.host=this;
@@ -2975,7 +2975,7 @@ apf.importCssString("#txt_rename{white-space:nowrap}");this.$txt.onselectstart=f
 };this.$txt.onkeyup=function(e){if(!this.host.$autocomplete){return;}this.host.$lookup(this[apf.hasContentEditable?"innerHTML":"value"]);
 };var sel;this.$txt.select=function(){if(!apf.hasMsRangeObject){if(window.getSelection&&document.createRange){var sel=window.getSelection();
 sel.removeAllRanges();var r=document.createRange();r.setStart(this.firstChild,0);
-var lastIndex=this.firstChild.nodeValue.lastIndexOf(".");r.setEnd(this.firstChild,lastIndex>-1?lastIndex:this.value.length);
+var lastIndex=this.firstChild.nodeValue.lastIndexOf(".");r.setEnd(this.firstChild,lastIndex>-1?lastIndex:this.firstChild.nodeValue.length);
 sel.addRange(r);}else{(sel||(sel=new apf.selection())).selectNode(this);}return;
 }var r=document.selection.createRange();try{r.moveToElementText(this);if(apf.isFalse(this.host.$getOption("main","selectrename"))||typeof this.host.$renameStartCollapse!="undefined"){r.collapse(this.host.$renameStartCollapse);
 }}catch(e){}r.select();};if(apf.hasFocusBug){this.$txt.onfocus=function(){if(apf.window){apf.window.$focusfix2();
