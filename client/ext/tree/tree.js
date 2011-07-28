@@ -473,7 +473,13 @@ return ext.register("ext/tree/tree", {
             }
         });
     },
-
+    
+    moveFile : function(path, newpath){
+        davProject.move(path, newpath);
+        trFiles.enable();
+        trFiles.focus();
+    },
+    
     refresh : function(){
         trFiles.getModel().load("<data><folder type='folder' name='" + ide.projectName + "' path='" + ide.davPrefix + "' root='1'/></data>");
         this.expandedList = {};
