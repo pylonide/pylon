@@ -1381,11 +1381,11 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbCh
             if (!btnLock && e.value && this.$ext.offsetWidth) // && this.parentNode.parentNode.localName == "menu") // & !_self.expanded
                 button.showMenu();
                 
-//            if(e.value == true && properties && properties.cbOnPageShow)
-//                properties.cbOnPageShow();
-//                
-//            else if(e.value == false && properties && properties.cbOnPageHide)
-//                properties.cbOnPageHide();
+            if(e.value == true && options && options.cbOnPageShow)
+                options.cbOnPageShow();
+                
+            else if(e.value == false && options && options.cbOnPageHide)
+                options.cbOnPageHide();
         });
         
         button.addEventListener("beforedrag", function(e){ //change this to beforedrag and recompile apf

@@ -35,7 +35,7 @@ return ext.register("ext/dockpanel/dockpanel", {
         var _self = this;
         
         var vManager = new apf.visibilitymanager();
-        this.layout = new DockableLayout(hboxMain, 
+        this.layout = new DockableLayout(hboxDockPanel, 
 			//Find Page
 			function(arrExtension){
 				if (!arrExtension || !_self.dockpanels[arrExtension[0]])
@@ -98,8 +98,7 @@ return ext.register("ext/dockpanel/dockpanel", {
                 apf.extend(_self.sections, objSettings.hidden);
             }
             
-            _self.layout.loadState(settings || _self.defaultState);
-            
+            _self.layout.loadState(_self.defaultState);
             _self.loaded = true;
         });
 
