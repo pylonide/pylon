@@ -40,7 +40,7 @@
           disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
     </a:bar>
     
-    <a:tab id="tabDebug" skin="docktab" visible="false" buttons="close" activepage="-1">
+    <a:tab id="tabDebug" skin="docktab" visible="false" activepage="-1">
         <a:page id="dbgCallStack" caption="Call Stack" render="runtime">
             <a:datagrid
               id         = "dgStack"

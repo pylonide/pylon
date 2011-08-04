@@ -21,7 +21,7 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbCh
     this.$cbStorePage   = cbStorePage;
     this.$cbFindPage    = cbFindPage;
     this.$cbChange      = cbChange;
-    this.$cbFindOptions	= cbFindOptions;
+    this.$cbFindOptions = cbFindOptions;
     
     var indicator = this.indicator = document.body.appendChild(document.createElement("div"));
     indicator.style.position = "absolute";
@@ -1042,6 +1042,7 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbCh
             pinned     : "true",
             animate    : "false",
             skin       : "dockwindowbasic",
+            resizable  : "true",
             dock       : 1,
             ondisplay  : function(){
                 if (_self.$currentMenu && _self.$currentMenu != this)
@@ -1085,7 +1086,6 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbCh
                         var page = e.page;
                         page.lastParent = this;
                     }
-    
                 })
             ]
         });
