@@ -33,17 +33,23 @@ return ext.register("ext/gittools/gittools", {
         this.blamejs = new BlameJS();
         this.gitLogParser = new GitLogParser();
 
-        this.section = dock.getSection("gittools", {
-            width  : 260,
-            height : 360
-        });
-
-        dock.registerPage(this.section, tabGitTools.firstChild, null, {
+        dock.register(this.name, "Git Tools", {
+            menu : "Tools/Git Tools",
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
                 defaultState: { x: -6, y: -217 },
                 activeState: { x: -6, y: -217 }
             }
+        }, function(type) {
+            return tabGitTools.firstChild;
+        });
+
+        dock.addDockable({
+            width : 260,
+            height : 340,
+            buttons : [
+                { caption: "Git Tools", ext : [this.name, "Git Tools"] }
+            ]
         });
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));

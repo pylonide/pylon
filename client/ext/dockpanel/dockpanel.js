@@ -58,7 +58,6 @@ return ext.register("ext/dockpanel/dockpanel", {
             }, 
             //Store Page
             function(amlPage){
-                console.log("STORING", amlPage);
                 var arrExtension = amlPage.$arrExtension;
                 var item = _self.dockpanels[arrExtension[0]][arrExtension[1]];
                 item.page = amlPage;
@@ -132,7 +131,7 @@ return ext.register("ext/dockpanel/dockpanel", {
         this.layout.clearState();
     },
 
-    register : function(name, type, options, getPage, def){
+    register : function(name, type, options, getPage){
         var panel = this.dockpanels[name] || (this.dockpanels[name] = {});
         panel[type] = {
             options : options,
@@ -140,6 +139,7 @@ return ext.register("ext/dockpanel/dockpanel", {
         };
 
         var layout = this.layout, _self = this;
+
         panel[type].mnuItem = mnuWindows.appendChild(new apf.item({
             caption : options.menu.split("/").pop(),
             type    : "check",
@@ -157,9 +157,7 @@ return ext.register("ext/dockpanel/dockpanel", {
             }
         }));
         
-        if (this.loaded) {
-            layout.addItem(def);
-        }
+        
     },
 
     addDockable : function(def){
@@ -182,7 +180,7 @@ return ext.register("ext/dockpanel/dockpanel", {
             }
             return;
         }
-        
+
         if (!state.bars[0])
             state.bars[0] = {expanded: false, width: 200, sections: []};
 
@@ -198,6 +196,8 @@ return ext.register("ext/dockpanel/dockpanel", {
                 buttons : [def]
             });
         }
+        
+        return bar.sections.slice(-1);
     }, //properties.forceShow ??
     
     //@todo removal of pages
