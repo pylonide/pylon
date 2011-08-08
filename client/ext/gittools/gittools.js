@@ -36,9 +36,9 @@ return ext.register("ext/gittools/gittools", {
         dock.register(this.name, "Git Tools", {
             menu : "Tools/Git Tools",
             primary : {
-                backgroundImage: "/static/style/images/debugicons.png",
-                defaultState: { x: -6, y: -217 },
-                activeState: { x: -6, y: -217 }
+                backgroundImage: "/static/style/images/git-tools.png",
+                defaultState: { x: 1, y: 2 },
+                activeState: { x: 1, y: 2 }
             }
         }, function(type) {
             return tabGitTools.firstChild;
@@ -87,6 +87,8 @@ return ext.register("ext/gittools/gittools", {
 
         this.gitLogs[file].lastSliderValue = sliderGitLog.value;
         this.formulateGitLogOut(sliderGitLog.value);
+        lblGitRevisions.setAttribute("caption", "Revision " +
+            sliderGitLog.value + "/" + this.gitLogs[file].logData.length);
         if (sliderGitLog.value != this.gitLogs[file].lastLoadedGitLog) {
             btnViewRevision.enable();
             btnGitBlame.disable();
@@ -254,21 +256,24 @@ return ext.register("ext/gittools/gittools", {
     setupGitLogElements: function(file) {
         var fileName = file.substr(file.lastIndexOf("/") + 1);
         if (this.gitLogs[file]) {
-            lblGitLog.setAttribute("caption", fileName + " revisions (" +
-                this.gitLogs[file].logData.length + ")");
-            sliderGitLog.setAttribute("max", this.gitLogs[file].logData.length);
+            var logDataLength = this.gitLogs[file].logData.length;
+            lblGitLog.setAttribute("caption", fileName);
+            lblGitRevisions.setAttribute("caption", "Revision " +
+                 logDataLength + "/" + logDataLength);
+            sliderGitLog.setAttribute("max", logDataLength);
             sliderGitLog.setAttribute("markers", "false");
             sliderGitLog.setAttribute("markers", "true");
             sliderGitLog.enable();
             sliderGitLog.setValue(this.gitLogs[file].lastSliderValue);
             this.formulateGitLogOut(this.gitLogs[file].lastSliderValue);
-            if (this.gitLogs[file].lastLoadedGitLog != this.gitLogs[file].logData.length) {
+            if (this.gitLogs[file].lastLoadedGitLog != logDataLength) {
                 editors.currentEditor.ceEditor.$editor.setReadOnly(true);
             } else {
                 editors.currentEditor.ceEditor.$editor.setReadOnly(false);
             }
         } else {
-            lblGitLog.setAttribute("caption", fileName + " revisions (0)");
+            lblGitLog.setAttribute("caption", fileName);
+            lblGitRevisions.setAttribute("caption", "No Revisions");
             sliderGitLog.setAttribute("max", 1);
             sliderGitLog.setValue(1);
             sliderGitLog.setAttribute("markers", "false");
@@ -300,25 +305,25 @@ return ext.register("ext/gittools/gittools", {
             return;
 
         if (!this.gitLogs[file].logData[index]) {
-            gitLogOut = '<div style="font-weight: bold; color: #333">* Current</div>';
+            gitLogOut = '<div style="color: #333"><strong>* Current</strong><br /><br /><em>Any uncommitted changes</em></div>';
         }
         else {
             var tDate = new Date(parseInt(this.gitLogs[file].logData[index].author.timestamp, 10) * 1000);
-            gitLogOut = '<div style="color: #333"><span class="header">Commit:</span> ' 
-                            + this.gitLogs[file].logData[index].commit //.substr(0, 10)
-                            + '<br /><span class="header">Tree:</span> '
-                            + this.gitLogs[file].logData[index].tree //.substr(0, 10)
-                            + '<br /><span class="header">Parent:</span> '
-                            + this.gitLogs[file].logData[index].parent //.substr(0, 10)
-                            + '<br /><span class="header">Author:</span> '
-                            + this.gitLogs[file].logData[index].author.fullName + ' '
-                            + this.gitLogs[file].logData[index].author.email.replace("<", "&lt;").replace(">", "&gt;")
-                            + '<br /><span class="header">Time:</span> '
-                            + tDate.toLocaleDateString().split(" ").slice(1).join(" ") 
-                            + " " + tDate.toLocaleTimeString()
-                            + '<br /><br /><span class="header">Commit Summary:</span><br /><br />'
-                            + this.gitLogs[file].logData[index].message.join("<br />")
-                            + '</div>';
+            gitLogOut = '<div style="color: #333"><span class="header">Commit:</span> ' +
+                            this.gitLogs[file].logData[index].commit + //.substr(0, 10)
+                            '<br /><span class="header">Tree:</span> ' +
+                            this.gitLogs[file].logData[index].tree + //.substr(0, 10)
+                            '<br /><span class="header">Parent:</span> ' +
+                            this.gitLogs[file].logData[index].parent + //.substr(0, 10)
+                            '<br /><span class="header">Author:</span> ' +
+                            this.gitLogs[file].logData[index].author.fullName + ' ' +
+                            this.gitLogs[file].logData[index].author.email.replace("<", "&lt;").replace(">", "&gt;") +
+                            '<br /><span class="header">Time:</span> ' +
+                            tDate.toLocaleDateString().split(" ").slice(1).join(" ") +
+                            " " + tDate.toLocaleTimeString() +
+                            '<br /><br /><span class="header">Commit Summary:</span><br /><br />' +
+                            this.gitLogs[file].logData[index].message.join("<br />") +
+                            '</div>';
         }
 
         txtGitLog.setValue(gitLogOut);

@@ -1,4 +1,55 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
+    <!--a:skin
+       src = "{require('text!ext/gittools/skin.xml')}"
+       media-path = "/static/style/images/"
+       icon-path  = "/static/style/icons/"
+    /-->
+    <a:style><![CDATA[
+        .git_log_label {
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .git_log_text {
+            padding: 5px;
+            border: 1px solid #bbb;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+        }
+        .sliderGitLog {
+            background: none;
+        }
+        .sliderGitLog .grabber {
+            background: url("/static/style/images/revision-scrubber.png") no-repeat 7px 0px;
+            width: 20px;
+            height: 16px;
+            position: absolute;
+            z-index : 10;
+            top: -8px;
+        }
+        .sliderGitLog .left {
+            /*margin: 0px;*/
+            background: none;
+            -webkit-box-shadow: inset 0px 1px 1px #fff;
+            -moz-box-shadow: inset 0px 1px 1px #fff;
+            border: 1px solid #d48a16;
+            background: #febf04; /* Old browsers */
+            background: -moz-linear-gradient(top, #febf04 0%, #ffd65e 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#febf04), color-stop(100%,#ffd65e)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top, #febf04 0%,#ffd65e 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top, #febf04 0%,#ffd65e 100%); /* Opera11.10+ */
+            background: -ms-linear-gradient(top, #febf04 0%,#ffd65e 100%); /* IE10+ */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#febf04', endColorstr='#ffd65e',GradientType=0 ); /* IE6-9 */
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+        }
+        .sliderGitLog u {
+            background: #86570f;
+            margin: 1px 0 0 10px;
+            height: 6px;
+        }
+    ]]></a:style>
     <a:tab id="tabGitTools" skin="docktab" visible="false">
         <a:page caption="Git Tools">
             <a:vbox flex="1" anchors="0 0 0 0">
@@ -8,14 +59,22 @@
                   width   = "100"
                   onclick = "require('ext/gittools/gittools').gitLog()"
                 /-->
-                <a:label id="lblGitLog"
-                  class = "git_log_label"
-                  caption = "File revisions"
-                  margin = "8 5 5 5"
-                />
+                <a:hbox align="center">
+                    <a:label id="lblGitLog"
+                      class = "git_log_label"
+                      caption = "File"
+                      margin = "8 5 5 5"
+                      flex = "1"
+                    />
+                    <a:label id="lblGitRevisions"
+                      caption = "Revisions (0)"
+                      margin = "8 5 5 5"
+                    />
+                </a:hbox>
                 <a:slider id="sliderGitLog"
+                  class="sliderGitLog"
                   disabled = "true"
-                  margin = "5"
+                  margin = "8"
                   value = "1"
                   min = "0"
                   max = "1"
