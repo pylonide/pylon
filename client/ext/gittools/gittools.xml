@@ -52,10 +52,15 @@
             margin: 2px 2px 0 8px;
             height: 5px;
         }
+        .git_tools .searchbox_textbox .sbtb_middle {
+            -webkit-border-radius: 6px;
+            -moz-border-radius: 6px;
+            border-radius: 6px;
+        }
     ]]></a:style>
     <a:tab id="tabGitTools" skin="docktab" visible="false">
         <a:page caption="Git Tools">
-            <a:vbox flex="1" anchors="0 0 0 0">
+            <a:vbox flex="1" class="git_tools" anchors="0 0 0 0">
                 <a:hbox align="center">
                     <a:label id="lblGitLog"
                       class = "git_log_label"
@@ -69,6 +74,8 @@
                     />
                 </a:hbox>
                 <a:textbox
+                  id = "tboxGitToolsFilter"
+                  skin = "searchbox_textbox"
                   margin  = "6 8 6 8"
                   onclear = "require('ext/gittools/gittools').searchFilter(this.getValue())"
                   onkeyup = "require('ext/gittools/gittools').searchFilter(this.getValue())"
@@ -85,8 +92,7 @@
                   slide = "snap"
                   balloon = "false"
                   markers = "true"
-                  onvaluechange = "require('ext/gittools/gittools').gitLogSliderChange()"
-                  onmouseup = "require('ext/gittools/gittools').gitLogSliderMouseUp()"
+                  onvaluechange = "require('ext/gittools/gittools').onGitLogSliderChange()"
                 />
                 <a:text id="txtGitLog"
                   margin     = "5"

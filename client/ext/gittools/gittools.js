@@ -25,10 +25,8 @@ return ext.register("ext/gittools/gittools", {
     command  : "gittools",
 
     nodes : [],
-    gitLogs : {},
-    currentGitLogs : {},
-    filteredLogData : {},
-    lastFilterValue : "",
+
+    fileData : {},
 
     init : function(amlNode) {
         var _self = this;
@@ -57,11 +55,19 @@ return ext.register("ext/gittools/gittools", {
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
-        tabEditors.addEventListener("afterswitch", function(e){
+        tabEditors.addEventListener("afterswitch", function (e) {
             _self.currentFile = _self.getFilePath(e.previous);
-            _self.currentGitLogs = _self.gitLogs;
-            _self.setupGitLogElements(_self.currentFile);
-            if (!_self.gitLogs[_self.currentFile])
+            if (_self.fileData[_self.currentFile] && _self.fileData[_self.currentFile].gitLog.currentLogData.length === 0) {
+                _self.fileData[_self.currentFile].gitLog.currentLogData = _self.fileData[_self.currentFile].gitLog.logData;
+            } else {
+                tboxGitToolsFilter.setValue(
+                    _self.fileData[_self.currentFile] ?
+                    _self.fileData[_self.currentFile].gitLog.lastFilterValue :
+                    ""
+                );
+            }
+            _self.setGitLogState(_self.currentFile);
+            if (!_self.fileData[_self.currentFile])
                 _self.gitLog();
             /*if (editors.currentEditor) {
                 editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr([]);
@@ -80,20 +86,29 @@ return ext.register("ext/gittools/gittools", {
         return filePath;
     },
 
-    gitLogSliderMouseUp : function() {
-        //console.log("mouseup");
+    onGitLogSliderChange : function() {
+        if (this.fileData[this.currentFile]) {
+            this.fileData[this.currentFile].gitLog.lastSliderValue = sliderGitLog.value;
+            this.gitLogSliderChange(sliderGitLog.value);
+        }
     },
 
-    gitLogSliderChange : function() {
-        var file = this.getFilePath();
-        if (!this.gitLogs[file])
-            return;
+    gitLogSliderChange : function(value) {
+        //if (!this.fileData[this.currentFile])
+        //    return;
 
-        this.currentGitLogs[file].lastSliderValue = sliderGitLog.value;
-        this.formulateGitLogOut(sliderGitLog.value);
+        this.formulateGitLogOut(value);
         lblGitRevisions.setAttribute("caption", "Revision " +
-            sliderGitLog.value + "/" + this.currentGitLogs[file].logData.length);
-        if (sliderGitLog.value != this.currentGitLogs[file].lastLoadedGitLog) {
+            value + "/" + this.fileData[this.currentFile].gitLog.currentLogData.length);
+        //if (value != this.fileData[this.currentFile].gitLog.lastLoadedGitLog) {
+        if (!this.fileData[this.currentFile].gitLog.currentLogData[value] &&
+                this.fileData[this.currentFile].gitLog.lastLoadedLogHash !== "") {
+            btnViewRevision.enable();
+            btnGitBlame.disable();
+        }
+        else if (this.fileData[this.currentFile].gitLog.currentLogData[value] &&
+              this.fileData[this.currentFile].gitLog.currentLogData[value].commit !=
+              this.fileData[this.currentFile].gitLog.lastLoadedLogHash) {
             btnViewRevision.enable();
             btnGitBlame.disable();
         } else {
@@ -122,13 +137,17 @@ return ext.register("ext/gittools/gittools", {
                     );
                 }
                 else {
-                    if (!this.gitLogs[data.file]) {
-                        this.gitLogs[data.file] = {
-                            logData : [],
-                            lastLoadedGitLog : 0,
-                            lastSliderValue : 0,
-                            currentRevision : editors.currentEditor ? editors.currentEditor.ceEditor.getSession().getValue() : "",
-                            revisions : {}
+                    if (!this.fileData[data.file]) {
+                        this.fileData[data.file] = {
+                            gitLog : {
+                                lastFilterValue : "",
+                                logData : [],
+                                currentLogData : [],
+                                lastLoadedLogHash : "",
+                                lastSliderValue : 0,
+                                currentRevision : editors.currentEditor ? editors.currentEditor.ceEditor.getSession().getValue() : "",
+                                revisions : {}
+                            }
                         };
                     }
                     ide.socket.send(JSON.stringify(data));
@@ -137,6 +156,9 @@ return ext.register("ext/gittools/gittools", {
         }
     },
 
+    /**
+     * @TODO REFACTOR
+     */
     gitBlame : function() {
         var data = {
             command : this.command,
@@ -233,7 +255,7 @@ return ext.register("ext/gittools/gittools", {
     },
 
     onGitShowMessage : function(message) {
-        this.gitLogs[message.body.file].revisions[message.body.hash] =
+        this.fileData[message.body.file].gitLog.revisions[message.body.hash] =
             message.body.out;
         editors.currentEditor.ceEditor.getSession().setValue(message.body.out);
         editors.currentEditor.ceEditor.$editor.setReadOnly(true);
@@ -252,21 +274,47 @@ return ext.register("ext/gittools/gittools", {
 
         this.outputGitBlame(this.blamejs.getCommitData(), this.blamejs.getLineData());
     },
+    
+    onGitLogMessage: function(message) {
+        this.gitLogParser.parseLog(message.body.out);
 
-    setupGitLogElements: function(file) {
+        this.fileData[message.body.file].gitLog.logData = this.gitLogParser.getLogData();
+        var logDataLength = this.fileData[message.body.file].gitLog.logData.length;
+
+        //this.fileData[message.body.file].gitLog.lastLoadedGitLog = 
+            this.fileData[message.body.file].gitLog.lastSliderValue = logDataLength;
+
+        // Lowercase all the searchable properties to speed up filtering
+        var logData = this.fileData[message.body.file].gitLog.logData;
+        for (var gi = 0; gi < logDataLength; gi++) {
+            logData[gi].commitLower = logData[gi].commit.toLowerCase();
+            logData[gi].parentLower = logData[gi].parent.toLowerCase();
+            logData[gi].treeLower = logData[gi].tree.toLowerCase();
+            logData[gi].messageJoinedLower = logData[gi].messageJoined.toLowerCase();
+            logData[gi].author.emailLower = logData[gi].author.email.toLowerCase();
+            logData[gi].author.fullNameLower = logData[gi].author.fullName.toLowerCase();
+            logData[gi].committer.emailLower = logData[gi].committer.email.toLowerCase();
+            logData[gi].committer.fullNameLower = logData[gi].committer.fullName.toLowerCase();
+        }
+        
+        this.fileData[message.body.file].gitLog.currentLogData = this.fileData[message.body.file].gitLog.logData;
+        this.setGitLogState(message.body.file);
+    },
+
+    setGitLogState : function(file) {
         var fileName = file.substr(file.lastIndexOf("/") + 1);
-        if (this.currentGitLogs[file]) {
-            var logDataLength = this.currentGitLogs[file].logData.length;
+        if (this.fileData[file]) {
+            var logDataLength = this.fileData[file].gitLog.currentLogData.length;
             lblGitLog.setAttribute("caption", fileName);
             lblGitRevisions.setAttribute("caption", "Revision " +
-                 logDataLength + "/" + logDataLength);
+                 this.fileData[file].gitLog.lastSliderValue + "/" + logDataLength);
             sliderGitLog.setAttribute("max", logDataLength);
             sliderGitLog.setAttribute("markers", "false");
             sliderGitLog.setAttribute("markers", "true");
             sliderGitLog.enable();
-            sliderGitLog.setValue(this.currentGitLogs[file].lastSliderValue);
-            this.formulateGitLogOut(this.currentGitLogs[file].lastSliderValue);
-            if (this.currentGitLogs[file].lastLoadedGitLog != logDataLength) {
+            sliderGitLog.setValue(this.fileData[file].gitLog.lastSliderValue);
+            this.formulateGitLogOut(this.fileData[file].gitLog.lastSliderValue);
+            if (this.fileData[file].gitLog.lastLoadedLogHash !== "") {
                 editors.currentEditor.ceEditor.$editor.setReadOnly(true);
             } else {
                 editors.currentEditor.ceEditor.$editor.setReadOnly(false);
@@ -287,55 +335,32 @@ return ext.register("ext/gittools/gittools", {
         }
     },
 
-    onGitLogMessage: function(message) {
-        this.gitLogParser.parseLog(message.body.out);
-
-        this.gitLogs[message.body.file].logData = this.gitLogParser.getLogData();
-
-        var logDataLength = this.gitLogs[message.body.file].logData.length;
-        this.gitLogs[message.body.file].lastLoadedGitLog = 
-            this.gitLogs[message.body.file].lastSliderValue = logDataLength;
-
-        // Lowercase all the searchable properties to speed up filtering
-        var logData = this.gitLogs[message.body.file].logData;
-        for (var gi = 0; gi < logDataLength; gi++) {
-            logData[gi].commitLower = logData[gi].commit.toLowerCase();
-            logData[gi].parentLower = logData[gi].parent.toLowerCase();
-            logData[gi].treeLower = logData[gi].tree.toLowerCase();
-            logData[gi].messageJoinedLower = logData[gi].messageJoined.toLowerCase();
-            logData[gi].author.emailLower = logData[gi].author.email.toLowerCase();
-            logData[gi].author.fullNameLower = logData[gi].author.fullName.toLowerCase();
-            logData[gi].committer.emailLower = logData[gi].committer.email.toLowerCase();
-            logData[gi].committer.fullNameLower = logData[gi].committer.fullName.toLowerCase();
-        }
-        this.setupGitLogElements(message.body.file);
-    },
-
     formulateGitLogOut: function(index) {
         var gitLogOut = "";
         var file = this.getFilePath();
-        if (!this.gitLogs[file])
+        if (!this.fileData[file])
             return;
 
-        if (!this.currentGitLogs[file].logData[index]) {
+        if (!this.fileData[file].gitLog.currentLogData[index]) {
             gitLogOut = '<div style="color: #333"><strong>* Current</strong><br /><br /><em>Any uncommitted changes</em></div>';
         }
         else {
-            var tDate = new Date(parseInt(this.currentGitLogs[file].logData[index].author.timestamp, 10) * 1000);
+            var logData = this.fileData[file].gitLog.currentLogData[index];
+            var tDate = new Date(parseInt(logData.author.timestamp, 10) * 1000);
             gitLogOut = '<div style="color: #333"><span class="header">Commit</span><br />&nbsp;&nbsp;&nbsp;&nbsp;' +
-                            this.currentGitLogs[file].logData[index].commit + //.substr(0, 10)
+                            logData.commit + //.substr(0, 10)
                             '<br /><span class="header">Tree</span><br />&nbsp;&nbsp;&nbsp;&nbsp;' +
-                            this.currentGitLogs[file].logData[index].tree + //.substr(0, 10)
+                            logData.tree + //.substr(0, 10)
                             '<br /><span class="header">Parent</span><br />&nbsp;&nbsp;&nbsp;&nbsp;' +
-                            this.currentGitLogs[file].logData[index].parent + //.substr(0, 10)
+                            logData.parent + //.substr(0, 10)
                             '<br /><span class="header">Author</span><br />&nbsp;&nbsp;&nbsp;&nbsp;' +
-                            this.currentGitLogs[file].logData[index].author.fullName + ' ' +
-                            this.currentGitLogs[file].logData[index].author.email.replace("<", "&lt;").replace(">", "&gt;") +
+                            logData.author.fullName + ' ' +
+                            logData.author.email.replace("<", "&lt;").replace(">", "&gt;") +
                             '<br /><span class="header">Time</span><br />&nbsp;&nbsp;&nbsp;&nbsp;' +
                             tDate.toLocaleDateString().split(" ").slice(1).join(" ") +
                             " " + tDate.toLocaleTimeString() +
                             '<br /><br /><span class="header">Commit Summary</span><br /><br />' +
-                            this.currentGitLogs[file].logData[index].message.join("<br />") +
+                            logData.message.join("<br />") +
                             '</div>';
         }
 
@@ -344,24 +369,34 @@ return ext.register("ext/gittools/gittools", {
 
     loadFileRevision : function() {
         var file = this.getFilePath();
-        if (sliderGitLog.value == this.gitLogs[file].logData.length) {
+        // If the slider value is out of the bounds of the current commit data, then we know
+        // the user is loading the most recent (possibly uncommitted) revision of the file
+        if (!this.fileData[file].gitLog.currentLogData[sliderGitLog.value]) {
             editors.currentEditor.ceEditor.getSession().setValue(
-                this.gitLogs[file].currentRevision
+                this.fileData[file].gitLog.currentRevision
             );
             editors.currentEditor.ceEditor.$editor.setReadOnly(false);
-        } else {
+        }
+        // Otherwise the user is attempting to load one of the previously committed revisions
+        else {
             // Save the latest version of the file
-            if (this.gitLogs[file].lastLoadedGitLog == this.gitLogs[file].logData.length)
-                this.gitLogs[file].currentRevision = editors.currentEditor.ceEditor.getSession().getValue();
+            //if (this.fileData[file].gitLog.lastLoadedGitLog == this.fileData[file].gitLog.currentLogData.length)
+            if (this.fileData[file].gitLog.lastLoadedLogHash === "")
+                this.fileData[file].gitLog.currentRevision = editors.currentEditor.ceEditor.getSession().getValue();
 
-            this.gitShow(this.currentGitLogs[file].logData[sliderGitLog.value].commit);
+            this.gitShow(this.fileData[file].gitLog.currentLogData[sliderGitLog.value].commit);
         }
 
-        this.currentGitLogs[file].lastLoadedGitLog = sliderGitLog.value;
+        //this.fileData[file].gitLog.lastLoadedGitLog = sliderGitLog.value;
+        this.fileData[file].gitLog.lastLoadedLogHash = this.fileData[file].gitLog.currentLogData[sliderGitLog.value] ?
+            this.fileData[file].gitLog.currentLogData[sliderGitLog.value].commit : "";
         btnViewRevision.disable();
         btnGitBlame.enable();
     },
 
+    /**
+     * @TODO REFACTOR
+     */
     outputGitBlame : function(commit_data, line_data) {
         var textHash = {}, lastHash = "";
         for (var li in line_data) {
@@ -384,68 +419,68 @@ return ext.register("ext/gittools/gittools", {
     },
 
     searchFilter : function(value) {
-        if (value != this.lastFilterValue) {
+        if (!this.fileData[this.currentFile] || !this.fileData[this.currentFile].gitLog.currentLogData)
+            return;
+
+        if (value != this.fileData[this.currentFile].gitLog.lastFilterValue) {
             // Clear the search
             if (value.length === 0) {
-                this.lastFilterValue = value;
-                this.currentGitLogs = this.gitLogs;
-                this.setupGitLogElements(this.currentFile);
+                this.fileData[this.currentFile].gitLog.lastFilterValue = "";
+                this.fileData[this.currentFile].gitLog.currentLogData = this.fileData[this.currentFile].gitLog.logData;
+                this.setGitLogState(this.currentFile);
             }
             else if (value.length >= 3) {
                 this.applyFilter(value);
-                this.lastFilterValue = value;
+                this.fileData[this.currentFile].gitLog.lastFilterValue = value;
             }
         }
     },
     
     applyFilter : function(filter) {
-        var logs = this.gitLogs[this.currentFile];
+        var logs = this.fileData[this.currentFile].gitLog.logData;
         if (!logs)
             return;
 
         filter = filter.toLowerCase();
-        this.filteredLogData[this.currentFile] = {};
-        this.filteredLogData[this.currentFile].logData = [];
 
-        //console.log(logs.logData);
-        for (var gi = 0; gi < logs.logData.length; gi++) {
-            if (logs.logData[gi].commitLower.indexOf(filter) >= 0) {
-                this.filteredLogData[this.currentFile].logData.push(logs.logData[gi]);
+        this.fileData[this.currentFile].gitLog.currentLogData = [];
+        for (var gi = 0; gi < logs.length; gi++) {
+            if (logs[gi].commitLower.indexOf(filter) >= 0) {
+                this.fileData[this.currentFile].gitLog.currentLogData.push(logs.logData[gi]);
                 continue;
             }
-            if (logs.logData[gi].parentLower.indexOf(filter) >= 0) {
-                this.filteredLogData[this.currentFile].logData.push(logs.logData[gi]);
+            if (logs[gi].parentLower.indexOf(filter) >= 0) {
+                this.fileData[this.currentFile].gitLog.currentLogData.push(logs[gi]);
                 continue;
             }
-            if (logs.logData[gi].treeLower.indexOf(filter) >= 0) {
-                this.filteredLogData[this.currentFile].logData.push(logs.logData[gi]);
+            if (logs[gi].treeLower.indexOf(filter) >= 0) {
+                this.fileData[this.currentFile].gitLog.currentLogData.push(logs[gi]);
                 continue;
             }
-            if (logs.logData[gi].messageJoinedLower.indexOf(filter) >= 0) {
-                this.filteredLogData[this.currentFile].logData.push(logs.logData[gi]);
+            if (logs[gi].messageJoinedLower.indexOf(filter) >= 0) {
+                this.fileData[this.currentFile].gitLog.currentLogData.push(logs[gi]);
                 continue;
             }
-            if (logs.logData[gi].author.emailLower.indexOf(filter) >= 0) {
-                this.filteredLogData[this.currentFile].logData.push(logs.logData[gi]);
+            if (logs[gi].author.emailLower.indexOf(filter) >= 0) {
+                this.fileData[this.currentFile].gitLog.currentLogData.push(logs[gi]);
                 continue;
             }
-            if (logs.logData[gi].author.fullNameLower.indexOf(filter) >= 0) {
-                this.filteredLogData[this.currentFile].logData.push(logs.logData[gi]);
+            if (logs[gi].author.fullNameLower.indexOf(filter) >= 0) {
+                this.fileData[this.currentFile].gitLog.currentLogData.push(logs[gi]);
                 continue;
             }
-            if (logs.logData[gi].committer.emailLower.indexOf(filter) >= 0) {
-                this.filteredLogData[this.currentFile].logData.push(logs.logData[gi]);
+            if (logs[gi].committer.emailLower.indexOf(filter) >= 0) {
+                this.fileData[this.currentFile].gitLog.currentLogData.push(logs[gi]);
                 continue;
             }
-            if (logs.logData[gi].committer.fullNameLower.indexOf(filter) >= 0) {
-                this.filteredLogData[this.currentFile].logData.push(logs.logData[gi]);
+            if (logs[gi].committer.fullNameLower.indexOf(filter) >= 0) {
+                this.fileData[this.currentFile].gitLog.currentLogData.push(logs[gi]);
                 continue;
             }
         }
 
-        //console.log(this.filteredLogData[this.currentFile]);
-        this.currentGitLogs = this.filteredLogData;
-        this.setupGitLogElements(this.currentFile);
+        this.setGitLogState(this.currentFile);
+        this.gitLogSliderChange(this.fileData[this.currentFile].gitLog.currentLogData.length);
     },
 
     enable : function(){
