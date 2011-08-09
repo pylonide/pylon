@@ -6742,7 +6742,7 @@
             background-position : 0 -18px;
         }
 
-        .searchbox_textboxFocus .btnclose {
+        .searchbox_textbox .btnclose {
             position : absolute;
             right : 8px;
             top : 5px;
