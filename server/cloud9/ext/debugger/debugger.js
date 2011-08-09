@@ -43,7 +43,7 @@ sys.inherits(DebuggerPlugin, Plugin);
                 this.$run(message, client);
                 break;
             case "rundebug":
-                netutil.findFreePort(this.NODE_DEBUG_PORT, "localhost", function(port) {
+                netutil.findFreePort(this.NODE_DEBUG_PORT, 64000, "localhost", function(err, port) {
                     _self.NODE_DEBUG_PORT = port;
                     message.preArgs = ["--debug=" + _self.NODE_DEBUG_PORT];
                     message.debug = true;
@@ -55,7 +55,7 @@ sys.inherits(DebuggerPlugin, Plugin);
                 });
                 break;
             case "rundebugbrk":
-                netutil.findFreePort(this.NODE_DEBUG_PORT, "localhost", function(port) {
+                netutil.findFreePort(this.NODE_DEBUG_PORT, 64000, "localhost", function(err, port) {
                     _self.NODE_DEBUG_PORT = port;
 
                     message.preArgs = ["--debug-brk=" + _self.NODE_DEBUG_PORT];

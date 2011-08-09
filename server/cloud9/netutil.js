@@ -1,22 +1,29 @@
 var net = require("net");
 var exec = require("child_process").exec;
 
-exports.findFreePort = function(start, hostname, callback) {
-    var port = start;
+exports.findFreePort = function(start, end, hostname, callback) {
+    var pivot = Math.floor(Math.random() * (end-start)) + start;
+    var port = pivot;
     asyncRepeat(function(next, done) {
         var stream = net.createConnection(port, hostname);
         
         stream.on("connect", function() {
             stream.destroy();
             port++;
+            if (port > end)
+                port = start;
+                
+            if (port == pivot)
+                done("Could not find free port.");
+            
             next();
         });
         
         stream.on("error", function() {
             done();
         });
-    }, function() {
-        callback(port);
+    }, function(err) {
+        callback(err, port);
     });
 };
 
