@@ -10,28 +10,31 @@
             font-size: 12px;
         }
         .git_log_text {
-            padding: 5px;
+            padding: 12px 10px;
             border: 1px solid #bbb;
             -webkit-border-radius: 5px;
             -moz-border-radius: 5px;
             border-radius: 5px;
+            -webkit-box-shadow: inset 0px 0px 4px rgba(0, 0, 0, 0.2);
+        }
+        .git_log_text span.header {
+            font-weight: bold;
         }
         .sliderGitLog {
             background: none;
         }
         .sliderGitLog .grabber {
-            background: url("/static/style/images/revision-scrubber.png") no-repeat 7px 0px;
+            background: url("/static/style/images/revision-scrubber.png") no-repeat 4px 0px;
             width: 20px;
-            height: 16px;
+            height: 19px;
             position: absolute;
             z-index : 10;
-            top: -8px;
+            top: -11px;
         }
         .sliderGitLog .left {
-            /*margin: 0px;*/
             background: none;
-            -webkit-box-shadow: inset 0px 1px 1px #fff;
-            -moz-box-shadow: inset 0px 1px 1px #fff;
+            -webkit-box-shadow: inset 0px 1px 0px #fed96b;
+            -moz-box-shadow: inset 0px 1px 0px #fed96b;
             border: 1px solid #d48a16;
             background: #febf04; /* Old browsers */
             background: -moz-linear-gradient(top, #febf04 0%, #ffd65e 100%); /* FF3.6+ */
@@ -46,19 +49,13 @@
         }
         .sliderGitLog u {
             background: #86570f;
-            margin: 1px 0 0 10px;
-            height: 6px;
+            margin: 2px 2px 0 8px;
+            height: 5px;
         }
     ]]></a:style>
     <a:tab id="tabGitTools" skin="docktab" visible="false">
         <a:page caption="Git Tools">
             <a:vbox flex="1" anchors="0 0 0 0">
-                <!--a:button
-                  caption = "Git Log"
-                  margin  = "10 5 5 5"
-                  width   = "100"
-                  onclick = "require('ext/gittools/gittools').gitLog()"
-                /-->
                 <a:hbox align="center">
                     <a:label id="lblGitLog"
                       class = "git_log_label"
@@ -71,6 +68,12 @@
                       margin = "8 5 5 5"
                     />
                 </a:hbox>
+                <a:textbox
+                  margin  = "6 8 6 8"
+                  onclear = "require('ext/gittools/gittools').searchFilter(this.getValue())"
+                  onkeyup = "require('ext/gittools/gittools').searchFilter(this.getValue())"
+                  initial-message = "Filter by SHA, Author, Commit Message">
+                </a:textbox>
                 <a:slider id="sliderGitLog"
                   class="sliderGitLog"
                   disabled = "true"

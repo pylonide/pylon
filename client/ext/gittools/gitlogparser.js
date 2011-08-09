@@ -64,8 +64,10 @@ var GitLogParser = (function() {
 
             switch (splitLine[0]) {
                 case "commit":
-                    if (this.currentLine.tree !== "")
+                    if (this.currentLine.tree !== "") {
+                        this.currentLine.messageJoined = this.currentLine.message.join("\n");
                         this.arrLogData.push(this.currentLine);
+                    }
 
                     this.currentLine = {
                         commit : splitLine[1],
