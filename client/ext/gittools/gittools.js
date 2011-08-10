@@ -69,12 +69,15 @@ return ext.register("ext/gittools/gittools", {
             _self.setGitLogState(_self.currentFile);
             if (!_self.fileData[_self.currentFile])
                 _self.gitLog();
-            /*if (editors.currentEditor) {
-                editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr([]);
-                if (_self.originalGutterWidth)
-                    editors.currentEditor.ceEditor.$editor.renderer.setGutterWidth(_self.originalGutterWidth + "px");
-            }*/
+            if (editors.currentEditor)
+                _self.resetAceGutter();
         });
+    },
+    
+    resetAceGutter : function() {
+        editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationText([]);
+        if (this.originalGutterWidth)
+            editors.currentEditor.ceEditor.$editor.renderer.setGutterWidth(this.originalGutterWidth + "px");
     },
 
     getFilePath : function(filePath) {
@@ -163,13 +166,12 @@ return ext.register("ext/gittools/gittools", {
         var data = {
             command : this.command,
             subcommand : "blame",
-            file : this.getFilePath()
+            file : this.currentFile
         };
 
-        if (this.gitLogs[data.file]) {
-            var lastLoadedGitLog = this.gitLogs[data.file].lastLoadedGitLog;
-            if (this.gitLogs[data.file] && this.gitLogs[data.file].logData[lastLoadedGitLog])
-                data.hash = this.gitLogs[data.file].logData[lastLoadedGitLog].commit;
+        if (this.fileData[data.file]) {
+            if (this.fileData[data.file] && this.fileData[data.file].gitLog.lastLoadedLogHash)
+                data.hash = this.fileData[data.file].gitLog.lastLoadedLogHash;
         }
 
         ide.dispatchEvent("track_action", {type: "gittools", cmd: this.command, subcommand: data.subcommand});
@@ -190,7 +192,7 @@ return ext.register("ext/gittools/gittools", {
                         this.originalGutterWidth = editors.currentEditor.ceEditor.$editor.renderer.getGutterWidth();
 
                     // Set gutter width, arbitrary number based on 12/13px font
-                    editors.currentEditor.ceEditor.$editor.renderer.setGutterWidth("300px");
+                    editors.currentEditor.ceEditor.$editor.renderer.setGutterWidth("265px");
                 }
             }
         }
@@ -369,6 +371,8 @@ return ext.register("ext/gittools/gittools", {
 
     loadFileRevision : function() {
         var file = this.getFilePath();
+        this.resetAceGutter();
+
         // If the slider value is out of the bounds of the current commit data, then we know
         // the user is loading the most recent (possibly uncommitted) revision of the file
         if (!this.fileData[file].gitLog.currentLogData[sliderGitLog.value]) {
@@ -414,7 +418,7 @@ return ext.register("ext/gittools/gittools", {
             }
         }
 
-        editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr(textHash);
+        editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationText(textHash);
         editors.currentEditor.ceEditor.$editor.renderer.updateFull();
     },
 

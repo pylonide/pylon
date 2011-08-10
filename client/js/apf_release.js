@@ -13227,10 +13227,10 @@ switch(mask[0]){case"%":value=parseInt(value)*(this.max-this.min)/100;break;case
 break;}this.$propHandlers.value.call(this,value);};this.setValue=function(value){this.setProperty("value",value,false,true);
 };this.getValue=function(){return this.step?Math.round(parseInt(this.value)/this.step)*this.step:this.value;
 };this.addEventListener("keydown",function(e){var key=e.keyCode;var ctrlKey=e.ctrlKey;
-switch(key){case 37:if(this.$dir!="horizontal"){return;}this.change(this.value-(ctrlKey?0.01:0.1));
-break;case 38:if(this.$dir!="vertical"){return;}this.change(this.value+(ctrlKey?0.01:0.1));
-break;case 39:if(this.$dir!="horizontal"){return;}this.change(this.value+(ctrlKey?0.01:0.1));
-break;case 40:if(this.$dir!="vertical"){return;}this.change(this.value-(ctrlKey?0.01:0.1));
+switch(key){case 37:if(this.$dir!="horizontal"){return;}this.change(this.value-this.step);
+break;case 38:if(this.$dir!="vertical"){return;}this.change(this.value+this.step);
+break;case 39:if(this.$dir!="horizontal"){return;}this.change(this.value+this.step);
+break;case 40:if(this.$dir!="vertical"){return;}this.change(this.value-this.step);
 break;case 13:if(this.$hasTSlider){this.$setLabelValue(this.oLabel.value);}break;
 default:return;}return false;},true);this.slideToggle=function(e,userAction){if(!e){e=event;
 }if(userAction&&this.disabled){return;}if(this.isOpened){this.slideUp();}else{this.slideDown(e);
