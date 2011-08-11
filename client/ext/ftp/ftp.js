@@ -1,12 +1,12 @@
 /**
  * FTP Module for the Cloud9 IDE
  *
- * @copyright 2010, Ajax.org B.V.
+ * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
- 
+
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
@@ -24,28 +24,28 @@ return ext.register("ext/ftp/ftp", {
     alone    : true,
     offline  : false,
     markup   : markup,
-    pageTitle: "Transcript",
+    pageTitle: "FTP log",
     pageID   : "pgFtpConsole",
     hotitems : {},
     css      : css,
     nodes    : [],
     groupList : ["owner", "group", "public"],
     permissionList : ["read", "write", "execute"],
-    
+
     hook : function(){
         ext.initExtension(this);
-        
+
         // hack to hide the dock panel!!
         if (window.dockPanelRight)
             dockPanelRight.setAttribute("visible", false)
-            
+
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
         //trFiles.setAttribute("multiselect", false);
     },
 
     init : function(amlNode){
         apf.importCssString((this.css || ""));
-        
+
         // console
         if (!this.$panel) {
             tabConsole.remove("console"); // remove Console tab
@@ -57,7 +57,9 @@ return ext.register("ext/ftp/ftp", {
             this.$panel.appendChild(ftpConsoleHbox);
             tabConsole.set(this.$panel);
         };
-        
+
+        console.log("FTP CLIENT PLUGIN STARTED");
+
         // filetree contextmenu, disabled for now
         /*
         var item = new apf.item({
@@ -65,26 +67,27 @@ return ext.register("ext/ftp/ftp", {
             caption : "File Properties",
             onclick : "require('ext/ftp/ftp').showFileProperties(trFiles.selected)"
         });
-        
+
         mnuCtxTree.appendChild(item);
         */
     },
-    
+
     log : function(msg, type, code){
         if (!tabConsole.visible)
             ideConsole.enable();
-        
+
         msg = apf.htmlentities(String(msg));
 
         if (!type)
             type = "log";
         else if (type == "command") {
             msg = "<span style='color:#0066FF'><span style='float:left'>Cmd:</span><div style='margin:0 0 0 80px'>"
-                + msg + "</div></span>"
+                + msg.toUpperCase() + "</div></span>"
         }
         else if (type == "response") {
+            console.log("RESPONSE", msg.replace(/\n/, "<br>"))
             msg = "<span style='color:#66FF66'><span style='float:left'>" + code + ":</span><div style='margin:0 0 0 80px'>"
-                + msg + "</div></span>"
+                + msg.replace(/\n/gm, "<br>") + "</div></span>"
         }
         else if (type == "status") {
             msg = "<span style='color:#FFFFFF'><div>"
@@ -104,19 +107,19 @@ return ext.register("ext/ftp/ftp", {
             this.log(aLines[i], "log");
         //this.log("", "divider");
     },
-    
+
     /**
      * Opens properties window and display properties for selected node
      */
     showFileProperties: function(node) {
 //        filesystem.webdav.getProperties(node.getAttribute("path"));
-        
+
         var permissions = "755"; // @todo, change to actual permissions of file/folder
 
         this.parsePermissions(permissions);
         winFileProperties.show();
     },
-    
+
     /**
      * set permissions in model
      */
@@ -125,14 +128,14 @@ return ext.register("ext/ftp/ftp", {
         for (var val, groupType, i = -1, l = this.groupList.length; ++i < l;) {
             groupType = this.groupList[i];
             val = parseInt(permissions[i]);
-            
+
             for (var checked, permissionType, j = -1, jl = this.permissionList.length; ++j < jl;) {
                 permissionType = this.permissionList[j];
                 checked = 0;
                 if (permissionType == "read" && val >= 4) {
                     checked = 1;
                     val -= 4;
-                } 
+                }
                 else if (permissionType == "write" && val >= 2) {
                     checked = 1;
                     val -= 2;
@@ -140,10 +143,10 @@ return ext.register("ext/ftp/ftp", {
                 else if (permissionType == "execute" && val >= 1) {
                     checked = 1;
                 }
-                
+
                 if (!noUpdate)
                     apf.xmldb.setAttribute(mdlFilePermissions.queryNode("group[@type=\"" + groupType + "\"]/permission[@type=\"" + permissionType + "\"]"), "checked", checked);
-                
+
                 fileRights += checked ? permissionType.charAt(0).toLowerCase() : "-";
             }
         }
@@ -151,7 +154,7 @@ return ext.register("ext/ftp/ftp", {
         apf.xmldb.setAttribute(mdlFilePermissions.queryNode("octal"), "value", permissions);
         apf.xmldb.setAttribute(mdlFilePermissions.queryNode("rights"), "value", fileRights);
     },
-    
+
     /**
      * get octal permissions from model
      */
@@ -165,7 +168,7 @@ return ext.register("ext/ftp/ftp", {
         for (var val, groupType, i = -1, l = this.groupList.length; ++i < l;) {
             groupType = this.groupList[i];
             val = 0;
-            
+
             for (var node, permissionType, j = -1, jl = this.permissionList.length; ++j < jl;) {
                 permissionType = this.permissionList[j];
                 node = mdlFilePermissions.queryNode("group[@type=\"" + groupType + "\"]/permission[@type=\"" + permissionType + "\"]");
@@ -174,21 +177,21 @@ return ext.register("ext/ftp/ftp", {
             }
             permissions += val;
         }
-        
+
         return permissions;
     },
-    
+
     /**
-     * 
+     *
      */
     updatePermissionCheckbox: function(groupType, permissionType, checked) {
         apf.xmldb.setAttribute(mdlFilePermissions.queryNode("group[@type=\"" + groupType + "\"]/permission[@type=\"" + permissionType + "\"]"), "checked", checked ? "1": "0");
-        
+
         var permissions = this.getPermissions();
         this.parsePermissions(permissions, true);
     },
-    
-    /** 
+
+    /**
      *
      */
     updatePermissionTextbox: function(permissions) {
@@ -201,7 +204,7 @@ return ext.register("ext/ftp/ftp", {
         }
         this.parsePermissions(permissions);
     },
-    
+
     setPermissions: function() {
         var obj = {};
         obj["http://ajax.org/2005/aml"] = {
@@ -209,17 +212,17 @@ return ext.register("ext/ftp/ftp", {
         };
 
         filesystem.webdav.setProperties(node.getAttribute("path"), obj);
-        
+
     },
-    
+
     onMessage: function(e) {
         var message = e.message;
         if (message.type !== "transcript")
             return;
-        
+
         this.log(message.body, message.subtype, message.code);
     },
-    
+
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
