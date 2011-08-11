@@ -62,11 +62,13 @@ return ext.register("ext/dockpanel/dockpanel", {
                 var item = _self.dockpanels[arrExtension[0]][arrExtension[1]];
                 item.page = amlPage;
 
-                _self.sections[arrExtension[0]][arrExtension[1]] = {
-                    buttons : [
-                        { ext : [arrExtension[0], arrExtension[1]] }
-                    ]
-                };
+                if (_self.sections[arrExtension[0]]) {
+                    _self.sections[arrExtension[0]][arrExtension[1]] = {
+                        buttons : [
+                            { ext : [arrExtension[0], arrExtension[1]] }
+                        ]
+                    };
+                }
 
                 item.mnuItem.uncheck();
 
@@ -90,7 +92,6 @@ return ext.register("ext/dockpanel/dockpanel", {
         ide.addEventListener("loadsettings", function(e){
             var model = e.model;
             var strSettings = model.queryValue("auto/dockpanel");
-            
             var settings = _self.defaultState;
             if (strSettings) {
                 var objSettings = apf.unserialize(strSettings);
@@ -250,22 +251,16 @@ return ext.register("ext/dockpanel/dockpanel", {
      * Updates the notification element to visually reflect notCount
      */
     updateNotificationElement: function(btnObj, count){
-        if(count == 0) {
+        if(count == 0)
             var countInner = "";
-        }
-        
-        else {
+        else
             var countInner = count;
-        }
 
-        if(apf.isGecko) {
+        if(apf.isGecko)
             btnObj.$ext.getElementsByClassName("dock_notification")[0].textContent = countInner;
-        }
-            
-        else {
+        else
             btnObj.$ext.getElementsByClassName("dock_notification")[0].innerText = countInner;
-        }
-        
+
         return true;
     }
 });
