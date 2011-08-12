@@ -109,29 +109,26 @@ return ext.register("ext/code/code", {
     nodes : [],
     
     getState : function(doc){
-        return;
         var doc = doc ? doc.acesession : this.getDocument();
         if (!doc || typeof doc.getSelection != "function") 
             return;
         
-        var sel   = doc.getSelection();
-        var range = sel.getRange();
+        var sel = doc.getSelection();
         return {
             scrolltop  : ceEditor.$editor.renderer.getScrollTop(),
             scrollleft : ceEditor.$editor.renderer.getScrollLeft(),
-            selection  : range
+            selection  : sel.getRange()
         };
     },
     
-    setState : function(doc){
-        
-        return;
+    setState : function(doc, state){
         var aceDoc = doc ? doc.acesession : this.getDocument();
-        if (!aceDoc || typeof aceDoc.getSelection != "function") 
+        if (!aceDoc || !state || typeof aceDoc.getSelection != "function") 
             return;
         
-        var state = doc.state;
-        var sel   = aceDoc.getSelection();
+        var sel = aceDoc.getSelection();
+        
+        //are those 3 lines set the values in per document base or are global for editor
         sel.setSelectionRange(state.selection, false);
         ceEditor.$editor.renderer.scrollToY(state.scrolltop)
         ceEditor.$editor.renderer.scrollToX(state.scrollleft)

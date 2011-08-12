@@ -70,7 +70,7 @@ User.VISITOR_PERMISSIONS = {
     };
     
     this.addClientConnection = function(client, message) {
-        var id = client.sessionId;
+        var id = client.id;
         if (this.clients[id] === client)
             return;
             
@@ -87,7 +87,7 @@ User.VISITOR_PERMISSIONS = {
                 user: _self,
                 client: client
             });
-            delete _self.clients[client.sessionId];
+            delete _self.clients[client.id];
             _self.onClientCountChange();
         });
         
@@ -99,7 +99,8 @@ User.VISITOR_PERMISSIONS = {
         try {
             if (typeof message == "string")
                 message = JSON.parse(message);
-        } catch (e) {
+        }
+        catch (e) {
             return this.error("Error parsing message: " + e + "\nmessage: " + message, 8);
         }
 
@@ -142,7 +143,7 @@ User.VISITOR_PERMISSIONS = {
             return;
 
         // pass a lambda to enable socket.io ACK
-        for (var id in this.clients) 
+        for (var id in this.clients)
             this.clients[id].send(msg, function() {});
     };
     

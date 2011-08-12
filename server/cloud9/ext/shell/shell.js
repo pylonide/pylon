@@ -140,7 +140,7 @@ sys.inherits(ShellPlugin, Plugin);
 
     this.getListing = function(tail, path, dirmode, callback) {
         var matches = [];
-        tail    = (tail || "").replace(/^[\s]+/g, "").replace(/[\s]+$/g, "").split(/[\s]+/g).pop();
+        tail = (tail || "").replace(/^[\s]+/g, "").replace(/[\s]+$/g, "").split(/[\s]+/g).pop();
         if (tail.indexOf("/") > -1) {
             path = path.replace(/[\/]+$/, "") + "/" + tail.substr(0, tail.lastIndexOf("/")).replace(/^[\/]+/, "");
             tail = tail.substr(tail.lastIndexOf("/") + 1).replace(/^[\/]+/, "").replace(/[\/]+$/, "");

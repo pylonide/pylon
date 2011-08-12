@@ -30665,7 +30665,7 @@ apf.GuiElement.propHandlers["caching"] = function(value) {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/rename.js)SIZE(15002)TIME(Tue, 26 Jul 2011 12:19:53 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/rename.js)SIZE(15022)TIME(Thu, 28 Jul 2011 15:17:54 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30858,7 +30858,7 @@ apf.Rename = function(){
             : this.$getDataNode("caption", this.$renameSubject);
 
         //xmlNode.nodeType >= 2 && xmlNode.nodeType <= 4
-        value =  startEmpty || !xmlNode
+        var value =  startEmpty || !xmlNode
             ? ""
             : (xmlNode.nodeType != 1
                 ? unescape(xmlNode.nodeValue) //decodeURI( - throws an error when using % in a non expected way
@@ -31063,11 +31063,11 @@ apf.Rename.initEditableArea = function(){
             if (!apf.hasMsRangeObject) {
                 if (window.getSelection && document.createRange) {
                     var sel = window.getSelection();
-                    sel.removeAllRanges()
+                    sel.removeAllRanges();
                     var r = document.createRange();
                     r.setStart(this.firstChild, 0);
                     var lastIndex = this.firstChild.nodeValue.lastIndexOf(".");
-                    r.setEnd(this.firstChild, lastIndex > -1 ? lastIndex : this.value.length);
+                    r.setEnd(this.firstChild, lastIndex > -1 ? lastIndex : this.firstChild.nodeValue.length);
                     sel.addRange(r)
                 }
                 else {

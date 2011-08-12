@@ -67,11 +67,27 @@ return ext.register("ext/debugger/debugger", {
         });
         
         var name = "ext/debugger/debugger"; //this.name
+        
+        dock.addDockable({
+            hidden  : false,
+            buttons : [
+                { caption: "Call Stack", ext : [name, "dbgCallStack"] }
+            ]
+        });
+        dock.addDockable({
+            hidden  : false,
+            buttons : [
+                { caption: "Interactive", ext : [name, "dbInteractive"] },
+                { caption: "Variables", ext : [name, "dbgVariable"] },
+                { caption: "Breakpoints", ext : [name, "dbgBreakpoints"] }
+            ]
+        });
+
         dock.register(name, "dbgCallStack", {
             menu : "Debugger/Call Stack",
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
-                defaultState: { x: -6, y: -217 /*-46*/ },
+                defaultState: { x: -6, y: -217 },
                 activeState: { x: -6, y: -217 }
             }
         }, function(type) {
@@ -83,7 +99,7 @@ return ext.register("ext/debugger/debugger", {
             menu : "Debugger/Interactive",
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
-                defaultState: { x: -7, y: -310 /*-130*/ },
+                defaultState: { x: -7, y: -310 },
                 activeState: { x: -7, y: -310 }
             }
         }, function(type) {
@@ -95,7 +111,7 @@ return ext.register("ext/debugger/debugger", {
             menu : "Debugger/Variables",
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
-                defaultState: { x: -6, y: -261 /*-174*/ },
+                defaultState: { x: -6, y: -261 },
                 activeState: { x: -6, y: -261 }
             }
         }, function(type) {
@@ -107,27 +123,12 @@ return ext.register("ext/debugger/debugger", {
             menu : "Debugger/Breakpoints",
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
-                defaultState: { x: -6, y: -360 /*-88*/ },
+                defaultState: { x: -6, y: -360 },
                 activeState: { x: -6, y: -360 }
             }
         }, function(type) {
             ext.initExtension(_self);
             return dbgBreakpoints;
-        });
-        
-        dock.addDockable({
-            hidden  : true,
-            buttons : [
-                { ext : [name, "dbgCallStack"] }
-            ]
-        });
-        dock.addDockable({
-            hidden  : true,
-            buttons : [
-                { ext : [name, "dbInteractive"] },
-                { ext : [name, "dbgVariable"] },
-                { ext : [name, "dbgBreakpoints"] }
-            ]
         });
     },
 

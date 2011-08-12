@@ -33,17 +33,23 @@ return ext.register("ext/gittools/gittools", {
         this.blamejs = new BlameJS();
         this.gitLogParser = new GitLogParser();
 
-        this.section = dock.getSection("gittools", {
-            width  : 260,
-            height : 360
-        });
-
-        dock.registerPage(this.section, tabGitTools.firstChild, null, {
+        dock.register(this.name, "Git Tools", {
+            menu : "Tools/Git Tools",
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
                 defaultState: { x: -6, y: -217 },
                 activeState: { x: -6, y: -217 }
             }
+        }, function(type) {
+            return tabGitTools.firstChild;
+        });
+
+        dock.addDockable({
+            width : 260,
+            height : 340,
+            buttons : [
+                { caption: "Git Tools", ext : [this.name, "Git Tools"] }
+            ]
         });
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
@@ -53,11 +59,11 @@ return ext.register("ext/gittools/gittools", {
             _self.setupGitLogElements(file);
             if (!_self.gitLogs[file])
                 _self.gitLog();
-            if (editors.currentEditor) {
+            /*if (editors.currentEditor) {
                 editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr([]);
                 if (_self.originalGutterWidth)
                     editors.currentEditor.ceEditor.$editor.renderer.setGutterWidth(_self.originalGutterWidth + "px");
-            }
+            }*/
         });
     },
 
@@ -75,7 +81,6 @@ return ext.register("ext/gittools/gittools", {
     },
 
     gitLogSliderChange : function() {
-        //console.log(sliderGitLog.value);
         var file = this.getFilePath();
         if (!this.gitLogs[file])
             return;
@@ -249,8 +254,8 @@ return ext.register("ext/gittools/gittools", {
     setupGitLogElements: function(file) {
         var fileName = file.substr(file.lastIndexOf("/") + 1);
         if (this.gitLogs[file]) {
-            lblGitLog.setAttribute("caption", fileName + " revisions ("
-                + this.gitLogs[file].logData.length + ")");
+            lblGitLog.setAttribute("caption", fileName + " revisions (" +
+                this.gitLogs[file].logData.length + ")");
             sliderGitLog.setAttribute("max", this.gitLogs[file].logData.length);
             sliderGitLog.setAttribute("markers", "false");
             sliderGitLog.setAttribute("markers", "true");
@@ -346,13 +351,12 @@ return ext.register("ext/gittools/gittools", {
                 lastHash = line_data[li].hash;
                 var tempTime = new Date(parseInt(commit_data[line_data[li].hash].authorTime, 10) * 1000);
                 textHash[li-1] = { 
-                      text : commit_data[line_data[li].hash].author
-                            + " &raquo; "
-                            + tempTime.getDate() + "/" + (tempTime.getMonth()+1) + "/" + tempTime.getFullYear()
-                            //+ line_data[li].hash.substr(0, 10)
-                    , title : "Commit Hash: " + line_data[li].hash.substr(0, 10)
-                            + "\n" + commit_data[line_data[li].hash].summary
-                            + "\n" + tempTime.toUTCString()
+                    text : commit_data[line_data[li].hash].author + " &raquo; " +
+                        tempTime.getDate() + "/" + (tempTime.getMonth()+1) + "/" + tempTime.getFullYear(),
+                        //+ line_data[li].hash.substr(0, 10)
+                    title : "Commit Hash: " + line_data[li].hash.substr(0, 10) +
+                        "\n" + commit_data[line_data[li].hash].summary +
+                        "\n" + tempTime.toUTCString()
                 };
             }
         }

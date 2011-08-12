@@ -238,9 +238,10 @@ Ide.DEFAULT_PLUGINS = [
                 setTimeout(function() {
                     var now = new Date().getTime();
                     if((now - user.last_message_time) > 10000) {
+                        console.log("User fully disconnected", username);
                         _self.removeUser(user);
                     }
-                }, 20000);
+                }, 10000);
             });
 
             this.onUserCountChange();
@@ -305,6 +306,8 @@ Ide.DEFAULT_PLUGINS = [
     };
 
     this.sendToUser = function(username, msg) {
+        //for (var u in this.$users)
+        //    console.log("IDE USER", this.$users[u].uid, this.$users[u].clients);
         this.$users[username] && this.$users[username].broadcast(msg);
     };
 
