@@ -37,7 +37,7 @@ return ext.register("ext/ftp/ftp", {
 
         // hack to hide the dock panel!!
         if (window.dockPanelRight)
-            dockPanelRight.setAttribute("visible", false)
+            dockPanelRight.setAttribute("visible", false);
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
         //trFiles.setAttribute("multiselect", false);
@@ -56,7 +56,7 @@ return ext.register("ext/ftp/ftp", {
             this.$panel = tabConsole.add(this.pageTitle, this.pageID);
             this.$panel.appendChild(ftpConsoleHbox);
             tabConsole.set(this.$panel);
-        };
+        }
 
         console.log("FTP CLIENT PLUGIN STARTED");
 
@@ -76,27 +76,37 @@ return ext.register("ext/ftp/ftp", {
         if (!tabConsole.visible)
             ideConsole.enable();
 
-        msg = apf.htmlentities(String(msg));
+        // Converts HTML special characters to their entity equivalents.
+        msg = apf.htmlentities("" + msg);
 
-        if (!type)
-            type = "log";
-        else if (type == "command") {
-            msg = "<span style='color:#0066FF'><span style='float:left'>Cmd:</span><div style='margin:0 0 0 80px'>"
-                + msg.toUpperCase() + "</div></span>"
+        switch (type) {
+            case "command":
+                msg = "<span style='color:#0066FF'><span style='float:left'>"
+                    + "Cmd:</span><div style='margin:0 0 0 80px'>"
+                    + msg + "</div></span>";
+                break;
+
+            case "response":
+                msg = "<span style='color:#66FF66'><span style='float:left'>"
+                    + code + ":</span><div style='margin:0 0 0 80px'>"
+                    + msg.replace(/\n/gm, "<br>").replace(/\s/gm, "&nbsp;")
+                    + "</div></span>";
+                break;
+
+            case "status":
+                msg = "<span style='color:#FFFFFF'><div>" + msg + "</div></span>";
+                break;
+
+            case "error":
+                msg = "<span style='color:#FF3300'><span style='float:left'>"
+                    + code + ":</span><div style='margin:0 0 0 80px'>"
+                    + msg + "</div></span>";
+                break;
+
+            default:
+                type = "log";
         }
-        else if (type == "response") {
-            console.log("RESPONSE", msg.replace(/\n/, "<br>"))
-            msg = "<span style='color:#66FF66'><span style='float:left'>" + code + ":</span><div style='margin:0 0 0 80px'>"
-                + msg.replace(/\n/gm, "<br>") + "</div></span>"
-        }
-        else if (type == "status") {
-            msg = "<span style='color:#FFFFFF'><div>"
-                + msg + "</div></span>"
-        }
-        else if (type == "error") {
-            msg = "<span style='color:#FF3300'><span style='float:left'>" + code + ":</span><div style='margin:0 0 0 80px'>"
-                + msg + "</div></span>"
-        }
+
         txtFtpConsole.addValue("<div class='item console_" + type + "'>" + msg + "</div>");
     },
 
