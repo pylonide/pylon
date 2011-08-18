@@ -1710,7 +1710,56 @@
         </a:main>
     </a:presentation>
 </a:button>
+<a:button name="c9-topbar-btn">
+    <a:style><![CDATA[
+        .c9-topbar-btn {
+            height              : 25px;
+            width               : 25px;
+            overflow            : hidden;
+            cursor              : pointer;
+            position            : relative;
+            cursor              : default;
+            -moz-user-select    : none; 
+            -khtml-user-select  : none; 
+            user-select         : none;
+            background-repeat   : no-repeat;
+            background-image    : url("images/c9-topbar-btns.png");
+            background-position : 0 0;
+        }
 
+        // dashboard 
+        .c9-topbar-btn.c9-topbar-btnDown.dashboard {
+            background-position : -25px 0;
+        }
+        .c9-topbar-btn.c9-topbar-btnOver.dashboard {
+            background-position : -50px 0;
+        }
+        .c9-topbar-btn.dashboard {
+            background-position : 0 0;
+        }
+        
+        // home
+        .c9-topbar-btn.c9-topbar-btnDown.home {
+            background-position : -25px -25px;
+        }
+        .c9-topbar-btn.c9-topbar-btnOver.home {
+            background-position : -50px -25px;
+        }
+        .c9-topbar-btn.home {
+            background-position : 0 -25px;
+        }
+        
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption      = "text()"
+          background = "."
+          icon       = ".">
+            <div class="c9-topbar-btn"> </div>
+        </a:main>
+    </a:presentation>
+</a:button>
 <a:checkbox name="checkbox">
     <a:style><![CDATA[
         .cbcontainer {
