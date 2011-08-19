@@ -310,29 +310,23 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         });
         
         var url;
-        if (location.host || window.cloud9config.standalone) {
-            var dav_url = location.href.replace(location.path + location.hash, "") + ide.davPrefix;
-            this.webdav = new apf.webdav({
-                id  : "davProject",
-                url : dav_url,
-                onauthfailure: function(e) {
-                    ide.dispatchEvent("authrequired");
-                }
+        var dav_url = location.href.replace(location.path + location.hash, "") + ide.davPrefix;
+        this.webdav = new apf.webdav({
+            id  : "davProject",
+            url : dav_url,
+            onauthfailure: function(e) {
+                ide.dispatchEvent("authrequired");
+            }
+        });
+        url = "{davProject.getroot()}";
+        
+        /*this.webdav.$undoFlag = false;
+        this.webdav.addEventListener("error", function(event) {
+            return util.alert("Webdav Exception", event.error.type || "", event.error.message, function() {
+                trFiles.getActionTracker().undo();
+                _self.webdav.$undoFlag = true;
             });
-            url = "{davProject.getroot()}";
-            
-            /*this.webdav.$undoFlag = false;
-            this.webdav.addEventListener("error", function(event) {
-                return util.alert("Webdav Exception", event.error.type || "", event.error.message, function() {
-                    trFiles.getActionTracker().undo();
-                    _self.webdav.$undoFlag = true;
-                });
-            });*/
-        }
-        else {
-            url = "ext/filesystem/files.xml";
-            this.readFile = this.saveFile = apf.K;
-        }
+        });*/
 
         function openHandler(e) {
             ide.socket.send(JSON.stringify({

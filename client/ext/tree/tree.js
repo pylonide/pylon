@@ -22,6 +22,7 @@ module.exports = ext.register("ext/tree/tree", {
     type             : ext.GENERAL,
     markup           : markup,
     visible          : true,
+    deps             : [fs],
     currentSettings  : [],
     expandedList     : {},
     loading          : false,
