@@ -55,6 +55,7 @@ var SupportedModes = {
     "text/x-java-source": "java",
     "text/x-csharp": "csharp",
     "text/x-script.coffeescript": "coffee",
+    "text/x-markdown": "markdown",
     "text/x-web-textile": "textile",
     "text/x-script.ocaml": "ocaml",
     "text/x-script.clojure": "clojure"
@@ -97,7 +98,10 @@ var contentTypes = {
     
     "clj": "text/x-script.clojure",
     "ml": "text/x-script.ocaml",
-    "mli": "text/x-script.ocaml"
+    "mli": "text/x-script.ocaml",
+    
+    "md": "text/x-markdown",
+    "markdown": "text/x-markdown"
 };
 
 module.exports = ext.register("ext/code/code", {

@@ -62,7 +62,8 @@ var SupportedIcons = {
     "text/cpp": 'page_white_cplusplus',
     "text/x-c": 'page_white_c',
     "text/x-csharp": 'page_white_csharp',
-    "text/text/x-java-source": 'page_white_cup'
+    "text/text/x-java-source": 'page_white_cup',
+    "text/x-markdown": 'page_white_text'
 };
         
 var contentTypes = {
