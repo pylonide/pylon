@@ -434,7 +434,7 @@ apf.$x = apf.$loader
         if (apf.$required.length)
             apf.$x.script.apply(apf.$x, apf.$required).wait(start);
         else {
-            if (window.require && typeof require.def == "function") {
+            if (typeof requirejs !== "undefined") {
                 require([
                     "pilot/fixoldbrowsers",
                     "apf/elements/codeeditor",

@@ -1,9 +1,9 @@
 // #ifdef __AMLDEBUGGER || __INC_ALL
-if (apf.hasRequireJS) require.def("apf/elements/debughost",
-    ["apf/elements/dbg/chromedebughost",
-     "apf/elements/dbg/v8debughost", 
-     "apf/elements/dbg/v8websocketdebughost"],
-    function(ChromeDebugHost, V8DebugHost, V8WebSocketDebugHost) {
+if (apf.hasRequireJS) define(function(require, exports, module) {
+
+var ChromeDebugHost = require("apf/elements/dbg/chromedebughost");
+var V8DebugHost = require("apf/elements/dbg/v8debughost");
+var V8WebSocketDebugHost = require("apf/elements/dbg/v8websocketdebughost");
     
 apf.debughost = function(struct, tagName){
     this.$init(tagName || "debughost", apf.NODE_HIDDEN, struct);

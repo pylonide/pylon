@@ -23,7 +23,7 @@ else*/
     apf.addDomLoadEvent(function(){apf.Init.run('body');});
 
 //Start
-if (window.require && typeof require.def == "function") {
+if (typeof requirejs !== "undefined") {
     var deps = [];
     // #ifdef __AMLCODEEDITOR || __INC_ALL
     deps.push("apf/elements/codeeditor");
