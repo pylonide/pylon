@@ -108,7 +108,7 @@ define(function(require, exports, module) {
             // fire up the socket connection:
             var options = {
                 rememberTransport: false,
-                //transports:  [/*"htmlfile", "xhr-multipart", "flashsocket", */"xhr-polling", "jsonp-polling"],
+                transports:  ["xhr-polling"],
                 connectTimeout: 5000,
                 reconnect: false,
                 transportOptions: {
