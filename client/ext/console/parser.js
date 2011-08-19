@@ -89,8 +89,8 @@
   Parser is now a single, self-contained object in the global name space.
   Note: we are not storing the terminal instance in order to avoid memory leakage.
 */
-require.def("ext/console/parser", [], function() {
-
+define(function(require, exports, module) {
+    
 function Parser() {
     this.lineBuffer = "";
     // config:
@@ -282,6 +282,6 @@ Parser.prototype = {
     }
 }
 
-return Parser;
+module.exports = Parser;
 });
 // eof

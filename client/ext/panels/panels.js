@@ -12,7 +12,7 @@ var ext = require("core/ext");
 var settings = require("ext/settings/settings");
 var markup = require("text!ext/panels/panels.xml");
 
-return ext.register("ext/panels/panels", {
+module.exports = ext.register("ext/panels/panels", {
     name   : "Panel Manager",
     dev    : "Ajax.org",
     alone  : true,

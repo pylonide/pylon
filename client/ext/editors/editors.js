@@ -13,7 +13,7 @@ var util = require("core/util");
 var panels = require("ext/panels/panels");
 var dockpanel = require("ext/dockpanel/dockpanel");
 
-return ext.register("ext/editors/editors", {
+module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
     dev     : "Ajax.org",
     alone   : true,

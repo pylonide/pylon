@@ -4,10 +4,13 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/testredbar/testredbar",
-    ["core/ide", "core/ext"], function(ide, ext) {
-        
-return ext.register("ext/testredbar/testredbar", {
+
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+ 
+module.exports = ext.register("ext/testredbar/testredbar", {
     dev    : "Ajax.org",
     alone  : true,
     type   : ext.GENERAL, 

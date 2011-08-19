@@ -15,7 +15,7 @@ var fs = require("ext/filesystem/filesystem");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/debugger/debugger.xml");
 
-return ext.register("ext/debugger/debugger", {
+module.exports = ext.register("ext/debugger/debugger", {
     name    : "Debug",
     dev     : "Ajax.org",
     type    : ext.GENERAL,

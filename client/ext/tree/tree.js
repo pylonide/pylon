@@ -4,13 +4,18 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/tree/tree",
-    ["core/ide", "core/ext", "core/util",
-     "ext/filesystem/filesystem", "ext/settings/settings", 
-     "ext/panels/panels", "text!ext/tree/tree.xml"],
-    function(ide, ext, util, fs, settings, panels, markup) {
 
-return ext.register("ext/tree/tree", {
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+var util = require("core/util");
+var fs = require("ext/filesystem/filesystem");
+var settings = require("ext/settings/settings"); 
+var panels = require("ext/panels/panels");
+var markup = require("text!ext/tree/tree.xml");
+
+module.exports = ext.register("ext/tree/tree", {
     name             : "Project Files",
     dev              : "Ajax.org",
     alone            : true,
@@ -160,8 +165,10 @@ return ext.register("ext/tree/tree", {
             checked : "[{require('ext/settings/settings').model}::auto/tree/@showhidden]",
             onclick : function(){
                 _self.changed = true;
-                require('ext/tree/tree').refresh();
-                require("ext/settings/settings").save();
+                require(["ext/tree/tree", "ext/settings/settings"], function(tree, settings) {
+                    tree.refresh();
+                    settings.save();
+                })
             }
         }));
         davProject.setAttribute("showhidden", "[{require('ext/settings/settings').model}::auto/tree/@showhidden]");

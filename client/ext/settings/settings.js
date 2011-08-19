@@ -16,7 +16,7 @@ var template = require("text!ext/settings/template.xml");
 var panels = require("ext/panels/panels");
 var skin = require("text!ext/settings/skin.xml");
 
-return ext.register("ext/settings/settings", {
+module.exports = ext.register("ext/settings/settings", {
     name    : "Preferences",
     dev     : "Ajax.org",
     alone   : true,

@@ -16,6 +16,7 @@ var Document = require("ace/document").Document;
 var ProxyDocument = require("ext/code/proxydocument");
 var markup = require("text!ext/code/code.xml");
 var settings = require("text!ext/code/settings.xml");
+var editors = require("ext/editors/editors");
 
 apf.actiontracker.actions.aceupdate = function(undoObj, undo){
     var q = undoObj.args;
@@ -99,13 +100,14 @@ var contentTypes = {
     "mli": "text/x-script.ocaml"
 };
 
-return ext.register("ext/code/code", {
+module.exports = ext.register("ext/code/code", {
     name    : "Code Editor",
     dev     : "Ajax.org",
     type    : ext.EDITOR,
     contentTypes : Object.keys(SupportedModes),
     markup  : markup,
-
+    deps    : [editors],
+    
     nodes : [],
     
     getState : function(doc){

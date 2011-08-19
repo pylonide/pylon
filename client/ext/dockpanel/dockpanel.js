@@ -12,7 +12,7 @@ var ide = require("core/ide");
 var DockableLayout = require("ext/dockpanel/libdock");
 var settings = require("ext/settings/settings");
 
-return ext.register("ext/dockpanel/dockpanel", {
+module.exports = ext.register("ext/dockpanel/dockpanel", {
     name           : "Dock Panel",
     dev            : "Ajax.org",
     alone          : true,

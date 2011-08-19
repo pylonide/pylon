@@ -4,11 +4,15 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/tabbehaviors/tabbehaviors",
-    ["core/ide", "core/ext", "core/util", "ext/save/save"],
-    function(ide, ext, util, save) {
 
-return ext.register("ext/tabbehaviors/tabbehaviors", {
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+var util = require("core/util");
+var save = require("ext/save/save");
+
+module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     name       : "Tab Behaviors",
     dev        :  "Ajax.org",
     alone      : true,

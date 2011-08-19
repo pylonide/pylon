@@ -6,8 +6,6 @@
  */
 define(function(require, exports, module) {
     
-var ide = require("core/ide");
-
 exports.alert = function(title, header, msg, onhide) {
     winAlert.show();
     winAlert.setAttribute('title', title);

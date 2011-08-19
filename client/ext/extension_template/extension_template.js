@@ -102,7 +102,7 @@ var ide = require("core/ide");
 
 var markup = require("text!ext/extension_template/extension_template.xml");
         
-return ext.register("ext/extension_template/extension_template", {
+module.exports = ext.register("ext/extension_template/extension_template", {
     /**
      * Extension Properties
      * 

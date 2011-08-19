@@ -9,7 +9,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 
-return ext.register("ext/connect/connect", {
+module.exports = ext.register("ext/connect/connect", {
     dev         : "Ajax.org",
     name        : "Offline",
     alone       : true,

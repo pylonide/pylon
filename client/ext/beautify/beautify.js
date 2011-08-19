@@ -21,7 +21,7 @@ define(function (require, exports, module) {
     var settings = require("text!ext/beautify/settings.xml");
     var extSettings = require("ext/settings/settings");
 
-    return ext.register("ext/beautify/beautify", {
+    module.exports = ext.register("ext/beautify/beautify", {
         name: "JS Beautify",
         dev: "Ajax.org",
         alone: true,

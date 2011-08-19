@@ -11,7 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
 
-return ext.register("ext/filesystem/filesystem", {
+module.exports = ext.register("ext/filesystem/filesystem", {
     name   : "File System",
     dev    : "Ajax.org",
     type   : ext.GENERAL,

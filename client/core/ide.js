@@ -229,6 +229,6 @@ define(function(require, exports, module) {
             });
         };
 
-        return ide;
+        module.exports = ide;
     }
 );
