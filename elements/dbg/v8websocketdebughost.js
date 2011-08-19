@@ -5,7 +5,7 @@ var WSV8DebuggerService = require("debug/WSV8DebuggerService");
 var V8Debugger = require("debug/V8Debugger");
 var APFV8Debugger = require("apf/elements/dbg/v8debugger");
 
-var V8WebSocketDebugHost = function(socket) {
+var V8WebSocketDebugHost = module.exports = function(socket) {
     this.$socket = socket;
     this.$debugger = null;
     
@@ -63,6 +63,5 @@ var V8WebSocketDebugHost = function(socket) {
     
 }).call(V8WebSocketDebugHost.prototype = new apf.Class());
 
-return V8WebSocketDebugHost;
 });
 // #endif

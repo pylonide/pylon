@@ -3,7 +3,7 @@ if (apf.hasRequireJS) define(function(require, exports, module) {
 
 var Breakpoint = require("debug/Breakpoint");
 
-var V8Debugger = function(dbg, host) {
+var V8Debugger = module.exports = function(dbg, host) {
     this.$init();
 
     this.$debugger = dbg;
@@ -524,8 +524,6 @@ var V8Debugger = function(dbg, host) {
     };
     
 }).call(V8Debugger.prototype = new apf.Class());
-
-return V8Debugger;
 
 });
 // #endif

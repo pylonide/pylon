@@ -22,7 +22,7 @@
 // #ifdef __AMLDEBUGGER || __INC_ALL
 if (apf.hasRequireJS) define(function(require, exports, module) {
 
-apf.dbg = function(struct, tagName){
+module.exports = apf.dbg = function(struct, tagName){
     this.$init(tagName || "debugger", apf.NODE_HIDDEN, struct);
 };
 
@@ -299,8 +299,8 @@ window.adbg = {
          }
      }
  };
+
 (apf.$asyncObjects || (apf.$asyncObjects = {}))["adbg"] = 1;
 
-return apf.dbg;
 });
 // #endif
