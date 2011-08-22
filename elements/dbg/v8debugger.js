@@ -1,9 +1,9 @@
 // #ifdef __AMLDEBUGGER || __INC_ALL
-if (apf.hasRequireJS) define(function(require, exports, module) {
+if (apf.hasRequireJS) define("apf/elements/dbg/v8debugger",
+    ["debug/Breakpoint"],
+    function(Breakpoint) {
 
-var Breakpoint = require("debug/Breakpoint");
-
-var V8Debugger = module.exports = function(dbg, host) {
+var V8Debugger = function(dbg, host) {
     this.$init();
 
     this.$debugger = dbg;

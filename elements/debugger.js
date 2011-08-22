@@ -20,9 +20,10 @@
  */
 
 // #ifdef __AMLDEBUGGER || __INC_ALL
-if (apf.hasRequireJS) define(function(require, exports, module) {
+if (apf.hasRequireJS) define("apf/elements/debugger",
+    [], function() {
 
-module.exports = apf.dbg = function(struct, tagName){
+apf.dbg = function(struct, tagName){
     this.$init(tagName || "debugger", apf.NODE_HIDDEN, struct);
 };
 

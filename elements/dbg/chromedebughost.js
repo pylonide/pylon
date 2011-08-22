@@ -1,14 +1,14 @@
 // #ifdef __AMLDEBUGGER || __INC_ALL
-if (apf.hasRequireJS) define(function(require, exports, module) {
-    
-var ChromeDebugMessageStream = require("debug/ChromeDebugMessageStream");
-var WSChromeDebugMessageStream = require("debug/WSChromeDebugMessageStream");
-var DevToolsService = require("debug/DevToolsService");
-var V8DebuggerService = require("debug/V8DebuggerService");
-var V8Debugger = require("debug/V8Debugger");
-var APFV8Debugger = require("apf/elements/dbg/v8debugger");
+if (apf.hasRequireJS) define("apf/elements/dbg/chromedebughost",
+    ["debug/ChromeDebugMessageStream", 
+     "debug/WSChromeDebugMessageStream", 
+     "debug/DevToolsService", 
+     "debug/V8DebuggerService",
+     "debug/V8Debugger",
+     "apf/elements/dbg/v8debugger"],
+    function(ChromeDebugMessageStream, WSChromeDebugMessageStream, DevToolsService, V8DebuggerService, V8Debugger, APFV8Debugger) {
 
-var ChromeDebugHost = module.exports = function(hostname, port, o3obj, ws) {
+var ChromeDebugHost = function(hostname, port, o3obj, ws) {
     this.$hostname = hostname;
     this.$port = port;
     this.$o3obj = o3obj;

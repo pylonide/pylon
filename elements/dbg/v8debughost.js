@@ -1,11 +1,11 @@
 // #ifdef __AMLDEBUGGER || __INC_ALL
-if (apf.hasRequireJS) define(function(require, exports, module) {
+if (apf.hasRequireJS) define("apf/elements/dbg/v8debughost",
+    ["debug/StandaloneV8DebuggerService",
+     "debug/V8Debugger",
+     "apf/elements/dbg/v8debugger"],
+    function(StandaloneV8DebuggerService, V8Debugger, APFV8Debugger) {
 
-var StandaloneV8DebuggerService = require("debug/StandaloneV8DebuggerService");
-var V8Debugger = require("debug/V8Debugger");
-var APFV8Debugger = require("apf/elements/dbg/v8debugger");
-
-var V8DebugHost = module.exports = function(hostname, port, o3obj) {
+var V8DebugHost = function(hostname, port, o3obj) {
     this.$hostname = hostname;
     this.$port = port;
     this.$o3obj = o3obj;
