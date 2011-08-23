@@ -46,7 +46,10 @@ sys.inherits(NodeRuntimePlugin, Plugin);
                 this.$run(message, client);
                 break;
             case "rundebug":
-                netutil.findFreePort(this.NODE_DEBUG_PORT, "localhost", function(port) {
+                netutil.findFreePort(this.NODE_DEBUG_PORT, this.NODE_DEBUG_PORT + 1000, "localhost", function(err, port) {
+                    if (err)
+                        return _self.$error("Could not find a free port", 9, err);
+
                     _self.NODE_DEBUG_PORT = port;
                     message.preArgs = ["--debug=" + _self.NODE_DEBUG_PORT];
                     message.debug = true;
@@ -56,9 +59,11 @@ sys.inherits(NodeRuntimePlugin, Plugin);
                 });
                 break;
             case "rundebugbrk":
-                netutil.findFreePort(this.NODE_DEBUG_PORT, "localhost", function(port) {
+                netutil.findFreePort(this.NODE_DEBUG_PORT, this.NODE_DEBUG_PORT + 1000, "localhost", function(err, port) {
+                    if (err)
+                        return _self.$error("Could not find a free port", 9, err);
+
                     _self.NODE_DEBUG_PORT = port;
-                    
                     message.preArgs = ["--debug-brk=" + _self.NODE_DEBUG_PORT];
                     message.debug = true;
                     _self.$run(message, client);
@@ -238,7 +243,8 @@ sys.inherits(NodeRuntimePlugin, Plugin);
                 _self.send({"type": "node-exit-with-error", errorMessage: err}, null, _self.name);
                 // the idea is that if the "node-exit-with-error" event is dispatched, 
                 // then the "node-exit" event is not.
-                _self.child.removeAllListeners("exit");
+                if (_self.child)
+                    _self.child.removeAllListeners("exit");
                 // in this case the debugger process is still running. We need to 
                 // kill that process, while not interfering with other parts of the source.
                 _self.$kill();

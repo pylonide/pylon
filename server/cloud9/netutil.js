@@ -45,7 +45,7 @@ exports.isPortOpen = function(hostname, port, timeout, callback) {
     var id = setTimeout(function() {
         stream.destroy();
         callback(false);
-    }, timeout);
+    }, timeout || 1000);
 };
 
 exports.getHostName = function(callback) {

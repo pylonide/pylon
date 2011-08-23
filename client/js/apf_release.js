@@ -5581,9 +5581,9 @@ if(this.validate){this.validate(true);}return true;};this.$draw=function(){this.
 this.$input=this.$getLayoutNode("main","input",this.$ext);this.$notfromext=this.$input&&this.$input!=this.$ext;
 this.$setupEvents();};this.$childProperty="label";this.addEventListener("$skinchange",function(){if(this.label){this.$propHandlers.label.call(this,this.label);
 }});}).call(apf.checkbox.prototype=new apf.BaseButton());apf.aml.setElement("checkbox",apf.checkbox);
-if(!apf.hasRequireJS){apf.aml.setElement("codeeditor",apf.textbox);}else{define("apf/elements/codeeditor",["ace/editor","ace/edit_session","ace/virtual_renderer","ace/undomanager","ace/range","pilot/fixoldbrowsers"],function(Editor,EditSession,VirtualRenderer,UndoManager,Range){Editor=Editor.Editor;
+if(!apf.hasRequireJS){apf.aml.setElement("codeeditor",apf.textbox);}else{define("apf/elements/codeeditor",["module","ace/editor","ace/edit_session","ace/virtual_renderer","ace/undomanager","ace/range","pilot/fixoldbrowsers"],function(module,Editor,EditSession,VirtualRenderer,UndoManager,Range){Editor=Editor.Editor;
 EditSession=EditSession.EditSession;VirtualRenderer=VirtualRenderer.VirtualRenderer;
-UndoManager=UndoManager.UndoManager;Range=Range.Range;apf.codeeditor=function(struct,tagName){this.$init(tagName||"codeeditor",apf.NODE_VISIBLE,struct);
+UndoManager=UndoManager.UndoManager;Range=Range.Range;apf.codeeditor=module.exports=function(struct,tagName){this.$init(tagName||"codeeditor",apf.NODE_VISIBLE,struct);
 this.documents=[];this.$cache={};this.setProperty("line",1);this.setProperty("col",1);
 };(function(){this.implement(apf.DataAction);this.$focussable=true;this.$childProperty="value";
 this.$isTextInput=true;this.value="";this.multiline=true;this.caching=true;this.$booleanProperties.activeline=true;
@@ -5823,7 +5823,7 @@ apf.layout.queue(this.$ext);this.addEventListener("afterload",this.$resize);this
 apf.layout.removeRule(this.$container,"dg"+this.$uniqueId);apf.layout.activateRules(this.$container);
 };}).call(apf.datagrid.prototype=new apf.BaseTree());apf.aml.setElement("datagrid",apf.datagrid);
 apf.aml.setElement("description",apf.BindingRule);apf.aml.setElement("color",apf.BindingRule);
-apf.aml.setElement("contents",apf.BindingRule);if(apf.hasRequireJS){define("apf/elements/debugger",[],function(){apf.dbg=function(struct,tagName){this.$init(tagName||"debugger",apf.NODE_HIDDEN,struct);
+apf.aml.setElement("contents",apf.BindingRule);if(apf.hasRequireJS){define("apf/elements/debugger",["module"],function(module){apf.dbg=module.exports=function(struct,tagName){this.$init(tagName||"debugger",apf.NODE_HIDDEN,struct);
 };(function(){this.$host=null;this.$debugger=null;this.$supportedProperties.push("state-running","state-attached","model-sources","model-stacks","model-breakpoints","activeframe");
 this.$createModelPropHandler=function(name,xml,callback){return function(value){if(!value){return;
 }this[name]=apf.setReference(value,apf.nameserver.register("model",value,new apf.model()));
@@ -5877,7 +5877,7 @@ var script=args[1];dbg.loadScript(script,function(source){if(options&&options.ca
 }else{callback(xml,apf.SUCCESS);}});}else{if(method=="loadFrame"){var dbg=args[0];
 var frame=args[1];dbg.loadFrame(frame,function(xml){if(options&&options.callback){options.callback(xml,apf.SUCCESS);
 }else{callback(xml,apf.SUCCESS);}});}}}}};(apf.$asyncObjects||(apf.$asyncObjects={}))["adbg"]=1;
-});}if(apf.hasRequireJS){define("apf/elements/debughost",["apf/elements/dbg/chromedebughost","apf/elements/dbg/v8debughost","apf/elements/dbg/v8websocketdebughost"],function(ChromeDebugHost,V8DebugHost,V8WebSocketDebugHost){apf.debughost=function(struct,tagName){this.$init(tagName||"debughost",apf.NODE_HIDDEN,struct);
+});}if(apf.hasRequireJS){define("apf/elements/debughost",["module","apf/elements/dbg/chromedebughost","apf/elements/dbg/v8debughost","apf/elements/dbg/v8websocketdebughost"],function(module,ChromeDebugHost,V8DebugHost,V8WebSocketDebugHost){apf.debughost=module.exports=function(struct,tagName){this.$init(tagName||"debughost",apf.NODE_HIDDEN,struct);
 };(function(){this.port=9222;this.server="localhost";this.type="chrome";this.autoinit=false;
 this.$modelTabs=null;this.$stateConnected=null;this.$host=null;this.$booleanProperties.autostart=true;
 this.$supportedProperties.push("port","server","type","autoinit","model-tabs","state-connected","strip");
@@ -7807,7 +7807,7 @@ newNode=undoObj.extra.newNode=newNodes[0];if(newNode){if(newNode.nodeType==2){un
 apf.xmldb.delayUpdate=true;if(!undo){for(var i=0;i<q.length;i++){if(!q[i].extra){q[i].extra={};
 }apf.actiontracker.actions[q[i].action](q[i],false,at);}}else{for(var i=q.length-1;
 i>=0;i--){apf.actiontracker.actions[q[i].action](q[i],true,at);}}apf.xmldb.delayUpdate=dUpdate;
-}};if(apf.hasRequireJS){define("apf/elements/dbg/chromedebughost",["debug/ChromeDebugMessageStream","debug/WSChromeDebugMessageStream","debug/DevToolsService","debug/V8DebuggerService","debug/V8Debugger","apf/elements/dbg/v8debugger"],function(ChromeDebugMessageStream,WSChromeDebugMessageStream,DevToolsService,V8DebuggerService,V8Debugger,APFV8Debugger){var ChromeDebugHost=function(hostname,port,o3obj,ws){this.$hostname=hostname;
+}};if(apf.hasRequireJS){define("apf/elements/dbg/chromedebughost",["module","debug/ChromeDebugMessageStream","debug/WSChromeDebugMessageStream","debug/DevToolsService","debug/V8DebuggerService","debug/V8Debugger","apf/elements/dbg/v8debugger"],function(module,ChromeDebugMessageStream,WSChromeDebugMessageStream,DevToolsService,V8DebuggerService,V8Debugger,APFV8Debugger){var ChromeDebugHost=module.exports=function(hostname,port,o3obj,ws){this.$hostname=hostname;
 this.$port=port;this.$o3obj=o3obj;this.$ws=ws;this.$debuggers={};this.$init();this.$connect(function(){});
 };(function(){this.$connect=function(callback){var self=this;if(this.state=="connected"){return callback.call(this);
 }else{this.addEventListener("connect",function(){self.removeEventListener("connect",arguments.callee);
@@ -7828,7 +7828,7 @@ for(var id in this.$debuggers){debuggers.push(id);}var self=this;var detachNext=
 var dbg=self.$debuggers[id];self.$v8ds.detach(id,function(){detachNext();dbg.dispatchEvent("detach");
 });}else{self.$socket.close();self.$debuggers={};self.dispatchEvent("disconnect",{});
 callback&&callback();}};detachNext();};}).call(ChromeDebugHost.prototype=new apf.Class());
-});}if(apf.hasRequireJS){define("apf/elements/dbg/v8debugger",["debug/Breakpoint"],function(Breakpoint){var V8Debugger=function(dbg,host){this.$init();
+});}if(apf.hasRequireJS){define("apf/elements/dbg/v8debugger",["module","debug/Breakpoint"],function(module,Breakpoint){var V8Debugger=module.exports=function(dbg,host){this.$init();
 this.$debugger=dbg;this.$host=host;this.$breakpoints={};var _self=this;dbg.addEventListener("changeRunning",function(e){_self.dispatchEvent("changeRunning",e);
 if(dbg.isRunning()){_self.setFrame(null);}});dbg.addEventListener("break",function(e){_self.dispatchEvent("break",e);
 });dbg.addEventListener("afterCompile",function(e){_self.dispatchEvent("afterCompile",{script:apf.getXml(_self.$getScriptXml(e.data.script))});
@@ -7914,7 +7914,7 @@ case"function":return"function "+value.inferredName+"()";default:return value.ty
 str.push(frame.func.name||frame.func.inferredName||"anonymous","(");for(var i=0,l=args.length;
 i<l;i++){var arg=args[i];if(!arg.name){continue;}argsStr.push(arg.name);}str.push(argsStr.join(", "),")");
 return str.join("");};this.$serializeVariable=function(item,name){var str=["<item name='",apf.escapeXML(name||item.name),"' value='",apf.escapeXML(this.$valueString(item.value)),"' type='",item.value.type,"' ref='",typeof item.value.ref=="number"?item.value.ref:item.value.handle,hasChildren[item.value.type]?"' children='true":"","' />"];
-return str.join("");};}).call(V8Debugger.prototype=new apf.Class());});}if(apf.hasRequireJS){define("apf/elements/dbg/v8debughost",["debug/StandaloneV8DebuggerService","debug/V8Debugger","apf/elements/dbg/v8debugger"],function(StandaloneV8DebuggerService,V8Debugger,APFV8Debugger){var V8DebugHost=function(hostname,port,o3obj){this.$hostname=hostname;
+return str.join("");};}).call(V8Debugger.prototype=new apf.Class());});}if(apf.hasRequireJS){define("apf/elements/dbg/v8debughost",["module","debug/StandaloneV8DebuggerService","debug/V8Debugger","apf/elements/dbg/v8debugger"],function(module,StandaloneV8DebuggerService,V8Debugger,APFV8Debugger){var V8DebugHost=module.exports=function(hostname,port,o3obj){this.$hostname=hostname;
 this.$port=port;this.$o3obj=o3obj;this.$debugger=null;this.$init();};(function(){this.$connect=function(callback){var self=this;
 if(this.state=="connected"){return callback.call(this);}else{this.addEventListener("connect",function(){self.removeEventListener("connect",arguments.callee);
 callback.call(self);});}if(this.state=="connecting"){return;}this.state="connecting";
@@ -7927,7 +7927,7 @@ self.$debugger=dbg;callback(null,dbg);});});};this.detach=function(dbg,callback)
 }this.$debugger=null;var self=this;this.$v8ds.detach(0,function(err){dbg.dispatchEvent("detach");
 self.$socket.close();self.dispatchEvent("disconnect",{});callback&&callback(err);
 });};this.disconnect=function(callback){this.detach(this.$debugger,callback);};
-}).call(V8DebugHost.prototype=new apf.Class());});}if(apf.hasRequireJS){define("apf/elements/dbg/v8websocketdebughost",["debug/WSV8DebuggerService","debug/V8Debugger","apf/elements/dbg/v8debugger"],function(WSV8DebuggerService,V8Debugger,APFV8Debugger){var V8WebSocketDebugHost=function(socket){this.$socket=socket;
+}).call(V8DebugHost.prototype=new apf.Class());});}if(apf.hasRequireJS){define("apf/elements/dbg/v8websocketdebughost",["module","debug/WSV8DebuggerService","debug/V8Debugger","apf/elements/dbg/v8debugger"],function(module,WSV8DebuggerService,V8Debugger,APFV8Debugger){var V8WebSocketDebugHost=module.exports=function(socket){this.$socket=socket;
 this.$debugger=null;this.$init();};(function(){this.$connect=function(callback){if(this.state!="connected"){this.$v8ds=new WSV8DebuggerService(this.$socket);
 }this.state="connected";this.dispatchEvent("connect");callback.call(this);};this.loadTabs=function(model){model.load("<tabs><tab id='0'>V8</tab></tabs>");
 };this.attach=function(tabId,callback){var dbg=this.$debugger;if(dbg){return callback(null,dbg);
