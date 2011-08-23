@@ -343,7 +343,7 @@ module.exports = ext.register("ext/editors/editors", {
         if (editorPage.actiontracker != page.$at)
             editorPage.setAttribute("actiontracker", page.$at);
         
-        page.$editor.setDocument(page.$doc, page.$at);
+        page.$editor.setDocument && page.$editor.setDocument(page.$doc, page.$at);
     },
 
     afterswitch : function(e) {
@@ -485,7 +485,7 @@ module.exports = ext.register("ext/editors/editors", {
                     copy.removeAttribute("changed");
                     pNode.appendChild(copy);
                     
-                    var state = pages[i].$editor.getState(pages[i].$doc);
+                    var state = pages[i].$editor.getState && pages[i].$editor.getState(pages[i].$doc);
                     if (state)
                         copy.setAttribute("state", apf.serialize(state));
                 }
