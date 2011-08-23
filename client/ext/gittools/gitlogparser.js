@@ -6,10 +6,10 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-require.def("ext/gittools/gitlogparser", [], function() {
+define(function(require, exports, module) {
 
-var GitLogParser = (function() {
-
+module.exports = (function() {
+     
     function GitLogParser() {
         this.arrLogData = [];
         this.currentLine = {
@@ -110,7 +110,5 @@ var GitLogParser = (function() {
 
     return GitLogParser;
 })();
-
-return GitLogParser;
 
 });

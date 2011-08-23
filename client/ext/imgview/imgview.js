@@ -11,6 +11,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var markup = require("text!ext/imgview/imgview.xml");
+var editors = require("ext/editors/editors");
 
 var ImageTypes = {
     "image/bmp": "bmp",
@@ -34,12 +35,13 @@ var ImageTypes = {
     "image/x-xpixmap": "xpm"
 };
 
-return ext.register("ext/imgview/imgview", {
+module.exports = ext.register("ext/imgview/imgview", {
     name    : "Image Viewer",
     dev     : "Ajax.org",
     contentTypes : Object.keys(ImageTypes),
     type    : ext.EDITOR,
     markup  : markup,
+    deps    : [editors],
 
     nodes : [],
 

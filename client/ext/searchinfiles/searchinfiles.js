@@ -7,16 +7,16 @@
  
 define(function(require, exports, module) {
  
- var ide = require("core/ide");
- var ext = require("core/ext");
- var util = require("core/util");
- var canon = require("pilot/canon");
- var editors = require("ext/editors/editors");
- var ideConsole = require("ext/console/console");
- var skin = require("text!ext/searchinfiles/skin.xml");
- var markup = require("text!ext/searchinfiles/searchinfiles.xml");
+var ide = require("core/ide");
+var ext = require("core/ext");
+var util = require("core/util");
+var canon = require("pilot/canon");
+var editors = require("ext/editors/editors");
+var ideConsole = require("ext/console/console");
+var skin = require("text!ext/searchinfiles/skin.xml");
+var markup = require("text!ext/searchinfiles/searchinfiles.xml");
   
-return ext.register("ext/searchinfiles/searchinfiles", {
+module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     name     : "Search in files",
     dev      : "Ajax.org",
     type     : ext.GENERAL,

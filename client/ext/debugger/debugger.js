@@ -15,7 +15,7 @@ var fs = require("ext/filesystem/filesystem");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/debugger/debugger.xml");
 
-return ext.register("ext/debugger/debugger", {
+module.exports = ext.register("ext/debugger/debugger", {
     name    : "Debug",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
@@ -64,6 +64,21 @@ return ext.register("ext/debugger/debugger", {
             var path = node.getAttribute("path");
             
             node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
+        });
+        
+        mdlDbgStack.addEventListener("update", function() {
+            // select the first stack entry, if none is selected yet
+            var frames = mdlDbgStack.data.selectNodes("frame");
+            if (frames.length) {
+                // check if none of the debug panels is visible yet...
+                var vis = [dbgCallStack, dbInteractive, dbgVariable, dbgBreakpoints].filter(function(el) {
+                    return el.$ext && apf.getStyle(el.$ext, "display") != "none";
+                });
+                if (vis.length)
+                    return;
+                // no elements visible yet...
+                dock.layout.show(dbgCallStack);
+            }
         });
         
         var name = "ext/debugger/debugger"; //this.name

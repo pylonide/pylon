@@ -4,15 +4,18 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/keybindings/keybindings",
-    ["core/ide", "core/ext", "core/util", "text!ext/keybindings/settings.xml"],
-    function(ide, ext, util, settings) {
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+var util = require("core/util");
+var settings = require("text!ext/keybindings/settings.xml");
 
 //var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
 //var default_mac = require("ace/keyboard/keybinding/default_mac").bindings;
 //editor.setKeyboardHandler(new HashHandler(default_mac));
 
-return ext.register("ext/keybindings/keybindings", {
+module.exports = ext.register("ext/keybindings/keybindings", {
     name   : "Keybindings Manager",
     dev    : "Ajax.org",
     alone  : true,

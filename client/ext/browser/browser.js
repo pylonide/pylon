@@ -4,11 +4,15 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/browser/browser",
-    ["core/ide", "core/ext", "text!ext/browser/browser.xml"],
-    function(ide, ext, markup) {
 
-return ext.register("ext/browser/browser", {
+define(function(require, exports, module) {
+    
+var ide = require("core/ide");
+var ext = require("core/ext");
+var markup = require("text!ext/browser/browser.xml");
+var editors = require("ext/editors/editors");
+
+module.exports = ext.register("ext/browser/browser", {
     name    : "Browser View",
     dev     : "Ajax.org",
     type    : ext.EDITOR,
@@ -17,6 +21,7 @@ return ext.register("ext/browser/browser", {
         "application/xhtml+xml"
     ],
     markup  : markup,
+    deps    : [editors],
 
     nodes : [],
 

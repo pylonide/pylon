@@ -27,7 +27,7 @@ var trieCommands,
     lastSearch   = null,
     parser       = new Parser();
 
-return ext.register("ext/console/console", {
+module.exports = ext.register("ext/console/console", {
     name   : "Console",
     dev    : "Ajax.org",
     type   : ext.GENERAL,

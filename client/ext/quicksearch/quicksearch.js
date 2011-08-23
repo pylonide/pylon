@@ -15,7 +15,7 @@ var Search = require("ace/search").Search;
 var skin = require("text!ext/quicksearch/skin.xml");
 var markup = require("text!ext/quicksearch/quicksearch.xml");
 
-return ext.register("ext/quicksearch/quicksearch", {
+module.exports = ext.register("ext/quicksearch/quicksearch", {
     name    : "quicksearch",
     dev     : "Ajax.org",
     type    : ext.GENERAL,

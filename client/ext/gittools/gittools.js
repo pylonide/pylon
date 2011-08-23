@@ -16,7 +16,7 @@ var editors = require("ext/editors/editors");
 var BlameJS = require("ext/gittools/blamejs");
 var GitLogParser = require("ext/gittools/gitlogparser");
 
-return ext.register("ext/gittools/gittools", {
+module.exports = ext.register("ext/gittools/gittools", {
     name     : "Git Tools",
     dev      : "Ajax.org",
     alone    : true,

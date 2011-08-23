@@ -2,7 +2,11 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/keybindings_default/default_win", ["core/ide", "ext/keybindings/keybindings"], function(ide, keys) {
+
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var keys = require("ext/keybindings/keybindings");
 
 return keys.onLoad({
     "ext" : {

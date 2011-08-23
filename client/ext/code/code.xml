@@ -64,5 +64,7 @@
         <a:item type="radio" value="text/x-csharp">C#</a:item>
         <a:item type="radio" value="text/x-script.clojure">Clojure</a:item>
         <a:item type="radio" value="text/x-script.ocaml">OCaml</a:item>
+        <a:item type="radio" value="text/x-markdown">Markdown</a:item>
+        <a:item type="radio" value="text/x-web-textile">Textile</a:item>
     </a:menu>
 </a:application>

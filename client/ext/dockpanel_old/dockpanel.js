@@ -11,7 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var markup = require("text!ext/dockpanel/dockpanel.xml");
 
-return ext.register("ext/dockpanel/dockpanel", {
+module.exports = ext.register("ext/dockpanel/dockpanel", {
     name   : "Dock Panel Manager",
     dev    : "Ajax.org",
     alone  : true,
