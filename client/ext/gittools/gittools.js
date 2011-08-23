@@ -75,7 +75,8 @@ return ext.register("ext/gittools/gittools", {
     },
     
     resetAceGutter : function() {
-        editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationText([]);
+        if (editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationText)
+            editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationText([]);
         if (this.originalGutterWidth)
             editors.currentEditor.ceEditor.$editor.renderer.setGutterWidth(this.originalGutterWidth + "px");
     },
