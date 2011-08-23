@@ -82,5 +82,4 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     }
 });
 
-    }
-);
+});

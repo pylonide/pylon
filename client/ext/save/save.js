@@ -413,5 +413,4 @@ module.exports = ext.register("ext/save/save", {
     }
 });
 
-    }
-);
+});

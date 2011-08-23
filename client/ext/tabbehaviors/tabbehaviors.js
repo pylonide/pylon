@@ -315,5 +315,4 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     }
 });
 
-    }
-);
+});

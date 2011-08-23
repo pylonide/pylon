@@ -223,5 +223,4 @@ module.exports = ext.register("ext/settings/settings", {
     }
 });
 
-    }
-);
+});

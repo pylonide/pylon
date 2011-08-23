@@ -297,5 +297,4 @@ module.exports = ext.register("ext/extension_template/extension_template", {
      }
 });
 
-    }
-);
+});

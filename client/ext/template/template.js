@@ -60,5 +60,4 @@ module.exports = ext.register("ext/template/template", {
     }
 });
 
-    }
-);
+});

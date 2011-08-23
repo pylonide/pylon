@@ -32,6 +32,4 @@ module.exports = ext.register("ext/testredbar/testredbar", {
     }
 });
 
-
-    }
-);
+});

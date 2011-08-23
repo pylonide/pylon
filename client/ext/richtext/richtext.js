@@ -67,5 +67,4 @@ module.exports = ext.register("ext/richtext/richtext", {
     }
 });
 
-    }
-);
+});

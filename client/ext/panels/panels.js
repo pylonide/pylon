@@ -255,5 +255,4 @@ module.exports = ext.register("ext/panels/panels", {
     }
 });
 
-    }
-);
+});

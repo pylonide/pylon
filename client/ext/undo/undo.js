@@ -72,5 +72,4 @@ module.exports = ext.register("ext/undo/undo", {
     }
 });
 
-    }
-);
+});
