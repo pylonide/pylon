@@ -1,11 +1,12 @@
 // #ifdef __AMLDEBUGGER || __INC_ALL
 if (apf.hasRequireJS) define("apf/elements/dbg/v8websocketdebughost",
-    ["debug/WSV8DebuggerService",
+    ["module",
+     "debug/WSV8DebuggerService",
      "debug/V8Debugger",
      "apf/elements/dbg/v8debugger"],
-    function(WSV8DebuggerService, V8Debugger, APFV8Debugger) {
+    function(module, WSV8DebuggerService, V8Debugger, APFV8Debugger) {
 
-var V8WebSocketDebugHost = function(socket) {
+var V8WebSocketDebugHost = module.exports = function(socket) {
     this.$socket = socket;
     this.$debugger = null;
     

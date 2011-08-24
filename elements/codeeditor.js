@@ -35,13 +35,12 @@
  * @version     %I%, %G%
  * @since       0.1
  */
-
 if (!apf.hasRequireJS)
     apf.aml.setElement("codeeditor", apf.textbox);
 else
     define("apf/elements/codeeditor",
-        ["ace/editor", "ace/edit_session", "ace/virtual_renderer", "ace/undomanager", "ace/range", "pilot/fixoldbrowsers"],
-        function(Editor, EditSession, VirtualRenderer, UndoManager, Range) {
+        ["module", "ace/editor", "ace/edit_session", "ace/virtual_renderer", "ace/undomanager", "ace/range", "pilot/fixoldbrowsers"],
+        function(module, Editor, EditSession, VirtualRenderer, UndoManager, Range) {
 
 Editor = Editor.Editor;
 EditSession = EditSession.EditSession;
@@ -49,7 +48,7 @@ VirtualRenderer = VirtualRenderer.VirtualRenderer;
 UndoManager = UndoManager.UndoManager;
 Range = Range.Range;
 
-apf.codeeditor = function(struct, tagName) {
+apf.codeeditor = module.exports = function(struct, tagName) {
     this.$init(tagName || "codeeditor", apf.NODE_VISIBLE, struct);
 
     this.documents = [];
