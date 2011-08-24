@@ -4,11 +4,15 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/editors/editors",
-    ["core/ide", "core/ext", "core/util", "ext/panels/panels"],
-    function(ide, ext, util, panels) {
 
-return ext.register("ext/editors/editors", {
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+var util = require("core/util");
+var panels = require("ext/panels/panels");
+
+module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
     dev     : "Ajax.org",
     alone   : true,

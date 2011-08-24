@@ -12,7 +12,7 @@ var ext = require("core/ext");
 var util = require("core/util");
 var markup = require("text!ext/noderunner/noderunner.xml");
 
-return ext.register("ext/noderunner/noderunner", {
+module.exports = ext.register("ext/noderunner/noderunner", {
     name    : "Node Runner",
     dev     : "Ajax.org",
     type    : ext.GENERAL,

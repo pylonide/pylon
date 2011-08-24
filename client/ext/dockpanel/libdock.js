@@ -15,7 +15,7 @@
 
 define(function(require, exports, module) {
 
-function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbChange) {
+var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbChange) {
     this.columnCounter  = 0;
     this.$parentHBox    = parentHBox;
     this.$cbStorePage   = cbStorePage;
@@ -28,7 +28,7 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbCh
     indicator.style.display = "none";
     indicator.style.border = "3px solid #7ac7f4";
     indicator.style.zIndex = 1000000;
-}
+};
 
 (function(){
     var whiledrag, lastInfo, diffPixel = 3;
@@ -1460,7 +1460,5 @@ function DockableLayout(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbCh
         return button;
     }
 }).call(DockableLayout.prototype);
-
-return DockableLayout;
 
 });

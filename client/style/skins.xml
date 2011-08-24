@@ -1482,6 +1482,94 @@
         </a:main>
     </a:presentation>
 </a:button>
+<a:button name="c9-toolbarbutton2">
+    <a:style><![CDATA[
+        .c9-toolbarbutton2 {
+            height             : 20px;
+            overflow           : hidden;
+            cursor             : default;
+            position           : relative;
+            -moz-user-select   : none; 
+            -khtml-user-select : none; 
+            user-select        : none;
+            line-height        : 13px;
+            margin:            : 0 1px;
+            border             : 1px solid transparent;
+        }
+        
+        .c9-toolbarbutton2 .c9-icon {
+            display: none;
+            width: 18px;
+            height: 18px;
+            background-position : 0 -18px;
+            background-repeat   : no-repeat;
+        }
+        
+        .c9-toolbarbutton2Icon .c9-icon {
+            display : block;
+        }
+        
+        .c9-toolbarbutton2Over {
+            
+        }
+        
+        .c9-toolbarbutton2 .c9-label {
+            position:relative;
+            overflow:hidden;
+            font-family:Arial;
+            font-size:12px;
+            color:#d6d6d6;
+            line-height:14px;
+            height:15px;
+            padding:3px 6px 0 6px;
+        }
+        
+        .c9-toolbarbutton2Empty .c9-icon {
+            position:relative;
+        }
+        
+        .c9-toolbarbutton2Empty .c9-label {
+            display:none;
+        }
+        
+        .c9-toolbarbutton2Icon .c9-label {
+            padding:3px 6px 0 22px;
+        }
+        
+        .c9-toolbarbutton2Icon.preview .c9-label {
+            padding-left : 25px;
+        }
+        
+        .c9-toolbarbutton2Disabled .c9-icon {
+            background-position: 0 1px;
+        }
+        
+        .c9-toolbarbutton2Over .c9-icon {
+            background-position: 0 -37px;
+        }
+        
+        .c9-toolbarbutton2Down .c9-icon {
+            background-position: 0 -56px;
+        }
+        
+        .c9-toolbarbutton2Disabled .c9-label {
+            color       : #606060;
+            text-shadow : rgba(0, 0, 0, 1) 0px 1px 0px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption      = "div[2]/text()"
+          background = "."
+          icon       = "div[1]">
+            <div class="c9-toolbarbutton2">
+                <div class="c9-icon"></div>
+                <div class="c9-label">-</div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:button>
 <a:button name="header-btn">
     <a:style><![CDATA[
         .header-btn {
@@ -1710,7 +1798,56 @@
         </a:main>
     </a:presentation>
 </a:button>
+<a:button name="c9-topbar-btn">
+    <a:style><![CDATA[
+        .c9-topbar-btn {
+            height              : 25px;
+            width               : 25px;
+            overflow            : hidden;
+            cursor              : pointer;
+            position            : relative;
+            cursor              : default;
+            -moz-user-select    : none; 
+            -khtml-user-select  : none; 
+            user-select         : none;
+            background-repeat   : no-repeat;
+            background-image    : url("images/c9-topbar-btns.png");
+            background-position : 0 0;
+        }
 
+        // dashboard 
+        .c9-topbar-btn.c9-topbar-btnDown.dashboard {
+            background-position : -25px 0;
+        }
+        .c9-topbar-btn.c9-topbar-btnOver.dashboard {
+            background-position : -50px 0;
+        }
+        .c9-topbar-btn.dashboard {
+            background-position : 0 0;
+        }
+        
+        // home
+        .c9-topbar-btn.c9-topbar-btnDown.home {
+            background-position : -25px -25px;
+        }
+        .c9-topbar-btn.c9-topbar-btnOver.home {
+            background-position : -50px -25px;
+        }
+        .c9-topbar-btn.home {
+            background-position : 0 -25px;
+        }
+        
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption      = "text()"
+          background = "."
+          icon       = ".">
+            <div class="c9-topbar-btn"> </div>
+        </a:main>
+    </a:presentation>
+</a:button>
 <a:checkbox name="checkbox">
     <a:style><![CDATA[
         .cbcontainer {
@@ -5012,6 +5149,14 @@
             padding    : 0;
             border     : 0;
         }
+        
+        .fixMargin2 {
+             margin-bottom: 2px !important;
+         }
+
+         .fixMargin5 {
+             margin-bottom: 5px !important;
+         }
 
         .spinner .divfix input {
             outline             : none;

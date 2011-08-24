@@ -14,7 +14,7 @@ var settings = require("ext/settings/settings");
 var save = require("ext/save/save");
 var markup = require("text!ext/run/run.xml");
 
-return ext.register("ext/run/run", {
+module.exports = ext.register("ext/run/run", {
     name    : "Run Toolbar",
     dev     : "Ajax.org",
     type    : ext.GENERAL,

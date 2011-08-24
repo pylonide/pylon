@@ -4,11 +4,15 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/html/html",
-    ["core/ide", "core/ext", "ext/code/code", "text!ext/html/html.xml"],
-    function(ide, ext, code, markup) {
+ 
+define(function(require, exports, module) {
 
-return ext.register("ext/html/html", {
+var ide = require("core/ide");
+var ext = require("core/ext");
+var code = require("ext/code/code");
+var markup = require("text!ext/html/html.xml");
+
+module.exports = ext.register("ext/html/html", {
     name    : "HTML Editor",
     dev     : "Ajax.org",
     type    : ext.GENERAL,

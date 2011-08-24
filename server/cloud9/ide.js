@@ -26,6 +26,7 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
     var baseUrl = (options.baseUrl || "").replace(/\/+$/, "");
     var staticUrl = options.staticUrl || "/static";
     var requirejsConfig = options.requirejsConfig || {
+        baseUrl: "/static/",
         paths: {
             "pilot": staticUrl + "/support/ace/support/pilot/lib/pilot",
             "ace": staticUrl + "/support/ace/lib/ace",
@@ -109,7 +110,6 @@ Ide.DEFAULT_PLUGINS = [
     "ext/gotoline/gotoline",
     "ext/html/html",
     "ext/ftp/ftp",
-    "ext/browser/browser",
     "ext/code/code",
     "ext/imgview/imgview",
     "ext/extmgr/extmgr",

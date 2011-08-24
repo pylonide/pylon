@@ -13,7 +13,7 @@ var editors = require("ext/editors/editors");
 var BlameJS = require("ext/gitblame/blamejs");
 var util    = require("core/util");
 
-return ext.register("ext/gitblame/gitblame", {
+module.exports = ext.register("ext/gitblame/gitblame", {
     name     : "Git Blame",
     dev      : "Ajax.org",
     alone    : true,

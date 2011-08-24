@@ -2,7 +2,7 @@
 <html [%offlineManifest%] xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
     <head profile="http://www.w3.org/2005/10/profile">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <title>Cloud9 - Your code, anywhere anytime.</title>
+        <title>[%projectName%] - Cloud9</title>
         <meta name="description" content=""/>
         <meta name="keywords" content=""/>
 
@@ -155,6 +155,27 @@
                     </a:hbox>
                     <a:hbox id="barTools" edge="8 0 0 0" padding="3" align="center">
                         <a:divider skin="c9-divider-double" />
+                    </a:hbox>
+                    <a:filler />
+                    <a:hbox id="barTools" edge="8 0 0 0" padding="3" align="center">
+                        <a href="javascript:void(0)" style="color:transparent;text-decoration:none;border:0;" target="_blank">
+                            <a:button id="btnDashboard" 
+                              width="25"
+                              height="25"
+                              skin="c9-topbar-btn"
+                              class="dashboard"
+                              onclick="this.parentNode.setAttribute('href', apf.config.baseurl + '/dashboard.html')" 
+                              tooltip="Dashboard" />
+                        </a>
+                        <a href="javascript:void(0)" style="color:transparent;text-decoration:none;border:0;" target="_blank">
+                            <a:button id="btnHome" 
+                              width="25"
+                              height="25"
+                              skin="c9-topbar-btn"
+                              class="home"
+                              onclick="this.parentNode.setAttribute('href', apf.config.baseurl)" 
+                              tooltip="Homepage" />
+                        </a>
                     </a:hbox>
                 </a:hbox>
             </a:bar>

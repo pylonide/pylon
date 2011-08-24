@@ -13,7 +13,7 @@ var util = require("core/util");
 var panels = require("ext/panels/panels");
 var dockpanel = require("ext/dockpanel/dockpanel");
 
-return ext.register("ext/editors/editors", {
+module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
     dev     : "Ajax.org",
     alone   : true,
@@ -233,7 +233,7 @@ return ext.register("ext/editors/editors", {
                 
                 //this is very bad, should be removed
                 setTimeout(function(){
-                    editor.setState(doc, doc.state);
+                    editor.setState && editor.setState(doc, doc.state);
                 }, 1000);
             });
 
@@ -343,7 +343,7 @@ return ext.register("ext/editors/editors", {
         if (editorPage.actiontracker != page.$at)
             editorPage.setAttribute("actiontracker", page.$at);
         
-        page.$editor.setDocument(page.$doc, page.$at);
+        page.$editor.setDocument && page.$editor.setDocument(page.$doc, page.$at);
     },
 
     afterswitch : function(e) {
@@ -485,7 +485,7 @@ return ext.register("ext/editors/editors", {
                     copy.removeAttribute("changed");
                     pNode.appendChild(copy);
                     
-                    var state = pages[i].$editor.getState(pages[i].$doc);
+                    var state = pages[i].$editor.getState && pages[i].$editor.getState(pages[i].$doc);
                     if (state)
                         copy.setAttribute("state", apf.serialize(state));
                 }

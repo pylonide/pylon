@@ -44,9 +44,9 @@
   * @author Mike de Boer <mike AT ajax.org>
   * @constructor 
   */
-require.def("ext/console/trie", [], function() {
+define(function(require, exports, module) {
 
-var Trie = (function() {
+module.exports = (function() {
     
     /** @ignore */
     function Trie(stem, sorting) {
@@ -376,7 +376,5 @@ var Trie = (function() {
     
     return Trie;
 })();
-
-return Trie;
 
 });

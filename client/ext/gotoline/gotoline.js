@@ -14,7 +14,7 @@ var editors = require("ext/editors/editors");
 var skin = require("text!ext/gotoline/skin.xml");
 var markup = require("text!ext/gotoline/gotoline.xml");
 
-return ext.register("ext/gotoline/gotoline", {
+module.exports = ext.register("ext/gotoline/gotoline", {
     name    : "Gotoline Window",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
