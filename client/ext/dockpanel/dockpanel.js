@@ -62,11 +62,13 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 var item = _self.dockpanels[arrExtension[0]][arrExtension[1]];
                 item.page = amlPage;
 
-                _self.sections[arrExtension[0]][arrExtension[1]] = {
-                    buttons : [
-                        { ext : [arrExtension[0], arrExtension[1]] }
-                    ]
-                };
+                if (_self.sections[arrExtension[0]]) {
+                    _self.sections[arrExtension[0]][arrExtension[1]] = {
+                        buttons : [
+                            { ext : [arrExtension[0], arrExtension[1]] }
+                        ]
+                    };
+                }
 
                 item.mnuItem.uncheck();
 
@@ -156,8 +158,6 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 }
             }
         }));
-        
-        
     },
 
     addDockable : function(def){

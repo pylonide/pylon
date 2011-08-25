@@ -304,7 +304,11 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         
         this.$cbChange();
     };
-    
+
+    this.pageExists = function(amlNode) {
+        return amlNode.$dockbutton ? true : false;
+    };
+
     /**
      * Show an item
      * @param {Object} amlNode
@@ -334,7 +338,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             lastBar = lastBar.bar;
            
         if (lastBar && !lastBar.visible)
-        	lastBar = lastBar.vbox;
+            lastBar = lastBar.vbox;
             
         return lastBar;
     };
@@ -384,9 +388,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             //Rest
             else {
                 var info = _self.$calcAction(e, original);
-                var aml  = last = info.aml;
+                var aml = last = info.aml;
             }
-            
+
             if (lastInfo && lastInfo.position == info.position && lastInfo.aml == aml) {
                 indicator.style.top = indicatorTop;
                 return;
@@ -857,24 +861,23 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     this.$stopDrag = function(e){
         whiledrag();
         apf.removeListener(document, "mousemove", whiledrag);
-        
-        
+
         var indicator = this.indicator;
         var info = lastInfo;//calcAction(e);
         var aml  = info && info.aml;
-        
+
         indicator.style.display = "none";
-        
+
         var original = whiledrag.dragged;
         apf.setOpacity(original.$ext, 1);
-    
+
         if (!aml) return;
         switch(info.position) {
             case "before_button":
             case "after_button":
                 var submenu = self[aml.submenu];
                 var dragAml = whiledrag.original;
-    
+
                 this.$moveTo(submenu, dragAml, aml, info.position == "before_button" 
                     ? aml 
                     : aml.nextSibling, aml.parentNode, info.position);
@@ -1211,11 +1214,11 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             var button = this.$dockbutton;
             var pNode = this.lastParent;
             var btnPNode = button.parentNode;
-        
+
             button.destroy(true, true);
-            
+
             this.removeNode();
-            
+
             if (!pNode.getPages().length) {
                 var barParent = btnPNode.parentNode;
                 if (pNode.parentNode.localName == "menu")
@@ -1239,7 +1242,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
             page.removeEventListener("beforedrag", beforeDrag);
             page.removeEventListener("afterclose", arguments.callee);
-            return false
+            return false;
         });
 
         return page;
