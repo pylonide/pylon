@@ -516,7 +516,7 @@ apf.caldropdown = function(struct, tagName){
         c.currentMonth = month;
         c.currentYear  = year;
 
-        var _width     = this.$ext.offsetWidth,
+        var _width     = apf.caldropdown.cache["oSlider"].host.$ext.offsetWidth,
             temp       = Math.floor((_width - 36) / 8) * 8 + 32 
                          - apf.getDiff(this.oNavigation)[0],
             w_days     = new Date(year, 0, 1).getDay();
@@ -701,7 +701,7 @@ apf.caldropdown = function(struct, tagName){
             newYear++;
         }
 
-        this.change(new Date(newYear, (newMonth - 1), nr, c.hours,
+        apf.caldropdown.cache["oSlider"].host.change(new Date(newYear, (newMonth - 1), nr, c.hours,
             c.minutes, c.seconds).format(this.outputFormat));
     };
 
