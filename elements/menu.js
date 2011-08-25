@@ -252,7 +252,7 @@ apf.menu = function(struct, tagName){
                     else
                         node.disable();
     
-                    if (!node.nextSibling && c == 0)
+                    if (!node.nextSibling && c == 0 && last)
                         last.hide();
                 }
             }
