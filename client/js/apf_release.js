@@ -6348,7 +6348,7 @@ for(i=0;i<l;i++){node=nodes[i];if(node.nodeType!=1||node.localName!="item"){cont
 }result=!xmlNode||!node.match||(node.cmatch||(node.cmatch=apf.lm.compile(node.match,{xpathmode:3,injectself:true})))(xmlNode);
 if(result){if(this.matchhide){node.show();}else{node.enable();}if(node.localName=="divider"&&this.matchhide){last=node;
 if(c==0){node.hide();}c=0;}else{c++;}}else{if(this.matchhide){node.hide();}else{node.disable();
-}if(!node.nextSibling&&c==0){last.hide();}}}}if(this.oOverlay){if(btnWidth){this.oOverlay.style.display="block";
+}if(!node.nextSibling&&c==0&&last){last.hide();}}}}if(this.oOverlay){if(btnWidth){this.oOverlay.style.display="block";
 this.oOverlay.style.width=btnWidth+"px";}else{this.oOverlay.style.display="none";
 }}function afterRender(){this.dispatchEvent("display",{opener:opener});if(x===null){apf.popup.show(this.$uniqueId,{x:0,y:this.ref?0:opener.$ext.offsetHeight,animate:noanim||!this.animate?false:"fade",steps:10,ref:(this.ref||opener).$ext,allowTogether:openMenuId,autohide:!this.pinned,noleft:this.left!==undefined});
 }else{var bodyPos=apf.getAbsolutePosition(document.body);apf.popup.show(this.$uniqueId,{x:x-bodyPos[0],y:y-bodyPos[1]-(apf.isIE&&apf.isIE<8?1:0),animate:noanim||!this.animate?false:"fade",steps:10,allowTogether:openMenuId,autohide:!this.pinned});
