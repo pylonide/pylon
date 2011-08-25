@@ -23,13 +23,15 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
     hook : function(){
         panels.register(this);
-
+        
+        // fix to prevent Active Files button is placed above Project Files
+        el = (navbar.firstChild.class == "project_files") ? navbar.childNodes[1] : navbar.firstChild;
         var btn = this.button = navbar.insertBefore(new apf.button({
             skin    : "mnubtn",
             state   : "true",
             "class" : "open_files",
             caption : "Active Files"
-        }), navbar.firstChild);
+        }), el);
 
         var _self = this;
         var model = this.model = new apf.model().load("<files />");
