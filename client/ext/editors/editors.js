@@ -53,7 +53,7 @@ module.exports = ext.register("ext/editors/editors", {
             (_self.contentTypes[mime] || (_self.contentTypes[mime] = [])).push(oExtension);
         });
 
-        if (!this.contentTypes["default"])
+        if (!this.contentTypes["default"] || (oExtension.name && oExtension.name == "Code Editor"))
             this.contentTypes["default"] = oExtension;
     },
 

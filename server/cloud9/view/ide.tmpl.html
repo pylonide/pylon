@@ -47,9 +47,9 @@
             var config = <%requirejsConfig%>;
             require(config, [apfLoc], function(){
                 apf.onstart = function(){
-                    var list = ["core/ide", "core/ext", "core/util"];
+                    var list = ["core/ide", "core/ext", "core/util", "ext/editors/editors"];
                     if (VERSION == RELEASE)
-                        list.push("ace/editor")
+                        list.push("ace/editor");
 
                     require(list, function(ide, ext, util){
                         ide.settings = <%settingsXml%>;

@@ -9,7 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var settings = require("ext/settings/settings");
 var markup = require("text!ext/panels/panels.xml");
 
 module.exports = ext.register("ext/panels/panels", {
