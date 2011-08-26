@@ -23,6 +23,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     this.$cbChange      = cbChange;
     this.$cbFindOptions = cbFindOptions;
     
+    this.$buttons = [];
+    
     var indicator = this.indicator = document.body.appendChild(document.createElement("div"));
     indicator.style.position = "absolute";
     indicator.style.display = "none";
@@ -319,6 +321,14 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         button.dispatchEvent("mousedown", {htmlEvent: {}});
     };
     
+     this.setCounter = function(ext, value){
+        if (!this.$buttons[ext])
+            throw new Error("Could not find button for '" + ext + "'");
+
+        var button = this.$buttons[ext];
+        button.$ext.getElementsByClassName("dock_notification")[0].innerHTML = +value || "";
+    };
+
     this.$isLastBar = function(aml) {
         var last = this.$parentHBox.lastChild;
         while (last && !last.visible)
@@ -1456,7 +1466,14 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             
             return false;
         });
-    
+
+        if (options.ext) {
+            this.$buttons[options.ext] = button;
+            button.addEventListener("DOMNodeRemovedFromDocument", function(){
+                delete _self.$buttons[options.ext];
+            });
+        }
+
         page.$dockbutton = button;
         button.$dockpage = page;
     
