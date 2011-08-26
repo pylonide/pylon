@@ -41,7 +41,7 @@ return keys.onLoad({
             "beautify": "Command-Shift-B"
         },
         "gotofile": {
-            "gotofile": "Alt-Shift-R|Command-T"
+            "gotofile": "Alt-Shift-R"
         },
         "newresource": {
             "newfile": "Command-N",

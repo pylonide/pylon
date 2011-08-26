@@ -42,7 +42,7 @@ return keys.onLoad({
             "beautify": "Ctrl-Shift-B"
         },
         "gotofile": {
-            "gotofile": "Alt-Shift-R|Ctrl-T"
+            "gotofile": "Alt-Shift-R"
         },
         "newresource": {
             "newfile": "Ctrl-N",
