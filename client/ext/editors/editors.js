@@ -11,8 +11,9 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
 var panels = require("ext/panels/panels");
+var dockpanel = require("ext/dockpanel/dockpanel");
 
-return ext.register("ext/editors/editors", {
+module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
     dev     : "Ajax.org",
     alone   : true,
@@ -103,7 +104,7 @@ return ext.register("ext/editors/editors", {
                         _self.afterswitch(e);
                     },
                     onclose : function(e){
-                        if (!ide.onLine) //For now prevent tabs from being closed
+                        if (!ide.onLine && !ide.offlineFileSystemSupport) //For now prevent tabs from being closed
                             return false;
                             
                         _self.close(e.page);
@@ -127,7 +128,7 @@ return ext.register("ext/editors/editors", {
             ext.style.left = (pos[0] - 2) + "px";
             ext.style.top  = pos[1] + "px";
             var d = apf.getDiff(ext);
-            ext.style.width = (ph.offsetWidth + 2 + (apf.isGecko && colRight.visible ? 2 : 0) - d[0]) + "px";
+            ext.style.width = (ph.offsetWidth + 2 + (apf.isGecko && dockpanel.visible ? 2 : 0) - d[0]) + "px";
             ext.style.height = (ph.offsetHeight - d[1]) + "px";
         });
 
@@ -210,10 +211,8 @@ return ext.register("ext/editors/editors", {
         }
 
         if (!editor.inited)
-            var editorPage = this.initEditor(editor);
-        else
-            editorPage = tabEditors.getPage(editor.path);
-
+            this.initEditor(editor);
+        
         //Create Fake Page
         if (init)
             tabEditors.setAttribute("buttons", "close");
@@ -231,11 +230,18 @@ return ext.register("ext/editors/editors", {
                 );
                 page.setAttribute("model", page.$model = model);
                 page.$model.load(xmlNode);
+                
+                //this is very bad, should be removed
+                setTimeout(function(){
+                    editor.setState && editor.setState(doc, doc.state);
+                }, 1000);
             });
 
         if (init)
             tabEditors.setAttribute("buttons", "close,scale");
-
+        
+        var editorPage = tabEditors.getPage(tabEditors.activepage);
+        
         doc.addEventListener("setnode", function(e) {
             fake.$model.load(e.node);
             ide.dispatchEvent("afteropenfile", {doc: doc, node: e.node});
@@ -264,7 +270,7 @@ return ext.register("ext/editors/editors", {
         
         if (init && !active)
             return;
-
+        
         //Set active page
         tabEditors.set(filepath);
 
@@ -275,7 +281,8 @@ return ext.register("ext/editors/editors", {
         /*fake.addEventListener("afteropen", function(){
 
         });*/
-
+        
+        
         editor.enable();
         //editor.$itmEditor.select();
         //editor.$rbEditor.select();
@@ -336,7 +343,7 @@ return ext.register("ext/editors/editors", {
         if (editorPage.actiontracker != page.$at)
             editorPage.setAttribute("actiontracker", page.$at);
         
-        page.$editor.setDocument(page.$doc, page.$at);
+        page.$editor.setDocument && page.$editor.setDocument(page.$doc, page.$at);
     },
 
     afterswitch : function(e) {
@@ -435,6 +442,11 @@ return ext.register("ext/editors/editors", {
                 var nodes  = model.queryNodes("auto/files/file");
                 for (var doc, i = 0, l = nodes.length; i < l; i++) {
                     doc = ide.createDocument(nodes[i]);
+                    
+                    var state = nodes[i].getAttribute("state");
+                    if (state)
+                        doc.state = apf.unserialize(state);
+                    
                     ide.dispatchEvent("openfile", {
                         doc    : doc,
                         init   : true,
@@ -472,6 +484,10 @@ return ext.register("ext/editors/editors", {
                     var copy = apf.xmldb.cleanNode(file.cloneNode(false));
                     copy.removeAttribute("changed");
                     pNode.appendChild(copy);
+                    
+                    var state = pages[i].$editor.getState && pages[i].$editor.getState(pages[i].$doc);
+                    if (state)
+                        copy.setAttribute("state", apf.serialize(state));
                 }
             }
 

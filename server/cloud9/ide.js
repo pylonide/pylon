@@ -26,6 +26,7 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
     var baseUrl = (options.baseUrl || "").replace(/\/+$/, "");
     var staticUrl = options.staticUrl || "/static";
     var requirejsConfig = options.requirejsConfig || {
+        baseUrl: "/static/",
         paths: {
             "pilot": staticUrl + "/support/ace/support/pilot/lib/pilot",
             "ace": staticUrl + "/support/ace/lib/ace",
@@ -55,9 +56,7 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
     };
 
     this.$users = {};
-
     this.nodeCmd = process.argv[0];
-    
 
     var davOptions = {
         node: this.options.mountDir,
@@ -110,7 +109,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/quicksearch/quicksearch",
     "ext/gotoline/gotoline",
     "ext/html/html",
-    "ext/browser/browser",
+    //"ext/browser/browser",
     "ext/code/code",
     "ext/imgview/imgview",
     "ext/extmgr/extmgr",
@@ -134,7 +133,7 @@ Ide.DEFAULT_PLUGINS = [
         this.indexRe = this.indexRe || new RegExp("^" + lang.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
         this.workspaceRe = this.workspaceRe || new RegExp("^" + lang.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
         
-        if (path.match(this.indexRe)) {            
+        if (path.match(this.indexRe)) {
             if (req.method !== "GET")
                 return next();
             this.$serveIndex(req, res, next);
@@ -144,6 +143,7 @@ Ide.DEFAULT_PLUGINS = [
                 if(process.platform == "sunos"){
                     this.davServer.plugins["codesearch"].GREP_CMD = __dirname+"/../../support/gnu-builds/grep-sunos";
                     this.davServer.plugins["filesearch"].FIND_CMD = __dirname+"/../../support/gnu-builds/find-sunos";
+                    this.davServer.plugins["filelist"].FIND_CMD = __dirname+"/../../support/gnu-builds/find-sunos";
                 }
                 this.davServer.plugins["permission"] = DavPermission;
                 this.davInited = true;
@@ -233,13 +233,15 @@ Ide.DEFAULT_PLUGINS = [
             });
             user.on("disconnectUser", function(user) {
                 console.log("Running user disconnect timer...");
-
+                _self.davServer.unmount();
+                
                 setTimeout(function() {
                     var now = new Date().getTime();
                     if((now - user.last_message_time) > 10000) {
+                        console.log("User fully disconnected", username);
                         _self.removeUser(user);
                     }
-                }, 20000);
+                }, 10000);
             });
             
             this.onUserCountChange();
@@ -279,7 +281,7 @@ Ide.DEFAULT_PLUGINS = [
     this.addClientConnection = function(username, client, message) {
         var user = this.$users[username];
         if (!user)
-            return this.error("No session for user " + username, 401, message, client);
+            return this.workspace.error("No session for user " + username, 401, message, client);
 
         user.addClientConnection(client, message);
     };
@@ -304,6 +306,8 @@ Ide.DEFAULT_PLUGINS = [
     };
     
     this.sendToUser = function(username, msg) {
+        //for (var u in this.$users)
+        //    console.log("IDE USER", this.$users[u].uid, this.$users[u].clients);
         this.$users[username] && this.$users[username].broadcast(msg);
     };
     

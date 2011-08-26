@@ -3,13 +3,13 @@
         function filesort(value, args, xmlNode) {
             return (xmlNode.tagName == "folder" ? 0 : 1) + value.toLowerCase();
         }
-        
+
         var confirmed = false;
-        
+
         function remove() {
             if (!confirmed) {
                 var files = trFiles.getSelection();
-            
+
                 function confirm(file) {
                     var name = file.getAttribute("name");
                 
@@ -53,25 +53,18 @@
             } else
                 return true;
         };
-        
-        function copy(a, b) {
-            davProject.copy(a, b + /\/[^\/]*$/.exec(a));
-        };
 
-        function move(a, b) {
-            davProject.move(a, b + /\/[^\/]*$/.exec(a), false, false, function() {
-                trFiles.enable();
-                trFiles.focus();
-            });
-        };
+        function createPath(a, b){
+            return b + "/" + apf.getFilename(a);
+        }
     ]]></a:script>
-    <a:window id="winFilesViewer" 
-      flex     = "1" 
-      skin     = "fm-window" 
-      title    = "Project Files" 
-      modal    = "false" 
-      visible  = "true" 
-      buttons  = "close" 
+    <a:window id="winFilesViewer"
+      flex     = "1"
+      skin     = "fm-window"
+      title    = "Project Files"
+      modal    = "false"
+      visible  = "true"
+      buttons  = "close"
       optimize = "true">
         <a:button
           top="-22"
@@ -82,7 +75,7 @@
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
         <a:tree id="trFiles" canrename="true" border="0" simpledata="true"
           contextmenu="mnuCtxTree" multiselect="false" reselectable="true" 
-          onbeforemove="this.disable();"
+          onbeforemove="this.disable();" autoselect="false"
           onbeforeremove="return remove()" disabled="{{!stServerConnected.active}}"
           flex="1" anchors = "0 0 0 0" onmouseover="require('ext/tree/tree').onTreeOver()"
           onmouseout="require('ext/tree/tree').onTreeOut()"
@@ -97,9 +90,13 @@
             <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
             <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
             <a:rename match="[file|folder[not(@path='/workspace')]]" set="{davProject.rename([@name], [@oldpath])}" />
-            <a:move set="{move([@path], [../@path])}"/>
+            <a:move set="{require('ext/tree/tree').moveFile([@path], createPath([@path], [../@path]))}"/>
             <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
-            <a:copy match="[file|folder]" set="{copy([@path], [../@path])}"/>
+            <a:copy match="[file|folder]" set="{
+                davProject.copy([@path], createPath([@newname] || [@path], [../@path]))
+            }" undo="{
+                alert('TODO!!');
+            }"/>
 
             <a:drag match="[folder|file]" />
             <a:drop match="[folder|file]" target="[folder]"
@@ -145,3 +142,4 @@
         </a:menu>
     </a:window>
 </a:application>
+

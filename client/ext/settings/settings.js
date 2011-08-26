@@ -16,7 +16,7 @@ var template = require("text!ext/settings/template.xml");
 var panels = require("ext/panels/panels");
 var skin = require("text!ext/settings/skin.xml");
 
-return ext.register("ext/settings/settings", {
+module.exports = ext.register("ext/settings/settings", {
     name    : "Preferences",
     dev     : "Ajax.org",
     alone   : true,
@@ -96,7 +96,11 @@ return ext.register("ext/settings/settings", {
             return;
         }
 
-        this.model.load(ide.settings);
+        try {
+		this.model.load(ide.settings);
+	} catch(e) {
+		this.model.load(template);
+	}
 
         ide.dispatchEvent("loadsettings", {
             model : _self.model
@@ -198,7 +202,7 @@ return ext.register("ext/settings/settings", {
             if(navbar.current && (navbar.current != this))
                 navbar.current.disable(false);
         }
-        
+        splitterPanelLeft.show();
         navbar.current = this;
     },
 
@@ -207,6 +211,8 @@ return ext.register("ext/settings/settings", {
             winSettings.hide();
         if (!noButton)
             this.button.setValue(false);
+
+        splitterPanelLeft.hide();
     },
 
     destroy : function(){
@@ -217,5 +223,4 @@ return ext.register("ext/settings/settings", {
     }
 });
 
-    }
-);
+});

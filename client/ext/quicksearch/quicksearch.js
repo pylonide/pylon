@@ -15,7 +15,7 @@ var Search = require("ace/search").Search;
 var skin = require("text!ext/quicksearch/skin.xml");
 var markup = require("text!ext/quicksearch/quicksearch.xml");
 
-return ext.register("ext/quicksearch/quicksearch", {
+module.exports = ext.register("ext/quicksearch/quicksearch", {
     name    : "quicksearch",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
@@ -215,10 +215,10 @@ return ext.register("ext/quicksearch/quicksearch", {
         var settings = require("ext/settings/settings");
         if (settings.model) {
             var history = settings.model;
-            search = apf.createNodeFromXpath(history.data, "search");
+            var search = apf.createNodeFromXpath(history.data, "search");
             
             if (!search.firstChild || search.firstChild.getAttribute("key") != txt) {
-                keyEl = apf.getXml("<word />");
+                var keyEl = apf.getXml("<word />");
                 keyEl.setAttribute("key", txt);
                 apf.xmldb.appendChild(search, keyEl, search.firstChild);
             }

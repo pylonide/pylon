@@ -2,7 +2,7 @@
 <html [%offlineManifest%] xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
     <head profile="http://www.w3.org/2005/10/profile">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <title>Cloud9 - Your code, anywhere anytime.</title>
+        <title>[%projectName%] - Cloud9</title>
         <meta name="description" content=""/>
         <meta name="keywords" content=""/>
 
@@ -156,6 +156,8 @@
                     <a:hbox id="barTools" edge="8 0 0 0" padding="3" align="center">
                         <a:divider skin="c9-divider-double" />
                     </a:hbox>
+                    <a:filler />
+                    <a:hbox id="barExtras" edge="8 0 0 0" padding="3" align="center"> </a:hbox>
                 </a:hbox>
             </a:bar>
 
@@ -173,12 +175,10 @@
                     <a:vbox id="colLeft" padding="3" width="200" />
                     <a:splitter width="0" id="splitterPanelLeft" />
                     <a:vbox id="colMiddle" flex="1" padding="3" />
-                    <a:bar id="dockPanelRight" skin="debug-panel">
-                        <a:button skin="dockheader" onclick="require('ext/dockpanel/dockpanel').expand()" />
-                    </a:bar>
-                    <a:splitter width="0" id="splitterPanelRight" visible="false" />
-                    <a:vbox id="colRight" padding="3" width="260" visible="false" splitters="true">
-                        <a:button skin="dockheader" class="expanded" nosplitter="true" height="11" margin="0 0 -3 0" onclick="require('ext/dockpanel/dockpanel').collapse()" />
+                    <a:vbox id="colRight" padding="0">
+                        <a:hbox id="hboxDockPanel" flex="1">
+                            <a:bar skin="basic" flex="1" />
+                        </a:hbox>
                     </a:vbox>
                 </a:hbox>
             </a:vbox>

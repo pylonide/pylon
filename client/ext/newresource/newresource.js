@@ -4,11 +4,16 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/newresource/newresource",
-    ["core/ide", "core/ext", "core/util", "ext/filesystem/filesystem", "text!ext/newresource/newresource.xml"],
-    function(ide, ext, util, fs, markup) {
+ 
+define(function(require, exports, module) {
 
-return ext.register("ext/newresource/newresource", {
+var ide = require("core/ide");
+var ext = require("core/ext");
+var util = require("core/util");
+var fs = require("ext/filesystem/filesystem");
+var markup = require("text!ext/newresource/newresource.xml");
+
+module.exports = ext.register("ext/newresource/newresource", {
     dev     : "Ajax.org",
     name    : "Newresource",
     alone   : true,
@@ -63,7 +68,6 @@ return ext.register("ext/newresource/newresource", {
                     _self.exists(path + "/" + filename, test);    
                 } else {
                     node.setAttribute('name', filename);
-                    console.log(node)
 //                    ide.dispatchEvent("openfile", {doc: ide.createDocument(node), type:'newfile'});
                 }
             };

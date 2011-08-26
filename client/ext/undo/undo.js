@@ -4,11 +4,13 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/undo/undo",
-    ["core/ide", "core/ext"],
-    function(ide, ext) {
 
-return ext.register("ext/undo/undo", {
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+ 
+module.exports = ext.register("ext/undo/undo", {
     dev    : "Ajax.org",
     name   : "Undo",
     alone  : true,
@@ -70,5 +72,4 @@ return ext.register("ext/undo/undo", {
     }
 });
 
-    }
-);
+});

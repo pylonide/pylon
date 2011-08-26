@@ -5,11 +5,14 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-require.def("ext/watcher/watcher",
-    ["core/ext", "core/ide", "core/util", "ext/tree/tree"],
-    function(ext, ide, util, tree) {
+define(function(require, exports, module) {
 
-return ext.register("ext/watcher/watcher", {
+var ide = require("core/ide");
+var ext = require("core/ext");
+var util = require("core/util");
+var tree = require("ext/tree/tree");
+
+module.exports = ext.register("ext/watcher/watcher", {
     name    : "Watcher",
     dev     : "Ajax.org",
     alone   : true,
@@ -17,6 +20,7 @@ return ext.register("ext/watcher/watcher", {
     type    : ext.GENERAL,
     markup  : null,
     visible : true,
+    deps    : [tree],
     
     init : function() {
         // console.log("Initializing watcher");

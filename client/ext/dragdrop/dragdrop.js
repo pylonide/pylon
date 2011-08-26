@@ -10,13 +10,14 @@ var ide  = require("core/ide");
 var ext  = require("core/ext");
 var util = require("core/util");
 var fs   = require("ext/filesystem/filesystem");
+var tree = require("ext/tree/tree");
 
-return ext.register("ext/dragdrop/dragdrop", {
+module.exports = ext.register("ext/dragdrop/dragdrop", {
     dev         : "Ajax.org",
     name        : "Dragdrop",
     alone       : true,
     type        : ext.GENERAL,
-    deps        : [],
+    deps        : [tree],
     
     init : function(){
         if (typeof window.FileReader == "undefined")

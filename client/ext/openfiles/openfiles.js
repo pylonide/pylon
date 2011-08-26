@@ -4,13 +4,17 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/openfiles/openfiles",
-    ["core/ide", "core/ext",
-     "ext/editors/editors", "ext/settings/settings",
-     "ext/panels/panels", "text!ext/openfiles/openfiles.xml"],
-    function(ide, ext, editors, settings, panels, markup) {
 
-return ext.register("ext/openfiles/openfiles", {
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+var editors = require("ext/editors/editors");
+var settings = require("ext/settings/settings");
+var panels = require("ext/panels/panels");
+var markup = require("text!ext/openfiles/openfiles.xml");
+
+module.exports = ext.register("ext/openfiles/openfiles", {
     name            : "Active Files",
     dev             : "Ajax.org",
     alone           : true,
@@ -19,13 +23,15 @@ return ext.register("ext/openfiles/openfiles", {
 
     hook : function(){
         panels.register(this);
-
+        
+        // fix to prevent Active Files button is placed above Project Files
+        el = (navbar.firstChild.class == "project_files") ? navbar.childNodes[1] : navbar.firstChild;
         var btn = this.button = navbar.insertBefore(new apf.button({
             skin    : "mnubtn",
             state   : "true",
             "class" : "open_files",
             caption : "Active Files"
-        }), navbar.firstChild);
+        }), el);
 
         var _self = this;
         var model = this.model = new apf.model().load("<files />");
@@ -137,14 +143,15 @@ return ext.register("ext/openfiles/openfiles", {
     },
 
     enable : function(noButton){
-        winOpenFiles.show();
+        if (self.winOpenFiles)
+            winOpenFiles.show();
         colLeft.show();
         if (!noButton) {
             this.button.setValue(true);
             if(navbar.current && (navbar.current != this))
                 navbar.current.disable(false);
         }
-
+        splitterPanelLeft.show();
         navbar.current = this;
     },
 
@@ -153,6 +160,8 @@ return ext.register("ext/openfiles/openfiles", {
             winOpenFiles.hide();
         if (!noButton)
             this.button.setValue(false);
+
+        splitterPanelLeft.hide();
     },
 
     destroy : function(){

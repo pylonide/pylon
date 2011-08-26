@@ -17,7 +17,7 @@ var filesystem = require("ext/filesystem/filesystem");
 var markup = require("text!ext/ftp/ftp.xml");
 var css = require("text!ext/ftp/ftp.css");
 
-return ext.register("ext/ftp/ftp", {
+module.exports = ext.register("ext/ftp/ftp", {
     name     : "FTP",
     dev      : "Ajax.org",
     type     : ext.GENERAL,

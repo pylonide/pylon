@@ -10,7 +10,7 @@
 require.def("ext/filesystem/filesystem",
     ["core/ide", "core/ext", "core/util"], function(ide, ext, util) {
 
-return ext.register("ext/filesystem/filesystem", {
+module.exports = ext.register("ext/filesystem/filesystem", {
     name   : "File System",
     dev    : "Ajax.org",
     type   : ext.GENERAL,
@@ -320,7 +320,7 @@ require.def("ext/settings/settings",
      "text!ext/settings/settings.xml", "text!ext/settings/template.xml"],
     function(ide, ext, util, fs, markup, template) {
 
-return ext.register("ext/settings/settings", {
+module.exports = ext.register("ext/settings/settings", {
     name    : "Settings",
     dev     : "Ajax.org",
     alone   : true,
@@ -529,7 +529,7 @@ require.def("ext/editors/editors",
     ["core/ide", "core/ext", "core/util", "ext/panels/panels"],
     function(ide, ext, util, panels) {
 
-return ext.register("ext/editors/editors", {
+module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
     dev     : "Ajax.org",
     alone   : true,
@@ -972,7 +972,7 @@ require.def("ext/themes/themes",
     ["core/ide", "core/ext", "core/util", "ext/editors/editors", "ext/settings/settings"],
     function(ide, ext, util, editors, settings) {
 
-return ext.register("ext/themes/themes", {
+module.exports = ext.register("ext/themes/themes", {
     name    : "Themes",
     dev     : "Ajax.org",
     alone   : true,
@@ -1038,7 +1038,7 @@ require.def("ext/themes_default/themes_default",
     ["core/ide", "core/ext", "core/util", "ext/themes/themes"],
     function(ide, ext, util, themes) {
 
-return ext.register("ext/themes_default/themes_default", {
+module.exports = ext.register("ext/themes_default/themes_default", {
     name    : "Themes",
     dev     : "Ajax.org",
     alone   : true,
@@ -1087,7 +1087,7 @@ require.def("ext/panels/panels",
     ["core/ide", "core/ext", "ext/settings/settings", "text!ext/panels/panels.xml"],
     function(ide, ext, settings, markup) {
         
-return ext.register("ext/panels/panels", {
+module.exports = ext.register("ext/panels/panels", {
     name   : "Panel Manager",
     dev    : "Ajax.org",
     alone  : true,
@@ -1343,7 +1343,7 @@ require.def("ext/tree/tree",
      "ext/panels/panels", "text!ext/tree/tree.xml"],
     function(ide, ext, fs, settings, panels, markup) {
 
-return ext.register("ext/tree/tree", {
+module.exports = ext.register("ext/tree/tree", {
     name            : "Tree",
     dev             : "Ajax.org",
     alone           : true,
@@ -1520,7 +1520,7 @@ require.def("ext/save/save",
             "text!ext/save/save.xml"],
     function(ide, ext, util, fs, markup) {
 
-return ext.register("ext/save/save", {
+module.exports = ext.register("ext/save/save", {
     dev         : "Ajax.org",
     name        : "Save",
     alone       : true,
@@ -1841,7 +1841,7 @@ require.def("ext/gotofile/gotofile",
      "text!ext/gotofile/gotofile.xml"],
     function(ide, ext, fs, settings, tree, markup) {
         
-return ext.register("ext/gotofile/gotofile", {
+module.exports = ext.register("ext/gotofile/gotofile", {
     name    : "Filter Tree",
     dev     : "Ajax.org",
     alone   : true,
@@ -1963,7 +1963,7 @@ require.def("ext/newresource/newresource",
     ["core/ide", "core/ext", "core/util", "ext/filesystem/filesystem", "text!ext/newresource/newresource.xml"],
     function(ide, ext, util, fs, markup) {
 
-return ext.register("ext/newresource/newresource", {
+module.exports = ext.register("ext/newresource/newresource", {
     dev     : "Ajax.org",
     name    : "Newresource",
     alone   : true,
@@ -2047,7 +2047,7 @@ require.def("ext/undo/undo",
     ["core/ide", "core/ext"],
     function(ide, ext) {
 
-return ext.register("ext/undo/undo", {
+module.exports = ext.register("ext/undo/undo", {
     dev    : "Ajax.org",
     name   : "Undo",
     alone  : true,
@@ -2120,7 +2120,7 @@ require.def("ext/clipboard/clipboard",
     ["core/ide", "core/ext"],
     function(ide, ext) {
 
-return ext.register("ext/clipboard/clipboard", {
+module.exports = ext.register("ext/clipboard/clipboard", {
     dev    : "Ajax.org",
     name   : "Clipboard",
     alone  : true,
@@ -2215,7 +2215,7 @@ require.def("ext/searchinfiles/searchinfiles",
      "text!ext/searchinfiles/searchinfiles.xml"],
     function(ide, ext, util, plugins, search, editors, console, skin, markup) {
 
-return ext.register("ext/searchinfiles/searchinfiles", {
+module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     name     : "Search in files",
     dev      : "Ajax.org",
     type     : ext.GENERAL,
@@ -2430,7 +2430,7 @@ require.def("ext/searchreplace/searchreplace",
      "text!ext/searchreplace/searchreplace.xml"],
     function(ide, ext, plugins, search, editors, markup) {
 
-return ext.register("ext/searchreplace/searchreplace", {
+module.exports = ext.register("ext/searchreplace/searchreplace", {
     name    : "Searchreplace",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
@@ -2649,7 +2649,7 @@ require.def("ext/quickwatch/quickwatch",
      "text!ext/quickwatch/quickwatch.xml"],
     function(ide, ext, editors, markup) {
 
-return ext.register("ext/quickwatch/quickwatch", {
+module.exports = ext.register("ext/quickwatch/quickwatch", {
     name    : "quickwatch",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
@@ -2771,7 +2771,7 @@ require.def("ext/quicksearch/quicksearch",
      "text!ext/quicksearch/quicksearch.xml"],
     function(ide, ext, plugins, search, editors, skin, markup) {
 
-return ext.register("ext/quicksearch/quicksearch", {
+module.exports = ext.register("ext/quicksearch/quicksearch", {
     name    : "quicksearch",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
@@ -3013,7 +3013,7 @@ require.def("ext/gotoline/gotoline",
      "text!ext/gotoline/gotoline.xml"],
     function(ide, ext, plugins, search, editors, skin, markup) {
 
-return ext.register("ext/gotoline/gotoline", {
+module.exports = ext.register("ext/gotoline/gotoline", {
     name    : "Gotoline Window",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
@@ -3233,7 +3233,7 @@ require.def("ext/html/html",
     ["core/ide", "core/ext", "ext/code/code", "text!ext/html/html.xml"],
     function(ide, ext, code, markup) {
 
-return ext.register("ext/html/html", {
+module.exports = ext.register("ext/html/html", {
     name    : "HTML Editor",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
@@ -3315,7 +3315,7 @@ require.def("ext/browser/browser",
     ["core/ide", "core/ext", "text!ext/browser/browser.xml"],
     function(ide, ext, markup) {
 
-return ext.register("ext/browser/browser", {
+module.exports = ext.register("ext/browser/browser", {
     name    : "Browser View",
     dev     : "Ajax.org",
     type    : ext.EDITOR,
@@ -3402,7 +3402,7 @@ apf.actiontracker.actions.aceupdate = function(undoObj, undo){
         q[1].redoChanges(q[0]);
 };
 
-return ext.register("ext/code/code", {
+module.exports = ext.register("ext/code/code", {
     name    : "Code Editor",
     dev     : "Ajax.org",
     type    : ext.EDITOR,
@@ -3632,7 +3632,7 @@ require.def("ext/extmgr/extmgr",
     ["core/ide", "core/ext", "core/util", "text!ext/extmgr/extmgr.xml"],
     function(ide, ext, util, markup) {
         
-return ext.register("ext/extmgr/extmgr", {
+module.exports = ext.register("ext/extmgr/extmgr", {
     name   : "Extension Manager",
     dev    : "Ajax.org",
     alone  : true,
@@ -3697,7 +3697,7 @@ require.def("ext/run/run",
      "ext/save/save",
      "text!ext/run/run.xml"], function(ide, ext, noderunner, settings, save, markup) {
 
-return ext.register("ext/run/run", {
+module.exports = ext.register("ext/run/run", {
     name   : "Run Toolbar",
     dev    : "Ajax.org",
     type   : ext.GENERAL,
@@ -3892,7 +3892,7 @@ require.def("ext/debugger/debugger",
      "text!ext/debugger/debugger.xml"],
     function(ide, Document, ext, log, noderunner, panels, fs, markup) {
 
-return ext.register("ext/debugger/debugger", {
+module.exports = ext.register("ext/debugger/debugger", {
     name   : "Debug",
     dev    : "Ajax.org",
     type   : ext.GENERAL,
@@ -4211,7 +4211,7 @@ require.def("ext/noderunner/noderunner",
      "text!ext/noderunner/noderunner.xml"], 
      function(ide, ext, util, log, markup) {
 
-return ext.register("ext/noderunner/noderunner", {
+module.exports = ext.register("ext/noderunner/noderunner", {
     name   : "Node Runner",
     dev    : "Ajax.org",
     type   : ext.GENERAL,
@@ -4294,7 +4294,7 @@ return ext.register("ext/noderunner/noderunner", {
                 break;
 
             case "state":
-                stDebugProcessRunning.setProperty("active", message.debugClient);
+                stDebugProcessRunning.setProperty("active", message.nodeDebugClient);
                 dbgNode.setProperty("strip", message.workspaceDir + "/");
                 ide.dispatchEvent("noderunnerready");
                 break;
@@ -4404,7 +4404,7 @@ var trieCommands,
     parser     = new parserCls();
 
 var tt=0;
-return ext.register("ext/console/console", {
+module.exports = ext.register("ext/console/console", {
     name   : "Console",
     dev    : "Ajax.org",
     type   : ext.GENERAL,
@@ -5327,7 +5327,7 @@ require.def("ext/tabbehaviors/tabbehaviors",
     ["core/ide", "core/ext", "core/util", "ext/save/save"],
     function(ide, ext, util, save) {
 
-return ext.register("ext/tabbehaviors/tabbehaviors", {
+module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     name    : "Tab Behaviors",
     dev     : "Ajax.org",
     alone   : true,
@@ -5650,7 +5650,7 @@ require.def("ext/keybindings/keybindings",
     ["core/ide", "core/ext", "core/util", "text!ext/keybindings/settings.xml"],
     function(ide, ext, util, settings) {
 
-return ext.register("ext/keybindings/keybindings", {
+module.exports = ext.register("ext/keybindings/keybindings", {
     name   : "Keybindings Manager",
     dev    : "Ajax.org",
     alone  : true,
@@ -5753,7 +5753,7 @@ require.def("ext/watcher/watcher",
     ["core/ext", "core/ide", "core/util"],
     function(ext, ide, util) {
 
-return ext.register("ext/watcher/watcher", {
+module.exports = ext.register("ext/watcher/watcher", {
     name    : "Watcher",
     dev     : "Ajax.org",
     alone   : true,

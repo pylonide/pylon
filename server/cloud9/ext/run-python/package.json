@@ -1,0 +1,6 @@
+{
+    "name": "python_runtime",
+    "description": "Provides a Python runtime and debugger.",
+    "version": "0.1",
+    "author": "Ajax.org B.V. <info@ajax.org>"
+}

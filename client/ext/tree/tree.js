@@ -4,19 +4,25 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/tree/tree",
-    ["core/ide", "core/ext", "core/util",
-     "ext/filesystem/filesystem", "ext/settings/settings", 
-     "ext/panels/panels", "text!ext/tree/tree.xml"],
-    function(ide, ext, util, fs, settings, panels, markup) {
 
-return ext.register("ext/tree/tree", {
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+var util = require("core/util");
+var fs = require("ext/filesystem/filesystem");
+var settings = require("ext/settings/settings"); 
+var panels = require("ext/panels/panels");
+var markup = require("text!ext/tree/tree.xml");
+
+module.exports = ext.register("ext/tree/tree", {
     name             : "Project Files",
     dev              : "Ajax.org",
     alone            : true,
     type             : ext.GENERAL,
     markup           : markup,
     visible          : true,
+    deps             : [fs],
     currentSettings  : [],
     expandedList     : {},
     loading          : false,
@@ -160,8 +166,10 @@ return ext.register("ext/tree/tree", {
             checked : "[{require('ext/settings/settings').model}::auto/tree/@showhidden]",
             onclick : function(){
                 _self.changed = true;
-                require('ext/tree/tree').refresh();
-                require("ext/settings/settings").save();
+                require(["ext/tree/tree", "ext/settings/settings"], function(tree, settings) {
+                    tree.refresh();
+                    settings.save();
+                })
             }
         }));
         davProject.setAttribute("showhidden", "[{require('ext/settings/settings').model}::auto/tree/@showhidden]");
@@ -170,32 +178,59 @@ return ext.register("ext/tree/tree", {
         
         trFiles.setAttribute("model", fs.model);
         
-        trFiles.addEventListener("afterchoose", this.$afterselect = function(e) {
+        trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
+            var settings = require("ext/settings/settings");
+            if (settings.model && trFiles.selected) {
+                var settings          = settings.model.data;
+                var treeSelectionNode = settings.selectSingleNode("auto/tree_selection");
+                var nodeSelected      = trFiles.selected.getAttribute("path");
+                var nodeType          = trFiles.selected.getAttribute("type");
+                if(treeSelectionNode) {
+                    apf.xmldb.setAttribute(treeSelectionNode, "path", nodeSelected);
+                    apf.xmldb.setAttribute(treeSelectionNode, "type", nodeType);
+                }
+                else
+                    apf.xmldb.appendChild(settings.selectSingleNode("auto"), 
+                        apf.getXml('<tree_selection path="' + nodeSelected + '" type="' + nodeType + '" />')
+                    );
+            }
+        }); 
+        
+        trFiles.addEventListener("afterchoose", this.$afterselect = function(e) {            
             var node = this.selected;
-            if (!node || node.tagName != "file" || this.selection.length > 1 || !ide.onLine) //ide.onLine can be removed after update apf
-                return;
+            if (!node || node.tagName != "file" || this.selection.length > 1 || !ide.onLine && !ide.offlineFileSystemSupport) //ide.onLine can be removed after update apf
+                    return;
 
             ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
         });
         
         trFiles.addEventListener("beforecopy", function(e) {
-            if (!ide.onLine) return false;
+            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
+            
+            var args     = e.args[0].args,
+                filename = args[1].getAttribute("name");
+
+            var count = 0;
+            filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1));
+            while (args[0].selectSingleNode("node()[@name='" + filename.replace(/'/g, "\\'") + "']")) {
+                filename = filename.replace(/\.(\d+)$/, "") + "." + ++count;
+            }
+            args[1].setAttribute("newname", filename);
             
             setTimeout(function () {
-                var args     = e.args[0].args,
-                    filename = args[1].getAttribute("name");
                 fs.beforeRename(args[1], null, args[0].getAttribute("path").replace(/[\/]+$/, "") + "/" + filename);
+                args[1].removeAttribute("newname");
             });
         });
        
         trFiles.addEventListener("beforestoprename", function(e) {
-            if (!ide.onLine) return false;
+            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
 
             return fs.beforeStopRename(e.value);
         });
  
         trFiles.addEventListener("beforerename", function(e){
-            if (!ide.onLine) return false;
+            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
             
             if(trFiles.$model.data.firstChild == trFiles.selected)
                 return false;
@@ -211,11 +246,11 @@ return ext.register("ext/tree/tree", {
                 exists = true;
                 break;
             }
-            if (exists) {
+            /*if (exists) {
                 util.alert("Error", "Unable to move", "Couldn't move to this destination because there's already a node with the same name");
                 trFiles.getActionTracker().undo();
                 return false;
-            }
+            }*/
             
             //setTimeout(function(){
                 fs.beforeRename(e.args[0], e.args[1]);
@@ -223,10 +258,7 @@ return ext.register("ext/tree/tree", {
         });
         
         trFiles.addEventListener("beforemove", function(e){
-            if (!ide.onLine)
-                return false;
-            // if (ide.dispatchEvent("beforemove") === false)
-            //               return false;
+            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
             
             setTimeout(function(){
                 var changes = e.args;
@@ -238,7 +270,7 @@ return ext.register("ext/tree/tree", {
         });
         
         var cancelWhenOffline = function(){
-            if (!ide.onLine) return false;
+            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
         };
         
         trFiles.addEventListener("beforeadd", cancelWhenOffline);
@@ -247,15 +279,17 @@ return ext.register("ext/tree/tree", {
         trFiles.addEventListener("dragstart", cancelWhenOffline);
         trFiles.addEventListener("dragdrop", cancelWhenOffline);
         
-        /*ide.addEventListener("afteroffline", function(e){
-            //trFiles.setAttribute("contextmenu", "");
-            mnuCtxTree.disable();
+        ide.addEventListener("afteroffline", function(e){
+            if (!ide.offlineFileSystemSupport) {
+                //trFiles.disable();
+                //mnuCtxTree.disable();
+            }
         });
         
         ide.addEventListener("afteronline", function(e){
-            //trFiles.setAttribute("contextmenu", "mnuCtxTree");
-            mnuCtxTree.enable();
-        });*/
+            //trFiles.enable();
+            //mnuCtxTree.enable();
+        });
         
         /**** Support for state preservation ****/
         trFiles.addEventListener("expand", function(e){
@@ -269,6 +303,8 @@ return ext.register("ext/tree/tree", {
             }
         });
         trFiles.addEventListener("collapse", function(e){
+            if (!e.xmlNode)
+                return;
             delete _self.expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)];
             
             if (!_self.loading) {
@@ -278,6 +314,18 @@ return ext.register("ext/tree/tree", {
         });
 
         ide.addEventListener("loadsettings", function(e){
+            function treeSelect(){
+                var treeSelection = model.queryNode("auto/tree_selection");
+                if(treeSelection) {
+                    trFiles.select(trFiles.$model.queryNode('//node()[@path="' 
+                        + model.queryValue('auto/tree_selection/@path') + '" and @type="' 
+                        + model.queryValue('auto/tree_selection/@type') + '"]'))
+                }
+                else {
+                    trFiles.select(trFiles.$model.queryNode("node()"));
+                }
+            };
+            
             var model = e.model;
             var strSettings = model.queryValue("auto/tree");
             if (strSettings) {
@@ -290,6 +338,7 @@ return ext.register("ext/tree/tree", {
                         trFiles.addEventListener("afterload", function(){
                             trFiles.expandList(_self.currentSettings, function(){
                                 _self.loading = false;
+                                treeSelect();
                             });
                             
                             trFiles.removeEventListener("load", arguments.callee);
@@ -302,6 +351,7 @@ return ext.register("ext/tree/tree", {
                     else {
                         trFiles.expandList(_self.currentSettings, function(){
                             _self.loading = false;
+                            treeSelect();
                         });
                     }
                 }catch(err){
@@ -431,7 +481,13 @@ return ext.register("ext/tree/tree", {
             }
         });
     },
-
+    
+    moveFile : function(path, newpath){
+        davProject.move(path, newpath);
+        trFiles.enable();
+        trFiles.focus();
+    },
+    
     refresh : function(){
         trFiles.getModel().load("<data><folder type='folder' name='" + ide.projectName + "' path='" + ide.davPrefix + "' root='1'/></data>");
         this.expandedList = {};
@@ -456,7 +512,8 @@ return ext.register("ext/tree/tree", {
             if(navbar.current && (navbar.current != this))
                 navbar.current.disable(false);
         }
-        
+
+        splitterPanelLeft.show();
         navbar.current = this;
     },
 
@@ -465,6 +522,8 @@ return ext.register("ext/tree/tree", {
             winFilesViewer.hide();
         if (!noButton)
             this.button.setValue(false);
+
+        splitterPanelLeft.hide();
     },
 
     destroy : function(){

@@ -14,17 +14,17 @@ module.exports = DebugProxy = function(port) {
     this.connected = false;
 
     var socket = new NodeSocket("localhost", port);
-    socket.onend = function() {
+    socket.on("end", function(errorInfo) {
         _self.connected = false;
-        _self.emit("end");
-    };
+        _self.emit("end", errorInfo);
+    });
     this.service = new StandaloneV8DebuggerService(socket);
 
-    this.service.addEventListener('connect', function() {
+    this.service.addEventListener("connect", function() {
         _self.connected = true;
         _self.emit("connection");
     });
-    this.service.addEventListener('debugger_command_0', function(msg) {
+    this.service.addEventListener("debugger_command_0", function(msg) {
         //console.log("REC ", msg.data);
         _self.emit("message", msg.data);
     });

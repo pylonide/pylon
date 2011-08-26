@@ -21,5 +21,6 @@
         <a:item value="rb" icon="page_white_ruby.png">Ruby file</a:item>
         <a:item value="mli" icon="page_white_code.png">OCaml file</a:item>
         <a:item value="clj" icon="page_white_code.png">Clojure file</a:item>
+        <a:item value="md" icon="page_white_text.png">Markdown</a:item>
     </a:menu>
 </a:application>

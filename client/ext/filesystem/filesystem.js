@@ -11,7 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
 
-return ext.register("ext/filesystem/filesystem", {
+module.exports = ext.register("ext/filesystem/filesystem", {
     name   : "File System",
     dev    : "Ajax.org",
     type   : ext.GENERAL,
@@ -86,7 +86,7 @@ return ext.register("ext/filesystem/filesystem", {
                         // @todo: in case of error, show nice alert dialog
                         if (data instanceof Error)
                             throw Error;
-                            
+
                         var strXml = data.match(new RegExp(("(<folder path='" + path 
                                 + "/" + name + "'.*?>)").replace(/\//g, "\\/")))[1];
                             
@@ -280,6 +280,29 @@ return ext.register("ext/filesystem/filesystem", {
         this.model = new apf.model();
         this.model.setAttribute("whitespace", false);
         
+        var processing = {};
+        this.model.addEventListener("update", function(e){
+            //resort on move, copy, rename, add
+            if (e.action == "attribute" || e.action == "add" || e.action == "move") {
+                var xmlNode = e.xmlNode, pNode = xmlNode.parentNode;
+                if (processing[xmlNode.getAttribute("a_id")])
+                    return;
+                processing[xmlNode.getAttribute("a_id")] = true;
+                
+                var sort = new apf.Sort();
+                sort.set({xpath: "@name", method: "filesort"});
+                var nodes = sort.apply(pNode.childNodes);
+                
+                for (var i = 0, l = nodes.length; i < l; i++) {
+                    if (nodes[i] == xmlNode) {
+                        if (xmlNode.nextSibling != nodes[i+1])
+                            apf.xmldb.appendChild(pNode, xmlNode, nodes[i+1]);
+                        break;
+                    }
+                }
+            }
+        });
+        
         var _self = this;
         ide.addEventListener("afteronline", function(){
             _self.model.load("<data><folder type='folder' name='" + ide.projectName + "' path='" + ide.davPrefix + "' root='1'/></data>");
@@ -287,29 +310,23 @@ return ext.register("ext/filesystem/filesystem", {
         });
         
         var url;
-        if (location.host || window.cloud9config.standalone) {
-            var dav_url = location.href.replace(location.path + location.hash, "") + ide.davPrefix;
-            this.webdav = new apf.webdav({
-                id  : "davProject",
-                url : dav_url,
-                onauthfailure: function(e) {
-                    ide.dispatchEvent("authrequired");
-                }
+        var dav_url = location.href.replace(location.path + location.hash, "") + ide.davPrefix;
+        this.webdav = new apf.webdav({
+            id  : "davProject",
+            url : dav_url,
+            onauthfailure: function(e) {
+                ide.dispatchEvent("authrequired");
+            }
+        });
+        url = "{davProject.getroot()}";
+        
+        /*this.webdav.$undoFlag = false;
+        this.webdav.addEventListener("error", function(event) {
+            return util.alert("Webdav Exception", event.error.type || "", event.error.message, function() {
+                trFiles.getActionTracker().undo();
+                _self.webdav.$undoFlag = true;
             });
-            url = "{davProject.getroot()}";
-            
-            /*this.webdav.$undoFlag = false;
-            this.webdav.addEventListener("error", function(event) {
-                return util.alert("Webdav Exception", event.error.type || "", event.error.message, function() {
-                    trFiles.getActionTracker().undo();
-                    _self.webdav.$undoFlag = true;
-                });
-            });*/
-        }
-        else {
-            url = "ext/filesystem/files.xml";
-            this.readFile = this.saveFile = apf.K;
-        }
+        });*/
 
         function openHandler(e) {
             ide.socket.send(JSON.stringify({
@@ -331,6 +348,7 @@ return ext.register("ext/filesystem/filesystem", {
             apf.xmldb.setAttribute(node, "loading", "true");
             ide.addEventListener("afteropenfile", function(e) {
                 apf.xmldb.setAttribute(e.node, "loading", "");
+                ide.removeEventListener("afteropenfile", arguments.callee);
             });
             
             if (doc.hasValue()) {
@@ -343,9 +361,50 @@ return ext.register("ext/filesystem/filesystem", {
                 if (ide.dispatchEvent("readfile", {doc: doc, node: node}) == false)
                     return;
 
+/* OFFLINE IMPLEMENTATION
+            // add a way to hook into loading of files
+            if (ide.dispatchEvent("readfile", {doc: doc, node: node}) == false)
+                return;
+
+            var path = node.getAttribute("path");
+            
+            var callback = function(data, state, extra) {
+                if (state == apf.OFFLINE) {
+                    ide.addEventListener("afteronline", function(e) {
+                        fs.readFile(path, callback);
+                        ide.removeEventListener("afteronline", arguments.callee);
+                    });
+                }
+                else if (state != apf.SUCCESS) {
+                    if (extra.status == 404) {
+                        ide.dispatchEvent("filenotfound", {
+                            node : node,
+                            url  : extra.url,
+                            path : path
+                        });
+                    }
+                }
+                else {
+                    doc.setValue(data);
+                    ide.dispatchEvent("afteropenfile", {doc: doc, node: node});                    
+                }
+            };
+            
+            fs.readFile(path, callback);
+*/
                 var path = node.getAttribute("path");
-                fs.readFile(path, function(data, state, extra) {
-                    if (state != apf.SUCCESS) {
+                
+                /**
+                 * This callback is executed when the file is read, we need to check
+                 * the current state of online/offline
+                 */
+                var readfileCallback = function(data, state, extra) {
+                    if (state == apf.OFFLINE) {
+                        ide.addEventListener("afteronline", function(e) {
+                            fs.readFile(path, readfileCallback);
+                            ide.removeEventListener("afteronline", arguments.callee);
+                        });
+                    } else if (state != apf.SUCCESS) {
                         if (extra.status == 404) {
                             ide.dispatchEvent("filenotfound", {
                                 node : node,
@@ -358,7 +417,9 @@ return ext.register("ext/filesystem/filesystem", {
                         doc.setValue(data);
                         ide.dispatchEvent("afteropenfile", {doc: doc, node: node});                    
                     }
-                });
+                };
+                
+                fs.readFile(path, readfileCallback);
             }
             else {
                 doc.setValue('empty file.');
@@ -370,9 +431,18 @@ return ext.register("ext/filesystem/filesystem", {
             var doc  = e.doc,
                 node = doc.getNode(),
                 path = node.getAttribute("path");
-            
-            fs.readFile(path, function(data, state, extra) {
-                if (state != apf.SUCCESS) {
+                
+            /**
+             * This callback is executed when the file is read, we need to check
+             * the current state of online/offline
+             */
+            var readfileCallback = function(data, state, extra) {
+                if (state == apf.OFFLINE) {
+                    ide.addEventListener("afteronline", function(e) {
+                        fs.readFile(path, readfileCallback);
+                        ide.removeEventListener("afteronline", arguments.callee);
+                    });
+                } else if (state != apf.SUCCESS) {
                     if (extra.status == 404)
                         ide.dispatchEvent("filenotfound", {
                             node : node,
@@ -382,7 +452,9 @@ return ext.register("ext/filesystem/filesystem", {
                 } else {
                    ide.dispatchEvent("afterreload", {doc : doc, data : data});
                 }
-            });
+            };
+            
+            fs.readFile(path, readfileCallback);
         });
     },
 

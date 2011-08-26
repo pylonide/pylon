@@ -13,7 +13,7 @@ var editors = require("ext/editors/editors");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/quickwatch/quickwatch.xml");
 
-return ext.register("ext/quickwatch/quickwatch", {
+module.exports = ext.register("ext/quickwatch/quickwatch", {
     name    : "quickwatch",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
@@ -36,7 +36,9 @@ return ext.register("ext/quickwatch/quickwatch", {
                 if (!this.value.trim())
                     return dgWatch.clear();
 
-                require("ext/console/console").evaluate(this.value);
+                require(["ext/debugger/inspector"], function(inspector) {
+                    inspector.evaluate(this.value);
+                });
             }
             else if (e.keyCode == 40 && dgWatch.length) {
                 var first = dgWatch.getFirstTraverseNode();
@@ -79,8 +81,10 @@ return ext.register("ext/quickwatch/quickwatch", {
             if (value) {
                 txtCurObject.setValue(value);
                 if (exec) {
-                    require("ext/console/console").evaluate(value);
-                    txtCurObject.focus();
+                    require(["ext/debugger/inspector"], function(inspector) {
+                        inspector.evaluate(value);
+                        txtCurObject.focus();
+                    });
                 }
             }
 

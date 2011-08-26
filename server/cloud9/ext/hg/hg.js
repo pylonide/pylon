@@ -5,6 +5,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var Plugin = require("cloud9/plugin");
+var Util   = require("cloud9/util");
 var sys    = require("sys");
 
 var ShellHgPlugin = module.exports = module.exports = function(ide, workspace) {
@@ -52,14 +53,14 @@ sys.inherits(ShellHgPlugin, Plugin);
         }
 
         function onfinish() {
-            _self.extend(commands, hghelp);
+            Util.extend(commands, hghelp);
             callback();
         }
     };
 
     this.augmentCommand = function(cmd, struct) {
         var map = commandsMap[cmd] || commandsMap["default"];
-        return this.extend(struct, map || {});
+        return Util.extend(struct, map || {});
     };
 
     this.command = function(user, message, client) {

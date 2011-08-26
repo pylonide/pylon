@@ -1,4 +1,13 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:menu id="mnuWindows">
+    	<a:item submenu="mnuPanels">Panels</a:item>
+    	<a:item submenu="mnuTabs">Tabs</a:item>
+    	<a:divider />
+    </a:menu>
+    
+    <a:menu id="mnuTabs">
+    </a:menu>
+    
     <a:menu id="mnuPanels">
     </a:menu>
 </a:application>

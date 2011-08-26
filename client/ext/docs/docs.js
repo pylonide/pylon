@@ -4,11 +4,14 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/docs/docs",
-    ["core/ide", "core/ext", "ext/panels/panels", "text!ext/docs/docs.xml"], 
-    function(ide, ext, panels, markup) {
+define(function(require, exports, module) {
 
-return ext.register("ext/docs/docs", {
+var ide = require("core/ide");
+var ext = require("core/ext");
+var panels = require("ext/panels/panels")
+var markup = require("text!ext/docs/docs.xml");
+
+module.exports = ext.register("ext/docs/docs", {
     name    : "Documentation",
     dev     : "Ajax.org",
     type    : ext.GENERAL,

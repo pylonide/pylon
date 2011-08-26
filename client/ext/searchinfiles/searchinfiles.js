@@ -7,16 +7,16 @@
  
 define(function(require, exports, module) {
  
- var ide = require("core/ide");
- var ext = require("core/ext");
- var util = require("core/util");
- var canon = require("pilot/canon");
- var editors = require("ext/editors/editors");
- var ideConsole = require("ext/console/console");
- var skin = require("text!ext/searchinfiles/skin.xml");
- var markup = require("text!ext/searchinfiles/searchinfiles.xml");
+var ide = require("core/ide");
+var ext = require("core/ext");
+var util = require("core/util");
+var canon = require("pilot/canon");
+var editors = require("ext/editors/editors");
+var ideConsole = require("ext/console/console");
+var skin = require("text!ext/searchinfiles/skin.xml");
+var markup = require("text!ext/searchinfiles/searchinfiles.xml");
   
-return ext.register("ext/searchinfiles/searchinfiles", {
+module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     name     : "Search in files",
     dev      : "Ajax.org",
     type     : ext.GENERAL,
@@ -196,6 +196,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
         var node = this.$currentScope = grpSFScope.value == "projects"
             ? trFiles.xmlRoot.selectSingleNode("folder[1]")
             : this.getSelectedTreeNode();
+
         var findValueSanitized = txtSFFind.value.trim().replace(/([\[\]\{\}])/g, '\\$1');
         _self.$model.clear();
         trSFResult.setAttribute("empty-message", "Searching for '" + findValueSanitized + "'...");
@@ -207,6 +208,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
             else
                 _self.$model.load(data);
         });
+
         ide.dispatchEvent("track_action", {type: "searchinfiles"});
     },
 
