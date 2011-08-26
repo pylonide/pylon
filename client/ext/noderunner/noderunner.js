@@ -60,7 +60,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
     onMessage : function(e) {
         var message = e.message;
-//        console.log("MSG", message)
+        //console.log("MSG", message)
 
         switch(message.type) {
             case "node-debug-ready":
@@ -88,8 +88,8 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 break;
 
             case "state":
-                stDebugProcessRunning.setProperty("active", message.nodeDebugClient);
-                stProcessRunning.setProperty("active", e.message.nodeProcessRunning || e.message.pythonProcessRunning);
+                stDebugProcessRunning.setProperty("active", message.debugClient || message.nodeDebugClient);
+                stProcessRunning.setProperty("active", message.processRunning || message.nodeProcessRunning || message.pythonProcessRunning);
                 dbgNode.setProperty("strip", message.workspaceDir + "/");
                 ide.dispatchEvent("noderunnerready");
                 break;
@@ -104,7 +104,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                     txtConsole.addValue("<div class='item console_log' style='font-weight:bold;color:yellow'>"
                         + message.message + "</div>");
                 }
-                else if (message.code !== 6 && message.code != 401) {
+                else if (message.code !== 6 && message.code != 401 && message.code != 455 && message.code != 456) {
                     //util.alert("Server Error", "Server Error " 
                     //    + (message.code || ""), message.message);
 
