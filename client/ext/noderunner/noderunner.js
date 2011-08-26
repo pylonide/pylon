@@ -60,7 +60,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
     onMessage : function(e) {
         var message = e.message;
-//        console.log("MSG", message)
+        //console.log("MSG", message)
 
         switch(message.type) {
             case "node-debug-ready":
@@ -88,8 +88,8 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 break;
 
             case "state":
-                stDebugProcessRunning.setProperty("active", message.nodeDebugClient);
-                stProcessRunning.setProperty("active", e.message.nodeProcessRunning || e.message.pythonProcessRunning);
+                stDebugProcessRunning.setProperty("active", message.debugClient || message.nodeDebugClient);
+                stProcessRunning.setProperty("active", message.processRunning || message.nodeProcessRunning || message.pythonProcessRunning);
                 dbgNode.setProperty("strip", message.workspaceDir + "/");
                 ide.dispatchEvent("noderunnerready");
                 break;
