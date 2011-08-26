@@ -104,7 +104,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                     txtConsole.addValue("<div class='item console_log' style='font-weight:bold;color:yellow'>"
                         + message.message + "</div>");
                 }
-                else if (message.code !== 6 && message.code != 401) {
+                else if (message.code !== 6 && message.code != 401 && message.code != 455 && message.code != 456) {
                     //util.alert("Server Error", "Server Error " 
                     //    + (message.code || ""), message.message);
 
