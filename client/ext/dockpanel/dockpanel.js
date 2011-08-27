@@ -199,34 +199,16 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         
         return bar.sections.slice(-1);
     }, //properties.forceShow ??
-    
+
     //@todo removal of pages
-    
+
     /**
      * Increases the notification number count by one
      * 
-     * @windowIdent identifier of the dock object
+     * @param {array} ext Identifier
      */
-    increaseNotificationCount: function(windowIdent){
-        /*for(var doi = 0; doi < this.dockObjects.length; doi++) {
-            if(this.dockObjects[doi].ident == windowIdent) {
-                // Only increase notification count if window is hidden
-                if(this.dockObjects[doi].btn.value == false) {
-                    if(this.dockObjects[doi].notCount >= 99)
-                        return true;
-
-                    this.dockObjects[doi].notCount++;
-                    this.updateNotificationElement(
-                            this.dockObjects[doi].btn
-                            , this.dockObjects[doi].notCount
-                    );
-                }
-                
-                return true;
-            }
-        }
-        
-        return false;*/
+    increaseNotificationCount: function(ext){
+        this.layout.increaseNotificationCount(ext);
     },
 
     /**

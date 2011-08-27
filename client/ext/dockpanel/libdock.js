@@ -320,7 +320,13 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         //button.showMenu();
         button.dispatchEvent("mousedown", {htmlEvent: {}});
     };
-    
+
+    /**
+     * Sets the notifications bubble to some value
+     * 
+     * @param {string} ext
+     * @param {number} value
+     */
      this.setCounter = function(ext, value){
         if (!this.$buttons[ext])
             throw new Error("Could not find button for '" + ext + "'");
@@ -328,6 +334,29 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         var button = this.$buttons[ext];
         button.$ext.getElementsByClassName("dock_notification")[0].innerHTML = +value || "";
     };
+    
+    /**
+     * Increases the notification count
+     * 
+     * @param {string} ext
+     */
+     this.increaseNotificationCount = function(ext) {
+         if (!this.$buttons[ext])
+            throw new Error("Could not find button for '" + ext + "'");
+
+        var button = this.$buttons[ext];
+        // If the button is active, then we don't need to increase the count
+        if (button.value)
+            return;
+
+        var dockNotificationEl = button.$ext.getElementsByClassName("dock_notification");
+        var value = dockNotificationEl[0].innerHTML;
+        if (!value || value == "")
+            value = 0;
+        if (+value == 99)
+            return;
+        dockNotificationEl[0].innerHTML = ++value || "";
+     };
 
     this.$isLastBar = function(aml) {
         var last = this.$parentHBox.lastChild;
@@ -1371,13 +1400,17 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 btnLock = true;
                 self[this.submenu].firstChild.set(page);
                 btnLock = false;
-                
+
+                // Reset the counter
+                if (options && options.ext)
+                    _self.setCounter(options.ext, 0);
+
                 if (options && (tmp = options.primary)) {
                     var span = button.$ext.getElementsByTagName("span");
                     span[2].style.backgroundPosition = 
                         tmp.activeState.x + 'px ' 
                         + tmp.activeState.y + 'px';
-            
+
                     if (tmp = options.secondary) {
                         span[1].style.backgroundPosition = 
                             tmp.activeState.x + 'px ' 
@@ -1386,7 +1419,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 }
             }
         }));
-        
+
         if (options && (tmp = options.primary)) {
             var span = button.$ext.getElementsByTagName("span");
             span[2].style.background = 'url("' 
@@ -1410,11 +1443,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 span[0].style.border = "1px solid #c7c7c7";
             }
         }
-        
+
         // When the page is shown, we can reset the notification count
         page.addEventListener("prop.visible", function(e) {
-//            _self.resetNotificationCount(winIdent);
-
             if (!btnLock && e.value && this.$ext.offsetWidth) // && this.parentNode.parentNode.localName == "menu") // & !_self.expanded
                 button.showMenu();
                 
