@@ -23,6 +23,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     this.$cbChange      = cbChange;
     this.$cbFindOptions = cbFindOptions;
     
+    this.$buttons = [];
+    
     var indicator = this.indicator = document.body.appendChild(document.createElement("div"));
     indicator.style.position = "absolute";
     indicator.style.display = "none";
@@ -304,7 +306,11 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         
         this.$cbChange();
     };
-    
+
+    this.pageExists = function(amlNode) {
+        return amlNode.$dockbutton ? true : false;
+    };
+
     /**
      * Show an item
      * @param {Object} amlNode
@@ -314,7 +320,44 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         //button.showMenu();
         button.dispatchEvent("mousedown", {htmlEvent: {}});
     };
+
+    /**
+     * Sets the notifications bubble to some value
+     * 
+     * @param {string} ext
+     * @param {number} value
+     */
+     this.setCounter = function(ext, value){
+        if (!this.$buttons[ext])
+            throw new Error("Could not find button for '" + ext + "'");
+
+        var button = this.$buttons[ext];
+        button.$ext.getElementsByClassName("dock_notification")[0].innerHTML = +value || "";
+    };
     
+    /**
+     * Increases the notification count
+     * 
+     * @param {string} ext
+     */
+     this.increaseNotificationCount = function(ext) {
+         if (!this.$buttons[ext])
+            throw new Error("Could not find button for '" + ext + "'");
+
+        var button = this.$buttons[ext];
+        // If the button is active, then we don't need to increase the count
+        if (button.value)
+            return;
+
+        var dockNotificationEl = button.$ext.getElementsByClassName("dock_notification");
+        var value = dockNotificationEl[0].innerHTML;
+        if (!value || value == "")
+            value = 0;
+        if (+value == 99)
+            return;
+        dockNotificationEl[0].innerHTML = ++value || "";
+     };
+
     this.$isLastBar = function(aml) {
         var last = this.$parentHBox.lastChild;
         while (last && !last.visible)
@@ -334,7 +377,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             lastBar = lastBar.bar;
            
         if (lastBar && !lastBar.visible)
-        	lastBar = lastBar.vbox;
+            lastBar = lastBar.vbox;
             
         return lastBar;
     };
@@ -384,9 +427,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             //Rest
             else {
                 var info = _self.$calcAction(e, original);
-                var aml  = last = info.aml;
+                var aml = last = info.aml;
             }
-            
+
             if (lastInfo && lastInfo.position == info.position && lastInfo.aml == aml) {
                 indicator.style.top = indicatorTop;
                 return;
@@ -857,24 +900,23 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     this.$stopDrag = function(e){
         whiledrag();
         apf.removeListener(document, "mousemove", whiledrag);
-        
-        
+
         var indicator = this.indicator;
         var info = lastInfo;//calcAction(e);
         var aml  = info && info.aml;
-        
+
         indicator.style.display = "none";
-        
+
         var original = whiledrag.dragged;
         apf.setOpacity(original.$ext, 1);
-    
+
         if (!aml) return;
         switch(info.position) {
             case "before_button":
             case "after_button":
                 var submenu = self[aml.submenu];
                 var dragAml = whiledrag.original;
-    
+
                 this.$moveTo(submenu, dragAml, aml, info.position == "before_button" 
                     ? aml 
                     : aml.nextSibling, aml.parentNode, info.position);
@@ -1211,11 +1253,11 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             var button = this.$dockbutton;
             var pNode = this.lastParent;
             var btnPNode = button.parentNode;
-        
+
             button.destroy(true, true);
-            
+
             this.removeNode();
-            
+
             if (!pNode.getPages().length) {
                 var barParent = btnPNode.parentNode;
                 if (pNode.parentNode.localName == "menu")
@@ -1239,7 +1281,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
             page.removeEventListener("beforedrag", beforeDrag);
             page.removeEventListener("afterclose", arguments.callee);
-            return false
+            return false;
         });
 
         return page;
@@ -1358,13 +1400,17 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 btnLock = true;
                 self[this.submenu].firstChild.set(page);
                 btnLock = false;
-                
+
+                // Reset the counter
+                if (options && options.ext)
+                    _self.setCounter(options.ext, 0);
+
                 if (options && (tmp = options.primary)) {
                     var span = button.$ext.getElementsByTagName("span");
                     span[2].style.backgroundPosition = 
                         tmp.activeState.x + 'px ' 
                         + tmp.activeState.y + 'px';
-            
+
                     if (tmp = options.secondary) {
                         span[1].style.backgroundPosition = 
                             tmp.activeState.x + 'px ' 
@@ -1373,7 +1419,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 }
             }
         }));
-        
+
         if (options && (tmp = options.primary)) {
             var span = button.$ext.getElementsByTagName("span");
             span[2].style.background = 'url("' 
@@ -1397,11 +1443,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 span[0].style.border = "1px solid #c7c7c7";
             }
         }
-        
+
         // When the page is shown, we can reset the notification count
         page.addEventListener("prop.visible", function(e) {
-//            _self.resetNotificationCount(winIdent);
-
             if (!btnLock && e.value && this.$ext.offsetWidth) // && this.parentNode.parentNode.localName == "menu") // & !_self.expanded
                 button.showMenu();
                 
@@ -1453,7 +1497,14 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             
             return false;
         });
-    
+
+        if (options.ext) {
+            this.$buttons[options.ext] = button;
+            button.addEventListener("DOMNodeRemovedFromDocument", function(){
+                delete _self.$buttons[options.ext];
+            });
+        }
+
         page.$dockbutton = button;
         button.$dockpage = page;
     

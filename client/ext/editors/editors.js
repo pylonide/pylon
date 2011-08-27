@@ -233,7 +233,7 @@ module.exports = ext.register("ext/editors/editors", {
                 
                 //this is very bad, should be removed
                 setTimeout(function(){
-                    editor.setState(doc, doc.state);
+                    editor.setState && editor.setState(doc, doc.state);
                 }, 1000);
             });
 
