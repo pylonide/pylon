@@ -59,11 +59,11 @@ module.exports = ext.register("ext/gittools/gittools", {
             _self.setupGitLogElements(file);
             if (!_self.gitLogs[file])
                 _self.gitLog();
-            /*if (editors.currentEditor) {
+            if (editors.currentEditor) {
                 editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr([]);
                 if (_self.originalGutterWidth)
                     editors.currentEditor.ceEditor.$editor.renderer.setGutterWidth(_self.originalGutterWidth + "px");
-            }*/
+            }
         });
     },
 
