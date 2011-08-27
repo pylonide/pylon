@@ -217,10 +217,9 @@ Ide.DEFAULT_PLUGINS = [
         var user = this.$users[username];
         if (user) {
             user.setPermissions(permissions);
-        }
-        else {
+        } else {
             user = this.$users[username] = new User(username, permissions, userData);
-            
+
             var _self = this;
             user.on("message", function(msg) {
                 if(_self.$users[msg.user.uid]) {
@@ -232,9 +231,9 @@ Ide.DEFAULT_PLUGINS = [
                 _self.workspace.execHook("disconnect", msg.user, msg.client);
             });
             user.on("disconnectUser", function(user) {
-                console.log("Running user disconnect timer...");
+                console.log("Running user disconnect timer", username);
                 _self.davServer.unmount();
-                
+
                 setTimeout(function() {
                     var now = new Date().getTime();
                     if((now - user.last_message_time) > 10000) {
@@ -243,7 +242,7 @@ Ide.DEFAULT_PLUGINS = [
                     }
                 }, 10000);
             });
-            
+
             this.onUserCountChange();
             this.emit("userJoin", user);
         }
@@ -292,7 +291,7 @@ Ide.DEFAULT_PLUGINS = [
     
     this.onUserCountChange = function() {
         this.emit("userCountChange", Object.keys(this.$users).length);
-        
+
         // TODO remove
         this.emit("clientCountChange", Object.keys(this.$users).length);
     };
@@ -306,8 +305,6 @@ Ide.DEFAULT_PLUGINS = [
     };
     
     this.sendToUser = function(username, msg) {
-        //for (var u in this.$users)
-        //    console.log("IDE USER", this.$users[u].uid, this.$users[u].clients);
         this.$users[username] && this.$users[username].broadcast(msg);
     };
     
