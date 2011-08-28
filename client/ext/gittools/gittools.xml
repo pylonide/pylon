@@ -1,9 +1,4 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <!--a:skin
-       src = "{require('text!ext/gittools/skin.xml')}"
-       media-path = "/static/style/images/"
-       icon-path  = "/static/style/icons/"
-    /-->
     <a:style><![CDATA[
         .git_log_label {
             font-weight: bold;
@@ -57,6 +52,19 @@
             -moz-border-radius: 6px;
             border-radius: 6px;
         }
+        .blameOutput {
+            font-family: Monaco, Courier New;
+            font-size: 12px;
+            padding: 10px 10px 0 10px;
+            overflow: hidden;
+            background: #e8e8e8;
+            border-right: 1px solid #7B7B7B;
+        }
+        .blameOutput div {
+            height: 16px;
+            text-align: right;
+            white-space : nowrap;
+        }
     ]]></a:style>
     <a:tab id="tabGitTools" skin="docktab" visible="false">
         <a:page caption="Git Tools">
@@ -65,7 +73,7 @@
                     <a:label id="lblGitLog"
                       class = "git_log_label"
                       caption = "File"
-                      margin = "8 5 5 5"
+                      margin = "8 0 5 5"
                       flex = "1"
                     />
                     <a:label id="lblGitRevisions"

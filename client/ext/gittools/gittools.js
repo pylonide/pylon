@@ -34,6 +34,74 @@ module.exports = ext.register("ext/gittools/gittools", {
         this.blamejs = new BlameJS();
         this.gitLogParser = new GitLogParser();
 
+        // Insert the scrolling annotation area
+        hboxMain.insertBefore(
+            new apf.vbox({ 
+                id : "gitToolsAceAnnotations",
+                visible : false,
+                width : "240",
+                anchors : "0 0 0 0",
+                childNodes : [
+                    new apf.toolbar({
+                        height  : "29",
+                        childNodes : [
+                            new apf.bar({
+                                border : "0 0 1 0",
+                                childNodes : [
+                                    new apf.button({
+                                        right : "5",
+                                        skin : "header-btn",
+                                        width : "15",
+                                        height : "15",
+                                        top : "6",
+                                        background : "big_close.png|horizontal|3|15",
+                                        onclick : "gitToolsAceAnnotations.hide();splitterAnnotations.hide()"
+                                    })
+                                ]
+                            })
+                        ]
+                    }),
+                    new apf.hbox({
+                        flex    : "1",
+                        "class" : "collab_output_container",
+                        childNodes : [
+                            new apf.text({
+                                id : "gitAnnotationsOutput",
+                                "class" : "blameOutput",
+                                flex : "1",
+                                scrolldown : "false",
+                                textselect : "true",
+                                overflow : "hidden"
+                            }),
+                            new apf.scrollbar({
+                                "for" : "gitAnnotationsOutput",
+                                id : "scrollAnnotationsOutput",
+                                skin : "sbios",
+                                width : "0",
+                                overflow : "auto",
+                                style : "visibility: hidden"
+                            })
+                        ]
+                    })
+                ]
+            }),
+            colMiddle
+        );
+
+        hboxMain.insertBefore(
+            new apf.splitter({
+                width : "0",
+                id : "splitterAnnotations",
+                visible : false
+            }),
+            colMiddle
+        );
+
+        gitAnnotationsOutput.addEventListener("scroll", this.annotationsScroll);
+
+        this.layerConfig = editors.currentEditor.ceEditor.$editor.renderer.layerConfig;
+
+        // Add to the right panel dock bar
         dock.register(this.name, "Git Tools", {
             menu : "Tools/Git Tools",
             primary : {
@@ -55,7 +123,20 @@ module.exports = ext.register("ext/gittools/gittools", {
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
+        // Handle scroll event from Ace
+        function aceScroll(e) {
+            // APF takes a percentage value btwn 0 and 1 and Ace gives us an integer
+            var percentage = e.data / (_self.layerConfig.maxHeight - _self.layerConfig.height);
+            // Set the scrollbar position, second argument prevents an event from dispatching
+            scrollAnnotationsOutput.setPosition(percentage, true);
+        }
+
+        // Listen for the scroll event from Ace's scrollbar
+        editors.currentEditor.ceEditor.$editor.renderer.scrollBar.addEventListener("scroll", aceScroll);
+
+        // Detect when the user switches tabs
         tabEditors.addEventListener("afterswitch", function (e) {
+            _self.layerConfig = editors.currentEditor.ceEditor.$editor.renderer.layerConfig;
             _self.currentFile = _self.getFilePath(e.previous);
             if (_self.fileData[_self.currentFile] && _self.fileData[_self.currentFile].gitLog.currentLogData.length === 0) {
                 _self.fileData[_self.currentFile].gitLog.currentLogData = _self.fileData[_self.currentFile].gitLog.logData;
@@ -73,7 +154,11 @@ module.exports = ext.register("ext/gittools/gittools", {
                 _self.resetAceGutter();
         });
     },
-    
+
+    annotationsScroll : function(e) {
+        editors.currentEditor.ceEditor.$editor.renderer.scrollBar.setScrollTop(e.scrollPos);
+    },
+
     resetAceGutter : function() {
         if (editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationText)
             editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationText([]);
@@ -186,14 +271,10 @@ module.exports = ext.register("ext/gittools/gittools", {
                         "Currently Offline",
                         "This operation could not be completed because you are offline."
                     );
-                }
-                else {
+                } else {
                     ide.socket.send(JSON.stringify(data));
-                    if (!this.originalGutterWidth)
-                        this.originalGutterWidth = editors.currentEditor.ceEditor.$editor.renderer.getGutterWidth();
-
-                    // Set gutter width, arbitrary number based on 12/13px font
-                    editors.currentEditor.ceEditor.$editor.renderer.setGutterWidth("265px");
+                    gitToolsAceAnnotations.show();
+                    splitterAnnotations.show();
                 }
             }
         }
@@ -419,8 +500,24 @@ module.exports = ext.register("ext/gittools/gittools", {
             }
         }
 
-        editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationText(textHash);
-        editors.currentEditor.ceEditor.$editor.renderer.updateFull();
+        // @TODO there's really no need for this to be in a separate loop
+        this.layerConfig = editors.currentEditor.ceEditor.$editor.renderer.layerConfig;
+        var numLines = this.layerConfig.maxHeight / this.layerConfig.lineHeight;
+        var output = "";
+
+        for (var i = 0; i < numLines; i++) {
+            output += '<div';
+
+            if (textHash[i]) {
+                output += ' title="' + textHash[i].title + '">' + textHash[i].text;
+            } else {
+                output += ">&nbsp;";
+            }
+
+            output += '</div>';
+        }
+
+        gitAnnotationsOutput.setValue(output);
     },
 
     searchFilter : function(value) {
