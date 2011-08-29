@@ -87,10 +87,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 ]
             }))
         );
-        
-        this.hotitems["closetab"]      = [this.nodes[1]];
-        this.hotitems["closealltabs"]  = [this.nodes[2]];
-        this.hotitems["closeallbutme"] = [this.nodes[3]];
+        this.hotitems["closetab"]      = [this.nodes[0]];
+        this.hotitems["closealltabs"]  = [this.nodes[1]];
+        this.hotitems["closeallbutme"] = [this.nodes[2]];
 
         tabEditors.setAttribute("contextmenu", "mnuContextTabs");
 
@@ -128,6 +127,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     closetab: function(page) {
         if (!page)
             page = tabEditors.getPage();
+
         if (page)
             tabEditors.remove(page);
         return false;
@@ -144,7 +144,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 return;
             
             pages.each(function(page){
-                page.$at.undo(-1);
+                //page.$at.undo(-1);
                 _self.removeItem(page);
                 tabs.remove(page, true);
             });
@@ -162,13 +162,13 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             if (pages[i] == page) continue;
             set.push(pages[i]);
         }
-        
+
         save.saveAllInteractive(set, function(all){
             if (all == -100) //Cancel
                 return;
             
             set.each(function(page){
-                page.$at.undo(-1);
+                //page.$at.undo(-1);
                 _self.removeItem(page);
                 tabs.remove(page, true);
             });
