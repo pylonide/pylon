@@ -56,7 +56,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                 break;
                 case 27: //ESCAPE
                     _self.toggleDialog(-1);
-                    console.log(e);
                     if (e.htmlEvent)
                         apf.stopEvent(e.htmlEvent)
                     else if (e.stop)
