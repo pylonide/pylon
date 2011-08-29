@@ -48,6 +48,11 @@ return keys.onLoad({
             "newfile": "Ctrl-N",
             "newfolder": "Ctrl-Shift-N"
         },
+        "quicksearch": {
+            "find": "Ctrl-F",
+            "findnext": "Ctrl-K",
+            "findprevious": "Ctrl-Shift-K"
+        },
         "searchreplace" : {
             "search": "Ctrl-Shift-F",
             "searchreplace": "Ctrl-Shift-R"

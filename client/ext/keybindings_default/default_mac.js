@@ -47,6 +47,11 @@ return keys.onLoad({
             "newfile": "Command-N",
             "newfolder": "Command-Shift-N"
         },
+        "quicksearch": {
+            "find": "Command-F",
+            "findnext": "Command-G",
+            "findprevious": "Command-Shift-G"
+        },
         "searchreplace" : {
             "search": "Command-Shift-F",
             "searchreplace": "Command-Shift-R"
