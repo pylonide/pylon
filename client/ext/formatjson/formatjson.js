@@ -34,10 +34,10 @@ module.exports = ext.register("ext/formatjson/formatjson", {
         var doc   = editor.getDocument();
         var range = sel.getRange();
         var value = doc.getTextRange(range);
-        try{
+        try {
             value = JSON.stringify(JSON.parse(value), null, indent);
         }
-        catch(e){
+        catch (e) {
             util.alert(
                 "Invalid JSON", 
                 "The selection contains an invalid or incomplete JSON string",

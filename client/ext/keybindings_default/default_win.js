@@ -42,11 +42,16 @@ return keys.onLoad({
             "beautify": "Ctrl-Shift-B"
         },
         "gotofile": {
-            "gotofile": "Alt-Shift-R|Ctrl-T"
+            "gotofile": "Alt-Shift-R"
         },
         "newresource": {
             "newfile": "Ctrl-N",
             "newfolder": "Ctrl-Shift-N"
+        },
+        "quicksearch": {
+            "find": "Ctrl-F",
+            "findnext": "Ctrl-K",
+            "findprevious": "Ctrl-Shift-K"
         },
         "searchreplace" : {
             "search": "Ctrl-Shift-F",
