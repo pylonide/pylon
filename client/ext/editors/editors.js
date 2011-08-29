@@ -444,8 +444,11 @@ module.exports = ext.register("ext/editors/editors", {
                     doc = ide.createDocument(nodes[i]);
                     
                     var state = nodes[i].getAttribute("state");
-                    if (state)
-                        doc.state = apf.unserialize(state);
+                    try {
+                        if (state)
+                            doc.state = JSON.parse(state);
+                    }
+                    catch (ex) {}
                     
                     ide.dispatchEvent("openfile", {
                         doc    : doc,

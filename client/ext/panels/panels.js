@@ -150,13 +150,16 @@ module.exports = ext.register("ext/panels/panels", {
         ide.addEventListener("loadsettings", function(e){
             var strSettings = e.model.queryValue("auto/panel");
             if (strSettings) {
-                _self.$settings = apf.unserialize(strSettings);
+                try {
+                    _self.$settings = JSON.parse(strSettings);
                 
-                var panelExt;
-                for (var path in _self.$settings) {
-                    if ((panelExt = _self.panels[path]) && panelExt.panel)
-                        _self.setPanelSettings(panelExt, _self.$settings[path]);
+                    var panelExt;
+                    for (var path in _self.$settings) {
+                        if ((panelExt = _self.panels[path]) && panelExt.panel)
+                            _self.setPanelSettings(panelExt, _self.$settings[path]);
+                    }
                 }
+                catch (ex) {}
             }
         });
 

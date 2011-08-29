@@ -93,10 +93,13 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             
             var settings = _self.defaultState;
             if (strSettings) {
-                var objSettings = apf.unserialize(strSettings);
-                
-                settings = objSettings.state;
-                apf.extend(_self.sections, objSettings.hidden);
+                // JSON parse COULD fail
+                try {
+                    var objSettings = JSON.parse(strSettings);
+                    settings = objSettings.state;
+                    apf.extend(_self.sections, objSettings.hidden);
+                }
+                catch (ex) {}
             }
             
             _self.layout.loadState(_self.defaultState);
