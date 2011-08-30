@@ -330,10 +330,16 @@ module.exports = ext.register("ext/tree/tree", {
             var strSettings = model.queryValue("auto/tree");
             if (strSettings) {
                 _self.loading = true;
-                _self.currentSettings = apf.unserialize(strSettings);
+                try {
+                    _self.currentSettings = JSON.parse(strSettings);
+                }
+                catch (ex) {
+                    //fail! revert to default
+                    _self.currentSettings = [];
+                }
                 
                 //Unstable - temporary fix
-                try{
+                try {
                     if (!trFiles.xmlRoot) {
                         trFiles.addEventListener("afterload", function(){
                             trFiles.expandList(_self.currentSettings, function(){
@@ -343,9 +349,8 @@ module.exports = ext.register("ext/tree/tree", {
                             
                             trFiles.removeEventListener("load", arguments.callee);
                             
-                            if(trFiles.$model.queryNodes('/data//node()').length <= 1) {
+                            if (trFiles.$model.queryNodes('/data//node()').length <= 1)
                                 trFiles.expandAll();
-                            }
                         });
                     }
                     else {
@@ -354,14 +359,14 @@ module.exports = ext.register("ext/tree/tree", {
                             treeSelect();
                         });
                     }
-                }catch(err){
+                }
+                catch (err){
                     model.setQueryValue("auto/tree/text()", "");
                 }
             }
             else {
-                if(trFiles.$model.queryNodes('/data//node()').length <= 1) {
+                if (trFiles.$model.queryNodes('/data//node()').length <= 1)
                     trFiles.expandAll();
-                }
             }
         });
 

@@ -41,11 +41,16 @@ return keys.onLoad({
             "beautify": "Command-Shift-B"
         },
         "gotofile": {
-            "gotofile": "Alt-Shift-R|Command-T"
+            "gotofile": "Alt-Shift-R"
         },
         "newresource": {
             "newfile": "Command-N",
             "newfolder": "Command-Shift-N"
+        },
+        "quicksearch": {
+            "find": "Command-F",
+            "findnext": "Command-G",
+            "findprevious": "Command-Shift-G"
         },
         "searchreplace" : {
             "search": "Command-Shift-F",

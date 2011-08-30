@@ -109,9 +109,10 @@ define(function(require, exports, module) {
             var options = {
                 rememberTransport: false,
                 transports:  ["xhr-polling"],
-                connectTimeout: 5000,
                 reconnect: false,
-                transportOptions: {
+                "connect timeout": 500,
+                "try multiple transports": false,
+                "transport options": {
                     "xhr-polling": {
                         timeout: 60000
                     },
@@ -120,7 +121,7 @@ define(function(require, exports, module) {
                     }
                 }
             };
-
+            
             ide.socketConnect = function() {
                 clearInterval(ide.$retryTimer);
 
@@ -140,9 +141,9 @@ define(function(require, exports, module) {
                         ide.dispatchEvent("socketDisconnect");
 
                     var sock = ide.socket.socket;
-                    if (!sock.connecting && !ide.testOffline && ide.loggedIn)
+                    if (!sock.connecting && !sock.reconnecting && !ide.testOffline && ide.loggedIn)
                         sock.reconnect();
-                }, 500);
+                }, 1000);
             };
 
             ide.socketMessage = function(message) {
@@ -163,8 +164,9 @@ define(function(require, exports, module) {
             
             // for unknown reasons io is sometimes undefined
             try {
-                ide.socket = new io.connect(null, options);
-            } catch (e) {
+                ide.socket = io.connect(null, options);
+            }
+            catch (e) {
                 util.alert(
                     "Error starting up",
                     "Error starting up the IDE", "There was an error starting up the IDE.<br>Please clear your browser cache and reload the page.",
