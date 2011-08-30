@@ -32,7 +32,7 @@ module.exports = ext.register("ext/ftp/ftp", {
     groupList : ["owner", "group", "public"],
     permissionList : ["read", "write", "execute"],
 
-    hook : function(){
+    hook: function(){
         ext.initExtension(this);
 
         // hack to hide the dock panel!!
@@ -43,10 +43,9 @@ module.exports = ext.register("ext/ftp/ftp", {
         //trFiles.setAttribute("multiselect", false);
     },
 
-    init : function(amlNode){
+    init: function(amlNode) {
         apf.importCssString((this.css || ""));
 
-        // console
         if (!this.$panel) {
             tabConsole.remove("console"); // remove Console tab
             tabConsole.remove("output"); // remove Output tab
@@ -57,8 +56,6 @@ module.exports = ext.register("ext/ftp/ftp", {
             this.$panel.appendChild(ftpConsoleHbox);
             tabConsole.set(this.$panel);
         }
-
-        console.log("FTP CLIENT PLUGIN STARTED");
 
         // filetree contextmenu, disabled for now
         /*
@@ -72,7 +69,7 @@ module.exports = ext.register("ext/ftp/ftp", {
         */
     },
 
-    log : function(msg, type, code){
+    log: function(msg, type, code) {
         if (!tabConsole.visible)
             ideConsole.enable();
 
@@ -113,8 +110,10 @@ module.exports = ext.register("ext/ftp/ftp", {
     write: function(aLines) {
         if (typeof aLines == "string")
             aLines = aLines.split("\n");
-        for (var i = 0, l = aLines.length; i < l; ++i)
-            this.log(aLines[i], "log");
+
+        aLines.forEach(function(line) {
+            this.log(line, "log")
+        });
         //this.log("", "divider");
     },
 
@@ -195,7 +194,8 @@ module.exports = ext.register("ext/ftp/ftp", {
      *
      */
     updatePermissionCheckbox: function(groupType, permissionType, checked) {
-        apf.xmldb.setAttribute(mdlFilePermissions.queryNode("group[@type=\"" + groupType + "\"]/permission[@type=\"" + permissionType + "\"]"), "checked", checked ? "1": "0");
+        apf.xmldb.setAttribute(mdlFilePermissions.queryNode(
+            "group[@type=\"" + groupType + "\"]/permission[@type=\"" + permissionType + "\"]"), "checked", checked ? "1": "0");
 
         var permissions = this.getPermissions();
         this.parsePermissions(permissions, true);
