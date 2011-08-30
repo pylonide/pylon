@@ -3912,10 +3912,10 @@ if(posAbs&&we&&typeof change.l!="undefined"){oHtml.style.left=(l=max((lMin-_self
 }if(typeof change.w!="undefined"){oHtml.style.width=(w=min(_self.maxwidth-hordiff,max(hordiff,_self.minwidth,change.w)-hordiff))+"px";
 }if(typeof change.h!="undefined"){oHtml.style.height=(h=min(_self.maxheight-verdiff,max(verdiff,_self.minheight,change.h)-verdiff))+"px";
 }}if(apf.hasSingleRszEvent){apf.layout.forceResize(_self.$int);}}function getResizeType(x,y){var cursor="",tcursor="";
-posAbs="absolute|fixed".indexOf(apf.getStyle(_self.$ext,"position"))>-1;if(_self.resizable==true||_self.resizable=="vertical"){if(y<rszborder+marginBox[0]){cursor=posAbs?"n":"";
-}else{if(y>this.offsetHeight-rszborder){cursor="s";}else{if(y>this.offsetHeight-rszcorner){tcursor="s";
-}}}}if(_self.resizable==true||_self.resizable=="horizontal"){if(x<(cursor?rszcorner:rszborder)+marginBox[0]){cursor+=tcursor+(posAbs?"w":"");
-}else{if(x>this.offsetWidth-(cursor||tcursor?rszcorner:rszborder)){cursor+=tcursor+"e";
+posAbs="absolute|fixed".indexOf(apf.getStyle(_self.$ext,"position"))>-1;if(_self.resizable==true||_self.resizable=="vertical"||_self.resizable.indexOf("top")>-1||_self.resizable.indexOf("bottom")>-1){if(y<rszborder+marginBox[0]&&_self.resizable.indexOf("top")>-1){cursor=posAbs?"n":"";
+}else{if(y>this.offsetHeight-rszborder&&_self.resizable.indexOf("bottom")>-1){cursor="s";
+}}}if(_self.resizable==true||_self.resizable=="horizontal"||_self.resizable.indexOf("left")>-1||_self.resizable.indexOf("right")>-1){if(x<(cursor?rszcorner:rszborder)+marginBox[0]&&_self.resizable.indexOf("left")>-1){cursor+=tcursor+(posAbs?"w":"");
+}else{if(x>this.offsetWidth-(cursor||tcursor?rszcorner:rszborder)&&_self.resizable.indexOf("right")>-1){cursor+=tcursor+"e";
 }}}return cursor;}var originalCursor;function resizeIndicate(e){if(!e){e=event;
 }if(!_self.resizable||_self.editable||document.onmousemove){return;}var pos=apf.getAbsolutePosition(_self.$ext),sLeft=0,sTop=0,x=e.clientX-pos[0]+sLeft+document.documentElement.scrollLeft,y=e.clientY-pos[1]+sTop+document.documentElement.scrollTop;
 if(!originalCursor){originalCursor=apf.getStyle(this,"cursor");}var cursor=getResizeType.call(_self.$ext,x,y);
