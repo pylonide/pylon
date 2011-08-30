@@ -33,7 +33,11 @@ exports.main = function(options) {
 
         var socketIo = IO.listen(server);
         socketIo.enable("browser client minification");
-        socketIo.set("log level", 2);
+        socketIo.set("log level", 1);
+        socketIo.set("close timeout", 7);
+        socketIo.set("heartbeat timeout", 2.5);
+        socketIo.set("heartbeat interval", 5);
+        socketIo.set("polling duration", 5);
         socketIo.sockets.on("connection", function(client) {
             ide.addUser(uid, User.OWNER_PERMISSIONS);
             ide.addClientConnection(uid, client, null);
