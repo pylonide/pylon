@@ -48,6 +48,11 @@ module.exports = ext.register("ext/gittools/gittools", {
                                 border : "0 0 1 0",
                                 height : "30",
                                 childNodes : [
+                                    new apf.label({
+                                        caption : "Git Blame",
+                                        margin : "6 0 5 5",
+                                        style : "font-size: 12px;font-weight:bold;color:#666"
+                                    }),
                                     new apf.button({
                                         right : "5",
                                         skin : "header-btn",
@@ -63,7 +68,6 @@ module.exports = ext.register("ext/gittools/gittools", {
                     }),
                     new apf.hbox({
                         flex    : "1",
-                        "class" : "collab_output_container",
                         childNodes : [
                             new apf.text({
                                 id : "gitAnnotationsOutput",
@@ -76,8 +80,9 @@ module.exports = ext.register("ext/gittools/gittools", {
                             new apf.scrollbar({
                                 "for" : "gitAnnotationsOutput",
                                 id : "scrollAnnotationsOutput",
-                                skin : "sbios",
                                 width : "0",
+                                padding : "0 0 0 0",
+                                margin : "0 0 0 0",
                                 overflow : "auto",
                                 style : "visibility: hidden"
                             })
@@ -92,7 +97,8 @@ module.exports = ext.register("ext/gittools/gittools", {
             new apf.splitter({
                 width : "0",
                 id : "splitterAnnotations",
-                visible : false
+                visible : false,
+                style : "border-right: 1px solid #7B7B7B"
             }),
             colMiddle
         );
@@ -128,13 +134,15 @@ module.exports = ext.register("ext/gittools/gittools", {
         }
         this.aceScrollbar.addEventListener("scroll", onAceScroll);
 
-        // Detect when the user switches tabs
-        tabEditors.addEventListener("afterswitch", function (e) {
-            _self.currentFile = _self.getFilePath(e.previous);
-
-            if (_self.fileData[_self.currentFile] && _self.fileData[_self.currentFile].gitLog.currentLogData.length === 0) {
-                _self.fileData[_self.currentFile].gitLog.currentLogData = _self.fileData[_self.currentFile].gitLog.logData;
+        function initiateCurrentFile(doc) {
+            var currentFile = _self.getFilePath();
+            if (_self.currentFile && _self.currentFile == currentFile) {
+                console.log("nope!");
+                return;
             }
+
+            var lastFile = _self.currentFile;
+            _self.currentFile = currentFile;
 
             tboxGitToolsFilter.setValue(
                 _self.fileData[_self.currentFile] ?
@@ -143,32 +151,56 @@ module.exports = ext.register("ext/gittools/gittools", {
             );
 
             _self.setGitLogState(_self.currentFile);
-
+            _self.restoreGitAnnotationsOutput("");
+            
             if (_self.fileData[_self.currentFile]) {
-                if (_self.fileData[_self.currentFile].lastGitBlameAnnotation)
-                    _self.restoreGitAnnotationsOutput(_self.fileData[_self.currentFile].lastGitBlameAnnotation);
+                if (_self.fileData[_self.currentFile].gitLog.currentLogData.length === 0)
+                    _self.fileData[_self.currentFile].gitLog.currentLogData = _self.fileData[_self.currentFile].gitLog.logData;
+
                 if (_self.fileData[_self.currentFile].showAnnotations) {
-                    _self.showAnnotations();
+                    _self.showAnnotations(function() {
+                        if (_self.fileData[_self.currentFile].lastGitBlameAnnotation) {
+                            _self.restoreGitAnnotationsOutput(_self.fileData[_self.currentFile].lastGitBlameAnnotation);
+                        }
+                    });
                 } else {
-                    _self.hideAnnotations();
+                    _self.hideAnnotations(lastFile);
                 }
             } else {
                 _self.setupFileData(_self.currentFile);
                 _self.gitLog();
-                _self.hideAnnotations();
+                _self.hideAnnotations(lastFile);
             }
 
-            _self.fileData[_self.currentFile].layerConfig = editors.currentEditor.ceEditor.$editor.renderer.layerConfig;
+            if (doc) {
+                _self.fileData[_self.currentFile].numLines = doc.getLength();
+            } else {
+                var layerConfig = editors.currentEditor.ceEditor.$editor.renderer.layerConfig;
+                _self.fileData[_self.currentFile].numLines = layerConfig.maxHeight / layerConfig.lineHeight;
+            }
+        }
 
-            //if (editors.currentEditor)
-            //    _self.resetAceGutter();
+        // We're already initiailized
+        if (ide.onLine)
+            initiateCurrentFile();
+
+        // Detect when Ace changes session (i.e. when user switches file tabs)
+        editors.currentEditor.ceEditor.$editor.addEventListener("changeSession", function(e) {
+            // allow the tab editors to switch also, before we initiate the current file
+            setTimeout(function() {
+                initiateCurrentFile(e.session.doc.doc);
+            });
         });
     },
 
     aceScroll : function(pos) {
+        if (!this.fileData[this.currentFile] || !this.fileData[this.currentFile].numLines)
+            return;
+
         // APF takes a percentage value btwn 0 and 1 and pos is an integer
-        var percentage = pos / (this.fileData[this.currentFile].layerConfig.maxHeight
-            - this.fileData[this.currentFile].layerConfig.height);
+        var layerConfig = editors.currentEditor.ceEditor.$editor.renderer.layerConfig;
+        var percentage = pos / (layerConfig.maxHeight - layerConfig.height);
+
         // Set the scrollbar position, second argument prevents an event from dispatching
         scrollAnnotationsOutput.setPosition(percentage, true);
     },
@@ -192,33 +224,67 @@ module.exports = ext.register("ext/gittools/gittools", {
         };
     },
 
-    /**
-     * @TODO defunct
-     */
-    resetAceGutter : function() {
-        /*if (editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationText)
-            editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationText([]);
-        if (this.originalGutterWidth)
-            editors.currentEditor.ceEditor.$editor.renderer.setGutterWidth(this.originalGutterWidth + "px");
-        */
-    },
-
-    showAnnotations : function() {
+    showAnnotations : function(callback) {
         gitToolsAceAnnotations.show();
         splitterAnnotations.show();
+        
+        var currentWidth = gitToolsAceAnnotations.getWidth();
+        var width = this.fileData[this.currentFile].annotationsWidth
+            ? this.fileData[this.currentFile].annotationsWidth : 240;
+
+        apf.tween.single(gitToolsAceAnnotations, {
+            type     : "width",
+            anim     : apf.tween.easeInOutCubic,
+            from     : currentWidth,
+            to       : width,
+            steps    : 15,
+            interval : 5,
+            control  : (this.control = {}),
+            oneach : function(){
+                apf.layout.forceResize(gitToolsAceAnnotations.$ext.parentNode);
+            },
+            onfinish : function() {
+                if (callback)
+                    callback();
+                window.onresize();
+            }
+        });
+
+        this.fileData[this.currentFile].showAnnotations = true;
     },
 
-    hideAnnotations : function() {
-        gitToolsAceAnnotations.hide();
-        splitterAnnotations.hide();
-        
+    hideAnnotations : function(lastFile) {
+        var currentWidth = gitToolsAceAnnotations.getWidth();
+        if (currentWidth) {
+            if (lastFile)
+                this.fileData[lastFile].annotationsWidth = currentWidth;
+            else
+                this.fileData[this.currentFile].annotationsWidth = currentWidth;
+
+            apf.tween.single(gitToolsAceAnnotations, {
+                type     : "width",
+                anim     : apf.tween.easeInOutCubic,
+                from     : currentWidth,
+                to       : 0,
+                steps    : 10,
+                interval : 5,
+                control  : (this.control = {}),
+                oneach : function(){
+                    apf.layout.forceResize(gitToolsAceAnnotations.$ext.parentNode);
+                },
+                onfinish : function() {
+                    apf.layout.forceResize(gitToolsAceAnnotations.$ext.parentNode);
+                    window.onresize();
+                }
+            });
+        }
+
         // Set state so we can reload state after the user switches tabs
         this.fileData[this.currentFile].showAnnotations = false;
     },
 
-    getFilePath : function(filePath) {
-        if (typeof filePath === "undefined")
-            filePath = tabEditors.getPage().$model.data.getAttribute("path");
+    getFilePath : function() {
+        filePath = tabEditors.getPage().$model.data.getAttribute("path");
         if (filePath.indexOf("/workspace/") === 0)
             filePath = filePath.substr(11);
 
@@ -279,9 +345,6 @@ module.exports = ext.register("ext/gittools/gittools", {
         }
     },
 
-    /**
-     * @TODO REFACTOR
-     */
     gitBlame : function() {
         var data = {
             command : this.command,
@@ -307,7 +370,6 @@ module.exports = ext.register("ext/gittools/gittools", {
                     );
                 } else {
                     ide.socket.send(JSON.stringify(data));
-                    this.fileData[this.currentFile].showAnnotations = true;
                     this.showAnnotations();
                 }
             }
@@ -487,7 +549,7 @@ module.exports = ext.register("ext/gittools/gittools", {
 
     loadFileRevision : function() {
         var file = this.getFilePath();
-        this.resetAceGutter();
+        this.hideAnnotations();
 
         // If the slider value is out of the bounds of the current commit data, then we know
         // the user is loading the most recent (possibly uncommitted) revision of the file
@@ -535,12 +597,9 @@ module.exports = ext.register("ext/gittools/gittools", {
         }
 
         // @TODO there's really no need for this to be in a separate loop
-        var numLines = this.fileData[file].layerConfig.maxHeight 
-            / this.fileData[file].layerConfig.lineHeight;
         var output = "";
 
-        console.log(numLines);
-        for (var i = 0; i < numLines; i++) {
+        for (var i = 0; i < this.fileData[file].numLines; i++) {
             output += "<div";
 
             if (textHash[i]) {
