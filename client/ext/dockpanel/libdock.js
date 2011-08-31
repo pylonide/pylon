@@ -1084,7 +1084,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             pinned     : "true",
             animate    : "false",
             skin       : "dockwindowbasic",
-            resizable  : "true",
+            resizable  : "left bottom",
             dock       : 1,
             ondisplay  : function(){
                 if (_self.$currentMenu && _self.$currentMenu != this)
