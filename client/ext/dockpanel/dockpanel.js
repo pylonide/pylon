@@ -165,14 +165,69 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             }
         }));
     },
-
+    
+    $filterPositionedButtons : function(def) {
+        function searchSection(section) {
+            var buttons = section.buttons;
+            for (var button, i = buttons.length; i >= 0; i--) {
+                if (checkButton(buttons[i]))
+                    delete buttons[i];
+            }
+            
+            return !buttons.length;
+        }
+        
+        function checkButton(button){
+            if (button.position) {
+                var section = this.layout.$findSection(button.position);
+                if (section) {
+                    randomAccessButtons.unshift(button);
+                    button.refSection = section;
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        var randomAccessButtons = [];
+        if (def.sections) {
+            var sections = def.sections;
+            for (var section, j = sections.length; j >= 0; j--) {
+                if (searchSection(sections[j]))
+                    delete sections[j];
+            }
+            if (!sections.length)
+                def = false;
+        }
+        else if (def.buttons) {
+            if (searchSection(def))
+                def = false;
+        }
+        else {
+            if (checkButton(def))
+                def = false;
+        }
+        
+        for (var i = 0; i < randomAccessButtons.length; i++) {
+            this.layout.addButtonToSection(randomAccessButtons[i]);
+        }
+        
+        return def;
+    },
+    
     addDockable : function(def){
+        //See if we have positioned buttons
+        def = this.$filterPositionedButtons(def);
+        if (!def)
+            return;
+        
         if (this.loaded) {
             this.layout.addItem(def);
             return;
         }
         
         var state = this.defaultState;
+        //Add a bar
         if (def.sections) {
             state.bars.push(def);
             return;
@@ -191,9 +246,11 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             state.bars[0] = {expanded: false, width: 200, sections: []};
 
         var bar = state.bars[0];
+        //Add a section
         if (def.buttons) {
             bar.sections.push(def);
         }
+        //Add a button
         else {
             bar.sections.push({
                 flex    : 2,
@@ -211,43 +268,9 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
      * 
      * @param {array} ext Identifier
      */
-    increaseNotificationCount: function(ext){
-        this.layout.increaseNotificationCount(ext);
+    setCounter: function(ext, value){
+        this.layout.setCounter(ext, value);
     },
-
-    /**
-     * Resets the notification count to 0
-     */
-    resetNotificationCount: function(windowIdent){
-        if(windowIdent == -1) return;
-
-        for(var doi = 0; doi < this.dockObjects.length; doi++) {
-            if(this.dockObjects[doi].ident == windowIdent) {
-                this.dockObjects[doi].notCount = 0;
-                this.updateNotificationElement(this.dockObjects[doi].btn, 0);
-                return true;
-            }
-        }
-        
-        return false;
-    },
-    
-    /**
-     * Updates the notification element to visually reflect notCount
-     */
-    updateNotificationElement: function(btnObj, count){
-        if(count == 0)
-            var countInner = "";
-        else
-            var countInner = count;
-
-        if(apf.isGecko)
-            btnObj.$ext.getElementsByClassName("dock_notification")[0].textContent = countInner;
-        else
-            btnObj.$ext.getElementsByClassName("dock_notification")[0].innerText = countInner;
-
-        return true;
-    }
 });
 
     }

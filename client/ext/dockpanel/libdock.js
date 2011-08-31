@@ -325,28 +325,13 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         button.$ext.getElementsByClassName("dock_notification")[0].innerHTML = +value || "";
     };
     
-    /**
-     * Increases the notification count
-     * 
-     * @param {string} ext
-     */
-     this.increaseNotificationCount = function(ext) {
-         if (!this.$buttons[ext])
-            throw new Error("Could not find button for '" + ext + "'");
-
-        var button = this.$buttons[ext];
-        // If the button is active, then we don't need to increase the count
-        if (button.value)
-            return;
-
-        var dockNotificationEl = button.$ext.getElementsByClassName("dock_notification");
-        var value = dockNotificationEl[0].innerHTML;
-        if (!value || value == "")
-            value = 0;
-        if (+value == 99)
-            return;
-        dockNotificationEl[0].innerHTML = ++value || "";
-     };
+    this.$findSection = function(sections){
+        for (var btn, i = 0; i < sections.length; i++) {
+            if (btn = this.$buttons[sections[i]]) {
+                return btn.parentNode;
+            }
+        }
+    }
 
     this.$isLastBar = function(aml) {
         var last = this.$parentHBox.lastChild;
@@ -1136,6 +1121,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         menu.show();
         menu.hide();
         
+        section.menu = menu;
+        
         return menu;
     }
     
@@ -1360,6 +1347,19 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         });
         
         return section;
+    }
+    
+    this.addButtonToSection = function(section, options) {
+        var button = this.$addButton(section, section.menu, 
+            this.$addPage(
+                this.$cbFindPage(options.ext), 
+                section.menu, 
+                options.caption, 
+                options.caption && options.caption.toLowerCase() || ""
+            ), apf.extend(options, this.$cbFindOptions(options.ext) || {})
+        );
+        
+        button.$dockData = options;
     }
     
     /**
