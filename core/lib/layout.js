@@ -216,8 +216,8 @@ apf.layout = {
                 this.activateRules(obj);
             }
 
-             if (apf.hasSingleRszEvent && window.onresize)
-                window.onresize();
+             if (apf.hasSingleRszEvent && apf.layout.$onresize)
+                apf.layout.$onresize();
             return;
         }
 
@@ -278,7 +278,7 @@ apf.layout = {
             if (!no_exec)
                 f();
 
-            if (!window.onresize) {
+            if (!apf.layout.$onresize) {
                 /*var f = apf.layout.onresize;
                 window.onresize = function(){
                     var s = [];
@@ -307,9 +307,9 @@ apf.layout = {
                     }
                 }
                 
-                window.onresize = function(){
+                apf.addListener(window, "resize", apf.layout.$onresize = function(){
                     rsz(apf.layout.onresize);
-                }
+                });
             }
         }
     },
@@ -320,7 +320,7 @@ apf.layout = {
      */
     forceResize : function(oHtml){
         if (apf.hasSingleRszEvent)
-            return window.onresize && window.onresize();
+            return apf.layout.$onresize && apf.layout.$onresize();
 
         /* @todo this should be done recursive, old way for now
         apf.hasSingleRszEvent
@@ -389,8 +389,8 @@ apf.layout = {
             else
                 delete this.onresize[htmlId];
 
-            if (window.onresize)
-                window.onresize();
+            if (apf.layout.$onresize)
+                apf.layout.$onresize();
 
             this.paused[this.getHtmlId(oHtml)] = null;
         }

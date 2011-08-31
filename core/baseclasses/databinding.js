@@ -799,8 +799,11 @@ apf.DataBinding = function(){
      * @private
      */
     this.$hasLoadStatus = function(xmlNode, state, unique){
+        if (!xmlNode)
+            return false;
         var ostatus = xmlNode.getAttribute("a_loaded");
-        if (!ostatus) return false;
+        if (!ostatus)
+            return false;
     
         var group  = this.loadgroup || "default";
         var re     = new RegExp("\\|" + (state || "\\w+") + ":" + group + ":" + (unique ? this.$uniqueId : "\\d+") + "\\|");
