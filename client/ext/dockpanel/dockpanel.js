@@ -167,19 +167,20 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
     },
     
     $filterPositionedButtons : function(def) {
+        var _self = this;
         function searchSection(section) {
             var buttons = section.buttons;
-            for (var button, i = buttons.length; i >= 0; i--) {
-                if (checkButton(buttons[i]))
-                    delete buttons[i];
+            for (var button, i = buttons.length - 1; i >= 0; i--) {
+                if (checkButton(buttons[i])) {
+                    buttons.length--;
+                }
             }
-            
             return !buttons.length;
         }
         
         function checkButton(button){
             if (button.position) {
-                var section = this.layout.$findSection(button.position);
+                var section = _self.layout.$findSection(button.position);
                 if (section) {
                     randomAccessButtons.unshift(button);
                     button.refSection = section;
@@ -192,9 +193,9 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         var randomAccessButtons = [];
         if (def.sections) {
             var sections = def.sections;
-            for (var section, j = sections.length; j >= 0; j--) {
+            for (var section, j = sections.length - 1; j >= 0; j--) {
                 if (searchSection(sections[j]))
-                    delete sections[j];
+                    sections.length--;
             }
             if (!sections.length)
                 def = false;

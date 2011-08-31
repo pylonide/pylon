@@ -297,10 +297,6 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         this.$cbChange();
     };
 
-    this.pageExists = function(amlNode) {
-        return amlNode.$dockbutton ? true : false;
-    };
-
     /**
      * Show an item
      * @param {Object} amlNode
@@ -319,7 +315,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
      */
      this.setCounter = function(ext, value){
         if (!this.$buttons[ext])
-            throw new Error("Could not find button for '" + ext + "'");
+            return;
 
         var button = this.$buttons[ext];
         button.$ext.getElementsByClassName("dock_notification")[0].innerHTML = +value || "";
@@ -1220,7 +1216,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 tab.$dragStart({clientX:clientX,clientY:clientY});
                 tab.$ext.style.zIndex = 1000000;
             });
-        
+
             _self.$startDrag(tab, this);
         
             return false;
@@ -1230,6 +1226,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             var button = this.$dockbutton;
             var pNode = this.lastParent;
             var btnPNode = button.parentNode;
+            var destroyable = this.$dockbutton.$dockData.destroyable;
 
             button.destroy(true, true);
 
@@ -1255,9 +1252,16 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             }
 
             _self.$cbStorePage(this);
+            
+            if (destroyable) {
+                pNode.appendChild(this);
+                this.destroy(true, true);
+            }
+            else {
+                page.removeEventListener("beforedrag", beforeDrag);
+                page.removeEventListener("afterclose", arguments.callee);
+            }
 
-            page.removeEventListener("beforedrag", beforeDrag);
-            page.removeEventListener("afterclose", arguments.callee);
             return false;
         });
 
@@ -1349,7 +1353,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         return section;
     }
     
-    this.addButtonToSection = function(section, options) {
+    this.addButtonToSection = function(options) {
+        var section = options.refSection;
         var button = this.$addButton(section, section.menu, 
             this.$addPage(
                 this.$cbFindPage(options.ext), 
