@@ -124,25 +124,15 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             
             var sections = bars[i].sections;
             for (var j = 0; j < sections.length; j++) {
-                var section = null, menu, info;
-                if (sections[j].sectionIdent) {
-                    section = this.$getSection(bar, sections[j].sectionIdent);
-                    if (section) {
-                        menu = section.$menu;
-                        info = section.$dockData;
-                    }
-                }
-                if (!section) {
-                    section = this.$addSection(bar, null, sections[j].sectionIdent);
-                    menu = this.$addMenu(section);
-                    info = section.$dockData = sections[j];
-                    section.$menu = menu;
-                    menu.firstChild.setAttribute("flex", info.flex);
-                    menu.setAttribute("width", info.width || 260);
-                    menu.setAttribute("height", info.height || 300);
-                }
+                var section = this.$addSection(bar);
+                var menu = this.$addMenu(section);
+                var info = section.$dockData = sections[j];
 
-                var buttons = sections[j].buttons;
+                menu.firstChild.setAttribute("flex", info.flex);
+                menu.setAttribute("width", info.width || 260);
+                menu.setAttribute("height", info.height || 300);
+
+                var buttons = sections[j].buttons
                 for (var k = 0; k < buttons.length; k++) {
                     var button = this.$addButton(section, menu, 
                         this.$addPage(
@@ -1288,28 +1278,14 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     };
 
     /**
-     * Retrieves an existing section and its associated menu
-     */
-    this.$getSection = function(bar, ident) {
-        for (var barChild in bar.childNodes) {
-            if (bar.childNodes[barChild].value && bar.childNodes[barChild].value == ident) {
-                return bar.childNodes[barChild];
-            }
-        }
-        
-        return null;
-    };
-
-    /**
      * Creates a new section
      */
-    this.$addSection = function(bar, before, ident){
+    this.$addSection = function(bar, before){
         var _self   = this;
         var section = bar.insertBefore(new apf.vbox({
             padding : 0,
             edge : "0 0 3 0",
             "class" : "docksection",
-            value : ident,
             dock    : 1,
             childNodes : [
                 new apf.divider({

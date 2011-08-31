@@ -24,7 +24,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
 
     nodes          : [],
     dockpanels     : [],
-    sections       : [],
+    sections       : {},
     
     loaded : false,
     
@@ -35,7 +35,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         var _self = this;
         
         var vManager = new apf.visibilitymanager();
-        this.layout = new DockableLayout(hboxDockPanel, 
+        this.layout = new DockableLayout(hboxMain, 
             //Find Page
             function(arrExtension){
                 if (!arrExtension || !_self.dockpanels[arrExtension[0]])
@@ -48,11 +48,11 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 var page = item.getPage();
                 page.$arrExtension = arrExtension;
 
-                /*vManager.permanent(page, function(e){
+                vManager.permanent(page, function(e){
                     item.mnuItem.check();
                 }, function(){
                     item.mnuItem.uncheck();
-                });*/
+                });
 
                 return page;
             }, 
@@ -62,7 +62,9 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 var item = _self.dockpanels[arrExtension[0]][arrExtension[1]];
                 item.page = amlPage;
 
-                if (_self.sections[arrExtension[0]]) {
+                if (!_self.sections[arrExtension[0]])
+                    _self.sections[arrExtension[0]] = {};
+                if (!_self.sections[arrExtension[0]][arrExtension[1]]) {
                     _self.sections[arrExtension[0]][arrExtension[1]] = {
                         buttons : [
                             { ext : [arrExtension[0], arrExtension[1]] }
@@ -102,8 +104,10 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 }
                 catch (ex) {}
             }
-            
-            _self.layout.loadState(_self.defaultState);
+
+            // @TODO update collaboration to be sympatico with settings being loaded
+            // and re-enable this
+            _self.layout.loadState(/*settings ||*/ _self.defaultState);
             _self.loaded = true;
         });
 
@@ -198,8 +202,6 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 buttons : [def]
             });
         }
-        
-        return bar.sections.slice(-1);
     }, //properties.forceShow ??
 
     //@todo removal of pages
