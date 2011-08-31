@@ -263,7 +263,7 @@ apf.scrollbar = function(struct, tagName){
         
         this.$recalc();
         this.$update();
-        this.setScroll(null, true);
+        this.setScroll(null, true, true);
     }
     
     this.$recalc = function(){
@@ -345,7 +345,7 @@ apf.scrollbar = function(struct, tagName){
         this.$updating = false;
     }
     
-    this.setScroll = function (timed, noEvent){
+    this.setScroll = function (timed, noEvent, noUpdateParent){
         if (this.$curValue > 1) 
             this.$curValue = 1;
         if (this.$curValue < 0) 
@@ -365,18 +365,20 @@ apf.scrollbar = function(struct, tagName){
         if (this.animating || !this.$visible) 
             return;
 
-        if (!noEvent) {
-            var oHtml, from, viewport, to;
-            if (this.$host) {
-                oHtml    = this.$getHtmlHost();
-                from     = oHtml[this.$scrollPos];
-                viewport = this.$getViewPort(oHtml);
-                to       = (this.$getScrollHeight(oHtml) - viewport) * this.$curValue;
-            }
-            
+        var oHtml, from, viewport, to;
+        if (this.$host) {
+            oHtml    = this.$getHtmlHost();
+            from     = oHtml[this.$scrollPos];
+            viewport = this.$getViewPort(oHtml);
+            to       = (this.$getScrollHeight(oHtml) - viewport) * this.$curValue;
+        }
+
+        if (!noUpdateParent) {
             if (this.$host)
                 oHtml[this.$scrollPos] = to;
+        }
 
+        if (!noEvent) {
             (this.$host && this.$host.dispatchEvent 
               ? this.$host 
               : this).dispatchEvent("scroll", {
