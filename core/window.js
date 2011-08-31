@@ -1028,7 +1028,7 @@ apf.window = function(){
 
         var canSelect = !((!apf.document
           && (!apf.isParsingPartial || amlNode)
-          || apf.dragMode) && !ta[e.target.tagName]);
+          || apf.dragMode) && !ta[e.target && e.target.tagName]);
 
         if (canSelect && amlNode) {
             if (!e.target && e.srcElement)
