@@ -69,16 +69,17 @@
     <a:tab id="tabGitTools" skin="docktab" visible="false">
         <a:page caption="Git Tools">
             <a:vbox flex="1" class="git_tools" anchors="0 0 0 0">
-                <a:hbox align="center">
+                <a:hbox>
                     <a:label id="lblGitLog"
                       class = "git_log_label"
                       caption = "File"
-                      margin = "8 0 5 5"
-                      flex = "1"
+                      margin = "8 0 0 8"
                     />
                     <a:label id="lblGitRevisions"
                       caption = "Revisions (0)"
-                      margin = "8 5 5 0"
+                      margin = "8 8 0 0"
+                      flex = "1"
+                      textalign = "right"
                     />
                 </a:hbox>
                 <a:textbox

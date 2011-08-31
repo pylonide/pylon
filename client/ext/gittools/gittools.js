@@ -136,10 +136,8 @@ module.exports = ext.register("ext/gittools/gittools", {
 
         function initiateCurrentFile(doc) {
             var currentFile = _self.getFilePath();
-            if (_self.currentFile && _self.currentFile == currentFile) {
-                console.log("nope!");
+            if (_self.currentFile && _self.currentFile == currentFile)
                 return;
-            }
 
             var lastFile = _self.currentFile;
             _self.currentFile = currentFile;
@@ -151,8 +149,7 @@ module.exports = ext.register("ext/gittools/gittools", {
             );
 
             _self.setGitLogState(_self.currentFile);
-            _self.restoreGitAnnotationsOutput("");
-            
+
             if (_self.fileData[_self.currentFile]) {
                 if (_self.fileData[_self.currentFile].gitLog.currentLogData.length === 0)
                     _self.fileData[_self.currentFile].gitLog.currentLogData = _self.fileData[_self.currentFile].gitLog.logData;
@@ -227,11 +224,13 @@ module.exports = ext.register("ext/gittools/gittools", {
     showAnnotations : function(callback) {
         gitToolsAceAnnotations.show();
         splitterAnnotations.show();
-        
+
         var currentWidth = gitToolsAceAnnotations.getWidth();
         var width = this.fileData[this.currentFile].annotationsWidth
             ? this.fileData[this.currentFile].annotationsWidth : 240;
 
+        var _self = this;
+        this.annotationsLock = true;
         apf.tween.single(gitToolsAceAnnotations, {
             type     : "width",
             anim     : apf.tween.easeInOutCubic,
@@ -247,6 +246,7 @@ module.exports = ext.register("ext/gittools/gittools", {
                 if (callback)
                     callback();
                 window.onresize();
+                _self.annotationsLock = false;
             }
         });
 
@@ -254,6 +254,7 @@ module.exports = ext.register("ext/gittools/gittools", {
     },
 
     hideAnnotations : function(lastFile) {
+        this.restoreGitAnnotationsOutput("");
         var currentWidth = gitToolsAceAnnotations.getWidth();
         if (currentWidth) {
             if (lastFile)
@@ -273,6 +274,8 @@ module.exports = ext.register("ext/gittools/gittools", {
                     apf.layout.forceResize(gitToolsAceAnnotations.$ext.parentNode);
                 },
                 onfinish : function() {
+                    gitToolsAceAnnotations.hide();
+                    splitterAnnotations.hide();
                     apf.layout.forceResize(gitToolsAceAnnotations.$ext.parentNode);
                     window.onresize();
                 }
@@ -369,8 +372,8 @@ module.exports = ext.register("ext/gittools/gittools", {
                         "This operation could not be completed because you are offline."
                     );
                 } else {
-                    ide.socket.send(JSON.stringify(data));
                     this.showAnnotations();
+                    ide.socket.send(JSON.stringify(data));
                 }
             }
         }
@@ -617,10 +620,13 @@ module.exports = ext.register("ext/gittools/gittools", {
     },
 
     restoreGitAnnotationsOutput : function(output) {
-        gitAnnotationsOutput.$ext.innerHTML = output;
-
-        // Set the scroll of the annotations output
-        this.aceScroll(this.aceScrollbar.element.scrollTop);
+        var _self = this;
+        setTimeout(function() {
+            gitAnnotationsOutput.$ext.innerHTML = output;
+            window.onresize();
+            // Set the scroll of the annotations output
+            _self.aceScroll(_self.aceScrollbar.element.scrollTop);
+        }, this.annotationsLock ? 500 : 0);
     },
 
     searchFilter : function(value) {
