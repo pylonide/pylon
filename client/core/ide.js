@@ -110,7 +110,7 @@ define(function(require, exports, module) {
                 "remember transport": false,
                 transports:  ["websocket", "htmlfile", "xhr-multipart", "xhr-polling"],
                 reconnect: false,
-                "connect timeout": 500,
+                "connect timeout": 5000,
                 "try multiple transports": true,
                 "transport options": {
                     "xhr-polling": {
