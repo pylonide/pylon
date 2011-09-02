@@ -1,0 +1,51 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:style><![CDATA[
+        .sandbox_text {
+            padding: 10px;
+            border-top: 1px solid #777;
+            background: #f8f8f8;
+            font-size: 13px;
+        }
+    ]]></a:style>
+    <a:tab id="tabSandbox" skin="docktab" visible="false" buttons="close" activepage="-1">
+        <a:page id="jsSandbox" caption="Sandbox" render="runtime">
+            <a:vbox anchors="0 0 0 0">
+                <a:toolbar height = "6" style="border-bottom: 1px solid #8c8c8c" />
+                <a:codeeditor id="sandboxCodeEditor"
+                  flex      = "1"
+                  realtime  = "true"
+                  border    = "0" 
+                  model     = "{require('ext/settings/settings').model}"
+                  value     = ""
+                  syntax            = "javascript"
+                  softtabs          = "[{require('ext/settings/settings').model}::editors/code/@softtabs]"
+                  tabsize           = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
+                  scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
+                  theme             = "[{require('ext/settings/settings').model}::editors/code/@theme]"
+                  selectstyle       = "[{require('ext/settings/settings').model}::editors/code/@selectstyle]"
+                  activeline        = "[{require('ext/settings/settings').model}::editors/code/@activeline]"
+                  showinvisibles    = "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
+                  autohidehorscrollbar  = "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]"
+                  showprintmargin   = "false"
+                  printmargincolumn = "0" />
+                <a:splitter />
+                <a:vbox flex = "1">
+                    <a:toolbar>
+                        <a:bar border = "1 0 0 0" style="border-top: 1px solid #8c8c8c">
+                            <a:button
+                              caption  = "Execute" 
+                              onclick  = "
+                                require('ext/sandbox/sandbox').evalInput()
+                              " />
+                        </a:bar>
+                    </a:toolbar>
+                    <a:text id = "sandboxOutput"
+                      class = "sandbox_text"
+                      flex = "1"
+                      textselect = "true"
+                    />
+                </a:vbox>
+            </a:vbox>
+        </a:page>
+    </a:tab>
+</a:application>
