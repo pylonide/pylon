@@ -33,7 +33,8 @@
                     <a:toolbar>
                         <a:bar border = "1 0 0 0" style="border-top: 1px solid #8c8c8c">
                             <a:button
-                              caption  = "Execute" 
+                              style = "font-weight: bold"
+                              caption  = "Run" 
                               onclick  = "
                                 require('ext/sandbox/sandbox').evalInput()
                               " />

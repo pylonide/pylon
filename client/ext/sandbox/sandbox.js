@@ -32,9 +32,9 @@ module.exports = ext.register("ext/sandbox/sandbox", {
         dock.register(name, "jsSandbox", {
             menu : "Sandbox",
             primary : {
-                backgroundImage: "/static/style/images/debugicons.png",
-                defaultState: { x: -7, y: -310 },
-                activeState: { x: -7, y: -310 }
+                backgroundImage: "/static/style/icons/sandbox-icon.png",
+                defaultState: { x: 0, y: 0 },
+                activeState: { x: 0, y: 0 }
             }
         }, function(type) {
             ext.initExtension(_self);
