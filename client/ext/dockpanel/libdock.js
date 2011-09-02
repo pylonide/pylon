@@ -1202,7 +1202,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 tab.id = tab.name = ""; //@todo fix this bug in apf
                 tab.destroy(true, true);
                 _self.$stopDrag(e.htmlEvent);
-                
+
+                tab.$ext.style.zIndex = 9000;
                 tab.removeEventListener("afterdrag", arguments.callee);
             });
             
@@ -1321,6 +1322,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     section.removeAttribute("top");
                     section.removeAttribute("width");
                     section.$ext.style.position = "relative";
+                    section.$ext.style.zIndex = 9000;
                 });
                 
                 var buttons = this.selectNodes("button");
@@ -1461,7 +1463,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 btn.destroy(true, true);
                 originalButton.setValue(false);
                 _self.$stopDrag(e.htmlEvent);
-                
+
+                btn.$ext.style.zIndex = 9000;
+
                 btn.removeEventListener("afterdrag", arguments.callee);
             });
             
