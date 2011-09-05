@@ -37,11 +37,23 @@ module.exports = ext.register("ext/extmgr/extmgr", {
             }), mnuWindows.firstChild)
         );
     },
-    
+
     init : function(amlNode){
-        
+
     },
-    
+
+    loadExtension : function() {
+        if (tbModuleName.validate()) {
+            var name = tbModuleName.value;
+            tbModuleName.clear();
+            require([name]);
+        } else {
+            util.alert("Error", "Validation Error",
+                "There was a problem validating your input: '" + 
+                tbModuleName.value + "'");
+        }
+    },
+
     enable : function(){
         if (!this.disabled) return;
         

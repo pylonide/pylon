@@ -17,14 +17,8 @@
                   default = "1"
                   caption = "Add"
                   disabled = "{!tbModuleName.value.trim()}"
-                  onclick = "
-                    if (tbModuleName.validate()) {
-                        var name = tbModuleName.value;
-                        tbModuleName.clear();
-                        
-                        require(\[name\]);
-                    }
-                  " />
+                  onclick = "require('ext/extmgr/extmgr').loadExtension()"
+                />
             </a:hbox>
             <a:datagrid id="dgExt" flex="1"
               model = "mdlExt"

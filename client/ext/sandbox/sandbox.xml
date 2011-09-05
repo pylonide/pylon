@@ -34,8 +34,9 @@
                         <a:bar border = "1 0 0 0" style="border-top: 1px solid #8c8c8c">
                             <a:button
                               style = "font-weight: bold"
-                              caption  = "Run" 
-                              onclick  = "
+                              caption = "Run"
+                              margin = "2 2 2 3"
+                              onclick = "
                                 require('ext/sandbox/sandbox').evalInput()
                               " />
                         </a:bar>
