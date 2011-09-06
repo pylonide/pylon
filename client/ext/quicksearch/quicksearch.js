@@ -15,6 +15,8 @@ var Search = require("ace/search").Search;
 var skin = require("text!ext/quicksearch/skin.xml");
 var markup = require("text!ext/quicksearch/quicksearch.xml");
 
+var oIter, oTotal;
+
 module.exports = ext.register("ext/quicksearch/quicksearch", {
     name    : "quicksearch",
     dev     : "Ajax.org",
@@ -31,6 +33,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     hotitems: {},
 
     nodes   : [],
+    
+    currentRange: null,
 
     hook : function(){
         var _self = this;
@@ -48,10 +52,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         txtQuickSearch.addEventListener("keydown", function(e){
             switch (e.keyCode){
                 case 13: //ENTER
-                    if (e.shiftKey)
-                        _self.execSearch(false, true);
-                    else
-                        _self.execSearch(false, false);
+                    _self.execSearch(false, e.shiftKey);
                     return false;
                 break;
                 case 27: //ESCAPE
@@ -87,6 +88,11 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor)
             editor.ceEditor.parentNode.appendChild(winQuickSearch);
+            
+        var p = document.getElementById("divSearchCount");
+        var spans = p.getElementsByTagName("span");
+        oIter  = spans[0];
+        oTotal = spans[1];
     },
     
     navigateList : function(type){
@@ -117,6 +123,44 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         if (e.keyCode == 27)
             this.toggleDialog(-1);
     },
+    
+    updateCounter: function() {
+        var ace = this.$getAce();
+        if (!ace || !winQuickSearch.visible) {
+            oIter.parentNode.style.width = "0px";
+            return;
+        }
+        else
+            oIter.parentNode.style.width = "auto";
+        
+        var ranges = ace.$search.findAll(ace.getSession());
+        if (!ranges || !ranges.length) {
+            oIter.innerHTML = oTotal.innerHTML = "0";
+            return;
+        }
+        var crtIdx = -1;
+        var cur = this.currentRange;
+        if (cur) {
+            // sort ranges by position in the current document
+            ranges.sort(cur.compareRange.bind(cur));
+            var start = cur.start;
+            var end   = cur.end;
+            for (var r, i = 0, l = ranges.length; i < l; ++i) {
+                r = ranges[i];
+                if (r.isStart(start.row, start.column) && r.isEnd(end.row, end.column)) {
+                    crtIdx = i;
+                    break;
+                }
+            }
+        }
+        oIter.innerHTML = String(++crtIdx);
+        oTotal.innerHTML = ranges.length;
+        setTimeout(function() {
+            var width = oIter.parentNode.offsetWidth;
+            txtQuickSearch.$button.style.right = (width + 8) + "px";
+            txtQuickSearch.$input.parentNode.style.paddingRight = (width + txtQuickSearch.$button.offsetWidth + 10) + "px";
+        });
+    },
 
     toggleDialog: function(force) {
         ext.initExtension(this);
@@ -131,6 +175,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         if (!editor || !editor.ceEditor)
             return;
 
+        var _self = this;
+        
         if (!force && !winQuickSearch.visible || force > 0) {
             this.position = 0;
             
@@ -158,7 +204,10 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                 to       : 5,
                 steps    : 8,
                 interval : 10,
-                control  : (this.control = {})
+                control  : (this.control = {}),
+                onfinish : function() {
+                    _self.updateCounter();
+                }
             });
         }
         else if (winQuickSearch.visible) {
@@ -189,19 +238,16 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     },
 
     execSearch: function(close, backwards) {
-        var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        var ace = this.$getAce();
+        if (!ace)
             return;
-        
-        var ceEditor = editor.ceEditor;
-        var ace      = ceEditor.$editor;
 
         var txt = txtQuickSearch.getValue();
         if (!txt)
             return;
 
         var options = {
-            backwards: backwards || false, 
+            backwards: !!backwards,
             wrap: true, 
             caseSensitive: false, 
             wholeWord: false, 
@@ -209,13 +255,10 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             scope: Search.ALL 
         };
 
-        if (this.$crtSearch != txt) {
+        if (this.$crtSearch != txt)
             this.$crtSearch = txt;
-            ace.find(txt, options);
-        }
-        else {
-            ace.find(txt, options);
-        }
+        ace.find(txt, options);
+        this.currentRange = ace.selection.getRange();
         
         var settings = require("ext/settings/settings");
         if (settings.model) {
@@ -231,8 +274,10 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         
         if (close) {
             winQuickSearch.hide();
-            ceEditor.focus();
+            editors.currentEditor.ceEditor.focus();
         }
+        
+        this.updateCounter();
     },
     
     find: function() {
@@ -241,27 +286,34 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     },
     
     findnext: function() {
-        var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        var ace = this.$getAce();
+        if (!ace)
             return;
-        
-        var ceEditor = editor.ceEditor;
-        var ace      = ceEditor.$editor;
 
         ace.findNext();
+        this.currentRange = ace.selection.getRange();
+        this.updateCounter();
         return false;
     },
     
     findprevious: function() {
+        var ace = this.$getAce();
+        if (!ace)
+            return;
+
+        ace.findPrevious();
+        this.currentRange = ace.selection.getRange();
+        this.updateCounter();
+        return false;
+    },
+    
+    $getAce: function() {
         var editor = editors.currentEditor;
         if (!editor || !editor.ceEditor)
             return;
         
         var ceEditor = editor.ceEditor;
-        var ace      = ceEditor.$editor;
-
-        ace.findPrevious();
-        return false;
+        return ceEditor.$editor;
     },
 
     enable : function(){
