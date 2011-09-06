@@ -5589,7 +5589,7 @@ this.$booleanProperties.caching=true;this.$booleanProperties.readonly=true;this.
 this.$booleanProperties.showinvisibles=true;this.$booleanProperties.showprintmargin=true;
 this.$booleanProperties.overwrite=true;this.$booleanProperties.softtabs=true;this.$booleanProperties.gutter=true;
 this.$booleanProperties.highlightselectedword=true;this.$booleanProperties.autohidehorscrollbar=true;
-this.$supportedProperties.push("value","syntax","activeline","selectstyle","caching","readonly","showinvisibles","showprintmargin","printmargincolumn","overwrite","tabsize","softtabs","debugger","model-breakpoints","scrollspeed","theme","gutter","highlightselectedword","autohidehorscrollbar");
+this.$booleanProperties.behaviors=true;this.$supportedProperties.push("value","syntax","activeline","selectstyle","caching","readonly","showinvisibles","showprintmargin","printmargincolumn","overwrite","tabsize","softtabs","debugger","model-breakpoints","scrollspeed","theme","gutter","highlightselectedword","autohidehorscrollbar","behaviors");
 var cacheId=0;this.$getCacheKey=function(value){if(typeof value=="string"){var key=this.xmlRoot?this.xmlRoot.getAttribute(apf.xmldb.xmlIdTag):value;
 }else{if(value.nodeType){var key=value.getAttribute(apf.xmldb.xmlIdTag);}}return key;
 };this.clearCacheItem=function(xmlNode){if(!this.caching){return;}var key=this.$getCacheKey(xmlNode);
@@ -5644,6 +5644,7 @@ callback(_self.$modes[syntax]);});};this.$propHandlers.activeline=function(value
 if(value){this.setProperty("wrapmode",true);}};this.$propHandlers.wraplimitmax=function(value,prop,initial){this.$editor.getSession().setWrapLimitRange(this.wraplimitmin,value);
 if(value){this.setProperty("wrapmode",true);}};this.$propHandlers.highlightselectedword=function(value,prop,initial){this.$editor.setHighlightSelectedWord(value);
 };this.$propHandlers.autohidehorscrollbar=function(value,prop,initial){this.$editor.renderer.setHScrollBarAlwaysVisible(!value);
+};this.$propHandlers.behaviors=function(value,prop,initial){this.$editor.setBehavioursEnabled(value);
 };this.$propHandlers["model-breakpoints"]=function(value,prop,inital){this.$debuggerBreakpoints=false;
 if(this.$breakpoints){this.$breakpoints.removeEventListener("update",this.$onBreakpoint);
 }this.$breakpoints=value;if(!this.$breakpoints){this.$updateBreakpoints();return;
@@ -5690,11 +5691,12 @@ if(_self.$debugger){_self.$toggleBreakpoint(e.row);}});ed.addEventListener("gutt
 }if(this.wraplimitmax===undefined){this.wraplimitmax=wraplimit.max;}if(this.wrapmode===undefined){this.wrapmode=doc.getUseWrapMode();
 }if(this.gutter===undefined){this.gutter=ed.renderer.getShowGutter();}if(this.highlightselectedword===undefined){this.highlightselectedword=ed.getHighlightSelectedWord();
 }if(this.autohidehorscrollbar){this.autohidehorscrollbar=!ed.renderer.getHScrollBarAlwaysVisible();
-}};}).call(apf.codeeditor.prototype=new apf.StandardBinding());apf.config.$inheritProperties["initial-message"]=1;
-apf.aml.setElement("codeeditor",apf.codeeditor);});}apf.comment=function(){this.$init("comment",apf.NODE_HIDDEN);
-};apf.comment.prototype=new apf.AmlComment();apf.aml.setElement("comment",apf.comment);
-apf.contextmenu=function(){this.$init("contextmenu",apf.NODE_HIDDEN);};(function(){this.$amlNodes=[];
-this.$attrExcludePropBind=apf.extend({match:1},this.$attrExcludePropBind);this.register=function(amlParent){if(!amlParent.contextmenus){amlParent.contextmenus=[];
+}if(this.behaviors===undefined){this.behaviors=!ed.getBehavioursEnabled();}};}).call(apf.codeeditor.prototype=new apf.StandardBinding());
+apf.config.$inheritProperties["initial-message"]=1;apf.aml.setElement("codeeditor",apf.codeeditor);
+});}apf.comment=function(){this.$init("comment",apf.NODE_HIDDEN);};apf.comment.prototype=new apf.AmlComment();
+apf.aml.setElement("comment",apf.comment);apf.contextmenu=function(){this.$init("contextmenu",apf.NODE_HIDDEN);
+};(function(){this.$amlNodes=[];this.$attrExcludePropBind=apf.extend({match:1},this.$attrExcludePropBind);
+this.register=function(amlParent){if(!amlParent.contextmenus){amlParent.contextmenus=[];
 }amlParent.contextmenus.push(this);};this.unregister=function(amlParent){amlParent.contextmenus.remove(this);
 };this.addEventListener("DOMNodeInsertedIntoDocument",function(e){this.register(this.parentNode);
 });}).call(apf.contextmenu.prototype=new apf.AmlElement());apf.aml.setElement("contextmenu",apf.contextmenu);
