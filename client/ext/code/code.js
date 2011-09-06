@@ -15,7 +15,8 @@ var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
 var Document = require("ace/document").Document;
 var ProxyDocument = require("ext/code/proxydocument");
 var markup = require("text!ext/code/code.xml");
-var settings = require("text!ext/code/settings.xml");
+var settings = require("ext/settings/settings");
+var markupSettings = require("text!ext/code/settings.xml");
 var editors = require("ext/editors/editors");
 
 apf.actiontracker.actions.aceupdate = function(undoObj, undo){
@@ -65,6 +66,7 @@ var contentTypes = {
     "js": "application/javascript",
     "json": "application/json",
     "css": "text/css",
+    "less": "text/css",
     "scss": "text/x-scss",
     "sass": "text/x-sass",
     
@@ -200,14 +202,15 @@ module.exports = ext.register("ext/code/code", {
         ceEditor.setProperty("value", doc.acesession);
     },
 
-    hook : function() {
-        var commitFunc = this.onCommit.bind(this),
-            name       = this.name;
+    hook: function() {
+        var _self      = this;
+        var commitFunc = this.onCommit.bind(this);
+        var name       = this.name;
         
         //Settings Support
-        ide.addEventListener("init.ext/settings/settings", function(e){
+        ide.addEventListener("init.ext/settings/settings", function(e) {
             e.ext.addSection("code", name, "editors", commitFunc);
-            barSettings.insertMarkup(settings);
+            barSettings.insertMarkup(markupSettings);
         });
         
         ide.addEventListener("loadsettings", function(e) {
@@ -215,13 +218,15 @@ module.exports = ext.register("ext/code/code", {
             var theme = e.model.queryValue("editors/code/@theme");
             if (theme) 
                 require([theme], function() {});
+            // pre load custom mime types
+            _self.getCustomTypes(e.model);
         });
         
         // preload common language modes
         require(["ace/mode/javascript", "ace/mode/html", "ace/mode/css"], function() {});
     },
 
-    init : function(amlPage) {
+    init: function(amlPage) {
         /*var def = ceEditor.getDefaults();
         
         ide.addEventListener("loadsettings", function() {
@@ -313,6 +318,8 @@ module.exports = ext.register("ext/code/code", {
             // Show print margin (showprintmargin)
         );
 
+        
+        
         mnuSyntax.onitemclick = function(e) {
             var file = ide.getActivePageModel();
             if (file) {
@@ -321,6 +328,15 @@ module.exports = ext.register("ext/code/code", {
                     apf.xmldb.removeAttribute(file, "customtype", "");
                 else
                     apf.xmldb.setAttribute(file, "customtype", value);
+                
+                if (file.getAttribute("customtype")) {
+                    var fileExt = file.getAttribute("name").split(".").pop();
+                    var customType = contentTypes[fileExt];
+                    if (!customType) {
+                        var mime = value.split(";")[0];
+                        _self.setCustomType(fileExt, mime);
+                    }
+                }
             }
         };
 
@@ -334,6 +350,36 @@ module.exports = ext.register("ext/code/code", {
                 
             var bindings = e.keybindings.code;
             ceEditor.$editor.setKeyboardHandler(new HashHandler(bindings));
+        });
+    },
+    
+    /**
+     * Saves custom syntax for extension type in settings.xml
+     * 
+     * @param {String} ext Contains the extension type shorthand
+     * @param {String} mime Mime type string the extension will be related to
+     */
+    setCustomType: function(ext, mime) {
+        var node = settings.model.queryNode('auto/customtypes/mime[@ext="' + ext + '"]');
+        if (!node) {
+            settings.model.appendXml('<mime name="' + mime + '" ext="' + ext + '" />', "auto/customtypes");
+            settings.save();
+        }
+    },
+    
+    /**
+     * Retrieves custom syntax for extensions saved in settings.xml
+     * 
+     * @param {Object} model Settings' model
+     */
+    getCustomTypes: function(model) {
+        var customTypes = model.queryNode("auto/customtypes");
+        if (!customTypes)
+            customTypes = apf.createNodeFromXpath(model.data, "auto/customtypes");
+        
+        var mimes = customTypes.selectNodes("mime");
+        mimes.forEach(function(n) {
+            contentTypes[n.getAttribute("ext")] = n.getAttribute("name")
         });
     },
 
