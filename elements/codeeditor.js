@@ -362,7 +362,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         this.$editor.renderer.setHScrollBarAlwaysVisible(!value);
     };
     this.$propHandlers["behaviors"] = function(value, prop, initial) {
-        this.$editor.renderer.setBehavioursEnabled(value);
+        this.$editor.setBehavioursEnabled(value);
     };
     
     this.$propHandlers["model-breakpoints"] = function(value, prop, inital) {
@@ -620,7 +620,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         if (this.autohidehorscrollbar)
             this.autohidehorscrollbar = !ed.renderer.getHScrollBarAlwaysVisible();
         if (this.behaviors === undefined)
-            this.behaviors = !ed.renderer.getBehavioursEnabled();
+            this.behaviors = !ed.getBehavioursEnabled();
     };
 
 // #ifdef __WITH_DATABINDING
