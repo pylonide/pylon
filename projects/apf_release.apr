@@ -100,7 +100,6 @@
         <p:define name="__APFVERSION" value="{version}"/>
         <p:define name="__WITH_CDN" value="0" />
         <p:define name="__DEBUG" value="0" />
-	<p:define name="__AMLDEBUGGER" value="0" />
         <p:define name="__PACKAGED" value="1"/>
         <p:define name="__PROCESSED" value="1"/>
         <p:define name="__WITH_UNSAFE_XMLHTTP" value="0" />
@@ -302,6 +301,7 @@
         <p:define name="__USE_TOSTRING" value="1" />
         <p:define name="__WITH_AMLDOCUMENT" value="1" />
         <p:define name="__WITH_LAYOUT" value="1" />
+        <p:define name="__AMLDEBUGGER" value="0" />
         <p:define name="__AMLWINDOW" value="1" />
         <p:define name="__AMLMODALWINDOW" value="1" />
         <p:define name="__WITH_WINDOW_ANIMATIONS" value="1" />
