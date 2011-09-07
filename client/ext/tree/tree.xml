@@ -7,6 +7,8 @@
         var confirmed = false;
 
         function remove() {
+            if(window.cloud9config.readonly == true)
+                return false;
             if (!confirmed) {
                 var files = trFiles.getSelection();
 

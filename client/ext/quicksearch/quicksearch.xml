@@ -17,6 +17,7 @@
             <a:button margin="0 0 0 5" skin="btnsearchicon" icon="rounded_close.png" onclick="
               require('ext/quicksearch/quicksearch').toggleDialog(-1);
             " />
+            <div id="divSearchCount"><span class="searchIter">0</span><span class="searchTotal">0</span></div>
         </a:hbox>
     </a:bar>
 </a:application>
