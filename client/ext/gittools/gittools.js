@@ -31,11 +31,72 @@ module.exports = ext.register("ext/gittools/gittools", {
     init : function(amlNode) {
         var _self = this;
 
+        // Create git blame and git log parsers
         this.blamejs = new BlameJS();
         this.gitLogParser = new GitLogParser();
 
+        this.setupUiElements();
+
+        // Add page to the dock panel
+        dock.register(this.name, "Git Tools", {
+            menu : "Tools/Git Tools",
+            primary : {
+                backgroundImage: "/static/style/images/git-tools.png",
+                defaultState: { x: 1, y: 2 },
+                activeState: { x: 1, y: 2 }
+            }
+        }, function(type) {
+            return tabGitTools.firstChild;
+        });
+
+        dock.addDockable({
+            width : 330,
+            height : 410,
+            buttons : [
+                { caption: "Git Tools", ext : [this.name, "Git Tools"] }
+            ]
+        });
+
+        this.aceScrollbar = editors.currentEditor.ceEditor.$editor.renderer.scrollBar;
+
+        // We're already initiailized
+        // @TODO: NO. ide.onLine is the WORST way to do this
+        if (ide.onLine)
+            this.initiateCurrentFile();
+
+        this.setupListeners();
+    },
+
+    setupListeners : function() {
+        var _self = this;
+        gitAnnotationsOutput.addEventListener("scroll", this.$onAnnosScroll = function(e) {
+            _self.onAnnotationsScroll(e);
+        });
+
+        ide.addEventListener("socketMessage", this.$onMessage = function(e) {
+            _self.onMessage(e);
+        });
+
+        this.aceScrollbar.addEventListener("scroll", this.$onAceScroll = function(e) {
+            _self.aceScroll(e.data);
+        });
+
+        // Detect when Ace changes session (i.e. when user switches file tabs)
+        tabEditors.addEventListener("afterswitch", this.$onTabSwitch = function() {
+            _self.initiateCurrentFile();
+        });
+    },
+
+    removeListeners : function() {
+        gitAnnotationsOutput.removeEventListener("scroll", this.$onAnnosScroll);
+        ide.removeEventListener("socketMessage", this.$onMessage);
+        this.aceScrollbar.removeEventListener("scroll", this.$onAceScroll);
+        tabEditors.removeEventListener("afterswitch", this.$onTabSwitch);
+    },
+
+    setupUiElements : function() {
         // Insert the scrolling annotation area
-        hboxMain.insertBefore(
+        this.nodes.push(hboxMain.insertBefore(
             new apf.vbox({ 
                 id : "gitToolsAceAnnotations",
                 visible : false,
@@ -91,9 +152,9 @@ module.exports = ext.register("ext/gittools/gittools", {
                 ]
             }),
             colMiddle
-        );
+        ));
 
-        hboxMain.insertBefore(
+        this.nodes.push(hboxMain.insertBefore(
             new apf.splitter({
                 width : "0",
                 id : "splitterAnnotations",
@@ -101,93 +162,47 @@ module.exports = ext.register("ext/gittools/gittools", {
                 style : "border-right: 1px solid #7B7B7B"
             }),
             colMiddle
+        ));
+    },
+
+    initiateCurrentFile : function() {
+        var _self = this;
+        var currentFile = this.getFilePath();
+        if (this.currentFile && this.currentFile == currentFile)
+            return;
+
+        var lastFile = this.currentFile;
+        this.currentFile = currentFile;
+
+        tboxGitToolsFilter.setValue(
+            this.fileData[this.currentFile] ?
+            this.fileData[this.currentFile].gitLog.lastFilterValue :
+            ""
         );
 
-        gitAnnotationsOutput.addEventListener("scroll", _self.onAnnotationsScroll);
+        this.setGitLogState(this.currentFile);
 
-        // Add to the right panel dock bar
-        dock.register(this.name, "Git Tools", {
-            menu : "Tools/Git Tools",
-            primary : {
-                backgroundImage: "/static/style/images/git-tools.png",
-                defaultState: { x: 1, y: 2 },
-                activeState: { x: 1, y: 2 }
-            }
-        }, function(type) {
-            return tabGitTools.firstChild;
-        });
+        if (this.fileData[this.currentFile]) {
+            if (this.fileData[this.currentFile].gitLog.currentLogData.length === 0)
+                this.fileData[this.currentFile].gitLog.currentLogData = this.fileData[this.currentFile].gitLog.logData;
 
-        dock.addDockable({
-            width : 330,
-            height : 410,
-            buttons : [
-                { caption: "Git Tools", ext : [this.name, "Git Tools"] }
-            ]
-        });
-
-        ide.addEventListener("socketMessage", this.onMessage.bind(this));
-
-        // Listen for the scroll event from Ace's scrollbar
-        this.aceScrollbar = editors.currentEditor.ceEditor.$editor.renderer.scrollBar;
-        function onAceScroll (e) {
-            _self.aceScroll(e.data);
-        }
-        this.aceScrollbar.addEventListener("scroll", onAceScroll);
-
-        function initiateCurrentFile(doc) {
-            var currentFile = _self.getFilePath();
-            if (_self.currentFile && _self.currentFile == currentFile)
-                return;
-
-            var lastFile = _self.currentFile;
-            _self.currentFile = currentFile;
-
-            tboxGitToolsFilter.setValue(
-                _self.fileData[_self.currentFile] ?
-                _self.fileData[_self.currentFile].gitLog.lastFilterValue :
-                ""
-            );
-
-            _self.setGitLogState(_self.currentFile);
-
-            if (_self.fileData[_self.currentFile]) {
-                if (_self.fileData[_self.currentFile].gitLog.currentLogData.length === 0)
-                    _self.fileData[_self.currentFile].gitLog.currentLogData = _self.fileData[_self.currentFile].gitLog.logData;
-
-                if (_self.fileData[_self.currentFile].showAnnotations) {
-                    _self.showAnnotations(function() {
-                        if (_self.fileData[_self.currentFile].lastGitBlameAnnotation) {
-                            _self.restoreGitAnnotationsOutput(_self.fileData[_self.currentFile].lastGitBlameAnnotation);
-                        }
-                    });
-                } else {
-                    _self.hideAnnotations(lastFile);
-                }
+            if (this.fileData[this.currentFile].showAnnotations) {
+                this.showAnnotations(function() {
+                    if (_self.fileData[_self.currentFile].lastGitBlameAnnotation) {
+                        _self.restoreGitAnnotationsOutput(_self.fileData[_self.currentFile].lastGitBlameAnnotation);
+                    }
+                });
             } else {
-                _self.setupFileData(_self.currentFile);
-                _self.gitLog();
-                _self.hideAnnotations(lastFile);
+                this.hideAnnotations(lastFile);
             }
-
-            if (doc) {
-                _self.fileData[_self.currentFile].numLines = doc.getLength();
-            } else {
-                var layerConfig = editors.currentEditor.ceEditor.$editor.renderer.layerConfig;
-                _self.fileData[_self.currentFile].numLines = layerConfig.maxHeight / layerConfig.lineHeight;
-            }
+        } else {
+            this.setupFileData(this.currentFile);
+            this.gitLog();
+            this.hideAnnotations(lastFile);
         }
 
-        // We're already initiailized
-        if (ide.onLine)
-            initiateCurrentFile();
-
-        // Detect when Ace changes session (i.e. when user switches file tabs)
-        editors.currentEditor.ceEditor.$editor.addEventListener("changeSession", function(e) {
-            // allow the tab editors to switch also, before we initiate the current file
-            setTimeout(function() {
-                initiateCurrentFile(e.session.doc.doc);
-            });
-        });
+        var layerConfig = editors.currentEditor.ceEditor.$editor.renderer.layerConfig;
+        this.fileData[this.currentFile].numLines = layerConfig.maxHeight / layerConfig.lineHeight;
     },
 
     aceScroll : function(pos) {
@@ -205,7 +220,7 @@ module.exports = ext.register("ext/gittools/gittools", {
     onAnnotationsScroll : function(e) {
         editors.currentEditor.ceEditor.$editor.renderer.scrollBar.setScrollTop(e.scrollPos);
     },
-    
+
     setupFileData : function(file) {
         this.fileData[file] = {
             showAnnotations : false,
@@ -245,7 +260,6 @@ module.exports = ext.register("ext/gittools/gittools", {
             onfinish : function() {
                 if (callback)
                     callback();
-                window.onresize();
                 _self.annotationsLock = false;
             }
         });
@@ -277,7 +291,6 @@ module.exports = ext.register("ext/gittools/gittools", {
                     gitToolsAceAnnotations.hide();
                     splitterAnnotations.hide();
                     apf.layout.forceResize(gitToolsAceAnnotations.$ext.parentNode);
-                    window.onresize();
                 }
             });
         }
@@ -579,9 +592,6 @@ module.exports = ext.register("ext/gittools/gittools", {
         btnGitBlame.enable();
     },
 
-    /**
-     * @TODO REFACTOR
-     */
     outputGitBlame : function(file, commit_data, line_data) {
         var textHash = {}, lastHash = "";
         for (var li in line_data) {
@@ -623,7 +633,6 @@ module.exports = ext.register("ext/gittools/gittools", {
         var _self = this;
         setTimeout(function() {
             gitAnnotationsOutput.$ext.innerHTML = output;
-            window.onresize();
             // Set the scroll of the annotations output
             _self.aceScroll(_self.aceScrollbar.element.scrollTop);
         }, this.annotationsLock ? 500 : 0);
@@ -707,10 +716,17 @@ module.exports = ext.register("ext/gittools/gittools", {
     },
 
     destroy : function(){
+        this.removeListeners();
+
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
         this.nodes = [];
+        this.fileData = {};
+
+        // @TODO APF remove does NOT work if the page isn't visible
+        // and scale is enabled on the tab
+        pgGittools.parentNode.remove(pgGittools);
     }
 });
 

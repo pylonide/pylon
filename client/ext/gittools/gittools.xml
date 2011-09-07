@@ -66,8 +66,8 @@
             white-space : nowrap;
         }
     ]]></a:style>
-    <a:tab id="tabGitTools" skin="docktab" visible="false">
-        <a:page caption="Git Tools">
+    <a:tab id="tabGitTools" skin="docktab" buttons="close" visible="false">
+        <a:page caption="Git Tools" id="pgGittools">
             <a:vbox flex="1" class="git_tools" anchors="0 0 0 0">
                 <a:hbox>
                     <a:label id="lblGitLog"

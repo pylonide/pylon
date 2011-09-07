@@ -97,10 +97,10 @@ module.exports = ext.register("ext/settings/settings", {
         }
 
         try {
-		this.model.load(ide.settings);
-	} catch(e) {
-		this.model.load(template);
-	}
+            this.model.load(ide.settings);
+        } catch(e) {
+            this.model.load(template);
+        }
 
         ide.dispatchEvent("loadsettings", {
             model : _self.model

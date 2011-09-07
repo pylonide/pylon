@@ -21,9 +21,7 @@ module.exports = ext.register("ext/sandbox/sandbox", {
 
     nodes : [],
 
-    init : function(amlNode){
-        
-    },
+    init : function(amlNode){},
 
     hook : function(){
         var _self = this;
@@ -66,12 +64,16 @@ module.exports = ext.register("ext/sandbox/sandbox", {
         this.nodes.each(function(item){
             item.enable();
         });
+
+        jsSandbox.enable();
     },
 
     disable : function(){
         this.nodes.each(function(item){
             item.disable();
         });
+
+        jsSandbox.disable();
     },
 
     destroy : function(){
@@ -79,6 +81,10 @@ module.exports = ext.register("ext/sandbox/sandbox", {
             item.destroy(true, true);
         });
         this.nodes = [];
+
+        // @TODO APF does NOT remove a page if
+        // scale is enabled on the tab and the page isn't visible
+        jsSandbox.parentNode.remove(jsSandbox);
     }
 });
 
