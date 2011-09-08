@@ -962,9 +962,18 @@ apf.DragServer = {
                 var parentNode = (elSel || o.xmlRoot).parentNode,
                     htmlParentNode;
                 if(parentNode && (htmlParentNode = apf.xmldb.findHtmlNode(parentNode, o))) {
-                    candrop = checkPermission(parentNode);
                     el = htmlParentNode;
+                    
+                    if (o.$findValueNode)
+                        fEl = o.$findValueNode(el);
+                    
+                    elSel = (fEl
+                        ? apf.xmldb.getNode(fEl)
+                        : apf.xmldb.findXmlNode(el));
+                            
+                    candrop = checkPermission(parentNode);
                     this.lastFel = htmlParentNode;
+                    
                     
                     if(!candrop)
                         return;
@@ -977,7 +986,7 @@ apf.DragServer = {
         }
         
         //EVENT - cancelable: ondragover
-        if (o.dispatchEvent("dragover", this.dragdata) === false)
+        if (o.dispatchEvent("dragover", this.dragdata, (elSel || o.xmlRoot), o.lastel) === false)
             candrop = false;
 
         //Set Cursor
