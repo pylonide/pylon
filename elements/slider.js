@@ -509,25 +509,25 @@ apf.slider = function(struct, tagName){
                 //LEFT
                 if (this.$dir != "horizontal")
                     return;
-                this.change(this.value - (ctrlKey ? 0.01 : 0.1));
+                this.change(this.value - this.step);
                 break;
             case 38:
                 //UP
                 if (this.$dir != "vertical")
                     return;
-                this.change(this.value + (ctrlKey ? 0.01 : 0.1));
+                this.change(this.value + this.step);
                 break;
             case 39:
                 //RIGHT
                 if (this.$dir != "horizontal")
                     return;
-                this.change(this.value + (ctrlKey ? 0.01 : 0.1));
+                this.change(this.value + this.step);
                 break;
             case 40:
                 //DOWN
                 if (this.$dir != "vertical")
                     return;
-                this.change(this.value - (ctrlKey ? 0.01 : 0.1));
+                this.change(this.value - this.step);
                 break;
             case 13:
                 //ENTER

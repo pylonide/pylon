@@ -74,22 +74,24 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.multiline         = true;
     this.caching           = true;
 
-    this.$booleanProperties["activeline"]      = true;
-    this.$booleanProperties["caching"]         = true;
-    this.$booleanProperties["readonly"]        = true;
-    this.$booleanProperties["activeline"]      = true;
-    this.$booleanProperties["showinvisibles"]  = true;
-    this.$booleanProperties["showprintmargin"] = true;
-    this.$booleanProperties["overwrite"]       = true;
-    this.$booleanProperties["softtabs"]        = true;
-    this.$booleanProperties["gutter"]          = true;
-    this.$booleanProperties["highlightselectedword"] = true;
-    this.$booleanProperties["autohidehorscrollbar"]  = true;
+    this.$booleanProperties["activeline"]               = true;
+    this.$booleanProperties["caching"]                  = true;
+    this.$booleanProperties["readonly"]                 = true;
+    this.$booleanProperties["activeline"]               = true;
+    this.$booleanProperties["showinvisibles"]           = true;
+    this.$booleanProperties["showprintmargin"]          = true;
+    this.$booleanProperties["overwrite"]                = true;
+    this.$booleanProperties["softtabs"]                 = true;
+    this.$booleanProperties["gutter"]                   = true;
+    this.$booleanProperties["highlightselectedword"]    = true;
+    this.$booleanProperties["autohidehorscrollbar"]     = true;
+    this.$booleanProperties["behaviors"]                = true;    
     
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
         "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
-        "theme", "gutter", "highlightselectedword", "autohidehorscrollbar");
+        "theme", "gutter", "highlightselectedword", "autohidehorscrollbar",
+        "behaviors");
 
     var cacheId = 0;
     this.$getCacheKey = function(value) {
@@ -359,6 +361,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$propHandlers["autohidehorscrollbar"] = function(value, prop, initial) {
         this.$editor.renderer.setHScrollBarAlwaysVisible(!value);
     };
+    this.$propHandlers["behaviors"] = function(value, prop, initial) {
+        this.$editor.setBehavioursEnabled(value);
+    };
     
     this.$propHandlers["model-breakpoints"] = function(value, prop, inital) {
         this.$debuggerBreakpoints = false;
@@ -614,6 +619,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.highlightselectedword = ed.getHighlightSelectedWord();
         if (this.autohidehorscrollbar)
             this.autohidehorscrollbar = !ed.renderer.getHScrollBarAlwaysVisible();
+        if (this.behaviors === undefined)
+            this.behaviors = !ed.getBehavioursEnabled();
     };
 
 // #ifdef __WITH_DATABINDING

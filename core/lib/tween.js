@@ -57,8 +57,8 @@ var modules = {
     },
     "height-rsz": function(oHtml, value, center){
         oHtml.style.height = value + PX;
-        if (apf.hasSingleResizeEvent)
-            window.onresize();
+        if (apf.hasSingleResizeEvent && apf.layout.$onresize)
+            apf.layout.$onresize();
     },
     mwidth: function(oHtml, value, info) {
         var diff = apf.getDiff(oHtml);
