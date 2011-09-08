@@ -269,14 +269,25 @@ module.exports = ext.register("ext/tree/tree", {
             });
         });
         
+        
         var cancelWhenOffline = function(){
             if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
+        };
+        
+        this.onDragStart = function(){
+            cancelWhenOffline();
+            
+        };
+        
+        this.onDragStop = function(){
+            
         };
         
         trFiles.addEventListener("beforeadd", cancelWhenOffline);
         trFiles.addEventListener("renamestart", cancelWhenOffline);
         trFiles.addEventListener("beforeremove", cancelWhenOffline);
-        trFiles.addEventListener("dragstart", cancelWhenOffline);
+        trFiles.addEventListener("dragstart", this.onDragStart);
+        trFiles.addEventListener("dragstop", this.onDragStop);
         trFiles.addEventListener("dragdrop", cancelWhenOffline);
         
         ide.addEventListener("afteroffline", function(e){
