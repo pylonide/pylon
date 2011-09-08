@@ -903,14 +903,16 @@ apf.DragServer = {
 
     stop : function(runEvent, success){
         if (this.last) this.dragout();
-
+        
+        this.dragdata.host.dispatchEvent("dragstop");
+        
         //Reset Objects
         this.dragdata.host.dragging = 0;
         this.dragdata.host.$hideDragIndicator(success);
-
+        
         /*if (runEvent && this.dragdata.host.$dragstop) 
             this.dragdata.host.$dragstop();*/
-
+        
         apf.dragMode         = false;
         document.onmousemove = 
         document.onmouseup   = null;
