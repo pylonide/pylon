@@ -5,6 +5,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  * 
  * @TODOs
+ * - Show details for the latest commit
  * - If file is unsaved, do not allow git blame
  *   until file is saved
  * - Replace slider and text output, with datagrid

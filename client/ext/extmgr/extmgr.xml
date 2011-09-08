@@ -51,7 +51,13 @@
                                     require('core/ext').unregister(require(dgExtUser.value));
                                 else
                                     require('core/ext').register(dgExtUser.value, require(dgExtUser.value));
-                              " />
+                              "
+                            />
+                            <a:button width="80"
+                              caption = "Done"
+                              margin = "0 0 0 30"
+                              onclick = "winExt.close()"
+                            />
                         </a:hbox>
                     </a:vbox>
                 </a:page>
@@ -77,7 +83,13 @@
                                     require('core/ext').unregister(require(dgExt.value));
                                 else
                                     require('core/ext').register(dgExt.value, require(dgExt.value));
-                              " />
+                              "
+                            />
+                            <a:button width="80"
+                              caption = "Done"
+                              margin = "0 0 0 30"
+                              onclick = "winExt.close()"
+                            />
                         </a:hbox>
                     </a:vbox>
                 </a:page>
