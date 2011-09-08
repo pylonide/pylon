@@ -70,7 +70,7 @@
                           caption  = "Execute" 
                           tooltip  = "Ctrl+Enter"
                           onclick  = "
-                            require('ext/console/console').consoleTextHandler({keyCode:13,ctrlKey:true})
+                            require('ext/debugger/inspector').consoleTextHandler({keyCode:13,ctrlKey:true})
                           " />
                         <a:button
                           disabled2 = "{!txtCode.value.trim()}"
@@ -95,7 +95,7 @@
                 <a:codeeditor id="txtCode" 
                   flex      = "1"
                   disabled  = "{stRunning.active or !stDebugProcessRunning.active}"
-                  onkeydown = "return require('ext/console/console').consoleTextHandler(event)" 
+                  onkeydown = "return require('ext/debugger/inspector').consoleTextHandler(event)" 
                   realtime  = "true"
                   border    = "0" 
                   model     = "{require('ext/settings/settings').model}" 
