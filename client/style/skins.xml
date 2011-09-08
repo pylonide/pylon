@@ -151,7 +151,7 @@
             border-right    : 1px solid #2E2E2E;
         }
         
-        .deploy.mnubtn, .preferences.mnubtn {
+        .deploy.mnubtn {
             border-bottom : none;
         }
 
