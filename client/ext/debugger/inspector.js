@@ -12,7 +12,8 @@ var Logger  = require("ext/console/logger");
 
 exports.evaluate = function(expression, callback){
     var _self = this;
-    var frame = dgStack && dgStack.selected && dgStack.selected.getAttribute("ref") || null;
+    var frame = (self.dgStack && dgStack.selected && dgStack.selected.getAttribute("ref")) || null;
+    
     dbg.evaluate(expression, frame, null, null, callback || function(xmlNode){
         exports.showObject(xmlNode);
     });
@@ -194,8 +195,11 @@ exports.calcName = function(xmlNode, useDisplay){
     }
     while (loopNode && loopNode.nodeType == 1);
 
-    if (path[0].charAt(0) == "[")
+    if (!path[0])
+        return "";
+    else if (path[0].charAt(0) == "[")
         path[0] = path[0].substr(2, path[0].length - 4);
+    
     return path.join(".").replace(/\.\[/g, "[");
 };
 
