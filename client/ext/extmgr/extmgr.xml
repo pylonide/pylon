@@ -40,7 +40,6 @@
                             <a:button width="80"
                               disabled = "{!dgExtUser.selected}"
                               caption = "Remove"
-                              class = "red_button"
                               margin = "0 10 0 0"
                               onclick = "require('ext/extmgr/extmgr').removeExtension()"
                             />

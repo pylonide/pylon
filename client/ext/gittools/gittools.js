@@ -3,6 +3,14 @@
  * 
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ * 
+ * @TODOs
+ * - If file is unsaved, do not allow git blame
+ *   until file is saved
+ * - Replace slider and text output, with datagrid
+ * - Brainstorm on best option for buttons @ bottom
+ * - Do not load gitlog until panel is shown
+ * - Spinner for when there's server activity
  */
 
 define(function(require, exports, module) {
@@ -95,7 +103,7 @@ module.exports = ext.register("ext/gittools/gittools", {
     },
 
     setupUiElements : function() {
-        // Insert the scrolling annotation area
+        // The annotation area
         this.nodes.push(hboxMain.insertBefore(
             new apf.vbox({ 
                 id : "gitToolsAceAnnotations",
