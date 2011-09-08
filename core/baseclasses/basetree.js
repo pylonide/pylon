@@ -105,16 +105,17 @@ apf.BaseTree = function(){
      * @attribute {Boolean} singleopen      whether the tree will expand a node by a single click. Defaults to false.
      * @attribute {Boolean} prerender       whether the tree will render all the nodes at load. Defaults to true.
      */
-    this.$booleanProperties["openadd"]        = true;
-    this.$booleanProperties["startcollapsed"] = true;
-    this.$booleanProperties["nocollapse"]     = true;
-    this.$booleanProperties["singleopen"]     = true;
-    this.$booleanProperties["animation"]      = true;
-    this.$booleanProperties["prerender"]      = true;
+    this.$booleanProperties["openadd"]         = true;
+    this.$booleanProperties["startcollapsed"]  = true;
+    this.$booleanProperties["nocollapse"]      = true;
+    this.$booleanProperties["singleopen"]      = true;
+    this.$booleanProperties["animation"]       = true;
+    this.$booleanProperties["prerender"]       = true;
     this.$booleanProperties["removecontainer"] = true;
+    this.$booleanProperties["dragroot"]        = true;
     
     this.$supportedProperties.push("openadd", "startcollapsed", "nocollapse",
-        "singleopen", "prerender", "removecontainer", "animation");
+        "singleopen", "prerender", "removecontainer", "animation", "dragroot");
     
     this.openadd        = true;
     this.startcollapsed = 1;
