@@ -218,7 +218,7 @@ module.exports = ext.register("ext/save/save", {
             this.saveBuffer[path] = page;
             return;
         }
-        apf.b(node).attr("saving", "1");
+        apf.xmldb.setAttribute(node, "saving", "1");
         
         var _self = this, panel = sbMain.firstChild;
         panel.setAttribute("caption", "Saving file " + path);
@@ -238,7 +238,7 @@ module.exports = ext.register("ext/save/save", {
             
             panel.setAttribute("caption", "Saved file " + path);
             ide.dispatchEvent("afterfilesave", {node: node, doc: doc, value: value});
-            apf.b(node).attr("saving", "0");
+            apf.xmldb.removeAttribute(node, "saving");
             if (_self.saveBuffer[path]) {
                 delete _self.saveBuffer[path];
                 _self.quicksave(page);
@@ -303,7 +303,7 @@ module.exports = ext.register("ext/save/save", {
             this.saveBuffer[path] = page;
             return;
         }
-        apf.b(file).attr("saving", "1");
+        apf.xmldb.setAttribute(node, "saving", "1");
             
         function onconfirm() {
             var panel   = sbMain.firstChild,
@@ -331,7 +331,7 @@ module.exports = ext.register("ext/save/save", {
                     page.$doc.setNode(file);
                 }
                 
-                apf.b(node).attr("saving", "0");
+                apf.xmldb.removeAttribute(node, "saving");
                 if (_self.saveBuffer[path]) {
                     delete _self.saveBuffer[path];
                     _self.saveFileAs(page);

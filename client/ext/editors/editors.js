@@ -486,6 +486,8 @@ module.exports = ext.register("ext/editors/editors", {
 
                     var copy = apf.xmldb.cleanNode(file.cloneNode(false));
                     copy.removeAttribute("changed");
+                    copy.removeAttribute("loading");
+                    copy.removeAttribute("saving");
                     pNode.appendChild(copy);
                     
                     var state = pages[i].$editor.getState && pages[i].$editor.getState(pages[i].$doc);
