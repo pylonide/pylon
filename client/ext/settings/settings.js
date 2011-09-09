@@ -4,9 +4,9 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
- 
+
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
@@ -86,7 +86,7 @@ module.exports = ext.register("ext/settings/settings", {
                         settings = template;
                     ide.settings =  settings;
                     _self.load();
-                    
+
                     ide.removeEventListener("socketMessage", arguments.callee);
                 }
             });
@@ -97,10 +97,10 @@ module.exports = ext.register("ext/settings/settings", {
         }
 
         try {
-		this.model.load(ide.settings);
-	} catch(e) {
-		this.model.load(template);
-	}
+            this.model.load(ide.settings);
+        } catch(e) {
+            this.model.load(template);
+        }
 
         ide.dispatchEvent("loadsettings", {
             model : _self.model
@@ -119,27 +119,27 @@ module.exports = ext.register("ext/settings/settings", {
         ide.addEventListener("$event.loadsettings", function(callback) {
             callback({model: _self.model});
         });
-        
+
         ide.removeEventListener("afteronline", this.$handleOnline);
     },
-    
+
     hook : function(){
         panels.register(this);
-        
+
         var btn = this.button = navbar.insertBefore(new apf.button({
             skin    : "mnubtn",
             state   : true,
             "class" : "preferences",
             caption : "Preferences"
         }), navbar.firstChild);
-        
+
         var _self = this;
 
         btn.addEventListener("mousedown", function(e){
             var value = this.value;
             if (navbar.current && (navbar.current != _self || value)) {
                 navbar.current.disable(navbar.current == _self);
-                if (value) 
+                if (value)
                     return;
             }
 
@@ -156,15 +156,15 @@ module.exports = ext.register("ext/settings/settings", {
 
     init : function(amlNode){
         this.panel = winSettings;
-        
+
         /*winSettings.addEventListener("hide", function(){
             colLeft.$ext.style.minWidth = "0px"; //hack
         });
-        
+
         winSettings.addEventListener("show", function() {
             colLeft.$ext.style.minWidth = "215px"; //hack
         });*/
-        
+
         colLeft.appendChild(winSettings);
     },
 
@@ -193,7 +193,7 @@ module.exports = ext.register("ext/settings/settings", {
             pages[i].$at.undo(-1);
         }
     },
-    
+
     enable : function(noButton){
         winSettings.show();
         colLeft.show();
