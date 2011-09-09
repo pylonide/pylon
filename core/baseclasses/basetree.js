@@ -187,7 +187,7 @@ apf.BaseTree = function(){
             pathLut[path] = true;
             
             var found;
-            for(var i = 0, l = pathList.length; i < l; i++) {
+            for (var i = 0, l = pathList.length; i < l; i++) {
                 var ipath = pathList[i];
                 if (ipath) {
                     if (ipath == path)
@@ -384,8 +384,8 @@ apf.BaseTree = function(){
                 if (!apf.isIE7) {
                     container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
                 }
+                _self.dispatchEvent("expand", {xmlNode: xmlNode});
             }
-            _self.dispatchEvent("expand", {xmlNode: xmlNode});
         }
         
         if(!this.getAttribute("animation")) {
