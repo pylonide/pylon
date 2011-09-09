@@ -36,9 +36,7 @@ module.exports = ext.register("ext/quickwatch/quickwatch", {
                 if (!this.value.trim())
                     return dgWatch.clear();
 
-                require(["ext/debugger/inspector"], function(inspector) {
-                    inspector.evaluate(this.value);
-                });
+                require("ext/debugger/inspector").evaluate(this.value);
             }
             else if (e.keyCode == 40 && dgWatch.length) {
                 var first = dgWatch.getFirstTraverseNode();
@@ -81,10 +79,8 @@ module.exports = ext.register("ext/quickwatch/quickwatch", {
             if (value) {
                 txtCurObject.setValue(value);
                 if (exec) {
-                    require(["ext/debugger/inspector"], function(inspector) {
-                        inspector.evaluate(value);
-                        txtCurObject.focus();
-                    });
+                    require("ext/debugger/inspector").evaluate(value);
+                    txtCurObject.focus();
                 }
             }
 

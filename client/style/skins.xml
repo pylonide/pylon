@@ -151,7 +151,7 @@
             border-right    : 1px solid #2E2E2E;
         }
         
-        .deploy.mnubtn, .preferences.mnubtn {
+        .deploy.mnubtn {
             border-bottom : none;
         }
 
@@ -6095,9 +6095,9 @@
 
     .editor_tab .editor_bg .editor_bg_content {
         width: 430px;
-        margin: 80px auto 0;
+        margin: 20px auto 0;
         background: url(images/empty_editor_icon.png) no-repeat center 0;
-        padding-top: 125px;
+        padding-top: 170px;
         text-align: center;
         color: #333333;
         text-shadow : rgba(255, 255, 255, .71) 1px 1px 1px;
@@ -6129,6 +6129,21 @@
         text-shadow : rgba(240, 240, 240, .71) 1px 1px 1px;
     }
     
+    .editor_tab .editor_bg .editor_bg_message-top {
+        color: #489829;
+        font-family: georgia;
+        padding-top: 4px;
+        text-shadow : rgba(240, 240, 240, .71) 0px 1px 1px;
+        font-size: 16px;
+        margin: 35px auto 0;
+        width: 430px;
+        text-align: center;
+    }
+    .editor_tab .editor_bg .editor_bg_message-top span {
+        color: #a1a1a1;
+        font-size: 12px;
+    }
+    
     .editor_tab .session_page {
         display : none;
         position : absolute;
@@ -6155,6 +6170,10 @@
         <div class="editor_tab">
             <div class="btnsesssioncontainer"> </div>
             <div class="editor_bg">
+                <div class="editor_bg_message-top">
+                    Invite people to this project by sharing the URL with them.
+                    <span>To access private projects both parties must have a Premium Account.</span>
+                </div>
                 <div class="editor_bg_content">
                     <div class="editor_bg_message">Open a file or create a new one to get started</div>
                 </div>

@@ -14,6 +14,7 @@ var dock   = require("ext/dockpanel/dockpanel");
 var fs = require("ext/filesystem/filesystem");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/debugger/debugger.xml");
+var inspector = require("ext/debugger/inspector");
 
 module.exports = ext.register("ext/debugger/debugger", {
     name    : "Debug",
