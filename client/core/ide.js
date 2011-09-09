@@ -107,11 +107,11 @@ define(function(require, exports, module) {
         ide.addEventListener("extload", function() {
             // fire up the socket connection:
             var options = {
-                rememberTransport: false,
-                transports:  ["xhr-polling"],
+                "remember transport": false,
+                transports:  ["websocket", "htmlfile", "xhr-multipart", "xhr-polling"],
                 reconnect: false,
-                "connect timeout": 500,
-                "try multiple transports": false,
+                "connect timeout": 5000,
+                "try multiple transports": true,
                 "transport options": {
                     "xhr-polling": {
                         timeout: 60000

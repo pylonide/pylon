@@ -6,6 +6,7 @@
       syntax            = "{require('ext/code/code').getSyntax(%[.])}"
       theme             = "[{require('ext/settings/settings').model}::editors/code/@theme]"
       overwrite         = "[{require('ext/settings/settings').model}::editors/code/@overwrite]"
+      behaviors         = "[{require('ext/settings/settings').model}::editors/code/@behaviors]"
       selectstyle       = "[{require('ext/settings/settings').model}::editors/code/@selectstyle]"
       activeline        = "[{require('ext/settings/settings').model}::editors/code/@activeline]"
       showinvisibles    = "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"

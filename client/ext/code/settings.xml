@@ -2,6 +2,7 @@
     <div class="header">
         <span></span><div>Code Editor</div>
     </div>
+    <a:checkbox class="underlined" label="Auto pair characters (quotes, etc.)" value="[editors/code/@behaviors]"  />
     <a:checkbox class="underlined" label="Overwrite Mode" value="[editors/code/@overwrite]"  />
     <a:checkbox class="underlined" label="Full Line Selection" value="[editors/code/@selectstyle]" values="line|text" />
     <a:checkbox class="underlined" label="Highlight Active Line" value="[editors/code/@activeline]" />
