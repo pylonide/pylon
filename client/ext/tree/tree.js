@@ -339,7 +339,6 @@ module.exports = ext.register("ext/tree/tree", {
                 }
 
                 //Unstable - temporary fix
-                console.log("SETTINGS LOADED, EXPANDING TREE", _self.currentSettings, trFiles.xmlRoot);
                 try {
                     if (!trFiles.xmlRoot) {
                         var model = trFiles.getModel();
@@ -363,7 +362,6 @@ module.exports = ext.register("ext/tree/tree", {
                     }
                 }
                 catch (err){
-                    console.log("ERROR??!?!", err);
                     model.setQueryValue("auto/tree/text()", "");
                 }
             }
@@ -422,7 +420,6 @@ module.exports = ext.register("ext/tree/tree", {
                 if (!trFiles.$hasLoadStatus(parent, "loaded"))
                     break;
                 name    = names.pop();
-                // console.log("CHECKING", parent, name);
                 node    = parent.selectSingleNode("node()[@name=\"" + name + "\"]");
                 if (!node) {
                     var path = parent.getAttribute("path") + "/" + name,
@@ -430,7 +427,6 @@ module.exports = ext.register("ext/tree/tree", {
 
                     if (names.length > 0 || e.type == "folder")
                         xmlNode = "<folder type='folder' " + " path='" + path + "' name='" + name + "' />";
-                    // console.log("INSERTING", xmlNode, parent);
                     trFiles.add(xmlNode, parent);
                     break;
                 }
@@ -472,7 +468,6 @@ module.exports = ext.register("ext/tree/tree", {
                     removed.push(node);
             }
             removed.forEach(function (node) {
-                // console.log("REMOVE", node);
                 apf.xmldb.removeNode(node);
             });
             path = parent.getAttribute("path");
@@ -484,7 +479,6 @@ module.exports = ext.register("ext/tree/tree", {
                     " name='" + name + "'" +
                     " path='" + path + "/" + name + "'" +
                 "/>";
-                // console.log("CREATE", xmlNode, parent);
                 trFiles.add(xmlNode, parent);
             }
         });
