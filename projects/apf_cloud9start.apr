@@ -219,6 +219,8 @@
         <p:define name="__WITH_AMLTEXT" value="1" />
         <p:define name="__WITH_LIVEEDIT" value="1" />
         <p:define name="__ENABLE_LIVEEDIT_RICHTEXT" value="1" />
+        <p:define name="__WITH_LIVEEDIT" value="1" />
+        <p:define name="__WITH_SELECTION" value="1" />
         <!-- binding options -->
 
         <!-- new defines -->
