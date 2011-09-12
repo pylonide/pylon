@@ -2273,7 +2273,7 @@ apf.lm_exec = new (function(){
                                   .replace(/"/g, "&quot;")
                                   .replace(/([\[\{\}\]])/g, "\\$1") + '"'
                     + (options.editor ? ' editor="' + options.editor + '"' : "")
-                : "") + '>' + (res || options && options.initial || "&#32;") 
+                : "") + '>' + (!options || !options.richtext ? apf.htmlentities : function(x){return x})(res || options && options.initial || "&#32;") 
               + '</div>';
         }
         else {
