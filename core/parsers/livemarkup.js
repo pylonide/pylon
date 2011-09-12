@@ -2260,6 +2260,14 @@ apf.lm_exec = new (function(){
             res = res.replace(/\n/g, "<br />");
         
         if (editMode !== false) {
+            var value = res || options && options.initial || "&#32;";
+            if (!options || !options.richtext) 
+                value = apf.htmlentities(value);
+            if (options && options.multiline)
+                value = value
+                    .replace(/&lt;br ?\/?&gt;/g, "<br />")
+                    .replace(/&lt;(\/?div)&gt;/g, "<$1>");
+
             return '<div' 
               + ' onmousedown="apf.LiveEdit.mousedown(this, event)" class="liveEdit' + (options && options.multiline ? ' liveeditMultiline' : '') + (!res && options && options.initial ? ' liveEditInitial' : '') + '" xpath="' + (n 
                 ? ((m.substr(0,1) != "/" 
@@ -2273,7 +2281,7 @@ apf.lm_exec = new (function(){
                                   .replace(/"/g, "&quot;")
                                   .replace(/([\[\{\}\]])/g, "\\$1") + '"'
                     + (options.editor ? ' editor="' + options.editor + '"' : "")
-                : "") + '>' + (!options || !options.richtext ? apf.htmlentities : function(x){return x})(res || options && options.initial || "&#32;") 
+                : "") + '>' + value 
               + '</div>';
         }
         else {
