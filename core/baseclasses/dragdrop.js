@@ -921,7 +921,8 @@ apf.DragServer = {
     },
 
     dragover : function(o, el, e){
-        var _self = this;
+        var _self      = this,
+            originalEl = el;
         
         function checkPermission(targetEl) {
             return o.isDropAllowed && o.xmlRoot
@@ -961,11 +962,8 @@ apf.DragServer = {
 
         if (!candrop) {
             if (o && o.$dragover) {
-                var parentNode = (elSel || o.xmlRoot).parentNode,
-                    htmlParentNode;
-                if(parentNode && (htmlParentNode = apf.xmldb.findHtmlNode(parentNode, o))) {
-                    el = htmlParentNode;
-                    
+                var parentNode = (elSel || o.xmlRoot).parentNode;
+                if(parentNode && (el = apf.xmldb.findHtmlNode(parentNode, o))) {                   
                     if (o.$findValueNode)
                         fEl = o.$findValueNode(el);
                     
@@ -974,7 +972,7 @@ apf.DragServer = {
                         : apf.xmldb.findXmlNode(el));
                             
                     candrop = checkPermission(parentNode);
-                    this.lastFel = htmlParentNode;
+                    this.lastFel = el;
                     
                     
                     if(!candrop)
@@ -988,7 +986,11 @@ apf.DragServer = {
         }
         
         //EVENT - cancelable: ondragover
-        if (o.dispatchEvent("dragover", this.dragdata, (elSel || o.xmlRoot), o.lastel) === false)
+        if (o.dispatchEvent("dragover", this.dragdata, {
+            target     : (elSel || o.xmlRoot), 
+            lastEl     : o.lastel,
+            originalEl : originalEl
+        }) === false)
             candrop = false;
 
         //Set Cursor
@@ -1161,13 +1163,13 @@ apf.DragServer = {
         //dragdata.indicator.style.top = e.clientY+"px";
         //dragdata.indicator.style.left = e.clientX+"px";
 
-        var storeIndicatorTopPos = dragdata.indicator.style.top;
-        //console.log("INDICATOR BEFORE: "+dragdata.indicator.style.top+" "+dragdata.indicator.style.left);
-        //get Element at x, y
-        dragdata.indicator.style.display = "block";
-        if (dragdata.indicator)
-            dragdata.indicator.style.top = "10000px";
-
+        if (dragdata.indicator) {
+            var storeIndicatorTopPos = dragdata.indicator.style.top;
+            //console.log("INDICATOR BEFORE: "+dragdata.indicator.style.top+" "+dragdata.indicator.style.left);
+            //get Element at x, y
+            dragdata.indicator.style.display = "block";
+                dragdata.indicator.style.top = "10000px";
+        }
         apf.DragServer.dragdata.x = e.pageX ? e.pageX - (!apf.isIE
             ? window.pageXOffset
             : 0) : c.clientX;
@@ -1180,8 +1182,9 @@ apf.DragServer = {
                 el = document.elementFromPoint(apf.DragServer.dragdata.x,
                 apf.DragServer.dragdata.y);
             }
-
-        dragdata.indicator.style.top = storeIndicatorTopPos;
+        
+        if (dragdata.indicator)
+            dragdata.indicator.style.top = storeIndicatorTopPos;
         //console.log("INDICATOR AFTER: "+dragdata.indicator.style.top+" "
         //+dragdata.indicator.style.left+" "+apf.DragServer.dragdata.x+" "+apf.DragServer.dragdata.y);
         //Set Indicator
@@ -1270,6 +1273,8 @@ apf.MultiselectDragDrop = function() {
     this.lastel       = null;
 
     this.$showDragIndicator = function(sel, e){
+        var srcEl = e.originalTarget || e.srcElement || e.target;
+        
         this.multiple = sel.length > 1;
         
         if (this.multiple) {
@@ -1277,7 +1282,8 @@ apf.MultiselectDragDrop = function() {
             this.diffY = e.scrollY;
         }
         else {
-            this.diffX = -1 * e.offsetX;
+            var itemNode = apf.xmldb.findHtmlNode(sel[0], this);
+            this.diffX = -1 * (e.offsetX - parseInt(apf.getStyleRecur(itemNode, "padding-left").replace(/px$/, "") - 10));
             this.diffY = -1 * e.offsetY;
         }
         
@@ -1321,6 +1327,9 @@ apf.MultiselectDragDrop = function() {
             var sel = this.$selected || this.$caret,
                 width = apf.getStyle(this.oDrag, "width");
             
+            if (!sel)
+                return;
+            
             if (!width || width == "auto")
                 this.oDrag.style.width = (sel.offsetWidth - apf.getWidthDiff(this.oDrag)) + "px";
             this.$updateNode(this.selected, this.oDrag);
@@ -1343,7 +1352,7 @@ apf.MultiselectDragDrop = function() {
                 steps    : apf.isIE ? 15 : 20,
                 interval : 15,
                 tweens   : [
-                    {type: "left", from: oDrag.offsetLeft, to: pos[0]},
+                    {type: "left", from: oDrag.offsetLeft, to: (pos[0] + parseInt(apf.getStyleRecur(this.$selected, "padding-left").replace(/px$/, "")))},
                     {type: "top",  from: oDrag.offsetTop,  to: pos[1]}
                 ],
                 onfinish : function(){
