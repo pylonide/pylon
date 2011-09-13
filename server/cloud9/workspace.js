@@ -22,10 +22,10 @@ var Workspace = module.exports = function(config) {
         for (var name in plugins) {
             this.plugins[name] = new plugins[name](this.ide, this);
         }
-        
+
         for (var name in plugins) {
             if (this.plugins[name].init)
-                this.plugins[name].init();            
+                this.plugins[name].init();
         }
     };
 
@@ -84,13 +84,14 @@ var Workspace = module.exports = function(config) {
         var count;
         for (var name in this.plugins) {
             count += 1;
-            var plugin = this.plugins[name];
-            plugin.dispose(function() {
+            this.plugins[name].dispose(function() {
                 count -= 1;
                 if (count == 0)
                     callback();
             });
         }
+
+        //this.ide.davServer.unmount();
     };
 
 }).call(Workspace.prototype);
