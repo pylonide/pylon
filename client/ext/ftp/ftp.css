@@ -18,3 +18,19 @@
 .fileprop_value > span {
     font-weight: bold;
 }
+
+.console_command {
+    color: #06f;
+}
+
+.console_response {
+    color: #6f6;
+}
+
+.console_status {
+    color: #fff;
+}
+
+.console_error {
+    color: #f30;
+}
