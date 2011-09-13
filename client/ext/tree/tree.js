@@ -39,6 +39,9 @@ module.exports = ext.register("ext/tree/tree", {
     },
 
     onSBMouseOut : function() {
+        if(this.ignoreSB)
+            return;
+        
         if (this.ignoreSBMouseOut)
             this.pendingSBFadeOut = true;
 
@@ -50,6 +53,9 @@ module.exports = ext.register("ext/tree/tree", {
     },
 
     onSBMouseUp : function() {
+        if(this.ignoreSB)
+            return;
+        
         this.ignoreSBMouseOut = false;
         if (this.pendingSBFadeOut) {
             this.pendingSBFadeOut = false;
@@ -64,6 +70,9 @@ module.exports = ext.register("ext/tree/tree", {
     },
 
     onTreeOut : function() {
+        if(this.ignoreSB)
+            return;
+        
         if (this.ignoreSBMouseOut)
             this.pendingSBFadeOut = true;
         this.hideScrollbar();
@@ -93,7 +102,10 @@ module.exports = ext.register("ext/tree/tree", {
     hideScrollbar : function() {
         if (this.ignoreSBMouseOut)
             return;
-
+        
+        if (this.sbTimer)
+            clearTimeout(this.sbTimer);
+        
         if (this.sbIsFaded === false) {
             var _self = this;
             this.sbTimer = setTimeout(function() {
@@ -274,13 +286,86 @@ module.exports = ext.register("ext/tree/tree", {
             if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
         };
         
+        this.dropTimer;
+//        this.scrollTimer;
+
         this.onDragStart = function(){
-            cancelWhenOffline();
+            if (this.dropTimer)
+                clearTimeout(this.dropTimer);
             
+//            if (this.scrollTimer)
+//                clearTimeout(this.scrollTimer);
+            
+            _self.ignoreSB = true;
+            
+            cancelWhenOffline();
         };
         
         this.onDragStop = function(){
+            if (this.dropTimer)
+                clearTimeout(this.dropTimer);
             
+//            if (this.scrollTimer)
+//                clearTimeout(this.scrollTimer);
+            
+            _self.ignoreSB = false;
+
+            _self.hideScrollbar();
+        };
+        
+        this.onDragOver = function(data){
+            var _self = this;
+            
+            if (this.dropTimer)
+                clearTimeout(this.dropTimer);
+            
+//            if (this.scrollTimer)
+//                clearTimeout(this.scrollTimer);
+            
+            this.dropTimer = setTimeout(function(){
+                clearTimeout(_self.dropTimer);
+                if(data.target && data.target.getAttribute("type") == "folder") {
+                    trFiles.slideOpen(null, data.target);
+                }
+            }, 1500);
+        };
+    
+        this.onDragDrop = function(){
+            if(this.dropTimer)
+                clearTimeout(this.dropTimer);
+            
+//            if(this.scrollTimer)
+//                clearTimeout(this.scrollTimer);
+            
+            _self.ignoreSB = false;
+            
+            cancelWhenOffline();
+        };
+        
+        this.onDragOut = function(){
+            var _self = this;
+            
+            if(this.dropTimer)
+                clearTimeout(this.dropTimer);
+            
+           /* if(this.scrollTimer)
+                clearTimeout(this.scrollTimer);
+            
+            this.scrollTimer = setTimeout(function(){
+                clearTimeout(_self.scrollTimer);
+                
+                var treeTopPos    = apf.getAbsolutePosition(trFiles.$ext)[1],
+                    treeBottomPos = treeTopPos + trFiles.$ext.offsetHeight,
+                    dragIndPos    = apf.getAbsolutePosition(trFiles.oDrag)[1];
+
+                if (dragIndPos < treeTopPos + 10) {
+                    sbTrFiles.scrollUp();
+                }
+                
+                if (dragIndPos > treeBottomPos - 10) {
+                    sbTrFiles.scrollDown();
+                }
+            }, 500);*/
         };
         
         trFiles.addEventListener("beforeadd", cancelWhenOffline);
@@ -288,7 +373,9 @@ module.exports = ext.register("ext/tree/tree", {
         trFiles.addEventListener("beforeremove", cancelWhenOffline);
         trFiles.addEventListener("dragstart", this.onDragStart);
         trFiles.addEventListener("dragstop", this.onDragStop);
-        trFiles.addEventListener("dragdrop", cancelWhenOffline);
+        trFiles.addEventListener("dragdrop", this.onDragDrop);
+        trFiles.addEventListener("dragover", this.onDragOver);
+        trFiles.addEventListener("dragout", this.onDragOut);
         
         ide.addEventListener("afteroffline", function(e){
             if (!ide.offlineFileSystemSupport) {
