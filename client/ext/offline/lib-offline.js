@@ -85,11 +85,12 @@ var Offline = module.exports = function(namespace, detectUrl){
     this.start = function(){
         // TODO: turned off because at this point the IDE is not up yet and
         // will result in JS errors
-        this.offlineTime = null; //parseInt(localStorage[this.namespace + ".offlinetime"]);
-        
+        this.offlineTime = parseInt(localStorage[this.namespace + ".offlinetime"] || 0);
+
         //If we were offline lets stay offline
         if (this.offlineTime)
             this.goOffline();
+        //I beleve these should be commented out for detection to pick up on the online state
         //else //Else we try to go online
             //this.goOnline();
         
@@ -108,10 +109,10 @@ var Offline = module.exports = function(namespace, detectUrl){
         
         this.http.get(apf.getNoCacheUrl(this.detectUrl), {
             callback: function(data, state, extra){
-                if(state != apf.SUCCESS || !window.navigator.onLine){
+                if (state != apf.SUCCESS || !window.navigator.onLine){
                     _self.goOffline(callback); //retry here??
                 }
-                else{
+                else {
                     _self.goOnline(callback);
                 }
             },
