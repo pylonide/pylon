@@ -132,7 +132,7 @@ define(function(require, exports, module) {
                 }));
             };
 
-            ide.socketDisconnect = function() {
+            /*ide.socketDisconnect = function() {
                 clearTimeout(ide.$retryTimer);
                 
                 var retries = 0;
@@ -144,8 +144,17 @@ define(function(require, exports, module) {
                     if (!sock.connecting && !sock.reconnecting && !ide.testOffline && ide.loggedIn)
                         sock.reconnect();
                 }, 1000);
-            };
-
+            };*/
+            
+            ide.addEventListener("afteroffline", function(){
+                ide.socket.socket.disconnect();
+            });
+            
+            ide.addEventListener("afteronline", function(){
+                if (!ide.socket.connecting && !ide.socket.reconnecting && ide.loggedIn)
+                    ide.socket.socket.connect();
+            });
+            
             ide.socketMessage = function(message) {
                 try {
                     message = JSON.parse(message);
@@ -209,7 +218,7 @@ define(function(require, exports, module) {
             ide.socket.on("connect",    ide.socketConnect);
             //ide.socket.on("reconnect",  ide.socketReconnect);
             //ide.socket.on("reconnecting",  ide.socketReconnecting);
-            ide.socket.on("disconnect", ide.socketDisconnect);
+            //ide.socket.on("disconnect", ide.socketDisconnect);
             var _oldsend = ide.socket.send;
             ide.socket.send = function(msg) {
                 // pass a lambda to enable socket.io ACK
