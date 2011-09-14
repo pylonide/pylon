@@ -19,7 +19,7 @@ var WebdavWrapper = module.exports = function(webdav, sync, fIdent, callback) {
     this.realWebdav    = webdav;
     
     // Check Local filesystem is available, or use localStorage
-    this.hasFileSystem = WebdavHtml5FileSystem.isAvailable() && false; //@todo this has to be changed when bgsync is 100% working
+    this.hasFileSystem = WebdavHtml5FileSystem.isAvailable()  && false; //@todo this has to be changed when bgsync is 100% working
     if (this.hasFileSystem)
         this.localWebdav = new WebdavHtml5FileSystem(callback, sync);
     else
@@ -137,7 +137,6 @@ var WebdavWrapper = module.exports = function(webdav, sync, fIdent, callback) {
     this.exec = function(type, args, callback) {
         if (ide.onLine)
             this.realWebdav.exec.apply(this.realWebdav, arguments);
-        
         this.localWebdav.exec.call(this.localWebdav, type, args, ide.onLine ? apf.K : callback);
     };
     
