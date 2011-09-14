@@ -49,7 +49,7 @@ module.exports = ext.register("ext/offline/offline", {
      */
     init : function(){
         var _self   = this;
-        var offline = this.offline = new Offline("cloud9");//, "static/ext/offline/ping.txt");
+        var offline = this.offline = new Offline("cloud9", "/static/ext/offline/ping.txt");
         var sync    = this.sync    = new Sync("cloud9");
         
         // preload the offline image programmatically:
@@ -57,17 +57,18 @@ module.exports = ext.register("ext/offline/offline", {
         img.src = "/static/style/images/offline.png";
 
         //Replace http checking because we already have a socket
-        offline.isSiteAvailable = function(){};
+        //offline.isSiteAvailable = function(){};
         
         //Set events necessary for checking online status using socket poll loop
-        ide.addEventListener("socketConnect", function(e){
+        //@todo we still need to solve if (!_self.offlineStartup)
+        /*ide.addEventListener("socketConnect", function(e){
             if (!_self.offlineStartup)
                 offline.goOnline(); //Comment this out to test offline-start
         });
         
         ide.addEventListener("socketDisconnect", function(e){
             offline.goOffline();
-        });
+        });*/
         
         //Forward Events
         offline.dispatchEvent = function(name, e){
@@ -344,7 +345,9 @@ module.exports = ext.register("ext/offline/offline", {
         
         /**** Init ****/
         
-        offline.start();
+        ide.addEventListener("extload", function() {
+            offline.start();
+        });
         
         if (_self.offlineStartup)
             ide.dispatchEvent("afteroffline"); //Faking offline startup
