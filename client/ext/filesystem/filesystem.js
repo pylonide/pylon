@@ -350,8 +350,10 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
             apf.xmldb.setAttribute(node, "loading", "true");
             ide.addEventListener("afteropenfile", function(e) {
-                apf.xmldb.setAttribute(e.node, "loading", "");
-                ide.removeEventListener("afteropenfile", arguments.callee);
+                if (e.node == node) {
+                    apf.xmldb.removeAttribute(e.node, "loading");
+                    ide.removeEventListener("afteropenfile", arguments.callee);
+                }
             });
 
             if (doc.hasValue()) {
