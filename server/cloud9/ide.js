@@ -141,7 +141,7 @@ Ide.DEFAULT_PLUGINS = [
         }
         else if (path.match(this.workspaceRe)) {
             if (!this.davInited) {
-                if(process.platform == "sunos"){
+                if (process.platform == "sunos") {
                     this.davServer.plugins["codesearch"].GREP_CMD = __dirname+"/../../support/gnu-builds/grep-sunos";
                     this.davServer.plugins["filesearch"].FIND_CMD = __dirname+"/../../support/gnu-builds/find-sunos";
                     this.davServer.plugins["filelist"].FIND_CMD = __dirname+"/../../support/gnu-builds/find-sunos";
