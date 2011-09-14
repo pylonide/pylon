@@ -20,7 +20,7 @@
     <a:presentation>
         <a:main>
             <div class='cboffline'>
-            
+
             </div>
         </a:main>
     </a:presentation>
@@ -64,21 +64,21 @@
             background    : url(images/c9-menu-backg.png) repeat-x 0 0;
             border-bottom : 1px solid #000000;
         }
-        
+
         .c9-menu-bar .c9-mbar-logo {
             position   : relative;
             overflow   : visible;
             height     : 36px;
             /*background : url(images/cloud9logo.png) no-repeat right 0;*/
         }
-        
+
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont {
             position   : relative;
             overflow   : visible;
             height     : 36px;
             margin-right:164px;
         }
-        
+
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-mbar-round {
             position:absolute;
             overflow:hidden;
@@ -88,7 +88,7 @@
             width:42px;
             height:34px;
         }
-        
+
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-offline {
             width:42px;
             height:21px;
@@ -99,11 +99,11 @@
             display:none;
             z-index: 100000;
         }
-        
+
         .c9-menu-bar.offline .c9-mbar-logo .c9-mbar-bcont .c9-offline {
             display:block;
         }
-        
+
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-mbar-cont {
             position:relative;
             overflow:visible;
@@ -111,7 +111,7 @@
             height:34px;
             background:url(images/c9-menu-backg2.png) repeat-x 0 5px;
         }
-        
+
         .c9-menu-bar .mainlogo {
             background: url("images/cloud9logo_transparent.png") no-repeat scroll 0 0 transparent;
             bottom: 0;
@@ -127,8 +127,8 @@
 
     <a:presentation>
         <a:main container="div/div/div[1]">
-            <div class="c9-menu-bar"> 
-                <div class="c9-mbar-logo"> 
+            <div class="c9-menu-bar">
+                <div class="c9-mbar-logo">
                     <div class="c9-mbar-bcont">
                         <div class="c9-mbar-cont"> </div>
                         <a href="/dashboard.html" class="mainlogo" target="_blank" title="back to dashboard">Dashboard</a>
@@ -150,7 +150,7 @@
             background-image : url(images/dockLeftBackground.png);
             border-right    : 1px solid #2E2E2E;
         }
-        
+
         .deploy.mnubtn {
             border-bottom : none;
         }
@@ -165,7 +165,7 @@
             position : absolute;
             bottom   : 20px;
         }
-        
+
         .black-menu-bar .c9menulogo span {
             background  : url(images/c9menulogo.png) no-repeat 0 0;
             width       : 45px;
@@ -175,7 +175,7 @@
             margin-left : -22px;
             top         : 0;
         }
-        
+
         .black-menu-bar .c9version {
             color       : #696969;
             font-family : Tahoma, Arial;
@@ -208,14 +208,14 @@
             background       : -webkit-gradient(linear, left center, right center, from(#f3f3f3), color-stop(1, #e5e5e5));
             background       : -moz-linear-gradient(center left, #f3f3f3 0%, #e5e5e5 100%) repeat scroll 0 0 transparent;
         }
-        
+
         .debug-panel .bar_inset {
             width            : 43px;
             height           : 12px;
             position         : relative;
             background       : url(images/sidebar_right_bar_inset.gif);
         }
-        
+
         .debug-panel .body {
             position    : absolute;
             top         : 0px;
@@ -360,11 +360,11 @@
         .btnIconOnly .lbl SPAN {
             background-position: 1px 3px;
         }
-        
+
         .btnIconOnly.newFolder .lbl SPAN {
             background-position: 1px 2px;
         }
-        
+
         .smallCaption.btnIconOnly .lbl {
             color: #323232;
             font-weight: normal;
@@ -892,7 +892,7 @@
             width: 14px;
             height: 14px;
         }
-        
+
         .dim8x8.btn_icon_only {
             width: 8px;
             height: 8px;
@@ -909,7 +909,7 @@
         .dim14-14.btn_icon_onlyOver {
             background-position: 0 -14px;
         }
-        
+
         .dim8x8.btn_icon_onlyOver {
             background-position: 0 -8px;
         }
@@ -921,11 +921,11 @@
         .dim22-22.btn_icon_onlyDown {
             background-position: 0 -44px;
         }
-        
+
         .dim14-14.btn_icon_onlyDown {
             background-position: 0 -28px;
         }
-        
+
         .dim8x8.btn_icon_onlyDown {
             background-position: 0 -16px;
         }
@@ -950,13 +950,13 @@
             overflow           : hidden;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none; 
-            -khtml-user-select : none; 
+            -moz-user-select   : none;
+            -khtml-user-select : none;
             user-select        : none;
             background-repeat:no-repeat;
             background-position: 0 0;
         }
-        
+
         .dockButton-footer {
             height: 10px;
             filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5');
@@ -964,22 +964,22 @@
             background       : -webkit-gradient(linear, left center, right center, from(#f3f3f3), color-stop(1, #e5e5e5));
             background       : -moz-linear-gradient(center left, #f3f3f3 0%, #e5e5e5 100%) repeat scroll 0 0 transparent;
         }
-        
+
         .dockButtonOver {
             background-image    : url(images/dock_button_sprite.png);
             background-position : 3px -114px;
         }
-        
+
         .dockButtonDown {
             background-image    : url(images/dock_button_sprite.png);
             background-position : 3px -35px;
         }
-        
+
         .dockButtonDown .dockButton-footer {
             -webkit-border-top-left-radius : 5px;
             -moz-border-radius-topleft     : 5px;
         }
-        
+
         .dockButton .icon {
             width                 : 35px;
             height                : 35px;
@@ -1001,7 +1001,7 @@
                rgb(197,233,216) 50%
             );*/
         }
-        
+
         .dockButton .dock_notification {
             position    : absolute;
             top         : 1px;
@@ -1016,7 +1016,7 @@
             letter-spacing: 1px;
             line-height : 9pt;
         }
-        
+
         .dockButton .dock_icon_image {
             -webkit-border-radius : 3px;
             -moz-border-radius    : 3px;
@@ -1027,59 +1027,59 @@
             width                 : 34px;
             height                : 33px;
         }
-        
+
         .dockButton .dock_icon_image.dii_primary {
             left   : 6px;
             top    : 5px;
             width  : 31px;
             height : 31px;
         }
-        
+
         .dockButton .dock_icon_image.dii_secondary {
             -webkit-border-radius : 5px;
             -moz-border-radius    : 5px;
         }
-        
+
         .dockButton.debug1 .icon {
             background-position: 0 -437px;
         }
-        
+
         .dockButtonChecked.debug1 .icon {
             background-position: 0 -556px;
         }
-        
+
         .dockButton.debug2 .icon {
             background-position: 0 -475px;
         }
-        
+
         .dockButton.call_stack .icon {
             background-position: 0 -515px;
         }
-        
+
         .dockButton.todo_check .icon {
             background-position: 0 -163px;
         }
-        
+
         .dockButtonChecked.todo_check .icon {
             background-position: 0 -201px;
         }
-        
+
         .dockButton.contact_list .icon {
             background-position: 0 -243px;
         }
-        
+
         .dockButtonChecked.contact_list .icon {
             background-position: 0 -281px;
         }
-        
+
         .dockButton.defaultUser .icon {
             background-position: 0 -360px;
         }
-        
+
         .dockButtonChecked.defaultUser .icon {
             background-position: 0 -400px;
         }
-        
+
     ]]></a:style>
 
      <a:presentation>
@@ -1266,12 +1266,12 @@
             overflow           : visible;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none; 
-            -khtml-user-select : none; 
+            -moz-user-select   : none;
+            -khtml-user-select : none;
             user-select        : none;
             line-height        : 17px;
         }
-        
+
         .c9-menu-btn .c9-left {
             width:5px;
             height:24px;
@@ -1280,7 +1280,7 @@
             top:0;
             left:0;
         }
-        
+
         .c9-menu-btn .c9-right {
             width:5px;
             height:24px;
@@ -1289,7 +1289,7 @@
             top:0;
             right:0;
         }
-        
+
         .c9-menu-btn .c9-label {
             font-family   : Tahoma, Arial;
             font-size     : 12px;
@@ -1300,36 +1300,36 @@
             margin        : 0 5px;
             text-shadow   : rgba(41, 42, 43, 1) 0px 1px 0px;
         }
-        
+
         .c9-menu-btnOver .c9-left {
             background:url(images/menu-btn.png) no-repeat 0 0;
         }
-        
+
         .c9-menu-btnOver .c9-right {
             background:url(images/menu-btn.png) no-repeat 0 -48px;
         }
-        
+
         .c9-menu-btnOver .c9-label {
             background:url(images/menu-btn.png) repeat-x 0 -24px;
         }
-        
+
         .c9-menu-btnDown .c9-left {
             background:url(images/menu-btn.png) no-repeat 0 -72px;
         }
-        
+
         .c9-menu-btnDown .c9-right {
             background:url(images/menu-btn.png) no-repeat 0 -120px;
         }
-        
+
         .c9-menu-btnDown .c9-label {
             background:url(images/menu-btn.png) repeat-x 0 -96px;
         }
-        
+
         .c9-menu-btnDown .c9-label {
            color:#d0e6b3;
-           text-shadow : none; 
+           text-shadow : none;
         }
-        
+
         .c9-menu-btnDown .c9-fix {
             height           : 3px;
             position         : absolute;
@@ -1340,14 +1340,14 @@
             background-color : #1c1c1c;
             z-index          : 20000101;
         }
-        
+
         .hbox > DIV > .c9-menu-btn {
             height : 24px;
         }
     ]]></a:style>
 
     <a:presentation>
-        <a:main 
+        <a:main
           caption      = "div[2]/text()"
           background = "."
           icon       = "div[2]"
@@ -1356,7 +1356,7 @@
                 <div class="c9-left"></div>
                 <div class="c9-label">-</div>
                 <div class="c9-right"></div>
-                <div class="c9-fix"></div>                  
+                <div class="c9-fix"></div>
             </div>
         </a:main>
     </a:presentation>
@@ -1369,17 +1369,17 @@
             overflow           : hidden;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none; 
-            -khtml-user-select : none; 
+            -moz-user-select   : none;
+            -khtml-user-select : none;
             user-select        : none;
             line-height        : 17px;
             border:1px solid transparent;
         }
-        
+
         .hbox > .c9-toolbarbutton {
             height : 23px;
         }
-        
+
         .c9-toolbarbutton .c9-icon {
             display: none;
             width:23px;
@@ -1390,28 +1390,28 @@
             background-position : 0 0;
             background-repeat   : no-repeat;
         }
-        
+
         .c9-toolbarbuttonIcon .c9-icon{
             display : block;
         }
-        
+
         .c9-toolbarbuttonOver {
             -moz-border-radius    : 5px;
             -webkit-border-radius : 5px;
             border-radius : 5px;
             border:1px solid #1c1c1c;
-            
+
             -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
-            
+
             background         : #343434;
             filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#3a3a3a', endColorstr='#333333');
             -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#3a3a3a', endColorstr='#333333')";
             background         : -webkit-gradient(linear, left top, left bottom, from(#3a3a3a), color-stop(1, #333333));
             background         :-moz-linear-gradient(center bottom, #333333 0%, #3a3a3a 100%) repeat scroll 0 0 transparent;
         }
-        
+
         .c9-toolbarbutton .c9-label {
             position:relative;
             overflow:hidden;
@@ -1422,48 +1422,48 @@
             height:15px;
             padding:3px 6px 0 6px;
         }
-        
+
         .c9-toolbarbuttonEmpty .c9-icon {
             position:relative;
         }
-        
+
         .c9-toolbarbuttonEmpty .c9-label {
             display:none;
         }
-        
+
         .c9-toolbarbuttonIcon .c9-label{
             padding:3px 6px 0 22px;
         }
-        
+
         .c9-toolbarbuttonIcon.preview .c9-label {
             padding-left : 25px;
         }
-        
+
         .c9-toolbarbuttonDown {
             -moz-border-radius    : 5px;
             -webkit-border-radius : 5px;
             border-radius : 5px;
             border:1px solid #1c1c1c;
-            
+
             -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
-            
+
             background         : #343434;
             filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#282828', endColorstr='#2e2e2e');
             -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#282828', endColorstr='#2e2e2e')";
             background         : -webkit-gradient(linear, left top, left bottom, from(#282828), color-stop(1, #2e2e2e));
             background         :-moz-linear-gradient(center bottom, #2e2e2e 0%, #282828 100%) repeat scroll 0 0 transparent;
         }
-        
+
         .c9-toolbarbuttonDown .c9-icon {
             background-position: 0-19px;
         }
-        
+
         .c9-toolbarbuttonDisabled .c9-icon {
             background-position : 0 -38px;
         }
-        
+
         .c9-toolbarbuttonDisabled .c9-label {
             color       : #606060;
             text-shadow : rgba(0, 0, 0, 1) 0px 1px 0px;
@@ -1471,7 +1471,7 @@
     ]]></a:style>
 
     <a:presentation>
-        <a:main 
+        <a:main
           caption      = "div[2]/text()"
           background = "."
           icon       = "div[1]">
@@ -1489,14 +1489,14 @@
             overflow           : hidden;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none; 
-            -khtml-user-select : none; 
+            -moz-user-select   : none;
+            -khtml-user-select : none;
             user-select        : none;
             line-height        : 13px;
             margin:            : 0 1px;
             border             : 1px solid transparent;
         }
-        
+
         .c9-toolbarbutton2 .c9-icon {
             display: none;
             width: 18px;
@@ -1504,15 +1504,15 @@
             background-position : 0 -18px;
             background-repeat   : no-repeat;
         }
-        
+
         .c9-toolbarbutton2Icon .c9-icon {
             display : block;
         }
-        
+
         .c9-toolbarbutton2Over {
-            
+
         }
-        
+
         .c9-toolbarbutton2 .c9-label {
             position:relative;
             overflow:hidden;
@@ -1523,35 +1523,35 @@
             height:15px;
             padding:3px 6px 0 6px;
         }
-        
+
         .c9-toolbarbutton2Empty .c9-icon {
             position:relative;
         }
-        
+
         .c9-toolbarbutton2Empty .c9-label {
             display:none;
         }
-        
+
         .c9-toolbarbutton2Icon .c9-label {
             padding:3px 6px 0 22px;
         }
-        
+
         .c9-toolbarbutton2Icon.preview .c9-label {
             padding-left : 25px;
         }
-        
+
         .c9-toolbarbutton2Disabled .c9-icon {
             background-position: 0 1px;
         }
-        
+
         .c9-toolbarbutton2Over .c9-icon {
             background-position: 0 -37px;
         }
-        
+
         .c9-toolbarbutton2Down .c9-icon {
             background-position: 0 -56px;
         }
-        
+
         .c9-toolbarbutton2Disabled .c9-label {
             color       : #606060;
             text-shadow : rgba(0, 0, 0, 1) 0px 1px 0px;
@@ -1559,7 +1559,7 @@
     ]]></a:style>
 
     <a:presentation>
-        <a:main 
+        <a:main
           caption      = "div[2]/text()"
           background = "."
           icon       = "div[1]">
@@ -1579,17 +1579,17 @@
             cursor              : pointer;
             position            : relative;
             cursor              : default;
-            -moz-user-select    : none; 
-            -khtml-user-select  : none; 
+            -moz-user-select    : none;
+            -khtml-user-select  : none;
             user-select         : none;
             background-position : 0 0;
             background-repeat   : no-repeat;
         }
-        
+
         .header-btnOver {
             background-position : 0 -15px;
         }
-        
+
         .header-btnDisabled {
             background-position : 0 -30px;
             cursor: default;
@@ -1597,7 +1597,7 @@
     ]]></a:style>
 
     <a:presentation>
-        <a:main 
+        <a:main
           caption      = "text()"
           background = "."
           icon       = ".">
@@ -1618,7 +1618,7 @@
             height : 10px;
             cursor : pointer;
         }
-        
+
         .dockheader span{
             width : 9px;
             height : 9px;
@@ -1628,7 +1628,7 @@
             top : 0px;
             background : url(images/toolbar-arrows.png) 0 -10px;
         }
-        
+
         .dockheaderOver {
             border-top : 1px solid #808183;
             filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#6b6c6e', endColorstr='#555557');
@@ -1636,7 +1636,7 @@
             background       : -webkit-gradient(linear, center top, center bottom, from(#6b6c6e), color-stop(1, #555557));
             background       : -moz-linear-gradient(center top, #6b6c6e 0%, #555557 100%) repeat scroll 0 0 transparent;
         }
-        
+
         .dockheader.expanded span{
             background-position : 0 0;
             right : 3px;
@@ -1644,11 +1644,11 @@
     ]]></a:style>
 
     <a:presentation>
-        <a:main 
+        <a:main
           caption      = "text()"
           background = "."
           icon       = ".">
-            <div class="dockheader"> 
+            <div class="dockheader">
                 <span> </span>
             </div>
         </a:main>
@@ -1666,12 +1666,12 @@
             cursor              : default;
             overflow            : hidden;
         }
-        
+
         .mnubtnOver,
         .mnubtnDown {
             background : url(images/radiobutton_over.png) no-repeat 0 0;
         }
-        
+
         .mnubtn .icon {
             background-position : 0 0;
             background-repeat   : no-repeat;
@@ -1681,7 +1681,7 @@
             top                 : 7px;
             left                : 12px;
         }
-        
+
         .mnubtn .pointer {
             /*background-image    : url(images/gitui_close_arrow.png);
             background-position : 0 0;
@@ -1693,7 +1693,7 @@
             right               : 5px;*/
             display             : none;
         }
-        
+
         .mnubtn SPAN {
             font-family         : Tahoma, Arial;
             font-size           : 10px;
@@ -1703,19 +1703,19 @@
             display:block;
             overflow:hidden;
         }
-        
+
         .mnubtnDown SPAN {
             color : white;
         }
-        
+
         .mnubtnDown .pointer {
             /*display:block;*/
         }
-        
+
         .mnubtnDown .icon {
             background-position:-40px 0;
         }
-        
+
         .mnubtn.spacer {
             border     : 0;
             border-top : 1px solid #3f3f41;
@@ -1724,41 +1724,41 @@
             padding    : 0;
             position   : relative;
         }
-        
+
         .mnubtn.spacer .pointer,
         .mnubtn.spacer .icon,
         .mnubtn.spacer SPAN {
             display : none;
         }
-        
+
         .mnubtn.project_files .icon {
             background-image:url(images/project_files.png);
         }
-        
+
         .mnubtn.open_files .icon {
             background-image:url(images/open_files.png);
         }
-        
+
         .mnubtn.visual_editor .icon {
             background-image:url(images/visual_editor.png);
         }
-        
+
         .mnubtn.preferences .icon {
             background-image:url(images/preferences.png);
         }
-        
+
         .mnubtn.git_corner .icon {
             background-image:url(images/git_corner.png);
         }
-        
+
         .mnubtn.deploy .icon {
             background-image:url(images/deploy.png);
         }
-        
+
         .mnubtn.the_store .icon {
             background-image:url(images/the_store.png);
         }
-        
+
         .mnubtn.shop {
             width    : 65px;
             height   : 45px;
@@ -1766,28 +1766,28 @@
             border   : 0;
             position : relative;
         }
-        
+
         .mnubtn.shop1 .icon {
             background-image:url(images/shop1.png);
         }
-        
+
         .mnubtn.shop2 .icon {
             background-image:url(images/shop2.png);
         }
-        
+
         .mnubtn.shop3 .icon {
             background-image:url(images/shop3.png);
         }
-        
+
         .mnubtn.shop4 .icon {
             background-image:url(images/shop4.png);
         }
-        
+
         .mnubtn.shop SPAN {
             display:none;
         }
     ]]></a:style>
-    
+
     <a:presentation>
         <a:main caption="span">
             <div class="mnubtn">
@@ -1807,15 +1807,15 @@
             cursor              : pointer;
             position            : relative;
             cursor              : default;
-            -moz-user-select    : none; 
-            -khtml-user-select  : none; 
+            -moz-user-select    : none;
+            -khtml-user-select  : none;
             user-select         : none;
             background-repeat   : no-repeat;
             background-image    : url("images/c9-topbar-btns.png");
             background-position : 0 0;
         }
 
-        // dashboard 
+        // dashboard
         .c9-topbar-btn.c9-topbar-btnDown.dashboard {
             background-position : -25px 0;
         }
@@ -1825,7 +1825,7 @@
         .c9-topbar-btn.dashboard {
             background-position : 0 0;
         }
-        
+
         // home
         .c9-topbar-btn.c9-topbar-btnDown.home {
             background-position : -25px -25px;
@@ -1836,11 +1836,11 @@
         .c9-topbar-btn.home {
             background-position : 0 -25px;
         }
-        
+
     ]]></a:style>
 
     <a:presentation>
-        <a:main 
+        <a:main
           caption      = "text()"
           background = "."
           icon       = ".">
@@ -2361,21 +2361,21 @@
             display : inline-block;
         }*/
 
-        .datagrid .loading, 
-        .datagrid .empty, 
+        .datagrid .loading,
+        .datagrid .empty,
         .datagrid .offline{
             padding : 5px;
             margin : 0;
             white-space : normal;
         }
 
-        .datagrid .loading span, 
-        .datagrid .empty span, 
+        .datagrid .loading span,
+        .datagrid .empty span,
         .datagrid .offline span{
             background : white;
             display : inline;
         }
-        
+
         .datagrid .empty {
             position:absolute;
             top:18px;
@@ -2577,7 +2577,7 @@
             background-color : #e6e6e6;
             white-space : nowrap;
         }
-        
+
         .datagrid .records {
             overflow-x: hidden;
             overflow-y: scroll;
@@ -2594,7 +2594,7 @@
             display:block;
             margin:0;
         }
-        
+
         .datagrid div.records .treecell strong {
 			top : 0px;
 		}
@@ -3183,7 +3183,7 @@
             border-right:1px solid #333333;
             cursor : default;
         }
-        
+
         .tab_console .btncontainer > .divider_console {
             height:23px;
         }
@@ -3205,7 +3205,7 @@
             border-bottom : 1px dotted #f3f3f3;
             height        : 4px;
         }
-        
+
         .divider-debugpanel DIV {
             border-bottom : 1px dotted #bebebe;
             border-top    : 1px dotted #f3f3f3;
@@ -3237,7 +3237,7 @@
             border-right:1px solid #404040;
         }
     ]]></a:style>
-    
+
     <a:presentation>
         <a:main>
             <div class="c9-divider"> </div>
@@ -3255,7 +3255,7 @@
             border-left:1px solid #000000;
             border-right:1px solid #404040;
         }
-        
+
         .c9-divider-double DIV {
             position:relative;
             width:1px;
@@ -3264,7 +3264,7 @@
             border-right:1px solid #000000;
         }
     ]]></a:style>
-    
+
     <a:presentation>
         <a:main>
             <div class="c9-divider-double">
@@ -3280,23 +3280,23 @@
             position : relative;
             overflow : hidden;
             height   : 21px;
-            
+
             -moz-border-radius    : 5px;
             -webkit-border-radius : 5px;
             border-radius         : 5px;
             border                : 1px solid #1c1c1c;
-            
+
             -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
-            
+
             background         : #383838;
             filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#383838', endColorstr='#323232');
             -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#383838', endColorstr='#323232')";
             background         : -webkit-gradient(linear, left top, left bottom, from(#383838), color-stop(1, #323232));
             background         :-moz-linear-gradient(center bottom, #323232 0%, #383838 100%) repeat scroll 0 0 transparent;
          }
-         
+
          .black_dropdown .label {
             position:relative;
             overflow:hidden;
@@ -3309,7 +3309,7 @@
             line-height:14px;
             border-right:1px solid #1c1c1c;
          }
-         
+
          .black_dropdown .button {
             width:14px;
             border-left:1px solid #4d4c4d;
@@ -3319,7 +3319,7 @@
             right:0;
             background:url(images/btn-arrow.png) no-repeat 4px 9px;
          }
-         
+
          .black_dropdownDown {
             background         : #2d2d2d;
             filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#272727', endColorstr='#2d2d2d');
@@ -3327,7 +3327,7 @@
             background         : -webkit-gradient(linear, left top, left bottom, from(#272727), color-stop(1, #2d2d2d));
             background         :-moz-linear-gradient(center bottom, #2d2d2d 0%, #272727 100%) repeat scroll 0 0 transparent;
          }
-         
+
          .c9-optionList {
             width               : 174px;
             overflow            : hidden;
@@ -3338,17 +3338,17 @@
             background-color    : #1c1c1c;
             border              : 1px solid rgba(255, 255, 255, 0.1);
             padding             : 0 0 4px 0;
-            
+
             -moz-box-shadow    : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
             -webkit-box-shadow : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
             box-shadow         : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
-            
+
             filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626');
             -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626')";
             background         : -webkit-gradient(linear, left top, left bottom, from(#1c1c1c), color-stop(0.9, #262626));
             background         :-moz-linear-gradient(center bottom, #262626 0%, #1c1c1c 20%) repeat scroll 0 0 transparent;
         }
-        
+
         .c9-optionList .c9-dd-item {
             height:18px;
             padding:3px 6px 0 6px;
@@ -3360,7 +3360,7 @@
             color         : white;
             cursor:default;
         }
-        
+
         .c9-optionList .c9-dd-item.hover {
             background-color : #292929;
         }
@@ -3872,20 +3872,20 @@
             z-index: 10000;
             position: absolute;
             overflow:visible;
-            
+
             font-family   : Tahoma, Arial;
             font-size     : 11px;
             line-height   : 14px;
             color         : #f1f1f1;
             cursor:default;
-            
+
             display : none;
             border:1px solid rgba(255, 255, 255, 0.1);
-            
+
             -moz-box-shadow    : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
             -webkit-box-shadow : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
             box-shadow         : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
-            
+
             background-color   : #1c1c1c;
             filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626');
             -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626')";
@@ -3917,7 +3917,7 @@
             overflow: visible;
             padding: 0;
             font-size: 1px;
-            
+
             margin:0 3px;
             border-top:1px solid #000000;
             border-bottom:1px solid #313131;
@@ -4012,7 +4012,7 @@
             -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
             box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
         }
-        
+
         .dockwindowbasic .page {
             overflow: hidden;
         }
@@ -4034,14 +4034,14 @@
                 z-index  : 10000;
                 padding  : 30px 0 0 0;
             }
-            
+
             .fm-window .fm-header {
                 position : relative;
                 overflow : hidden;
                 height   : 30px;
                 top      : -30px;
             }
-            
+
             .fm-window .fm-header .hcontent {
                 background    : url(images/header_backg.png)  repeat-x 0 0;
                 margin-right  : 6px;
@@ -4056,7 +4056,7 @@
                 color         : #e8e8e8;
                 text-shadow   : #2a2c2d 0px 1px 0px;
             }
-            
+
             .fm-window .fm-header .right {
                 width:6px;
                 height:30px;
@@ -4065,7 +4065,7 @@
                 right:0;
                 background:url(images/header_right.png) no-repeat 0 0;
             }
-    
+
             .fm-window .fm-content {
                 position:absolute;
                 overflow:visible;
@@ -4077,15 +4077,15 @@
                 background:url(images/panelBg.png) repeat-y right 0;
             }
         ]]></a:style>
-        
+
         <a:presentation>
-            <a:main 
+            <a:main
               collapsed-height = "30"
               minheight        = "30"
               minwidth         = "60"
-              container        = "div[2]" 
-              drag             = "div[2]" 
-              title            = "div[1]/div[1]/text()" 
+              container        = "div[2]"
+              drag             = "div[2]"
+              title            = "div[1]/div[1]/text()"
               icon             = "div[1]/div[1]/div[1]"
               buttons          = "div[1]/div[1]/div[2]">
                 <div class="fm-window">
@@ -4513,22 +4513,22 @@
         .winadv .wn_cp_border_t .wn_cp_buttons div:hover{
             color: #7d7d7d;
         }
-        
+
         .winadv .wn_cp_border_t .wn_cp_buttons .close {
             background: url(images/big_close.png) no-repeat 0 0;
             width: 14px;
             height: 15px;
             margin-top: 6px;
         }
-        
+
         .winadv .wn_cp_border_t .wn_cp_buttons .close.hover {
             background-position: -15px 0;
         }
-        
+
         .winadv .wn_cp_border_t .wn_cp_buttons .close.down {
             background-position: -30px 0;
         }
-        
+
         .winadv .wn_cp_content {
             position            : relative;
             width               : 100%;
@@ -4577,7 +4577,7 @@
             height      : 25px;
             padding     : 17px 0 0 6px;
         }
-        
+
         .winadv .wn_cp_border_t .wn_cp_buttons {
             margin : 13px 0 0 0;
         }
@@ -4652,7 +4652,7 @@
             padding-left:14px;
             margin-bottom:1px;
         }
-        
+
         .rbclassic .radio {
             width      : 12px;
             height     : 12px;
@@ -4929,15 +4929,15 @@
         }
 
         .console_scrollbarDisabled {
-            
+
         }
 
         .console_scrollbarDisabled span {
-            
+
         }
 
         .console_scrollbarDisabled .filler {
-            
+
         }
 
         .console_scrollbar .indicator {
@@ -5003,7 +5003,7 @@
         .console_scrollbar span{
             left : 0;
         }
-        
+
         .console_scrollbar .mainrail {
             height : auto;
         }
@@ -5149,7 +5149,7 @@
             padding    : 0;
             border     : 0;
         }
-        
+
         .fixMargin2 {
              margin-bottom: 2px !important;
          }
@@ -5281,22 +5281,22 @@
             overflow           : hidden;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none; 
-            -khtml-user-select : none; 
+            -moz-user-select   : none;
+            -khtml-user-select : none;
             user-select        : none;
             line-height        : 17px;
             border             : 1px solid transparent;
             float              : left;
         }
-        
+
         .c9-dropdown-btn.main {
             border-width:1px 0 1px 1px;
         }
-        
+
         .c9-dropdown-btn.arrow {
             border-width:1px 1px 1px 0;
         }
-        
+
         .c9-dropdown-btn .c9-icon {
             width:19px;
             height:19px;
@@ -5306,7 +5306,7 @@
             background-position: 0 0;
             background-repeat:no-repeat;
         }
-        
+
          .c9-dropdown-btn .c9-label {
             position:relative;
             overflow:hidden;
@@ -5319,7 +5319,7 @@
             margin:3px 0 0 0;
             border-right:1px solid #1c1c1c;
          }
-         
+
          .c9-dropdown-btn .c9-arrow {
             width:14px;
             height:15px;
@@ -5328,39 +5328,39 @@
             border-left:1px solid #4d4d4d;
             background:url(images/btn-arrow.png) no-repeat 4px 6px;
          }
-         
+
          .c9-dropdown-btn.arrow .c9-icon,
          .c9-dropdown-btn.arrow .c9-label,
          .c9-dropdown-btn.main .c9-arrow {
             display:none;
          }
-         
+
          .c9-dropdown-btnOver {
             border                : 1px solid #1c1c1c;
             -moz-border-radius    : 5px;
             -webkit-border-radius : 5px;
             border-radius         : 5px;
-            
+
             background : #333333;
             filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#393939', endColorstr='#333333');
             -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#393939', endColorstr='#333333')";
             background : -webkit-gradient(linear, left top, left bottom, from(#393939), color-stop(1, #333333));
             background : -moz-linear-gradient(center bottom, #333333 0%, #393939 100%) repeat scroll 0 0 transparent;
-            
+
             -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.15);
             -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.15);
             box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.15);
-            
+
             float:left;
         }
-        
+
         .c9-dropdown-btnOver.main {
             -moz-border-radius    : 5px 0 0 5px;
             -webkit-border-radius : 5px 0 0 5px;
             border-radius         : 5px 0 0 5px;
             border-right          : 0;
         }
-        
+
         .c9-dropdown-btnOver.arrow,
         .c9-dropdown-btnDown.main.arrow {
             -moz-border-radius    : 0 5px 5px 0;
@@ -5368,14 +5368,14 @@
             border-radius         : 0 5px 5px 0;
             border-left:0;
         }
-        
+
         .c9-dropdown-btnDown.main .c9-label,
         .c9-dropdown-btnOver .c9-label {
             height       : 17px;
             padding      : 4px 5px 0 26px;
             margin       : 0;
         }
-         
+
         .c9-dropdown-btnDown.main .c9-arrow,
         .c9-dropdown-btnOver .c9-arrow {
             width               : 14px;
@@ -5383,67 +5383,67 @@
             margin              : 0;
             background-position : 4px 9px;
         }
-        
+
         .c9-dropdown-btnDown {
             border                : 1px solid #1c1c1c;
             -moz-border-radius    : 5px;
             -webkit-border-radius : 5px;
             border-radius         : 5px;
-            
+
             background : #333333;
             filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#393939', endColorstr='#333333');
             -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#393939', endColorstr='#333333')";
             background : -webkit-gradient(linear, left top, left bottom, from(#393939), color-stop(1, #333333));
             background : -moz-linear-gradient(center bottom, #333333 0%, #393939 100%) repeat scroll 0 0 transparent;
-            
+
             -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.15);
             -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.15);
             box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.15);
-            
+
             float:left;
         }
-        
+
         .c9-dropdown-btnDown.main {
             -moz-border-radius    : 5px 0 0 5px;
             -webkit-border-radius : 5px 0 0 5px;
             border-radius         : 5px 0 0 5px;
             border-right          : 0;
-            
+
             background : #333333;
             filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#282828', endColorstr='#2e2e2e');
             -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#282828', endColorstr='#2e2e2e')";
             background : -webkit-gradient(linear, left top, left bottom, from(#282828), color-stop(1, #2e2e2e));
             background : -moz-linear-gradient(center bottom, #2e2e2e 0%, #282828 100%) repeat scroll 0 0 transparent;
         }
-        
+
         .c9-dropdown-btnDown.main .c9-icon {
             background-position: 0 -19px;
         }
-        
+
         .c9-dropdown-btnDown.arrow {
             -moz-border-radius    : 0 5px 5px 0;
             -webkit-border-radius : 0 5px 5px 0;
             border-radius         : 0 5px 5px 0;
             border-left           : 0;
-            
+
             background : #333333;
             filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#282828', endColorstr='#1f1f1f');
             -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#282828', endColorstr='#1f1f1f')";
             background : -webkit-gradient(linear, left top, left bottom, from(#282828), color-stop(1, #1f1f1f));
             background : -moz-linear-gradient(center bottom, #1f1f1f 0%, #282828 100%) repeat scroll 0 0 transparent;
         }
-        
+
         .c9-dropdown-btnDisabled.main .c9-icon {
             background-position: 0 -37px;
         }
-        
+
          .c9-dropdown-btnDisabled .c9-label {
             color:#18191a;
             text-shadow   : rgba(62, 63, 64, 1) 0px 1px 0px;
             border-right:0;
             padding:1px 6px 0 26px;
          }
-         
+
          .c9-dropdown-btnDisabled .c9-arrow {
             width:15px;
             height:15px;
@@ -5467,12 +5467,12 @@
          .c9-dropdown-btnDisabled .c9-label {
             padding:1px 4px 0 26px;
          }
-         
+
          .c9-dropdown-btnDisabled .c9-arrow {
             background-position : 0 6px;
          }
     ]]></a:style>
-    
+
     <a:presentation>
         <a:main caption="div[2]/text()" background="div/span" icon="div[1]">
             <div class="c9-dropdown-btn">
@@ -5490,7 +5490,7 @@
             position : relative;
             z-index  : 90000;
         }
-        
+
         .splitterFocus {
         }
 
@@ -5509,23 +5509,23 @@
         .splitterRealtime{
             background : url(images/spacer.gif);
         }
-        
+
         .splitter.vertical{
             display  : -moz-box;
             display  : -webkit-box;
             display  : -ms-box;
         }
-        
+
         .splitter.vertical div{
             width : 5px;
             margin-left : -3px;
             background : url(images/spacer.gif);
         }
-        
+
         .splitter.horizontal{
             margin : -2px 0 0 0;
         }
-        
+
         .splitter.horizontal div{
             height : 5px;
             margin-top : -2px;
@@ -5533,7 +5533,7 @@
             position : absolute;
             width : 100%;
         }
-        
+
         .dockcol .splitter.horizontal{
             height : 3px;
             background : #333;
@@ -5756,7 +5756,7 @@
     }
 
     .tab_console .btncontainer div.curbtn {
-        color       : #a2c890;
+        color       : #cbfaa9;
         cursor      : default;
         z-index     : 1;
         background  : #1d1d1d url(images/console-tab-btn-curr.png) repeat-x 0 0;
@@ -5840,7 +5840,7 @@
     .tab_console .btncontainer .btntab {
         padding      : 5px 27px 1px 27px;
     }
-    
+
     .tab_console .btncontainer div.curbtn {
         padding      : 3px 27px 1px 27px;
     }
@@ -5893,7 +5893,7 @@
         background: -moz-linear-gradient(center bottom,#262829 0%, #2f3031 100%);
         margin-top : -32px;
         width : auto;
-        
+
         -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
         -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
         box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
@@ -5934,24 +5934,24 @@
         top:10px;
         width:5px;
     }
-    
+
     .editor_tab .btnsesssioncontainer .session_btn .sessiontab_icon {
         background-repeat: no-repeat;
         background-position: 0 0;
     }
-    
+
     .editor_tab .btnsesssioncontainer .saving_active .sessiontab_icon {
         background-image: url(images/save-indicator-active-tab.gif);
     }
-    
+
     .editor_tab .btnsesssioncontainer .saving .sessiontab_icon {
         background-image: url(images/save-indicator-inactive-tab.gif);
     }
-    
+
     .editor_tab .btnsesssioncontainer .loading_active .sessiontab_icon {
         background-image: url(images/load-indicator-active-tab.gif);
     }
-    
+
     .editor_tab .btnsesssioncontainer .loading .sessiontab_icon {
         background-image: url(images/load-indicator-inactive-tab.gif);
     }
@@ -6120,7 +6120,7 @@
         -webkit-border-radius: 4px;
         -webkit-border-radius: 4px;
     }
-    
+
     .editor_tab .editor_bg .editor_bg_content .editor_bg_message {
         color: #489829;
         font-family: georgia;
@@ -6128,7 +6128,7 @@
         background: url(images/green-arrow-left.png) no-repeat 0 0;
         text-shadow : rgba(240, 240, 240, .71) 1px 1px 1px;
     }
-    
+
     .editor_tab .editor_bg .editor_bg_message-top {
         color: #489829;
         font-family: georgia;
@@ -6143,7 +6143,7 @@
         color: #a1a1a1;
         font-size: 12px;
     }
-    
+
     .editor_tab .session_page {
         display : none;
         position : absolute;
@@ -6226,7 +6226,7 @@
             font-family : Tahoma, Arial;
             font-size : 11px;
             border-bottom : 1px solid #8c8c8c;
-            
+
             /*border-top : 1px solid #ffffff;
             border-right : 1px solid #8c8c8c;
             border-left : 1px solid #8c8c8c;*/
@@ -6411,7 +6411,7 @@
             overflow: visible;
             white-space: nowrap;
             border-bottom : 1px solid #8c8c8c;
-            
+
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
             background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
             width : auto;
@@ -6615,8 +6615,8 @@
             padding : 7px 0 3px 0;
             color : #eee;
             overflow : hidden;
-        }    
-        
+        }
+
         .console_text .item{
             /*border-bottom : 1px solid #3F3F3F;*/
             padding : 2px 10px;
@@ -6625,14 +6625,14 @@
         .console_text .red {
             color: #c93a40;
         }
-        
+
         .console_text .blue,
         .console_text .item a:link,
         .console_text .item a:hover,
         .console_text .item a:active {
             color: #86c2f6;
         }
-        .console_text .gray, 
+        .console_text .gray,
         .console_text .item a:visited {
             color: #909090;
         }
@@ -6877,7 +6877,7 @@
             background-color : transparent;
             width: 100%;
         }
-        
+
         .searchbox_textbox.small_font .sbtb_middle,
             .searchbox_textbox.small_font .sbtb_middle INPUT {
             font-size: 11px;
@@ -6998,7 +6998,7 @@
             overflow : hidden;
             height : 27px;
         }
-        
+
         .toolbar .subbar.no_border {
             border-bottom: none;
             padding-top: 1px;
@@ -7053,7 +7053,7 @@
             padding          : 0;
             overflow         : hidden;
             border-right     : 1px solid #f5f5f5;
-            
+
             -webkit-user-select: none;
             -khtml-user-select: none;
             -moz-user-select: none;
@@ -7064,7 +7064,7 @@
         .hboxTrFiles {
             background :url(images/tree-shadow-left.png) repeat-y left 0, url(images/tree-shadow-right.png) repeat-y right 0, url(images/tree_backg.png) repeat 0 0;
         }
-        
+
         .filemgr-tree U {
             position:relative;
             overflow:hidden;
@@ -7073,83 +7073,83 @@
             padding:0 0 0 0;
             text-decoration:none;
         }
-        
+
         .filemgr-tree U .item-fix {
             padding-left : 15px;
         }
-        
+
         .filemgr-tree U U .item-fix {
             padding-left : 30px;
         }
-        
+
         .filemgr-tree U U U .item-fix {
             padding-left : 45px;
         }
-        
+
         .filemgr-tree U U U U .item-fix {
             padding-left : 60px;
         }
-        
+
         .filemgr-tree U U U U U .item-fix {
             padding-left : 75px;
         }
-        
+
         .filemgr-tree U U U U U U .item-fix {
             padding-left : 90px;
         }
-        
+
         .filemgr-tree U U U U U U U .item-fix {
             padding-left : 105px;
         }
-        
+
         .filemgr-tree U U U U U U U U .item-fix {
             padding-left : 120px;
         }
-        
+
         .filemgr-tree U U U U U U U U U .item-fix {
             padding-left : 135px;
         }
-        
+
         .filemgr-tree U U U U U U U U U U .item-fix {
             padding-left : 150px;
         }
-        
+
         .filemgr-tree U U U U U U U U U U U .item-fix {
             padding-left : 165px;
         }
-        
+
         .filemgr-tree U U U U U U U U U U U U .item-fix {
             padding-left : 180px;
         }
-        
+
         .filemgr-tree U U U U U U U U U U U U U .item-fix {
             padding-left : 195px;
         }
-        
+
         .filemgr-tree U U U U U U U U U U U U U U .item-fix {
             padding-left : 210px;
         }
-        
+
         .filemgr-tree U U U U U U U U U U U U U U U .item-fix {
             padding-left : 225px;
         }
-        
+
         .filemgr-tree U U U U U U U U U U U U U U U U .item-fix {
             padding-left : 240px;
         }
-        
+
         .filemgr-tree U U U U U U U U U U U U U U U U U .item-fix {
             padding-left : 255px;
         }
-        
+
         .filemgr-tree U U U U U U U U U U U U U U U U U U .item-fix {
             padding-left : 270px;
         }
-        
+
         .filemgr-tree U U U U U U U U U U U U U U U U U U U .item-fix {
             padding-left : 285px;
         }
-        
+
         .filemgr-tree U U U U U U U U U U U U U U U U U U U U .item-fix {
             padding-left : 300px;
         }
@@ -7161,18 +7161,18 @@
             border-bottom:1px solid transparent;
             /*width:100%;*/
         }
-        
+
         .filemgr-tree .item-fix .item {
             height:18px;
             padding:0 0 0 15px;
             position:relative;
             /*overflow:hidden;*/
         }
-        
+
         .filemgr-tree .item-fix.selected {
             background : url(images/tree_selected.png) repeat 0 0;
         }
-        
+
         .filemgr-dragtree .item .caption,
         .filemgr-tree .item-fix.dragAppend .item {
             -webkit-border-radius: 10px;
@@ -7185,15 +7185,15 @@
             color: white;
             margin-right: 5px;
         }
-        
+
         .filemgr-tree .item-fix.dragDenied {
-            
+
         }
-        
+
         .filemgr-tree .item-fix.dragInsert {
-            
+
         }
-        
+
         .filemgr-treeFocus .item-fix.selected {
             border-top:1px solid #3a9bec;
             border-bottom:1px solid #185f97;
@@ -7202,13 +7202,13 @@
             background : -webkit-gradient(linear, left top, left bottom, from(#2890e5), color-stop(1, #1f82d2));
             background : -moz-linear-gradient(center bottom, #1f82d2 0%, #2890e5 100%) repeat scroll 0 0 transparent;
         }
-        
+
         .filemgr-dragtree,
         .filemgr-treeFocus .item-fix.selected .item LABEL .caption,
         .filemgr-treeFocus .item-fix.dragAppend .item LABEL .caption {
             color:white;
         }
-        
+
         .filemgr-tree .item SPAN {
             top:5px;
             left:4px;
@@ -7217,26 +7217,26 @@
             position:absolute;
             overflow:hidden;
         }
-        
-        .filemgr-tree U.root .item-fix.min .item SPAN, 
-        .filemgr-tree U.root .item-fix.minlast .item SPAN, 
+
+        .filemgr-tree U.root .item-fix.min .item SPAN,
+        .filemgr-tree U.root .item-fix.minlast .item SPAN,
         .filemgr-tree U.root .item-fix.plus .item SPAN,
         .filemgr-tree U.root .item-fix.pluslast .item SPAN,
         .filemgr-tree .item-fix.root .item SPAN {
             background-image:url(images/tree_close_arrow_small.png);
             background-repeat: no-repeat;
         }
-        
+
         .filemgr-tree .item-fix.min .item SPAN,
         .filemgr-tree .item-fix.minlast .item SPAN {
             background-position: -10px 0;
         }
-        
+
         .filemgr-tree .item-fix.plus .item SPAN,
         .filemgr-tree .item-fix.pluslast .item SPAN {
             background-position: 0 0;
         }
-        
+
         .filemgr-tree .item LABEL {
             display:block;
             position:relative;
@@ -7246,7 +7246,7 @@
             background-repeat:no-repeat;
             padding-left:20px;
         }
-        
+
         .filemgr-tree .item LABEL .caption {
             font-family : Tahoma, Arial;
             font-size   : 11px;
@@ -7259,32 +7259,32 @@
             text-decoration:none;
             white-space: nowrap;
         }
-        
+
         .filemgr-tree .loading .item {
             background : url(images/file-tree-load-spinner.gif) no-repeat 16px 1px;
         }
-        
+
         .filemgr-tree .loading .item LABEL {
             background-position : -1000px 0;
         }
-        
+
         .filemgr-tree .loading.selected .item {
             background : url(images/file-tree-load-spinner-selected.gif) no-repeat 16px 1px;
         }
-        
+
         .filemgr-tree .ldng,
         .filemgr-tree .empty {
             display : none;
         }
-        
+
         #txt_rename {
             /*border:1px solid #2084d6;
             background-color: #d7e7f4;*/
-            
+
             height:16px;
             padding-left:1px;
             margin-top:0px;
-            
+
             font-family : Tahoma, Arial;
             font-size   : 11px;
             color       : #101010;
@@ -7295,13 +7295,13 @@
             word-break: keep-all;
             cursor: text;
             outline : none;
-            
+
             -webkit-user-select: text;
             -khtml-user-select: text;
             -moz-user-select: text;
             -o-user-select: text;
             user-select: text;
-            
+
             overflow: visible;
             display: inline-block;
             background-color: #EAF1F7;
@@ -7310,24 +7310,24 @@
             -webkit-box-shadow: 0px 0px 6px #76839A;
             box-shadow: 0px 0px 6px #76839A;
         }
-        
+
         #txt_rename::selection {
-            background: #90C3EF; 
+            background: #90C3EF;
             }
         #txt_rename::-moz-selection {
             background: #90C3EF;
         }
-        
+
         .filemgr-dragtree {
             overflow:hidden;
             height:22px;
             opacity: .6;
         }
-        
+
         .filemgr-dragtree .item SPAN {
             display:none;
         }
-        
+
         .filemgr-dragtree .item LABEL {
             display:block;
             position:relative;
@@ -7339,7 +7339,7 @@
             padding-right:6px;
             float:left;
         }
-        
+
         .filemgr-dragtree .item LABEL .caption {
             font-family     : Tahoma, Arial;
             font-size       : 11px;
@@ -7361,12 +7361,12 @@
             height:16px;
             padding:2px 0 0 2px;
         }
-        
+
         #txt_rename {
             height:15px;
             padding-top:1px;
         }
-        
+
         .filemgr-dragtree2 .item LABEL .caption {
             height          : 16px;
             padding         : 3px 0 0 20px;
@@ -7629,7 +7629,7 @@
 			.img{
 				overflow: auto;
 			}
-	
+
             .img div {
 				width : 100%;
 				height : 100%;
@@ -7645,11 +7645,11 @@
 				-webkit-box-align: center;
 				box-align: center;
             }
-            
+
             .img IMG {
 				display: block;
             }
-			
+
 			.img span{
 				display:block;
 			}

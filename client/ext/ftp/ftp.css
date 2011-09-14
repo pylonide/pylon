@@ -1,36 +1,19 @@
-.fileprop_row {
-    margin: 0 0 2px 0;
-}
-
-.fileprop_header {
-    display: inline-block;
-    width: 70px;
-    padding: 0 10px 0 0;
-    text-align: right;
-    clear: both;
-}
-
-.fileprop_value {
-    display: inline-block;
-    width: 240px;
-}
-
-.fileprop_value > span {
-    font-weight: bold;
-}
-
 .console_command {
-    color: #06f;
+    line-height: 150%;
+    color: #cbfaa9;
 }
 
 .console_response {
-    color: #6f6;
+    line-height: 150%;
+    color: #aaa;
 }
 
 .console_status {
+    line-height: 150%;
     color: #fff;
 }
 
 .console_error {
+    line-height: 150%;
     color: #f30;
 }
