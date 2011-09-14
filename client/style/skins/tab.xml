@@ -77,7 +77,7 @@
     }
 
     .tab_console .btncontainer div.curbtn {
-        color       : #a2c890;
+        color       : #cbfaa9;
         cursor      : default;
         z-index     : 1;
         background:url(images/console-tab-btn-curr.png) repeat-x 0 0;
@@ -161,7 +161,7 @@
     .tab_console .btncontainer .btntab {
         padding      : 5px 27px 1px 27px;
     }
-    
+
     .tab_console .btncontainer div.curbtn {
         padding      : 3px 27px 1px 27px;
     }
@@ -213,7 +213,7 @@
         background: -moz-linear-gradient(center bottom,#262829 0%, #2f3031 100%);
         margin-top : -32px;
         width : auto;
-        
+
         -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
         -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
         box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
@@ -496,7 +496,7 @@
             font-family : Tahoma, Arial;
             font-size : 11px;
             border-bottom : 1px solid #8c8c8c;
-            
+
             /*border-top : 1px solid #ffffff;
             border-right : 1px solid #8c8c8c;
             border-left : 1px solid #8c8c8c;*/
@@ -681,7 +681,7 @@
             overflow: visible;
             white-space: nowrap;
             border-bottom : 1px solid #8c8c8c;
-            
+
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
             background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
             width : auto;

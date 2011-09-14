@@ -27,8 +27,6 @@ module.exports = ext.register("ext/ftp/ftp", {
     hotitems : {},
     css      : css,
     nodes    : [],
-    groupList : ["owner", "group", "public"],
-    permissionList : ["read", "write", "execute"],
 
     hook: function(){
         ext.initExtension(this);
@@ -65,17 +63,17 @@ module.exports = ext.register("ext/ftp/ftp", {
         if (type === "response")
             msg = msg.replace(/\n/gm, "<br>").replace(/\s/gm, "&nbsp;");
 
-        txtFtpConsole.addValue("<br><div class='item console_" + type + "'>" + msg + "</div>");
+        txtFtpConsole.addValue("<div class='item console_" + type + "'>" + msg + "</div>");
     },
 
-    write: function(aLines) {
-        if (typeof aLines == "string")
-            aLines = aLines.split("\n");
+    write: function(lines) {
+        var self = this;
+        if (typeof lines == "string")
+            aLines = lines.split("\n");
 
-        aLines.forEach(function(line) {
-            this.log(line, "log")
+        lines.forEach(function(line) {
+            self.log(line, "log")
         });
-        //this.log("", "divider");
     },
 
     onMessage: function(e) {
