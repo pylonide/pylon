@@ -9,9 +9,9 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-require.def("ext/gitblame/blamejs", [], function() {
+define(function(require, exports, module) {
 
-var BlameJS = (function() {
+module.exports = (function() {
     
     function BlameJS() {
         this.commit_data = {};
@@ -166,7 +166,5 @@ var BlameJS = (function() {
 
     return BlameJS;
 })();
-
-return BlameJS;
 
 });

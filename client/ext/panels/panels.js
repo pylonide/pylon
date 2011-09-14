@@ -9,10 +9,9 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var settings = require("ext/settings/settings");
 var markup = require("text!ext/panels/panels.xml");
 
-return ext.register("ext/panels/panels", {
+module.exports = ext.register("ext/panels/panels", {
     name   : "Panel Manager",
     dev    : "Ajax.org",
     alone  : true,
@@ -136,12 +135,12 @@ return ext.register("ext/panels/panels", {
     init : function(amlNode){
         this.nodes.push(
             barMenu.appendChild(new apf.button({
-                submenu : "mnuPanels",
+                submenu : "mnuWindows",
                 caption : "Windows",
                 skin    : "c9-menu-btn",
                 margin  : "1 0 0 0"
             })),
-            mnuPanels
+            mnuWindows
         );
         
         /**** Support for state preservation ****/
@@ -151,13 +150,16 @@ return ext.register("ext/panels/panels", {
         ide.addEventListener("loadsettings", function(e){
             var strSettings = e.model.queryValue("auto/panel");
             if (strSettings) {
-                _self.$settings = apf.unserialize(strSettings);
+                try {
+                    _self.$settings = JSON.parse(strSettings);
                 
-                var panelExt;
-                for (var path in _self.$settings) {
-                    if ((panelExt = _self.panels[path]) && panelExt.panel)
-                        _self.setPanelSettings(panelExt, _self.$settings[path]);
+                    var panelExt;
+                    for (var path in _self.$settings) {
+                        if ((panelExt = _self.panels[path]) && panelExt.panel)
+                            _self.setPanelSettings(panelExt, _self.$settings[path]);
+                    }
                 }
+                catch (ex) {}
             }
         });
 
@@ -255,5 +257,4 @@ return ext.register("ext/panels/panels", {
     }
 });
 
-    }
-);
+});

@@ -2,7 +2,10 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/keybindings_default/default_mac", ["core/ide", "ext/keybindings/keybindings"], function(ide, keys) {
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var keys = require("ext/keybindings/keybindings");
 
 return keys.onLoad({
     "ext" : {
@@ -38,11 +41,16 @@ return keys.onLoad({
             "beautify": "Command-Shift-B"
         },
         "gotofile": {
-            "gotofile": "Alt-Shift-R|Command-T"
+            "gotofile": "Alt-Shift-R"
         },
         "newresource": {
             "newfile": "Command-N",
             "newfolder": "Command-Shift-N"
+        },
+        "quicksearch": {
+            "find": "Command-F",
+            "findnext": "Command-G",
+            "findprevious": "Command-Shift-G"
         },
         "searchreplace" : {
             "search": "Command-Shift-F",

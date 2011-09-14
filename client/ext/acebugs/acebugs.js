@@ -14,7 +14,7 @@ var dock    = require("ext/dockpanel/dockpanel");
 var editors = require("ext/editors/editors");
 var markup  = require("text!ext/acebugs/acebugs.xml");
 
-return ext.register("ext/acebugs/acebugs", {
+module.exports = ext.register("ext/acebugs/acebugs", {
     name: "Ace Bugs",
     dev: "Ajax.org",
     alone: true,

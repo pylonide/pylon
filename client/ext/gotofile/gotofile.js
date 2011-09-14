@@ -4,17 +4,18 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/gotofile/gotofile",
-    ["core/ide", 
-     "core/ext",
-     "ext/filesystem/filesystem", 
-     "ext/settings/settings",
-     "ext/tree/tree",
-     "ext/editors/editors",
-     "text!ext/gotofile/gotofile.xml"],
-    function(ide, ext, fs, settings, tree, editors, markup) {
+
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+var fs = require("ext/filesystem/filesystem");
+var settings = require("ext/settings/settings");
+var tree = require("ext/tree/tree");
+var editors = require("ext/editors/editors");
+var markup = require("text!ext/gotofile/gotofile.xml");
         
-return ext.register("ext/gotofile/gotofile", {
+module.exports = ext.register("ext/gotofile/gotofile", {
     name    : "Filter Tree",
     dev     : "Ajax.org",
     alone   : true,

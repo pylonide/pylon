@@ -13,7 +13,7 @@ var editors = require("ext/editors/editors");
 var BlameJS = require("ext/gitblame/blamejs");
 var util    = require("core/util");
 
-return ext.register("ext/gitblame/gitblame", {
+module.exports = ext.register("ext/gitblame/gitblame", {
     name     : "Git Blame",
     dev      : "Ajax.org",
     alone    : true,
@@ -50,10 +50,11 @@ return ext.register("ext/gitblame/gitblame", {
     },
 
     requestBlame : function() {
-        var cmd = "blame";
+        var cmd = "gittools";
 
         var data = {
             command : cmd,
+            subcommand : "blame",
             file    : tabEditors.getPage().$model.data.getAttribute("path")
         };
 
@@ -63,8 +64,6 @@ return ext.register("ext/gitblame/gitblame", {
               data: data
             }) !== false) {
                 if (!ide.onLine) {
-                    // @TODO Put in a util.error here
-                    console.log("Cannot execute command. You are currently offline.");
                     util.alert(
                         "Currently Offline",
                         "Currently Offline",

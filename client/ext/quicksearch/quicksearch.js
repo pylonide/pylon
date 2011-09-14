@@ -15,7 +15,7 @@ var Search = require("ace/search").Search;
 var skin = require("text!ext/quicksearch/skin.xml");
 var markup = require("text!ext/quicksearch/quicksearch.xml");
 
-return ext.register("ext/quicksearch/quicksearch", {
+module.exports = ext.register("ext/quicksearch/quicksearch", {
     name    : "quicksearch",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
@@ -23,7 +23,10 @@ return ext.register("ext/quicksearch/quicksearch", {
     skin    : skin,
     markup  : markup,
     commands : {
-        "quicksearch": {hint: "quickly search for a string inside the active document, without further options (see 'search')"}
+        "quicksearch": {hint: "quickly search for a string inside the active document, without further options (see 'search')"},
+        "find": {hint: "open the quicksearch dialog to quickly search for a phrase"},
+        "findnext": {hint: "search for the next occurrence of the search query your entered last"},
+        "findprevious": {hint: "search for the previous occurrence of the search query your entered last"}
     },
     hotitems: {},
 
@@ -33,7 +36,7 @@ return ext.register("ext/quicksearch/quicksearch", {
         var _self = this;
         canon.addCommand({
             name: "find",
-            exec: function(env, args, request) { 
+            exec: function(env, args, request) {
                 _self.toggleDialog(1);
             }
         });
@@ -43,17 +46,19 @@ return ext.register("ext/quicksearch/quicksearch", {
         var _self = this;
         
         txtQuickSearch.addEventListener("keydown", function(e){
-            switch(e.keyCode){
+            switch (e.keyCode){
                 case 13: //ENTER
                     if (e.shiftKey)
-                        _self.find(false, true);
+                        _self.execSearch(false, true);
                     else
-                        _self.find(false, false);
+                        _self.execSearch(false, false);
                     return false;
                 break;
                 case 27: //ESCAPE
                     _self.toggleDialog(-1);
-                    if (e.stop)
+                    if (e.htmlEvent)
+                        apf.stopEvent(e.htmlEvent)
+                    else if (e.stop)
                         e.stop();
                     return false;
                 break;
@@ -183,8 +188,8 @@ return ext.register("ext/quicksearch/quicksearch", {
         this.toggleDialog(1);
     },
 
-    find: function(close, backwards) {
-        var editor = require('ext/editors/editors').currentEditor;
+    execSearch: function(close, backwards) {
+        var editor = editors.currentEditor;
         if (!editor || !editor.ceEditor)
             return;
         
@@ -215,10 +220,10 @@ return ext.register("ext/quicksearch/quicksearch", {
         var settings = require("ext/settings/settings");
         if (settings.model) {
             var history = settings.model;
-            search = apf.createNodeFromXpath(history.data, "search");
+            var search = apf.createNodeFromXpath(history.data, "search");
             
             if (!search.firstChild || search.firstChild.getAttribute("key") != txt) {
-                keyEl = apf.getXml("<word />");
+                var keyEl = apf.getXml("<word />");
                 keyEl.setAttribute("key", txt);
                 apf.xmldb.appendChild(search, keyEl, search.firstChild);
             }
@@ -228,6 +233,35 @@ return ext.register("ext/quicksearch/quicksearch", {
             winQuickSearch.hide();
             ceEditor.focus();
         }
+    },
+    
+    find: function() {
+        this.toggleDialog(1);
+        return false;
+    },
+    
+    findnext: function() {
+        var editor = editors.currentEditor;
+        if (!editor || !editor.ceEditor)
+            return;
+        
+        var ceEditor = editor.ceEditor;
+        var ace      = ceEditor.$editor;
+
+        ace.findNext();
+        return false;
+    },
+    
+    findprevious: function() {
+        var editor = editors.currentEditor;
+        if (!editor || !editor.ceEditor)
+            return;
+        
+        var ceEditor = editor.ceEditor;
+        var ace      = ceEditor.$editor;
+
+        ace.findPrevious();
+        return false;
     },
 
     enable : function(){

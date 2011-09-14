@@ -3,7 +3,7 @@
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/apf.js)SIZE(97098)TIME(Tue, 19 Jul 2011 12:26:37 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/apf.js)SIZE(97236)TIME(Thu, 21 Jul 2011 15:42:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -251,8 +251,9 @@ VERSION:'3.0beta',
         // http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
         // http://sla.ckers.org/forum/read.php?24,31765,33730
         var sAgent = navigator.userAgent.toLowerCase() || "",
+            isSafInf = (sAgent.indexOf('safari') != -1) && /a/.__proto__=='//', // Safari versions < 5.1 (before Lion release)
             // 1->IE, 0->FF, 2->GCrome, 3->Safari, 4->Opera, 5->Konqueror 
-            b      = (typeof/./)[0]=='f'?+'1\0'?3:2:+'1\0'?5:1-'\0'?1:+{valueOf:function(x){return!x}}?4:0;
+            b      = (typeof/./)[0]=='f'?+'1\0'?3:2:+'1\0'?5:1-'\0'?1:isSafInf?3:+{valueOf:function(x){return!x}}?4:0;
 
        /*
         * Fix for firefox older than 2
@@ -26523,7 +26524,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(46989)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(47033)TIME(Tue, 26 Jul 2011 12:19:57 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -26863,8 +26864,9 @@ apf.MultiselectBinding = function(){
         var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.xmlRoot);
         while (nodes[i] && nodes[i] != xmlNode)
             i++;
-
-        return nodes[i + (up ? -1 * count : count)];
+        
+        var ind = i + (up ? -1 * count : count);
+        return nodes[ind < 0 ? 0 : ind];
     };
 
     /**
@@ -27219,7 +27221,7 @@ apf.MultiselectBinding = function(){
                 return;
             
             if (this.$hasLoadStatus(xmlNode) && this.$removeLoading)
-                this.$removeLoading(htmlNode);
+                this.$removeLoading(xmlNode);
 
             if (this.$container.firstChild && !apf.xmldb.getNode(this.$container.firstChild)) {
                 //Appearantly the content was cleared
@@ -29786,7 +29788,7 @@ apf.ChildValue = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dataaction.js)SIZE(27010)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dataaction.js)SIZE(27055)TIME(Thu, 21 Jul 2011 10:05:47 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30195,10 +30197,12 @@ apf.DataAction = function(){
         }
 
         //Use Action Tracker
-        this.$executeAction(atAction, args, atName, xmlNode);
+        var result = this.$executeAction(atAction, args, atName, xmlNode);
         
         if (shouldLoad)
             this.load(xmlNode.selectSingleNode(xpath));
+        
+        return result;
     };
     
     /**
@@ -30661,7 +30665,7 @@ apf.GuiElement.propHandlers["caching"] = function(value) {
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/rename.js)SIZE(14376)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/rename.js)SIZE(15022)TIME(Thu, 28 Jul 2011 15:17:54 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30790,7 +30794,7 @@ apf.Rename = function(){
 
         if (!xmlNode) return;
 
-        this.$executeSingleValue("rename", "caption", xmlNode, value);
+        return this.$executeSingleValue("rename", "caption", xmlNode, value);
     };
 
     /**
@@ -30800,11 +30804,12 @@ apf.Rename = function(){
      *
      */
     this.startDelayedRename = function(e, time, userAction){
+        clearTimeout(this.renameTimer);
+        
         if (e && (e.button == 2 || e.ctrlKey || e.shiftKey) 
           || userAction && this.disabled)
             return;
 
-        clearTimeout(this.renameTimer);
         this.renameTimer = $setTimeout('apf.lookup('
             + this.$uniqueId + ').startRename()', time || 400);
     };
@@ -30853,7 +30858,7 @@ apf.Rename = function(){
             : this.$getDataNode("caption", this.$renameSubject);
 
         //xmlNode.nodeType >= 2 && xmlNode.nodeType <= 4
-        value =  startEmpty || !xmlNode
+        var value =  startEmpty || !xmlNode
             ? ""
             : (xmlNode.nodeType != 1
                 ? unescape(xmlNode.nodeValue) //decodeURI( - throws an error when using % in a non expected way
@@ -30933,10 +30938,11 @@ apf.Rename = function(){
             this.$stopAction("rename");
         }
         else {
-            if (this.$replacedNode)
-                this.$replacedNode.innerHTML = value.replace(/</g, "&lt;").replace(/\r?\n/g, "<br />");
             //this.$selected.innerHTML = this.$txt.innerHTML;
-            this.rename(this.$renameSubject, value);
+            if (this.rename(this.$renameSubject, value) !== false) {
+                if (this.$replacedNode)
+                    this.$replacedNode.innerHTML = value.replace(/</g, "&lt;").replace(/\r?\n/g, "<br />");
+            }
         }
 
         if (!this.renaming) {
@@ -31038,6 +31044,7 @@ apf.Rename.initEditableArea = function(){
         this.$txt.oncontextmenu =
         //this.$txt.onkeydown   = 
         this.$txt.onmouseup   = 
+        this.$txt.ondblclick  =
         this.$txt.onmousedown = function(e){ 
             apf.stopPropagation(e || event)
         };
@@ -31054,7 +31061,18 @@ apf.Rename.initEditableArea = function(){
         var sel;
         this.$txt.select = function(){
             if (!apf.hasMsRangeObject) {
-                (sel || (sel = new apf.selection())).selectNode(this);
+                if (window.getSelection && document.createRange) {
+                    var sel = window.getSelection();
+                    sel.removeAllRanges();
+                    var r = document.createRange();
+                    r.setStart(this.firstChild, 0);
+                    var lastIndex = this.firstChild.nodeValue.lastIndexOf(".");
+                    r.setEnd(this.firstChild, lastIndex > -1 ? lastIndex : this.firstChild.nodeValue.length);
+                    sel.addRange(r)
+                }
+                else {
+                    (sel || (sel = new apf.selection())).selectNode(this);
+                }
                 return;
             }
     
@@ -31450,7 +31468,7 @@ apf.BaseButton = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/baselist.js)SIZE(38995)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/baselist.js)SIZE(38108)TIME(Tue, 26 Jul 2011 12:19:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -32047,7 +32065,9 @@ apf.BaseList = function(){
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  this.hasPassedDown = true;\
-                 if (!o.renaming && o.hasFocus() && isSelected == 1) \
+                 if (event.button == 2) \
+                    o.stopRename();\
+                 else if (!o.renaming && o.hasFocus() && isSelected == 1) \
                     this.dorename = true;\
                  if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
                      o.select(this, event.ctrlKey, event.shiftKey, -1)');
@@ -34680,7 +34700,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(49045)TIME(Wed, 20 Jul 2011 14:43:15 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(50047)TIME(Tue, 26 Jul 2011 12:19:57 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34791,11 +34811,12 @@ apf.BaseTree = function(){
     this.$booleanProperties["startcollapsed"] = true;
     this.$booleanProperties["nocollapse"]     = true;
     this.$booleanProperties["singleopen"]     = true;
+    this.$booleanProperties["animation"]      = true;
     this.$booleanProperties["prerender"]      = true;
     this.$booleanProperties["removecontainer"] = true;
     
     this.$supportedProperties.push("openadd", "startcollapsed", "nocollapse",
-        "singleopen", "prerender", "removecontainer");
+        "singleopen", "prerender", "removecontainer", "animation");
     
     this.openadd        = true;
     this.startcollapsed = 1;
@@ -35043,38 +35064,52 @@ apf.BaseTree = function(){
         container.style.overflow = "hidden";
         container.style.height = prevHeight;
         
-        apf.tween.single(container, {
-            type    : 'scrollheight', 
-            from    : container.offsetHeight, 
-            to      : height, 
-            anim    : this.$animType, 
-            steps   : this.$animOpenStep,
-            interval: this.$animSpeed,
-            onfinish: function(container){
-                if (xmlNode && _self.$hasLoadStatus(xmlNode, "potential")) {
-                    $setTimeout(function(){
-                        if (container != this.$container) {
-                            container.style.height = container.scrollHeight + "px";
-                            container.style.overflow = "hidden";
-                        }
-                        _self.$extend(xmlNode, container, null, callback);
-                    });
+        function finishSlide() {
+            if (xmlNode && _self.$hasLoadStatus(xmlNode, "potential")) {
+                $setTimeout(function(){
                     if (container != this.$container) {
-                        if (!apf.isIE7) {
-                            container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
-                        }
-                        container.style.overflow = "visible";
+                        container.style.height = container.scrollHeight + "px";
+                        container.style.overflow = "hidden";
                     }
-                }
-                else if (container != this.$container) {
-                    container.style.overflow = "visible";
+                    _self.$extend(xmlNode, container, null, callback);
+                });
+                if (container != this.$container) {
                     if (!apf.isIE7) {
                         container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
                     }
+                    container.style.overflow = "visible";
                 }
-                _self.dispatchEvent("expand", {xmlNode: xmlNode});
             }
-        });
+            else if (container != this.$container) {
+                container.style.overflow = "visible";
+                if (!apf.isIE7) {
+                    container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
+                }
+            }
+            _self.dispatchEvent("expand", {xmlNode: xmlNode});
+        }
+        
+        if(!this.getAttribute("animation")) {
+            var diff = apf.getHeightDiff(container),
+                oInt = container;
+
+            container.style.height = Math.max((height), 0) + "px";
+            oInt.scrollTop         = oInt.scrollHeight - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
+            finishSlide();
+        }
+        else {
+            apf.tween.single(container, {
+                type    : 'scrollheight', 
+                from    : container.offsetHeight, 
+                to      : height, 
+                anim    : this.$animType, 
+                steps   : this.$animOpenStep,
+                interval: this.$animSpeed,
+                onfinish: function(container){
+                    finishSlide();
+                }
+            });
+        }
     };
 
     /**
@@ -35432,9 +35467,17 @@ apf.BaseTree = function(){
     };
     
     //???
-    this.$removeLoading = function(htmlNode){
-        if (!htmlNode) return;
-        this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
+    this.$removeLoading = function(xmlNode){
+        if (!xmlNode) return;
+        
+        if (this.$timers)
+            clearTimeout(this.$timers[xmlNode.getAttribute(apf.xmldb.xmlIdTag)]);
+        
+        var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this); 
+        if (htmlNode) {
+            this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
+            this.$setStyleClass(htmlNode, "", ["loading"]);
+        }
     };
     
     //check databinding for how this is normally implemented
@@ -35449,6 +35492,11 @@ apf.BaseTree = function(){
 
         if (rule && xmlContext) {
             this.$setLoadStatus(xmlNode, "loading");
+            
+            var _self = this;
+            (this.$timers || (this.$timers = {}))[xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = setTimeout(function(){;
+                _self.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), "loading");
+            }, 100);
             
             if (rule.get) {
                 
@@ -35467,7 +35515,7 @@ apf.BaseTree = function(){
         }
         else if (!this.prerender) {
             this.$setLoadStatus(xmlNode, "loaded");
-            this.$removeLoading(apf.xmldb.getHtmlNode(xmlNode, this));
+            this.$removeLoading(xmlNode);
             xmlUpdateHandler.call(this, {
                 action  : "insert", 
                 xmlNode : xmlNode, 
@@ -40816,7 +40864,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/window.js)SIZE(50515)TIME(Thu, 23 Jun 2011 08:28:02 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/window.js)SIZE(50515)TIME(Tue, 26 Jul 2011 12:19:57 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43258,7 +43306,7 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/opera.js)SIZE(6576)TIME(Thu, 23 Jun 2011 08:28:01 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/opera.js)SIZE(6583)TIME(Thu, 21 Jul 2011 15:42:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43345,7 +43393,7 @@ apf.runOpera = function (){
     Document.prototype.selectSingleNode     =
     XMLDocument.prototype.selectSingleNode  =
     HTMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
-        var nodeList = this.selectNodes(sExpr + "[1]", contextNode ? contextNode : null);
+        var nodeList = this.selectNodes("(" + sExpr + ")[1]", contextNode ? contextNode : null);
         return nodeList.length > 0 ? nodeList[0] : null;
     };
     
@@ -43444,7 +43492,7 @@ apf.runOpera = function (){
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/webkit.js)SIZE(7728)TIME(Tue, 19 Jul 2011 17:17:35 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/webkit.js)SIZE(7777)TIME(Thu, 21 Jul 2011 15:42:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43515,8 +43563,8 @@ apf.runWebkit = function(){
     
     //XMLDocument.selectSingleNode
     HTMLDocument.prototype.selectSingleNode = XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
-        var nodeList = this.selectNodes(sExpr, contextNode || null);
-        return nodeList[0] || null;
+        var nodeList = this.selectNodes("(" + sExpr + ")[1]", contextNode ? contextNode : null);
+        return nodeList.length > 0 ? nodeList[0] : null;
     };
     
     //Element.selectSingleNode
@@ -48401,7 +48449,7 @@ apf.aml.setElement("actions", apf.actions);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker.js)SIZE(36292)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker.js)SIZE(36296)TIME(Thu, 21 Jul 2011 09:59:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48884,8 +48932,8 @@ apf.actiontracker = function(struct, tagName){
                     + (extra.url ? "Url:" + extra.url + "\n\n" : "")
                     + extra.message));
 
-                if ((UndoObj && UndoObj.xmlActionNode || extra.amlNode || apf)
-                  .dispatchEvent("error", apf.extend({
+                //(UndoObj && UndoObj.xmlActionNode || extra.amlNode || apf)
+                if (this.dispatchEvent("error", apf.extend({
                     error   : oError,
                     state   : state,
                     bubbles : true
@@ -55317,7 +55365,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/debugger.js)SIZE(10804)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/debugger.js)SIZE(10843)TIME(Tue, 26 Jul 2011 12:19:57 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55416,24 +55464,24 @@ apf.dbg = function(struct, tagName){
             dbgImpl.addEventListener("detach", _self.$onDetach.bind(_self));
             dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));
             
-            _self.$loadSources(function() {           
-	            dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {      
-	                _self.$debugger.backtrace(_self.$mdlStack, function() {              
-	                    var frame = _self.$mdlStack.queryNode("frame[1]");
-	                    if (frame) {
-	                        var scriptId = frame.getAttribute("scriptid");
-	                        var scriptName = _self.$mdlSources.queryValue("file[@scriptid='" + scriptId + "']/@scriptname");
-	                        
-	                        if (scriptName) {
-	                            var line = frame.getAttribute("line");
-	                            var bp = _self.$mdlBreakpoints.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + line + "']");
-	                        }
-	                        if (!scriptName || !bp) {
-	                           _self.$debugger.continueScript();
-	                        }
-	                    }
+            _self.$loadSources(function() {
+                dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {
+                    _self.$debugger.backtrace(_self.$mdlStack, function() {
+                        var frame = _self.$mdlStack.queryNode("frame[1]");
+                        if (frame) {
+                            var scriptId = frame.getAttribute("scriptid");
+                            var scriptName = _self.$mdlSources.queryValue("file[@scriptid='" + scriptId + "']/@scriptname");
+                            
+                            if (scriptName) {
+                                var line = frame.getAttribute("line");
+                                var bp = _self.$mdlBreakpoints.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + line + "']");
+                            }
+                            if (!scriptName || !bp) {
+                               _self.$debugger.continueScript();
+                            }
+                        }
                     });
-	            });
+                });
             });
         });
     };
@@ -55525,13 +55573,13 @@ apf.dbg = function(struct, tagName){
             if (bp)
                 model.removeXml(bp)
             else {
-	            var bp = apf.n("<breakpoint/>")
-	                .attr("script", scriptName)
-	                .attr("line", row)
-	                .attr("text", script.getAttribute("path") + ":" + row)
-	                .attr("lineoffset", 0)
-	                .node();
-	            model.appendXml(bp);
+                var bp = apf.n("<breakpoint/>")
+                    .attr("script", scriptName)
+                    .attr("line", row)
+                    .attr("text", script.getAttribute("path") + ":" + row)
+                    .attr("lineoffset", 0)
+                    .node();
+                model.appendXml(bp);
             }
         }
     };
@@ -55627,7 +55675,8 @@ return apf.dbg;
 });
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/debughost.js)SIZE(4814)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/debughost.js)SIZE(4775)TIME(Tue, 26 Jul 2011 12:19:57 GMT)*/
 
 
 if (apf.hasRequireJS) require.def("apf/elements/debughost",
@@ -55681,9 +55730,8 @@ apf.debughost = function(struct, tagName){
     };
     
     this.init = function() {
-        if (this.$host) {
+        if (this.$host)
             return;
-        }
         
         if (this.type == "chrome" || this.type == "v8" || this.type == "v8-ws") {
             if (!apf.debughost.$o3obj && this.type !== "v8-ws") {
@@ -55695,14 +55743,17 @@ apf.debughost = function(struct, tagName){
 
             if (this.type == "chrome") {
                 this.$host = new ChromeDebugHost(this.server, this.port, apf.debughost.$o3obj);
-            } else if (this.type == "v8") {
+            }
+            else if (this.type == "v8") {
                 this.$host = new V8DebugHost(this.server, this.port, apf.debughost.$o3obj);
-            } else if (this.type == "v8-ws") {
+            }
+            else if (this.type == "v8-ws") {
                 var socket = this.dispatchEvent("socketfind");
                 if (!socket)
                     throw new Error("no socket found!")
                 this.$host = new V8WebSocketDebugHost(socket);
-            } else if (this.type == "chrome-ws") {
+            }
+            else if (this.type == "chrome-ws") {
                 var socket = this.dispatchEvent("socketfind");
                 if (!socket)
                     throw new Error("no socket found!")
@@ -55742,11 +55793,7 @@ apf.debughost = function(struct, tagName){
         if (!this.$host) 
             this.init();
         
-        if (tab) {
-            var id = tab.getAttribute("id");
-        } else {
-            var id = null;
-        }
+        var id = tab ? tab.getAttribute("id") : null;
         
         var _self = this;
         this.$host.attach(id, function(err, dbg) {
@@ -55776,6 +55823,7 @@ apf.aml.setElement("debughost", apf.debughost);
 return apf.debughost;
 
 });
+
 
 
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/defaults.js)SIZE(1838)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
@@ -59632,7 +59680,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/markupedit.js)SIZE(57357)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/markupedit.js)SIZE(55951)TIME(Thu, 21 Jul 2011 08:53:19 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71100,7 +71148,7 @@ apf.aml.setElement("toolbar", apf.toolbar);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/tree.js)SIZE(17313)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/tree.js)SIZE(17397)TIME(Tue, 26 Jul 2011 12:19:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71361,7 +71409,9 @@ apf.tree = function(struct, tagName){
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  this.hasPassedDown = true;\
-                 if (!o.renaming && o.hasFocus() && isSelected == 1) \
+                 if (event.button == 2) \
+                    o.stopRename();\
+                 else if (!o.renaming && o.hasFocus() && isSelected == 1) \
                     this.dorename = true;\
                  if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
                      o.select(this, event.ctrlKey, event.shiftKey, event.button);\
@@ -71614,7 +71664,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/webdav.js)SIZE(49942)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/webdav.js)SIZE(49956)TIME(Thu, 21 Jul 2011 11:15:11 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72665,7 +72715,7 @@ apf.webdav = function(struct, tagName){
                         return this.v;
                     },
                     data : data.data,
-                    v    : (data.data.type == "file" ? 1 : 0) + "" + data.data.name
+                    v    : (data.data.type == "file" ? 1 : 0) + "" + data.data.name.toLowerCase()
                 });
         }
         
@@ -73503,7 +73553,7 @@ return ChromeDebugHost;
 });
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8debugger.js)SIZE(16896)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8debugger.js)SIZE(18531)TIME(Tue, 26 Jul 2011 12:19:57 GMT)*/
 
 
 if (apf.hasRequireJS) require.def("apf/elements/dbg/v8debugger",
@@ -73544,17 +73594,16 @@ var V8Debugger = function(dbg, host) {
     this.stripPrefix = "";
 
     this.setStrip = function(stripPrefix) {
-        this.stripPrefix = stripPrefix
+        this.stripPrefix = stripPrefix;
     };
 
     this.$strip = function(str) {
         if (!this.stripPrefix)
             return str;
 
-        if (str.indexOf(this.stripPrefix) == 0)
-            return str.slice(this.stripPrefix.length)
-        else
-            return str;
+        return str.indexOf(this.stripPrefix) === 0
+            ? str.slice(this.stripPrefix.length)
+            : str;
     };
 
     this.isRunning = function() {
@@ -73565,11 +73614,10 @@ var V8Debugger = function(dbg, host) {
         var _self = this;
         this.$debugger.scripts(4, null, false, function(scripts) {
             var xml = [];
-            for (var i = 0; i < scripts.length; i++) {
+            for (var i = 0, l = scripts.length; i < l; i++) {
                 var script = scripts[i];
-                if (script.name && script.name.indexOf("chrome-extension://") == 0) {
+                if (script.name && script.name.indexOf("chrome-extension://") === 0)
                     continue;
-                }
                 xml.push(_self.$getScriptXml(script));
             }
             model.load("<sources>" + xml.join("") + "</sources>");
@@ -73578,11 +73626,13 @@ var V8Debugger = function(dbg, host) {
     };
 
     this.$getScriptXml = function(script) {
-        return ["<file scriptid='", script.id,
+        return [
+            "<file scriptid='", script.id,
             "' scriptname='", apf.escapeXML(script.name || "anonymous"),
             "' text='", this.$strip(apf.escapeXML(script.text || "anonymous")),
             "' lineoffset='", script.lineOffset,
-            "' debug='true' />"].join("")
+            "' debug='true' />"
+        ].join("");
     };
 
     function getId(frame){
@@ -73604,7 +73654,7 @@ var V8Debugger = function(dbg, host) {
 
         //@todo check for ref?? might fail for 2 functions in the same file with the same name in a different context
         return true;
-    }
+    };
 
     /**
      * Assumptions:
@@ -73617,31 +73667,33 @@ var V8Debugger = function(dbg, host) {
         xmlFrame.setAttribute("line", frame.line);
         xmlFrame.setAttribute("column", frame.column);
 
-        var vars = xmlFrame.selectNodes("vars/item");
+        var i, j, l;
+        var vars  = xmlFrame.selectNodes("vars/item");
         var fVars = frame.arguments;
-        for (var i = 1, j = 0; j < fVars.length; j++) { //i = 1 to skin this
+        for (i = 1, j = 0, l = fVars.length; j < l; j++) { //i = 1 to skin this
             if (fVars[j].name)
                 this.$updateVar(vars[i++], fVars[j]);
         }
-        var fVars = frame.locals;
-        for (var j = 0; j < frame.locals.length; j++) {
+        fVars = frame.locals;
+        for (j = 0, l = frame.locals.length; j < l; j++) {
             if (fVars[j].name !== ".arguments")
                 this.$updateVar(vars[i++], fVars[j]);
         }
 
         //@todo not caring about globals/scopes right now
-    },
+    };
 
     this.$updateVar = function(xmlVar, fVar){
         xmlVar.setAttribute("value", this.$valueString(fVar.value));
         xmlVar.setAttribute("type", fVar.value.type);
         xmlVar.setAttribute("ref", fVar.value.ref);
         apf.xmldb.setAttribute(xmlVar, "children", hasChildren[fVar.value.type] ? "true" : "false");
-    }
+    };
 
     this.$buildFrame = function(frame, ref, xml){
         var script = ref(frame.script.ref);
-        xml.push("<frame index='", frame.index,
+        xml.push(
+            "<frame index='", frame.index,
             "' name='", apf.escapeXML(apf.escapeXML(this.$frameToString(frame))),
             "' column='", frame.column,
             "' id='", getId(frame),
@@ -73649,7 +73701,8 @@ var V8Debugger = function(dbg, host) {
             "' line='", frame.line,
             "' script='", this.$strip(script.name),
             "' scriptid='", frame.func.scriptId, //script.id,
-            "'>");
+            "'>"
+        );
         xml.push("<vars>");
 
         var receiver = {
@@ -73658,11 +73711,12 @@ var V8Debugger = function(dbg, host) {
         };
         xml.push(this.$serializeVariable(receiver));
 
-        for (var j = 0; j < frame.arguments.length; j++) {
+        var j, l;
+        for (j = 0, l = frame.arguments.length; j < l; j++) {
             if (frame.arguments[j].name)
                 xml.push(this.$serializeVariable(frame.arguments[j]));
         }
-        for (var j = 0; j < frame.locals.length; j++) {
+        for (j = 0, l = frame.locals.length; j < l; j++) {
             if (frame.locals[j].name !== ".arguments")
                 xml.push(this.$serializeVariable(frame.locals[j]));
         }
@@ -73671,14 +73725,14 @@ var V8Debugger = function(dbg, host) {
 
         xml.push("<scopes>");
         var scopes = frame.scopes;
-        for (var j = 0; j < scopes.length; j++) {
+        for (j = 0, l = scopes.length; j < l; j++) {
             var scope = scopes[j];
             xml.push("<scope index='",scope.index, "' type='", scope.type, "' />");
         }
         xml.push("</scopes>");
 
         xml.push("</frame>");
-    }
+    };
 
     this.backtrace = function(model, callback) {
         var _self = this;
@@ -73692,20 +73746,19 @@ var V8Debugger = function(dbg, host) {
                 return {};
             }
 
+            var i, l;
             var frames    = body.frames;        
             var xmlFrames = model.queryNodes("frame");
             if (xmlFrames.length && _self.$isEqual(xmlFrames, frames)) {
-                for (var i = 0; i < frames.length; i++) {
+                for (i = 0, l = frames.length; i < l; i++)
                     _self.$updateFrame(xmlFrames[i], frames[i]);
-                }
                 _self.setFrame(xmlFrames[0]);
             }
             else {
                 var xml = [];
                 if (frames) {
-                    for (var i = 0; i < frames.length; i++) {
+                    for (i = 0, l = frames.length; i < l; i++)
                         _self.$buildFrame(frames[i], ref, xml);
-                    }
                 }
                 model.load("<frames>" + xml.join("") + "</frames>");
                 _self.setFrame(model.data.firstChild);
@@ -73715,29 +73768,28 @@ var V8Debugger = function(dbg, host) {
     };
 
     this.loadScript = function(script, callback) {
-        var id = script.getAttribute("scriptid");
+        var id    = script.getAttribute("scriptid");
         var _self = this;
         this.$debugger.scripts(4, [id], true, function(scripts) {
-            if (scripts.length) {
-                var script = scripts[0];
-                callback(script.source);
-            }
+            if (!scripts.length)
+                return;
+            var script = scripts[0];
+            callback(script.source);
         });
     };
 
     this.loadObjects = function(item, callback) {
-        var ref = item.getAttribute("ref");
+        var ref   = item.getAttribute("ref");
         var _self = this;
         this.$debugger.lookup([ref], false, function(body) {
-            var refs = [];
+            var refs  = [];
             var props = body[ref].properties;
-            for (var i=0; i<props.length; i++) {
+            for (var i = 0, l = props.length; i < l; i++)
                 refs.push(props[i].ref);
-            }
 
             _self.$debugger.lookup(refs, false, function(body) {
                 var xml = ["<item>"];
-                for (var i=0; i<props.length; i++) {
+                for (var i = 0, l = props.length; i < l; i++) {
                     props[i].value = body[props[i].ref];
                     xml.push(_self.$serializeVariable(props[i]));
                 }
@@ -73751,26 +73803,25 @@ var V8Debugger = function(dbg, host) {
         //var xml = "<vars><item name='juhu' value='42' type='number'/></vars>"
         var scopes = frame.getElementsByTagName("scope");
 
-        var frameIndex = parseInt(frame.getAttribute("index"));
+        var frameIndex = parseInt(frame.getAttribute("index"), 10);
 
-        var _self = this;
+        var _self     = this;
         var processed = 0;
-        var expected = 0;
-        var xml = ["<vars>"];
+        var expected  = 0;
+        var xml       = ["<vars>"];
 
-        for (var i=0; i<scopes.length; i++) {
+        for (var i = 0, l = scopes.length; i < l; i++) {
             var scope = scopes[i];
-            var type = parseInt(scope.getAttribute("type"));
+            var type = parseInt(scope.getAttribute("type"), 10);
 
             // ignore local and global scope
             if (type > 1) {
                 expected += 1;
-                var index = parseInt(scope.getAttribute("index"));
+                var index = parseInt(scope.getAttribute("index"), 10);
                 this.$debugger.scope(index, frameIndex, true, function(body) {
                     var props = body.object.properties;
-                    for (j=0; j<props.length; j++) {
-                        xml.push(_self.$serializeVariable(props[j]))
-                    }
+                    for (j = 0, l2 = props.length; j < l2; j++)
+                        xml.push(_self.$serializeVariable(props[j]));
                     processed += 1;
                     if (processed == expected) {
                         xml.push("</vars>");
@@ -73779,7 +73830,7 @@ var V8Debugger = function(dbg, host) {
                 });
             }
         }
-        if (expected == 0)
+        if (expected === 0)
             return callback("<vars />");
     };
 
@@ -73799,11 +73850,18 @@ var V8Debugger = function(dbg, host) {
         var breakpoints = model.queryNodes("breakpoint");
         _self.$debugger.listbreakpoints(function(v8Breakpoints) {
             if (v8Breakpoints.breakpoints) {
-                for (var id in _self.$breakpoints)
-                    _self.$breakpoints[id].destroy();
+                var bp;
+                for (var bId in _self.$breakpoints) {
+                    bp = _self.$breakpoints[bId];
+                    bp.destroy();
+                    if (bp.xml) {
+                        apf.xmldb.removeNode(bp.xml);
+                        delete bp.xml;
+                    }
+                }
                 _self.$breakpoints = {};
                 
-                for (var i=0,l=v8Breakpoints.breakpoints.length; i<l; i++) {
+                for (var i = 0, l = v8Breakpoints.breakpoints.length; i < l; i++) {
                     if (v8Breakpoints.breakpoints[i].type == "scriptId")
                         continue;
                         
@@ -73813,63 +73871,102 @@ var V8Debugger = function(dbg, host) {
                     _self.$breakpoints[id] = breakpoint;
                     
                     model.removeXml("breakpoint[@script='" + breakpoint.source + "' and @line='" + breakpoint.line + "']");
-                    model.appendXml(_self.$getBreakpointXml(breakpoint, 0));
+                    breakpoint.xml = model.appendXml(_self.$getBreakpointXml(breakpoint, 0));
                 }
             }
     
             var modelBps = model.queryNodes("breakpoint") || [];
-            
             apf.asyncForEach(Array.prototype.slice.call(modelBps, 0), function(modelBp, next) {
                 var script = modelBp.getAttribute("script");
-                var line = modelBp.getAttribute("line");
-                var id = script + "|" + line;
-                var bp = _self.$breakpoints[id];
+                var line   = modelBp.getAttribute("line");
+                var id     = script + "|" + line;
+                var bp     = _self.$breakpoints[id];
+                
+                if (modelBp.parentNode)
+                    apf.xmldb.removeNode(modelBp);
                 if (!bp) {
-                    bp = _self.$breakpoints[id] = new Breakpoint(script, line, modelBp.getAttribute("column"));
-                    bp.condition = modelBp.getAttribute("condition");
-                    bp.ignoreCount = parseInt(modelBp.getAttribute("ignorecount") || 0);
-                    bp.enabled = modelBp.getAttribute("enabled") == "true";
-                    bp.attach(_self.$debugger, function() {
-		                if (modelBp.parentNode) model.removeXml(modelBp);
-		                model.appendXml(_self.$getBreakpointXml(bp, 0));
-		                next();
-                    });
+                    bp = _self.$addBreakpoint({
+                        id: id,
+                        name: script,
+                        row: line,
+                        col: modelBp.getAttribute("column"),
+                        lineOffset: 0,
+                        scriptId: null,
+                        data: {
+                            condition:   modelBp.getAttribute("condition"),
+                            ignoreCount: parseInt(modelBp.getAttribute("ignorecount") || 0, 10),
+                            enabled:     (modelBp.getAttribute("enabled") == "true")
+                        }
+                    }, model, next);
                 }
                 else {
-	                if (modelBp.parentNode) model.removeXml(modelBp);
-	                model.appendXml(_self.$getBreakpointXml(bp, 0));
-	                next();
+                    model.appendXml(_self.$getBreakpointXml(bp, 0));
+                    next();
                 }
             }, callback);
         });
     };
     
     this.toggleBreakpoint = function(script, relativeRow, model) {
-        var _self = this;
-
-        var name = script.getAttribute("scriptname");
-
-        var lineOffset = parseInt(script.getAttribute("lineoffset") || "0");
-        var row = lineOffset + relativeRow;
-        var id = name + "|" + row;
-
+        var name       = script.getAttribute("scriptname");
+        var lineOffset = parseInt(script.getAttribute("lineoffset") || "0", 10);
+        var row        = lineOffset + relativeRow;
+        var id         = name + "|" + row;
         var breakpoint = this.$breakpoints[id];
+        var _self      = this;
+        
         if (breakpoint) {
-            delete this.$breakpoints[id];
-            breakpoint.clear(function() {
-                model.removeXml(model.queryNode("breakpoint[@id=" + breakpoint.$id + "]"));
-            });
-        } else {
-            breakpoint = this.$breakpoints[id] = new Breakpoint(name, row);
-            breakpoint.attach(this.$debugger, function() {
-                model.appendXml(_self.$getBreakpointXml(breakpoint, lineOffset, script.getAttribute("scriptid")));
-            });
+            try {
+                breakpoint.clear(function() {
+                    _self.$removeBreakpoint(breakpoint, model);
+                });
+            }
+            catch(ex) {
+                // aie! failed, remove it to be sure.
+                _self.$removeBreakpoint(breakpoint, model);
+            }
         }
+        else {
+            breakpoint = this.$addBreakpoint({
+                id: id,
+                name: name,
+                row: row,
+                col: 0,
+                lineOffset: lineOffset,
+                scriptId: script.getAttribute("scriptid")
+            }, model);
+        }
+    };
+    
+    this.$removeBreakpoint = function(bp, model) {
+        if (bp.$id) {
+            var node,
+                xpath = "breakpoint[@id=" + bp.$id + "]";
+            while (node = model.queryNode(xpath))
+                apf.xmldb.removeNode(node);
+        }
+        delete this.$breakpoints[bp.id];
+    };
+    
+    this.$addBreakpoint = function(options, model, callback) {
+        //id, name, row, col, lineOffset, scriptId, dbg, data
+        var bp = this.$breakpoints[options.id] = new Breakpoint(options.name, options.row, options.col, options.dbg);
+        bp.id = options.id;
+        if (options.data)
+            apf.extend(bp, options.data);
+        var _self = this;
+        bp.attach(this.$debugger, function() {
+            // TODO: error handling
+            model.appendXml(_self.$getBreakpointXml(bp, options.lineOffset, options.scriptId));
+            callback && callback();
+        });
+        return bp;
     };
     
     this.$getBreakpointXml = function(breakpoint, lineOffset, scriptId) {
         var xml = [];
-        xml.push("<breakpoint",
+        xml.push(
+            "<breakpoint",
             " id='", breakpoint.$id,
             "' text='", this.$strip(apf.escapeXML(breakpoint.source)), ":", breakpoint.line,
             "' script='", apf.escapeXML(breakpoint.source),
@@ -73879,9 +73976,10 @@ var V8Debugger = function(dbg, host) {
             "' condition='", apf.escapeXML(breakpoint.condition || ""),
             "' ignorecount='", breakpoint.ignoreCount || 0,
             "' enabled='", breakpoint.enabled,
-            "' />")
+            "' />"
+        );
 
-        return(xml.join(""));
+        return xml.join("");
     };
 
     this.continueScript = function(callback) {
@@ -73917,14 +74015,16 @@ var V8Debugger = function(dbg, host) {
                     "\" value='", error.message, "' />");
             }
             else {
-                str.push("<item name=\"", apf.escapeXML(name),
-                  "\" value='", apf.escapeXML(body.text), //body.value ||
-                  "' type='", body.type,
-                  "' ref='", body.handle,
-                  body.constructorFunction ? "' constructor='" + body.constructorFunction.ref : "",
-                  body.prototypeObject ? "' prototype='" + body.prototypeObject.ref : "",
-                  body.properties && body.properties.length ? "' children='true" : "",
-                  "' />");
+                str.push(
+                    "<item name=\"", apf.escapeXML(name),
+                    "\" value='", apf.escapeXML(body.text), //body.value ||
+                    "' type='", body.type,
+                    "' ref='", body.handle,
+                    body.constructorFunction ? "' constructor='" + body.constructorFunction.ref : "",
+                    body.prototypeObject ? "' prototype='" + body.prototypeObject.ref : "",
+                    body.properties && body.properties.length ? "' children='true" : "",
+                    "' />"
+              );
             }
             callback(apf.getXml(str.join("")), body, refs, error);
         });
@@ -73953,11 +74053,12 @@ var V8Debugger = function(dbg, host) {
     };
 
     this.$frameToString = function(frame) {
-        var str = [];
-        str.push(frame.func.name || frame.func.inferredName || "anonymous", "(");
-        var args = frame.arguments;
+        var str     = [];
+        var args    = frame.arguments;
         var argsStr = [];
-        for (var i=0; i<args.length; i++) {
+
+        str.push(frame.func.name || frame.func.inferredName || "anonymous", "(");
+        for (var i = 0, l = args.length; i < l; i++) {
             var arg = args[i];
             if (!arg.name)
                 continue;
@@ -73965,24 +74066,26 @@ var V8Debugger = function(dbg, host) {
         }
         str.push(argsStr.join(", "), ")");
         return str.join("");
-    }
+    };
 
     this.$serializeVariable = function(item, name) {
-        var str = [];
-        str.push("<item name='", apf.escapeXML(name || item.name),
+        var str = [
+            "<item name='", apf.escapeXML(name || item.name),
             "' value='", apf.escapeXML(this.$valueString(item.value)),
             "' type='", item.value.type,
             "' ref='", typeof item.value.ref == "number" ? item.value.ref : item.value.handle,
             hasChildren[item.value.type] ? "' children='true" : "",
-            "' />");
+            "' />"
+        ];
         return str.join("");
-    }
+    };
     
 }).call(V8Debugger.prototype = new apf.Class());
 
 return V8Debugger;
 
 });
+
 
 
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8debughost.js)SIZE(2485)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
@@ -74078,7 +74181,7 @@ return V8DebugHost;
 });
 
 
-/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8websocketdebughost.js)SIZE(1852)TIME(Wed, 20 Jul 2011 14:02:04 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8websocketdebughost.js)SIZE(1853)TIME(Tue, 26 Jul 2011 12:19:57 GMT)*/
 
 
 if (apf.hasRequireJS) require.def("apf/elements/dbg/v8websocketdebughost",
@@ -74147,6 +74250,7 @@ var V8WebSocketDebugHost = function(socket) {
 
 return V8WebSocketDebugHost;
 });
+
 
 
 /*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/modalwindow/widget.js)SIZE(7077)TIME(Thu, 23 Jun 2011 08:28:03 GMT)*/

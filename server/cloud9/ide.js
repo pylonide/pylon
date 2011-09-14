@@ -18,7 +18,7 @@ var jsDAV = require("jsdav"),
 
 module.exports = Ide = function(options, httpServer, exts, socket) {
     EventEmitter.call(this);
-    
+
     this.httpServer = httpServer;
     this.socket = socket;
 
@@ -26,6 +26,7 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
     var baseUrl = (options.baseUrl || "").replace(/\/+$/, "");
     var staticUrl = options.staticUrl || "/static";
     var requirejsConfig = options.requirejsConfig || {
+        baseUrl: "/static/",
         paths: {
             "pilot": staticUrl + "/support/ace/support/pilot/lib/pilot",
             "ace": staticUrl + "/support/ace/lib/ace",
@@ -34,7 +35,7 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
         },
         waitSeconds: 30
     };
-    
+
     this.options = {
         workspaceDir: this.workspaceDir,
         mountDir: options.mountDir || this.workspaceDir,
@@ -55,9 +56,7 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
     };
 
     this.$users = {};
-
     this.nodeCmd = process.argv[0];
-    
 
     var davOptions = {
         node: this.options.mountDir,
@@ -70,12 +69,12 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
         util.extend(davOptions, options.remote);
     else
         davOptions.path = this.options.mountDir;
-    
+
     this.davServer = jsDAV.mount(davOptions);
     this.davInited = false;
-    
+
     this.workspace = new Workspace({ ide: this });
-    
+
     this.workspace.createPlugins(exts);
     var statePlugin = this.workspace.getExt("state");
     if (statePlugin) {
@@ -110,7 +109,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/quicksearch/quicksearch",
     "ext/gotoline/gotoline",
     "ext/html/html",
-    "ext/browser/browser",
+    //"ext/ftp/ftp",
     "ext/code/code",
     "ext/imgview/imgview",
     "ext/extmgr/extmgr",
@@ -131,11 +130,11 @@ Ide.DEFAULT_PLUGINS = [
 
     this.handle = function(req, res, next) {
         var path = Url.parse(req.url).pathname;
-        
+
         this.indexRe = this.indexRe || new RegExp("^" + lang.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
         this.workspaceRe = this.workspaceRe || new RegExp("^" + lang.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
-        
-        if (path.match(this.indexRe)) {            
+
+        if (path.match(this.indexRe)) {
             if (req.method !== "GET")
                 return next();
             this.$serveIndex(req, res, next);
@@ -145,6 +144,7 @@ Ide.DEFAULT_PLUGINS = [
                 if(process.platform == "sunos"){
                     this.davServer.plugins["codesearch"].GREP_CMD = __dirname+"/../../support/gnu-builds/grep-sunos";
                     this.davServer.plugins["filesearch"].FIND_CMD = __dirname+"/../../support/gnu-builds/find-sunos";
+                    this.davServer.plugins["filelist"].FIND_CMD = __dirname+"/../../support/gnu-builds/find-sunos";
                 }
                 this.davServer.plugins["permission"] = DavPermission;
                 this.davInited = true;
@@ -162,26 +162,26 @@ Ide.DEFAULT_PLUGINS = [
         fs.readFile(__dirname + "/view/ide.tmpl.html", "utf8", function(err, index) {
             if (err)
                 return next(err);
-               
+
             res.writeHead(200, {"Content-Type": "text/html"});
-            
+
             var permissions = _self.getPermissions(req);
             var plugins = lang.arrayToMap(_self.options.plugins);
 
             var client_exclude = lang.arrayToMap(permissions.client_exclude.split("|"));
             for (plugin in client_exclude)
                 delete plugins[plugin];
-                
+
             var client_include = lang.arrayToMap((permissions.client_include || "").split("|"));
             for (plugin in client_include)
                 if (plugin)
                     plugins[plugin] = 1;
-            
+
             var staticUrl = _self.options.staticUrl;
-            var aceScripts = 
+            var aceScripts =
                 '<script type="text/javascript" src="' + staticUrl + '/support/ace/build/src/ace-uncompressed.js"></script>\n' +
                 '<script type="text/javascript" src="' + staticUrl + '/support/ace/build/src/mode-javascript.js"></script>'
-            
+
             var replacements = {
                 davPrefix: _self.options.davPrefix,
                 workspaceDir: _self.options.workspaceDir,
@@ -221,7 +221,7 @@ Ide.DEFAULT_PLUGINS = [
         }
         else {
             user = this.$users[username] = new User(username, permissions, userData);
-            
+
             var _self = this;
             user.on("message", function(msg) {
                 if(_self.$users[msg.user.uid]) {
@@ -234,15 +234,17 @@ Ide.DEFAULT_PLUGINS = [
             });
             user.on("disconnectUser", function(user) {
                 console.log("Running user disconnect timer...");
+                _self.davServer.unmount();
 
                 setTimeout(function() {
                     var now = new Date().getTime();
                     if((now - user.last_message_time) > 10000) {
+                        console.log("User fully disconnected", username);
                         _self.removeUser(user);
                     }
-                }, 20000);
+                }, 10000);
             });
-            
+
             this.onUserCountChange();
             this.emit("userJoin", user);
         }
@@ -272,7 +274,7 @@ Ide.DEFAULT_PLUGINS = [
         else
             return user.getPermissions();
     };
-    
+
     this.hasUser = function(username) {
         return !!this.$users[username];
     };
@@ -280,18 +282,18 @@ Ide.DEFAULT_PLUGINS = [
     this.addClientConnection = function(username, client, message) {
         var user = this.$users[username];
         if (!user)
-            return this.error("No session for user " + username, 401, message, client);
+            return this.workspace.error("No session for user " + username, 401, message, client);
 
         user.addClientConnection(client, message);
     };
-    
+
     this.onUserMessage = function(user, message, client) {
         this.workspace.execHook("command", user, message, client);
     };
-    
+
     this.onUserCountChange = function() {
         this.emit("userCountChange", Object.keys(this.$users).length);
-        
+
         // TODO remove
         this.emit("clientCountChange", Object.keys(this.$users).length);
     };
@@ -299,15 +301,17 @@ Ide.DEFAULT_PLUGINS = [
     this.broadcast = function(msg, scope) {
         // TODO check permissions
         for (var username in this.$users) {
-            var user = this.$users[username];            
+            var user = this.$users[username];
             user.broadcast(msg, scope);
         }
     };
-    
+
     this.sendToUser = function(username, msg) {
+        //for (var u in this.$users)
+        //    console.log("IDE USER", this.$users[u].uid, this.$users[u].clients);
         this.$users[username] && this.$users[username].broadcast(msg);
     };
-    
+
     this.dispose = function(callback) {
         this.workspace.dispose(callback);
     };

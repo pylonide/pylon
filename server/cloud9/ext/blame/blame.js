@@ -18,7 +18,7 @@ sys.inherits(BlamePlugin, Plugin);
 
 (function() {
 
-    this.getGitRoot = function(path, callback) {
+    this.gitTopLevelProc = function(path, callback) {
         // @TODO SECURITY
         var argv  = ["rev-parse", "--show-toplevel"];
 
@@ -36,6 +36,18 @@ sys.inherits(BlamePlugin, Plugin);
         );
     };
 
+    this.getGitRoot = function(dirPath, absoluteFilePath, callback) {
+        var _self = this;
+        this.gitTopLevelProc(dirPath, function(err, gitRoot) {
+            if (err || !gitRoot)
+                return callback("no");
+
+            gitRoot = gitRoot.replace("\n", "");
+            var relativeFilePath = absoluteFilePath.substr(gitRoot.length + 1);
+            callback(null, relativeFilePath, gitRoot);
+        });
+    };
+
     this.command = function(user, message, client) {
         if (message.command != "blame")
             return false;
@@ -47,19 +59,16 @@ sys.inherits(BlamePlugin, Plugin);
 
         var lastSlash = message.file.lastIndexOf("/");
         var dirPath = "/" + message.file.substr(0, lastSlash);
-        this.getGitRoot(dirPath, function(err, gitRoot) {
-            if (err || !gitRoot)
+        var absoluteFilePath = _self.ide.workspaceDir + "/" + message.file;
+
+        this.getGitRoot(dirPath, absoluteFilePath, function(err, relativeFilePath, gitRoot) {
+            if (err)
                 return _self.sendResult(0, message.command, {
                             code: 0,
                             argv: message.argv,
                             err: err ? err : "No git root found for file",
                             out: null
                         });
-
-            gitRoot = gitRoot.replace("\n", "");
-
-            var absoluteFilePath = _self.ide.workspaceDir + "/" + message.file;
-            var relativeFilePath = absoluteFilePath.substr(gitRoot.length + 1);
 
             var argv  = ["blame", "-p", relativeFilePath];
 

@@ -14,7 +14,7 @@ var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
 var markup = require("text!ext/formatjson/formatjson.xml");
         
-return ext.register("ext/formatjson/formatjson", {
+module.exports = ext.register("ext/formatjson/formatjson", {
     name     : "JSON Formatter",
     dev      : "Ajax.org",
     alone    : true,
@@ -34,10 +34,10 @@ return ext.register("ext/formatjson/formatjson", {
         var doc   = editor.getDocument();
         var range = sel.getRange();
         var value = doc.getTextRange(range);
-        try{
+        try {
             value = JSON.stringify(JSON.parse(value), null, indent);
         }
-        catch(e){
+        catch (e) {
             util.alert(
                 "Invalid JSON", 
                 "The selection contains an invalid or incomplete JSON string",

@@ -4,12 +4,17 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/save/save",
-    ["core/ide", "core/ext", "core/util", "ext/filesystem/filesystem",
-     "text!ext/save/save.css", "text!ext/save/save.xml"],
-    function(ide, ext, util, fs, css, markup) {
 
-return ext.register("ext/save/save", {
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+var util = require("core/util");
+var fs = require("ext/filesystem/filesystem");
+var css = require("text!ext/save/save.css");
+var markup = require("text!ext/save/save.xml");
+
+module.exports = ext.register("ext/save/save", {
     dev         : "Ajax.org",
     name        : "Save",
     alone       : true,
@@ -17,7 +22,8 @@ return ext.register("ext/save/save", {
     markup      : markup,
     css         : css,
     deps        : [fs],
-    offline     : false,
+    offline     : true,
+
     commands     : {
         "quicksave": {hint: "save the currently active file to disk"},
         "saveas": {hint: "save the file to disk with a different filename"}
@@ -212,12 +218,13 @@ return ext.register("ext/save/save", {
             this.saveBuffer[path] = page;
             return;
         }
-        apf.b(node).attr("saving", "1");
+        apf.xmldb.setAttribute(node, "saving", "1");
         
         var _self = this, panel = sbMain.firstChild;
         panel.setAttribute("caption", "Saving file " + path);
         
         ide.dispatchEvent("beforefilesave", {node: node, doc: doc, value: value});
+
         fs.saveFile(path, value, function(data, state, extra){
             if (state != apf.SUCCESS) {
                 util.alert(
@@ -231,7 +238,7 @@ return ext.register("ext/save/save", {
             
             panel.setAttribute("caption", "Saved file " + path);
             ide.dispatchEvent("afterfilesave", {node: node, doc: doc, value: value});
-            apf.b(node).attr("saving", "0");
+            apf.xmldb.removeAttribute(node, "saving");
             if (_self.saveBuffer[path]) {
                 delete _self.saveBuffer[path];
                 _self.quicksave(page);
@@ -296,7 +303,7 @@ return ext.register("ext/save/save", {
             this.saveBuffer[path] = page;
             return;
         }
-        apf.b(file).attr("saving", "1");
+        apf.xmldb.setAttribute(node, "saving", "1");
             
         function onconfirm() {
             var panel   = sbMain.firstChild,
@@ -324,7 +331,7 @@ return ext.register("ext/save/save", {
                     page.$doc.setNode(file);
                 }
                 
-                apf.b(node).attr("saving", "0");
+                apf.xmldb.removeAttribute(node, "saving");
                 if (_self.saveBuffer[path]) {
                     delete _self.saveBuffer[path];
                     _self.saveFileAs(page);
@@ -406,5 +413,4 @@ return ext.register("ext/save/save", {
     }
 });
 
-    }
-);
+});

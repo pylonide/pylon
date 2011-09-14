@@ -4,11 +4,13 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/clipboard/clipboard",
-    ["core/ide", "core/ext"],
-    function(ide, ext) {
+ 
+define(function(require, exports, module) {
 
-return ext.register("ext/clipboard/clipboard", {
+var ide = require("core/ide");
+var ext = require("core/ext");
+ 
+module.exports = ext.register("ext/clipboard/clipboard", {
     dev    : "Ajax.org",
     name   : "Clipboard",
     alone  : true,
@@ -80,5 +82,4 @@ return ext.register("ext/clipboard/clipboard", {
     }
 });
 
-    }
-);
+});

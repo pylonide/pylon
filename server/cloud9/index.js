@@ -31,12 +31,15 @@ exports.main = function(options) {
                 exts[name] = require("./ext/" + name + "/" + name);
         });
 
-        // create web socket
-        var socketOptions = {
-            transports:  ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling']
-        };
-        var socketIo = IO.listen(server, socketOptions);
-        socketIo.on("connection", function(client) {
+        var socketIo = IO.listen(server);
+        socketIo.enable("browser client minification");
+        socketIo.set("log level", 1);
+        socketIo.set("close timeout", 7);
+        socketIo.set("heartbeat timeout", 2.5);
+        socketIo.set("heartbeat interval", 5);
+        socketIo.set("polling duration", 5);
+        socketIo.sockets.on("connection", function(client) {
+            ide.addUser(uid, User.OWNER_PERMISSIONS);
             ide.addClientConnection(uid, client, null);
         });
 

@@ -1,0 +1,54 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:tab id="tabGitTools" skin="docktab" visible="false">
+        <a:page caption="Git Tools">
+            <a:vbox flex="1" anchors="0 0 0 0">
+                <!--a:button
+                  caption = "Git Log"
+                  margin  = "10 5 5 5"
+                  width   = "100"
+                  onclick = "require('ext/gittools/gittools').gitLog()"
+                /-->
+                <a:label id="lblGitLog"
+                  class = "git_log_label"
+                  caption = "File revisions"
+                  margin = "8 5 5 5"
+                />
+                <a:slider id="sliderGitLog"
+                  disabled = "true"
+                  margin = "5"
+                  value = "1"
+                  min = "0"
+                  max = "1"
+                  step = "1"
+                  slide = "snap"
+                  balloon = "false"
+                  markers = "true"
+                  onvaluechange = "require('ext/gittools/gittools').gitLogSliderChange()"
+                  onmouseup = "require('ext/gittools/gittools').gitLogSliderMouseUp()"
+                />
+                <a:text id="txtGitLog"
+                  margin     = "5"
+                  scrolldown = "false"
+                  textselect = "true"
+                  focussable = "true"
+                  flex       = "1"
+                  class      = "git_log_text" />
+                <a:hbox pack="start" align="start">
+                    <a:button caption="View Revision"
+                      id = "btnViewRevision"
+                      disabled = "true"
+                      margin = "5 5 10 5"
+                      width = "120"
+                      onclick = "require('ext/gittools/gittools').loadFileRevision()"
+                    />
+                    <a:button caption="Git Blame"
+                      id = "btnGitBlame"
+                      margin  = "5 5 10 5"
+                      width   = "100"
+                      onclick = "require('ext/gittools/gittools').gitBlame()"
+                    />
+                </a:hbox>
+            </a:vbox>
+        </a:page>
+    </a:tab>
+</a:application>

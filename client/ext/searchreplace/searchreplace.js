@@ -4,16 +4,18 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("ext/searchreplace/searchreplace",
-    ["core/ide",
-     "core/ext",
-     "pilot/canon",
-     "ace/search",
-     "ext/editors/editors", 
-     "text!ext/searchreplace/searchreplace.xml"],
-    function(ide, ext, canon, search, editors, markup) {
 
-return ext.register("ext/searchreplace/searchreplace", {
+define(function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+ 
+var canon = require("pilot/canon");
+var search = require("ace/search");
+var editors = require("ext/editors/editors");
+var markup = require("text!ext/searchreplace/searchreplace.xml");
+
+module.exports = ext.register("ext/searchreplace/searchreplace", {
     name    : "Searchreplace",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
@@ -169,11 +171,9 @@ return ext.register("ext/searchreplace/searchreplace", {
             //     wholeWord: false,
             //     regExp: false
             // }
-            console.log(options);
             this.$editor.find(txt, options);
         }
         else {
-            console.log(options);
             this.$editor.find(txt, options);
         }
         chkSearchSelection.setAttribute("checked", false);

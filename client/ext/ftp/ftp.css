@@ -3,7 +3,7 @@
 }
 
 .fileprop_header {
-    display:inline-block;
+    display: inline-block;
     width: 70px;
     padding: 0 10px 0 0;
     text-align: right;
@@ -11,10 +11,26 @@
 }
 
 .fileprop_value {
-    display:inline-block;
+    display: inline-block;
     width: 240px;
 }
 
 .fileprop_value > span {
     font-weight: bold;
+}
+
+.console_command {
+    color: #06f;
+}
+
+.console_response {
+    color: #6f6;
+}
+
+.console_status {
+    color: #fff;
+}
+
+.console_error {
+    color: #f30;
 }

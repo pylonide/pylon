@@ -6,6 +6,7 @@
       syntax            = "{require('ext/code/code').getSyntax(%[.])}"
       theme             = "[{require('ext/settings/settings').model}::editors/code/@theme]"
       overwrite         = "[{require('ext/settings/settings').model}::editors/code/@overwrite]"
+      behaviors         = "[{require('ext/settings/settings').model}::editors/code/@behaviors]"
       selectstyle       = "[{require('ext/settings/settings').model}::editors/code/@selectstyle]"
       activeline        = "[{require('ext/settings/settings').model}::editors/code/@activeline]"
       showinvisibles    = "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
@@ -64,5 +65,7 @@
         <a:item type="radio" value="text/x-csharp">C#</a:item>
         <a:item type="radio" value="text/x-script.clojure">Clojure</a:item>
         <a:item type="radio" value="text/x-script.ocaml">OCaml</a:item>
+        <a:item type="radio" value="text/x-markdown">Markdown</a:item>
+        <a:item type="radio" value="text/x-web-textile">Textile</a:item>
     </a:menu>
 </a:application>

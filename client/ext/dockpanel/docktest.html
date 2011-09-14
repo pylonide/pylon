@@ -8,6 +8,7 @@
             HTML{overflow:hidden}
         </style>
         <script type="text/javascript" src="../../js/apf_debug.js"></script>
+        <script type="text/javascript" src="../../require.js"></script>
     </head>
     <body>
         <a:skin
@@ -24,12 +25,11 @@
           storage             = "cookie"
           baseurl             = "{apf.host ? apf.host : ''}" />
     
-        <a:hbox id="hboxMain" padding="0" anchors="0 0 0 0">
+        <a:hbox id="hboxMain" padding="0" anchors="30 0 30 0">
             <a:bar skin="basic" flex="1">
             </a:bar>
         </a:hbox>
 
-        <a:script src="libdock.js" />
         <a:script src="docktest.js" />
     </body>
 </html>

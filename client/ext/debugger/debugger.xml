@@ -1,5 +1,4 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    
     <a:bar id="tbDebug">
         <!--a:button
           icon="chromium_16.png"
@@ -40,10 +39,9 @@
           onclick  = "dbg.stepOut();"
           disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
     </a:bar>
-
-
-    <a:tab id="tabDebug" skin="docktab" visible="false">
-        <a:page id="dbgCallStack" caption="Call Stack">
+    
+    <a:tab id="tabDebug" skin="docktab" visible="false" activepage="-1">
+        <a:page id="dbgCallStack" caption="Call Stack" render="runtime">
             <a:datagrid
               id         = "dgStack"
               anchors    = "0 0 0 0"
@@ -63,7 +61,7 @@
                 </a:each>
             </a:datagrid>
         </a:page>
-        <a:page id="dbInteractive" caption="Interactive">
+        <a:page id="dbInteractive" caption="Interactive" render="runtime">
             <a:vbox anchors="0 0 0 0">
                 <a:toolbar>
                     <a:bar border="0 0 1 0">
@@ -72,7 +70,7 @@
                           caption  = "Execute" 
                           tooltip  = "Ctrl+Enter"
                           onclick  = "
-                            require('ext/console/console').consoleTextHandler({keyCode:13,ctrlKey:true})
+                            require('ext/debugger/inspector').consoleTextHandler({keyCode:13,ctrlKey:true})
                           " />
                         <a:button
                           disabled2 = "{!txtCode.value.trim()}"
@@ -83,9 +81,9 @@
                         <a:divider skin2="c9-divider"/>
                         <a:dropdown id="lstScripts"
                           skin2       = "black_dropdown"
-                    	  margin     = "3 0 0 4"
+                          margin     = "3 0 0 4"
                           width      = "120"
-                    	  maxitems   = "10"
+                          maxitems   = "10"
                           model      = "mdlDbgSources"
                           disabled   = "{!stDebugProcessRunning.active and 1}" 
                           each       = "[file]"
@@ -97,7 +95,7 @@
                 <a:codeeditor id="txtCode" 
                   flex      = "1"
                   disabled  = "{stRunning.active or !stDebugProcessRunning.active}"
-                  onkeydown = "return require('ext/console/console').consoleTextHandler(event)" 
+                  onkeydown = "return require('ext/debugger/inspector').consoleTextHandler(event)" 
                   realtime  = "true"
                   border    = "0" 
                   model     = "{require('ext/settings/settings').model}" 
@@ -113,7 +111,7 @@
                   printmargincolumn = "0" />
             </a:vbox>
         </a:page>
-        <a:page id="dbgVariable" caption="Variables">
+        <a:page id="dbgVariable" caption="Variables" render="runtime">
             <a:datagrid id="dgVars"
               anchors    = "0 0 0 0" 
               border     = "0"
@@ -133,7 +131,7 @@
                 </a:each>
             </a:datagrid>
         </a:page>
-        <a:page id="dbgBreakpoints" caption="Breakpoints">
+        <a:page id="dbgBreakpoints" caption="Breakpoints" render="runtime">
             <a:list id="lstBreakpoints"
               autoselect = "false"
               reselectable = "true"
@@ -147,7 +145,7 @@
             </a:list>
         </a:page>
         <a:model id="mdlAceAnnotations"></a:model>
-        <a:page id="aceAnnotations" caption="Bugs">
+        <a:page id="aceAnnotations" caption="Bugs" render="runtime">
             <a:datagrid id="dgAceAnnotations"
               anchors    = "0 0 0 0" 
               border     = "0"
