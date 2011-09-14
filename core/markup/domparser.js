@@ -146,7 +146,8 @@ apf.DOMParser.prototype = new (function(){
 
         //First pass - Node creation
         var nodes, nodelist = {}, prios = [], _self = this;
-        (function recur(amlNode, nodes){
+        var recur;
+        (recur = function(amlNode, nodes){
             var cL, newNode, node, nNodes,
                 cNodes = amlNode.childNodes,
                 i      = 0,
