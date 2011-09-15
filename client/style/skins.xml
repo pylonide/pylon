@@ -6095,7 +6095,7 @@
 
     .editor_tab .editor_bg .editor_bg_content {
         width: 430px;
-        margin: 20px auto 0;
+        margin: 100px auto 0;
         background: url(images/empty_editor_icon.png) no-repeat center 0;
         padding-top: 170px;
         text-align: center;
@@ -6103,7 +6103,11 @@
         text-shadow : rgba(255, 255, 255, .71) 1px 1px 1px;
         font-size: 18px;
     }
-
+    
+    .infraeditor.editor_tab .editor_bg .editor_bg_content {
+        margin-top: 0;
+    }
+    
     .editor_tab .editor_bg .editor_bg_content .editor_bg_message2 {
         background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(237,237,237)),color-stop(1, rgb(255,255,255)));
         background: -moz-linear-gradient(center bottom,rgb(237,237,237) 0%,rgb(255,255,255) 100%);
@@ -6138,12 +6142,25 @@
         margin: 35px auto 0;
         width: 430px;
         text-align: center;
+        display: none;
     }
+    
+    .infraeditor.editor_tab .editor_bg .editor_bg_message-top {
+        display: block;
+    }
+    
     .editor_tab .editor_bg .editor_bg_message-top span {
         color: #a1a1a1;
         font-size: 12px;
     }
 
+    .editor_tab .editor_bg .editor_divider {
+        background: url(images/empty_editor_divider.png) no-repeat center center;
+        height: 14px;
+        width: 430px;
+        margin-top: 20px;
+    }
+    
     .editor_tab .session_page {
         display : none;
         position : absolute;
@@ -6173,6 +6190,7 @@
                 <div class="editor_bg_message-top">
                     Invite people to this project by sharing the URL with them.
                     <span>To access private projects both parties must have a Premium Account.</span>
+                    <div class="editor_divider"></div>
                 </div>
                 <div class="editor_bg_content">
                     <div class="editor_bg_message">Open a file or create a new one to get started</div>
@@ -7164,7 +7182,7 @@
 
         .filemgr-tree .item-fix .item {
             height:18px;
-            padding:0 0 0 15px;
+            padding:0 0 0 14px;
             position:relative;
             /*overflow:hidden;*/
         }
@@ -7175,6 +7193,12 @@
 
         .filemgr-dragtree .item .caption,
         .filemgr-tree .item-fix.dragAppend .item {
+            color: white;
+            margin-right: 5px;
+        }
+        
+        .filemgr-dragtree .item .caption,
+        .filemgr-tree .item-fix.dragAppend .label-content {
             -webkit-border-radius: 10px;
             -moz-border-radius: 10px;
             border-radius: 10px;
@@ -7182,10 +7206,8 @@
             -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#2890e5', endColorstr='#1f82d2')";
             background : -webkit-gradient(linear, left top, left bottom, from(#2890e5), color-stop(1, #1f82d2));
             background : -moz-linear-gradient(center bottom, #1f82d2 0%, #2890e5 100%) repeat scroll 0 0 transparent;
-            color: white;
-            margin-right: 5px;
         }
-
+        
         .filemgr-tree .item-fix.dragDenied {
 
         }
@@ -7229,7 +7251,7 @@
 
         .filemgr-tree .item-fix.min .item SPAN,
         .filemgr-tree .item-fix.minlast .item SPAN {
-            background-position: -10px 0;
+            background-position: -10px -1px;
         }
 
         .filemgr-tree .item-fix.plus .item SPAN,
@@ -7242,9 +7264,9 @@
             position:relative;
             /*overflow:hidden;*/
             height:18px;
-            background-position:0 1px;
+            background-position:3px 1px;
             background-repeat:no-repeat;
-            padding-left:20px;
+            padding-left:21px;
         }
 
         .filemgr-tree .item LABEL .caption {
@@ -7381,17 +7403,19 @@
         </a:main>
         <a:item
           class     = "."
-          caption   = "div/label/u"
-          icon      = "div/label"
+          caption   = "div/div/label/u"
+          icon      = "div/div/label"
           openclose = "div/span"
-          select    = "div/label"
+          select    = "div/div/label"
           container = "following-sibling::u">
             <div class="item-fix">
                 <div class="item">
                     <span> </span>
-                    <label>
-                        <u class="caption">-</u>
-                    </label>
+                    <div class="label-content">
+                        <label>
+                            <u class="caption">-</u>
+                        </label>
+                    </div>
                 </div>
             </div>
             <u> </u>
@@ -7400,9 +7424,11 @@
             <div class="filemgr-dragtree">
                 <div class="item">
                     <span> </span>
-                    <label>
-                        <u class="caption">-</u>
-                    </label>
+                    <div class="label-content">
+                        <label>
+                            <u class="caption">-</u>
+                        </label>
+                    </div>
                 </div>
             </div>
         </a:dragindicator>
