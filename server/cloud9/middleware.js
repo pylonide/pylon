@@ -48,7 +48,7 @@ exports.errorHandler = function() {
         }
         else if (!(err instanceof error.HttpError)) {
             err.code = 500;
-            err.defaultMessage = "Internal Server Error"
+            err.defaultMessage = "Internal Server Error";
         }
 
         var isXHR = req.headers["x-requested-with"] && req.headers["x-requested-with"].toLowerCase() == "xmlhttprequest";
@@ -64,9 +64,10 @@ exports.errorHandler = function() {
                 res.writeHead(err.code || 500, {"Content-Type": "text/html"});
                 return res.end(html);
             })
-        } else {
+        }
+        else {
             res.writeHead(err.code || 500, {"Content-Type": "text/plain"});
-            res.end(err.message);
+            res.end(err.message || "");
         }
         if (err.stack)
             console.log("Exception found" + err.message + "\n" + err.stack);
@@ -84,16 +85,20 @@ exports.staticGzip = function(options){
         flags = options.flags || exports.flags,
         bin = options.bin || exports.bin;
 
-    if (!root) throw new Error('staticGzip root must be set');
-    if (!compress) throw new Error('staticGzip compress array must be passed');
+    if (!root) 
+        throw new Error("staticGzip root must be set");
+    if (!compress) 
+        throw new Error("staticGzip compress array must be passed");
 
     return function(req, res, next){
-        if (req.method !== 'GET') return next();
+        if (req.method !== "GET")
+            return next();
 
-        var acceptEncoding = req.headers['accept-encoding'] || '';
+        var acceptEncoding = req.headers["accept-encoding"] || "";
 
         // Ignore when Accept-Encoding does not allow gzip
-        if (acceptEncoding && !~acceptEncoding.indexOf('gzip')) return next();
+        if (acceptEncoding && !~acceptEncoding.indexOf("gzip"))
+            return next();
 
         // Parse the url
         var url = parse(req.url),
@@ -101,7 +106,8 @@ exports.staticGzip = function(options){
             mime = utils.mime.type(filename).split(';')[0];
 
         // MIME type not white-listed
-        if (!~compress.indexOf(mime)) return next();
+        if (!~compress.indexOf(mime))
+            return next();
 
         // Check if gzipped static is available
         gzipped(filename, function(err, path, ext){
@@ -109,21 +115,21 @@ exports.staticGzip = function(options){
                 next();
                 // We were looking for a gzipped static,
                 // so lets gzip it!
-                if (err.path.indexOf('.gz') === err.path.length - 3) {
+                if (err.path.indexOf(".gz") === err.path.length - 3)
                     gzip(filename, path, flags, bin);
-                }
-            } else if (err) {
+            }
+            else if (err) {
                 next(err);
-            } else {
+            }
+            else {
                 // Re-write the url to serve the gzipped static
-                req.url = url.pathname + ext;
-                req.url = req.url.replace(/[^/]+$/, ".$&");
+                req.url = (url.pathname + ext).replace(/[^/]+$/, ".$&");
                 var writeHead = res.writeHead;
                 res.writeHead = function(status, headers){
                     headers = headers || {};
                     res.writeHead = writeHead;
-                    headers['Content-Type'] = mime;
-                    headers['Content-Encoding'] = 'gzip';
+                    headers["Content-Type"] = mime;
+                    headers["Content-Encoding"] = "gzip";
                     res.writeHead(status, headers);
                 };
                 next();
@@ -135,7 +141,7 @@ exports.staticGzip = function(options){
 function gzipped(path, fn) {
     fs.stat(path, function(err, stat){
         if (err) return fn(err);
-        var ext = '.' + Number(stat.mtime) + '.gz';
+        var ext = "." + Number(stat.mtime) + ".gz";
         path += ext;
         path = path.replace(/[^/]+$/, ".$&");
         fs.stat(path, function(err){
@@ -152,12 +158,12 @@ var escapeShell = function(cmd) {
 }
 
 function gzip(src, dest, flags, bin) {
-    var cmd = escapeShell(bin) + ' ' + flags + ' -c '
-        + escapeShell(src) + ' > ' + escapeShell(dest);
+    var cmd = escapeShell(bin) + " " + flags + " -c "
+        + escapeShell(src) + " > " + escapeShell(dest);
 
     exec(cmd, function(err, stdout, stderr){
         if (err) {
-            console.error('\n' + err.stack);
+            console.error("\n" + err.stack);
             fs.unlink(dest);
         }
     });
