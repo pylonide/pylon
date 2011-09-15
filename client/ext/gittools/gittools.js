@@ -264,12 +264,13 @@ module.exports = ext.register("ext/gittools/gittools", {
             interval : 5,
             control  : (this.control = {}),
             oneach : function(){
-                apf.layout.forceResize(gitToolsAceAnnotations.$ext.parentNode);
+                //apf.layout.forceResize(gitToolsAceAnnotations.$ext.parentNode);
             },
             onfinish : function() {
                 if (callback)
                     callback();
                 _self.annotationsLock = false;
+                //apf.layout.forceResize();
             }
         });
 
@@ -294,12 +295,12 @@ module.exports = ext.register("ext/gittools/gittools", {
                 interval : 5,
                 control  : (this.control = {}),
                 oneach : function(){
-                    apf.layout.forceResize(gitToolsAceAnnotations.$ext.parentNode);
+                    //apf.layout.forceResize(gitToolsAceAnnotations.$ext.parentNode);
                 },
                 onfinish : function() {
                     gitToolsAceAnnotations.hide();
                     splitterAnnotations.hide();
-                    apf.layout.forceResize(gitToolsAceAnnotations.$ext.parentNode);
+                    //apf.layout.forceResize(gitToolsAceAnnotations.$ext.parentNode);
                 }
             });
         }
