@@ -52,6 +52,43 @@ var WebdavLocalStorage = module.exports = function(callback, sync, fIdent) {
             callback("", apf.SUCCESS, {});
     };
     
+    this.remove = function(path, lock, callback){
+        this.sync.add(path, {
+            type: "webdav-rm",
+            path: path,
+            lock: lock
+        });
+        
+        if (callback)
+            callback("", apf.SUCCESS, {});
+    };
+    
+    this.copy = function(from, to, overwrite, lock, callback){
+        this.sync.add(from, {
+            type: "webdav-copy",
+            from: from,
+            to: to,
+            overwrite: overwrite,
+            lock: lock
+        });
+        
+        if (callback)
+            callback("", apf.SUCCESS, {});
+    };
+    
+    this.move = function(from, to, overwrite, lock, callback){
+        this.sync.add(from, {
+            type: "webdav-move",
+            from: from,
+            to: to,
+            overwrite: overwrite,
+            lock: lock
+        });
+        
+        if (callback)
+            callback("", apf.SUCCESS, {});
+    };
+    
     this.list = function(path, callback){
         this.handleError(callback);
     };
