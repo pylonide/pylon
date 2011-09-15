@@ -17,9 +17,10 @@
       scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
       
       fontsize          = "[{require('ext/settings/settings').model}::editors/code/@fontsize]"
-      wrapmode          = "[@wrapmode]"
+      wrapmode          = "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"      
       wraplimitmin      = "[{require('ext/settings/settings').model}::editors/code/@wraplimitmin]"
-      wraplimitmax      = "[{require('ext/settings/settings').model}::editors/code/@wraplimitmax]"
+      wraplimitmax      = "[{require('ext/settings/settings').model}::editors/code/@wrapmode] and 80"
+      wraplimitmax2     = "[{require('ext/settings/settings').model}::editors/code/@wraplimitmax]"
       gutter            = "[{require('ext/settings/settings').model}::editors/code/@gutter]"
       highlightselectedword = "[{require('ext/settings/settings').model}::editors/code/@highlightselectedword]"
       autohidehorscrollbar  = "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]"
