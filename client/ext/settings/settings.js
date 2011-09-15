@@ -90,7 +90,7 @@ module.exports = ext.register("ext/settings/settings", {
                     ide.removeEventListener("socketMessage", arguments.callee);
                 }
             });
-
+            
             if (ide.onLine === true)
                 ide.socket.send(JSON.stringify({command: "settings", action: "get"}));
             return;
