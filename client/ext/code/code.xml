@@ -26,7 +26,7 @@
       
       contextmenu       = "mnuCtxEditor"
       debugger          = "{this.syntax == 'javascript' ? dbg : null}"
-      readonly          = "{[@loading] or cloud9config.readonly or (location.host and stDebugProcessRunning.active and [@scriptid])}"
+      readonly          = "{[@loading] or cloud9config.readonly or (location.host and window.stDebugProcessRunning and stDebugProcessRunning.active and [@scriptid])}"
     />
     
     <a:menu id="mnuCtxEditor" render="runtime">
