@@ -79,7 +79,7 @@
           contextmenu="mnuCtxTree" multiselect="false" reselectable="true" 
           onbeforemove="this.disable();" autoselect="false"
           onbeforeremove="return remove()" disabled="{{!stServerConnected.active}}"
-          flex="1" anchors = "0 0 0 0" onmouseover="require('ext/tree/tree').onTreeOver()"
+          flex="1" anchors="0 0 0 0" onmouseover="require('ext/tree/tree').onTreeOver()"
           onmouseout="require('ext/tree/tree').onTreeOut()"
         >
             <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
