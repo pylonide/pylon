@@ -105,8 +105,7 @@ var WebdavWrapper = module.exports = function(webdav, sync, fIdent, callback) {
         if (ide.onLine)
             this.realWebdav.move.apply(this.realWebdav, arguments);
         
-        if(typeof this.localWebdav.move != "undefined")
-            this.localWebdav.move.call(this.localWebdav, sFrom, sTo, bOverwrite, bLock, ide.onLine ? apf.K : callback);
+        this.localWebdav.move.call(this.localWebdav, sFrom, sTo, bOverwrite, bLock, ide.onLine ? apf.K : callback);
     }
     
     this.report = function(sPath, reportName, oProperties, callback) {
