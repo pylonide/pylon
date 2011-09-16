@@ -109,7 +109,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/quicksearch/quicksearch",
     "ext/gotoline/gotoline",
     "ext/html/html",
-    "ext/ftp/ftp",
+    //"ext/ftp/ftp",
     "ext/code/code",
     "ext/imgview/imgview",
     "ext/extmgr/extmgr",

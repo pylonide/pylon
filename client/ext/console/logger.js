@@ -55,7 +55,10 @@ exports.logNodeStream = function(data, stream, useOutput) {
             }) + "</span></div>");
     }
 
-    (useOutput ? txtOutput : txtConsole).addValue(log.join(""));
+    if (useOutput && txtOutput)
+        txtOutput.addValue(log.join(""));
+    else if (txtConsole)
+        txtConsole.addValue(log.join(""));
 };
 
 exports.log = function(msg, type, pre, post, otherOutput){
