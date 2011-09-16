@@ -98,11 +98,13 @@ define(function(require, exports, module) {
         apf.addEventListener("load", function(){
             ide.start();
         });
-        
-        //@todo this doesnt work
-        apf.addEventListener("exit", function(){
-            //return "Are you sure you want to close Cloud9? Your state will be saved and will be loaded next time you start Cloud9";
-        });
+
+        // Note FF 4 and above do not display the string to the user
+        // https://bugzilla.mozilla.org/show_bug.cgi?id=588292
+        window.onbeforeunload = function() {
+            // @TODO check if any files are unsaved
+            //return "Are you sure you want to close Cloud9?";
+        };
 
         ide.addEventListener("extload", function() {
             // fire up the socket connection:
