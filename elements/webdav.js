@@ -1048,9 +1048,14 @@ apf.webdav = function(struct, tagName){
             aOut = [];
         if (aResp.length) //we got a valid result set, so assume that any possible AUTH has succeeded
             this.$regVar("authenticated", true);
-        // start from 1 (one), because the first element contains PROP info on the path
-        var start = (extra.headers && typeof extra.headers.Depth != "undefined" && extra.headers.Depth == 0) ? 0 : 1;
-        for (var sa = [], data, i = start, j = aResp.length; i < j; i++) {
+            
+        var sPath;
+        for (var sa = [], data, i = 0, j = aResp.length; i < j; i++) {
+            // Exclude requesting URL if it matches node's HREF (same node)
+            sPath = decodeURIComponent($xmlns(aResp[i], "href", apf.webdav.NS.D)[0].firstChild.nodeValue);
+            if (sPath === extra.url)
+                continue;
+                
             parseItem.call(this, aResp[i], data = {});
             if (data.data) 
                 sa.push({
