@@ -369,6 +369,9 @@ module.exports = ext.register("ext/editors/editors", {
         }*/
         apf.history.setHash("!" + path);
         
+        setTimeout(function() {
+            ceEditor.focus();
+        }, 100);
         //toHandler.$itmEditor.select();
         //toHandler.$rbEditor.select();
 
