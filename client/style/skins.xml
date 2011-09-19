@@ -2604,8 +2604,11 @@
             padding : 2px 0 1px 24px;
         }
     ]]></a:style>
-
-
+    <a:style condition="apf.isWebkit && (apf.versionSafari >= 5 || apf.versionChrome >= 14)"><![CDATA[
+        .datagrid .headings {
+            margin-right: 0px;
+        }
+    ]]></a:style>
     <a:presentation>
         <a:main head="div[1]" container="div[3]" pointer="div[2]" widthdiff="1" iframe2="true">
             <div class="datagrid">
