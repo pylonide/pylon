@@ -349,11 +349,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
     this.$propHandlers["wraplimitmin"] = function(value, prop, initial) {
         this.$editor.getSession().setWrapLimitRange(value, this.wraplimitmax);
-        if (value) this.setProperty("wrapmode", true);
     };
     this.$propHandlers["wraplimitmax"] = function(value, prop, initial) {
         this.$editor.getSession().setWrapLimitRange(this.wraplimitmin, value);
-        if (value) this.setProperty("wrapmode", true);
     };
     this.$propHandlers["highlightselectedword"] = function(value, prop, initial) {
         this.$editor.setHighlightSelectedWord(value);
