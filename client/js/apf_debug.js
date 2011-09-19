@@ -7078,7 +7078,11 @@ apf.selectTextHtml = function(oHtml){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/visibilitymanager.js)SIZE(4929)TIME(Wed, 14 Sep 2011 08:38:13 GMT)*/
+=======
+/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/visibilitymanager.js)SIZE(4965)TIME(Fri, 16 Sep 2011 12:57:18 GMT)*/
+>>>>>>> hotfix/1.7.3
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7174,9 +7178,9 @@ apf.visibilitymanager = function(){
     }
     
     this.permanent = function(amlNode, show, hide){
-        var state = amlNode.$ext.offsetHeight || amlNode.$ext.offsetWidth;
+        var state = amlNode.$ext && (amlNode.$ext.offsetHeight || amlNode.$ext.offsetWidth);
         function check(e){
-            var newState = amlNode.$ext.offsetHeight || amlNode.$ext.offsetWidth;
+            var newState = amlNode.$ext && (amlNode.$ext.offsetHeight || amlNode.$ext.offsetWidth);
             if (newState == state)
                 return;
             
@@ -16976,7 +16980,11 @@ apf.Init.run("http");
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16782)TIME(Wed, 14 Sep 2011 10:54:40 GMT)*/
+=======
+/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16782)TIME(Fri, 16 Sep 2011 12:57:18 GMT)*/
+>>>>>>> hotfix/1.7.3
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36103,7 +36111,11 @@ apf.config.$inheritProperties["render-delay"] = 1;
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dragdrop.js)SIZE(55347)TIME(Wed, 14 Sep 2011 08:38:13 GMT)*/
+=======
+/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dragdrop.js)SIZE(55817)TIME(Fri, 16 Sep 2011 12:57:18 GMT)*/
+>>>>>>> hotfix/1.7.3
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36986,7 +36998,12 @@ apf.DragServer = {
     },
 
     dragover : function(o, el, e){
+<<<<<<< HEAD
         var _self = this;
+=======
+        var _self      = this,
+            originalEl = el;
+>>>>>>> hotfix/1.7.3
         
         function checkPermission(targetEl) {
             return o.isDropAllowed && o.xmlRoot
@@ -37026,11 +37043,16 @@ apf.DragServer = {
 
         if (!candrop) {
             if (o && o.$dragover) {
+<<<<<<< HEAD
                 var parentNode = (elSel || o.xmlRoot).parentNode,
                     htmlParentNode;
                 if(parentNode && (htmlParentNode = apf.xmldb.findHtmlNode(parentNode, o))) {
                     el = htmlParentNode;
                     
+=======
+                var parentNode = (elSel || o.xmlRoot).parentNode;
+                if(parentNode && (el = apf.xmldb.findHtmlNode(parentNode, o))) {                   
+>>>>>>> hotfix/1.7.3
                     if (o.$findValueNode)
                         fEl = o.$findValueNode(el);
                     
@@ -37039,7 +37061,11 @@ apf.DragServer = {
                         : apf.xmldb.findXmlNode(el));
                             
                     candrop = checkPermission(parentNode);
+<<<<<<< HEAD
                     this.lastFel = htmlParentNode;
+=======
+                    this.lastFel = el;
+>>>>>>> hotfix/1.7.3
                     
                     
                     if(!candrop)
@@ -37053,7 +37079,15 @@ apf.DragServer = {
         }
         
         //EVENT - cancelable: ondragover
+<<<<<<< HEAD
         if (o.dispatchEvent("dragover", this.dragdata, (elSel || o.xmlRoot), o.lastel) === false)
+=======
+        if (o.dispatchEvent("dragover", this.dragdata, {
+            target     : (elSel || o.xmlRoot), 
+            lastEl     : o.lastel,
+            originalEl : originalEl
+        }) === false)
+>>>>>>> hotfix/1.7.3
             candrop = false;
 
         //Set Cursor
@@ -37217,13 +37251,13 @@ apf.DragServer = {
         //dragdata.indicator.style.top = e.clientY+"px";
         //dragdata.indicator.style.left = e.clientX+"px";
 
-        var storeIndicatorTopPos = dragdata.indicator.style.top;
-        //console.log("INDICATOR BEFORE: "+dragdata.indicator.style.top+" "+dragdata.indicator.style.left);
-        //get Element at x, y
-        dragdata.indicator.style.display = "block";
-        if (dragdata.indicator)
-            dragdata.indicator.style.top = "10000px";
-
+        if (dragdata.indicator) {
+            var storeIndicatorTopPos = dragdata.indicator.style.top;
+            //console.log("INDICATOR BEFORE: "+dragdata.indicator.style.top+" "+dragdata.indicator.style.left);
+            //get Element at x, y
+            dragdata.indicator.style.display = "block";
+                dragdata.indicator.style.top = "10000px";
+        }
         apf.DragServer.dragdata.x = e.pageX ? e.pageX - (!apf.isIE
             ? window.pageXOffset
             : 0) : c.clientX;
@@ -37236,8 +37270,9 @@ apf.DragServer = {
                 el = document.elementFromPoint(apf.DragServer.dragdata.x,
                 apf.DragServer.dragdata.y);
             }
-
-        dragdata.indicator.style.top = storeIndicatorTopPos;
+        
+        if (dragdata.indicator)
+            dragdata.indicator.style.top = storeIndicatorTopPos;
         //console.log("INDICATOR AFTER: "+dragdata.indicator.style.top+" "
         //+dragdata.indicator.style.left+" "+apf.DragServer.dragdata.x+" "+apf.DragServer.dragdata.y);
         //Set Indicator
@@ -37319,6 +37354,8 @@ apf.MultiselectDragDrop = function() {
     this.lastel       = null;
 
     this.$showDragIndicator = function(sel, e){
+        var srcEl = e.originalTarget || e.srcElement || e.target;
+        
         this.multiple = sel.length > 1;
         
         if (this.multiple) {
@@ -37326,7 +37363,8 @@ apf.MultiselectDragDrop = function() {
             this.diffY = e.scrollY;
         }
         else {
-            this.diffX = -1 * e.offsetX;
+            var itemNode = apf.xmldb.findHtmlNode(sel[0], this);
+            this.diffX = -1 * (e.offsetX - parseInt(apf.getStyleRecur(itemNode, "padding-left").replace(/px$/, "") - 10));
             this.diffY = -1 * e.offsetY;
         }
         
@@ -37370,6 +37408,9 @@ apf.MultiselectDragDrop = function() {
             var sel = this.$selected || this.$caret,
                 width = apf.getStyle(this.oDrag, "width");
             
+            if (!sel)
+                return;
+            
             if (!width || width == "auto")
                 this.oDrag.style.width = (sel.offsetWidth - apf.getWidthDiff(this.oDrag)) + "px";
             this.$updateNode(this.selected, this.oDrag);
@@ -37392,7 +37433,7 @@ apf.MultiselectDragDrop = function() {
                 steps    : apf.isIE ? 15 : 20,
                 interval : 15,
                 tweens   : [
-                    {type: "left", from: oDrag.offsetLeft, to: pos[0]},
+                    {type: "left", from: oDrag.offsetLeft, to: (pos[0] + parseInt(apf.getStyleRecur(this.$selected, "padding-left").replace(/px$/, "")))},
                     {type: "top",  from: oDrag.offsetTop,  to: pos[1]}
                 ],
                 onfinish : function(){
@@ -40864,7 +40905,11 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/window.js)SIZE(50515)TIME(Wed, 14 Sep 2011 08:38:13 GMT)*/
+=======
+/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/window.js)SIZE(50527)TIME(Fri, 16 Sep 2011 12:57:18 GMT)*/
+>>>>>>> hotfix/1.7.3
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -41669,7 +41714,7 @@ apf.window = function(){
 
         var canSelect = !((!apf.document
           && (!apf.isParsingPartial || amlNode)
-          || apf.dragMode) && !ta[e.target.tagName]);
+          || apf.dragMode) && !ta[e.target && e.target.tagName]);
 
         if (canSelect && amlNode) {
             if (!e.target && e.srcElement)
@@ -53314,7 +53359,11 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/codeeditor.js)SIZE(21229)TIME(Tue, 13 Sep 2011 14:00:10 GMT)*/
+=======
+/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/codeeditor.js)SIZE(21119)TIME(Mon, 19 Sep 2011 14:22:07 GMT)*/
+>>>>>>> hotfix/1.7.3
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53359,6 +53408,7 @@ else
     define("apf/elements/codeeditor",
         ["module", "ace/editor", "ace/edit_session", "ace/virtual_renderer", "ace/undomanager", "ace/range", "pilot/fixoldbrowsers"],
         function(module, Editor, EditSession, VirtualRenderer, UndoManager, Range) {
+<<<<<<< HEAD
 
 Editor = Editor.Editor;
 EditSession = EditSession.EditSession;
@@ -53366,6 +53416,15 @@ VirtualRenderer = VirtualRenderer.VirtualRenderer;
 UndoManager = UndoManager.UndoManager;
 Range = Range.Range;
 
+=======
+
+Editor = Editor.Editor;
+EditSession = EditSession.EditSession;
+VirtualRenderer = VirtualRenderer.VirtualRenderer;
+UndoManager = UndoManager.UndoManager;
+Range = Range.Range;
+
+>>>>>>> hotfix/1.7.3
 apf.codeeditor = module.exports = function(struct, tagName) {
     this.$init(tagName || "codeeditor", apf.NODE_VISIBLE, struct);
 
@@ -53664,11 +53723,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
     this.$propHandlers["wraplimitmin"] = function(value, prop, initial) {
         this.$editor.getSession().setWrapLimitRange(value, this.wraplimitmax);
-        if (value) this.setProperty("wrapmode", true);
     };
     this.$propHandlers["wraplimitmax"] = function(value, prop, initial) {
         this.$editor.getSession().setWrapLimitRange(this.wraplimitmin, value);
-        if (value) this.setProperty("wrapmode", true);
     };
     this.$propHandlers["highlightselectedword"] = function(value, prop, initial) {
         this.$editor.setHighlightSelectedWord(value);
@@ -71681,7 +71738,11 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
+<<<<<<< HEAD
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/webdav.js)SIZE(49956)TIME(Sat, 13 Aug 2011 16:27:03 GMT)*/
+=======
+/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/webdav.js)SIZE(50041)TIME(Fri, 16 Sep 2011 14:48:39 GMT)*/
+>>>>>>> hotfix/1.7.3
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72722,9 +72783,14 @@ apf.webdav = function(struct, tagName){
             aOut = [];
         if (aResp.length) //we got a valid result set, so assume that any possible AUTH has succeeded
             this.$regVar("authenticated", true);
-        // start from 1 (one), because the first element contains PROP info on the path
-        var start = (extra.headers && typeof extra.headers.Depth != "undefined" && extra.headers.Depth == 0) ? 0 : 1;
-        for (var sa = [], data, i = start, j = aResp.length; i < j; i++) {
+            
+        var sPath;
+        for (var sa = [], data, i = 0, j = aResp.length; i < j; i++) {
+            // Exclude requesting URL if it matches node's HREF (same node)
+            sPath = decodeURIComponent($xmlns(aResp[i], "href", apf.webdav.NS.D)[0].firstChild.nodeValue);
+            if (sPath === extra.url)
+                continue;
+                
             parseItem.call(this, aResp[i], data = {});
             if (data.data) 
                 sa.push({
