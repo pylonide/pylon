@@ -1848,6 +1848,274 @@
         </a:main>
     </a:presentation>
 </a:button>
+     <a:button name="button-green-rounded">
+        <a:style><![CDATA[
+            .button-continue {
+                height             : 20px;
+                padding            : 0;
+                margin             : 0;
+                overflow           : hidden;
+                position           : relative;
+                cursor             : pointer;
+                -moz-user-select   : none;
+                -khtml-user-select : none;
+                user-select        : none;
+                width              : auto;
+                border             : 1px solid #1d6e26;
+
+                -moz-border-radius    : 14px;
+                -webkit-border-radius : 14px;
+                border-radius : 14px;
+
+                background : #e6e6e6 no-repeat 0 50%;
+                filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#15bd3f', endColorstr='#1f8739');
+                -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#15bd3f', endColorstr='#1f8739')";
+                background : -webkit-gradient(linear, left top, left bottom, from(#15bd3f), color-stop(1, #1f8739));
+                background :-moz-linear-gradient(center bottom, #27a245 0%, #19bc42 100%) repeat scroll 0 0 transparent;
+
+                -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.5) inset, 0px 1px 0px 0px rgba(255, 255, 255, 1);
+                -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.5) inset, 0px 1px 0px 0px rgba(255, 255, 255, 1);
+                box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.5) inset, 0px 1px 0px 0px rgba(255, 255, 255, 1);
+
+                line-height   : 11px;
+                text-shadow   : rgba(34, 143, 61, 1) 0px 1px 0px;
+                font-family   : Arial;
+                font-size     : 11px;
+                font-weight   : bold;
+                color         : white;
+                white-space   : nowrap;
+                text-overflow : ellipsis;
+                text-align:center;
+            }
+
+            .button-continueOver, .button-continue.hover {
+                filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#30c253', endColorstr='#399950');
+                -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#30c253', endColorstr='#399950')";
+                background : -webkit-gradient(linear, left top, left bottom, from(#30c253), color-stop(1, #399950));
+                background :-moz-linear-gradient(center bottom, #399950 0%, #30c253 100%) repeat scroll 0 0 transparent;
+            }
+
+            .button-continueDown, .button-container.active {
+                filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#15a73a', endColorstr='#1f7e36');
+                -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#15a73a', endColorstr='#1f7e36')";
+                background : -webkit-gradient(linear, left top, left bottom, from(#15a73a), color-stop(1, #1f7e36));
+                background :-moz-linear-gradient(center bottom, #1f7e36 0%, #15a73a 100%) repeat scroll 0 0 transparent;
+            }
+
+            .button-continue SPAN {
+                line-height: 21px;
+            }
+            
+            .button-continueIcon SPAN {
+                background-repeat   : no-repeat;
+                background-position : right 0;
+                height:15px;
+                padding:5px 38px 0 0;
+                position:relative;
+                overflow:hidden;
+                line-height:20px;
+            }
+            
+            .button-continueDisabled {
+                cursor        : default;
+                text-shadow   : #2ab949 0px 1px 0px;
+                color         : #26843d;
+            }
+
+            .button-continue.black {
+                background : #2c2c2c no-repeat 0 50%;
+                filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#545454', endColorstr='#2c2c2c');
+                -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#545454', endColorstr='#2c2c2c')";
+                background : -webkit-gradient(linear, left top, left bottom, from(#545454), color-stop(1, #2c2c2c));
+                background :-moz-linear-gradient(center bottom, #2c2c2c 0%, #545454 100%) repeat scroll 0 0 transparent;
+                border:1px solid #2c2c2c;
+
+                -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.3) inset;
+                -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.3) inset;
+                box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.3) inset;
+
+                text-shadow   : rgba(0, 0, 0, 1) 0px 1px 0px;
+            }
+
+            .button-continueOver.black {
+                filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#606060', endColorstr='#3b3b3b');
+                -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#606060', endColorstr='#3b3b3b')";
+                background : -webkit-gradient(linear, left top, left bottom, from(#606060), color-stop(1, #3b3b3b));
+                background :-moz-linear-gradient(center bottom, #3b3b3b 0%, #606060 100%) repeat scroll 0 0 transparent;
+            }
+
+            .button-continueDown.black {
+                filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#4e4e4e', endColorstr='#292929');
+                -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#4e4e4e', endColorstr='#292929')";
+                background : -webkit-gradient(linear, left top, left bottom, from(#4e4e4e), color-stop(1, #292929));
+                background :-moz-linear-gradient(center bottom, #292929 0%, #4e4e4e 100%) repeat scroll 0 0 transparent;
+            }
+
+            .button-continue.lightblue {
+                background         : #378ec4 no-repeat 0 50%;
+                filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#72b9e2', endColorstr='#378ec4');
+                -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#72b9e2', endColorstr='#378ec4')";
+                background         : -webkit-gradient(linear, left top, left bottom, from(#72b9e2), color-stop(1, #378ec4));
+                background         :-moz-linear-gradient(center bottom, #378ec4 0%, #72b9e2 100%) repeat scroll 0 0 transparent;
+
+                -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.5) inset, 0px 1px 2px 0px rgba(14, 48, 79, 0.39);
+                -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.5) inset, 0px 1px 2px 0px rgba(14, 48, 79, 0.39);
+                box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.5) inset, 0px 1px 2px 0px rgba(14, 48, 79, 0.39);
+                border                : 1px solid #105b86;
+                -moz-border-radius    : 12px;
+                -webkit-border-radius : 12px;
+                text-shadow           : rgba(69, 130, 177, 1) 0px 1px 0px;
+            }
+
+            .button-continue.orange {
+                background         : #378ec4 no-repeat 0 50%;
+                filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#ffaf24', endColorstr='#e78700');
+                -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#ffaf24', endColorstr='#e78700')";
+                background         : -webkit-gradient(linear, left top, left bottom, from(#ffaf24), color-stop(1, #e78700));
+                background         :-moz-linear-gradient(center bottom, #e78700 20%, #ffaf24 100%) repeat scroll 0 0 transparent;
+
+                -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.5) inset, 0px 1px 2px 0px rgba(42, 42, 44, 0.39);
+                -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.5) inset, 0px 1px 2px 0px rgba(42, 42, 44, 0.39);
+                box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.5) inset, 0px 1px 2px 0px rgba(42, 42, 44, 0.39);
+                border                : 0;
+                -moz-border-radius    : 12px;
+                -webkit-border-radius : 12px;
+                text-shadow           : rgba(255, 174, 33, 1) 0px 1px 0px;
+                font-size:10px;
+                color:#553506;
+                padding:4px 0 0 0;
+            }
+
+            .button-continue.gray {
+                background : #000000 no-repeat 0 50%;
+                filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#f7f7f7', endColorstr='#e6e6e6');
+                -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#f7f7f7', endColorstr='#e6e6e6')";
+                background : -webkit-gradient(linear, left top, left bottom, from(#f7f7f7), color-stop(1, #e6e6e6));
+                background :-moz-linear-gradient(center bottom, #e6e6e6 0%, #f7f7f7 100%) repeat scroll 0 0 transparent;
+                border:1px solid #b3b3b3;
+
+                -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.3) inset, 0px 1px 0px 0px rgba(255, 255, 255, 1);
+                -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.3) inset, 0px 1px 0px 0px rgba(255, 255, 255, 1);
+                box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.3) inset, 0px 1px 0px 0px rgba(255, 255, 255, 1);
+
+                text-shadow   : rgba(255, 255, 255, 1) 0px 1px 0px;
+                color         : #474747;
+            }
+            
+            .button-continue.blackdropdown {
+                background : #e6e6e6 no-repeat 0 50%;
+                filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#15bc3f', endColorstr='#1d8838');
+                -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#15bc3f', endColorstr='#1d8838')";
+                background : -webkit-gradient(linear, left top, left bottom, from(#15bc3f), color-stop(1, #1d8838));
+                background :-moz-linear-gradient(center bottom, #1d8838 0%, #15bc3f 100%) repeat scroll 0 0 transparent;
+                -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.5) inset,0px 1px 0px 0px rgba(0, 0, 0, 1);
+                -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.5) inset,0px 1px 0px 0px rgba(0, 0, 0, 1);
+                box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.5) inset,0px 1px 0px 0px rgba(0, 0, 0, 1);
+                border:0;
+                height:22px;
+            }
+            
+            .button-continue.blackdropdown SPAN {
+                line-height: 22px;
+            }
+            
+            .button-continue.blackdropdown.button-continueOver {
+                filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#30c253', endColorstr='#399950');
+                -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#30c253', endColorstr='#399950')";
+                background : -webkit-gradient(linear, left top, left bottom, from(#30c253), color-stop(1, #399950));
+                background :-moz-linear-gradient(center bottom, #399950 0%, #30c253 100%) repeat scroll 0 0 transparent;
+            }
+            
+            .button-continue.blackdropdown.button-continueDown {
+                filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#399950', endColorstr='#30c253');
+                -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#399950', endColorstr='#30c253')";
+                background : -webkit-gradient(linear, left top, left bottom, from(#399950), color-stop(1, #30c253));
+                background :-moz-linear-gradient(center bottom, #30c253 0%, #399950 100%) repeat scroll 0 0 transparent;
+            }
+            
+            .button-continue.onblack {
+                border             : 0;
+                -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.5) inset, 1px 1px 3px 0px rgba(20, 20, 20, 0.8);
+                -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.5) inset, 1px 1px 3px 0px rgba(20, 20, 20, 0.8);
+                box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.5) inset, 1px 1px 3px 0px rgba(20, 20, 20, 0.8);
+            }
+            
+            .button-continue.uc {
+                text-transform: uppercase;
+            }
+            
+            .button-continueOver.onblack {
+                filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#30c755', endColorstr='#36a951');
+                -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#30c755', endColorstr='#36a951')";
+                background : -webkit-gradient(linear, left top, left bottom, from(#30c755), color-stop(1, #36a951));
+                background :-moz-linear-gradient(center bottom, #36a951 0%, #30c755 100%) repeat scroll 0 0 transparent;
+            }
+            
+            .button-continueDown.onblack {
+                filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1d9b3b', endColorstr='#1bc343');
+                -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1d9b3b', endColorstr='#1bc343')";
+                background : -webkit-gradient(linear, left top, left bottom, from(#1d9b3b), color-stop(1, #1bc343));
+                background :-moz-linear-gradient(center bottom, #1bc343 0%, #1d9b3b 100%) repeat scroll 0 0 transparent;
+            }
+            
+            .hbox > DIV > .button-continue {
+                height  : 22px;
+                padding : 0;/*5px 0 0 0;*/
+            }
+
+            .hbox > DIV > .button-continue.orange {
+                height:19px;
+            }
+        ]]></a:style>
+        <a:style condition="apf.isSafari || apf.isChrome"><![CDATA[
+            .button-continue {
+                height  : 20px;
+                padding : 0;
+            }
+
+            .button-continue SPAN {
+                height  : 16px;
+                padding : 4px 0 0 0;
+                line-height: 20px;
+            }
+            
+            .button-continue.orange SPAN {
+                line-height: 14px;
+                height:20px;
+                padding-top:0;
+            }
+
+            .button-continueIcon SPAN {
+                padding:4px 38px 0 0;
+                background-position : right -1px;
+            }
+
+            .hbox > .button-continue {
+                height  : 22px;
+            }
+
+            .hbox > .button-continue.orange {
+                height : 19px;
+            }
+        ]]></a:style>
+        <a:style condition="apf.isIE"><![CDATA[
+            .button-continue {
+                height  : 17px;
+                padding : 3px 0 0 0;
+            }
+        ]]></a:style>
+
+         <a:presentation>
+            <a:main
+              caption    = "span/text()"
+              background = "span"
+              icon       = "span">
+                <div class="button-continue">
+                    <span>-</span>
+                </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
 <a:checkbox name="checkbox">
     <a:style><![CDATA[
         .cbcontainer {
@@ -4094,6 +4362,60 @@
                         <div class="right"></div>
                     </div>
                     <div class="fm-content"> </div>
+                </div>
+            </a:main>
+            <a:button>
+                <div> </div>
+            </a:button>
+        </a:presentation>
+    </a:modalwindow>
+   <a:modalwindow name="modalwindow_signin">
+        <a:style><![CDATA[
+            .modalwindow_signin {
+                background:url(images/signin_window.png) no-repeat 0 0;
+                position:relative;
+                overflow:hidden;
+                margin:40px auto 0 auto;
+            }
+
+            .modalwindow_signin .mw2_container {
+                
+            }
+
+            .modalwindow_signin .mw2_title {
+                position:relative;
+                overflow:hidden;
+                font-family:Arial;
+                font-size:23px;
+                font-weight:bold;
+                line-height:30px;
+                color:white;
+                text-align:center;
+                margin:20px 0 0 0;
+                text-shadow   : rgba(32, 113, 167, 1) 0px 1px 0px;
+            }
+
+            .modalwindow_signin .mw2_buttons {
+                display : none;
+            }
+        ]]></a:style>
+
+        <a:presentation>
+            <a:main
+              collapsed-height = "26"
+              minheight        = "100"
+              minwidth         = "150"
+              container        = "div[1]"
+              drag             = "div[1]/div[1]"
+              title            = "div[1]/div[1]/text()"
+              icon             = "div[1]/div[2]"
+              buttons          = "div[1]/div[3]">
+                <div class="modalwindow_signin">
+                    <div class="mw2_container">
+                        <div class="mw2_title">-</div>
+                        <div class="mw2_icon"></div>
+                        <div class="mw2_buttons"></div>
+                    </div>
                 </div>
             </a:main>
             <a:button>
@@ -7123,7 +7445,138 @@
         </a:main>
     </a:presentation>
 </a:textbox>
+    <a:textbox name="dashboard-textbox">
+        <a:alias>input</a:alias>
+        <a:alias>secret</a:alias>
 
+        <a:style><![CDATA[
+            .txt_dsb {
+                position              : relative;
+                overflow              : hidden;
+                border                : 1px solid #acb1b7;
+                height                : 24px;
+                -moz-border-radius    : 3px;
+                -webkit-border-radius : 3px;
+                border-radius         : 3px;
+                background-color      : white;
+                -moz-box-shadow       : 0px 1px 2px rgba(0, 0, 0, 0.17) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.75);
+                -webkit-box-shadow    : 0px 1px 2px rgba(0, 0, 0, 0.17) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.75);
+                box-shadow            : 0px 1px 2px rgba(0, 0, 0, 0.17) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.75);
+            }
+
+            .txt_dsb .txt_dsb_fix {
+                position         : relative;
+                overflow         : hidden;
+                height           : 24px;
+                margin           : 0 5px;
+                background-color : transparent;
+                padding-right:16px;
+            }
+
+            .txt_dsb .txt_dsb_fix INPUT {
+                border           : 0;
+                position         : relative;
+                overflow         : hidden;
+                display          : block;
+                width            : 100%;
+                height           : 24px;
+                background-color : transparent;
+                font-family      : Arial;
+                font-size        : 12px;
+                color            : #202020;
+                outline          : none;
+            }
+
+            .txt_dsbInitial .txt_dsb_fix INPUT {
+                color : #cccccc;
+            }
+
+            .txt_dsb .txt_dsb_fix .close {
+                width      : 10px;
+                display    : none;
+                height     : 10px;
+                background : url(images/iks.png) no-repeat 0 0;
+                position   : absolute;
+                top        : 7px;
+                right      : 2px;
+            }
+
+            .noclosebtn .txt_dsb_fix .close {
+                top     : 8px;
+                left    : 0;
+                display : none;
+                background : none;
+            }
+
+            .vbox > DIV > .txt_dsb {
+                height:26px;
+            }
+
+            .txt_dsb.bold-font {
+                height:26px;
+            }
+
+            .vbox > DIV > .txt_dsb.bold-font {
+                height:28px;
+            }
+
+            .txt_dsb.bold-font .txt_dsb_fix INPUT {
+                font-weight:bold;
+                text-align:right;
+                font-size:19px; 
+            }
+
+            .txt_dsb.bold-font2 .txt_dsb_fix INPUT {
+                font-weight:bold;
+            }
+
+            .txt_dsb .initialfix {
+                display: none;
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                color : #cccccc;
+                margin-top: 6px;
+                background-color      : white;
+            }
+            .txt_dsb.txt_dsbInitial .initialfix.initFxEnabled {
+                display: block;
+            }
+
+            .txt_dsb.txt_dsbError {
+                border: 1px solid red;
+            }
+        ]]></a:style>
+        <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
+            .vbox > .txt_dsb {
+                height:26px;
+            }
+        ]]></a:style>
+
+        <a:presentation>
+            <a:main
+              input="div/input"
+              initialfix="div/div[2]"
+              button="div/div[1]">
+                <div class="txt_dsb">
+                    <div class="txt_dsb_fix">
+                        <input type="text" />
+                        <div class="close"> </div>
+                        <div class="initialfix"> </div>
+                    </div>
+                </div>
+            </a:main>
+            <a:container>
+                <div class="hp_tbxautoc"> </div>
+            </a:container>
+            <a:item caption=".">
+                <div>-</div>
+            </a:item>
+        </a:presentation>
+    </a:textbox>
+    
 <a:toolbar name="toolbar">
     <a:style><![CDATA[
         .toolbar .menubar {
