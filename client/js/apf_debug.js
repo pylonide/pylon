@@ -7078,11 +7078,7 @@ apf.selectTextHtml = function(oHtml){
 
 
 
-<<<<<<< HEAD
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/visibilitymanager.js)SIZE(4929)TIME(Wed, 14 Sep 2011 08:38:13 GMT)*/
-=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/visibilitymanager.js)SIZE(4965)TIME(Fri, 16 Sep 2011 12:57:18 GMT)*/
->>>>>>> hotfix/1.7.3
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16980,11 +16976,7 @@ apf.Init.run("http");
 
 
 
-<<<<<<< HEAD
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16782)TIME(Wed, 14 Sep 2011 10:54:40 GMT)*/
-=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16782)TIME(Fri, 16 Sep 2011 12:57:18 GMT)*/
->>>>>>> hotfix/1.7.3
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36111,11 +36103,7 @@ apf.config.$inheritProperties["render-delay"] = 1;
 
 
 
-<<<<<<< HEAD
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dragdrop.js)SIZE(55347)TIME(Wed, 14 Sep 2011 08:38:13 GMT)*/
-=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dragdrop.js)SIZE(55817)TIME(Fri, 16 Sep 2011 12:57:18 GMT)*/
->>>>>>> hotfix/1.7.3
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36998,12 +36986,8 @@ apf.DragServer = {
     },
 
     dragover : function(o, el, e){
-<<<<<<< HEAD
-        var _self = this;
-=======
         var _self      = this,
             originalEl = el;
->>>>>>> hotfix/1.7.3
         
         function checkPermission(targetEl) {
             return o.isDropAllowed && o.xmlRoot
@@ -37043,16 +37027,8 @@ apf.DragServer = {
 
         if (!candrop) {
             if (o && o.$dragover) {
-<<<<<<< HEAD
-                var parentNode = (elSel || o.xmlRoot).parentNode,
-                    htmlParentNode;
-                if(parentNode && (htmlParentNode = apf.xmldb.findHtmlNode(parentNode, o))) {
-                    el = htmlParentNode;
-                    
-=======
                 var parentNode = (elSel || o.xmlRoot).parentNode;
                 if(parentNode && (el = apf.xmldb.findHtmlNode(parentNode, o))) {                   
->>>>>>> hotfix/1.7.3
                     if (o.$findValueNode)
                         fEl = o.$findValueNode(el);
                     
@@ -37061,11 +37037,7 @@ apf.DragServer = {
                         : apf.xmldb.findXmlNode(el));
                             
                     candrop = checkPermission(parentNode);
-<<<<<<< HEAD
-                    this.lastFel = htmlParentNode;
-=======
                     this.lastFel = el;
->>>>>>> hotfix/1.7.3
                     
                     
                     if(!candrop)
@@ -37079,15 +37051,11 @@ apf.DragServer = {
         }
         
         //EVENT - cancelable: ondragover
-<<<<<<< HEAD
-        if (o.dispatchEvent("dragover", this.dragdata, (elSel || o.xmlRoot), o.lastel) === false)
-=======
         if (o.dispatchEvent("dragover", this.dragdata, {
             target     : (elSel || o.xmlRoot), 
             lastEl     : o.lastel,
             originalEl : originalEl
         }) === false)
->>>>>>> hotfix/1.7.3
             candrop = false;
 
         //Set Cursor
@@ -40905,11 +40873,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-<<<<<<< HEAD
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/window.js)SIZE(50515)TIME(Wed, 14 Sep 2011 08:38:13 GMT)*/
-=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/window.js)SIZE(50527)TIME(Fri, 16 Sep 2011 12:57:18 GMT)*/
->>>>>>> hotfix/1.7.3
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53359,11 +53323,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-<<<<<<< HEAD
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/codeeditor.js)SIZE(21229)TIME(Tue, 13 Sep 2011 14:00:10 GMT)*/
-=======
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/codeeditor.js)SIZE(21119)TIME(Mon, 19 Sep 2011 14:22:07 GMT)*/
->>>>>>> hotfix/1.7.3
+/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/codeeditor.js)SIZE(21229)TIME(Mon, 19 Sep 2011 14:29:44 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53408,7 +53368,6 @@ else
     define("apf/elements/codeeditor",
         ["module", "ace/editor", "ace/edit_session", "ace/virtual_renderer", "ace/undomanager", "ace/range", "pilot/fixoldbrowsers"],
         function(module, Editor, EditSession, VirtualRenderer, UndoManager, Range) {
-<<<<<<< HEAD
 
 Editor = Editor.Editor;
 EditSession = EditSession.EditSession;
@@ -53416,15 +53375,6 @@ VirtualRenderer = VirtualRenderer.VirtualRenderer;
 UndoManager = UndoManager.UndoManager;
 Range = Range.Range;
 
-=======
-
-Editor = Editor.Editor;
-EditSession = EditSession.EditSession;
-VirtualRenderer = VirtualRenderer.VirtualRenderer;
-UndoManager = UndoManager.UndoManager;
-Range = Range.Range;
-
->>>>>>> hotfix/1.7.3
 apf.codeeditor = module.exports = function(struct, tagName) {
     this.$init(tagName || "codeeditor", apf.NODE_VISIBLE, struct);
 
@@ -53723,9 +53673,11 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
     this.$propHandlers["wraplimitmin"] = function(value, prop, initial) {
         this.$editor.getSession().setWrapLimitRange(value, this.wraplimitmax);
+        if (value) this.setProperty("wrapmode", true);
     };
     this.$propHandlers["wraplimitmax"] = function(value, prop, initial) {
         this.$editor.getSession().setWrapLimitRange(this.wraplimitmin, value);
+        if (value) this.setProperty("wrapmode", true);
     };
     this.$propHandlers["highlightselectedword"] = function(value, prop, initial) {
         this.$editor.setHighlightSelectedWord(value);
@@ -71738,11 +71690,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-<<<<<<< HEAD
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/webdav.js)SIZE(49956)TIME(Sat, 13 Aug 2011 16:27:03 GMT)*/
-=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/webdav.js)SIZE(50041)TIME(Fri, 16 Sep 2011 14:48:39 GMT)*/
->>>>>>> hotfix/1.7.3
 
 /*
  * See the NOTICE file distributed with this work for additional
