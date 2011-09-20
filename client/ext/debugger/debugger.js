@@ -160,6 +160,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             else
                 ide.barTools.appendChild(button);
             
+            //collect all the elements that are normal nodes
             if (button.nodeType == 1) {
                 this.nodesAll.push(button);
             }
@@ -341,9 +342,11 @@ module.exports = ext.register("ext/debugger/debugger", {
     disable : function(){
         if (this.disabled) return;
         
+        //stop debugging
         require('ext/run/run').stop();
-        stProcessRunning.deactivate();
+        this.deactivate();
         
+        //loop from each item of the plugin and disable it
         this.nodesAll.each(function(item){            
             if (!item.$lastDisabled)
                 item.$lastDisabled = item.disabled;
