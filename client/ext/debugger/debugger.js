@@ -21,7 +21,7 @@ module.exports = ext.register("ext/debugger/debugger", {
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
-    //offline : false,
+    offline : false,
     markup  : markup,
     buttonClassName : "debug1",
     deps    : [fs, noderunner],
@@ -33,7 +33,8 @@ module.exports = ext.register("ext/debugger/debugger", {
             }
         }
     },
-
+    
+    nodesAll: [],
     nodes : [],
     hotitems: {},
 
@@ -51,10 +52,10 @@ module.exports = ext.register("ext/debugger/debugger", {
         });
         
         stDebugProcessRunning.addEventListener("activate", function() {
-            _self.enable();
+            _self.activate();
         });
         stProcessRunning.addEventListener("deactivate", function() {
-            _self.disable();
+            _self.deactivate();
         });
         
         ide.addEventListener("afteropenfile", function(e) {
@@ -158,6 +159,10 @@ module.exports = ext.register("ext/debugger/debugger", {
                 ide.barTools.insertBefore(button, btnRun);
             else
                 ide.barTools.appendChild(button);
+            
+            if (button.nodeType == 1) {
+                this.nodesAll.push(button);
+            }
         }
 
         this.hotitems["resume"]   = [btnResume];
@@ -304,8 +309,8 @@ module.exports = ext.register("ext/debugger/debugger", {
         }
         this.inSync = false;
     },
-
-    enable : function(){
+    
+    activate : function(){
         ext.initExtension(this);
         
         this.nodes.each(function(item){
@@ -314,14 +319,40 @@ module.exports = ext.register("ext/debugger/debugger", {
         });
     },
 
-    disable : function(){
+    deactivate : function(){
         this.nodes.each(function(item){
             if (item.hide)
                 item.hide();
         });
-        //log.disable(true);
+    },    
+    
+    enable : function(){
+        if (!this.disabled) return;
+        
+        this.nodesAll.each(function(item){            
+            item.setProperty("disabled", item.$lastDisabled !== undefined
+                ? item.$lastDisabled
+                : true);
+            delete item.$lastDisabled;
+        });
+        this.disabled = false;
     },
 
+    disable : function(){
+        if (this.disabled) return;
+        
+        require('ext/run/run').stop();
+        stProcessRunning.deactivate();
+        
+        this.nodesAll.each(function(item){            
+            if (!item.$lastDisabled)
+                item.$lastDisabled = item.disabled;
+            item.disable();
+        });
+        
+        this.disabled = true;
+    },
+    
     destroy : function(){
         this.nodes.each(function(item){
             item.destroy(true, true);
