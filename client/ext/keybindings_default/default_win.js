@@ -35,6 +35,9 @@ return keys.onLoad({
             "stepover": "F10",
             "stepout": "Shift-F9"
         },
+        "focus": {
+            "focus": "Ctrl-E"
+        },
         "gotoline": {
             "gotoline": "Ctrl-G"
         },
