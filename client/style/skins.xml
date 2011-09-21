@@ -2604,7 +2604,7 @@
             padding : 2px 0 1px 24px;
         }
     ]]></a:style>
-    <a:style condition="apf.isWebkit && (apf.versionSafari >= 5 || apf.versionChrome >= 14)"><![CDATA[
+    <a:style condition="apf.isWebkit &amp;&amp; (apf.versionSafari &gt;= 5 || apf.versionChrome &gt;= 14)"><![CDATA[
         .datagrid .headings {
             margin-right: 0px;
         }

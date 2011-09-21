@@ -122,7 +122,7 @@ module.exports = ext.register("ext/editors/editors", {
             ]
         });
         
-        tabPlaceholder.addEventListener("resize", function(e){
+        tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
             var ext = tab.$ext, ph;
             var pos = apf.getAbsolutePosition(ph = tabPlaceholder.$ext);
             ext.style.left = (pos[0] - 2) + "px";
@@ -133,6 +133,14 @@ module.exports = ext.register("ext/editors/editors", {
         });
 
         return vbox;
+    },
+    
+    disableTabResizeEvent : function() {
+        tabPlaceholder.removeEventListener("resize", this.$tabPlaceholderResize);
+    },
+    
+    enableTabResizeEvent : function() {
+        tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize);
     },
 
     isEditorAvailable : function(page, path){
@@ -420,7 +428,7 @@ module.exports = ext.register("ext/editors/editors", {
         });
 
         var vbox  = colMiddle;
-        this.hbox = vbox.appendChild(new apf.hbox({flex : 1, padding : 5, splitters : true}));
+        this.hbox = vbox.appendChild(new apf.hbox({flex : 1, padding : 5, splitters : true }));
         //this.splitter = vbox.appendChild(new apf.splitter());
         this.nodes.push(this.addTabSection());
 

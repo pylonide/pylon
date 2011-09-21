@@ -84,11 +84,11 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             if (!apf.isChildOf(winQuickSearch, e.toElement))
                 _self.toggleDialog(-1);
         });
-        
+
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor)
             editor.ceEditor.parentNode.appendChild(winQuickSearch);
-            
+
         var p = document.getElementById("divSearchCount");
         var spans = p.getElementsByTagName("span");
         oIter  = spans[0];

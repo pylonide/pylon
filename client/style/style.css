@@ -22,6 +22,12 @@ BODY {
     opacity : 0.5;
 }
 
+.vbfocus {
+    z-index: 99999999;
+    background: url(images/focusbg.png);
+    padding: 0 80px;
+}
+
 #logo {
     background: url(images/logo.png) no-repeat 0 0;
     width: 186px;
