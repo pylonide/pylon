@@ -53,7 +53,6 @@ module.exports = ext.register("ext/focus/focus", {
     
     toggleFullscreenFocus : function() {
         if (this.isFocused) {
-            //vbFocus.hide();
             tabEditors.parentNode.$ext.style.width = this.teWidth;
             tabEditors.parentNode.$ext.style.height = this.teHeight;
             tabEditors.parentNode.$ext.style.marginLeft = this.teMarginLeft;
@@ -67,9 +66,10 @@ module.exports = ext.register("ext/focus/focus", {
             editors.enableTabResizeEvent();
             btnFocusFullscreen.setAttribute("class", "notfull");
             vbFocus.hide();
+            apf.layout.forceResize();
             setTimeout(function() {
-                apf.layout.forceResize();
-            }, 0);
+                ceEditor.focus();
+            }, 100);
             this.isFocused = false;
         } else {
             vbFocus.show();
@@ -94,9 +94,10 @@ module.exports = ext.register("ext/focus/focus", {
             tabEditors.parentNode.$ext.style.mozBoxShadow = "0px 0px 25px #000";
             tabEditors.parentNode.$ext.style.webkitBoxShadow = "0px 0px 25px #000";
             btnFocusFullscreen.setAttribute("class", "full");
+            apf.layout.forceResize();
             setTimeout(function() {
-                apf.layout.forceResize();
-            }, 0);
+                ceEditor.focus();
+            }, 100);
             this.isFocused = true;
         }
     },
