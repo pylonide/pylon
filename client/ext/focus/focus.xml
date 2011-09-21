@@ -1,0 +1,21 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:skin
+       id  = "focus"
+       src = "{require('text!ext/focus/skin.xml')}"
+       media-path = "/static/style/images/"
+       icon-path  = "/static/style/icons/"
+    />
+    <a:button id="btnFocusFullscreen"
+      visible = "true"
+      width   = "26"
+      height  = "26"
+      top     = "10"
+      right   = "5"
+      class = "notfull"
+      skinset = "focus"
+      skin = "focusbutton"
+      onclick = "require('ext/focus/focus').toggleFullscreenFocus()"
+      onmouseover = "require('ext/focus/focus').fadeButtonIn()"
+      onmouseout = "require('ext/focus/focus').fadeButtonOut()"
+     />
+</a:application>
