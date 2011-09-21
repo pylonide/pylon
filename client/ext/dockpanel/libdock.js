@@ -1051,8 +1051,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             ref        : section,
             pinned     : "true",
             animate    : "false",
-            skin       : "dockwindowbasic",
-            resizable  : "true",
+            skin       : "dockwindowblack",
+            resizable  : "horizontal",
             dock       : 1,
             ondisplay  : function(){
                 if (_self.$currentMenu && _self.$currentMenu != this)
@@ -1065,12 +1065,12 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 var dist  = menu.$ext.offsetWidth > width - pos[0] //Weird bug - chrome only??
                     ? width - pos[0] 
                     : menu.$ext.offsetWidth;
-                
-                menu.$ext.style.marginLeft = (-1 * dist) + "px";
+
+                menu.$ext.style.marginLeft = (-1 * dist - 6) + "px";
                 
                 setTimeout(function(){
                     menu.$ext.style.marginRight = "0";
-                    menu.$ext.style.right = (width - pos[0]) + "px";
+                    menu.$ext.style.right = (width - pos[0] + 6) + "px";
                     menu.$ext.style.left = "";
                     menu.$ext.style.zIndex = "9999";
                 });
@@ -1087,7 +1087,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             },
             childNodes : [
                 new apf.tab({
-                    anchors : "0 0 0 0", 
+                    anchors : "4 4 4 4", 
                     skin : "docktab",
                     buttons : "scale",
                     dock    : 1,
