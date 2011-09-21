@@ -200,13 +200,9 @@
         .debug-panel {
             position         : relative;
             overflow         : hidden;
-            width            : 43px;
+            width            : 37px;
             border-left      : 1px solid #333;
-            background-color : #e7e7e7;
-            filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5');
-            -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5')";
-            background       : -webkit-gradient(linear, left center, right center, from(#f3f3f3), color-stop(1, #e5e5e5));
-            background       : -moz-linear-gradient(center left, #f3f3f3 0%, #e5e5e5 100%) repeat scroll 0 0 transparent;
+            background       : url(images/debug-panel_bg.png) 0 0;
         }
 
         .debug-panel .bar_inset {
@@ -1639,13 +1635,13 @@
 <a:button name="dockheader">
     <a:style><![CDATA[
         .dockheader {
-            border-top : 1px solid #727375;
+            border-top : 1px solid #595a5c;
             /*border-bottom : 1px solid #f1f1f1;*/
             position : relative;
-            filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#5a5b5d', endColorstr='#424244');
-            -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#5a5b5d', endColorstr='#424244')";
-            background       : -webkit-gradient(linear, center top, center bottom, from(#5a5b5d), color-stop(1, #424244));
-            background       : -moz-linear-gradient(center top, #5a5b5d 0%, #424244 100%) repeat scroll 0 0 transparent;
+            filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#3E3F41', endColorstr='#303132');
+            -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#3E3F41', endColorstr='#303132')";
+            background       : -webkit-gradient(linear, center top, center bottom, from(#3E3F41), color-stop(1, #303132));
+            background       : -moz-linear-gradient(center top , #3E3F41 0%, #303132 100%) repeat scroll 0 0 transparent;
             height : 10px;
             cursor : pointer;
         }
@@ -1661,11 +1657,11 @@
         }
 
         .dockheaderOver {
-            border-top : 1px solid #808183;
-            filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#6b6c6e', endColorstr='#555557');
-            -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#6b6c6e', endColorstr='#555557')";
-            background       : -webkit-gradient(linear, center top, center bottom, from(#6b6c6e), color-stop(1, #555557));
-            background       : -moz-linear-gradient(center top, #6b6c6e 0%, #555557 100%) repeat scroll 0 0 transparent;
+            border-top : 1px solid #595a5c;
+            filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#525354', endColorstr='#454647');
+            -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#525354', endColorstr='#454647')";
+            background       : -webkit-gradient(linear, center top, center bottom, from(#525354), color-stop(1, #454647));
+            background       : -moz-linear-gradient(center top, #525354 0%, #454647 100%) repeat scroll 0 0 transparent;
         }
 
         .dockheader.expanded span{
@@ -3232,14 +3228,14 @@
         .divider-debugpanel {
             position      : relative;
             overflow      : hidden;
-            border-top    : 1px dotted #bebebe;
-            border-bottom : 1px dotted #f3f3f3;
+            border-top    : 1px dotted #000000;
+            border-bottom : 1px dotted #39393b;
             height        : 4px;
         }
 
         .divider-debugpanel DIV {
-            border-bottom : 1px dotted #bebebe;
-            border-top    : 1px dotted #f3f3f3;
+            border-bottom : 1px dotted #000000;
+            border-top    : 1px dotted #39393b;
         }
     ]]></a:style>
     <a:style condition="apf.isGecko">
@@ -4042,6 +4038,71 @@
         <a:divider inherit="true">
             <div class='menu_divider'></div>
         </a:divider>
+    </a:presentation>
+</a:menu>
+<a:menu name="dockwindowblack">
+    <a:style><![CDATA[
+        .dockwindowblack {
+            position              : relative;
+            border                : 1px solid #000;
+            -moz-border-radius    : 8px;
+            -webkit-border-radius : 8px;
+            border-radius         : 8px;
+            background            : -webkit-gradient(linear,left bottom,left top,color-stop(0, #202020),color-stop(1, #2f2f2f));
+            background            : -moz-linear-gradient(center bottom,#202020 0%, #2f2f2f 100%);
+            padding               : 4px;
+            
+            
+            margin-left : -42px;
+            margin-top : -20px;
+            border : 1px solid #000;
+            
+            -webkit-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
+            -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .dockwindowblack .arrow {
+            background: url(images/black-panel_arrow.png) no-repeat 0 0;
+            position: absolute;
+            top: 42px;
+            right: -17px;
+            width: 17px;
+            height: 21px;
+        }
+        
+        .dockwindowblack .noise_top {
+            background : url(images/glossy-header.png) 0 0;
+            height: 13px;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+        
+        .dockwindowblack .noise_bg {
+            background: url(images/noise_pattern_transparent.png) 0 0;
+            bottom: 0;
+            left: 0;
+            opacity: 0.1;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+        
+        .dockwindowblack .page {
+            overflow: hidden;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="dockwindowblack">
+                <div class="noise_bg"></div>
+                <div class="noise_top"></div>
+                <div class="arrow"></div>
+            </div>
+        </a:main>
     </a:presentation>
 </a:menu>
 <a:menu name="dockwindowbasic">
@@ -6605,20 +6666,31 @@
             margin : 0 auto;
             overflow: hidden;
             position:relative;
+            
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+            
+            /*-webkit-border-bottom-left-radius: 4px;
+            -webkit-border-bottom-right-radius: 4px;
+            -moz-border-radius-bottomleft: 4px;
+            -moz-border-radius-bottomright: 4px;
+            border-bottom-left-radius: 4px;
+            border-bottom-right-radius: 4px;*/
+            
             /*border-bottom: 1px solid white;*/
         }
 
         .docktab .btncontainer{
             padding : 0;
             z-index : 100;
-            height: 18px;
+            height: 22px;
             overflow: visible;
             white-space: nowrap;
-            border-bottom : 1px solid #8c8c8c;
-
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
-            background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
             width : auto;
+            /*border-bottom : 1px solid #ffffff;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
+            background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);*/
         }
         .docktab .btncontainer>div {
             display: block;
@@ -6631,16 +6703,28 @@
         }
 
         .docktab .btncontainer .btntab {
-            padding       : 1px 2px 2px 2px;
+            padding       : 2px 2px 3px;
             position      : relative;
             text-align    : center;
-            border-right  : 1px solid #8c8c8c;
-            border-bottom : 1px solid #8c8c8c;
-
-            background : -moz-linear-gradient(top, #d6d6d6, #c7c7c7 );
+            border-right  : 1px solid #464646;
+            border-bottom : 1px solid #464646;
+            
+            -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.26) inset;
+            -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.26) inset;
+            
+            background: url(images/black-tab_btn_bg.png) 0 0;
+            
+            /*background : -moz-linear-gradient(top, #d6d6d6, #c7c7c7 );
             background : -webkit-gradient(linear, 0% 0%, 0% 100%, from(#d6d6d6), to(#c7c7c7));
             -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
-            -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
+            -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;*/
+            
+            /*-webkit-border-top-left-radius: 4px;
+            -webkit-border-top-right-radius: 4px;
+            -moz-border-radius-topleft: 4px;
+            -moz-border-radius-topright: 4px;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;*/
         }
 
         /*.docktab .btncontainer div.firstbtn {
@@ -6658,11 +6742,11 @@
         .docktab .btncontainer .btntab .tab_title {
             overflow : hidden;
             padding  : 1px 0 0 2px;
-            color    : #202020;
+            color    : #bbbbbb;
 
-            text-shadow : rgba(255,255,255,0.7) 0px 1px 0px;
+            text-shadow : rgba(0,0,0,0.7) 0px 1px 0px;
             font-family : "Arial", Tahoma;
-            font-size : 11px;
+            font-size : 12px;
         }
 
         .docktab .btncontainer .btntab.btnclose .tab_title {
@@ -6677,8 +6761,10 @@
         }
 
         .docktab .btncontainer div.over {
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
-            background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
+            /*background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
+            background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);*/
+            
+            background: url(images/black-tab_btn_bg.png) 0 -22px;
             cursor: default;
         }
 
@@ -6686,10 +6772,15 @@
             color       : #202020;
             cursor      : default;
             z-index     : 1;
-            background: -webkit-gradient(linear,left bottom,left top,from(rgb(246,246,246)),color-stop(1, rgb(237,237,237)));
-            background: -moz-linear-gradient(center bottom,rgb(246,246,246) 60%,rgb(237,237,237) 100%);
+            background: -webkit-gradient(linear,left bottom,left top,from(#ffffff),color-stop(1, #fafcfe));
+            background: -moz-linear-gradient(center bottom,#ffffff 60%,#fafcfe 100%);
             border-right : 1px solid #8c8c8c;
-            border-bottom: 1px solid #F6F6F6;
+            border-bottom: 1px solid #FAFCFE;
+        }
+        
+        .docktab .btncontainer .btntab.curbtn .tab_title {
+            color: #373d43;
+            text-shadow : rgba(255,255,255,0.7) 0px 1px 0px;
         }
 
         .docktab .scale .btntab .tab_middle {
@@ -6739,7 +6830,7 @@
         .docktab .page {
             display : none;
             position : absolute;
-            top : 19px;
+            top : 22px;
             bottom : 0;
             left : 0;
             right : 0;
@@ -6771,7 +6862,7 @@
         <a:button
           caption   = "div[1]/text()"
           container = "."
-          maxwidth  = "80"
+          maxwidth  = "100"
           minwidth  = "10">
             <div class="btntab">
                 <!--div class="tab_icon"> </div-->
@@ -7190,11 +7281,20 @@
         }
 
         .toolbar .subbar {
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(222,224,227)),color-stop(1, rgb(239,241,244)));
-            background: -moz-linear-gradient(center bottom,rgb(222,224,227) 0%,rgb(239,241,244) 100%);
+            /*background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(222,224,227)),color-stop(1, rgb(239,241,244)));
+            background: -moz-linear-gradient(center bottom,rgb(222,224,227) 0%,rgb(239,241,244) 100%);*/
+            
+            background-image: linear-gradient(bottom, #ECEFF2 0%, #EDF0F3 50%, #F3F6F8 51%, #FAFCFE 100%);
+            background-image: -o-linear-gradient(bottom, #ECEFF2 0%, #EDF0F3 50%, #F3F6F8 51%, #FAFCFE 100%);
+            background-image: -moz-linear-gradient(bottom, #ECEFF2 0%, #EDF0F3 50%, #F3F6F8 51%, #FAFCFE 100%);
+            background-image: -webkit-linear-gradient(bottom, #ECEFF2 0%, #EDF0F3 50%, #F3F6F8 51%, #FAFCFE 100%);
+            background-image: -ms-linear-gradient(bottom, #ECEFF2 0%, #EDF0F3 50%, #F3F6F8 51%, #FAFCFE 100%);
+            
+            
             font-family: Arial;
             font-size: 12px;
-            border-bottom: 1px solid #b2b2b2;
+            /*border-bottom: 1px solid #b2b2b2;*/
+            border-bottom: 1px solid #E1E5EA;
             position: relative;
             padding: 0;
             width : 100%;
