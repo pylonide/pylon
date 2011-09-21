@@ -23,7 +23,7 @@ BODY {
 }
 
 .vbfocus {
-    z-index: 99999999;
+    z-index: 99999;
     background: url(images/focusbg.png);
     padding: 0 80px;
 }

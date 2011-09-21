@@ -3,11 +3,12 @@
  * 
  * @TODO
  * - Escape to get out of focus mode
- * - Get rid of button background on button mouseout. Then bring it back on mouseover
- * - Ability to modify width of container (a la Lion Safari)
  * - Get 100% height to work (overflows in at least webkit)
+ * - Get it to work in FF. Doesn't get everything during appendChild
+ * - Implement disabling of extension/disables button
  * - Adjust button's `right` property for browsers with wider scrollbars
  * - Animate the window to full, and visa versa; consider this: http://extralogical.net/projects/firmin/
+ * - Ability to modify width of container (a la Lion Safari)
  * 
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>

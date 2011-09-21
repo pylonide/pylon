@@ -11,22 +11,23 @@
                 -khtml-user-select : none;
                 user-select        : none;
                 line-height        : 17px;
+                opacity : 0.01;
             }
             
             .focusbutton.full {
-                background         : url(images/focus-buttons.png) -1px -28px no-repeat;
+                background : url(images/focus-buttons.png) -1px -28px no-repeat;
             }
 
             .focusbutton.full.focusbuttonOver {
-                background         : url(images/focus-buttons.png) -28px -28px no-repeat;
+                background : url(images/focus-buttons.png) -28px -28px no-repeat;
             }
 
             .focusbutton.notfull {
-                background         : url(images/focus-buttons.png) -1px -1px no-repeat;
+                background : url(images/focus-buttons.png) -1px -1px no-repeat;
             }
 
             .focusbutton.notfull.focusbuttonOver {
-                background         : url(images/focus-buttons.png) -28px -1px no-repeat;
+                background : url(images/focus-buttons.png) -28px -1px no-repeat;
             }
         ]]></a:style>
         <a:presentation>
