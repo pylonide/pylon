@@ -201,7 +201,7 @@
             position         : relative;
             overflow         : hidden;
             width            : 37px;
-            border-left      : 1px solid #1e1e1e;
+            border-left      : 1px solid #333;
             background       : url(images/debug-panel_bg.png) 0 0;
         }
 
@@ -1610,8 +1610,8 @@
 <a:button name="dockheader">
     <a:style><![CDATA[
         .dockheader {
-            /*border-top : 1px solid #595a5c;
-            border-bottom : 1px solid #f1f1f1;*/
+            border-top : 1px solid #595a5c;
+            /*border-bottom : 1px solid #f1f1f1;*/
             position : relative;
             filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#3E3F41', endColorstr='#303132');
             -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#3E3F41', endColorstr='#303132')";
@@ -1633,7 +1633,7 @@
         }
 
         .dockheaderOver {
-            /*border-top : 1px solid #595a5c;*/
+            border-top : 1px solid #595a5c;
             filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#525354', endColorstr='#454647');
             -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#525354', endColorstr='#454647')";
             background       : -webkit-gradient(linear, center top, center bottom, from(#525354), color-stop(1, #454647));
@@ -4053,9 +4053,6 @@
             position: absolute;
             right: 0;
             top: 0;
-            -moz-border-radius    : 8px 8px 0px 0px;
-            -webkit-border-radius : 8px 8px 0px 0px;
-            border-radius         : 8px 8px 0px 0px;
         }
         
         .dockwindowblack .noise_bg {
@@ -6829,7 +6826,7 @@
         .docktab .page {
             display : none;
             position : absolute;
-            top : 21px;
+            top : 22px;
             bottom : 0;
             left : 0;
             right : 0;
