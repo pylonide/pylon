@@ -5654,8 +5654,8 @@ callback(_self.$modes[syntax]);});};this.$propHandlers.activeline=function(value
 };this.$propHandlers.fontsize=function(value,prop,initial){this.$ext.style.fontSize=value+"px";
 };this.$propHandlers.wrapmode=function(value,prop,initial){this.$editor.getSession().setUseWrapMode(value);
 };this.$propHandlers.wraplimitmin=function(value,prop,initial){this.$editor.getSession().setWrapLimitRange(value,this.wraplimitmax);
-if(value){this.setProperty("wrapmode",true);}};this.$propHandlers.wraplimitmax=function(value,prop,initial){this.$editor.getSession().setWrapLimitRange(this.wraplimitmin,value);
-if(value){this.setProperty("wrapmode",true);}};this.$propHandlers.highlightselectedword=function(value,prop,initial){this.$editor.setHighlightSelectedWord(value);
+};this.$propHandlers.wraplimitmax=function(value,prop,initial){this.$editor.getSession().setWrapLimitRange(this.wraplimitmin,value);
+};this.$propHandlers.highlightselectedword=function(value,prop,initial){this.$editor.setHighlightSelectedWord(value);
 };this.$propHandlers.autohidehorscrollbar=function(value,prop,initial){this.$editor.renderer.setHScrollBarAlwaysVisible(!value);
 };this.$propHandlers.behaviors=function(value,prop,initial){this.$editor.setBehavioursEnabled(value);
 };this.$propHandlers["model-breakpoints"]=function(value,prop,inital){this.$debuggerBreakpoints=false;

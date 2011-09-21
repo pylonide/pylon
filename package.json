@@ -1,6 +1,6 @@
 {
     "name": "cloud9",
-    "description": "Ajax.org Cloud9 IDE",
+    "description": "Cloud9 IDE",
     "version": "0.5.1",
     "homepage" : "http://github.com/ajaxorg/cloud9",
     "engines": {"node": ">= 0.4.0"},
@@ -8,7 +8,7 @@
     "main": "bin/cloud9",
     "repository" : {
         "type" : "git",
-         "url" : "http://github.com/ajaxorg/cloud9.git"
+         "url" : "http://github.com/ajaxorg/cloud9"
     },
     "bin" : {
         "cloud9" : "./bin/cloud9-npm.js"

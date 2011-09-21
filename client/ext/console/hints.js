@@ -63,7 +63,7 @@ exports.show = function(textbox, base, hints, cmdsLut, cursorPos) {
         //console.log("isn't this OK? ", cmdName, base);
         cmd   = cmdsLut && cmdsLut[cmdName];
         isCmd = !!cmd;
-        content.push('<a href="javascript:void(0);" onclick="require(\'ext/console/console\').hintClick(this);" ' 
+        content.push('<a href="javascript:void(0);" onclick="require(\'ext/console/hints\').click(this);" ' 
             + 'data-hint="'+ base + ',' + cmdName + ',' + textbox.id + ',' + cursorPos + ',' + isCmd + '">'
             + cmdName + (cmd
             ? '<span>' + cmd.hint + (cmd.hotkey
