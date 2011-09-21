@@ -2,8 +2,7 @@
  * Fullscreen focus for the editor tabs
  * 
  * @TODO
- * - Get it to work in FF. Doesn't get everything during appendChild
- * - Get 100% height to work (overflows in at least webkit)
+ * - 100% height isn't working with firefox
  * - Why doesn't disabling the extension enter into the disable() function??
  * - Animate the window to full, and visa versa; consider this: http://extralogical.net/projects/firmin/
  * - Ability to modify width of container (a la Lion Safari)
@@ -80,7 +79,7 @@ module.exports = ext.register("ext/focus/focus", {
         tabEditors.parentNode.$ext.style.marginRight = this.teMarginRight;
         tabEditors.parentNode.$ext.style.left = this.teLeft;
         tabEditors.parentNode.$ext.style.top = this.teTop;
-        tabEditors.parentNode.$ext.style.paddingBottom = this.tePaddingBottom;
+        //tabEditors.parentNode.$ext.style.paddingBottom = this.tePaddingBottom;
         tabEditors.parentNode.$ext.style.mozBoxShadow = "none";
         tabEditors.parentNode.$ext.style.webkitBoxShadow = "none";
         document.body.appendChild(tabEditors.parentNode.$ext);
@@ -105,7 +104,7 @@ module.exports = ext.register("ext/focus/focus", {
         this.teMarginRight = tabEditors.parentNode.$ext.style.marginRight;
         this.teLeft = tabEditors.parentNode.$ext.style.left;
         this.teTop = tabEditors.parentNode.$ext.style.top;
-        this.tePaddingBottom = tabEditors.parentNode.$ext.style.paddingBottom;
+        //this.tePaddingBottom = tabEditors.parentNode.$ext.style.paddingBottom;
 
         tabEditors.parentNode.$ext.style.width = "85%";
         tabEditors.parentNode.$ext.style.height = "100%";
@@ -113,7 +112,7 @@ module.exports = ext.register("ext/focus/focus", {
         tabEditors.parentNode.$ext.style.marginRight = "auto";
         tabEditors.parentNode.$ext.style.left = "0";
         tabEditors.parentNode.$ext.style.top = "0";
-        tabEditors.parentNode.$ext.style.paddingBottom = "0";
+        //tabEditors.parentNode.$ext.style.paddingBottom = "0";
         tabEditors.parentNode.$ext.style.mozBoxShadow = "0px 0px 25px #000";
         tabEditors.parentNode.$ext.style.webkitBoxShadow = "0px 0px 25px #000";
         btnFocusFullscreen.setAttribute("class", "full");
