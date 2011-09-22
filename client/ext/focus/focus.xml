@@ -15,7 +15,7 @@
       skinset = "focus"
       skin = "focusbutton"
       onclick = "require('ext/focus/focus').toggleFullscreenFocus()"
-      onmouseover = "require('ext/focus/focus').fadeButtonIn()"
-      onmouseout = "require('ext/focus/focus').fadeButtonOut()"
+      onmouseover = "require('ext/focus/focus').fadeFocusButtonIn()"
+      onmouseout = "require('ext/focus/focus').fadeFocusButtonOut()"
      />
 </a:application>
