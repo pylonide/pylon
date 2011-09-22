@@ -5,6 +5,7 @@
  * - 100% height isn't working with firefox
  * - Why doesn't disabling the extension call the disable() function??
  * - Animate the window out of focused mode
+ * - Exit focus mode when doing any keybinding operation (except openfiles, quicksearch, gotoline)
  * - Ability to modify width of container (a la Lion Safari)
  * 
  * @copyright 2011, Ajax.org B.V.
