@@ -43,7 +43,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         canon.addCommand({
             name: "find",
             exec: function(env, args, request) {
-                _self.toggleDialog(1);
+                _self.toggleDialog(-1);
             }
         });
     },
@@ -61,9 +61,9 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     return false;
                 break;
                 case 27: //ESCAPE
-                    _self.toggleDialog(-1);
+                    _self.toggleDialog(1);
                     if (e.htmlEvent)
-                        apf.stopEvent(e.htmlEvent)
+                        apf.stopEvent(e.htmlEvent);
                     else if (e.stop)
                         e.stop();
                     return false;
@@ -85,7 +85,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             }
         });
         
-        winQuickSearch.addEventListener("blur", function(e){
+        winQuickSearch.addEventListener("blur", function(e) {
             if (!apf.isChildOf(winQuickSearch, e.toElement))
                 _self.toggleDialog(-1);
         });
@@ -95,7 +95,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             editor.ceEditor.parentNode.appendChild(winQuickSearch);
     },
     
-    navigateList : function(type){
+    navigateList : function(type) {
         var settings = require("ext/settings/settings");
         if (!settings) return;
         
@@ -121,23 +121,26 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     
     handleQuicksearchEscape : function(e) {
         if (e.keyCode == 27)
-            this.toggleDialog(-1);
+            this.toggleDialog(1);
     },
 
     toggleDialog: function(force) {
         ext.initExtension(this);
 
-        if (this.control && this.control.stop)
+        /*if (this.control && this.control.stop)
             this.control.stop();
-
+        
+        if (this.control && this.control.state == apf.tween.RUNNING)
+            return;
+*/
         var editorPage = tabEditors.getPage();
         if (!editorPage) return;
 
         var editor = editors.currentEditor;
         if (!editor || !editor.ceEditor)
             return;
-
-        if (!force && !winQuickSearch.visible || force > 0) {
+        
+        if (!winQuickSearch.visible) {
             this.position = 0;
             
             var sel   = editor.getSelection();
@@ -153,6 +156,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
             winQuickSearch.$ext.style.top = "-30px";
             winQuickSearch.show();
+            
             txtQuickSearch.focus();
             txtQuickSearch.select();
 
@@ -171,20 +175,22 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             txtQuickSearch.focus();
             txtQuickSearch.select();
             
-            //Animate
-            apf.tween.single(winQuickSearch, {
-                type     : "top",
-                anim     : apf.tween.NORMAL,
-                from     : winQuickSearch.$ext.offsetTop,
-                to       : -30,
-                steps    : 8,
-                interval : 10,
-                control  : (this.control = {}),
-                onfinish : function(){
-                    winQuickSearch.hide();
-                    editor.ceEditor.focus();
-                }
-            });
+            if (force > 0) {
+                //Animate
+                apf.tween.single(winQuickSearch, {
+                    type     : "top",
+                    anim     : apf.tween.NORMAL,
+                    from     : winQuickSearch.$ext.offsetTop,
+                    to       : -30,
+                    steps    : 8,
+                    interval : 10,
+                    control  : (this.control = {}),
+                    onfinish : function() {
+                        winQuickSearch.hide();
+                        editor.ceEditor.focus();
+                    }
+                });
+            }
         }
 
         return false;
