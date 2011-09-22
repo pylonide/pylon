@@ -73,25 +73,40 @@ module.exports = ext.register("ext/focus/focus", {
     /**
      * Method invoked to do the actual toggling of focus mode
      * Detects if focused or not
+     * 
+     * @param {amlEvent} e Event from click
      */
-    toggleFullscreenFocus : function() {
+    toggleFullscreenFocus : function(e) {
+        var shiftKey = false;
+        if (e)
+            shiftKey = e.htmlEvent.shiftKey;
+
         if (this.isFocused)
-            this.escapeFromFocusMode();
+            this.escapeFromFocusMode(shiftKey);
         else
-            this.enterIntoFocusMode();
+            this.enterIntoFocusMode(shiftKey);
+    },
+
+    checkBrowserCssTransforms : function() {
+        var isWebkitCapable = apf.isWebkit && (apf.versionSafari >= 3.1 || apf.versionChrome >= 11);
+        var isGeckoCapable = apf.isGecko && apf.versionGecko >= 4;
+        var isOperaCapable = apf.isOpera && apf.versionOpera >= 10;
+        return isWebkitCapable || isGeckoCapable || isOperaCapable;
     },
 
     /**
      * Enters the editor into fullscreen/focus mode
+     * 
+     * @param {boolean} slow Whether to slow down the animation
      */
-    enterIntoFocusMode : function() {
+    enterIntoFocusMode : function(slow) {
         var _self = this;
 
         this.saveTabEditorsParentStyles();
         btnFocusFullscreen.setAttribute("class", "full");
 
         // Do fancy animation
-        if(apf.isWebkit && (apf.versionSafari >= 3.1 || apf.versionChrome >= 11)) {
+        if (this.checkBrowserCssTransforms()) {
             this.matchAnimationWindowPosition();
             this.setAceThemeBackground();
 
@@ -111,7 +126,7 @@ module.exports = ext.register("ext/focus/focus", {
                 top: "0",
                 width: afWidth + "px",
                 timingFunction: "ease-in-out"
-            }, 0.7, function() {
+            }, slow ? 3.7 : 0.7, function() {
                 _self.animateFocus.style.display = "none";
                 vbFocus.appendChild(tabEditors.parentNode);
 
@@ -119,6 +134,7 @@ module.exports = ext.register("ext/focus/focus", {
 
                 setTimeout(function() {
                     ceEditor.focus();
+                    apf.layout.forceResize(tabEditors.parentNode.$ext);
                 }, 100);
             });
 
@@ -128,7 +144,7 @@ module.exports = ext.register("ext/focus/focus", {
                 vbFocus.show();
                 Firmin.animate(vbFocus.$ext, {
                     opacity: "1"
-                }, 0.5);
+                }, slow ? 3.5 : 0.5);
             }, 0);
         }
         else {
@@ -143,7 +159,7 @@ module.exports = ext.register("ext/focus/focus", {
 
             setTimeout(function() {
                 ceEditor.focus();
-            }, 100);
+            }, 0);
         }
 
         this.isFocused = true;
@@ -152,13 +168,15 @@ module.exports = ext.register("ext/focus/focus", {
     /**
      * Returns the editor to its original, non-focused,
      * non-fullscreen state
+     * 
+     * @param {boolean} slow Whether to slow down the animation
      */
-    escapeFromFocusMode : function() {
+    escapeFromFocusMode : function(slow) {
         var _self = this;
 
         btnFocusFullscreen.setAttribute("class", "notfull");
 
-        if(apf.isWebkit && (apf.versionSafari >= 3.1 || apf.versionChrome >= 11)) {
+        if (this.checkBrowserCssTransforms()) {
             // Get the destination values
             editors.setTabResizeValues(this.animateFocus);
             var left = this.animateFocus.style.left;
@@ -178,21 +196,22 @@ module.exports = ext.register("ext/focus/focus", {
                     left: left,
                     top: top,
                     timingFunction: "ease-in-out"
-                }, 0.7, function() {
+                }, slow ? 3.7 : 0.7, function() {
                     _self.animateFocus.style.display = "none";
                     // Reset values
                     _self.resetTabEditorsParentStyles();
                     document.body.appendChild(tabEditors.parentNode.$ext);
                     editors.enableTabResizeEvent();
-    
-                    apf.layout.forceResize();
+                    apf.layout.forceResize(tabEditors.parentNode.$ext);
+
                     setTimeout(function() {
                         ceEditor.focus();
+                        apf.layout.forceResize(tabEditors.parentNode.$ext);
                     }, 100);
                 });
                 Firmin.animate(vbFocus.$ext, {
                     opacity: "0"
-                }, 0.5, function() {
+                }, slow ? 3.5 : 0.5, function() {
                     vbFocus.hide();
                 });
             }, 0);
