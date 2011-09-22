@@ -1273,7 +1273,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             childNodes : [
                 new apf.divider({
                     skin : "divider-debugpanel",
-                    margin : "3 5 2 5",
+                    margin : "3 4 2 2",
                     dock    : 1,
                     draggable : "true"
                 })
