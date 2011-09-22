@@ -103,9 +103,9 @@ module.exports = ext.register("ext/debugger/debugger", {
         dock.register(name, "dbgCallStack", {
             menu : "Debugger/Call Stack",
             primary : {
-                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
-                defaultState: { x: -6, y: -217 },
-                activeState: { x: -6, y: -217 }
+                backgroundImage: "/static/style/images/debugicons.png",
+                defaultState: { x: -8, y: -47 },
+                activeState: { x: -8, y: -47 }
             }
         }, function(type) {
             ext.initExtension(_self);
@@ -115,9 +115,9 @@ module.exports = ext.register("ext/debugger/debugger", {
         dock.register(name, "dbInteractive", {
             menu : "Debugger/Interactive",
             primary : {
-                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
-                defaultState: { x: -7, y: -310 },
-                activeState: { x: -7, y: -310 }
+                backgroundImage: "/static/style/images/debugicons.png",
+                defaultState: { x: -8, y: -130 },
+                activeState: { x: -8, y: -130 }
             }
         }, function(type) {
             ext.initExtension(_self);
@@ -127,9 +127,9 @@ module.exports = ext.register("ext/debugger/debugger", {
         dock.register(name, "dbgVariable", {
             menu : "Debugger/Variables",
             primary : {
-                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
-                defaultState: { x: -6, y: -261 },
-                activeState: { x: -6, y: -261 }
+                backgroundImage: "/static/style/images/debugicons.png",
+                defaultState: { x: -8, y: -174 },
+                activeState: { x: -8, y: -174 }
             }
         }, function(type) {
             ext.initExtension(_self);
@@ -139,9 +139,9 @@ module.exports = ext.register("ext/debugger/debugger", {
         dock.register(name, "dbgBreakpoints", {
             menu : "Debugger/Breakpoints",
             primary : {
-                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
-                defaultState: { x: -6, y: -360 },
-                activeState: { x: -6, y: -360 }
+                backgroundImage: "/static/style/images/debugicons.png",
+                defaultState: { x: -8, y: -88 },
+                activeState: { x: -8, y: -88 }
             }
         }, function(type) {
             ext.initExtension(_self);

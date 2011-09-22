@@ -241,8 +241,13 @@
 
         .docksection{
             /*border : 1px solid #fff;*/
-            border-bottom : 1px solid #333;
+            border-bottom : 1px solid #404042;
         }
+        .docksection>:first-child {
+            border-bottom : 1px solid #040404;
+        }
+        
+      
     ]]></a:style>
 
     <a:presentation>
@@ -966,8 +971,8 @@
 <a:button name="dockButton">
     <a:style><![CDATA[
         .dockButton {
-            width              : 41px;
-            height             : 40px;
+            width              : 37px;
+            height             : 37px;
             padding-top        : 3px;
             overflow           : hidden;
             cursor             : default;
@@ -981,20 +986,20 @@
 
         .dockButton-footer {
             height: 10px;
-            filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5');
+            /*filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5');
             -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5')";
             background       : -webkit-gradient(linear, left center, right center, from(#f3f3f3), color-stop(1, #e5e5e5));
-            background       : -moz-linear-gradient(center left, #f3f3f3 0%, #e5e5e5 100%) repeat scroll 0 0 transparent;
+            background       : -moz-linear-gradient(center left, #f3f3f3 0%, #e5e5e5 100%) repeat scroll 0 0 transparent;*/
         }
 
         .dockButtonOver {
             background-image    : url(images/dock_button_sprite.png);
-            background-position : 3px -114px;
+            background-position : 2px -47px;
         }
 
         .dockButtonDown {
             background-image    : url(images/dock_button_sprite.png);
-            background-position : 3px -35px;
+            background-position : 2px 4px;
         }
 
         .dockButtonDown .dockButton-footer {
@@ -1003,8 +1008,8 @@
         }
 
         .dockButton .icon {
-            width                 : 35px;
-            height                : 35px;
+            width                 : 31px;
+            height                : 32px;
             -webkit-border-radius : 3px;
             -moz-border-radius    : 3px;
             margin                : 0px 1px 2px 4px;
@@ -1051,7 +1056,7 @@
         }
 
         .dockButton .dock_icon_image.dii_primary {
-            left   : 6px;
+            left   : 4px;
             top    : 5px;
             width  : 31px;
             height : 31px;
@@ -1644,6 +1649,7 @@
             background       : -moz-linear-gradient(center top , #3E3F41 0%, #303132 100%) repeat scroll 0 0 transparent;
             height : 10px;
             cursor : pointer;
+            border-bottom: 1px solid #38393b;
         }
 
         .dockheader span{
@@ -1668,6 +1674,14 @@
             background-position : 0 0;
             right : 3px;
         }
+        
+        .dockheader .dockheader-footer {
+            border-bottom: 1px solid #1D1E1F;
+            bottom: 0;
+            left: 0;
+            position: absolute;
+            width: 100%;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -1677,6 +1691,7 @@
           icon       = ".">
             <div class="dockheader">
                 <span> </span>
+                <div class="dockheader-footer"></div>
             </div>
         </a:main>
     </a:presentation>
