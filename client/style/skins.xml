@@ -1652,9 +1652,6 @@
             position: absolute;
             width: 100%;
         }
-        .dockcol .dockheader .dockheader-footer {
-            top: 10px;
-        }
     ]]></a:style>
 
     <a:presentation>
