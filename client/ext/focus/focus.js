@@ -82,6 +82,137 @@ module.exports = ext.register("ext/focus/focus", {
     },
 
     /**
+     * Enters the editor into fullscreen/focus mode
+     */
+    enterIntoFocusMode : function() {
+        var _self = this;
+
+        this.saveTabEditorsParentStyles();
+        btnFocusFullscreen.setAttribute("class", "full");
+
+        // Do fancy animation
+        if(apf.isWebkit && (apf.versionSafari >= 3.1 || apf.versionChrome >= 11)) {
+            this.matchAnimationWindowPosition();
+            this.setAceThemeBackground();
+
+            editors.disableTabResizeEvent();
+            this.placeTabIntoAnimationWindow();
+
+            // Calculates the anticipated width and left placement position
+            // of the tabEditors.parentNode after it's done being animated,
+            // so there is an un-noticeable transition from the end of the
+            // animation to where the tabEditors.parentNode eventually rests
+            var browserWidth = apf.getHtmlInnerWidth(document.body);
+            var afWidth = browserWidth * 0.85;
+            var leftOffset = (browserWidth-afWidth)/2;
+            Firmin.animate(this.animateFocus, {
+                height: "100%",
+                left: leftOffset + "px",
+                top: "0",
+                width: afWidth + "px",
+                timingFunction: "ease-in-out"
+            }, 0.7, function() {
+                _self.animateFocus.style.display = "none";
+                vbFocus.appendChild(tabEditors.parentNode);
+
+                _self.setFocusedTabParentStyles();
+
+                setTimeout(function() {
+                    ceEditor.focus();
+                }, 100);
+            });
+
+            // Not sure why but if we don't use setTimeout here
+            // the animation happens instantaneously
+            setTimeout(function() {
+                vbFocus.show();
+                Firmin.animate(vbFocus.$ext, {
+                    opacity: "1"
+                }, 0.5);
+            }, 0);
+        }
+        else {
+            vbFocus.show();
+            vbFocus.$ext.style.opacity = "1";
+            vbFocus.appendChild(tabEditors.parentNode);
+            editors.disableTabResizeEvent();
+
+            this.setFocusedTabParentStyles();
+
+            btnFocusFullscreen.setAttribute("class", "full");
+
+            setTimeout(function() {
+                ceEditor.focus();
+            }, 100);
+        }
+
+        this.isFocused = true;
+    },
+
+    /**
+     * Returns the editor to its original, non-focused,
+     * non-fullscreen state
+     */
+    escapeFromFocusMode : function() {
+        var _self = this;
+
+        btnFocusFullscreen.setAttribute("class", "notfull");
+
+        if(apf.isWebkit && (apf.versionSafari >= 3.1 || apf.versionChrome >= 11)) {
+            // Get the destination values
+            editors.setTabResizeValues(this.animateFocus);
+            var left = this.animateFocus.style.left;
+            var top = this.animateFocus.style.top;
+            var width = this.animateFocus.style.width;
+            var height = this.animateFocus.style.height;
+
+            this.matchAnimationWindowPosition();
+            this.placeTabIntoAnimationWindow();
+
+            // Not sure why but setTimeout seems to be the only
+            // way to get the animation to not happen instantaneously
+            setTimeout(function() {
+                Firmin.animate(this.animateFocus, {
+                    height: height,
+                    width: width,
+                    left: left,
+                    top: top,
+                    timingFunction: "ease-in-out"
+                }, 0.7, function() {
+                    _self.animateFocus.style.display = "none";
+                    // Reset values
+                    _self.resetTabEditorsParentStyles();
+                    document.body.appendChild(tabEditors.parentNode.$ext);
+                    editors.enableTabResizeEvent();
+    
+                    apf.layout.forceResize();
+                    setTimeout(function() {
+                        ceEditor.focus();
+                    }, 100);
+                });
+                Firmin.animate(vbFocus.$ext, {
+                    opacity: "0"
+                }, 0.5, function() {
+                    vbFocus.hide();
+                });
+            }, 0);
+        }
+        else {
+            this.resetTabEditorsParentStyles();
+            document.body.appendChild(tabEditors.parentNode.$ext);
+            editors.enableTabResizeEvent();
+            vbFocus.$ext.style.opacity = "0";
+            vbFocus.hide();
+            apf.layout.forceResize();
+            setTimeout(function() {
+                ceEditor.focus();
+            }, 100);
+        }
+
+        this.isFocused = false;
+    },
+
+    /**
      * Retrieves and saves the styles of tabEditors.parentNode
      * so that when we reset the position of it back to unfocused mode,
      * all those position details remain intact
@@ -104,36 +235,6 @@ module.exports = ext.register("ext/focus/focus", {
         tabEditors.parentNode.$ext.style.top = this.teTop;
         tabEditors.parentNode.$ext.style.mozBoxShadow = "none";
         tabEditors.parentNode.$ext.style.webkitBoxShadow = "none";
-    },
-
-    /**
-     * Returns the editor to its original, non-focused,
-     * non-fullscreen state
-     */
-    escapeFromFocusMode : function() {
-        // Reset values
-        this.resetTabEditorsParentStyles();
-
-        btnFocusFullscreen.setAttribute("class", "notfull");
-        document.body.appendChild(tabEditors.parentNode.$ext);
-        editors.enableTabResizeEvent();
-
-        if(apf.isWebkit && (apf.versionSafari >= 3.1 || apf.versionChrome >= 11)) {
-            Firmin.animate(vbFocus.$ext, {
-                opacity: "0"
-            }, 0.5, function() {
-                vbFocus.hide();
-            });
-        }
-        else {
-            vbFocus.$ext.style.opacity = "0";
-            vbFocus.hide();
-        }
-        apf.layout.forceResize();
-        setTimeout(function() {
-            ceEditor.focus();
-        }, 100);
-        this.isFocused = false;
     },
 
     /**
@@ -214,69 +315,6 @@ module.exports = ext.register("ext/focus/focus", {
         tabEditors.parentNode.$ext.style.position = "relative";
         tabEditors.parentNode.$ext.style.left = "0px";
         tabEditors.parentNode.$ext.style.top = "0px";
-    },
-
-    /**
-     * Enters the editor into fullscreen/focus mode
-     */
-    enterIntoFocusMode : function() {
-        var _self = this;
-
-        this.saveTabEditorsParentStyles();
-        btnFocusFullscreen.setAttribute("class", "full");
-
-        // Do fancy animation
-        if(apf.isWebkit && (apf.versionSafari >= 3.1 || apf.versionChrome >= 11)) {
-            this.matchAnimationWindowPosition();
-            this.setAceThemeBackground();
-
-            editors.disableTabResizeEvent();
-            this.placeTabIntoAnimationWindow();
-
-            // Calculates the anticipated width and left placement position
-            // of the tabEditors.parentNode after it's done being animated,
-            // so there is an un-noticeable transition from the end of the
-            // animation to where the tabEditors.parentNode eventually rests
-            var browserWidth = apf.getHtmlInnerWidth(document.body);
-            var afWidth = browserWidth * 0.85;
-            var leftOffset = (browserWidth-afWidth)/2;
-            Firmin.animate(this.animateFocus, {
-                height: "100%",
-                left: leftOffset + "px",
-                top: "0",
-                width: afWidth + "px",
-                timingFunction: "ease-in-out"
-            }, 0.7, function() {
-                _self.animateFocus.style.display = "none";
-                vbFocus.appendChild(tabEditors.parentNode);
-
-                _self.setFocusedTabParentStyles();
-
-                setTimeout(function() {
-                    ceEditor.focus();
-                }, 100);
-            });
-            vbFocus.show();
-            Firmin.animate(vbFocus.$ext, {
-                opacity: "1"
-            }, 0.5);
-        }
-        else {
-            vbFocus.show();
-            vbFocus.$ext.style.opacity = "1";
-            vbFocus.appendChild(tabEditors.parentNode);
-            editors.disableTabResizeEvent();
-
-            this.setFocusedTabParentStyles();
-
-            btnFocusFullscreen.setAttribute("class", "full");
-
-            setTimeout(function() {
-                ceEditor.focus();
-            }, 100);
-        }
-
-        this.isFocused = true;
     },
 
     /**
