@@ -85,44 +85,123 @@ module.exports = ext.register("ext/focus/focus", {
         document.body.appendChild(tabEditors.parentNode.$ext);
         editors.enableTabResizeEvent();
         btnFocusFullscreen.setAttribute("class", "notfull");
-        vbFocus.hide();
+
+        if(apf.isWebkit && (apf.versionSafari >= 3.1 || apf.versionChrome >= 11)) {
+            Firmin.animate(vbFocus.$ext, {
+                opacity: "0"
+            }, 0.5, function() {
+                vbFocus.hide();
+            });
+        }
+        else {
+            vbFocus.$ext.style.opacity = "0";
+            vbFocus.hide();
+        }
         apf.layout.forceResize();
         setTimeout(function() {
             ceEditor.focus();
         }, 100);
         this.isFocused = false;
     },
-    
-    enterIntoFullscreen : function() {
-        vbFocus.show();
-        vbFocus.appendChild(tabEditors.parentNode);
-        editors.disableTabResizeEvent();
 
+    enterIntoFullscreen : function() {
         this.teWidth = tabEditors.parentNode.$ext.style.width;
         this.teHeight = tabEditors.parentNode.$ext.style.height;
         this.teMarginLeft = tabEditors.parentNode.$ext.style.marginLeft;
         this.teMarginRight = tabEditors.parentNode.$ext.style.marginRight;
         this.teLeft = tabEditors.parentNode.$ext.style.left;
         this.teTop = tabEditors.parentNode.$ext.style.top;
-        //this.tePaddingBottom = tabEditors.parentNode.$ext.style.paddingBottom;
-
-        tabEditors.parentNode.$ext.style.width = "85%";
-        tabEditors.parentNode.$ext.style.height = "100%";
-        tabEditors.parentNode.$ext.style.marginLeft = "auto";
-        tabEditors.parentNode.$ext.style.marginRight = "auto";
-        tabEditors.parentNode.$ext.style.left = "0";
-        tabEditors.parentNode.$ext.style.top = "0";
-        //tabEditors.parentNode.$ext.style.paddingBottom = "0";
-        tabEditors.parentNode.$ext.style.mozBoxShadow = "0px 0px 25px #000";
-        tabEditors.parentNode.$ext.style.webkitBoxShadow = "0px 0px 25px #000";
         btnFocusFullscreen.setAttribute("class", "full");
-        apf.layout.forceResize();
-        setTimeout(function() {
-            ceEditor.focus();
-        }, 100);
+        // Do fancy animation
+        if(apf.isWebkit && (apf.versionSafari >= 3.1 || apf.versionChrome >= 11)) {
+            var tePos = apf.getAbsolutePosition(tabEditors.parentNode.$ext);
+            var teWidth = tabEditors.parentNode.getWidth();
+            var teHeight = tabEditors.parentNode.getHeight();
+
+            // Set the background color so animating doesn't show a dumb gray background
+            var ace_editor = document.getElementsByClassName("ace_editor")[0];
+            var classNames = ace_editor.getAttribute("class").split(" ");
+            for (var cn in classNames) {
+                if (classNames[cn].indexOf("ace-") === 0) {
+                    var selectorString = "." + classNames[cn] + " .ace_scroller";
+                    var bgColor = apf.getStyleRule(selectorString, "background-color");
+                    if (!bgColor)
+                        bgColor = apf.getStyleRule(".ace_scroller", "background-color");
+                    ace_editor.style.backgroundColor = bgColor;
+                    break;
+                }
+            }
+
+            var animateFocus = document.getElementById("animateFocus");
+            animateFocus.style.left = tePos[0] + "px";
+            animateFocus.style.top = tePos[1] + "px";
+            animateFocus.style.width = teWidth + "px";
+            animateFocus.style.height = teHeight + "px";
+            animateFocus.style.display = "block";
+
+            editors.disableTabResizeEvent();
+            animateFocus.appendChild(tabEditors.parentNode.$ext);
+            tabEditors.parentNode.$ext.style.width = "100%";
+            tabEditors.parentNode.$ext.style.height = "100%";
+            tabEditors.parentNode.$ext.style.position = "relative";
+            tabEditors.parentNode.$ext.style.left = "0px";
+            tabEditors.parentNode.$ext.style.top = "0px";
+
+            var browserWidth = apf.getHtmlInnerWidth(document.body);
+            var afWidth = browserWidth * 0.85;
+            var leftOffset = (browserWidth-afWidth)/2;
+            Firmin.animate(animateFocus, {
+                height: "100%",
+                left: leftOffset + "px",
+                top: "0",
+                width: afWidth + "px",
+                timingFunction: "ease-in-out"
+            }, 1.0, function() {
+                animateFocus.style.display = "none";
+                vbFocus.appendChild(tabEditors.parentNode);
+
+                tabEditors.parentNode.$ext.style.width = "85%";
+                tabEditors.parentNode.$ext.style.height = "100%";
+                tabEditors.parentNode.$ext.style.marginLeft = "auto";
+                tabEditors.parentNode.$ext.style.marginRight = "auto";
+                tabEditors.parentNode.$ext.style.left = "0";
+                tabEditors.parentNode.$ext.style.top = "0";
+                tabEditors.parentNode.$ext.style.mozBoxShadow = "0px 0px 25px #000";
+                tabEditors.parentNode.$ext.style.webkitBoxShadow = "0px 0px 25px #000";
+                apf.layout.forceResize();
+                setTimeout(function() {
+                    ceEditor.focus();
+                }, 100);
+            });
+            vbFocus.show();
+            Firmin.animate(vbFocus.$ext, {
+                opacity: "1"
+            }, 0.5);
+        }
+        else {
+            vbFocus.show();
+            vbFocus.$ext.style.opacity = "1";
+            vbFocus.appendChild(tabEditors.parentNode);
+            editors.disableTabResizeEvent();
+
+            tabEditors.parentNode.$ext.style.width = "85%";
+            tabEditors.parentNode.$ext.style.height = "100%";
+            tabEditors.parentNode.$ext.style.marginLeft = "auto";
+            tabEditors.parentNode.$ext.style.marginRight = "auto";
+            tabEditors.parentNode.$ext.style.left = "0";
+            tabEditors.parentNode.$ext.style.top = "0";
+            tabEditors.parentNode.$ext.style.mozBoxShadow = "0px 0px 25px #000";
+            tabEditors.parentNode.$ext.style.webkitBoxShadow = "0px 0px 25px #000";
+            btnFocusFullscreen.setAttribute("class", "full");
+            apf.layout.forceResize();
+            setTimeout(function() {
+                ceEditor.focus();
+            }, 100);
+        }
+
         this.isFocused = true;
     },
-    
+
     fadeButtonIn : function() {
         apf.tween.single(btnFocusFullscreen, {
             type     : "opacity",
