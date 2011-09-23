@@ -32,7 +32,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         }
     },
 
-    readFile : function (path, callback){
+    readFile : function (path, callback) {
         if (this.webdav)
             this.webdav.read(path, callback);
     },
@@ -80,7 +80,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 if (exists) {
                     name = prefix + "." + index++;
                     _self.exists(path + "/" + name, test);
-                } else {
+                }
+                else {
                     tree.focus();
                     _self.webdav.exec("mkdir", [path, name], function(data) {
                         // @todo: in case of error, show nice alert dialog
@@ -88,7 +89,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                             throw Error;
 
                         var strXml = data.match(new RegExp(("(<folder path='" + path
-                                + "/" + name + "'.*?>)").replace(/\//g, "\\/")))[1];
+                            + "/" + name + "'.*?>)").replace(/\//g, "\\/")))[1];
 
                         tree.slideOpen(null, node, true, function(data, flag, extra){
                             var folder;
@@ -113,7 +114,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     createFile: function(filename, newFile) {
         var node;
 
-        if(!newFile) {
+        if (!newFile) {
             node = trFiles.selected;
             if (!node)
                 node = trFiles.xmlRoot.selectSingleNode("folder");
@@ -121,13 +122,15 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 node = node.parentNode;
         }
         else {
-            node = apf.getXml('<file newfile="1" type="file" size="" changed="1" name="Untitled.txt" contenttype="text/plain; charset=utf-8" modifieddate="" creationdate="" lockable="false" hidden="false" executable="false"></file>');
+            node = apf.getXml('<file newfile="1" type="file" size="" changed="1" name="Untitled.txt" '
+                + 'contenttype="text/plain; charset=utf-8" modifieddate="" creationdate="" '
+                + 'lockable="false" hidden="false" executable="false"></file>');
         }
 
         if (this.webdav) {
             var prefix = filename ? filename : "Untitled.txt";
 
-            if(!newFile)
+            if (!newFile)
                 trFiles.focus();
 
             var _self = this,
@@ -143,8 +146,9 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 if (exists) {
                     filename = prefix + "." + index++;
                     _self.exists(path + "/" + filename, test);
-                } else {
-                    if(!newFile) {
+                }
+                else {
+                    if (!newFile) {
                         var file, both = 0;
                         function done(){
                             if (both == 2) {
@@ -154,7 +158,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                             }
                         }
 
-                        trFiles.slideOpen(null, node, true, function(){
+                        trFiles.slideOpen(null, node, true, function() {
                             both++;
                             done();
                         });
@@ -175,9 +179,9 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         });
                     }
                     else {
-                        node.setAttribute('name', filename);
-                        node.setAttribute('path', path + '/' + filename);
-                        ide.dispatchEvent("openfile", {doc: ide.createDocument(node), type:'newfile'});
+                        node.setAttribute("name", filename);
+                        node.setAttribute("path", path + "/" + filename);
+                        ide.dispatchEvent("openfile", {doc: ide.createDocument(node), type: "newfile"});
                     }
                 }
             };
@@ -279,7 +283,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
     /**** Init ****/
 
-    init : function(amlNode){
+    init : function(amlNode) {
         this.model = new apf.model();
         this.model.setAttribute("whitespace", false);
 
@@ -361,7 +365,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 return;
             }
 
-            if (!e.type || e.type != 'newfile') {
+            if (!e.type || e.type != "newfile") {
                 // add a way to hook into loading of files
                 if (ide.dispatchEvent("readfile", {doc: doc, node: node}) == false)
                     return;
@@ -409,7 +413,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                             fs.readFile(path, readfileCallback);
                             ide.removeEventListener("afteronline", arguments.callee);
                         });
-                    } else if (state != apf.SUCCESS) {
+                    }
+                    else if (state != apf.SUCCESS) {
                         if (extra.status == 404) {
                             ide.dispatchEvent("filenotfound", {
                                 node : node,
@@ -427,7 +432,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 fs.readFile(path, readfileCallback);
             }
             else {
-                doc.setValue('empty file.');
+                doc.setValue("empty file.");
                 ide.dispatchEvent("afteropenfile", {doc: doc, node: node});
             }
         });
@@ -447,14 +452,16 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         fs.readFile(path, readfileCallback);
                         ide.removeEventListener("afteronline", arguments.callee);
                     });
-                } else if (state != apf.SUCCESS) {
+                }
+                else if (state != apf.SUCCESS) {
                     if (extra.status == 404)
                         ide.dispatchEvent("filenotfound", {
                             node : node,
                             url  : extra.url,
                             path : path
                         });
-                } else {
+                }
+                else {
                    ide.dispatchEvent("afterreload", {doc : doc, data : data});
                 }
             };
@@ -463,11 +470,9 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         });
     },
 
-    enable : function(){
-    },
+    enable : function(){},
 
-    disable : function(){
-    },
+    disable : function(){},
 
     destroy : function(){
         this.webdav.destroy(true, true);
