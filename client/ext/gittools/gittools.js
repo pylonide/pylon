@@ -22,8 +22,8 @@ var util = require("core/util");
 var dock = require("ext/dockpanel/dockpanel");
 var markup = require("text!ext/gittools/gittools.xml");
 var editors = require("ext/editors/editors");
-var BlameJS = require("ext/gittools/blamejs");
-var GitLogParser = require("ext/gittools/gitlogparser");
+var BlameJS = require("ext/gittools/gitblame/blamejs");
+var GitLogParser = require("ext/gittools/gitlog/gitlogparser");
 
 module.exports = ext.register("ext/gittools/gittools", {
     name     : "Git Tools",
