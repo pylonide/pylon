@@ -41,7 +41,7 @@ module.exports = ext.register("ext/focus/focus", {
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor)
             editor.ceEditor.parentNode.appendChild(btnFocusFullscreen);
-        
+
         // @TODO adjust position based on scrollbar width
         if (!(apf.isChrome && apf.versionChrome >= 14) && !(apf.isSafari && apf.versionSafari >= 5))
             btnFocusFullscreen.setAttribute("right", "26");
@@ -50,6 +50,21 @@ module.exports = ext.register("ext/focus/focus", {
             btnFocusFullscreen.setAttribute("right", "28");
 
         this.animateFocus = document.getElementById("animateFocus");
+        this.animateFocusPosition = document.getElementById("animateFocusPosition");
+
+        var _self = this;
+        vbFocus.addEventListener("resize", function(e) {
+            if (_self.isFocused) {
+                // Calculate the position
+                var height = (window.innerHeight-33) + "px"
+                tabEditors.parentNode.$ext.style.height = height;
+                _self.animateFocus.style.height = window.innerHeight + "px";
+                var width = window.innerWidth * 0.85;
+                var widthDiff = (window.innerWidth - width) / 2;
+                tabEditors.parentNode.$ext.style.width = _self.animateFocus.style.width = width + "px";
+                _self.animateFocus.style.left = widthDiff + "px";
+            }
+        });
     },
 
     hook : function(){
@@ -88,6 +103,11 @@ module.exports = ext.register("ext/focus/focus", {
             this.enterIntoFocusMode(shiftKey);
     },
 
+    /**
+     * Checks if the current browser supports fancy shmancy animations
+     * 
+     * @return {boolean} true if supported, false otherwise
+     */
     checkBrowserCssTransforms : function() {
         var isWebkitCapable = apf.isWebkit && (apf.versionSafari >= 3.1 || apf.versionChrome >= 11);
         var isGeckoCapable = apf.isGecko && apf.versionGecko >= 4;
@@ -118,20 +138,27 @@ module.exports = ext.register("ext/focus/focus", {
             // of the tabEditors.parentNode after it's done being animated,
             // so there is an un-noticeable transition from the end of the
             // animation to where the tabEditors.parentNode eventually rests
-            var browserWidth = apf.getHtmlInnerWidth(document.body);
+            var browserWidth = window.innerWidth;
             var afWidth = browserWidth * 0.85;
-            var leftOffset = (browserWidth-afWidth)/2;
+            var leftOffset = (browserWidth-afWidth)/2 + "px";
+            var afHeight = window.innerHeight + "px";
+
             Firmin.animate(this.animateFocus, {
-                height: "100%",
-                left: leftOffset + "px",
+                height: afHeight,
+                left: leftOffset,
                 top: "0",
                 width: afWidth + "px",
                 timingFunction: "ease-in-out"
             }, slow ? 3.7 : 0.7, function() {
-                _self.animateFocus.style.display = "none";
-                vbFocus.appendChild(tabEditors.parentNode);
 
-                _self.setFocusedTabParentStyles();
+                _self.isFocused = true;
+
+                // Frustratingly, Firmin does not reset the style attribute
+                // after applying these properties, so we must do it ourselves
+                var astyles = "display:block;top:0;height:" + afHeight + ";left:" + leftOffset + ";width:" + afWidth + "px";
+                _self.animateFocus.setAttribute("style", astyles);
+                
+                apf.layout.forceResize();
 
                 setTimeout(function() {
                     ceEditor.focus();
@@ -148,13 +175,16 @@ module.exports = ext.register("ext/focus/focus", {
                 }, slow ? 3.5 : 0.5);
             }, 0);
         }
+        
+        // @TODO update this
         else {
+            this.isFocused = true;
             vbFocus.show();
             vbFocus.$ext.style.opacity = "1";
             vbFocus.appendChild(tabEditors.parentNode);
             editors.disableTabResizeEvent();
 
-            this.setFocusedTabParentStyles();
+            this.setFocusedContainerStyles(tabEditors.parentNode);
 
             btnFocusFullscreen.setAttribute("class", "full");
 
@@ -162,8 +192,6 @@ module.exports = ext.register("ext/focus/focus", {
                 ceEditor.focus();
             }, 0);
         }
-
-        this.isFocused = true;
     },
 
     /**
@@ -176,46 +204,46 @@ module.exports = ext.register("ext/focus/focus", {
         var _self = this;
 
         btnFocusFullscreen.setAttribute("class", "notfull");
+        this.isFocused = false;
 
         if (this.checkBrowserCssTransforms()) {
             // Get the destination values
-            editors.setTabResizeValues(this.animateFocus);
-            var left = this.animateFocus.style.left;
-            var top = this.animateFocus.style.top;
-            var width = this.animateFocus.style.width;
-            var height = this.animateFocus.style.height;
+            editors.setTabResizeValues(this.animateFocusPosition);
+            var left = this.animateFocusPosition.style.left;
+            var top = this.animateFocusPosition.style.top;
+            var width = this.animateFocusPosition.style.width;
+            var height = this.animateFocusPosition.style.height;
 
-            this.matchAnimationWindowPosition();
-            this.placeTabIntoAnimationWindow();
+            // Set the width to its actual width instead of "85%"
+            var afWidth = apf.getHtmlInnerWidth(this.animateFocus);
+            this.animateFocus.style.width = afWidth + "px";
+            var afHeight = apf.getHtmlInnerHeight(this.animateFocus);
+            this.animateFocus.style.height = afHeight + "px";
 
-            // Not sure why but setTimeout seems to be the only
-            // way to get the animation to not happen instantaneously
-            setTimeout(function() {
-                Firmin.animate(this.animateFocus, {
-                    height: height,
-                    width: width,
-                    left: left,
-                    top: top,
-                    timingFunction: "ease-in-out"
-                }, slow ? 3.7 : 0.7, function() {
-                    _self.animateFocus.style.display = "none";
-                    // Reset values
-                    _self.resetTabEditorsParentStyles();
-                    document.body.appendChild(tabEditors.parentNode.$ext);
-                    editors.enableTabResizeEvent();
+            Firmin.animate(this.animateFocus, {
+                height: height,
+                width: width,
+                left: left,
+                top: top,
+                timingFunction: "ease-in-out"
+            }, slow ? 3.7 : 0.7, function() {
+                _self.animateFocus.style.display = "none";
+                // Reset values
+                _self.resetTabEditorsParentStyles();
+                document.body.appendChild(tabEditors.parentNode.$ext);
+                editors.enableTabResizeEvent();
+                apf.layout.forceResize(tabEditors.parentNode.$ext);
+
+                setTimeout(function() {
+                    ceEditor.focus();
                     apf.layout.forceResize(tabEditors.parentNode.$ext);
-
-                    setTimeout(function() {
-                        ceEditor.focus();
-                        apf.layout.forceResize(tabEditors.parentNode.$ext);
-                    }, 100);
-                });
-                Firmin.animate(vbFocus.$ext, {
-                    opacity: "0"
-                }, slow ? 3.5 : 0.5, function() {
-                    vbFocus.hide();
-                });
-            }, 0);
+                }, 100);
+            });
+            Firmin.animate(vbFocus.$ext, {
+                opacity: "0"
+            }, slow ? 3.5 : 0.5, function() {
+                vbFocus.hide();
+            });
         }
         else {
             this.resetTabEditorsParentStyles();
@@ -229,7 +257,6 @@ module.exports = ext.register("ext/focus/focus", {
             }, 100);
         }
 
-        this.isFocused = false;
     },
 
     /**
@@ -253,8 +280,6 @@ module.exports = ext.register("ext/focus/focus", {
         tabEditors.parentNode.$ext.style.marginRight = this.teMarginRight;
         tabEditors.parentNode.$ext.style.left = this.teLeft;
         tabEditors.parentNode.$ext.style.top = this.teTop;
-        tabEditors.parentNode.$ext.style.mozBoxShadow = "none";
-        tabEditors.parentNode.$ext.style.webkitBoxShadow = "none";
     },
 
     /**
@@ -282,7 +307,7 @@ module.exports = ext.register("ext/focus/focus", {
      * Otherwise the default background color is grayish and the
      * animation exposes that bg color - making it look bad
      * 
-     * This is hacked and should be in Ace already
+     * This is hacked and should probably be in Ace already
      */
     setAceThemeBackground : function() {
         // Set the background color so animating doesn't show a dumb gray background
@@ -301,23 +326,18 @@ module.exports = ext.register("ext/focus/focus", {
     },
 
     /**
-     * After the tabEditors.parentNode has been transplanted into
-     * vbFocus, this sets the styles so it looks and resizes
-     * in a normal way within its new parent
+     * Sets the styles of the tabEditors container (@param el)
      * 
      * After all the styles are set it resizes the layout so all the
      * tab headers get resized and the ace highlight line extens all
      * the way
      */
-    setFocusedTabParentStyles : function() {
-        tabEditors.parentNode.$ext.style.width = "85%";
-        tabEditors.parentNode.$ext.style.height = "100%";
-        tabEditors.parentNode.$ext.style.marginLeft = "auto";
-        tabEditors.parentNode.$ext.style.marginRight = "auto";
-        tabEditors.parentNode.$ext.style.left = "0";
-        tabEditors.parentNode.$ext.style.top = "0";
-        tabEditors.parentNode.$ext.style.mozBoxShadow = "0px 0px 25px #000";
-        tabEditors.parentNode.$ext.style.webkitBoxShadow = "0px 0px 25px #000";
+    setFocusedContainerStyles : function(el) {
+        //el.$ext.style.width = "85%";
+        //el.$ext.style.height = "100%";
+        //el.$ext.style.marginLeft = "auto";
+        //el.$ext.style.marginRight = "auto";
+        //el.$ext.style.left = "0";
 
         apf.layout.forceResize();
     },
