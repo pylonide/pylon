@@ -2,9 +2,7 @@
  * Fullscreen focus for the editor tabs
  * 
  * @TODO
- * - 100% height isn't working with firefox
  * - Why doesn't disabling the extension call the disable() function??
- * - Animate the window out of focused mode
  * - Exit focus mode when doing any keybinding operation (except openfiles, quicksearch, gotoline)
  * - Ability to modify width of container (a la Lion Safari)
  * 
@@ -32,7 +30,8 @@ module.exports = ext.register("ext/focus/focus", {
     neverShown : true,
     
     commands : {
-        "focus": {hint: "toggle editor focus mode"}
+        "focus": {hint: "toggle editor focus mode"},
+        "focusslow": {hint: "toggle editor focus mode in slow-motion"}
     },
 
     nodes : [],
@@ -87,6 +86,13 @@ module.exports = ext.register("ext/focus/focus", {
     },
 
     /**
+     * Method attached to key combo for slow mode (Shift)
+     */
+    focusslow : function() {
+        this.toggleFullscreenFocus({ htmlEvent : { shiftKey : true }});
+    },
+
+    /**
      * Method invoked to do the actual toggling of focus mode
      * Detects if focused or not
      * 
@@ -126,6 +132,13 @@ module.exports = ext.register("ext/focus/focus", {
         this.saveTabEditorsParentStyles();
         btnFocusFullscreen.setAttribute("class", "full");
 
+        // Calculates the destination position and dimensions of
+        // the animated container
+        var browserWidth = window.innerWidth;
+        var afWidth = browserWidth * 0.85;
+        var leftOffset = (browserWidth-afWidth)/2 + "px";
+        var afHeight = window.innerHeight + "px";
+
         // Do fancy animation
         if (this.checkBrowserCssTransforms()) {
             this.matchAnimationWindowPosition();
@@ -133,15 +146,6 @@ module.exports = ext.register("ext/focus/focus", {
 
             editors.disableTabResizeEvent();
             this.placeTabIntoAnimationWindow();
-
-            // Calculates the anticipated width and left placement position
-            // of the tabEditors.parentNode after it's done being animated,
-            // so there is an un-noticeable transition from the end of the
-            // animation to where the tabEditors.parentNode eventually rests
-            var browserWidth = window.innerWidth;
-            var afWidth = browserWidth * 0.85;
-            var leftOffset = (browserWidth-afWidth)/2 + "px";
-            var afHeight = window.innerHeight + "px";
 
             Firmin.animate(this.animateFocus, {
                 height: afHeight,
@@ -157,7 +161,7 @@ module.exports = ext.register("ext/focus/focus", {
                 // after applying these properties, so we must do it ourselves
                 var astyles = "display:block;top:0;height:" + afHeight + ";left:" + leftOffset + ";width:" + afWidth + "px";
                 _self.animateFocus.setAttribute("style", astyles);
-                
+
                 apf.layout.forceResize();
 
                 setTimeout(function() {
@@ -166,31 +170,30 @@ module.exports = ext.register("ext/focus/focus", {
                 }, 100);
             });
 
-            // Not sure why but if we don't use setTimeout here
-            // the animation happens instantaneously
-            setTimeout(function() {
-                vbFocus.show();
-                Firmin.animate(vbFocus.$ext, {
-                    opacity: "1"
-                }, slow ? 3.5 : 0.5);
-            }, 0);
+            vbFocus.show();
+            Firmin.animate(vbFocus.$ext, {
+                opacity: "1"
+            }, slow ? 3.5 : 0.5);
         }
-        
+
         // @TODO update this
         else {
             this.isFocused = true;
             vbFocus.show();
             vbFocus.$ext.style.opacity = "1";
-            vbFocus.appendChild(tabEditors.parentNode);
+
             editors.disableTabResizeEvent();
+            this.placeTabIntoAnimationWindow();
+            this.animateFocus.style.display = "block";
 
-            this.setFocusedContainerStyles(tabEditors.parentNode);
+            var astyles = "display:block;top:0;height:" + afHeight + ";left:" + leftOffset + ";width:" + afWidth + "px";
+            this.animateFocus.setAttribute("style", astyles);
 
-            btnFocusFullscreen.setAttribute("class", "full");
+            apf.layout.forceResize();
 
             setTimeout(function() {
                 ceEditor.focus();
-            }, 0);
+            }, 100);
         }
     },
 
@@ -249,6 +252,7 @@ module.exports = ext.register("ext/focus/focus", {
             this.resetTabEditorsParentStyles();
             document.body.appendChild(tabEditors.parentNode.$ext);
             editors.enableTabResizeEvent();
+            this.animateFocus.style.display = "none";
             vbFocus.$ext.style.opacity = "0";
             vbFocus.hide();
             apf.layout.forceResize();
@@ -323,23 +327,6 @@ module.exports = ext.register("ext/focus/focus", {
                 break;
             }
         }
-    },
-
-    /**
-     * Sets the styles of the tabEditors container (@param el)
-     * 
-     * After all the styles are set it resizes the layout so all the
-     * tab headers get resized and the ace highlight line extens all
-     * the way
-     */
-    setFocusedContainerStyles : function(el) {
-        //el.$ext.style.width = "85%";
-        //el.$ext.style.height = "100%";
-        //el.$ext.style.marginLeft = "auto";
-        //el.$ext.style.marginRight = "auto";
-        //el.$ext.style.left = "0";
-
-        apf.layout.forceResize();
     },
 
     /**

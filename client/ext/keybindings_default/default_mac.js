@@ -35,7 +35,8 @@ return keys.onLoad({
             "stepout": "Shift-F11"
         },
         "focus": {
-            "focus": "Command-E"
+            "focus": "Command-E",
+            "focusslow": "Command-Shift-E"
         },
         "gotoline": {
             "gotoline": "Command-L"

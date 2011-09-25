@@ -36,7 +36,8 @@ return keys.onLoad({
             "stepout": "Shift-F9"
         },
         "focus": {
-            "focus": "Ctrl-E"
+            "focus": "Ctrl-E",
+            "focusslow": "Ctrl-Shift-E"
         },
         "gotoline": {
             "gotoline": "Ctrl-G"
