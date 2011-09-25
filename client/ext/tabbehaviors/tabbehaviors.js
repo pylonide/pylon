@@ -248,7 +248,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         if (node) {
             trFiles.select(page.root);
             trFiles.focus();
-            scrollToFile();
+            scrollToFile(50);
         }
         else {
             var parts = page.name.replace(/^\//, "").split("/");
@@ -264,11 +264,11 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             trFiles.expandList(pathList, function() {
                 trFiles.select(page.root);
                 trFiles.focus();
-                scrollToFile();
+                scrollToFile(250);
             });
         }
         
-        function scrollToFile() {
+        function scrollToFile(delay) {
             var htmlNode = apf.xmldb.findHtmlNode(trFiles.selected, trFiles);
             var itemPos = apf.getAbsolutePosition(htmlNode, trFiles.$container);
             var top = trFiles.$container.scrollTop;
@@ -285,7 +285,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             
             setTimeout(function() {
                 sbTrFiles.setPosition(y);
-            }, 250);
+            }, delay);
         }
     },
 
