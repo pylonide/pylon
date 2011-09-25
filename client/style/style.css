@@ -23,7 +23,7 @@ BODY {
 }
 
 #animateFocus {
-    z-index: 99999999;
+    z-index: 99999;
     position: absolute;
     -webkit-box-shadow: 0px 0px 25px #000;
     -moz-box-shadow: 0px 0px 25px #000;
@@ -36,7 +36,7 @@ BODY {
 
 .vbfocus {
     opacity: 0;
-    z-index: 99999;
+    z-index: 99998;
     background: url(images/focusbg.png);
     padding: 0 80px;
 }
