@@ -38,7 +38,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         "tab7": {hint: "navigate to the seventh tab"},
         "tab8": {hint: "navigate to the eighth tab"},
         "tab9": {hint: "navigate to the ninth tab"},
-        "tab0": {hint: "navigate to the tenth tab"}
+        "tab0": {hint: "navigate to the tenth tab"},
+        "showtabintree": {hint: "show the current tab in the file tree"}
     },
     hotitems   : {},
 
@@ -49,8 +50,16 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         
         this.nodes.push(
             mnuTabs.appendChild(new apf.item({
+                caption : "Show Current Tab in File Tree",
+                onclick : function() {
+                    var page = tabEditors.getPage();
+                    if (page)
+                        _self.showtabintree(page);
+                }
+            })),
+            mnuTabs.appendChild(new apf.item({
                 caption : "Close Tab",
-                onclick : function(){
+                onclick : function() {
                     _self.closetab();
                 }
             })),
@@ -60,7 +69,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             })),
             mnuTabs.appendChild(new apf.item({
                 caption : "Close All But Current Tab",
-                onclick : function(){
+                onclick : function() {
                     _self.closeallbutme();
                 }
             })),
@@ -69,8 +78,16 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 id : "mnuContextTabs",
                 childNodes : [
                     new apf.item({
+                        caption : "Show in File Tree",
+                        onclick : function() {
+                            var page = tabEditors.getPage();
+                            if (page)
+                                _self.showtabintree(page);
+                        }
+                    }),
+                    new apf.item({
                         caption : "Close Tab",
-                        onclick : function(){
+                        onclick : function() {
                             _self.closetab(tabEditors.contextPage);
                         }
                     }),
@@ -80,16 +97,17 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                     }),
                     new apf.item({
                         caption : "Close Other Tabs",
-                        onclick : function(){
+                        onclick : function() {
                             _self.closeallbutme(tabEditors.contextPage);
                         }
-                    })
+                    }),
                 ]
             }))
         );
-        this.hotitems["closetab"]      = [this.nodes[0]];
-        this.hotitems["closealltabs"]  = [this.nodes[1]];
-        this.hotitems["closeallbutme"] = [this.nodes[2]];
+        this.hotitems["showtabintree"] = [this.nodes[0]];
+        this.hotitems["closetab"]      = [this.nodes[1]];
+        this.hotitems["closealltabs"]  = [this.nodes[2]];
+        this.hotitems["closeallbutme"] = [this.nodes[3]];
 
         tabEditors.setAttribute("contextmenu", "mnuContextTabs");
 
@@ -218,6 +236,52 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         if (item && item.relPage) {
             tabEditors.set(item.relPage);
             return false;
+        }
+    },
+    
+    /**
+     * Gain focus on the file tree item's current selected tab.
+     * 
+     * Works by Finding the node related to the active tab in the tree, and
+     * unfolds its parent folders until the node can be reached by an xpath
+     * selector and focused, to finally scroll to the selected node.
+     */
+    showtabintree: function(page) {
+        var node = trFiles.queryNode(page.name);
+        
+        if (node) {
+            trFiles.expandAndSelect(page.root);
+            trFiles.focus();
+            scrollToFile();
+        }
+        else {
+            var parts = page.name.replace(/^\//, "").split("/");
+            parts.shift() && parts.pop();
+            var pathList = ["folder[1]"];
+            var str = "";
+            
+            parts.forEach(function(part) {
+                str += '/folder[@name="' + part + '"]';
+                pathList.push("folder[1]" + str);
+            });
+            
+            trFiles.expandList(pathList, function() {
+                trFiles.select(page.root);
+                trFiles.focus();
+                scrollToFile();
+            });
+        }
+        
+        function scrollToFile() {
+            setTimeout(function() {
+                var htmlNode = apf.xmldb.findHtmlNode(trFiles.selected, trFiles);
+                var itemPos = apf.getAbsolutePosition(htmlNode, trFiles.$container);
+                var totalHeight = trFiles.$container.scrollHeight;
+                var center = trFiles.getHeight() / 2;
+                var offset = (itemPos[1] / totalHeight) > 0.5 ? ~center : center;
+                var y = itemPos[1] / (totalHeight + offset);
+                sbTrFiles.setPosition(y);
+            }, 200);
         }
     },
 
