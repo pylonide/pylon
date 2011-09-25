@@ -51,11 +51,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         this.nodes.push(
             mnuTabs.appendChild(new apf.item({
                 caption : "Show Current Tab in File Tree",
-                onclick : function() {
-                    var page = tabEditors.getPage();
-                    if (page)
-                        _self.showtabintree(page);
-                }
+                onclick : _self.showtabintree
             })),
             mnuTabs.appendChild(new apf.item({
                 caption : "Close Tab",
@@ -79,11 +75,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 childNodes : [
                     new apf.item({
                         caption : "Show in File Tree",
-                        onclick : function() {
-                            var page = tabEditors.getPage();
-                            if (page)
-                                _self.showtabintree(page);
-                        }
+                        onclick : _self.showtabintree
                     }),
                     new apf.item({
                         caption : "Close Tab",
@@ -246,11 +238,15 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
      * unfolds its parent folders until the node can be reached by an xpath
      * selector and focused, to finally scroll to the selected node.
      */
-    showtabintree: function(page) {
-        var node = trFiles.queryNode(page.name);
+    showtabintree: function(e) {
+        if (!tabEditors.getPage())
+            return;
+            
+        var page = tabEditors.getPage();
+        var node = trFiles.queryNode('//file[@path="' + page.name + '"]');
         
         if (node) {
-            trFiles.expandAndSelect(page.root);
+            trFiles.select(page.root);
             trFiles.focus();
             scrollToFile();
         }
@@ -273,15 +269,23 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         }
         
         function scrollToFile() {
+            var htmlNode = apf.xmldb.findHtmlNode(trFiles.selected, trFiles);
+            var itemPos = apf.getAbsolutePosition(htmlNode, trFiles.$container);
+            var top = trFiles.$container.scrollTop;
+            var bottom = top + trFiles.$container.offsetHeight;
+            
+            // No scrolling needed when item is in between visible boundaries.
+            if (itemPos[1] > top && itemPos[1] < bottom)
+                return;
+            
+            var totalHeight = trFiles.$container.scrollHeight;
+            var center = trFiles.getHeight() / 2;
+            var offset = (itemPos[1] / totalHeight) > 0.5 ? ~center : center;
+            var y = itemPos[1] / (totalHeight + offset);
+            
             setTimeout(function() {
-                var htmlNode = apf.xmldb.findHtmlNode(trFiles.selected, trFiles);
-                var itemPos = apf.getAbsolutePosition(htmlNode, trFiles.$container);
-                var totalHeight = trFiles.$container.scrollHeight;
-                var center = trFiles.getHeight() / 2;
-                var offset = (itemPos[1] / totalHeight) > 0.5 ? ~center : center;
-                var y = itemPos[1] / (totalHeight + offset);
                 sbTrFiles.setPosition(y);
-            }, 200);
+            }, 250);
         }
     },
 
