@@ -222,7 +222,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         if (!bar.vbox) {
             var _self = this;
             bar.vbox = bar.parentNode.insertBefore(new apf.vbox({
-                padding   : 3,
+                padding   : 0,
                 width     : bar.$dockData && bar.$dockData.width || 260,
                 splitters : true,
                 vdock     : 1,
@@ -233,7 +233,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         skin       : "dockheader",
                         "class"    : "expanded",
                         nosplitter : true,
-                        height     : 11,
+                        height     : 12,
+                        resizable  : false,
                         margin     : "0 0 -3 0",
                         onclick    : function(){
                             _self.collapseBar(bar);
