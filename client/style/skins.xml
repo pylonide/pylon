@@ -6924,9 +6924,14 @@
 
     <a:presentation>
 <<<<<<< HEAD
+<<<<<<< HEAD
         <a:main pages="." buttons="div[3]">
             <div class="docktab">
                 <div class="expand-panel-bg"></div>
+=======
+        <a:main pages="." buttons="div[2]">
+            <div class="docktab">
+>>>>>>> 86ff29c... * update panel
                 <div class="noise_bg"></div>
                 <div class="btncontainer"> </div>
             </div>

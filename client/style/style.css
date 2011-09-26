@@ -122,6 +122,7 @@ BODY {
     
     background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #202020),color-stop(1, #2f2f2f));
     background: -moz-linear-gradient(center bottom,#202020 0%, #2f2f2f 100%);
+<<<<<<< HEAD
 }
 
 .dockcol .expand-panel-bg {
@@ -132,6 +133,8 @@ BODY {
     position: absolute;
     right: 0;
     top: 0;
+=======
+>>>>>>> 86ff29c... * update panel
 }
 
 .unselectable {
