@@ -201,7 +201,7 @@
             position         : relative;
             overflow         : hidden;
             width            : 37px;
-            border-left      : 1px solid #333;
+            border-left      : 1px solid #1e1e1e;
             background       : url(images/debug-panel_bg.png) 0 0;
         }
 
@@ -218,6 +218,7 @@
             left        : 0;
             right       : 0;
             bottom      : 0;
+            border-left : 1px solid #38393b;
         }
     ]]></a:style>
 
@@ -1609,8 +1610,8 @@
 <a:button name="dockheader">
     <a:style><![CDATA[
         .dockheader {
-            border-top : 1px solid #595a5c;
-            /*border-bottom : 1px solid #f1f1f1;*/
+            /*border-top : 1px solid #595a5c;
+            border-bottom : 1px solid #f1f1f1;*/
             position : relative;
             filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#3E3F41', endColorstr='#303132');
             -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#3E3F41', endColorstr='#303132')";
@@ -1627,12 +1628,12 @@
             position : absolute;
             display : block;
             right : 2px;
-            top : 0px;
+            top : 1px;
             background : url(images/toolbar-arrows.png) 0 -10px;
         }
 
         .dockheaderOver {
-            border-top : 1px solid #595a5c;
+            /*border-top : 1px solid #595a5c;*/
             filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#525354', endColorstr='#454647');
             -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#525354', endColorstr='#454647')";
             background       : -webkit-gradient(linear, center top, center bottom, from(#525354), color-stop(1, #454647));
@@ -1650,6 +1651,9 @@
             left: 0;
             position: absolute;
             width: 100%;
+        }
+        .dockcol .dockheader .dockheader-footer {
+            top: 10px;
         }
     ]]></a:style>
 
@@ -4049,6 +4053,9 @@
             position: absolute;
             right: 0;
             top: 0;
+            -moz-border-radius    : 8px 8px 0px 0px;
+            -webkit-border-radius : 8px 8px 0px 0px;
+            border-radius         : 8px 8px 0px 0px;
         }
         
         .dockwindowblack .noise_bg {
@@ -5615,7 +5622,7 @@
 
         .dockcol .splitter.horizontal{
             height : 3px;
-            background : #333;
+            /*background : #333;*/
         }
         .dockcol .splitter.horizontal div{
             height : 3px;
@@ -6650,7 +6657,13 @@
             
             /*border-bottom: 1px solid white;*/
         }
-
+        
+        .dockcol .docktab {
+            -webkit-border-radius: 0;
+            -moz-border-radius: 0;
+            border-radius: 0;
+        }
+        
         .docktab .btncontainer{
             padding : 0;
             z-index : 100;
@@ -6797,11 +6810,26 @@
         .docktab .btncontainer .curbtn.btnclose strong:active {
             background-position : -28px 0;
         }
+        
+        .dockcol .docktab .noise_bg {
+            background: url(images/noise_pattern_transparent.png) 0 0;
+            bottom: 0;
+            left: 0;
+            opacity: 0.1;
+            position: absolute;
+            right: 0;
+            top: 0;
+            display: none;
+        }
 
+        .dockcol .docktab .noise_bg {
+            display: block;
+        }
+        
         .docktab .page {
             display : none;
             position : absolute;
-            top : 22px;
+            top : 21px;
             bottom : 0;
             left : 0;
             right : 0;
@@ -6825,8 +6853,9 @@
     </a:style>
 
     <a:presentation>
-        <a:main pages="." buttons="div[1]">
+        <a:main pages="." buttons="div[2]">
             <div class="docktab">
+                <div class="noise_bg"></div>
                 <div class="btncontainer"> </div>
             </div>
         </a:main>
