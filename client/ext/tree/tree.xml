@@ -122,7 +122,7 @@
             onmouseup   = "require('ext/tree/tree').onSBMouseUp()"
         />
         <a:menu id="mnuCtxTree" disabled="{!stServerConnected.active}">
-            <a:item match="[file]" class="strong"  onclick="
+            <a:item match="[file]" class="strong" onclick="
                 require('core/ide').dispatchEvent('openfile', {doc: require('core/ide').createDocument(apf.activeElement.selected)})
             ">Edit</a:item>
             <a:divider />
@@ -136,7 +136,7 @@
             <a:item match="[file|folder[not(@root)]]" onclick="
                 apf.clipboard.copySelection(apf.activeElement);
             ">Copy</a:item>
-            <a:item match="[folder|project]" disabled="{!apf.clipboard.empty}" onclick="
+            <a:item match="[folder|project]" disabled="{apf.clipboard.empty}" onclick="
                 apf.clipboard.pasteSelection(apf.activeElement);
             ">Paste</a:item>
             <a:divider />

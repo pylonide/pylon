@@ -9,6 +9,27 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+
+/**
+ * This function must be called only when the selected node is a folder.
+ * Check if the currently selected node in the tree it's going to be pasted
+ * within itself.
+ * 
+ * @return Boolean
+ */
+function hasNodeInStore(amlTree) {
+    var selectedNodes = apf.clipboard.get() || [];
+    var selectedNode = {
+        name: amlTree.selected.getAttribute("name") || "",
+        mdat: amlTree.selected.getAttribute("modifieddate") || ""
+    };
+    
+    return selectedNodes.some(function(n) {
+        var name = n.getAttribute("name");
+        var mdat = n.getAttribute("modifieddate");
+        return (name === selectedNode.name && mdat === selectedNode.mdat);
+    });
+}
  
 module.exports = ext.register("ext/clipboard/clipboard", {
     dev    : "Ajax.org",
@@ -32,11 +53,12 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             })),
             mnuEdit.appendChild(new apf.item({
                 caption : "Copy",
-                onclick : this.copy
+                onclick : this.copy.bind(this, true),
             })),
             mnuEdit.appendChild(new apf.item({
                 caption : "Paste",
-                onclick : this.paste
+                onclick : this.paste.bind(this, true),
+                disabled: "{apf.clipboard.empty}"
             }))
         );
 
@@ -52,14 +74,24 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             apf.clipboard.cutSelection(trFiles);
     },
 
-    copy: function() {
-        if (apf.document.activeElement == trFiles)
+    copy: function(apply) {
+        if (apf.document.activeElement == trFiles || apply)
             apf.clipboard.copySelection(trFiles);
     },
 
-    paste: function() {
-        if (apf.document.activeElement == trFiles)
-            apf.clipboard.pasteSelection(trFiles);
+    paste: function(apply) {
+        if (apf.document.activeElement == trFiles || apply) {
+            var selected = null;
+            
+            if (trFiles.selected.getAttribute("type") !== "folder")
+                selected = trFiles.selected.parentNode;
+            else if (hasNodeInStore(trFiles))
+                return;
+            
+            apf.clipboard.pasteSelection(trFiles, selected);
+            apf.clipboard.clear();
+            apf.clipboard.store = null;
+        }
     },
 
     enable : function(){

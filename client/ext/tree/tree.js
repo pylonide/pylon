@@ -14,6 +14,7 @@ var fs = require("ext/filesystem/filesystem");
 var settings = require("ext/settings/settings");
 var panels = require("ext/panels/panels");
 var markup = require("text!ext/tree/tree.xml");
+var clipboard = require("ext/clipboard/clipboard");
 
 module.exports = ext.register("ext/tree/tree", {
     name             : "Project Files",
@@ -22,7 +23,7 @@ module.exports = ext.register("ext/tree/tree", {
     type             : ext.GENERAL,
     markup           : markup,
     visible          : true,
-    deps             : [fs],
+    deps             : [fs, clipboard],
     currentSettings  : [],
     expandedList     : {},
     loading          : false,
@@ -177,7 +178,7 @@ module.exports = ext.register("ext/tree/tree", {
         mnuView.appendChild(new apf.divider());
 
         trFiles.setAttribute("model", fs.model);
-
+        
         trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
             var settings = require("ext/settings/settings");
             if (settings.model && trFiles.selected) {
@@ -290,6 +291,13 @@ module.exports = ext.register("ext/tree/tree", {
             //trFiles.enable();
             //mnuCtxTree.enable();
         });
+        
+        /**** Support for copy/paste in file tree ****/
+        ide.addEventListener("keybindingschange", function(e) {
+            var bindings = e.keybindings;
+            apf.hotkeys.register(bindings.clipboard.copy, clipboard.copy);
+            apf.hotkeys.register(bindings.clipboard.paste, clipboard.paste);
+        });
 
         /**** Support for state preservation ****/
         trFiles.addEventListener("expand", function(e){
@@ -302,6 +310,7 @@ module.exports = ext.register("ext/tree/tree", {
                 settings.save();
             }
         });
+        
         trFiles.addEventListener("collapse", function(e){
             if (!e.xmlNode)
                 return;
