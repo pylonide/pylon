@@ -143,19 +143,27 @@ module.exports = ext.register("ext/code/code", {
     },
 
     getSyntax : function(node) {
-        if(!node) return "";
+        if (!node)
+            return "";
+        
         var customType = node.getAttribute("customtype");
-        if (!customType)
-            customType = contentTypes[node.getAttribute("name").split(".").pop()];
+        
+        if (!customType) {
+            var fileName = node.getAttribute("name");
+            
+            if (fileName.lastIndexOf(".") != -1)
+                customType = contentTypes[fileName.split(".").pop()];
+            else
+                customType = contentTypes["*" + fileName];
+        }
 
         if (customType) {
             var mime = customType.split(";")[0];
-
+            
             return (SupportedModes[mime] || "text");
         }
-        else {
-            return "text";
-        }
+        
+        return "text";
     },
     
     getSelection : function(){
@@ -322,20 +330,33 @@ module.exports = ext.register("ext/code/code", {
         
         mnuSyntax.onitemclick = function(e) {
             var file = ide.getActivePageModel();
+            
             if (file) {
                 var value = e.relatedNode.value;
+                
                 if (value == "auto")
                     apf.xmldb.removeAttribute(file, "customtype", "");
                 else
                     apf.xmldb.setAttribute(file, "customtype", value);
                 
                 if (file.getAttribute("customtype")) {
-                    var fileExt = file.getAttribute("name").split(".").pop();
-                    var customType = contentTypes[fileExt];
-                    if (!customType) {
-                        var mime = value.split(";")[0];
-                        _self.setCustomType(fileExt, mime);
-                    }
+                    var fileName = file.getAttribute("name");
+                    
+                    if (contentTypes["*" + fileName])
+                        delete contentTypes["*" + fileName];
+                    
+                    var mime = value.split(";")[0];
+                    var fileExt = (fileName.lastIndexOf(".") != -1) ?
+                        fileName.split(".").pop() : null;
+                    
+                    if (fileExt && contentTypes[fileExt] !== mime)
+                        delete contentTypes[fileExt];
+                        
+                    var customType = fileExt ?
+                        contentTypes[fileExt] : contentTypes["*" + fileName];
+                    
+                    if (!customType)
+                        _self.setCustomType(fileExt ? fileExt : file, mime);
                 }
             }
         };
@@ -356,15 +377,27 @@ module.exports = ext.register("ext/code/code", {
     /**
      * Saves custom syntax for extension type in settings.xml
      * 
-     * @param {String} ext Contains the extension type shorthand
+     * @param {String|xmlNode} ext Contains the extension type shorthand
      * @param {String} mime Mime type string the extension will be related to
      */
     setCustomType: function(ext, mime) {
-        var node = settings.model.queryNode('auto/customtypes/mime[@ext="' + ext + '"]');
-        if (!node) {
-            settings.model.appendXml('<mime name="' + mime + '" ext="' + ext + '" />', "auto/customtypes");
-            settings.save();
+        var node;
+        
+        if (typeof ext === "string") {
+            node = settings.model.queryNode('auto/customtypes/mime[@ext="' + ext + '"]');
+            if (!node)
+                settings.model.appendXml('<mime name="' + mime + '" ext="' + ext + '" />', "auto/customtypes");
+        } else {
+            var name = ext.getAttribute("name") || "";
+            node = settings.model.queryNode('auto/customtypes/mime[@filename="' + name + '"]');
+            if (node)
+                apf.xmldb.removeAttribute(node, "ext");
+            else
+                settings.model.appendXml('<mime name="' + mime + '" filename="' + name + '" />', "auto/customtypes");
         }
+        
+        apf.xmldb.setAttribute(node, "name", mime);
+        settings.save();
     },
     
     /**
@@ -379,7 +412,10 @@ module.exports = ext.register("ext/code/code", {
         
         var mimes = customTypes.selectNodes("mime");
         mimes.forEach(function(n) {
-            contentTypes[n.getAttribute("ext")] = n.getAttribute("name")
+            if (n.getAttribute("filename"))
+                contentTypes["*" + n.getAttribute("filename")] = n.getAttribute("name");
+            else
+                contentTypes[n.getAttribute("ext")] = n.getAttribute("name");
         });
     },
 
