@@ -39,12 +39,12 @@ exports.staticProvider = function (root, mount) {
         } else
             next();
     };
-}
+};
 
 exports.errorHandler = function() {
     return function(err, req, res, next) {
         if (!(err instanceof Error)) {
-            err = new error.InternalServerError(err.message || err.toString())
+            err = new error.InternalServerError(err.message || err.toString());
         }
         else if (!(err instanceof error.HttpError)) {
             err.code = 500;
@@ -63,15 +63,15 @@ exports.errorHandler = function() {
 
                 res.writeHead(err.code || 500, {"Content-Type": "text/html"});
                 return res.end(html);
-            })
+            });
         }
         else {
             res.writeHead(err.code || 500, {"Content-Type": "text/plain"});
-            res.end(err.message || "");
+            res.end(err.message ? err.message.toString() : "");
         }
         if (err.stack)
             console.log("Exception found" + err.message + "\n" + err.stack);
-    }
+    };
 };
 
 exports.bin = "gzip";
