@@ -246,13 +246,13 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         var node = trFiles.queryNode('//file[@path="' + page.name + '"]');
         
         if (node) {
+            trFiles.expandAndSelect(node);
             trFiles.focus();
-            trFiles.expandAndSelect(page.root);
             scrollToFile();
         }
         else {
-            var parts = page.name.replace(/^\//, "").split("/");
-            parts.shift() && parts.pop();
+            var parts = page.name.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
+            var file = parts.pop();
             var pathList = ["folder[1]"];
             var str = "";
             
@@ -261,20 +261,22 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 pathList.push("folder[1]" + str);
             });
             
+            var xpath = pathList[pathList.length - 1];
+            
             trFiles.expandList(pathList, function() {
+                trFiles.select(trFiles.queryNode(xpath + '/file[@name="' + file + '"]'));
                 trFiles.focus();
-                trFiles.select(page.root);
                 scrollToFile();
             });
         }
         
         function scrollToFile() {
-            var htmlNode = apf.xmldb.findHtmlNode(trFiles.selected, trFiles);
+            var htmlNode = apf.xmldb.getHtmlNode(trFiles.selected, trFiles);
             var itemPos = apf.getAbsolutePosition(htmlNode, trFiles.$container);
             var top = trFiles.$container.scrollTop;
             var bottom = top + trFiles.$container.offsetHeight;
             
-            // No scrolling needed when item is in between visible boundaries.
+            // No scrolling needed when item is between visible boundaries.
             if (itemPos[1] > top && itemPos[1] < bottom)
                 return;
             
@@ -283,9 +285,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             var offset = (itemPos[1] / totalHeight) > 0.5 ? ~center : center;
             var y = itemPos[1] / (totalHeight + offset);
             
-            setTimeout(function() {
-                sbTrFiles.setPosition(y);
-            }, 50);
+            sbTrFiles.setPosition(y);
         }
     },
 
