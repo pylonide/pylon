@@ -304,8 +304,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
      */
     this.show = function(amlNode){
         var button = amlNode.$dockbutton || amlNode;
-        //button.showMenu();
-        button.dispatchEvent("mousedown", {htmlEvent: {}});
+
+        if (button.value === false)
+            button.dispatchEvent("mousedown", {htmlEvent: {}});
     };
 
     /**
