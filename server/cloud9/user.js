@@ -14,8 +14,8 @@ var User = function (uid, permissions, data) {
     this.permissions = permissions;
     this.data = data;
     this.clients = [];
-    this.last_message_time = new Date().getTime();
     this.$server_exclude = {};
+    this.flagged_for_removal = false;
 };
 
 sys.inherits(User, EventEmitter);
