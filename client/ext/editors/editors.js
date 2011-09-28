@@ -225,7 +225,7 @@ module.exports = ext.register("ext/editors/editors", {
                 page.$editor = editor;
                 page.setAttribute("tooltip", "[@path]");
                 page.setAttribute("class",
-                    "{parseInt([@saving]) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
+                    "{parseInt([@saving]) || parseInt([@lookup]) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
                     ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"
                 );
                 page.setAttribute("model", page.$model = model);

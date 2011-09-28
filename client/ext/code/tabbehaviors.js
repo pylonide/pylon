@@ -262,16 +262,11 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             });
             
             var xpath = pathList[pathList.length - 1];
-            var docNode = page.$doc.getNode();
-            // Show spinner in active tab the file is being looked up
-            apf.xmldb.setAttribute(docNode, "lookup", "1");
             
             trFiles.expandList(pathList, function() {
                 trFiles.select(trFiles.queryNode(xpath + '/file[@name="' + file + '"]'));
                 trFiles.focus();
                 scrollToFile();
-                // Hide spinner in active tae
-                apf.xmldb.removeAttribute(docNode, "lookup");
             });
         }
         
