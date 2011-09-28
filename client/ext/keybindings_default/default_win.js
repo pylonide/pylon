@@ -82,7 +82,7 @@ return keys.onLoad({
             "tab8": "Ctrl-8",
             "tab9": "Ctrl-9",
             "tab0": "Ctrl-0",
-            "showtabintree": "Ctrl-Shift-L"
+            "revealtab": "Ctrl-Shift-L"
         },
         "code" : {
             "selectall": "Ctrl-A",

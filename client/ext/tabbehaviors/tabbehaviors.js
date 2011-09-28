@@ -39,7 +39,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         "tab8": {hint: "navigate to the eighth tab"},
         "tab9": {hint: "navigate to the ninth tab"},
         "tab0": {hint: "navigate to the tenth tab"},
-        "showtabintree": {hint: "show the current tab in the file tree"}
+        "revealtab": {hint: "reveal current tab in the file tree"}
     },
     hotitems   : {},
 
@@ -50,8 +50,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         
         this.nodes.push(
             mnuTabs.appendChild(new apf.item({
-                caption : "Show Current Tab in File Tree",
-                onclick : _self.showtabintree
+                caption : "Reveal in File Tree",
+                onclick : _self.revealtab
             })),
             mnuTabs.appendChild(new apf.item({
                 caption : "Close Tab",
@@ -74,8 +74,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 id : "mnuContextTabs",
                 childNodes : [
                     new apf.item({
-                        caption : "Show in File Tree",
-                        onclick : _self.showtabintree
+                        caption : "Reveal in File Tree",
+                        onclick : _self.revealtab
                     }),
                     new apf.item({
                         caption : "Close Tab",
@@ -96,7 +96,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 ]
             }))
         );
-        this.hotitems["showtabintree"] = [this.nodes[0]];
+        this.hotitems["revealtab"] = [this.nodes[0]];
         this.hotitems["closetab"]      = [this.nodes[1]];
         this.hotitems["closealltabs"]  = [this.nodes[2]];
         this.hotitems["closeallbutme"] = [this.nodes[3]];
@@ -238,7 +238,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
      * unfolds its parent folders until the node can be reached by an xpath
      * selector and focused, to finally scroll to the selected node.
      */
-    showtabintree: function(e) {
+    revealtab: function(e) {
         if (!tabEditors.getPage())
             return;
             

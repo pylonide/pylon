@@ -81,7 +81,7 @@ return keys.onLoad({
             "tab8": "Command-8",
             "tab9": "Command-9",
             "tab0": "Command-0",
-            "showtabintree": "Command-Shift-L"
+            "revealtab": "Command-Shift-L"
         },
         "code" : {
             "selectall": "Command-A",
