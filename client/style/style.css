@@ -129,10 +129,21 @@ BODY {
     background: -moz-linear-gradient(center bottom,#202020 0%, #2f2f2f 100%);
     bottom: 0;
     left: 0;
+    position: absolute;<
+    right: 0;
+    top: 0;
+}
+
+.dockcol .expand-panel-bg {
+    background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #202020),color-stop(1, #2f2f2f));
+    background: -moz-linear-gradient(center bottom,#202020 0%, #2f2f2f 100%);
+    bottom: 0;
+    left: 0;
     position: absolute;
     right: 0;
     top: 0;
 }
+
 .unselectable {
     -moz-user-select: -moz-none;
     -khtml-user-select: none;
