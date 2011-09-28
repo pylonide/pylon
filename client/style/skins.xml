@@ -5676,6 +5676,10 @@
             height : 3px;
             /*background : #333;*/
         }
+        
+        .dockcol > div:nth-child(2) {
+            display: none !important;
+        }
         .dockcol .splitter.horizontal div{
             height : 3px;
             margin-top : 0;
@@ -6230,6 +6234,7 @@
     }*/
     
     /*.editor_tab .btnsesssioncontainer .loading_active .sessiontab_icon {
+
         background-image: url(images/load-indicator-active-tab.gif);
     }
 
@@ -6923,15 +6928,9 @@
     </a:style>
 
     <a:presentation>
-<<<<<<< HEAD
-<<<<<<< HEAD
         <a:main pages="." buttons="div[3]">
             <div class="docktab">
                 <div class="expand-panel-bg"></div>
-=======
-        <a:main pages="." buttons="div[2]">
-            <div class="docktab">
->>>>>>> 86ff29c... * update panel
                 <div class="noise_bg"></div>
                 <div class="btncontainer"> </div>
             </div>
