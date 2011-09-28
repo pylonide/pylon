@@ -246,8 +246,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             bar.vbox.$ext.style.borderLeft = "1px solid #333";
             
             bar.splitter = bar.parentNode.insertBefore(new apf.splitter({
-                scale : "right",
-                width : "0"
+                scale   : "right",
+                "class" : "splitter-editor-right",
+                width   : "0"
             }), bar.vbox);
             
             bar.splitter.bar = 
@@ -259,6 +260,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         }
         
         var vbox = bar.selectNodes("vbox");
+        
         for (var i = 0; i < vbox.length; i++) {
             var menu = self[vbox[i].selectSingleNode("button").submenu];
             menu.hide();
