@@ -29,8 +29,8 @@ module.exports = ext.register("ext/focus/focus", {
     skin     : skin,
     isFocused : false,
     neverShown : true,
-    initialWidth : 0.75,
-    
+    initialWidth : 0.70,
+
     commands : {
         "focus": {hint: "toggle editor focus mode"},
         "focusslow": {hint: "toggle editor focus mode in slow-motion"}
@@ -39,6 +39,27 @@ module.exports = ext.register("ext/focus/focus", {
     nodes : [],
 
     init : function(amlNode){
+        // Create all the elements used here
+        this.animateFocus = document.createElement("div");
+        this.animateFocus.setAttribute("id", "animateFocus");
+        this.animateFocus.setAttribute("style", "display: none");
+        document.body.appendChild(this.animateFocus);
+
+        this.animateFocusPosition = document.createElement("div");
+        this.animateFocusPosition.setAttribute("id", "animateFocusPosition");
+        this.animateFocusPosition.setAttribute("style", "display: none");
+        document.body.appendChild(this.animateFocusPosition);
+
+        this.focusHandleLeft = document.createElement("div");
+        this.focusHandleLeft.setAttribute("id", "focusHandleLeft");
+        this.focusHandleLeft.setAttribute("style", "display: none");
+        document.body.appendChild(this.focusHandleLeft);
+
+        this.focusHandleRight = document.createElement("div");
+        this.focusHandleRight.setAttribute("id", "focusHandleRight");
+        this.focusHandleRight.setAttribute("style", "display: none");
+        document.body.appendChild(this.focusHandleRight);
+
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor)
             editor.ceEditor.parentNode.appendChild(btnFocusFullscreen);
