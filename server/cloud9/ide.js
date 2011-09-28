@@ -225,9 +225,6 @@ Ide.DEFAULT_PLUGINS = [
 
             var _self = this;
             user.on("message", function(msg) {
-                if(_self.$users[msg.user.uid]) {
-                    _self.$users[msg.user.uid].last_message_time = new Date().getTime();
-                }
                 _self.onUserMessage(msg.user, msg.message, msg.client);
             });
             user.on("disconnectClient", function(msg) {
@@ -237,13 +234,18 @@ Ide.DEFAULT_PLUGINS = [
                 console.log("Running user disconnect timer", username);
                 _self.davServer.unmount();
 
-                setTimeout(function() {
-                    var now = new Date().getTime();
-                    if((now - user.last_message_time) > 10000) {
-                        console.log("User fully disconnected", username);
-                        _self.removeUser(user);
-                    }
-                }, 10000);
+                if (user.flagged_for_removal) {
+                    console.log("User fully disconnected", username);
+                    _self.removeUser(user);
+                }
+                else {
+                    setTimeout(function() {
+                        if (Object.keys(user.clients).length === 0) {
+                            console.log("User fully disconnected", username);
+                            _self.removeUser(user);
+                        }
+                    }, 10000);
+                }
             });
 
             this.onUserCountChange();
@@ -263,6 +265,7 @@ Ide.DEFAULT_PLUGINS = [
         if (!this.$users[user.uid])
             return;
 
+        console.log("Removing user", user.uid);
         delete this.$users[user.uid];
         this.onUserCountChange();
         this.emit("userLeave", user);
