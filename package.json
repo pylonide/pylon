@@ -8,7 +8,7 @@
     "main": "bin/cloud9",
     "repository" : {
         "type" : "git",
-         "url" : "http://github.com/ajaxorg/cloud9"
+         "url" : "git://github.com/ajaxorg/cloud9.git"
     },
     "bin" : {
         "cloud9" : "./bin/cloud9-npm.js"
