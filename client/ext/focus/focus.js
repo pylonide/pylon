@@ -5,6 +5,7 @@
  * - Why doesn't disabling the extension call the disable() function??
  * - Exit focus mode when doing any keybinding operation (except openfiles, quicksearch, gotoline)
  * - Ability to modify width of container (a la Lion Safari)
+ * - While animating, disable ability to toggle focus mode (better: cancel and reverse the operation)
  * 
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -28,6 +29,7 @@ module.exports = ext.register("ext/focus/focus", {
     skin     : skin,
     isFocused : false,
     neverShown : true,
+    initialWidth : 0.75,
     
     commands : {
         "focus": {hint: "toggle editor focus mode"},
@@ -58,7 +60,7 @@ module.exports = ext.register("ext/focus/focus", {
                 var height = (window.innerHeight-33) + "px"
                 tabEditors.parentNode.$ext.style.height = height;
                 _self.animateFocus.style.height = window.innerHeight + "px";
-                var width = window.innerWidth * 0.85;
+                var width = window.innerWidth * this.initialWidth;
                 var widthDiff = (window.innerWidth - width) / 2;
                 tabEditors.parentNode.$ext.style.width = _self.animateFocus.style.width = width + "px";
                 _self.animateFocus.style.left = widthDiff + "px";
@@ -135,7 +137,7 @@ module.exports = ext.register("ext/focus/focus", {
         // Calculates the destination position and dimensions of
         // the animated container
         var browserWidth = window.innerWidth;
-        var afWidth = browserWidth * 0.85;
+        var afWidth = browserWidth * this.initialWidth;
         var leftOffset = (browserWidth-afWidth)/2 + "px";
         var afHeight = window.innerHeight + "px";
 
