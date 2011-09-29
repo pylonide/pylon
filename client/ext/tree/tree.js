@@ -184,7 +184,6 @@ module.exports = ext.register("ext/tree/tree", {
                 })
             }
         }));
-        davProject.setAttribute("showhidden", "[{require('ext/settings/settings').model}::auto/tree/@showhidden]");
 
         mnuView.appendChild(new apf.divider());
 
@@ -423,6 +422,8 @@ module.exports = ext.register("ext/tree/tree", {
                     trFiles.select(trFiles.$model.queryNode("node()"));
                 }
             };
+
+            davProject.setAttribute("showhidden", "[{require('ext/settings/settings').model}::auto/tree/@showhidden]");
 
             var model = e.model;
             var strSettings = model.queryValue("auto/tree");
