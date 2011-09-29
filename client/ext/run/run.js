@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var noderunner = require("ext/noderunner/noderunner");
 var settings = require("ext/settings/settings");
+var dock   = require("ext/dockpanel/dockpanel");
 var save = require("ext/save/save");
 var markup = require("text!ext/run/run.xml");
 
@@ -30,7 +31,41 @@ module.exports = ext.register("ext/run/run", {
     },
 
     nodes : [],
-
+    hook : function(){
+        var _self = this;
+        
+        var name = "ext/run/run"; //this.name
+        
+        dock.addDockable({
+            id: "mnuRunCommands",
+            hidden     : false,
+            height     : 30,
+            width      : 179,
+            resizable  : false,
+            skin       : "dockwin_runbtns",
+            noTab      : true,
+            position   : 1,
+            draggable  : false,
+            buttons : [{
+                id      : "btnRunCommands",
+                caption : "Run Commands", 
+                "class" : "btn-runcommands",
+                ext     : [name, "tbDebugNav"] 
+            }]
+        });
+        
+        dock.register(name, "tbDebugNav", {
+            menu : "Run Commands",
+            primary : {
+                backgroundImage: "/static/style/images/debugicons.png",
+                defaultState: { x: -6, y: -265 },
+                activeState: { x: -6, y: -265 }
+            }
+        }, function(type) {
+            return tbDebugNav;
+        });
+        ext.initExtension(_self);
+    },
     init : function(amlNode){
         while(tbRun.childNodes.length) {
             var button = tbRun.firstChild;
@@ -114,6 +149,11 @@ module.exports = ext.register("ext/run/run", {
             this.runConfig(config, debug);
             ide.dispatchEvent("track_action", {type: debug ? "debug" : "run"});
         }
+        
+        if(debug) {
+            var pos  = apf.getAbsolutePosition(btnRunCommands.$ext);
+            self[btnRunCommands.submenu].display(pos[0]-1, pos[1]-11, false, btnRunCommands)
+        }
     },
 
     $updateMenu : function() {
@@ -164,6 +204,7 @@ module.exports = ext.register("ext/run/run", {
 
     stop : function() {
         noderunner.stop();
+        self[btnRunCommands.submenu].hide();
     },
 
     enable : function(){

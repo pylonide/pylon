@@ -981,7 +981,11 @@
             -webkit-border-top-left-radius : 5px;
             -moz-border-radius-topleft     : 5px;
         }
-
+        
+        .dockButtonDown.btn-runcommands {
+            background-image: none;
+        }
+        
         .dockButton .icon {
             width                 : 31px;
             height                : 32px;
@@ -1379,7 +1383,7 @@
         }
 
         .hbox > .c9-toolbarbutton {
-            height : 23px;
+            height: 23px;
         }
 
         .c9-toolbarbutton .c9-icon {
@@ -1392,7 +1396,7 @@
             background-position : 0 0;
             background-repeat   : no-repeat;
         }
-
+        
         .c9-toolbarbuttonIcon .c9-icon{
             display : block;
         }
@@ -1459,7 +1463,7 @@
         }
 
         .c9-toolbarbuttonDown .c9-icon {
-            background-position: 0-19px;
+            background-position: 0 -19px;
         }
 
         .c9-toolbarbuttonDisabled .c9-icon {
@@ -1478,6 +1482,137 @@
           background = "."
           icon       = "div[1]">
             <div class="c9-toolbarbutton">
+                <div class="c9-icon"></div>
+                <div class="c9-label">-</div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:button>
+<a:button name="c9-sidepanelsbutton">
+    <a:style><![CDATA[
+        .c9-sidepanelsbutton {
+            height             : 21px;
+            overflow           : hidden;
+            cursor             : default;
+            position           : relative;
+            -moz-user-select   : none;
+            -khtml-user-select : none;
+            user-select        : none;
+            line-height        : 17px;
+            border:1px solid transparent;
+            padding-bottom: 1px;
+            padding-top: 1px;
+            
+            -moz-border-radius    : 5px;
+            -webkit-border-radius : 5px;
+            border-radius : 5px;
+            border:1px solid #1c1c1c;
+
+            -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
+            -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
+            box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
+
+            background         : #343434;
+            filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#282828', endColorstr='#2e2e2e');
+            -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#282828', endColorstr='#2e2e2e')";
+            background         : -webkit-gradient(linear, left top, left bottom, from(#282828), color-stop(1, #2e2e2e));
+            background         :-moz-linear-gradient(center bottom, #2e2e2e 0%, #282828 100%) repeat scroll 0 0 transparent;
+            
+            width: 25px;
+        }
+
+        .c9-sidepanelsbutton .c9-icon {
+            display: none;
+            width:23px;
+            height:19px;
+            position:absolute;
+            top:1px;
+            left:2px;
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            left: 1px;
+        }
+
+        .c9-sidepanelsbuttonIcon .c9-icon{
+            display : block;
+        }
+
+        .c9-sidepanelsbuttonOver {
+            -moz-border-radius    : 5px;
+            -webkit-border-radius : 5px;
+            border-radius : 5px;
+            border:1px solid #1c1c1c;
+
+            -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
+            -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
+            box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
+
+            background         : #343434;
+            filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#3a3a3a', endColorstr='#333333');
+            -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#3a3a3a', endColorstr='#333333')";
+            background         : -webkit-gradient(linear, left top, left bottom, from(#3a3a3a), color-stop(1, #333333));
+            background         :-moz-linear-gradient(center bottom, #333333 0%, #3a3a3a 100%) repeat scroll 0 0 transparent;
+        }
+        
+        .c9-sidepanelsbutton.active {
+            background-image: linear-gradient(bottom, rgb(70,94,58) 0%, rgb(74,98,62) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(70,94,58) 0%, rgb(74,98,62) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(70,94,58) 0%, rgb(74,98,62) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(70,94,58) 0%, rgb(74,98,62) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(70,94,58) 0%, rgb(74,98,62) 100%);
+         }
+         
+        .c9-sidepanelsbutton .c9-label {
+            position:relative;
+            overflow:hidden;
+            font-family:Arial;
+            font-size:12px;
+            color:#d6d6d6;
+            line-height:14px;
+            height:15px;
+            padding:3px 6px 0 6px;
+        }
+
+        .c9-sidepanelsbuttonEmpty .c9-icon {
+            position:relative;
+        }
+
+        .c9-sidepanelsbuttonEmpty .c9-label {
+            display:none;
+        }
+
+        .c9-sidepanelsbuttonIcon .c9-label{
+            padding:3px 6px 0 22px;
+        }
+
+        .c9-sidepanelsbuttonIcon.preview .c9-label {
+            padding-left : 25px;
+        }
+
+        .c9-sidepanelsbuttonDown {}
+
+        .c9-sidepanelsbuttonDown .c9-icon {}
+
+        .c9-sidepanelsbuttonDisabled {
+
+        }
+        
+        .c9-sidepanelsbuttonDisabled .c9-icon {
+            background-position : 0 -38px;
+        }
+
+        .c9-sidepanelsbuttonDisabled .c9-label {
+            color       : #606060;
+            text-shadow : rgba(0, 0, 0, 1) 0px 1px 0px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main
+          caption      = "div[2]/text()"
+          background = "."
+          icon       = "div[1]">
+            <div class="c9-sidepanelsbutton">
                 <div class="c9-icon"></div>
                 <div class="c9-label">-</div>
             </div>
@@ -1620,6 +1755,10 @@
             height : 10px;
             cursor : pointer;
             border-bottom: 1px solid #38393b;
+        }
+        
+        .dockcol .dockheader {
+            border-bottom: 1px solid #505053;
         }
 
         .dockheader span{
@@ -4083,6 +4222,58 @@
         </a:main>
     </a:presentation>
 </a:menu>
+<a:menu name="dockwin_runbtns">
+    <a:style><![CDATA[
+        .dockwin_runbtns {
+            position              : relative;
+            padding               : 5px 4px;
+            margin-left : -42px;
+            margin-top : 15px;
+        }
+        
+        .dockwin_runbtns .dockwin_runbtns-bg {
+            border-top : 1px solid #606166;
+            -moz-border-radius    : 5px;
+            -webkit-border-radius : 5px;
+            border-radius         : 5px;
+            
+            background-image: linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
+            
+            -webkit-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
+            -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
+            
+            bottom: -2px;
+            position: absolute;
+            right: -39px;
+            top: 1px;
+            width: 212px;
+        }
+        
+        .dockwin_runbtns .dockwin_runbtns-bg .dockwin_runbtns-icon {
+            background: url(images/play-button-active.png) no-repeat 0 0;
+            height: 19px;
+            position: absolute;
+            right: 10px;
+            top: 5px;
+            width: 11px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="dockwin_runbtns">
+                <div class="dockwin_runbtns-bg" onmousedown="apf.findHost(this).hide()">
+                    <div class="dockwin_runbtns-icon"></div>
+                </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:menu>
 <a:menu name="dockwindowbasic">
     <a:style><![CDATA[
         .dockwindowbasic{
@@ -5621,8 +5812,8 @@
         }
 
         .dockcol .splitter.horizontal{
-            height : 1px;
-            background-color: #38393A;
+            height : 2px;
+            background-color: #505053;
             border-top: 1px solid #000000;
             /*background : #333;*/
         }
