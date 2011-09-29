@@ -111,7 +111,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         if (!$noClear)
             this.clearState();
 
-        var bar, bars = obj.bars;
+        var bars = obj.bars,
+            bar;
+            
         for (var i = 0; i < bars.length; i++) {
             if (bars[i].ref)
                 bar = bars[i].ref;
@@ -121,19 +123,23 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             }
             
             var sections = bars[i].sections;
+            
             for (var j = 0; j < sections.length; j++) {
-                var section = null, menu, info;
+                var section = null, 
+                    menu, info;
+                    
                 if (sections[j].sectionIdent) {
                     section = this.$getSection(bar, sections[j].sectionIdent);
+                    
                     if (section) {
                         menu = section.$menu;
                         info = section.$dockData;
                     }
                 }
                 if (!section) {
-                    section = this.$addSection(bar, null, sections[j].sectionIdent);
-                    menu = this.$addMenu(section);
+                    section = this.$addSection(bar, bar.childNodes[sections[j].position], sections[j].sectionIdent, sections[j]);
                     info = section.$dockData = sections[j];
+                    menu = this.$addMenu(section);
                     section.$menu = menu;
                     menu.firstChild.setAttribute("flex", info.flex);
                     menu.setAttribute("width", info.width || 260);
@@ -141,6 +147,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 }
 
                 var buttons = sections[j].buttons;
+                
                 for (var k = 0; k < buttons.length; k++) {
                     var button = this.$addButton(section, menu, 
                         this.$addPage(
@@ -235,7 +242,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         nosplitter : true,
                         height     : 12,
                         resizable  : false,
-                        margin     : "0 0 -3 0",
+                        margin     : "0 0 0 0",
                         onclick    : function(){
                             _self.collapseBar(bar);
                         }
@@ -264,10 +271,10 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         for (var i = 0; i < vbox.length; i++) {
             var menu = self[vbox[i].selectSingleNode("button").submenu];
             menu.hide();
-            var tab = menu.firstChild;
-            bar.vbox.appendChild(tab);
-            if (!tab.flex)
-                tab.setAttribute("flex", 1);
+            var childEl = menu.firstChild;
+            bar.vbox.appendChild(childEl);
+            if (!childEl.flex && childEl.tagName != "bar")
+                childEl.setAttribute("flex", 1);           
         }
         
         bar.hide();
@@ -288,7 +295,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             this.$currentMenu.hide();
         
         var vbox = bar.selectNodes("vbox");
-        var tabs = bar.vbox.selectNodes("tab");
+        var tabs = bar.vbox.selectNodes("bar|tab");
         for (var i = 0; i < vbox.length; i++) {
             var menu = self[vbox[i].selectSingleNode("button").submenu];
             menu.appendChild(tabs[i]);
@@ -499,7 +506,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         div1.style.left = diff[0] + "px";
                         div1.style.width = (matchAml.$button.offsetWidth - 5) + "px";
                         div1.style.height = "18px";
-                        div1.style.margin = "-18px 0 0 -3px";
+                        div1.style.margin = "-18px 0 0 0px";
                         div1.style.border = "3px solid #7ac7f4";
                         div1.style.borderWidth = "3px 3px 0 3px";
                         
@@ -1044,19 +1051,46 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
      * Creates a new menu
      */
     this.$addMenu = function(section){
-        var _self = this;
+        var _self = this,
+            childNodes = [],
+            menuId = section.$dockData.id || "submenu" + menuCounter++;
+        
+        if(!section.$dockData.noTab) {
+            childNodes = [
+                new apf.tab({
+                    anchors : "4 4 4 4", 
+                    skin : "docktab",
+                    buttons : "scale",
+                    dock    : 1,
+                    activepage : 0,
+                    onclose : function(e){
+                        var page = e.page;
+                        page.lastParent = this;
+                    }
+                })
+            ];
+        }
+        else {
+            childNodes = [
+                new apf.bar({
+                    skin: "basic",
+                    dock: 1,
+                    anchors : "4 4 4 4"
+                })
+            ]
+        }
         
         var menu = new apf.menu({
-            id : "submenu" + menuCounter++,
-            width : "200",
-            height : "200",
-            ref        : section,
-            pinned     : "true",
-            animate    : "false",
-            skin       : "dockwindowblack",
-            resizable  : "horizontal",
-            dock       : 1,
-            ondisplay  : function(){
+            id : menuId,
+            width     : section.$dockData.width ? section.$dockData.width : "200",
+            height    : section.$dockData.height ? section.$dockData.height : "200",
+            ref       : section,
+            pinned    : "true",
+            animate   : "false",
+            skin      : section.$dockData.skin ? section.$dockData.skin : "dockwindowblack",
+            resizable : section.$dockData.resizable === false ? false : "left bottom",
+            dock      : 1,
+            ondisplay : function(){
                 if (_self.$currentMenu && _self.$currentMenu != this)
                     _self.$currentMenu.hide();
                 _self.$currentMenu = this;
@@ -1083,24 +1117,16 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     var pos = apf.getAbsolutePosition(menu.opener.$ext);
                     var width = apf.getWindowWidth();
                     
-                    menu.$ext.style.right = (Math.min((width - pos[0]), menu.$ext.offsetWidth)) + "px";
+                    menu.$ext.style.right = (Math.min((width - pos[0]), menu.$ext.offsetWidth) + 6) + "px";
                     menu.$ext.style.left = "";
                 });
             },
-            childNodes : [
-                new apf.tab({
-                    anchors : "4 4 4 4", 
-                    skin : "docktab",
-                    buttons : "scale",
-                    dock    : 1,
-                    activepage : -1,
-                    onclose : function(e){
-                        var page = e.page;
-                        page.lastParent = this;
-                    }
-                })
-            ]
+            childNodes : childNodes
         });
+        
+        if(section.$dockData.noTab) {
+            tbDebugNav.show();
+        }
         
         apf.document.body.appendChild(menu);
         menu.show();
@@ -1129,7 +1155,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     onclick : function(){
                         _self.expandBar(this.parentNode);
                     }
-                })
+                }),
             ]
         }), before);
         
@@ -1263,7 +1289,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     /**
      * Creates a new section
      */
-    this.$addSection = function(bar, before, ident){
+    this.$addSection = function(bar, before, ident, sectionOpt){
         var _self   = this;
         var section = bar.insertBefore(new apf.vbox({
             padding : 0,
@@ -1276,72 +1302,74 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     skin : "divider-debugpanel",
                     margin : "3 4 2 2",
                     dock    : 1,
-                    draggable : "true"
+                    draggable : sectionOpt.draggable || "true"
                 })
             ]
         }), before);
         
-        var div = section.firstChild;
-        div.addEventListener("beforedrag", function(e){ //change this to beforedrag and recompile apf
-            var section = this.parentNode;
-            
-            //this.hideMenu();
-        
-            var pNode = section.$dockbar = section.parentNode;
-            var placeHolder = section.cloneNode(false);
-            placeHolder.removeAttribute("id");
-            placeHolder.$dockfor = section;
-        
-            var diff = apf.getDiff(section.$ext);
-            var height = section.$ext.offsetHeight;
-            var pos = apf.getAbsolutePosition(section.$ext);
-            
-            pNode.insertBefore(placeHolder, section);
-            placeHolder.$ext.style.background = "#acacac";
-            placeHolder.$ext.style.height = (height - diff[1]) + "px";
-            
-            section.setWidth(section.$ext.offsetWidth);
-            apf.document.body.appendChild(section);
-            section.setLeft(pos[0]);
-            section.setTop(pos[1]);
-            
-            section.addEventListener("afterdrag", function(e){
-                pNode.insertBefore(section, placeHolder);
-                section.setAttribute("draggable", false);
-        
-                setTimeout(function(){
-                    section.removeAttribute("left");
-                    section.removeAttribute("top");
-                    section.removeAttribute("width");
-                    section.$ext.style.position = "relative";
+        if(sectionOpt.draggable !== false) {
+            var div = section.firstChild;
+            div.addEventListener("beforedrag", function(e){ //change this to beforedrag and recompile apf
+                var section = this.parentNode;
+
+                //this.hideMenu();
+
+                var pNode = section.$dockbar = section.parentNode;
+                var placeHolder = section.cloneNode(false);
+                placeHolder.removeAttribute("id");
+                placeHolder.$dockfor = section;
+
+                var diff = apf.getDiff(section.$ext);
+                var height = section.$ext.offsetHeight;
+                var pos = apf.getAbsolutePosition(section.$ext);
+
+                pNode.insertBefore(placeHolder, section);
+                placeHolder.$ext.style.background = "#acacac";
+                placeHolder.$ext.style.height = (height - diff[1]) + "px";
+
+                section.setWidth(section.$ext.offsetWidth);
+                apf.document.body.appendChild(section);
+                section.setLeft(pos[0]);
+                section.setTop(pos[1]);
+
+                section.addEventListener("afterdrag", function(e){
+                    pNode.insertBefore(section, placeHolder);
+                    section.setAttribute("draggable", false);
+
+                    setTimeout(function(){
+                        section.removeAttribute("left");
+                        section.removeAttribute("top");
+                        section.removeAttribute("width");
+                        section.$ext.style.position = "relative";
+                    });
+
+                    var buttons = this.selectNodes("button");
+                    if (buttons.length)
+                        buttons[0].setValue(false);
+
+                    _self.$stopDrag(e.htmlEvent);
+
+                    placeHolder.destroy(true, true);
+
+                    section.removeEventListener("afterdrag", arguments.callee);
                 });
-                
-                var buttons = this.selectNodes("button");
-                if (buttons.length)
-                    buttons[0].setValue(false);
-                
-                _self.$stopDrag(e.htmlEvent);
-                
-                placeHolder.destroy(true, true);
-                
-                section.removeEventListener("afterdrag", arguments.callee);
+
+                section.setAttribute("draggable", true);
+
+                var clientX = e.htmlEvent.clientX;
+                var clientY = e.htmlEvent.clientY;
+                setTimeout(function(){
+                    //@todo Collapse menu
+
+                    section.$dragStart({clientX:clientX,clientY:clientY});
+                    section.$ext.style.zIndex = 1000000;
+                });
+
+                _self.$startDrag(section, this);
+
+                return false;
             });
-        
-            section.setAttribute("draggable", true);
-            
-            var clientX = e.htmlEvent.clientX;
-            var clientY = e.htmlEvent.clientY;
-            setTimeout(function(){
-                //@todo Collapse menu
-                
-                section.$dragStart({clientX:clientX,clientY:clientY});
-                section.$ext.style.zIndex = 1000000;
-            });
-            
-            _self.$startDrag(section, this);
-            
-            return false;
-        });
+        }
         
         return section;
     }
@@ -1351,14 +1379,16 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
      */
     this.$addButton = function(section, submenu, page, options){
         var _self  = this, btnLock, tmp;
+        
         var button = section.appendChild(new apf.button({
             skin    : "dockButton",
             submenu : submenu.id,
             dock    : 1,
+            "class" : options["class"],
             draggable : "true",
             onmousedown  : function(){
                 btnLock = true;
-                self[this.submenu].firstChild.set(page);
+                self[this.submenu].firstChild.set && self[this.submenu].firstChild.set(page);
                 btnLock = false;
                 
                 if (options && (tmp = options.primary)) {
@@ -1375,6 +1405,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 }
             }
         }));
+        
+        if(options["id"])
+            button.setAttribute('id', options["id"]);
         
         if (options && (tmp = options.primary)) {
             var span = button.$ext.getElementsByTagName("span");
