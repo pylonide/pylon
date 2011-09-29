@@ -2,9 +2,8 @@
  * Fullscreen focus for the editor tabs
  * 
  * @TODO
- * - Why doesn't disabling the extension call the disable() function??
+ * - Disabling the extension doesn't call the disable() function
  * - Exit focus mode when doing any keybinding operation (except openfiles, quicksearch, gotoline)
- * - Ability to modify width of container (a la Lion Safari)
  * - While animating, disable ability to toggle focus mode (better: cancel and reverse the operation)
  * 
  * @copyright 2011, Ajax.org B.V.
@@ -17,6 +16,7 @@ var ext = require("core/ext");
 var ide = require("core/ide");
 var canon = require("pilot/canon");
 var editors = require("ext/editors/editors");
+var settings = require("ext/settings/settings");
 var markup = require("text!ext/focus/focus.xml");
 var skin = require("text!ext/focus/skin.xml");
 
@@ -29,7 +29,11 @@ module.exports = ext.register("ext/focus/focus", {
     skin     : skin,
     isFocused : false,
     neverShown : true,
+
     initialWidth : 0.70,
+
+    handleLeftMove : false,
+    handleRightMove : false,
 
     commands : {
         "focus": {hint: "toggle editor focus mode"},
@@ -37,6 +41,31 @@ module.exports = ext.register("ext/focus/focus", {
     },
 
     nodes : [],
+
+    hook : function(){
+        var _self = this;
+        ide.addEventListener("openfile", function() {
+            if (_self.neverShown) {
+                setTimeout(function() {
+                    ext.initExtension(_self);
+                }, 1000);
+                _self.neverShown = false;
+            }
+        });
+
+        ide.addEventListener("loadsettings", function(e){
+            var strSettings = e.model.queryValue("auto/focus");
+            if (strSettings) {
+                _self.initialWidth = strSettings;
+            }
+        });
+
+        ide.addEventListener("savesettings", function(e){
+            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/focus/text()");
+            xmlSettings.nodeValue = _self.initialWidth;
+            return true;
+        });
+    },
 
     init : function(amlNode){
         // Create all the elements used here
@@ -52,13 +81,15 @@ module.exports = ext.register("ext/focus/focus", {
 
         this.focusHandleLeft = document.createElement("div");
         this.focusHandleLeft.setAttribute("id", "focusHandleLeft");
-        this.focusHandleLeft.setAttribute("style", "display: none");
+        this.focusHandleLeft.setAttribute("style", "opacity: 0.0");
         document.body.appendChild(this.focusHandleLeft);
 
         this.focusHandleRight = document.createElement("div");
         this.focusHandleRight.setAttribute("id", "focusHandleRight");
-        this.focusHandleRight.setAttribute("style", "display: none");
+        this.focusHandleRight.setAttribute("style", "opacity: 0.0");
         document.body.appendChild(this.focusHandleRight);
+        
+        this.setupHandleListeners();
 
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor)
@@ -77,27 +108,75 @@ module.exports = ext.register("ext/focus/focus", {
         var _self = this;
         vbFocus.addEventListener("resize", function(e) {
             if (_self.isFocused) {
-                // Calculate the position
-                var height = (window.innerHeight-33) + "px"
-                tabEditors.parentNode.$ext.style.height = height;
-                _self.animateFocus.style.height = window.innerHeight + "px";
-                var width = window.innerWidth * this.initialWidth;
-                var widthDiff = (window.innerWidth - width) / 2;
-                tabEditors.parentNode.$ext.style.width = _self.animateFocus.style.width = width + "px";
-                _self.animateFocus.style.left = widthDiff + "px";
+                _self.calculatePositions();
             }
         });
     },
 
-    hook : function(){
+    calculatePositions : function() {
+        // Calculate the position
         var _self = this;
-        ide.addEventListener("openfile", function() {
-            if (_self.neverShown) {
-                setTimeout(function() {
-                    ext.initExtension(_self);
-                }, 1000);
-                _self.neverShown = false;
+        var height = (window.innerHeight-33) + "px";
+        tabEditors.parentNode.$ext.style.height = height;
+        _self.animateFocus.style.height = window.innerHeight + "px";
+        var width = window.innerWidth * _self.initialWidth;
+        var widthDiff = (window.innerWidth - width) / 2;
+        tabEditors.parentNode.$ext.style.width = _self.animateFocus.style.width = width + "px";
+        _self.animateFocus.style.left = widthDiff + "px";
+
+        // Set the resize handle positions
+        _self.focusHandleLeft.style.height = window.innerHeight + "px";
+        _self.focusHandleLeft.style.left = (widthDiff+0) + "px";
+        _self.focusHandleRight.style.height = window.innerHeight + "px";
+        _self.focusHandleRight.style.left = ((widthDiff + width) - 5) + "px";
+    },
+
+    // @TODO implement removeListeners
+    setupHandleListeners : function() {
+        var _self = this;
+
+        this.focusHandleLeft.addEventListener("mousedown", function(e) {
+            _self.browserWidth = window.innerWidth;
+            _self.handleLeftMove = true;
+        });
+
+        this.focusHandleRight.addEventListener("mousedown", function(e) {
+            _self.browserWidth = window.innerWidth;
+            _self.handleRightMove = true;
+        });
+
+        document.addEventListener("mousemove", function(e) {
+            if (_self.isFocused) {
+                // Now resize those love handles!
+                function afterCalculation() {
+                    if (_self.initialWidth < 0.4)
+                        _self.initialWidth = 0.4;
+                    else if (_self.initialWidth > 0.95)
+                        _self.initialWidth = 1.0;
+                    _self.calculatePositions();
+                    apf.layout.forceResize(tabEditors.parentNode.$ext);
+                }
+                if (_self.handleLeftMove) {
+                    _self.initialWidth = 1.0 - ((e.clientX * 2)/_self.browserWidth);
+                    afterCalculation();
+                }
+                else if (_self.handleRightMove) {
+                    var fakeLeftCalc = _self.browserWidth - e.clientX;
+                    _self.initialWidth = 1.0 - ((fakeLeftCalc * 2)/_self.browserWidth);
+                    afterCalculation();
+                }
             }
+        });
+
+        document.addEventListener("mouseup", function() {
+            if (!_self.isFocused)
+                return;
+
+            if (_self.handleLeftMove || _self.handleRightMove)
+                settings.save();
+            _self.handleLeftMove = false;
+            _self.handleRightMove = false;
+            apf.layout.forceResize();
         });
     },
 
@@ -180,12 +259,26 @@ module.exports = ext.register("ext/focus/focus", {
 
                 _self.isFocused = true;
 
-                // Frustratingly, Firmin does not reset the style attribute
-                // after applying these properties, so we must do it ourselves
+                // Frustratingly, Firmin does not remove the csstransform attributes
+                // after the animation is complete, so we must do it ourselves
                 var astyles = "display:block;top:0;height:" + afHeight + ";left:" + leftOffset + ";width:" + afWidth + "px";
                 _self.animateFocus.setAttribute("style", astyles);
 
                 apf.layout.forceResize();
+
+                Firmin.animate(_self.focusHandleLeft, {
+                    opacity : 1.0,
+                    timingFunction: "ease-in-out"
+                }, 0.7).animate({
+                    opacity : 0.0
+                }, 0.5);
+
+                Firmin.animate(_self.focusHandleRight, {
+                    opacity : 1.0,
+                    timingFunction: "ease-in-out"
+                }, 0.7).animate({
+                    opacity : 0.0
+                }, 0.5);
 
                 setTimeout(function() {
                     ceEditor.focus();
@@ -199,7 +292,6 @@ module.exports = ext.register("ext/focus/focus", {
             }, slow ? 3.5 : 0.5);
         }
 
-        // @TODO update this
         else {
             this.isFocused = true;
             vbFocus.show();
@@ -212,6 +304,33 @@ module.exports = ext.register("ext/focus/focus", {
             var astyles = "display:block;top:0;height:" + afHeight + ";left:" + leftOffset + ";width:" + afWidth + "px";
             this.animateFocus.setAttribute("style", astyles);
 
+            _self.focusHandleLeft.style.opacity = "1.0";
+            _self.focusHandleRight.style.opacity = "1.0";
+
+            setTimeout(function() {
+                apf.tween.single(_self.focusHandleLeft, {
+                    type     : "opacity",
+                    anim     : apf.tween.easeInOutCubic,
+                    from     : 1.0,
+                    to       : 0.0,
+                    steps    : 8,
+                    interval : 20,
+                    control  : (this.control = {}),
+                    onfinish : function(){
+                    }
+                });
+                apf.tween.single(_self.focusHandleRight, {
+                    type     : "opacity",
+                    anim     : apf.tween.easeInOutCubic,
+                    from     : 1.0,
+                    to       : 0.0,
+                    steps    : 8,
+                    interval : 20,
+                    control  : (this.control = {}),
+                    onfinish : function(){
+                    }
+                });
+            }, 700);
             apf.layout.forceResize();
 
             setTimeout(function() {
@@ -231,6 +350,11 @@ module.exports = ext.register("ext/focus/focus", {
 
         btnFocusFullscreen.setAttribute("class", "notfull");
         this.isFocused = false;
+
+        this.focusHandleLeft.style.opacity = "0.0";
+        this.focusHandleRight.style.opacity = "0.0";
+
+        tabEditors.parentNode.$ext.style.width = "100%";
 
         if (this.checkBrowserCssTransforms()) {
             // Get the destination values
@@ -265,6 +389,7 @@ module.exports = ext.register("ext/focus/focus", {
                     apf.layout.forceResize(tabEditors.parentNode.$ext);
                 }, 100);
             });
+
             Firmin.animate(vbFocus.$ext, {
                 opacity: "0"
             }, slow ? 3.5 : 0.5, function() {

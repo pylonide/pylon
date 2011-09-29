@@ -37,8 +37,26 @@ BODY {
 #focusHandleRight, #focusHandleLeft {
     position: absolute;
     z-index: 99999;
-    width: 3px;
-    background: red;
+    width: 5px;
+    background: transparent;
+    cursor: ew-resize;
+    opacity: 0;
+}
+
+#focusHandleLeft {
+    background-image: linear-gradient(right , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+    background-image: -o-linear-gradient(right , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+    background-image: -moz-linear-gradient(right , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+    background-image: -webkit-linear-gradient(right , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+    background-image: -ms-linear-gradient(right , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+}
+
+#focusHandleRight {
+    background-image: linear-gradient(left , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+    background-image: -o-linear-gradient(left , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+    background-image: -moz-linear-gradient(left , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+    background-image: -webkit-linear-gradient(left , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+    background-image: -ms-linear-gradient(left , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
 }
 
 .vbfocus {
