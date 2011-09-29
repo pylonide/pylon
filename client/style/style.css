@@ -54,7 +54,30 @@ BODY {
     color : #666;
 }
 
-.relative{
+.draganddrop {
+    position: absolute;
+    z-index: 99999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: yellow;
+    opacity: 0;
+    visibility: hidden;
+    color: #000;
+    -webkit-transition: opacity 0.25s ease-out;
+    -moz-transition: opacity 0.25s ease-out;
+    -ms-transition: opacity 0.25s ease-out;
+    -o-transition: opacity 0.25s ease-out;
+    transition: opacity 0.25s ease-out;
+}
+
+.draganddrop.over {
+    opacity: .35;
+    visibility: visible;
+}
+
+.relative {
     position : relative;
 }
 
