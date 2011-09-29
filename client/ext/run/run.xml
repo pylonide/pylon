@@ -16,6 +16,42 @@
         <a:item onclick="require('ext/run/run').showRunConfigs(true)">Run Configurations ...</a:item>
     </a:menu>
     
+    <a:hbox id="tbDebugNav" padding="3" edge="1 3 0" visible="false">
+        <div class="expand-panel-bg"></div>
+        <a:button tooltip="Stop"
+          icon     = "stop.png"
+          skin     = "c9-sidepanelsbutton"
+          onclick  = "require('ext/run/run').stop()"
+          disabled = "{!stProcessRunning.active and 1}" />
+        <a:button id="btnResume" tooltip="Resume"
+          icon     = "play.png"
+          onclick  = "dbg.continueScript();"
+          skin     = "c9-sidepanelsbutton"
+          disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+        <a:button  tooltip="Suspend"
+          skin     = "c9-sidepanelsbutton"
+          icon     = "pause.png"
+          onclick  = "dbg.suspend();"
+          disabled = "{!stDebugProcessRunning.active or !stRunning.active}"/>
+        <a:divider skin="c9-divider" />
+        <a:button id="btnStepInto" tooltip="Step Into"
+          icon     = "stepinto.png" 
+          skin     = "c9-sidepanelsbutton"
+          onclick  = "dbg.stepInto();" 
+          disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+        <a:button id="btnStepOver" tooltip="Step Over"
+          icon     = "step.png"
+          skin     = "c9-sidepanelsbutton"
+          onclick  = "dbg.stepNext();"
+          disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+        <a:button id="btnStepOut" tooltip="Step Out"
+          icon     = "stepback.png" 
+          skin     = "c9-sidepanelsbutton"
+          onclick  = "dbg.stepOut();"
+          disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+        <a:divider skin="c9-divider" />
+    </a:hbox>
+    
     <a:window id="winRunCfgNew" 
       title="New Run Configuration" 
       model="{lstRunCfg.selected}"
