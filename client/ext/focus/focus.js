@@ -55,9 +55,8 @@ module.exports = ext.register("ext/focus/focus", {
 
         ide.addEventListener("loadsettings", function(e){
             var strSettings = e.model.queryValue("auto/focus");
-            if (strSettings) {
+            if (strSettings)
                 _self.initialWidth = strSettings;
-            }
         });
 
         ide.addEventListener("savesettings", function(e){
