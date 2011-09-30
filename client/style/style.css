@@ -160,14 +160,12 @@ BODY {
     background-image: -moz-linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
     background-image: -webkit-linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
     background-image: -ms-linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
+    right: -3px
 }
 .dockcol .basic .hbox {
     
 }
-.dockcol .basic .hbox > div {
-    margin-bottom: 5px;
-    margin-top: 2px;
-}
+
 .unselectable {
     -moz-user-select: -moz-none;
     -khtml-user-select: none;
