@@ -46,6 +46,9 @@
         .basic{
             position : relative;
         }
+        .dockwin_runbtns .basic {
+            margin-top: -3px;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -242,13 +245,11 @@
 
         .docksection{
             /*border : 1px solid #fff;*/
-            border-bottom : 1px solid #404042;
+            border-bottom: 1px solid #040404;
+            -moz-box-shadow    : 0 1px 0 #404042;
+            -webkit-box-shadow : 0 1px 0 #404042;
+            box-shadow: 0 1px 0 #404042;
         }
-        .docksection>:first-child {
-            border-bottom : 1px solid #040404;
-        }
-        
-      
     ]]></a:style>
 
     <a:presentation>
@@ -4263,7 +4264,11 @@
             width: 11px;
         }
     ]]></a:style>
-
+    <a:style condition="apf.isChrome"><![CDATA[
+        .dockwin_runbtns {
+            margin-top : 13px;
+        }
+    ]]></a:style>
     <a:presentation>
         <a:main container=".">
             <div class="dockwin_runbtns">
@@ -4274,6 +4279,7 @@
         </a:main>
     </a:presentation>
 </a:menu>
+
 <a:menu name="dockwindowbasic">
     <a:style><![CDATA[
         .dockwindowbasic{
@@ -5831,7 +5837,6 @@
             border-right: 1px solid #1E1E1E;
         }
     ]]></a:style>
-
     <a:presentation>
         <a:main handle=".">
             <div class="splitter">
