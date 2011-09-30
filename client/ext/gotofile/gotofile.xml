@@ -8,6 +8,7 @@
       height    = "300"
       resizable = "true"
       kbclose   = "true"
+      zindex    = "999999"
       onshow    = "
         txtGoToFile.select();
       ">
