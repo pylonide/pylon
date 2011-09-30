@@ -31,12 +31,14 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
 
         this.nodes.push(trFiles.$ext, tabEditors.$ext);
         var dropbox = document.createElement("div");
-        
         apf.setStyleClass(dropbox, "draganddrop");
-        dropbox.innerHtml = "Drop files here to upload";
+        
+        var label = document.createElement("span");
+        label.textContent = "Drop files here to upload";
+        dropbox.appendChild(label);
         
         this.nodes.forEach(function(holder) {
-            dropbox = holder.dropbox = dropbox.cloneNode(false);
+            dropbox = holder.dropbox = dropbox.cloneNode(true);
             holder.appendChild(dropbox);
             
             holder.addEventListener("dragenter", dragEnter, false);
@@ -70,6 +72,46 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         function noopHandler(e) {
             apf.stopEvent(e);
         }
+        
+        this.StatusBar = {
+            $init: function() {
+                if (!sbMain)
+                    return;
+                
+                sbMain.firstChild.appendChild(
+                    new apf.progressbar({
+                        id: "pbMain",
+                        anchors: "0 0 0 5",
+                        //autohide: true
+                    })
+                );
+            },
+            start: function() {
+                if (!sbMain.visible)
+                    sbMain.show();
+            },
+            end: function() {
+                sbMain.hide();
+                
+                if (sbMain.childNodes)
+                    sbMain.childNodes[0].setAttribute("caption", "");
+            },
+            upload: function(file) {
+                if (sbMain.childNodes) {
+                    var caption = "Uploading file " + (file.name || "") + "(" + (file.type || "") + ")";
+                    sbMain.childNodes[0].setAttribute("caption", caption);
+                }
+                pbMain.clear();
+                pbMain.start();
+                
+            },
+            progress: function(value) {
+                pbMain.setValue(value);
+            }
+        };
+            
+        this.StatusBar.$init();
+        apf.addEventListener("http.uploadprogress", this.onProgress.bind(this));
     },
     
     onBeforeDrop: function(e) {
@@ -115,13 +157,14 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         var files = e.dataTransfer.files;
         
         apf.asyncForEach(files, function(file, next) {
+            _self.StatusBar.start();
             /** Processing ... */
             var reader = new FileReader();
             /** Init the reader event handlers */
             reader.onloadend = _self.onLoad.bind(_self, file, next);
             /** Begin the read operation */
             reader.readAsBinaryString(file);
-        }, function() {});
+        }, this.StatusBar.end);
     },
     
     onLoad: function(file, next, e) {
@@ -135,6 +178,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         var path     = node.getAttribute("path");
         var filename = file.name;
         var index    = 0;
+        var _self    = this;
 
         function check(exists) {
             if (exists) {
@@ -145,13 +189,14 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         }
         
         function send() {
-            oBinary = {filename: file.name, filesize: file.size/*, filedataname: file.name, multipart: true*/};
+            oBinary = {filename: file.name, filesize: file.size, blob: file/*, filedataname: file.name, multipart: true*/};
             /**
              * jsDav still does not implement multipart content parsing.
              * Also _only_ Firefox 3.6+ implements XHR.sendAsBinary() so far,
              * therefore we are forced to send data encoded as base64 to make this work
              */
             fs.webdav.write(path + "/" + file.name, e.target.result, false, oBinary, complete);
+            _self.StatusBar.upload(file);
         }
         
         function complete(data, state, extra) {
@@ -190,12 +235,19 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         fs.exists(path + "/" + file.name, check);
     },
     
+    onProgress: function(o) {
+        var e = o.extra;
+        var total = (e.loaded / e.total) * 100;
+        this.StatusBar.progress(total.toFixed());
+    },
+    
     enable: function() {
         var _self = this;
         this.nodes.each(function(item) {
             for (var e in _self.dragStateEvent)
                 item.addEventListener(e, _self.dragStateEvent[e], false);
         });
+        apf.addEventListener("http.uploadprogress", this.onProgress);
     },
     
     disable: function() {
@@ -204,6 +256,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
             for (var e in _self.dragStateEvent)
                 item.removeEventListener(e, _self.dragStateEvent[e], false);
         });
+        apf.removeEventListener("http.uploadprogress", this.onProgress);
     },
     
     destroy: function() {
@@ -214,6 +267,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
                 item.removeEventListener(e, _self.dragStateEvent[e], false);
         });
         this.nodes = [];
+        apf.removeEventListener("http.uploadprogress", this.onProgress);
     }
 });
 
