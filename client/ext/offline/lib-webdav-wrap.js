@@ -141,7 +141,12 @@ var WebdavWrapper = module.exports = function(webdav, sync, fIdent, callback) {
     
     this.handleError = function(callback, error) {
         callback(null, apf.ERROR, error ? {message: error.code} : {});
-    }
+    };
+    
+    this.setAttribute = function(args) {
+        this.realWebdav.setAttribute.apply(this.realWebdav, arguments);
+    };
+    
 }).call(WebdavWrapper.prototype = new apf.Class().$init());
 
 });
