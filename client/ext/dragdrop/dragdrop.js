@@ -26,8 +26,10 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
     nodes: [],
         
     init: function() {
+        /*apf.hasDragAndDrop = ("ondragstart" in document && "ondrop" in document);;
         if (!apf.hasDragAndDrop)
             return;
+        */
 
         this.nodes.push(trFiles.$ext, tabEditors.$ext);
         var dropbox = document.createElement("div");
