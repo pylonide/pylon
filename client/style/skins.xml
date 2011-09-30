@@ -4628,12 +4628,6 @@
         }
     ]]></a:style>
 
-    <a:style condition="apf.isChrome"><![CDATA[
-        .dockwin_runbtns {
-            margin-top : 13px;
-        }
-    ]]></a:style>
-
     <a:presentation>
         <a:main container=".">
             <div class="dockwin_runbtns">
