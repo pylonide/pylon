@@ -309,11 +309,14 @@ module.exports = ext.register("ext/console/console", {
     onMessage: function(e) {
         var res,
             message = e.message;
-            
+
         if (message.type == "node-data")
             return Logger.logNodeStream(message.data, message.stream, true);
-        
+
         if (message.type != "result")
+            return;
+            
+        if (message.subtype == "quickopen")
             return;
 
         switch (message.subtype) {
@@ -359,6 +362,8 @@ module.exports = ext.register("ext/console/console", {
                 //console.log("error: ", message.body);
                 Logger.log(message.body);
                 Logger.log("", "divider");
+                break;
+            case "quickopen":
                 break;
             /*case "git":
             case "npm":
