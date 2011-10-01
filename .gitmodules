@@ -31,3 +31,9 @@
 [submodule "support/uglify-js"]
 	path = support/uglify-js
 	url = git://github.com/ajaxorg/UglifyJS.git
+[submodule "client/ext/gittools/gitblame"]
+	path = client/ext/gittools/gitblame
+	url = git://github.com/mattpardee/GitBlameParserJS.git
+[submodule "client/ext/gittools/gitlog"]
+	path = client/ext/gittools/gitlog
+	url = git://github.com/mattpardee/GitLogParserJS.git
