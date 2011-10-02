@@ -26,10 +26,8 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
     nodes: [],
         
     init: function() {
-        /*apf.hasDragAndDrop = ("ondragstart" in document && "ondrop" in document);;
-        if (!apf.hasDragAndDrop)
-            return;
-        */
+        //if (!apf.hasDragAndDrop)
+        //    return;
 
         this.nodes.push(trFiles.$ext, tabEditors.$ext);
         var dropbox = document.createElement("div");
@@ -117,7 +115,8 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
     },
     
     onBeforeDrop: function(e) {
-        if (!(window.File && window.FileReader)) {
+        // @see Please, go to line 176 for clarification.
+        if (!(window.File && window.FileReader/* && window.FormData*/)) {
             util.alert(
                 "Could not upload file(s)", "An error occurred while dropping this file(s)",
                 "Your browser does not offer support for drag and drop for file uploads. " +
@@ -156,16 +155,33 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
     
     onDrop: function(e) {
         var _self = this;
-        var files = e.dataTransfer.files;
+        var dt = e.dataTransfer;
+        var files = dt.files;
         
         apf.asyncForEach(files, function(file, next) {
             _self.StatusBar.start();
-            /** Processing ... */
-            var reader = new FileReader();
-            /** Init the reader event handlers */
-            reader.onloadend = _self.onLoad.bind(_self, file, next);
-            /** Begin the read operation */
-            reader.readAsBinaryString(file);
+            /** Chrome, Firefox */
+            if (apf.hasFileApi) {
+                /** Processing ... */
+                var reader = new FileReader();
+                /** Init the reader event handlers */
+                reader.onloadend = _self.onLoad.bind(_self, file, next);
+                /** Begin the read operation */
+                reader.readAsBinaryString(file);
+            }
+            else {
+                /** Safari >= 5.0.2 and Safari < 6.0 */
+                _self.onLoad(file, next, _self.getFormData(file));
+                /**
+                 * @fixme Safari for Mac is buggy when sending XHR using FormData
+                 * Problem in their source code causing sometimes `WebKitFormBoundary`
+                 * to be added to the request body, making it imposible to construct
+                 * a multipart message manually and to construct headers.
+                 * 
+                 * @see http://www.google.es/url?sa=t&source=web&cd=2&ved=0CCgQFjAB&url=https%3A%2F%2Fdiscussions.apple.com%2Fthread%2F2412523%3Fstart%3D0%26tstart%3D0&ei=GFWITr2BM4SEOt7doNUB&usg=AFQjCNF6WSGeTkrpaqioUyEswi9K2xhZ8g
+                 * @todo For safari 6.0 seems like FileReader will be present
+                 */
+            }
         }, this.StatusBar.end);
     },
     
@@ -187,17 +203,22 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
                 filename = file.name + "." + index++;
                 fs.exists(path + "/" + filename, check);
             } else
-                send();
+                upload();
         }
         
-        function send() {
-            oBinary = {filename: file.name, filesize: file.size, blob: file/*, filedataname: file.name, multipart: true*/};
-            /**
-             * jsDav still does not implement multipart content parsing.
-             * Also _only_ Firefox 3.6+ implements XHR.sendAsBinary() so far,
-             * therefore we are forced to send data encoded as base64 to make this work
-             */
-            fs.webdav.write(path + "/" + file.name, e.target.result, false, oBinary, complete);
+        function upload() {
+            var data = e instanceof FormData ? e : e.target.result;
+            var oBinary = {
+                filename: file.name,
+                filesize: file.size,
+                blob: file
+            };
+            /*if (data instanceof FormData) {
+                oBinary.filedataname = file.name;
+                oBinary.multipart = true;
+            }*/
+            
+            fs.webdav.write(path + "/" + file.name, data, false, oBinary, complete);
             _self.StatusBar.upload(file);
         }
         
@@ -233,7 +254,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
             });
         }
         
-        /** Check if path already exists, otherwise continue with send() */
+        /** Check if path already exists, otherwise continue with upload() */
         fs.exists(path + "/" + file.name, check);
     },
     
@@ -241,6 +262,13 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         var e = o.extra;
         var total = (e.loaded / e.total) * 100;
         this.StatusBar.progress(total.toFixed());
+    },
+    
+    getFormData: function(file) {
+        var form = new FormData();
+        form.append("upload", file);
+        
+        return form;
     },
     
     enable: function() {
