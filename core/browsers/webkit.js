@@ -56,6 +56,23 @@ apf.runWebkit = function(){
     }
     //#endif
     
+    //#ifdef __SUPPORT_CHROME
+    if (XMLHttpRequest.prototype.sendAsBinary === undefined) {
+        /**
+         * Binary support for Chrome 7+ which implements [ECMA-262] typed arrays
+         * @see http://www.khronos.org/registry/typedarray/specs/latest/
+         */
+        if (window.ArrayBuffer) {
+            XMLHttpRequest.prototype.sendAsBinary = function(string) {
+                var bytes = Array.prototype.map.call(string, function(c) {
+                    return c.charCodeAt(0) & 0xff;
+                });
+                this.send(new Uint8Array(bytes).buffer);
+            };
+        }
+    }
+    //#endif
+    
     //#ifdef __PARSER_XPATH
     
     // #ifdef __DEPRECATED
