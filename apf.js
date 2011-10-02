@@ -372,6 +372,7 @@ var apf = {
         this.supportOverflowComponent  = apf.isIE;
         // http://robertnyman.com/2010/12/02/css3-flexible-box-layout-module-aka-flex-box-introduction-and-demostest-cases/
         this.hasFlexibleBox            = apf.versionGecko >= 3 || (apf.isWebkit && apf.versionWebkit >= 3.2);
+        this.hasFileApi                = !!(window["File"] && window["FileReader"] && window["Blob"] && window["FileError"]);
         this.hasEventSrcElement        = apf.isIE;
         this.canHaveHtmlOverSelects    = !apf.isIE6 && !apf.isIE5;
         this.hasInnerText              = apf.isIE;
