@@ -315,6 +315,9 @@ module.exports = ext.register("ext/console/console", {
         
         if (message.type != "result")
             return;
+            
+        if (message.subtype == "quickopen")
+            return;
 
         switch (message.subtype) {
             case "commandhints":

@@ -23,6 +23,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     type    : ext.GENERAL,
     markup  : markup,
     offline : 0,
+    command : "quickopen",
+    lastSearchTerm : "",
     commands : {
         "gotofile": {hint: "search for a filename and jump to it"}
     },
@@ -32,6 +34,15 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 
     hook : function(){
         var _self = this;
+        
+        ide.addEventListener("socketConnect", function(e){
+            ide.socket.send(JSON.stringify({
+                command : _self.command,
+                subcommand : "load"
+            }));
+        });
+
+        ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
         this.nodes.push(
             mnuFile.insertBefore(new apf.item({
@@ -57,11 +68,25 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     },
 
     init : function() {
-        txtGoToFile.addEventListener("keydown", function(e){
+        var _self = this;
+        txtGoToFile.addEventListener("keyup", function(e){
+            setTimeout(function() {
             if (txtGoToFile.value == "") {
+                mdlGoToFile.clear();
                 return;
             }
             
+            if (txtGoToFile.value.length >= 3) {
+                var term = txtGoToFile.value;
+                if (term != _self.lastSearchTerm) {
+                    _self.searchFiles(term);
+                    _self.lastSearchTerm = term;
+                }
+            }
+            });
+        });
+
+        txtGoToFile.addEventListener("keydown", function(e){
             if (e.keyCode == 13){
                 var node = trFiles.xmlRoot.selectSingleNode("folder[1]");
                 mdlGoToFile.load("{davProject.report('" + node.getAttribute("path")
@@ -98,6 +123,34 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         this.nodes.push(winGoToFile);
     },
     
+    searchFiles : function(term) {
+        var rx = new RegExp('"([^"]*' + term + '[^"]*)"', 'gi');
+        var i = 0, results = '<d:multistatus xmlns:d="DAV:"><d:response>';
+        var resArr = [];
+        while (result = rx.exec(this.filesTestAgainst)) {
+            resArr.push(result[1]);
+            if (++i >= 50)
+                break;
+        }
+
+        var rankedArr = [], unRankedArr = [];
+        var termLwr = term.toLowerCase();
+        for (i = 0; i < resArr.length; i++) {
+            var filename = apf.getFilename(resArr[i]).toLowerCase();
+            var matchIndex = filename.indexOf(termLwr);
+            if (matchIndex != -1)
+                rankedArr.splice(matchIndex, 0, resArr[i]);
+            else
+                unRankedArr.push(resArr[i]);
+        }
+        rankedArr.length || unRankedArr.length ? results += "<d:href>" : "";
+        results += rankedArr.join("</d:href><d:href>");
+        results += unRankedArr.join("</d:href><d:href>");
+        rankedArr.length || unRankedArr.length ? results += "</d:href>" : "";
+        results += '</d:response></d:multistatus>';
+        mdlGoToFile.load(results);
+    },
+    
     gotofile : function(){
         this.toggleDialog(true);
         return false;
@@ -111,6 +164,28 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         else
             winGoToFile.hide();
         return false;
+    },
+    
+    onMessage: function(e) {
+        var message = e.message;
+        //console.log(message);
+
+        if (message.type != "result" && message.subtype != this.command)
+            return;
+
+        var arr = message.body.out;
+        /*r slash = apf.isWin ? "\\" : "/";
+        
+        for (var a in arr) {
+            if (typeof arr[a] != "string")
+                continue;
+            var lastSlashPos = arr[a].lastIndexOf(slash) + 1;
+            var file = arr[a].substr(lastSlashPos);
+            this.filesTestAgainst += "\"" + file + ":" + arr[a] + "\"";
+        }*/
+        this.filesTestAgainst = "\"" + message.body.out.join("\"\"") + "\"";
+        //console.log(this.filesTestAgainst);
+        //console.log(message.body.out);
     },
 
     enable : function(){
