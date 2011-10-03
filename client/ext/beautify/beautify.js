@@ -30,7 +30,7 @@ module.exports = ext.register("ext/beautify/beautify", {
     commands: {
         "beautify": {
             hint: "reformat selected JavaScript code in the editor",
-            msg: "Beaufiying selection."
+            msg: "Beautifying selection."
         }
     },
 
