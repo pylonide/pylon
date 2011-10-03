@@ -25,8 +25,14 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     commands : {
         "quicksearch": {hint: "quickly search for a string inside the active document, without further options (see 'search')"},
         "find": {hint: "open the quicksearch dialog to quickly search for a phrase"},
-        "findnext": {hint: "search for the next occurrence of the search query your entered last"},
-        "findprevious": {hint: "search for the previous occurrence of the search query your entered last"}
+        "findnext": {
+            hint: "search for the next occurrence of the search query your entered last",
+            msg: "Navigating to next match."
+        },
+        "findprevious": {
+            hint: "search for the previous occurrence of the search query your entered last",
+            msg: "Navigating to previous match."
+        }
     },
     hotitems: {},
 
