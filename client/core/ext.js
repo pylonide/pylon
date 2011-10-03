@@ -184,11 +184,19 @@ module.exports = ext = {
     execCommand: function(cmd, data) {
         cmd = (cmd || "").trim();
         var oCmd = this.commandsLut[cmd];
-        if (!oCmd || !oCmd.ext)
-            return;
+        if (!oCmd || !oCmd.ext) {
+            return require(["ext/console/console"], function(oExt) {
+                oExt.write("Command not found.");
+            });
+        }
         var oExt = require(oCmd.ext);
-        if (oExt && typeof oExt[cmd] == "function")
+        if (oExt && typeof oExt[cmd] === "function") {
+            require(["ext/console/console"], function(consoleExt) {
+                if (oExt.commands[cmd].msg)
+                    consoleExt.write(oExt.commands[cmd].msg);
+            });
             return oExt[cmd](data);
+        }
     },
 
     setLayoutMode : function(mode){
