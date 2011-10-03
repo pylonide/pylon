@@ -71,18 +71,16 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         var _self = this;
         txtGoToFile.addEventListener("keyup", function(e){
             setTimeout(function() {
-            if (txtGoToFile.value == "") {
-                mdlGoToFile.clear();
-                return;
-            }
-            
-            if (txtGoToFile.value.length >= 3) {
+                if (txtGoToFile.value == "") {
+                    mdlGoToFile.clear();
+                    return;
+                }
+
                 var term = txtGoToFile.value;
                 if (term != _self.lastSearchTerm) {
                     _self.searchFiles(term);
                     _self.lastSearchTerm = term;
                 }
-            }
             });
         });
 
