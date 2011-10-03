@@ -143,19 +143,22 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             else
                 unRankedArr.push(resArr[i]);
         }
-        rankedArr.length || unRankedArr.length ? results += "<d:href>" : "";
+
+        rankedArr.length ? results += "<d:href>" : "";
         results += rankedArr.join("</d:href><d:href>");
+        rankedArr.length ? results += "</d:href>" : "";
+        unRankedArr.length ? results += "<d:href>" : "";
         results += unRankedArr.join("</d:href><d:href>");
-        rankedArr.length || unRankedArr.length ? results += "</d:href>" : "";
+        unRankedArr.length ? results += "</d:href>" : "";
         results += '</d:response></d:multistatus>';
         mdlGoToFile.load(results);
     },
-    
+
     gotofile : function(){
         this.toggleDialog(true);
         return false;
     },
-    
+
     toggleDialog: function(forceShow) {
         ext.initExtension(this);
         
@@ -165,27 +168,15 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             winGoToFile.hide();
         return false;
     },
-    
+
     onMessage: function(e) {
         var message = e.message;
-        //console.log(message);
 
         if (message.type != "result" && message.subtype != this.command)
             return;
 
         var arr = message.body.out;
-        /*r slash = apf.isWin ? "\\" : "/";
-        
-        for (var a in arr) {
-            if (typeof arr[a] != "string")
-                continue;
-            var lastSlashPos = arr[a].lastIndexOf(slash) + 1;
-            var file = arr[a].substr(lastSlashPos);
-            this.filesTestAgainst += "\"" + file + ":" + arr[a] + "\"";
-        }*/
         this.filesTestAgainst = "\"" + message.body.out.join("\"\"") + "\"";
-        //console.log(this.filesTestAgainst);
-        //console.log(message.body.out);
     },
 
     enable : function(){
