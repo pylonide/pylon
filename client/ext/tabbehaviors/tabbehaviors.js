@@ -51,7 +51,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         this.nodes.push(
             mnuTabs.appendChild(new apf.item({
                 caption : "Reveal in File Tree",
-                onclick : _self.revealtab
+                onclick : function() {
+                    _self.revealtab();
+                }
             })),
             mnuTabs.appendChild(new apf.item({
                 caption : "Close Tab",
@@ -75,7 +77,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 childNodes : [
                     new apf.item({
                         caption : "Reveal in File Tree",
-                        onclick : _self.revealtab
+                        onclick : function() {
+                            _self.revealtab(tabEditors.contextPage);
+                        }
                     }),
                     new apf.item({
                         caption : "Close Tab",
@@ -96,7 +100,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 ]
             }))
         );
-        this.hotitems["revealtab"] = [this.nodes[0]];
+        this.hotitems["revealtab"]     = [this.nodes[0]];
         this.hotitems["closetab"]      = [this.nodes[1]];
         this.hotitems["closealltabs"]  = [this.nodes[2]];
         this.hotitems["closeallbutme"] = [this.nodes[3]];
@@ -232,25 +236,27 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
     
     /**
-     * Gain focus on the file tree item's current selected tab.
+     * Scrolls to the selected tab's file path in the "Project Files" tree
      * 
      * Works by Finding the node related to the active tab in the tree, and
      * unfolds its parent folders until the node can be reached by an xpath
      * selector and focused, to finally scroll to the selected node.
      */
-    revealtab: function(e) {
-        if (!tabEditors.getPage())
-            return;
-            
-        var page = tabEditors.getPage();
+    revealtab: function(page) {
+        if (!page)
+            page = tabEditors.getPage();
+        if (!page)
+            return false;
+
         var node = trFiles.queryNode('//file[@path="' + page.name + '"]');
-        
+
         if (node) {
             trFiles.expandAndSelect(node);
             trFiles.focus();
             scrollToFile();
         }
         else {
+            page = tabEditors.getPage();
             var parts = page.name.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
             var file = parts.pop();
             var pathList = ["folder[1]"];
