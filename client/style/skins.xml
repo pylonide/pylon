@@ -6227,7 +6227,7 @@
             <div class="editor_bg">
                 <div class="editor_bg_message-top">
                     Invite people to this project by sharing the URL with them.
-                    <span>To access private projects both parties must have a Premium Account.</span>
+<!--                    <span>To access private projects both parties must have a Premium Account.</span>-->
                     <div class="editor_divider"></div>
                 </div>
                 <div class="editor_bg_content">
