@@ -1,10 +1,10 @@
 /**
- * Fullscreen focus for the editor tabs
+ * Zen mode
  * 
  * @TODO
  * - Disabling the extension doesn't call the disable() function
- * - Exit focus mode when doing any keybinding operation (except openfiles, quicksearch, gotoline)
- * - While animating, disable ability to toggle focus mode (better: cancel and reverse the operation)
+ * - Exit zen mode when doing any keybinding operation (except openfiles, quicksearch, gotoline)
+ * - While animating, disable ability to toggle zen mode (better: cancel and reverse the operation)
  * 
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -12,16 +12,18 @@
  
 define(function(require, exports, module) {
 
+require("ext/zen/firmin-all-min");
+
 var ext = require("core/ext");
 var ide = require("core/ide");
 var canon = require("pilot/canon");
 var editors = require("ext/editors/editors");
 var settings = require("ext/settings/settings");
-var markup = require("text!ext/focus/focus.xml");
-var skin = require("text!ext/focus/skin.xml");
+var markup = require("text!ext/zen/zen.xml");
+var skin = require("text!ext/zen/skin.xml");
 
-module.exports = ext.register("ext/focus/focus", {
-    name     : "Editor Focus",
+module.exports = ext.register("ext/zen/zen", {
+    name     : "Zen mode",
     dev      : "Ajax.org",
     alone    : true,
     type     : ext.GENERAL,
@@ -36,8 +38,8 @@ module.exports = ext.register("ext/focus/focus", {
     handleRightMove : false,
 
     commands : {
-        "focus": {hint: "toggle editor focus mode"},
-        "focusslow": {hint: "toggle editor focus mode in slow-motion"}
+        "zen": {hint: "toggle zen mode"},
+        "zenslow": {hint: "toggle zen mode in slow-motion"}
     },
 
     nodes : [],
@@ -54,13 +56,13 @@ module.exports = ext.register("ext/focus/focus", {
         });
 
         ide.addEventListener("loadsettings", function(e){
-            var strSettings = e.model.queryValue("auto/focus");
+            var strSettings = e.model.queryValue("auto/zen");
             if (strSettings)
                 _self.initialWidth = strSettings;
         });
 
         ide.addEventListener("savesettings", function(e){
-            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/focus/text()");
+            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/zen/text()");
             xmlSettings.nodeValue = _self.initialWidth;
             return true;
         });
@@ -68,44 +70,51 @@ module.exports = ext.register("ext/focus/focus", {
 
     init : function(amlNode){
         // Create all the elements used here
-        this.animateFocus = document.createElement("div");
-        this.animateFocus.setAttribute("id", "animateFocus");
-        this.animateFocus.setAttribute("style", "display: none");
-        document.body.appendChild(this.animateFocus);
+        this.animateZen = document.createElement("div");
+        this.animateZen.setAttribute("id", "animateZen");
+        this.animateZen.setAttribute("style", "display: none");
+        document.body.appendChild(this.animateZen);
 
-        this.animateFocusPosition = document.createElement("div");
-        this.animateFocusPosition.setAttribute("id", "animateFocusPosition");
-        this.animateFocusPosition.setAttribute("style", "display: none");
-        document.body.appendChild(this.animateFocusPosition);
+        this.animateZenPosition = document.createElement("div");
+        this.animateZenPosition.setAttribute("id", "animateZenPosition");
+        this.animateZenPosition.setAttribute("style", "display: none");
+        document.body.appendChild(this.animateZenPosition);
 
-        this.focusHandleLeft = document.createElement("div");
-        this.focusHandleLeft.setAttribute("id", "focusHandleLeft");
-        this.focusHandleLeft.setAttribute("style", "opacity: 0.0");
-        document.body.appendChild(this.focusHandleLeft);
+        this.zenHandleLeft = document.createElement("div");
+        this.zenHandleLeft.setAttribute("id", "zenHandleLeft");
+        this.zenHandleLeft.setAttribute("style", "opacity: 0.0");
+        document.body.appendChild(this.zenHandleLeft);
 
-        this.focusHandleRight = document.createElement("div");
-        this.focusHandleRight.setAttribute("id", "focusHandleRight");
-        this.focusHandleRight.setAttribute("style", "opacity: 0.0");
-        document.body.appendChild(this.focusHandleRight);
-        
+        this.zenHandleRight = document.createElement("div");
+        this.zenHandleRight.setAttribute("id", "zenHandleRight");
+        this.zenHandleRight.setAttribute("style", "opacity: 0.0");
+        document.body.appendChild(this.zenHandleRight);
+
         this.setupHandleListeners();
 
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor)
-            editor.ceEditor.parentNode.appendChild(btnFocusFullscreen);
+            editor.ceEditor.parentNode.appendChild(btnZenFullscreen);
+            
+        vbMain.parentNode.appendChild(new apf.vbox({
+            anchors: "0 0 0 0",
+            id: "vbZen",
+            "class": "vbZen",
+            visible: false
+        }));
 
         // @TODO adjust position based on scrollbar width
         if (!(apf.isChrome && apf.versionChrome >= 14) && !(apf.isSafari && apf.versionSafari >= 5))
-            btnFocusFullscreen.setAttribute("right", "26");
+            btnZenFullscreen.setAttribute("right", "26");
 
         if (apf.isWin)
-            btnFocusFullscreen.setAttribute("right", "28");
+            btnZenFullscreen.setAttribute("right", "28");
 
-        this.animateFocus = document.getElementById("animateFocus");
-        this.animateFocusPosition = document.getElementById("animateFocusPosition");
+        this.animateZen = document.getElementById("animateZen");
+        this.animateZenPosition = document.getElementById("animateZenPosition");
 
         var _self = this;
-        vbFocus.addEventListener("resize", function(e) {
+        vbZen.addEventListener("resize", function(e) {
             if (_self.isFocused) {
                 _self.calculatePositions();
             }
@@ -117,29 +126,29 @@ module.exports = ext.register("ext/focus/focus", {
         var _self = this;
         var height = (window.innerHeight-33) + "px";
         tabEditors.parentNode.$ext.style.height = height;
-        _self.animateFocus.style.height = window.innerHeight + "px";
+        _self.animateZen.style.height = window.innerHeight + "px";
         var width = window.innerWidth * _self.initialWidth;
         var widthDiff = (window.innerWidth - width) / 2;
-        tabEditors.parentNode.$ext.style.width = _self.animateFocus.style.width = width + "px";
-        _self.animateFocus.style.left = widthDiff + "px";
+        tabEditors.parentNode.$ext.style.width = _self.animateZen.style.width = width + "px";
+        _self.animateZen.style.left = widthDiff + "px";
 
         // Set the resize handle positions
-        _self.focusHandleLeft.style.height = window.innerHeight + "px";
-        _self.focusHandleLeft.style.left = (widthDiff+0) + "px";
-        _self.focusHandleRight.style.height = window.innerHeight + "px";
-        _self.focusHandleRight.style.left = ((widthDiff + width) - 5) + "px";
+        _self.zenHandleLeft.style.height = window.innerHeight + "px";
+        _self.zenHandleLeft.style.left = (widthDiff+0) + "px";
+        _self.zenHandleRight.style.height = window.innerHeight + "px";
+        _self.zenHandleRight.style.left = ((widthDiff + width) - 5) + "px";
     },
 
     // @TODO implement removeListeners
     setupHandleListeners : function() {
         var _self = this;
 
-        this.focusHandleLeft.addEventListener("mousedown", function(e) {
+        this.zenHandleLeft.addEventListener("mousedown", function(e) {
             _self.browserWidth = window.innerWidth;
             _self.handleLeftMove = true;
         });
 
-        this.focusHandleRight.addEventListener("mousedown", function(e) {
+        this.zenHandleRight.addEventListener("mousedown", function(e) {
             _self.browserWidth = window.innerWidth;
             _self.handleRightMove = true;
         });
@@ -182,32 +191,32 @@ module.exports = ext.register("ext/focus/focus", {
     /**
      * Method attached to key combination (Cmd/Ctrl + E)
      */
-    focus : function() {
-        this.toggleFullscreenFocus();
+    zen : function() {
+        this.toggleFullscreenZen();
     },
 
     /**
      * Method attached to key combo for slow mode (Shift)
      */
-    focusslow : function() {
-        this.toggleFullscreenFocus({ htmlEvent : { shiftKey : true }});
+    zenslow : function() {
+        this.toggleFullscreenZen({ htmlEvent : { shiftKey : true }});
     },
 
     /**
-     * Method invoked to do the actual toggling of focus mode
-     * Detects if focused or not
+     * Method invoked to do the actual toggling of zen mode
+     * Detects if zened or not
      * 
      * @param {amlEvent} e Event from click
      */
-    toggleFullscreenFocus : function(e) {
+    toggleFullscreenZen : function(e) {
         var shiftKey = false;
         if (e)
             shiftKey = e.htmlEvent.shiftKey;
 
         if (this.isFocused)
-            this.escapeFromFocusMode(shiftKey);
+            this.escapeFromZenMode(shiftKey);
         else
-            this.enterIntoFocusMode(shiftKey);
+            this.enterIntoZenMode(shiftKey);
     },
 
     /**
@@ -223,15 +232,15 @@ module.exports = ext.register("ext/focus/focus", {
     },
 
     /**
-     * Enters the editor into fullscreen/focus mode
+     * Enters the editor into fullscreen/zen mode
      * 
      * @param {boolean} slow Whether to slow down the animation
      */
-    enterIntoFocusMode : function(slow) {
+    enterIntoZenMode : function(slow) {
         var _self = this;
 
         this.saveTabEditorsParentStyles();
-        btnFocusFullscreen.setAttribute("class", "full");
+        btnZenFullscreen.setAttribute("class", "full");
 
         // Calculates the destination position and dimensions of
         // the animated container
@@ -248,7 +257,7 @@ module.exports = ext.register("ext/focus/focus", {
             editors.disableTabResizeEvent();
             this.placeTabIntoAnimationWindow();
 
-            Firmin.animate(this.animateFocus, {
+            Firmin.animate(this.animateZen, {
                 height: afHeight,
                 left: leftOffset,
                 top: "0",
@@ -261,18 +270,18 @@ module.exports = ext.register("ext/focus/focus", {
                 // Frustratingly, Firmin does not remove the csstransform attributes
                 // after the animation is complete, so we must do it ourselves
                 var astyles = "display:block;top:0;height:" + afHeight + ";left:" + leftOffset + ";width:" + afWidth + "px";
-                _self.animateFocus.setAttribute("style", astyles);
+                _self.animateZen.setAttribute("style", astyles);
 
                 apf.layout.forceResize();
 
-                Firmin.animate(_self.focusHandleLeft, {
+                Firmin.animate(_self.zenHandleLeft, {
                     opacity : 1.0,
                     timingFunction: "ease-in-out"
                 }, 0.7).animate({
                     opacity : 0.0
                 }, 0.5);
 
-                Firmin.animate(_self.focusHandleRight, {
+                Firmin.animate(_self.zenHandleRight, {
                     opacity : 1.0,
                     timingFunction: "ease-in-out"
                 }, 0.7).animate({
@@ -285,29 +294,29 @@ module.exports = ext.register("ext/focus/focus", {
                 }, 100);
             });
 
-            vbFocus.show();
-            Firmin.animate(vbFocus.$ext, {
+            vbZen.show();
+            Firmin.animate(vbZen.$ext, {
                 opacity: "1"
             }, slow ? 3.5 : 0.5);
         }
 
         else {
             this.isFocused = true;
-            vbFocus.show();
-            vbFocus.$ext.style.opacity = "1";
+            vbZen.show();
+            vbZen.$ext.style.opacity = "1";
 
             editors.disableTabResizeEvent();
             this.placeTabIntoAnimationWindow();
-            this.animateFocus.style.display = "block";
+            this.animateZen.style.display = "block";
 
             var astyles = "display:block;top:0;height:" + afHeight + ";left:" + leftOffset + ";width:" + afWidth + "px";
-            this.animateFocus.setAttribute("style", astyles);
+            this.animateZen.setAttribute("style", astyles);
 
-            _self.focusHandleLeft.style.opacity = "1.0";
-            _self.focusHandleRight.style.opacity = "1.0";
+            _self.zenHandleLeft.style.opacity = "1.0";
+            _self.zenHandleRight.style.opacity = "1.0";
 
             setTimeout(function() {
-                apf.tween.single(_self.focusHandleLeft, {
+                apf.tween.single(_self.zenHandleLeft, {
                     type     : "opacity",
                     anim     : apf.tween.easeInOutCubic,
                     from     : 1.0,
@@ -318,7 +327,7 @@ module.exports = ext.register("ext/focus/focus", {
                     onfinish : function(){
                     }
                 });
-                apf.tween.single(_self.focusHandleRight, {
+                apf.tween.single(_self.zenHandleRight, {
                     type     : "opacity",
                     anim     : apf.tween.easeInOutCubic,
                     from     : 1.0,
@@ -339,44 +348,44 @@ module.exports = ext.register("ext/focus/focus", {
     },
 
     /**
-     * Returns the editor to its original, non-focused,
+     * Returns the editor to its original, non-zen,
      * non-fullscreen state
      * 
      * @param {boolean} slow Whether to slow down the animation
      */
-    escapeFromFocusMode : function(slow) {
+    escapeFromZenMode : function(slow) {
         var _self = this;
 
-        btnFocusFullscreen.setAttribute("class", "notfull");
+        btnZenFullscreen.setAttribute("class", "notfull");
         this.isFocused = false;
 
-        this.focusHandleLeft.style.opacity = "0.0";
-        this.focusHandleRight.style.opacity = "0.0";
+        this.zenHandleLeft.style.opacity = "0.0";
+        this.zenHandleRight.style.opacity = "0.0";
 
         tabEditors.parentNode.$ext.style.width = "100%";
 
         if (this.checkBrowserCssTransforms()) {
             // Get the destination values
-            editors.setTabResizeValues(this.animateFocusPosition);
-            var left = this.animateFocusPosition.style.left;
-            var top = this.animateFocusPosition.style.top;
-            var width = this.animateFocusPosition.style.width;
-            var height = this.animateFocusPosition.style.height;
+            editors.setTabResizeValues(this.animateZenPosition);
+            var left = this.animateZenPosition.style.left;
+            var top = this.animateZenPosition.style.top;
+            var width = this.animateZenPosition.style.width;
+            var height = this.animateZenPosition.style.height;
 
             // Set the width to its actual width instead of "85%"
-            var afWidth = apf.getHtmlInnerWidth(this.animateFocus);
-            this.animateFocus.style.width = afWidth + "px";
-            var afHeight = apf.getHtmlInnerHeight(this.animateFocus);
-            this.animateFocus.style.height = afHeight + "px";
+            var afWidth = apf.getHtmlInnerWidth(this.animateZen);
+            this.animateZen.style.width = afWidth + "px";
+            var afHeight = apf.getHtmlInnerHeight(this.animateZen);
+            this.animateZen.style.height = afHeight + "px";
 
-            Firmin.animate(this.animateFocus, {
+            Firmin.animate(this.animateZen, {
                 height: height,
                 width: width,
                 left: left,
                 top: top,
                 timingFunction: "ease-in-out"
             }, slow ? 3.7 : 0.7, function() {
-                _self.animateFocus.style.display = "none";
+                _self.animateZen.style.display = "none";
                 // Reset values
                 _self.resetTabEditorsParentStyles();
                 document.body.appendChild(tabEditors.parentNode.$ext);
@@ -389,19 +398,19 @@ module.exports = ext.register("ext/focus/focus", {
                 }, 100);
             });
 
-            Firmin.animate(vbFocus.$ext, {
+            Firmin.animate(vbZen.$ext, {
                 opacity: "0"
             }, slow ? 3.5 : 0.5, function() {
-                vbFocus.hide();
+                vbZen.hide();
             });
         }
         else {
             this.resetTabEditorsParentStyles();
             document.body.appendChild(tabEditors.parentNode.$ext);
             editors.enableTabResizeEvent();
-            this.animateFocus.style.display = "none";
-            vbFocus.$ext.style.opacity = "0";
-            vbFocus.hide();
+            this.animateZen.style.display = "none";
+            vbZen.$ext.style.opacity = "0";
+            vbZen.hide();
             apf.layout.forceResize();
             setTimeout(function() {
                 ceEditor.focus();
@@ -412,7 +421,7 @@ module.exports = ext.register("ext/focus/focus", {
 
     /**
      * Retrieves and saves the styles of tabEditors.parentNode
-     * so that when we reset the position of it back to unfocused mode,
+     * so that when we reset the position of it back to unzen mode,
      * all those position details remain intact
      */
     saveTabEditorsParentStyles : function() {
@@ -443,11 +452,11 @@ module.exports = ext.register("ext/focus/focus", {
         var teWidth = tabEditors.parentNode.getWidth();
         var teHeight = tabEditors.parentNode.getHeight();
 
-        this.animateFocus.style.left = tePos[0] + "px";
-        this.animateFocus.style.top = tePos[1] + "px";
-        this.animateFocus.style.width = teWidth + "px";
-        this.animateFocus.style.height = teHeight + "px";
-        this.animateFocus.style.display = "block";
+        this.animateZen.style.left = tePos[0] + "px";
+        this.animateZen.style.top = tePos[1] + "px";
+        this.animateZen.style.width = teWidth + "px";
+        this.animateZen.style.height = teHeight + "px";
+        this.animateZen.style.display = "block";
     },
     
     /**
@@ -483,7 +492,7 @@ module.exports = ext.register("ext/focus/focus", {
      * animation window
      */
     placeTabIntoAnimationWindow : function() {
-        this.animateFocus.appendChild(tabEditors.parentNode.$ext);
+        this.animateZen.appendChild(tabEditors.parentNode.$ext);
         tabEditors.parentNode.$ext.style.width = "100%";
         tabEditors.parentNode.$ext.style.height = "100%";
         tabEditors.parentNode.$ext.style.position = "relative";
@@ -492,10 +501,10 @@ module.exports = ext.register("ext/focus/focus", {
     },
 
     /**
-     * Called during the onmouseover event from the focus button
+     * Called during the onmouseover event from the zen button
      */
-    fadeFocusButtonIn : function() {
-        apf.tween.single(btnFocusFullscreen, {
+    fadeZenButtonIn : function() {
+        apf.tween.single(btnZenFullscreen, {
             type     : "opacity",
             anim     : apf.tween.easeInOutCubic,
             from     : 0.01,
@@ -509,10 +518,10 @@ module.exports = ext.register("ext/focus/focus", {
     },
 
     /**
-     * Called during the onmouseout event from the focus button
+     * Called during the onmouseout event from the zen button
      */
-    fadeFocusButtonOut : function() {
-        apf.tween.single(btnFocusFullscreen, {
+    fadeZenButtonOut : function() {
+        apf.tween.single(btnZenFullscreen, {
             type     : "opacity",
             anim     : apf.tween.easeInOutCubic,
             from     : 1,
@@ -526,7 +535,7 @@ module.exports = ext.register("ext/focus/focus", {
     },
 
     enable : function(){
-        btnFocusFullscreen.show();
+        btnZenFullscreen.show();
         this.nodes.each(function(item){
             item.enable();
         });
@@ -534,8 +543,8 @@ module.exports = ext.register("ext/focus/focus", {
 
     disable : function(){
         if (this.isFocused)
-            this.escapeFromFocusMode();
-        btnFocusFullscreen.hide();
+            this.escapeFromZenMode();
+        btnZenFullscreen.hide();
         this.nodes.each(function(item){
             item.disable();
         });

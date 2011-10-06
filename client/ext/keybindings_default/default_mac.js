@@ -34,12 +34,12 @@ return keys.onLoad({
             "stepover": "F10",
             "stepout": "Shift-F11"
         },
-        "focus": {
-            "focus": "Command-E",
-            "focusslow": "Command-Shift-E"
+        "zen": {
+            "zen": "Command-E",
+            "zenslow": "Command-Shift-E"
         },
         "gotoline": {
-            "gotoline": "Command-L"
+           "gotoline": "Command-L"
         },
         "beautify": {
             "beautify": "Command-Shift-B"
@@ -89,7 +89,6 @@ return keys.onLoad({
         "code" : {
             "selectall": "Command-A",
             "removeline": "Command-D",
-            "gotoline": "Command-L",
             "togglecomment": "Command-/",
             "findnext": "Command-G",
             "findprevious": "Command-Shift-G",
