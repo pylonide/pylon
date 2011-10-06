@@ -22,6 +22,50 @@ BODY {
     opacity : 0.5;
 }
 
+#animateFocus {
+    z-index: 99999;
+    position: absolute;
+    -webkit-box-shadow: 0px 0px 25px #000;
+    -moz-box-shadow: 0px 0px 25px #000;
+    overflow: hidden;
+}
+
+#animateFocusPosition {
+    position: absolute;
+}
+
+#focusHandleRight, #focusHandleLeft {
+    position: absolute;
+    z-index: 99999;
+    width: 5px;
+    background: transparent;
+    cursor: ew-resize;
+    opacity: 0;
+}
+
+#focusHandleLeft {
+    background-image: linear-gradient(right , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+    background-image: -o-linear-gradient(right , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+    background-image: -moz-linear-gradient(right , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+    background-image: -webkit-linear-gradient(right , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+    background-image: -ms-linear-gradient(right , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+}
+
+#focusHandleRight {
+    background-image: linear-gradient(left , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+    background-image: -o-linear-gradient(left , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+    background-image: -moz-linear-gradient(left , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+    background-image: -webkit-linear-gradient(left , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+    background-image: -ms-linear-gradient(left , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+}
+
+.vbfocus {
+    opacity: 0;
+    z-index: 99998;
+    background: url(images/focusbg.png);
+    padding: 0 80px;
+}
+
 #logo {
     background: url(images/logo.png) no-repeat 0 0;
     width: 186px;

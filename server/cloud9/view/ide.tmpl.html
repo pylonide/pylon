@@ -145,6 +145,12 @@
         <a:include src="/static/include/menus.xml" />
         <a:include src="/static/include/windows.xml" />
 
+        <a:vbox
+            anchors = "0 0 0 0"
+            id = "vbFocus"
+            class = "vbfocus"
+            visible = "false"
+        />
         <a:vbox anchors="0 0 0 0" id="vbMain">
             <a:bar skin="c9-menu-bar" id="logobar">
                 <a:hbox>
@@ -189,5 +195,6 @@
                 <a:section />
             </a:statusbar>
         </a:vbox>
+        <script type="text/javascript" src="[%staticUrl%]/js/firmin-all-min.js"></script>
     </body>
 </html>
