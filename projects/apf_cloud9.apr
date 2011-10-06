@@ -440,6 +440,9 @@
 
         <p:define name="__AMLCODEEDITOR" value="1" />
         <p:define name="__AMLDEBUGGER" value="1" />
+        <p:define name="__AMLNOTIFIER" value="1" />
+
+
         <!-- NOT USED DEFINES -->
 
         <!--p:define name="__INC_ALL" value="1" /-->
@@ -569,8 +572,7 @@
         <p:define name="__AMLCALDROPDOWN" value="1" />
         <p:define name="__AMLACCORDION" value="1" />
         <p:define name="__AMLFLASHPLAYER" value="1" />
-        <p:define name="__AMLICONMAP" value="1" />
-        <p:define name="__AMLNOTIFIER" value="1" />
+        <p:define name="__AMLICONMAP" value="1" />        
         <p:define name="__AMLCOLORPICKER" value="1" />
         <p:define name="__AMLCHART" value="1" />
         <p:define name="__AMLCOLLECTION" value="1" />
