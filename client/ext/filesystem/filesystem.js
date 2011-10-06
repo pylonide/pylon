@@ -363,7 +363,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
             if (!e.type || e.type != 'newfile') {
                 // add a way to hook into loading of files
-                if (ide.dispatchEvent("readfile", {doc: doc, node: node}) == false)
+                if (ide.dispatchEvent("readfile", {doc: doc, node: node}) === false)
                     return;
 
                 /* OFFLINE IMPLEMENTATION
