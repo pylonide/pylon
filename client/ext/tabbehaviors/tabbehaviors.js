@@ -243,7 +243,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
      * selector and focused, to finally scroll to the selected node.
      */
     revealtab: function(page) {
-        if (!page)
+        if (!page || page.command)
             page = tabEditors.getPage();
         if (!page)
             return false;
@@ -254,32 +254,31 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             trFiles.expandAndSelect(node);
             trFiles.focus();
             scrollToFile();
+            return;
         }
-        else {
-            page = tabEditors.getPage();
-            var parts = page.name.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
-            var file = parts.pop();
-            var pathList = ["folder[1]"];
-            var str = "";
-            
-            parts.forEach(function(part) {
-                str += '/folder[@name="' + part + '"]';
-                pathList.push("folder[1]" + str);
-            });
-            
-            var xpath = pathList[pathList.length - 1];
-            var docNode = page.$doc.getNode();
-            // Show spinner in active tab the file is being looked up
-            apf.xmldb.setAttribute(docNode, "lookup", "1");
-            
-            trFiles.expandList(pathList, function() {
-                trFiles.select(trFiles.queryNode(xpath + '/file[@name="' + file + '"]'));
-                trFiles.focus();
-                scrollToFile();
-                // Hide spinner in active tae
-                apf.xmldb.removeAttribute(docNode, "lookup");
-            });
-        }
+
+        var parts = page.name.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
+        var file = parts.pop();
+        var pathList = ["folder[1]"];
+        var str = "";
+        
+        parts.forEach(function(part) {
+            str += '/folder[@name="' + part + '"]';
+            pathList.push("folder[1]" + str);
+        });
+        
+        var xpath = pathList[pathList.length - 1];
+        var docNode = page.$doc.getNode();
+        // Show spinner in active tab the file is being looked up
+        apf.xmldb.setAttribute(docNode, "lookup", "1");
+        
+        trFiles.expandList(pathList, function() {
+            trFiles.select(trFiles.queryNode(xpath + '/file[@name="' + file + '"]'));
+            trFiles.focus();
+            scrollToFile();
+            // Hide spinner in active tab
+            apf.xmldb.removeAttribute(docNode, "lookup");
+        });
         
         function scrollToFile() {
             var htmlNode = apf.xmldb.getHtmlNode(trFiles.selected, trFiles);
