@@ -12,7 +12,6 @@ define(function (require, exports, module) {
 
 var ext = require("core/ext");
 var ide = require("core/ide");
-var util = require("./util");
 var canon = require("pilot/canon");
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
