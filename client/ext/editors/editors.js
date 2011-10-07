@@ -559,7 +559,7 @@ module.exports = ext.register("ext/editors/editors", {
         // match any character except :& or end of file
         // optional: match : digit - digit
         // [1] is filename, [2] is starting line number, [3] is ending line number
-        var editorInitialStatePattern = /openfile-(.[^:&$]+)(?:\:(\d+)-(\d+))?/;
+        var editorInitialStatePattern = /openfile-(.[^:&$]*)(?:\:(\d+)-(\d+))?/;
         var rawState = hash.match(editorInitialStatePattern);
         
         if (rawState) {
@@ -586,11 +586,7 @@ module.exports = ext.register("ext/editors/editors", {
             // and expand the tree
             checkExpand(path, doc);
             
-            // if there are already nodes of this file open, remove them
-            /* var openNodes = model.queryNodes('auto/files/file[@path="' + path + '"]');
-            for(var ix = 0; ix < openNodes.length; ix++) {
-                openNodes[ix].parentNode.removeChild(openNodes[ix]);
-            } */
+            // return the new hash
             return hash.replace(editorInitialStatePattern, "");
         }
         
