@@ -71,7 +71,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
                     );
                 }
                 else {
-                    ide.socket.send(JSON.stringify(data));
+                    ide.socket.json.send(data);
                     // Set gutter width
                     editors.currentEditor.ceEditor.$editor.renderer.setGutterWidth("300px");
                 }

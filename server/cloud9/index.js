@@ -38,6 +38,7 @@ exports.main = function(options) {
         socketIo.set("heartbeat timeout", 2.5);
         socketIo.set("heartbeat interval", 5);
         socketIo.set("polling duration", 5);
+        socketIo.set("transports", ["websocket", "htmlfile", "xhr-polling"]);
         socketIo.sockets.on("connection", function(client) {
             ide.addUser(uid, User.OWNER_PERMISSIONS);
             ide.addClientConnection(uid, client, null);

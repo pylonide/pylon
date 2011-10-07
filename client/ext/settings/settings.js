@@ -41,11 +41,11 @@ module.exports = ext.register("ext/settings/settings", {
     },
 
     saveToFile : function(){
-        ide.socket.send(JSON.stringify({
+        ide.socket.json.send({
             command: "settings",
             action: "set",
             settings: this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || ""
-        }));
+        });
     },
 
     saveSettingsPanel: function() {
@@ -92,7 +92,7 @@ module.exports = ext.register("ext/settings/settings", {
             });
             
             if (ide.onLine === true)
-                ide.socket.send(JSON.stringify({command: "settings", action: "get"}));
+                ide.socket.json.send({command: "settings", action: "get"});
             return;
         }
 

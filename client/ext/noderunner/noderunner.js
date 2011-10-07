@@ -40,12 +40,12 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         stDebugProcessRunning.addEventListener("deactivate", this.$onDebugProcessDeactivate.bind(this));
 
         ide.addEventListener("consolecommand.run", function(e) {
-            ide.socket.send(JSON.stringify({
+            ide.socket.json.send({
                 command: "internal-isfile",
                 argv: e.data.argv,
                 cwd: e.data.cwd,
                 sender: "noderunner"
-            }));
+            });
             return false;
         });
     },
@@ -124,7 +124,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                     });
                 }
                 
-                ide.socket.send('{"command": "state"}');
+                ide.socket.json.send({"command": "state"});
                 break;
         }
     },
@@ -138,7 +138,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             "command" : "RunDebugChrome",
             "file"    : ""
         };
-        ide.socket.send(JSON.stringify(command));
+        ide.socket.json.send(command);
     },
 
     debug : function() {
@@ -159,7 +159,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 "C9_SELECTED_FILE": page ? page.getAttribute("path").slice(ide.davPrefix.length) : ""
             }
         };
-        ide.socket.send(JSON.stringify(command));
+        ide.socket.json.send(command);
 
         if (debug)
             stDebugProcessRunning.activate();
@@ -171,10 +171,10 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         if (!stProcessRunning.active)
             return;
 
-        ide.socket.send(JSON.stringify({
+        ide.socket.json.send({
             "command": "kill",
             "runner"  : "node" //ddRunnerSelector.value // Explicit addition; trying to affect as less logic as possible for now...
-        }));
+        });
     },
 
     enable : function(){

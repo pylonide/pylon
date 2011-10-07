@@ -365,7 +365,7 @@ module.exports = ext.register("ext/gittools/gittools", {
                         "This operation could not be completed because you are offline."
                     );
                 } else {
-                    ide.socket.send(JSON.stringify(data));
+                    ide.socket.json.send(data);
                 }
             }
         }
@@ -396,7 +396,7 @@ module.exports = ext.register("ext/gittools/gittools", {
                     );
                 } else {
                     this.showAnnotations();
-                    ide.socket.send(JSON.stringify(data));
+                    ide.socket.json.send(data);
                 }
             }
         }
@@ -422,7 +422,7 @@ module.exports = ext.register("ext/gittools/gittools", {
                         "This operation could not be completed because you are offline."
                     );
                 } else {
-                    ide.socket.send(JSON.stringify(data));
+                    ide.socket.json.send(data);
                 }
             }
         }

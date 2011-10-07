@@ -336,12 +336,12 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         });*/
 
         function openHandler(e) {
-            ide.socket.send(JSON.stringify({
+            ide.socket.json.send({
                 command: "internal-isfile",
                 argv: e.data.argv,
                 cwd: e.data.cwd,
                 sender: "filesystem"
-            }));
+            });
             return false;
         }
         ide.addEventListener("consolecommand.open", openHandler);

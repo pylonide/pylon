@@ -42,12 +42,12 @@ module.exports = ext.register("ext/debugger/debugger", {
         var _self = this;
         
         ide.addEventListener("consolecommand.debug", function(e) {
-            ide.socket.send(JSON.stringify({
+            ide.socket.json.send({
                 command: "internal-isfile",
                 argv: e.data.argv,
                 cwd: e.data.cwd,
                 sender: "debugger"
-            }));
+            });
             return false;
         });
         

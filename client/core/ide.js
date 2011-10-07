@@ -109,34 +109,23 @@ define(function(require, exports, module) {
         ide.addEventListener("extload", function() {
             // fire up the socket connection:
             var options = {
-                "remember transport": false,
-                transports:  ["websocket", "htmlfile", "xhr-multipart", "xhr-polling"],
                 reconnect: false,
                 "connect timeout": 5000,
-                "try multiple transports": true,
-                "transport options": {
-                    "xhr-polling": {
-                        timeout: 60000
-                    },
-                    "jsonp-polling": {
-                        timeout: 60000
-                    }
-                }
+                "try multiple transports": true
             };
             
             ide.socketConnect = function() {
                 clearInterval(ide.$retryTimer);
 
-                ide.socket.send(JSON.stringify({
+                ide.socket.json.send({
                     command: "attach",
                     sessionId: ide.sessionId,
                     workspaceId: ide.workspaceId
-                }));
+                });
             };
 
             ide.socketDisconnect = function() {
                 clearTimeout(ide.$retryTimer);
-                
                 var retries = 0;
                 ide.$retryTimer = setInterval(function() {
                     if (++retries == 3)
@@ -150,12 +139,12 @@ define(function(require, exports, module) {
 
             ide.socketMessage = function(message) {
                 try {
-                    message = JSON.parse(message);
+                    if (typeof message == "string")
+                        message = JSON.parse(message);
                 }
-                catch(e) {
+                catch (ex) {
                     return;
                 }
-
                 if (message.type == "attached")
                     ide.dispatchEvent("socketConnect");
 
@@ -206,17 +195,12 @@ define(function(require, exports, module) {
                 }
                 return;
             }
-            
+
             ide.socket.on("message",    ide.socketMessage);
             ide.socket.on("connect",    ide.socketConnect);
             //ide.socket.on("reconnect",  ide.socketReconnect);
             //ide.socket.on("reconnecting",  ide.socketReconnecting);
             ide.socket.on("disconnect", ide.socketDisconnect);
-            var _oldsend = ide.socket.send;
-            ide.socket.send = function(msg, cb) {
-                // pass a lambda to enable socket.io ACK
-                _oldsend.call(ide.socket, msg, cb || function() {});
-            };
         });
         
         ide.getActivePageModel = function() {
