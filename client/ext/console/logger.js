@@ -36,7 +36,7 @@ exports.logNodeStream = function(data, stream, useOutput) {
     for (var i = 0, l = lines.length; i < l; i++) {
         if (!lines[i])
             continue;
-        log.push("<div class='item'><span style='" + style + "'>" + lines[i]
+        log.push("<div class='item'><span style='" + style + "'>" + apf.htmlentities(lines[i])
             .replace(wsRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>" + workspaceDir + "/$1$2$3</a>")
             .replace(wsrRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>$1$2$3</a>")
             .replace(/\s{2,}/g, function(str) {
