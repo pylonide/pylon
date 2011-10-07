@@ -51,14 +51,20 @@ var SupportedModes = {
     "text/x-script.python": "python",
     "text/x-script.ruby": "ruby",
     "text/x-script.perl": "perl",
+    "text/x-script.perl-module": "perl",
     "text/x-c": "c_cpp",
     "text/x-java-source": "java",
+    "text/x-groovy": "groovy",
     "text/x-csharp": "csharp",
     "text/x-script.coffeescript": "coffee",
     "text/x-markdown": "markdown",
     "text/x-web-textile": "textile",
     "text/x-script.ocaml": "ocaml",
-    "text/x-script.clojure": "clojure"
+    "text/x-script.clojure": "clojure",
+    "application/x-latex": "latex",
+    "text/x-lua": "lua",
+    "text/x-script.powershell": "powershell",
+    "text/x-scala": "scala"
 };
 
 var contentTypes = {
@@ -96,12 +102,29 @@ var contentTypes = {
     "h": "text/x-c",
     "hh": "text/x-c",
     
+    "cs": "text/x-csharp",
+    
+    "java": "text/x-java-source",
     "clj": "text/x-script.clojure",
+    "groovy": "text/x-groovy",
+    "scala": "text/x-scala",
+    
     "ml": "text/x-script.ocaml",
     "mli": "text/x-script.ocaml",
     
     "md": "text/x-markdown",
-    "markdown": "text/x-markdown"
+    "markdown": "text/x-markdown",
+    "textile": "text/x-web-textile",
+    "latex": "application/x-latex",
+    "tex": "application/x-latex",
+    "ltx": "application/x-latex",
+    
+    "lua": "text/x-lua",
+    
+    "pl": "text/x-script.perl",
+    "pm": "text/x-script.perl-module",
+    
+    "ps1": "text/x-script.powershell"
 };
 
 module.exports = ext.register("ext/code/code", {

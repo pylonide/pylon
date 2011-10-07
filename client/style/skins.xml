@@ -256,7 +256,29 @@
         </a:main>
     </a:presentation>
 </a:bar>
+<a:button name="btn-access_request">
+    <a:style><![CDATA[
+        .btn-access_request {
+            background: url(images/red-arrow-down.png) no-repeat right 1px;
+            color: #fec0c0;
+            padding-right: 20px;
+            cursor: default;
+        }
 
+        .btn-access_requestOver {
+            text-decoration: underline;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main
+          caption      = "text()"
+          background = "."
+          icon       = ".">
+            <div class="btn-access_request"> </div>
+        </a:main>
+    </a:presentation>
+</a:button>
 <a:button name="button">
     <a:style><![CDATA[
         .btn {
@@ -3244,7 +3266,23 @@
         </a:main>
     </a:presentation>
 </a:divider>
+    <a:divider name="c9-divider-hor">
+    <a:style><![CDATA[
+        .c9-divider-hor {
+            position   : relative;
+            overflow   : hidden;
+            height     : 0px;
+            border-top:1px solid #000000;
+            border-bottom:1px solid #404040;
+        }
+    ]]></a:style>
 
+    <a:presentation>
+        <a:main>
+            <div class="c9-divider-hor"> </div>
+        </a:main>
+    </a:presentation>
+</a:divider>
 <a:divider name="c9-divider-double">
     <a:style><![CDATA[
         .c9-divider-double {
@@ -6222,7 +6260,7 @@
             <div class="editor_bg">
                 <div class="editor_bg_message-top">
                     Invite people to this project by sharing the URL with them.
-                    <span>To access private projects both parties must have a Premium Account.</span>
+<!--                    <span>To access private projects both parties must have a Premium Account.</span>-->
                     <div class="editor_divider"></div>
                 </div>
                 <div class="editor_bg_content">

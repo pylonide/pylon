@@ -35,6 +35,10 @@ return keys.onLoad({
             "stepover": "F10",
             "stepout": "Shift-F9"
         },
+        "zen": {
+            "zen": "Ctrl-E",
+            "zenslow": "Ctrl-Shift-E"
+        },
         "gotoline": {
             "gotoline": "Ctrl-G"
         },
