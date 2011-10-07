@@ -5573,12 +5573,23 @@
         }
 
         .dockcol .splitter.horizontal{
-            height : 3px;
-            background : #333;
+            height : 1px;
+            background-color: #38393A;
+            border-top: 1px solid #000000;
+            /*background : #333;*/
+        }
+        
+        .dockcol > div:nth-child(2) {
+            display: none !important;
         }
         .dockcol .splitter.horizontal div{
             height : 3px;
             margin-top : 0;
+        }
+        
+        .splitter-editor-right {
+            background: url(images/editor_header.png) repeat-x 0 0;
+            border-right: 1px solid #1E1E1E;
         }
     ]]></a:style>
 
@@ -5977,15 +5988,37 @@
         background-repeat: no-repeat;
         background-position: 0 0;
     }
-
-    .editor_tab .btnsesssioncontainer .saving_active .sessiontab_icon {
-        background-image: url(images/save-indicator-active-tab.gif);
+    
+    .editor_tab .btnsesssioncontainer .sessiontab_saving {
+        position: absolute;
+        right: 0;
+        top: 7px;
+        z-index: 1;
+    }
+    
+    .editor_tab .btnsesssioncontainer .saving_active .sessiontab_saving {
+        height: 15px;
+        width: 15px;
+        background-image: url(images/tab-save-spinner-active.gif);
+    }
+    
+    .editor_tab .btnsesssioncontainer .saving .sessiontab_saving {
+        height: 13px;
+        width: 13px;
+        background-image: url(images/tab-save-spinner-inactive.gif);
+    }
+    
+    .editor_tab .btnsesssioncontainer .over .sessiontab_saving {
+        display: none;
     }
 
+    /*.editor_tab .btnsesssioncontainer .saving_active .sessiontab_icon {
+        background-image: url(images/save-indicator-active-tab.gif);  
+    }
     .editor_tab .btnsesssioncontainer .saving .sessiontab_icon {
         background-image: url(images/save-indicator-inactive-tab.gif);
-    }
-
+    }*/
+    
     .editor_tab .btnsesssioncontainer .loading_active .sessiontab_icon {
         background-image: url(images/load-indicator-active-tab.gif);
     }
@@ -6246,6 +6279,7 @@
             <div class="tab_middle">
                 <div class="sessiontab_icon"> </div>
                 <div class="sessiontab_title">-</div>
+                <div class="sessiontab_saving"> </div>
             </div>
             <div class="tab_left"> </div>
             <div class="tab_right"> </div>
@@ -6472,6 +6506,11 @@
             background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
             width : auto;
         }
+        .dockcol .docktab .btncontainer{
+            padding-top: 6px;
+            padding-left: 3px;
+            padding-right: 5px;
+        }
 
         .docktab .btncontainer>div {
             display: block;
@@ -6604,6 +6643,13 @@
             border-bottom: 1px solid #8c8c8c;*/
             overflow: hidden;
         }
+        
+        .dockcol .docktab .page {
+            top: 26px;
+            right: 5px;
+            left: 3px;
+            bottom: 5px;
+        }
 
         .docktab .page.curpage{
             display : block;
@@ -6616,8 +6662,10 @@
     </a:style>
 
     <a:presentation>
-        <a:main pages="." buttons="div[1]">
+        <a:main pages="." buttons="div[3]">
             <div class="docktab">
+                <div class="expand-panel-bg"></div>
+                <div class="noise_bg"></div>
                 <div class="btncontainer"> </div>
             </div>
         </a:main>
