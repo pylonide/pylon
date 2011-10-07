@@ -1,0 +1,22 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:skin
+       id  = "zen"
+       src = "{require('text!ext/zen/skin.xml')}"
+       media-path = "/static/style/images/"
+       icon-path  = "/static/style/icons/"
+    />
+    <a:button id="btnZenFullscreen"
+      visible = "true"
+      width   = "26"
+      height  = "26"
+      top     = "18"
+      right   = "11"
+      class = "notfull"
+      skinset = "zen"
+      skin = "zenbutton"
+      onclick = "require('ext/zen/zen').toggleFullscreenZen(event)"
+      onmouseover = "require('ext/zen/zen').fadeZenButtonIn()"
+      onmouseout = "require('ext/zen/zen').fadeZenButtonOut()"
+     />
+
+</a:application>

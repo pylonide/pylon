@@ -35,9 +35,9 @@ return keys.onLoad({
             "stepover": "F10",
             "stepout": "Shift-F9"
         },
-        "focus": {
-            "focus": "Ctrl-E",
-            "focusslow": "Ctrl-Shift-E"
+        "zen": {
+            "zen": "Ctrl-E",
+            "zenslow": "Ctrl-Shift-E"
         },
         "gotoline": {
             "gotoline": "Ctrl-G"

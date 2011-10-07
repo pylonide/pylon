@@ -144,13 +144,7 @@
         <a:include src="/static/include/models.xml" />
         <a:include src="/static/include/menus.xml" />
         <a:include src="/static/include/windows.xml" />
-
-        <a:vbox
-            anchors = "0 0 0 0"
-            id = "vbFocus"
-            class = "vbfocus"
-            visible = "false"
-        />
+        
         <a:vbox anchors="0 0 0 0" id="vbMain">
             <a:bar skin="c9-menu-bar" id="logobar">
                 <a:hbox>
@@ -164,7 +158,7 @@
                     </a:hbox>
                     <a:filler />
                     <a:hbox id="barExtras" edge="8 0 0 0" padding="3" align="center"> 
-                        <a:divider skin="c9-divider" id="dividerBarExtras" visible="false"/>
+                        <a:divider skin="c9-divider" />
                     </a:hbox>
                 </a:hbox>
             </a:bar>
