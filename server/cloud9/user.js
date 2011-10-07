@@ -61,6 +61,9 @@ User.VISITOR_PERMISSIONS = {
     
     this.setPermissions = function(permissions) {
         this.$server_exclude = lang.arrayToMap(permissions.server_exclude.split("|"));
+        if (this.permissions === permissions)
+            return;
+        
         this.permissions = permissions;
         this.emit("changePermissions", this);
     };

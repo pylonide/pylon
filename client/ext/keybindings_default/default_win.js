@@ -35,6 +35,10 @@ return keys.onLoad({
             "stepover": "F10",
             "stepout": "Shift-F9"
         },
+        "zen": {
+            "zen": "Ctrl-E",
+            "zenslow": "Ctrl-Shift-E"
+        },
         "gotoline": {
             "gotoline": "Ctrl-G"
         },
@@ -81,7 +85,8 @@ return keys.onLoad({
             "tab7": "Ctrl-7",
             "tab8": "Ctrl-8",
             "tab9": "Ctrl-9",
-            "tab0": "Ctrl-0"
+            "tab0": "Ctrl-0",
+            "revealtab": "Ctrl-Shift-L"
         },
         "code" : {
             "selectall": "Ctrl-A",

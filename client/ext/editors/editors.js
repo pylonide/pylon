@@ -122,17 +122,41 @@ module.exports = ext.register("ext/editors/editors", {
             ]
         });
         
-        tabPlaceholder.addEventListener("resize", function(e){
-            var ext = tab.$ext, ph;
-            var pos = apf.getAbsolutePosition(ph = tabPlaceholder.$ext);
-            ext.style.left = (pos[0] - 2) + "px";
-            ext.style.top  = pos[1] + "px";
-            var d = apf.getDiff(ext);
-            ext.style.width = (ph.offsetWidth + 2 + (apf.isGecko && dockpanel.visible ? 2 : 0) - d[0]) + "px";
-            ext.style.height = (ph.offsetHeight - d[1]) + "px";
+        tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
+            _self.setTabResizeValues(tab.$ext);
         });
 
         return vbox;
+    },
+    
+    /**
+     * This method has been abstracted so it can be used by
+     * the focus extension to get the destination coordinates and
+     * dimensions of tabEditors.parentNode when the editor goes
+     * out of focus mode
+     */
+    setTabResizeValues : function(ext) {
+        var ph;
+        var pos = apf.getAbsolutePosition(ph = tabPlaceholder.$ext);
+        ext.style.left = (pos[0] - 2) + "px";
+        ext.style.top = pos[1] + "px";
+        var d = apf.getDiff(ext);
+        ext.style.width = (ph.offsetWidth + 2 + (apf.isGecko && dockpanel.visible ? 2 : 0) - d[0]) + "px";
+        ext.style.height = (ph.offsetHeight - d[1]) + "px";
+    },
+
+    /**
+     * Disable the resize event when the editors are in focus mode
+     */
+    disableTabResizeEvent : function() {
+        tabPlaceholder.removeEventListener("resize", this.$tabPlaceholderResize);
+    },
+
+    /**
+     * Enable the resize event when the editors come back to non-focus mode
+     */
+    enableTabResizeEvent : function() {
+        tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize);
     },
 
     isEditorAvailable : function(page, path){
@@ -225,7 +249,7 @@ module.exports = ext.register("ext/editors/editors", {
                 page.$editor = editor;
                 page.setAttribute("tooltip", "[@path]");
                 page.setAttribute("class",
-                    "{parseInt([@saving]) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
+                    "{parseInt([@saving]) || parseInt([@lookup]) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
                     ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"
                 );
                 page.setAttribute("model", page.$model = model);
