@@ -453,12 +453,14 @@ module.exports = ext.register("ext/editors/editors", {
         ide.addEventListener("loadsettings", function(e){
             function checkExpand(path, doc) {
                 var parent_path = apf.getDirname(path).replace(/\/$/, "");
-                trFiles.addEventListener("expand", function(e){
+                var expandEventListener = function(e) {
                     if (e.xmlNode && e.xmlNode.getAttribute("path") == parent_path) {
                         doc.setNode(e.xmlNode.selectSingleNode("node()[@path='" + path + "']"));
-                        trFiles.removeEventListener("expand", arguments.callee);
+                        trFiles.removeEventListener("expand", expandEventListener);
                     }
-                });
+                };
+                
+                trFiles.addEventListener("expand", expandEventListener);
             }
             
             var model = e.model;
