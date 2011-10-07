@@ -140,7 +140,7 @@ module.exports = ext.register("ext/code/code", {
     nodes : [],
     
     getState : function(doc){
-        var doc = doc ? doc.acesession : this.getDocument();
+        doc = doc ? doc.acesession : this.getDocument();
         if (!doc || typeof doc.getSelection != "function") 
             return;
         
@@ -161,8 +161,8 @@ module.exports = ext.register("ext/code/code", {
         
         //are those 3 lines set the values in per document base or are global for editor
         sel.setSelectionRange(state.selection, false);
-        ceEditor.$editor.renderer.scrollToY(state.scrolltop)
-        ceEditor.$editor.renderer.scrollToX(state.scrollleft)
+        ceEditor.$editor.renderer.scrollToY(state.scrolltop);
+        ceEditor.$editor.renderer.scrollToX(state.scrollleft);
     },
 
     getSyntax : function(node) {
@@ -258,25 +258,6 @@ module.exports = ext.register("ext/code/code", {
     },
 
     init: function(amlPage) {
-        /*var def = ceEditor.getDefaults();
-        
-        ide.addEventListener("loadsettings", function() {
-            //check default settings...
-            var settings = require("ext/settings/settings"),
-                model    = settings.model,
-                base     = model.data.selectSingleNode("editors/code");
-            if (!base)
-                base = model.appendXml('<code name="' + this.name +'" />', "editors");
-                
-            // go through all default settings and append them to the XML if they're not there yet
-            for (var prop in def) {
-                if (!prop) continue;
-                if (!base.getAttribute(prop))
-                    base.setAttribute(prop, def[prop]);
-            }
-            apf.xmldb.applyChanges("synchronize", base);
-        });*/
-
         amlPage.appendChild(ceEditor);
         ceEditor.show();
 
@@ -300,34 +281,7 @@ module.exports = ext.register("ext/code/code", {
                 submenu : "mnuSyntax"
             })),
 
-            /*mnuView.appendChild(new apf.item({
-                type    : "check",
-                caption : "Overwrite Mode",
-                checked : "{ceEditor.overwrite}"
-            })),*/
-
             mnuView.appendChild(new apf.divider()),
-
-            /*mnuView.appendChild(new apf.item({
-                type    : "check",
-                caption : "Select Full Line",
-                values  : "line|text",
-                value   : "[{require('ext/settings/settings').model}::editors/code/@selectstyle]",
-            })),*/
-
-            /*mnuView.appendChild(new apf.item({
-                type    : "check",
-                caption : "Read Only",
-                checked : "{ceEditor.readonly}"
-            })),*/
-
-            /*mnuView.appendChild(new apf.item({
-                type    : "check",
-                caption : "Highlight Active Line",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@activeline]"
-            })),
-
-            mnuView.appendChild(new apf.divider()),*/
 
             mnuView.appendChild(new apf.item({
                 type    : "check",
@@ -340,13 +294,6 @@ module.exports = ext.register("ext/code/code", {
                 caption : "Wrap Lines",
                 checked : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
             }))
-            // Wrap Lines (none),
-            // Overwrite mode (overwrite),
-            // Full line selection (selectstyle),
-            // Read only (readonly),
-            // Highlight active line (activeline),
-            // Show invisibles (showinvisibles),
-            // Show print margin (showprintmargin)
         );
 
         
@@ -383,10 +330,6 @@ module.exports = ext.register("ext/code/code", {
                 }
             }
         };
-
-        /*ide.addEventListener("clearfilecache", function(e){
-            ceEditor.clearCacheItem(e.xmlNode);
-        });*/
 
         ide.addEventListener("keybindingschange", function(e){
             if (typeof ceEditor == "undefined")
