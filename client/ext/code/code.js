@@ -169,20 +169,19 @@ module.exports = ext.register("ext/code/code", {
         if (!node)
             return "";
         
-        var customType = node.getAttribute("customtype");
+        var mime = node.getAttribute("customtype");
         
-        if (!customType) {
+        if (!mime) {
             var fileName = node.getAttribute("name");
-            
+
             if (fileName.lastIndexOf(".") != -1)
-                customType = contentTypes[fileName.split(".").pop()];
+                mime = contentTypes[fileName.split(".").pop()];
             else
-                customType = contentTypes["*" + fileName];
+                mime = contentTypes["*" + fileName];
         }
 
-        if (customType) {
-            var mime = customType.split(";")[0];
-            
+        if (mime) {
+            mime = mime.split(";")[0];
             return (SupportedModes[mime] || "text");
         }
         
