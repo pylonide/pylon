@@ -34,20 +34,20 @@ module.exports = ext.register("ext/save/save", {
 
     hook : function(){
         if (!self.tabEditors) return;
-        
+
         var _self = this;
-        
+
         tabEditors.addEventListener("close", this.$close = function(e) {
             var at = e.page.$at;
             if (!at.undo_ptr)
                 at.undo_ptr = at.$undostack[0];
             if (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr) {
                 ext.initExtension(_self);
-                
+
                 winCloseConfirm.page = e.page;
                 winCloseConfirm.all = 0;
                 winCloseConfirm.show();
-                
+
                 winCloseConfirm.addEventListener("hide", function(){
                     if (winCloseConfirm.all != -100) {
                         if(!tabEditors.getPage().$model.data.getAttribute('newfile')) {
@@ -60,10 +60,10 @@ module.exports = ext.register("ext/save/save", {
                     }
                     winCloseConfirm.removeEventListener("hide", arguments.callee);
                 });
-                
+
                 btnYesAll.hide();
                 btnNoAll.hide();
-                
+
                 e.preventDefault();
             }
         });
@@ -80,7 +80,7 @@ module.exports = ext.register("ext/save/save", {
         var saveItem, saveAsItem;
         this.nodes.push(
             ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
-        
+
             ide.mnuFile.insertBefore(new apf.item({
                 caption : "Save All",
                 onclick : function(){
@@ -88,7 +88,7 @@ module.exports = ext.register("ext/save/save", {
                 },
                 disabled : "{!!!tabEditors.activepage}"
             }), ide.mnuFile.firstChild),
-                
+
             saveAsItem = ide.mnuFile.insertBefore(new apf.item({
                 caption : "Save As...",
                 onclick : function () {
@@ -96,7 +96,7 @@ module.exports = ext.register("ext/save/save", {
                 },
                 disabled : "{!!!tabEditors.activepage}"
             }), ide.mnuFile.firstChild),
-            
+
             saveItem = ide.mnuFile.insertBefore(new apf.item({
                 caption : "Save",
                 onclick : this.quicksave.bind(this),
@@ -110,7 +110,7 @@ module.exports = ext.register("ext/save/save", {
 
     init : function(amlNode){
         var _self = this;
-        
+
         apf.importCssString((this.css || ""));
         winCloseConfirm.onafterrender = function(){
             btnYesAll.addEventListener("click", function(){
@@ -133,7 +133,7 @@ module.exports = ext.register("ext/save/save", {
                 winCloseConfirm.hide();
             });
         }
-        
+
         winSaveAs.addEventListener("hide", function(){
             if(winSaveAs.page) {
                 tabEditors.remove(winSaveAs.page, true);
@@ -142,21 +142,21 @@ module.exports = ext.register("ext/save/save", {
             }
         });
     },
-    
+
     saveall : function(){
-        var pages = tabEditors.getPages();        
+        var pages = tabEditors.getPages();
         for (var i = 0; i < pages.length; i++) {
             var at = pages[i].$at;
             // if (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr)
             this.quicksave(pages[i]);
         }
     },
-    
+
     saveAllInteractive : function(pages, callback){
         ext.initExtension(this);
-        
+
         winCloseConfirm.all = 0;
-                
+
         var _self = this;
         apf.asyncForEach(pages, function(item, next) {
             var at = item.$at;
@@ -168,7 +168,7 @@ module.exports = ext.register("ext/save/save", {
 
                 if (winCloseConfirm.all)
                     return next();
-                
+
                 tabEditors.set(item);
                 winCloseConfirm.page = item;
                 winCloseConfirm.show();
@@ -181,7 +181,7 @@ module.exports = ext.register("ext/save/save", {
                     winCloseConfirm.removeEventListener("hide", arguments.callee);
                     next();
                 });
-                
+
                 btnYesAll.setProperty("visible", pages.length > 1);
                 btnNoAll.setProperty("visible", pages.length > 1);
             }
@@ -205,13 +205,12 @@ module.exports = ext.register("ext/save/save", {
         if(node.getAttribute('newfile')){
             this.saveas();
         }
-            
+
         if (node.getAttribute("debug"))
             return;
 
         var path = node.getAttribute("path");
-        var value = doc.getValue();
-        
+
         // check if we're already saving!
         var saving = parseInt(node.getAttribute("saving"));
         if (saving) {
@@ -219,11 +218,13 @@ module.exports = ext.register("ext/save/save", {
             return;
         }
         apf.xmldb.setAttribute(node, "saving", "1");
-        
+
         var _self = this, panel = sbMain.firstChild;
         panel.setAttribute("caption", "Saving file " + path);
-        
-        ide.dispatchEvent("beforefilesave", {node: node, doc: doc, value: value});
+
+        ide.dispatchEvent("beforefilesave", {node: node, doc: doc });
+
+        var value = doc.getValue();
 
         fs.saveFile(path, value, function(data, state, extra){
             if (state != apf.SUCCESS) {
@@ -235,7 +236,7 @@ module.exports = ext.register("ext/save/save", {
                             ? "The connection timed out."
                             : "The error reported was " + extra.message));
             }
-            
+
             panel.setAttribute("caption", "Saved file " + path);
             ide.dispatchEvent("afterfilesave", {node: node, doc: doc, value: value});
             apf.xmldb.removeAttribute(node, "saving");
@@ -254,10 +255,10 @@ module.exports = ext.register("ext/save/save", {
         page.$at.dispatchEvent("afterchange");
         return false;
     },
-    
+
     choosePath : function(path, select) {
         var _self = this;
-        
+
         fs.list(path.match(/(.*)\/[^/]*/)[1], function (data, state, extra) {
             if (new RegExp("<folder.*" + path + ".*>").test(data)) {
                 path  = path.replace(new RegExp('\/' + cloud9config.davPrefix.split('/')[1]), '')
@@ -267,36 +268,36 @@ module.exports = ext.register("ext/save/save", {
                 // console.log(path);
                 trSaveAs.expandList([path], function() {
                     var node = trSaveAs.getModel().data.selectSingleNode(path);
-                     
+
                     trSaveAs.select(node);
                 });
             } else
                 _self.saveFileAs();
         });
     },
-    
+
     saveas : function(){
         var tabPage = tabEditors.getPage(),
             path    = tabPage ? tabPage.$model.data.getAttribute("path") : false;
-        
+
         if(!path)
             return;
-        
+
         ext.initExtension(this);
-        
+
         var fooPath = path.split('/');
         txtSaveAs.setValue(fooPath.pop());
         lblPath.setProperty('caption', fooPath.join('/') + '/');
         winSaveAs.show();
     },
-    
+
     saveFileAs : function(page) {
         var _self   = this,
             page    = page || tabEditors.getPage(),
             file    = page.$model.data,
             path    = file.getAttribute("path"),
             newPath = lblPath.getProperty('caption') + txtSaveAs.getValue();
-            
+
         // check if we're already saving!
         var saving = parseInt(file.getAttribute("saving"));
         if (saving) {
@@ -304,15 +305,15 @@ module.exports = ext.register("ext/save/save", {
             return;
         }
         apf.xmldb.setAttribute(node, "saving", "1");
-            
+
         function onconfirm() {
             var panel   = sbMain.firstChild,
                 value   = page.$doc.getValue();
-  
+
             // console.log(value);
             winConfirm.hide();
             winSaveAs.hide();
-            
+
             panel.setAttribute("caption", "Saving file " + newPath);
             fs.saveFile(newPath, value, function(value, state, extra) {
                 if (state != apf.SUCCESS) {
@@ -324,19 +325,19 @@ module.exports = ext.register("ext/save/save", {
                 if (path != newPath) {
                     var model = page.$model,
                         node  = model.getXml();
-                        
+
                     model.load(node);
                     file = model.data;
                     fs.beforeRename(file, null, newPath);
                     page.$doc.setNode(file);
                 }
-                
+
                 apf.xmldb.removeAttribute(node, "saving");
                 if (_self.saveBuffer[path]) {
                     delete _self.saveBuffer[path];
                     _self.saveFileAs(page);
                 }
-            
+
                 if(file.getAttribute("newfile")) {
                     file.removeAttribute("newfile");
                     apf.xmldb.setAttribute(file, "changed", "0");
@@ -355,13 +356,13 @@ module.exports = ext.register("ext/save/save", {
                 //}, 2500);
             });
         };
-    
+
         if (path != newPath) {
             fs.exists(newPath, function (exists) {
                 if (exists) {
                     var name    = newPath.match(/\/([^/]*)$/)[1],
                         folder  = newPath.match(/\/([^/]*)\/[^/]*$/)[1];
-                    
+
                     util.confirm(
                         "Are you sure?",
                         "\"" + name + "\" already exists, do you want to replace it?",
@@ -377,7 +378,7 @@ module.exports = ext.register("ext/save/save", {
         else
             onconfirm();
     },
-    
+
     expandTree : function(){
         var _self = this;
         setTimeout(function(){
@@ -390,7 +391,7 @@ module.exports = ext.register("ext/save/save", {
                 trSaveAs.slideOpen(null, trSaveAs.getModel().data.selectSingleNode('//folder'));
         });
     },
-    
+
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
