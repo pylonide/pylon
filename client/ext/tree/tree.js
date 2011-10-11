@@ -462,7 +462,7 @@ module.exports = ext.register("ext/tree/tree", {
                 var node    = nodes[i],
                     name    = node.getAttribute("name");
 
-                if (files[name])
+                if (files && files[name])
                     delete files[name];
                 else
                     removed.push(node);

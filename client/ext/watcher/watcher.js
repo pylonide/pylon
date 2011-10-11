@@ -36,7 +36,7 @@ module.exports = ext.register("ext/watcher/watcher", {
             ide.socket.send(JSON.stringify({
                 "command"     : "watcher",
                 "type"        : "watchFile",
-                "path"        : ide.workspaceDir + path.slice(ide.davPrefix.length)
+                "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
             }));
         }
         
@@ -44,7 +44,7 @@ module.exports = ext.register("ext/watcher/watcher", {
             ide.socket.send(JSON.stringify({
                 "command"     : "watcher",
                 "type"        : "unwatchFile",
-                "path"        : ide.workspaceDir + path.slice(ide.davPrefix.length)
+                "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
             }));
         }           
        
