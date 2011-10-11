@@ -1,5 +1,7 @@
 /**
- * Auto-save Module for the Cloud9 IDE
+ * Auto-save Module for the Cloud9 IDE. A simple plug-in that auto-saves files
+ * the user is working on and potentially restores them in case the user
+ * accidentally leaves the editor without saving.
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
