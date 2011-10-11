@@ -3,6 +3,7 @@
  * the user is working on and potentially restores them in case the user
  * accidentally leaves the editor without saving.
  *
+ * @author Sergi Mansilla <sergi AT ajax DOT org>
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
