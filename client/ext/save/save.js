@@ -146,8 +146,6 @@ module.exports = ext.register("ext/save/save", {
     saveall : function(){
         var pages = tabEditors.getPages();
         for (var i = 0; i < pages.length; i++) {
-            var at = pages[i].$at;
-            // if (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr)
             this.quicksave(pages[i]);
         }
     },
@@ -163,8 +161,6 @@ module.exports = ext.register("ext/save/save", {
             if (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr) {
                 if (winCloseConfirm.all == 1)
                     _self.quicksave(item);
-                //else if (winCloseConfirm.all == -1)
-                    //item.$at.undo(-1);
 
                 if (winCloseConfirm.all)
                     return next();
@@ -175,8 +171,6 @@ module.exports = ext.register("ext/save/save", {
                 winCloseConfirm.addEventListener("hide", function(){
                     if (winCloseConfirm.all == 1)
                         _self.quicksave(item);
-                    //else if (winCloseConfirm.all == -1)
-                        //item.$at.undo(-1);
 
                     winCloseConfirm.removeEventListener("hide", arguments.callee);
                     next();

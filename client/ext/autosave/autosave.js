@@ -11,8 +11,11 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
 var fs = require("ext/filesystem/filesystem");
+var settings = require("text!ext/autosave/settings.xml");
+var markup = require("text!ext/autosave/autosave.xml");
+var extSettings = require("ext/settings/settings");
 
-var INTERVAL = 1000 * 10 * 1;
+var INTERVAL = 1000 * 60 * 5; // 5 minutes
 var FILE_SUFFIX = "swp";
 
 module.exports = ext.register("ext/autosave/autosave", {
@@ -20,6 +23,7 @@ module.exports = ext.register("ext/autosave/autosave", {
     name        : "Save",
     alone       : true,
     type        : ext.GENERAL,
+    markup      : markup,
     deps        : [fs],
     offline     : true,
 
@@ -27,51 +31,98 @@ module.exports = ext.register("ext/autosave/autosave", {
     saveBuffer  : {},
 
     hook : function(){
-        if (!self.tabEditors) {
+        if (!self.tabEditors)
             return;
-        }
 
         var that = this;
-        // Autosave every <interval> seconds
         this.autoSaveInterval = setInterval(function() {
-            var pages = tabEditors.getPages();
-            for (var i = 0, len = pages.length; i < len; i++) {
-                that.saveTmp(pages[i]);
-            }
+            that.doAutoSave();
         }, INTERVAL);
-
-        var getTempPath = function(originalPath) {
-            return originalPath + "." + FILE_SUFFIX;
-        };
 
         ide.addEventListener("openfile", function(data) {
             if (!data || !data.doc)
                 return;
 
             var node = data.doc.getNode();
-            var lastModifiedOriginal = node.getAttribute("modifieddate");
+            var dateOriginal = new Date(node.getAttribute("modifieddate"));
             var originalPath = node.getAttribute("path");
+            var bkpPath = that._getTempPath(originalPath);
 
-            var bkpPath = getTempPath(originalPath);
             fs.exists(bkpPath, function(exists) {
-                if (exists && "modified date is newer") {
-                    fs.readFile(bkpPath, function(obj) {
-                        //console.log("node", obj);
+                var node = fs.model.data.selectSingleNode("//file[@path='" + bkpPath + "']");
+                var date = node && new Date(node.getAttribute("modifieddate"));
+
+                if (exists && node && date.getTime() > dateOriginal.getTime()) {
+                    ext.initExtension(that);
+
+                    fs.readFile(bkpPath, function(contents) {
+                        winNewerSave.restoredContents = contents;
+                        winNewerSave.doc = data.doc;
+                        winNewerSave.path = bkpPath;
+                        winNewerSave.show();
                     });
                 }
             });
         });
 
         ide.addEventListener("afterfilesave", function(obj) {
-            var bkpPath = getTempPath(obj.node.getAttribute("path"));
-            fs.exists(bkpPath, function(exists) {
-                if (exists)
-                    fs.remove(bkpPath);
-            });
+            that._removeFile(that._getTempPath(obj.node.getAttribute("path")));
+        });
+
+        ide.addEventListener("init.ext/settings/settings", function (e) {
+            barSettings.insertMarkup(settings);
         });
     },
 
-    init : function(amlNode) {},
+    init : function(amlNode) {
+        var self = this;
+        winNewerSave.onafterrender = function(){
+            btnRestoreYes.addEventListener("click", function() {
+                winNewerSave.doc.setValue(winNewerSave.restoredContents)
+
+                winNewerSave.restoredContents = null;
+                winNewerSave.doc = null;
+                winNewerSave.path = null;
+
+                winNewerSave.hide()
+            });
+            btnRestoreNo.addEventListener("click", function() {
+                // It is understood that if the user doesn't want to restore
+                // contents from the previous file the first time, he will
+                // never want to.
+                winNewerSave.path && self._removeFile(winNewerSave.path);
+
+                winNewerSave.restoredContents = null;
+                winNewerSave.doc = null;
+                winNewerSave.path = null;
+
+                winNewerSave.hide();
+            });
+        }
+    },
+
+    doAutoSave: function() {
+        var self = this;
+        var node = extSettings.model.data.selectSingleNode("general/@autosave");
+
+        if (node && node.firstChild && node.firstChild.nodeValue == "true") {
+            var pages = tabEditors.getPages();
+            for (var i = 0, len = pages.length; i < len; i++) {
+                self.saveTmp(pages[i]);
+            }
+        }
+    },
+
+    _getTempPath: function(originalPath) {
+        return originalPath + "." + FILE_SUFFIX;
+    },
+
+    _removeFile: function(path) {
+        fs.exists(path, function(exists) {
+            if (exists)
+                fs.remove(path);
+        });
+    },
 
     saveTmp : function(page) {
         if (!page || !page.$at)
@@ -86,11 +137,11 @@ module.exports = ext.register("ext/autosave/autosave", {
         if (model && model.data.getAttribute("changed") !== "1")
             return;
 
+        ext.initExtension(this);
+
         var doc = page.$doc;
         var node = doc.getNode();
         if (node.getAttribute('newfile')) {
-            //this.saveas();
-            // what to do
             return; // for now
         }
 
@@ -110,26 +161,14 @@ module.exports = ext.register("ext/autosave/autosave", {
         var panel = sbMain.firstChild;
         panel.setAttribute("caption", "Saving file " + path);
 
-        ide.dispatchEvent("beforefilesave", {
-            node: node, doc: doc
-        });
-
         var self = this;
         var value = doc.getValue();
         var bkpPath = path + "." + FILE_SUFFIX;
         fs.saveFile(bkpPath, value, function(data, state, extra) {
-            if (state != apf.SUCCESS) {
+            if (state != apf.SUCCESS)
                 return;
-            }
 
             panel.setAttribute("caption", "Auto-saved file " + path);
-            /*
-            ide.dispatchEvent("afterfilesave", {
-                node: node,
-                doc: doc,
-                value: value
-            });
-            */
 
             apf.xmldb.removeAttribute(node, "saving");
             if (self.saveBuffer[path]) {
