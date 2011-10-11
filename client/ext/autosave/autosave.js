@@ -35,6 +35,11 @@ module.exports = ext.register("ext/autosave/autosave", {
             return;
 
         var that = this;
+        // This is the main interval. Whatever it happens, every `INTERVAL`
+        // milliseconds, the plugin will attempt to save every file that is
+        // open and dirty.
+        // We might want to detect user "bursts" in writing and autosave after
+        // those happen. Left as an exercise for the reader.
         this.autoSaveInterval = setInterval(function() {
             that.doAutoSave();
         }, INTERVAL);
@@ -45,17 +50,24 @@ module.exports = ext.register("ext/autosave/autosave", {
 
             var node = data.doc.getNode();
             var dateOriginal = new Date(node.getAttribute("modifieddate"));
-            var originalPath = node.getAttribute("path");
-            var bkpPath = that._getTempPath(originalPath);
+            var bkpPath = that._getTempPath(node.getAttribute("path"));
 
+            // If there is already a backup file
             fs.exists(bkpPath, function(exists) {
+                if (!exists)
+                    return;
+
                 var node = fs.model.data.selectSingleNode("//file[@path='" + bkpPath + "']");
                 var date = node && new Date(node.getAttribute("modifieddate"));
 
-                if (exists && node && date.getTime() > dateOriginal.getTime()) {
+                // If the date of the backed up file is newer than the file we
+                // are trying to open, present the user with a choice dialog
+                if (date && date.getTime() > dateOriginal.getTime()) {
                     ext.initExtension(that);
 
                     fs.readFile(bkpPath, function(contents) {
+                        // Set up some state into the indow itself. Not great,
+                        // but easiest way and not awful either
                         winNewerSave.restoredContents = contents;
                         winNewerSave.doc = data.doc;
                         winNewerSave.path = bkpPath;
@@ -65,6 +77,7 @@ module.exports = ext.register("ext/autosave/autosave", {
             });
         });
 
+        // Remove any temporary file after the user saves willingly.
         ide.addEventListener("afterfilesave", function(obj) {
             that._removeFile(that._getTempPath(obj.node.getAttribute("path")));
         });
@@ -76,39 +89,38 @@ module.exports = ext.register("ext/autosave/autosave", {
 
     init : function(amlNode) {
         var self = this;
+
+        var resetWinAndHide = function() {
+            winNewerSave.restoredContents = null;
+            winNewerSave.doc = null;
+            winNewerSave.path = null;
+
+            winNewerSave.hide();
+        };
+
         winNewerSave.onafterrender = function(){
             btnRestoreYes.addEventListener("click", function() {
-                winNewerSave.doc.setValue(winNewerSave.restoredContents)
-
-                winNewerSave.restoredContents = null;
-                winNewerSave.doc = null;
-                winNewerSave.path = null;
-
-                winNewerSave.hide()
+                var contents = winNewerSave.restoredContents;
+                winNewerSave.doc && winNewerSave.doc.setValue(contents);
+                resetWinAndHide();
             });
+
             btnRestoreNo.addEventListener("click", function() {
                 // It is understood that if the user doesn't want to restore
                 // contents from the previous file the first time, he will
                 // never want to.
                 winNewerSave.path && self._removeFile(winNewerSave.path);
-
-                winNewerSave.restoredContents = null;
-                winNewerSave.doc = null;
-                winNewerSave.path = null;
-
-                winNewerSave.hide();
+                resetWinAndHide();
             });
         }
     },
 
     doAutoSave: function() {
-        var self = this;
         var node = extSettings.model.data.selectSingleNode("general/@autosave");
-
         if (node && node.firstChild && node.firstChild.nodeValue == "true") {
             var pages = tabEditors.getPages();
             for (var i = 0, len = pages.length; i < len; i++) {
-                self.saveTmp(pages[i]);
+                this.saveTmp(pages[i]);
             }
         }
     },
@@ -131,13 +143,12 @@ module.exports = ext.register("ext/autosave/autosave", {
         if (!page)
             return;
 
+        ext.initExtension(this);
         // Check to see if the page has been actually modified since the last
         // save.
         var model = page.getModel();
         if (model && model.data.getAttribute("changed") !== "1")
             return;
-
-        ext.initExtension(this);
 
         var doc = page.$doc;
         var node = doc.getNode();
