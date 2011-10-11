@@ -23,9 +23,13 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
     hook : function(){
         panels.register(this);
-        
-        // fix to prevent Active Files button is placed above Project Files
-        el = (navbar.firstChild.class == "project_files") ? navbar.childNodes[1] : navbar.firstChild;
+
+        // Fix to prevent Active Files button is placed above Project Files
+        var el = navbar.firstChild;
+        if (navbar.firstChild.class == "project_files") {
+            el = navbar.childNodes[1];
+        }
+
         var btn = this.button = navbar.insertBefore(new apf.button({
             skin    : "mnubtn",
             state   : "true",
@@ -85,7 +89,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             if (!node || this.selection.length > 1) //ide.onLine can be removed after update apf
                 return;
 
-            ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
+            ide.dispatchEvent("openfile", { doc: ide.createDocument(node) });
         });
 
         lstOpenFiles.addEventListener("afterremove", function(e){
@@ -106,27 +110,28 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         });
 
         ide.addEventListener("treechange", function(e) {
-            var path    = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                                .replace(/\[@name="workspace"\]/, "")
-                                .replace(/\//, ""),
-                parent  = trFiles.getModel().data.selectSingleNode(path),
-                nodes   = parent.childNodes,
-                files   = e.files,
-                removed = [];
+            var path = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
+                        .replace(/\[@name="workspace"\]/, "")
+                        .replace(/\//, "");
+            var parent  = trFiles.getModel().data.selectSingleNode(path);
+            var nodes   = parent.childNodes;
+            var files   = e.files;
+            var removed = [];
 
             for (var i = 0; i < nodes.length; ++i) {
-                var node    = nodes[i],
-                    name    = node.getAttribute("name");
+                var node = nodes[i];
+                var name = node.getAttribute("name");
 
                 if (files[name])
                     delete files[name];
                 else
                     removed.push(node);
             }
+
             removed.forEach(function (node) {
-                // console.log("REMOVE", node);
                 apf.xmldb.removeNode(node);
             });
+
             path = parent.getAttribute("path");
             for (var name in files) {
                 var file = files[name];
@@ -136,15 +141,17 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                     " name='" + name + "'" +
                     " path='" + path + "/" + name + "'" +
                 "/>";
-                // console.log("CREATE", xmlNode, parent);
+
                 trFiles.add(xmlNode, parent);
             }
         });
     },
 
     enable : function(noButton){
-        if (self.winOpenFiles)
+        if (self.winOpenFiles) {
             winOpenFiles.show();
+        }
+
         colLeft.show();
         if (!noButton) {
             this.button.setValue(true);
