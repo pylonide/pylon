@@ -435,7 +435,7 @@ apf.page = function(struct, tagName){
                 + this.$uniqueId + ').parentNode.$setStyleClass(this, "", ["down"], true);');
             elBtn.setAttribute("onmouseover", 'var o = apf.lookup('
                 + this.$uniqueId + ').parentNode;if(apf.lookup(' + this.$uniqueId
-                + ') != o.$activepage) o.$setStyleClass(this, "over", null, true);');
+                + ') != o.$activepage'  + (this.parentNode.overactivetab ? " || true" : "")  + ') o.$setStyleClass(this, "over", null, true);');
             elBtn.setAttribute("onmouseout", 'var o = apf.lookup('
                 + this.$uniqueId + ').parentNode;\
                   o.$setStyleClass(this, "", ["over"], true);\

@@ -346,7 +346,7 @@ apf.notifier = function(struct, tagName){
                     }
 
                     if (_self.showing == 0)
-                        this.lastPos = null;
+                        _self.lastPos = null;
                 }
             });
         }
