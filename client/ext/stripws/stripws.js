@@ -19,6 +19,7 @@ var settings = require("text!ext/stripws/settings.xml");
 var extSettings = require("ext/settings/settings");
 
 var RE_WS = /[ \t\r\f\v]+\n/g;
+
 // Attaching to exports.module for testing purposes
 var strip = module.exports.strip = function () {
     if (!editors.currentEditor.ceEditor)
@@ -28,12 +29,27 @@ var strip = module.exports.strip = function () {
     var session = editor.getSession()
     var source = session.getValue();
     var pos = editor.getCursorPosition();
-
+    var selection = session.getSelection();
     var result = source.replace(RE_WS, "\n");
-    session.setValue(result);
-    var lineLength = session.getLine(pos.row).length;
+    var lead, anchor;
 
-    editor.moveCursorTo(pos.row, pos.column >= lineLength ? lineLength : pos.column);
+    // Check whether the user has text selected
+    if (!selection.isEmpty()) {
+        lead = selection.getCursor();
+        anchor = selection.getSelectionAnchor();
+    }
+
+    // Set the new trimmed buffer contents
+    session.setValue(result);
+
+    if (lead && anchor) {
+        var selection = session.getSelection();
+
+        selection.setSelectionAnchor(anchor.row, anchor.column);
+        selection.moveCursorTo(lead.row, lead.column);
+    } else {
+        editor.moveCursorTo(pos.row, pos.column);
+    }
 
     return result;
 }
