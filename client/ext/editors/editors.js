@@ -90,11 +90,12 @@ module.exports = ext.register("ext/editors/editors", {
             htmlNode : document.body,
             childNodes: [
                 new apf.tab({
-                    id       : "tabEditors",
-                    skin     : "editor_tab",
-                    style    : "height : 100%",
-                    buttons  : "close,scale",
-                    onfocus  : function(e){
+                    id      : "tabEditors",
+                    skin    : "editor_tab",
+                    style   : "height : 100%",
+                    buttons : "close,scale",
+                    overactivetab  : true,
+                    onfocus        : function(e){
                         _self.switchfocus(e);
                     },
                     onbeforeswitch : function(e){
