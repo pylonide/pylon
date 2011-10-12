@@ -28,15 +28,16 @@ var strip = module.exports.strip = function () {
     var editor = editors.currentEditor.ceEditor.$editor;
     var session = editor.getSession()
     var source = session.getValue();
-    var pos = editor.getCursorPosition();
     var selection = session.getSelection();
     var result = source.replace(RE_WS, "\n");
-    var lead, anchor;
+    var pos, lead, anchor;
 
     // Check whether the user has text selected
     if (!selection.isEmpty()) {
         lead = selection.getCursor();
         anchor = selection.getSelectionAnchor();
+    } else {
+        pos = editor.getCursorPosition();
     }
 
     // Set the new trimmed buffer contents
@@ -47,7 +48,7 @@ var strip = module.exports.strip = function () {
 
         selection.setSelectionAnchor(anchor.row, anchor.column);
         selection.moveCursorTo(lead.row, lead.column);
-    } else {
+    } else if (pos) {
         editor.moveCursorTo(pos.row, pos.column);
     }
 
