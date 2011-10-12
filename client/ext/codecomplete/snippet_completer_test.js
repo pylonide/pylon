@@ -1,5 +1,5 @@
 if (typeof process !== "undefined") {
-    require("../../../../support/paths");
+    require("../../../support/paths");
     require("ace/test/mockdom");
 }
 
@@ -63,7 +63,7 @@ module.exports = {
             });
         });
     },
-    
+
     "test javascript insertion 2" : function(next) {
         var session = new EditSession("while(true) {\n    fnc\n}", new JavascriptMode());
         var editor = new Editor(new MockRenderer(), session);
@@ -82,7 +82,7 @@ module.exports = {
             });
         });
     },
-    
+
     "test html insertion" : function(next) {
         var session = new EditSession("divc", new HTMLMode());
         var editor = new Editor(new MockRenderer(), session);

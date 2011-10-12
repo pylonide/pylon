@@ -1,5 +1,5 @@
 if (typeof process !== "undefined") {
-    require("../../../../support/paths");
+    require("../../../support/paths");
     require("ace/test/mockdom");
 }
 
@@ -61,7 +61,7 @@ module.exports = {
                 assert.equal(matches.length, 1);
                 assert.equal(matches[0].name, "equal");
                 assert.equal(determineDistance(matches[0].score), 9);
-                
+
                 editor.moveCursorTo(1, 30); // .mat|[0]
 
                 localCompleter.analyze(editor, function() {
