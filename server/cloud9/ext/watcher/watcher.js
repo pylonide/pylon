@@ -104,7 +104,8 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                             "type"      : "watcher",
                             "subtype"   : subtype,
                             "path"      : path,
-                            "files"     : files
+                            "files"     : files,
+                            "lastmod"   : curr.mtime
                         });
                         //console.log("Sent " + subtype + " notification for file " + path);
                     });

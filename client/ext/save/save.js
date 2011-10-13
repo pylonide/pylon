@@ -240,6 +240,7 @@ module.exports = ext.register("ext/save/save", {
             panel.setAttribute("caption", "Saved file " + path);
             ide.dispatchEvent("afterfilesave", {node: node, doc: doc, value: value});
             apf.xmldb.removeAttribute(node, "saving");
+            apf.xmldb.setAttribute(node, "modifieddate", apf.queryValue(extra.data, "//d:getlastmodified"));
             if (_self.saveBuffer[path]) {
                 delete _self.saveBuffer[path];
                 _self.quicksave(page);
