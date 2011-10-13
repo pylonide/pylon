@@ -3239,9 +3239,7 @@ btn.setAttribute("button","button");setButtonEvents.call(this,btn);}};this.addEv
 this.length=0;this.isLoading={};this.inited=this.ready=false;this.$scroll=true;
 this.set=function(page,callback,noEvent){if(noEvent||this.src&&!this.$findPage(page,{})){return this.$propHandlers.activepage.call(this,page,null,null,callback,noEvent);
 }if(callback&&this.activepage==page){return callback(this.getPage(page));}this.$lastCallback=callback;
-this.setProperty("activepage",page);};this.$booleanProperties.overactivetab=true;
-this.$supportedProperties.push("activepage","activepagenr","length","src","loading","trans-in","trans-out","overactivetab");
-console.log(this)
+this.setProperty("activepage",page);};this.$supportedProperties.push("activepage","activepagenr","length","src","loading","trans-in","trans-out");
 this.$propHandlers.activepagenr=this.$propHandlers.activepage=function(next,prop,force,callback,noEvent){if(!this.inited||apf.isNot(next)||next==-1){return;
 }if(!callback){callback=this.$lastCallback;delete this.$lastCallback;}var page,info={};
 page=this.$findPage(next,info);if(!page){if(this.src){if(this.isLoading[next]){return;
@@ -6659,7 +6657,7 @@ if((x[0]=="top"&&this.sign==1)||(x[0]=="bottom"&&this.sign==-1)){if(this.arrange
 $setTimeout(hideWindow,_self.timeout);}});function hideWindow(){if(isMouseOver){return;
 }apf.tween.css(oNoti,"notifier_hidden",{anim:apf.tween.NORMAL,steps:10,interval:20,onfinish:function(container){apf.setStyleClass(oNoti,"",["notifier_hover"]);
 if(isMouseOver){return;}if(oNoti.parentNode){if(oNoti.parentNode.removeChild(oNoti)&&!removed){_self.showing--;
-removed=true;}}if(_self.showing==0){_self.lastPos=null;}}});}oNoti.onmouseover=function(e){e=(e||event);
+removed=true;}}if(_self.showing==0){this.lastPos=null;}}});}oNoti.onmouseover=function(e){e=(e||event);
 var tEl=e.explicitOriginalTarget||e.toElement;if(isMouseOver){return;}if(tEl==oNoti||apf.isChildOf(oNoti,tEl)){apf.tween.css(oNoti,"notifier_hover",{anim:apf.tween.NORMAL,steps:10,interval:20,onfinish:function(container){apf.setStyleClass(oNoti,"",["notifier_shown"]);
 }});isMouseOver=true;}};oNoti.onmouseout=function(e){e=(e||event);var tEl=e.explicitOriginalTarget||e.toElement;
 if(!isMouseOver){return;}if(apf.isChildOf(tEl,oNoti)||(!apf.isChildOf(oNoti,tEl)&&oNoti!==tEl)){isMouseOver=false;
@@ -6725,7 +6723,7 @@ var sType=this.getAttribute("type");if(sType){this.fake=true;this.relPage=this.p
 }if(this.parentNode.$hasButtons){this.parentNode.$getNewContext("button");var elBtn=this.parentNode.$getLayoutNode("button");
 elBtn.setAttribute(this.parentNode.$getOption("main","select")||"onmousedown","var page = apf.lookup("+this.$uniqueId+');                 if (page.disabled) return;                 if (event.button == 2 &amp;&amp; page.parentNode.contextmenu) {                    page.parentNode.contextPage = page;                    return;                 }                 page.parentNode.set(page);                 page.canHaveChildren = 2;                 page.$setStyleClass(this, "down", null, true);');
 elBtn.setAttribute("onmouseup","apf.lookup("+this.$uniqueId+').parentNode.$setStyleClass(this, "", ["down"], true);');
-elBtn.setAttribute("onmouseover","var o = apf.lookup("+this.$uniqueId+").parentNode;if(apf.lookup("+this.$uniqueId+") != o.$activepage"+(this.parentNode.overactivetab?" || true":"")+') o.$setStyleClass(this, "over", null, true);');
+elBtn.setAttribute("onmouseover","var o = apf.lookup("+this.$uniqueId+").parentNode;if(apf.lookup("+this.$uniqueId+') != o.$activepage) o.$setStyleClass(this, "over", null, true);');
 elBtn.setAttribute("onmouseout","var o = apf.lookup("+this.$uniqueId+').parentNode;                  o.$setStyleClass(this, "", ["over"], true);                  var page = apf.lookup('+this.$uniqueId+");                  page.canHaveChildren = true;");
 var closebtn=this.getAttribute("closebtn");if((apf.isTrue(closebtn)||((this.parentNode.buttons||"").indexOf("close")>-1&&!apf.isFalse(closebtn)))){var btncontainer=this.parentNode.$getLayoutNode("button","container");
 this.parentNode.$getNewContext("btnclose");var elBtnClose=this.parentNode.$getLayoutNode("btnclose");
