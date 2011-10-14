@@ -81,9 +81,9 @@ apf.BaseTab = function(){
     };
 
     /**** Properties and Attributes ****/
-    this.$booleanProperties["overactivetab"] = true;
+
     this.$supportedProperties.push("activepage", "activepagenr", "length",
-        "src", "loading", "trans-in", "trans-out", "overactivetab");
+        "src", "loading", "trans-in", "trans-out");
 
     /**
      * @attribute {Number} activepagenr the child number of the active page.

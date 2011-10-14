@@ -408,7 +408,7 @@ apf.page = function(struct, tagName){
     this.$btnDown = function(oHtml, htmlEvent){
         if (this.disabled) 
             return;
-        
+            
         if (htmlEvent.button == 2 && this.parentNode.contextmenu) {
             this.parentNode.contextPage = this;
             return;
@@ -436,9 +436,9 @@ apf.page = function(struct, tagName){
             div.style.marginLeft = apf.getStyle(this.$button, "marginLeft");
             div.style.marginRight = apf.getStyle(this.$button, "marginRight");
             
-            var marginWidth = Math.abs(apf.getMargin(div)[0]);
-            
             this.$button.parentNode.insertBefore(div, this.$button);
+            
+            var marginWidth = Math.abs(apf.getMargin(div)[0]);
             
             var mUp, mMove, _self = this;
             apf.addListener(document, "mousemove", mMove = function(e){
