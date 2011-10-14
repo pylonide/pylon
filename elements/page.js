@@ -397,6 +397,162 @@ apf.page = function(struct, tagName){
         if (this.$button)
             this.$setStyleClass(this.$button, "btnDisabled");//@todo this.$baseCSSname + 
     };
+    
+    function $btnSet(oHtml){
+        this.parentNode.set(this);
+        this.canHaveChildren = 2;
+        this.$setStyleClass(oHtml, "down", null, true);
+    }
+    
+    this.$btnControl = {};
+    this.$btnDown = function(oHtml, htmlEvent){
+        if (this.disabled) 
+            return;
+        
+        if (htmlEvent.button == 2 && this.parentNode.contextmenu) {
+            this.parentNode.contextPage = this;
+            return;
+        }
+        
+        this.$btnPressed = true;
+        
+        if (!this.parentNode.$order)
+            $btnSet.call(this, oHtml);
+        //#ifdef __WITH_TAB_ORDER
+        //@todo vertically stacked buttons
+        else {
+            this.$dragging = true;
+            
+            var pos = apf.getAbsolutePosition(this.$button, this.parentNode.$ext);
+            var x = htmlEvent.clientX - pos[0];
+            var t = apf.getAbsolutePosition(this.$button)[1];
+            oHtml.style.left = (oHtml.offsetLeft) + "px";
+            oHtml.style.top = (oHtml.offsetTop) + "px";
+            oHtml.style.position = "absolute";
+            oHtml.style.zIndex = 1;
+            
+            var div = document.createElement("div");
+            div.style.width = oHtml.offsetWidth + "px";
+            div.style.marginLeft = apf.getStyle(this.$button, "marginLeft");
+            div.style.marginRight = apf.getStyle(this.$button, "marginRight");
+            
+            var marginWidth = Math.abs(apf.getMargin(div)[0]);
+            
+            this.$button.parentNode.insertBefore(div, this.$button);
+            
+            var mUp, mMove, _self = this;
+            apf.addListener(document, "mousemove", mMove = function(e){
+                if (!e) e = event;
+                
+                oHtml.style.left = "-2000px";
+                
+                var el = document.elementFromPoint(e.clientX, t + 1);
+                var aml = el && apf.findHost(el);
+                
+                oHtml.style.left = (e.clientX - x) + "px";
+                
+                if (aml && aml.localName == "page") {
+                    aml.$button.style.position = "relative";
+
+                    var obj, onRight = div.offsetLeft > aml.$button.offsetLeft;
+                    
+                    var pos = apf.getAbsolutePosition(aml.$button);
+                    if (onRight && aml.$button.offsetWidth - e.clientX + pos[0] < marginWidth)
+                        return;
+                        
+                    if (obj = _self.$btnControl[aml.$uniqueId]) {
+                        if (obj.onRight != onRight)
+                            obj.stop();
+                        else 
+                            return;
+                    }
+                    
+                    _self.$btnControl[aml.$uniqueId] = {onRight: onRight};
+                    
+                    apf.tween.single(aml.$button, {
+                        steps   : 20,
+                        interval: 10,
+                        from    : 0,
+                        to      : onRight
+                            ? aml.$button.offsetWidth - marginWidth
+                            : -1 * (aml.$button.offsetWidth - marginWidth),
+                        type    : "left",
+                        anim    : apf.tween.easeInOutCubic,
+                        control : _self.$btnControl[aml.$uniqueId],
+                        onstop  : function(){
+                            
+                        },
+                        onfinish : function(){
+                            aml.$button.style.left     = 
+                            aml.$button.style.position = "";
+                            
+                            delete _self.$btnControl[aml.$uniqueId];
+                            
+                            if (div) {
+                                div.parentNode.insertBefore(div, onRight
+                                    ? aml.$button
+                                    : aml.$button.nextSibling);
+                            }
+                        }
+                    });
+                }
+            });
+            
+            apf.addListener(document, "mouseup", mUp = function(e){
+                if (!e) e = event;
+                
+                var aml = apf.findHost(div.nextSibling);
+                
+                apf.tween.single(_self.$button, {
+                    steps   : 20,
+                    interval: 10,
+                    from    : _self.$button.offsetLeft,
+                    to      : div.offsetLeft,
+                    type    : "left",
+                    anim    : apf.tween.easeInOutCubic,
+                    onstop  : function(){
+                        
+                    },
+                    onfinish : function(){
+                        oHtml.style.position = 
+                        oHtml.style.zIndex   = 
+                        oHtml.style.top      = 
+                        oHtml.style.left     = "";
+                        
+                        _self.parentNode.insertBefore(_self, aml);
+                        div.parentNode.removeChild(div);
+                    }
+                });
+                
+                apf.removeListener(document, "mouseup", mUp);
+                apf.removeListener(document, "mousemove", mMove);
+            });
+        }
+        //#endif
+    }
+    
+    this.$btnUp = function(oHtml){
+        this.parentNode.$setStyleClass(oHtml, "", ["down"], true);
+        
+        if (this.disabled) 
+            return;
+        
+        if (this.parentNode.$order && this.$btnPressed) {
+            this.$dragging = false;
+            
+            $btnSet.call(this, oHtml);
+        }
+        
+        this.$btnPressed = false;
+    }
+    
+    this.$btnOut = function(oHtml){
+        this.parentNode.$setStyleClass(oHtml, "", ["over"], true);
+        
+        this.canHaveChildren = true;
+        this.$dragging       = false;
+        this.$btnPressed     = false;
+    }
 
     /**** Init ****/
 
@@ -406,7 +562,7 @@ apf.page = function(struct, tagName){
         apf.setStyleClass(this.$button, e.value, this.$lastClassValueBtn ? [this.$lastClassValueBtn] : null);
         this.$lastClassValueBtn = e.value;
     });
-
+    
     this.$draw = function(isSkinSwitch){
         this.skinName = this.parentNode.skinName;
 
@@ -422,25 +578,14 @@ apf.page = function(struct, tagName){
             this.parentNode.$getNewContext("button");
             var elBtn = this.parentNode.$getLayoutNode("button");
             elBtn.setAttribute(this.parentNode.$getOption("main", "select") || "onmousedown",
-                'var page = apf.lookup(' + this.$uniqueId + ');\
-                 if (page.disabled) return;\
-                 if (event.button == 2 &amp;&amp; page.parentNode.contextmenu) {\
-                    page.parentNode.contextPage = page;\
-                    return;\
-                 }\
-                 page.parentNode.set(page);\
-                 page.canHaveChildren = 2;\
-                 page.$setStyleClass(this, "down", null, true);');
-            elBtn.setAttribute("onmouseup", 'apf.lookup('
-                + this.$uniqueId + ').parentNode.$setStyleClass(this, "", ["down"], true);');
+                'apf.lookup(' + this.$uniqueId + ').$btnDown(this, event);');
+            elBtn.setAttribute("onmouseup", 
+                'apf.lookup(' + this.$uniqueId + ').$btnUp(this)');
             elBtn.setAttribute("onmouseover", 'var o = apf.lookup('
                 + this.$uniqueId + ').parentNode;if(apf.lookup(' + this.$uniqueId
                 + ') != o.$activepage'  + (this.parentNode.overactivetab ? " || true" : "")  + ') o.$setStyleClass(this, "over", null, true);');
             elBtn.setAttribute("onmouseout", 'var o = apf.lookup('
-                + this.$uniqueId + ').parentNode;\
-                  o.$setStyleClass(this, "", ["over"], true);\
-                  var page = apf.lookup(' + this.$uniqueId + ');\
-                  page.canHaveChildren = true;');
+                + this.$uniqueId + ').$btnOut(this, event);');
 
             //var cssClass = this.getAttribute("class");
             //if (cssClass) {

@@ -306,6 +306,7 @@ apf.BaseTab = function(){
         //this.buttons = value;
         this.$scale = value.indexOf("scale") > -1;
         this.$scroll = !this.$scale;
+        this.$order = value.indexOf("order") > -1;
         
         //#ifdef __ENABLE_TAB_SCALE
         //@todo skin change
@@ -1286,7 +1287,7 @@ apf.BaseTab = function(){
             this.set(amlNode);
         
         //#ifdef __ENABLE_TAB_SCALE
-        if (this.$scale && amlNode.visible) 
+        if (this.$scale && amlNode.visible && !e.$isMoveWithinParent) 
             this.$scaleinit(amlNode, "add");
         else 
         //#endif
