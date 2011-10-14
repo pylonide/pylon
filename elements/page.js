@@ -469,6 +469,11 @@ apf.page = function(struct, tagName){
                     
                     _self.$btnControl[aml.$uniqueId] = {onRight: onRight};
                     
+                    var newPosition = _self.$lastPosition = onRight
+                        ? aml.$button
+                        : aml.$button.nextSibling;
+                    _self.$lastLeft = aml.$button.offsetLeft;
+                    
                     apf.tween.single(aml.$button, {
                         steps   : 20,
                         interval: 10,
@@ -489,40 +494,48 @@ apf.page = function(struct, tagName){
                             delete _self.$btnControl[aml.$uniqueId];
                             
                             if (div) {
-                                div.parentNode.insertBefore(div, onRight
-                                    ? aml.$button
-                                    : aml.$button.nextSibling);
+                                div.parentNode.insertBefore(div, newPosition);
                             }
+                            
+                            _self.$lastPosition =
+                            _self.$lastLeft     = undefined;
                         }
                     });
                 }
             });
-            
+
             apf.addListener(document, "mouseup", mUp = function(e){
                 if (!e) e = event;
                 
-                var aml = apf.findHost(div.nextSibling);
-                
-                apf.tween.single(_self.$button, {
-                    steps   : 20,
-                    interval: 10,
-                    from    : _self.$button.offsetLeft,
-                    to      : div.offsetLeft,
-                    type    : "left",
-                    anim    : apf.tween.easeInOutCubic,
-                    onstop  : function(){
-                        
-                    },
-                    onfinish : function(){
-                        oHtml.style.position = 
-                        oHtml.style.zIndex   = 
-                        oHtml.style.top      = 
-                        oHtml.style.left     = "";
-                        
-                        _self.parentNode.insertBefore(_self, aml);
-                        div.parentNode.removeChild(div);
-                    }
-                });
+                var aml = apf.findHost(_self.$lastPosition || div.nextSibling);
+                if (aml != _self.nextSibling) {
+                    apf.tween.single(_self.$button, {
+                        steps   : 20,
+                        interval: 10,
+                        from    : _self.$button.offsetLeft,
+                        to      : _self.$lastLeft || div.offsetLeft,
+                        type    : "left",
+                        anim    : apf.tween.easeInOutCubic,
+                        onstop  : function(){
+                            
+                        },
+                        onfinish : function(){
+                            oHtml.style.position = 
+                            oHtml.style.zIndex   = 
+                            oHtml.style.top      = 
+                            oHtml.style.left     = "";
+                            
+                            _self.parentNode.insertBefore(_self, aml);
+                            div.parentNode.removeChild(div);
+                        }
+                    });
+                }
+                else {
+                    oHtml.style.position = 
+                    oHtml.style.zIndex   = 
+                    oHtml.style.top      = 
+                    oHtml.style.left     = "";
+                }
                 
                 apf.removeListener(document, "mouseup", mUp);
                 apf.removeListener(document, "mousemove", mMove);
