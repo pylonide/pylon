@@ -5993,7 +5993,7 @@
         position: absolute;
         right: 0;
         top: 7px;
-        z-index: 1;
+        z-index: 10;
     }
     
     .editor_tab .btnsesssioncontainer .saving_active .sessiontab_saving {
@@ -6087,7 +6087,7 @@
         color       : #333333;
         cursor      : default;
         text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
-        z-index     : 1;
+        z-index     : 10;
         height:25px;
         border-bottom:1px solid #e8e8e8;
     }

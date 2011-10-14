@@ -79,7 +79,7 @@
     .tab_console .btncontainer div.curbtn {
         color       : #cbfaa9;
         cursor      : default;
-        z-index     : 1;
+        z-index     : 10;
         background:url(images/console-tab-btn-curr.png) repeat-x 0 0;
         border-top: 1px solid #4f4f4f;
         z-index:101;
@@ -309,7 +309,7 @@
         color       : #333333;
         cursor      : default;
         text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
-        z-index     : 1;
+        z-index     : 10;
         height:25px;
         border-bottom:1px solid #e8e8e8;
     }

@@ -12,6 +12,7 @@ var ext = require("core/ext");
 var util = require("core/util");
 var panels = require("ext/panels/panels");
 var dockpanel = require("ext/dockpanel/dockpanel");
+var settings = require("ext/settings/settings");
 
 module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
@@ -93,7 +94,7 @@ module.exports = ext.register("ext/editors/editors", {
                     id      : "tabEditors",
                     skin    : "editor_tab",
                     style   : "height : 100%",
-                    buttons : "close,scale",
+                    buttons : "close,scale,order",
                     overactivetab  : true,
                     onfocus        : function(e){
                         _self.switchfocus(e);
@@ -121,6 +122,18 @@ module.exports = ext.register("ext/editors/editors", {
                     right   : "0"
                 })*/
             ]
+        });
+        
+        tabEditors.addEventListener("DOMNodeInserted",function(e){
+            if (e.$isMoveWithinParent) {
+                //record position in settings
+                
+                var amlNode = e.currentTarget;
+                if (amlNode.localName != "page" || e.relatedNode != this || amlNode.nodeType != 1)
+                    return;
+                
+                settings.save();
+            }
         });
         
         tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
