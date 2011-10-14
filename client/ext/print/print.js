@@ -45,7 +45,7 @@ module.exports = ext.register("ext/formatjson/formatjson", {
         
         var win = window.open();
         win.document.documentElement.innerHTML = '<html><body>\n\
-<style type="text/css" media="screen">\n\
+<style type="text/css">\n\
     :css:\n\
 </style>\n\
 :html:\n\
