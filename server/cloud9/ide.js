@@ -124,6 +124,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/beautify/beautify",
     "ext/offline/offline",
     "ext/zen/zen",
+    "ext/print/print",
     "ext/codecomplete/codecomplete"
     //"ext/acebugs/acebugs"
 ];
