@@ -493,9 +493,8 @@ apf.page = function(struct, tagName){
                             
                             delete _self.$btnControl[aml.$uniqueId];
                             
-                            if (div) {
+                            if (div && div.parentNode)
                                 div.parentNode.insertBefore(div, newPosition);
-                            }
                             
                             _self.$lastPosition =
                             _self.$lastLeft     = undefined;
@@ -535,6 +534,8 @@ apf.page = function(struct, tagName){
                     oHtml.style.zIndex   = 
                     oHtml.style.top      = 
                     oHtml.style.left     = "";
+                    
+                    div.parentNode.removeChild(div);
                 }
                 
                 apf.removeListener(document, "mouseup", mUp);
