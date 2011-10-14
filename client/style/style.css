@@ -93,6 +93,8 @@ BODY {
     -o-user-select: none;
     user-select: none;
 }
+
+.ace_content { z-index: 0 }
 /**
  * SERVICE SIGNIN BUTTONS
  */
