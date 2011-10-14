@@ -1220,6 +1220,11 @@
                     short="Enable tab close buttons, which enables a tab to be closed manually by a user"
                     requires="__WITH_ALIGNMENT"
                     desc="" />
+		  <p:define name="__ENABLE_TAB_ORDER"
+                    match=""
+                    short="Enable dragging tabs"
+                    requires=""
+                    desc="" /
             </p:define>
             <p:define name="__AMLTOOLBAR"
               match="a:toolbar"
