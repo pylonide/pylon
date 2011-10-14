@@ -54,8 +54,53 @@ BODY {
     color : #666;
 }
 
-.relative{
-    position : relative;
+.draganddrop {
+    position: absolute;
+    z-index: 99999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    visibility: hidden;
+    background-color: rgba(255, 255, 255, 0);
+    color: #000;
+    text-align: center;
+    -webkit-transition: background-color 0.25s ease-out;
+    -moz-transition: background-color 0.25s ease-out;
+    -ms-transition: background-color 0.25s ease-out;
+    -o-transition: background-color 0.25s ease-out;
+    transition: background-color 0.25s ease-out;
+}
+
+.draganddrop.over {
+    visibility: visible;
+    background-color: rgba(255, 255, 255, .5);
+}
+
+.draganddrop > span {
+    padding: 16px 8px;
+    background-color: rgba(0, 0, 0, 0);
+    color: #fff;
+    font-size: 15px;
+    font-weight: bold;
+    position: relative;
+    top: 150px;
+    -webkit-transition: background-color 0.25s ease-out;
+    -moz-transition: background-color 0.25s ease-out;
+    -ms-transition: background-color 0.25s ease-out;
+    -o-transition: background-color 0.25s ease-out;
+    transition: background-color 0.25s ease-out;
+    border-radius: 8px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+}
+
+.draganddrop.over > span {
+    background-color: rgba(0, 0, 0, .75);
+}
+
+.relative {
+    position: relative;
 }
 
 .consoleInputBox {
