@@ -517,7 +517,9 @@ apf.page = function(struct, tagName){
             apf.addListener(document, "mouseup", mUp = function(e){
                 if (!e) e = event;
                 
-                var aml = apf.findHost(_self.$lastPosition || div.nextSibling);
+                var aml = _self.$lastPosition != null
+                    ? apf.findHost(_self.$lastPosition || div.nextSibling)
+                    : null;
                 if (started && aml != _self.nextSibling) {
                     apf.tween.single(_self.$button, {
                         steps   : 20,
