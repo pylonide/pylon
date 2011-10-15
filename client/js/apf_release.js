@@ -6737,7 +6737,8 @@ if(onRight&&aml.$button.offsetWidth-e.clientX+pos[0]<marginWidth){return;}if(obj
 _self.$lastLeft=aml.$button.offsetLeft;apf.tween.single(aml.$button,{steps:20,interval:10,from:0,to:onRight?aml.$button.offsetWidth-marginWidth:-1*(aml.$button.offsetWidth-marginWidth),type:"left",anim:apf.tween.easeInOutCubic,control:_self.$btnControl[aml.$uniqueId],onstop:function(){},onfinish:function(){aml.$button.style.left=aml.$button.style.position="";
 delete _self.$btnControl[aml.$uniqueId];if(div&&div.parentNode){div.parentNode.insertBefore(div,newPosition);
 }_self.$lastPosition=_self.$lastLeft=undefined;}});}});apf.addListener(document,"mouseup",mUp=function(e){if(!e){e=event;
-}var aml=apf.findHost(_self.$lastPosition||div.nextSibling);if(started&&aml!=_self.nextSibling){apf.tween.single(_self.$button,{steps:20,interval:10,from:_self.$button.offsetLeft,to:_self.$lastLeft||div.offsetLeft,type:"left",control:_self.$btnControl[_self.$uniqueId]={},anim:apf.tween.easeInOutCubic,onstop:function(){},onfinish:function(){oHtml.style.position=oHtml.style.zIndex=oHtml.style.top=oHtml.style.left="";
+}var aml=_self.$lastPosition!=null?apf.findHost(_self.$lastPosition||div.nextSibling):null;
+if(started&&aml!=_self.nextSibling){apf.tween.single(_self.$button,{steps:20,interval:10,from:_self.$button.offsetLeft,to:_self.$lastLeft||div.offsetLeft,type:"left",control:_self.$btnControl[_self.$uniqueId]={},anim:apf.tween.easeInOutCubic,onstop:function(){},onfinish:function(){oHtml.style.position=oHtml.style.zIndex=oHtml.style.top=oHtml.style.left="";
 _self.parentNode.insertBefore(_self,aml);div.parentNode.removeChild(div);delete _self.$btnControl[_self.$uniqueId];
 }});}else{oHtml.style.position=oHtml.style.zIndex=oHtml.style.top=oHtml.style.left="";
 div.parentNode.removeChild(div);}apf.removeListener(document,"mouseup",mUp);apf.removeListener(document,"mousemove",mMove);
