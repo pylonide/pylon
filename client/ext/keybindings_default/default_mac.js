@@ -70,11 +70,11 @@ return keys.onLoad({
             "showsettings": "Command-,"
         },
         "tabbehaviors" : {
-            "closetab": "Command-W",
-            "closealltabs": "Command-Shift-W",
-            "closeallbutme": "Command-Option-W",
-            "gototabright": "Command-Shift-]",
-            "gototableft": "Command-Shift-[",
+            "closetab": "Command-Shift-W",
+            "closealltabs": "Command-Option-W",
+            "closeallbutme": "Command-Ctrl-W",
+            "gototabright": "Command-]",
+            "gototableft": "Command-[",
             "tab1": "Command-1",
             "tab2": "Command-2",
             "tab3": "Command-3",
@@ -85,7 +85,9 @@ return keys.onLoad({
             "tab8": "Command-8",
             "tab9": "Command-9",
             "tab0": "Command-0",
-            "revealtab": "Command-Shift-L"
+            "revealtab": "Command-Shift-L",
+            "nexttab": "Option-Tab",
+            "previoustab": "Option-Shift-Tab"
         },
         "code" : {
             "selectall": "Command-A",

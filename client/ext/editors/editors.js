@@ -271,7 +271,7 @@ module.exports = ext.register("ext/editors/editors", {
             });
 
         if (init)
-            tabEditors.setAttribute("buttons", "close,scale");
+            tabEditors.setAttribute("buttons", "close,scale,order");
         
         var editorPage = tabEditors.getPage(tabEditors.activepage);
         

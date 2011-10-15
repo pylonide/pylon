@@ -74,8 +74,8 @@ return keys.onLoad({
             "closetab": "Ctrl-W",
             "closealltabs": "Ctrl-Shift-W",
             "closeallbutme": "Ctrl-Alt-W",
-            "gototabright": "Ctrl-Shift-]",
-            "gototableft": "Ctrl-Shift-[",
+            "gototabright": "Ctrl-]",
+            "gototableft": "Ctrl-[",
             "tab1": "Ctrl-1",
             "tab2": "Ctrl-2",
             "tab3": "Ctrl-3",
@@ -86,7 +86,9 @@ return keys.onLoad({
             "tab8": "Ctrl-8",
             "tab9": "Ctrl-9",
             "tab0": "Ctrl-0",
-            "revealtab": "Ctrl-Shift-L"
+            "revealtab": "Ctrl-Shift-L",
+            "nexttab": "Ctrl-Tab",
+            "previoustab": "Ctrl-Shift-Tab"
         },
         "code" : {
             "selectall": "Ctrl-A",

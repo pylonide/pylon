@@ -20,6 +20,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     type       : ext.GENERAL,
     deps       : [panels],
     menus      : [],
+    accessed   : [],
     sep        : null,
     more       : null,
     menuOffset : 5,
@@ -39,7 +40,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         "tab8": {hint: "navigate to the eighth tab"},
         "tab9": {hint: "navigate to the ninth tab"},
         "tab0": {hint: "navigate to the tenth tab"},
-        "revealtab": {hint: "reveal current tab in the file tree"}
+        "revealtab": {hint: "reveal current tab in the file tree"},
+        "nexttab": {hint: "navigate to the next tab in the stack of accessed tabs"},
+        "previoustab": {hint: "navigate to the previous tab in the stack of accessed tabs"},
     },
     hotitems   : {},
 
@@ -122,20 +125,34 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
 
         tabEditors.addEventListener("DOMNodeInserted", function(e) {
-            var page;
-            if ((page = e.currentTarget) && page.parentNode == this && page.localName == "page" && page.fake) {
-                _self.addItem(page);
+            var page = e.currentTarget;
+            if (page.localName != "page" || e.relatedNode != this || page.nodeType != 1)
+                return;
+            
+            if (e.$isMoveWithinParent) {
+                page.$tabMenu.parentNode.insertBefore(page.$tabMenu,
+                    page.nextSibling ? page.nextSibling.$tabMenu : null);
                 
-//                var count = 0;
-//                
-//                apf.addListener(page.$button, "mousedown", function(e) {
-//                    if (++count < 2)
-//                        return setTimeout(function () { count = 0; }, 500);
-//                    require("ext/panels/panels").toggleAll();
-//                    count = 0;
-//                });
+                _self.updateState();
             }
-        })
+            else if (page.fake)
+                _self.addItem(page);
+        });
+        
+        tabEditors.addEventListener("DOMNodeRemoved", function(e) {
+            var page = e.currentTarget;
+            if (page.localName != "page" || e.relatedNode != this || page.nodeType != 1)
+                return;
+            
+            if (!e.$doOnlyAdmin)
+                _self.accessed.remove(page);
+        });
+        
+        tabEditors.addEventListener("afterswitch", function(e) {
+            var page = e.nextPage;
+            _self.accessed.remove(page);
+            _self.accessed.push(page);
+        });
     },
 
     closetab: function(page) {
@@ -189,6 +206,18 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
         
         return false;
+    },
+    
+    nexttab : function(){
+        var current = this.accessed.pop();
+        this.accessed.unshift(current);
+        tabEditors.set(this.accessed[this.accessed.length - 1]);
+    },
+    
+    previoustab : function(){
+        var next = this.accessed.shift();
+        this.accessed.push(next);
+        tabEditors.set(next);
     },
 
     gototabright: function() {
@@ -302,16 +331,20 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     addItem: function(page) {
         if (this.more)
             return; // no more items allowed...
-        var no = this.nodes.push(
-            mnuTabs.appendChild(new apf.item({
-                caption : page.getAttribute("caption"),
-                model   : page.$model,
-                relPage : page.id,
-                onclick : function() {
-                    tabEditors.set(this.relPage);
-                }
-            }))
-        ) - 1;
+        
+        var mnu = mnuTabs.appendChild(new apf.item({
+            caption : page.getAttribute("caption"),
+            model   : page.$model,
+            relPage : page.id,
+            onclick : function() {
+                tabEditors.set(this.relPage);
+            }
+        }));
+        var no = this.nodes.push(mnu) - 1;
+        
+        page.$tabMenu = mnu;
+        this.accessed.push(page);
+        
         this.updateState();
     },
 
@@ -345,7 +378,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 this.sep = mnuTabs.appendChild(new apf.divider());
         }
 
-        if (len < (force ? 9 : 10)) { // we already have 4 other menu items
+        if (len < (force ? 9 : 10)) { // we already have 9 other menu items
             if (this.more) {
                 this.more.destroy(true, true);
                 this.more = null;
@@ -355,21 +388,18 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.more = mnuTabs.appendChild(new apf.item({
                 caption : "More...",
                 onclick : function() {
-                    alert("To be implemented!")
+                    require("ext/openfiles/openfiles").show();
                 }
             }));
         }
 
         // update hotkeys and hotitems:
-        var keyId,
-            aItems = this.nodes.slice(this.menuOffset),
-            i      = 0,
-            l      = aItems.length;
-        for (; i < l; ++i) {
+        var keyId, pages = tabEditors.getPages();
+        for (var i = 0, l = pages.length; i < l; ++i) {
             keyId = "tab" + (i + 1 == 10 ? 0 : i + 1);
-            this.hotitems[keyId] = [aItems[i]];
-            if (typeof this.commands[keyId]["hotkey"] != "undefined")
-                aItems[i].setProperty("hotkey", this.commands[keyId].hotkey);
+            this.hotitems[keyId] = [pages[i].$tabMenu];
+            if (typeof this.commands[keyId].hotkey != "undefined")
+                pages[i].$tabMenu.setAttribute("hotkey", this.commands[keyId].hotkey);
         }
     },
 

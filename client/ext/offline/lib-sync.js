@@ -17,7 +17,7 @@ var Sync = module.exports = function(namespace){
 
 (function(){
     this.getLength = function(){
-        return this.items.length;
+        return this.items && this.items.length || 0;
     }
     
     /**
