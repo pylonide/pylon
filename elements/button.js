@@ -272,13 +272,15 @@ apf.button  = function(struct, tagName){
         if (this.$hotkey)
             apf.setNodeValue(this.$hotkey, value);
 
-        if (this.$lastHotkey)
-            apf.removeHotkey(this.$lastHotkey);
+        if (this.$lastHotkey) {
+            apf.hotkeys.remove(this.$lastHotkey[0], this.$lastHotkey[1]);
+            delete this.$lastHotkey[0];
+        }
 
         if (value) {
-            this.$lastHotkey = value;
+            this.$lastHotkey = [value];
             var _self = this;
-            apf.registerHotkey(value, function(e){
+            apf.hotkeys.register(value, this.$lastHotkey[1] = function(){
                 //hmm not very scalable...
                 _self.$setState("Over", {});
 

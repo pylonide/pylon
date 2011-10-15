@@ -212,13 +212,15 @@ apf.item  = function(struct, tagName){
         if (this.$hotkey)
             apf.setNodeValue(this.$hotkey, apf.isMac ? apf.hotkeys.toMacNotation(value) : value);
 
-        if (this.$lastHotkey)
-            apf.hotkeys.remove(this.$lastHotkey);
+        if (this.$lastHotkey) {
+            apf.hotkeys.remove(this.$lastHotkey[0], this.$lastHotkey[1]);
+            delete this.$lastHotkey[0];
+        }
 
         if (value) {
-            this.$lastHotkey = value;
+            this.$lastHotkey = [value];
             var _self = this;
-            apf.hotkeys.register(value, function(){
+            apf.hotkeys.register(value, this.$lastHotkey[1] = function(){
                 if (_self.disabled || !_self.visible)
                     return;
                 

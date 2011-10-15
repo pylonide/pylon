@@ -418,7 +418,7 @@ apf.page = function(struct, tagName){
         
         if (!this.parentNode.$order)
             $btnSet.call(this, oHtml);
-        //#ifdef __WITH_TAB_ORDER
+        //#ifdef __ENABLE_TAB_ORDER
         //@todo vertically stacked buttons
         else {
             this.$dragging = true;

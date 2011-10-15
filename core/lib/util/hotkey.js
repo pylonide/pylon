@@ -78,7 +78,7 @@ apf.hotkeys = {};
 
     var _self = this, trace = 0;
     
-    function register(hotkey, handler) {
+    function register(hotkey, handler, remove) {
         var key,
             hashId = 0,
             keys   = hotkey.splitSafe("\\-", null, true),
@@ -103,7 +103,13 @@ apf.hotkeys = {};
 
         if (!_self.$keys[hashId])
             _self.$keys[hashId] = {};
-        _self.$keys[hashId][key] = handler;
+
+        if (remove) {
+            if (handler == _self.$keys[hashId][key])
+                _self.$keys[hashId][key] = null;
+        }
+        else
+            _self.$keys[hashId][key] = handler;
     }
 
     /**
@@ -151,12 +157,12 @@ apf.hotkeys = {};
      * Removes a registered hotkey.
      * @param {String} hotkey the hotkey combination.
      */
-    apf.removeHotkey = this.remove = this.unregister = function(hotkey) {
+    apf.removeHotkey = this.remove = this.unregister = function(hotkey, handler) {
         var parts = hotkey.split("|"),
             i     = 0,
             l     = parts.length;
         for (; i < l; ++i)
-            register(parts[i], null);
+            register(parts[i], handler, true);
     };
     
     function toMacNotation(hotkey, bHtml) {
