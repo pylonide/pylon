@@ -113,7 +113,7 @@ module.exports = ext.register("ext/editors/editors", {
                     }
                 }),
                 new apf.button({
-                    top   : 7,
+                    top   : 6,
                     left  : 3,
                     width : 19,
                     height : 24,
