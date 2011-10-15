@@ -517,7 +517,7 @@ apf.page = function(struct, tagName){
             apf.addListener(document, "mouseup", mUp = function(e){
                 if (!e) e = event;
                 
-                var aml = _self.$lastPosition != null
+                var aml = _self.$lastPosition !== null
                     ? apf.findHost(_self.$lastPosition || div.nextSibling)
                     : null;
                 if (started && aml != _self.nextSibling) {
