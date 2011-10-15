@@ -99,6 +99,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/openfiles/openfiles",
     "ext/tree/tree",
     "ext/save/save",
+    "ext/recentfiles/recentfiles",
     "ext/gotofile/gotofile",
     "ext/newresource/newresource",
     "ext/undo/undo",
