@@ -21,6 +21,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     deps       : [panels],
     menus      : [],
     accessed   : [],
+    $tabAccessCycle : 2,
     sep        : null,
     more       : null,
     menuOffset : 5,
@@ -148,10 +149,32 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 _self.accessed.remove(page);
         });
         
+        var cycleKeyPressed, cycleKey = apf.isMac ? 18 : 17;
         tabEditors.addEventListener("afterswitch", function(e) {
             var page = e.nextPage;
-            _self.accessed.remove(page);
-            _self.accessed.push(page);
+
+            if (!cycleKeyPressed) {
+                console.log("here");
+                _self.accessed.remove(page);
+                _self.accessed.push(page);
+            }
+        });
+        
+        apf.addEventListener("keydown", function(eInfo) {
+            if (eInfo.keyCode == cycleKey)
+                cycleKeyPressed = true;
+        });
+        
+        apf.addEventListener("keyup", function(eInfo) {
+            if (eInfo.keyCode == cycleKey && cycleKeyPressed) {
+                var page = tabEditors.getPage();
+                if (page) {
+                    _self.accessed.remove(page);
+                    _self.accessed.push(page);
+                }
+                _self.$tabAccessCycle = 2;
+                cycleKeyPressed = false;
+            }
         });
     },
 
@@ -209,14 +232,30 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
     
     nexttab : function(){
-        var current = this.accessed.pop();
-        this.accessed.unshift(current);
-        tabEditors.set(this.accessed[this.accessed.length - 1]);
+        var n = this.accessed.length - this.$tabAccessCycle++;
+        if (n < 0) {
+            n = this.accessed.length - 1;
+            this.$tabAccessCycle = 2;
+        }
+
+        var next = this.accessed[n];
+        if (next == tabEditors.getPage())
+            return this.nexttab();
+        
+        tabEditors.set(next);
     },
     
     previoustab : function(){
-        var next = this.accessed.shift();
-        this.accessed.push(next);
+        var n = this.accessed.length - --this.$tabAccessCycle;
+        if (n ==  this.accessed.length) {
+            n = 0;
+            this.$tabAccessCycle = this.accessed.length;
+        }
+
+        var next = this.accessed[n];
+        if (next == tabEditors.getPage())
+            return this.previoustab();
+        
         tabEditors.set(next);
     },
 
