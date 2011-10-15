@@ -5528,7 +5528,7 @@ if(this.submenu){bs=this.$baseCSSname+"menu";this.$setStyleClass(this.$ext,(stat
 return true;}};this.$submenu=function(hide,force){if(hide){this.setValue(false);
 this.$setState("Out",{},"mouseout");if(this.parentNode){this.parentNode.menuIsPressed=false;
 }}};this.addEventListener("$skinchange",function(e){if(this.tooltip){apf.GuiElement.propHandlers.tooltip.call(this,this.tooltip);
-}});this.$draw=function(){var pNode,isToolbarButton=(pNode=this.parentNode)&&pNode.parentNode.localName=="toolbar";
+}});this.$draw=function(){var pNode,isToolbarButton=(pNode=this.parentNode)&&pNode.parentNode&&pNode.parentNode.localName=="toolbar";
 if(isToolbarButton){if(typeof this.focussable=="undefined"){this.focussable=false;
 }this.$focussable=apf.KEYBOARD;}this.$ext=this.$getExternal();this.oIcon=this.$getLayoutNode("main","icon",this.$ext);
 this.oCaption=this.$getLayoutNode("main","caption",this.$ext);this.$useExtraDiv=apf.isTrue(this.$getOption("main","extradiv"));

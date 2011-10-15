@@ -413,7 +413,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         }
         else if (!this.sep && (len || force)) {
             if (len)
-                this.sep = mnuTabs.insertBefore(new apf.divider(), this.nodes[2].nextSibling);
+                this.sep = mnuTabs.insertBefore(new apf.divider(), this.nodes[3].nextSibling);
             else
                 this.sep = mnuTabs.appendChild(new apf.divider());
         }
