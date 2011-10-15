@@ -421,15 +421,18 @@ apf.page = function(struct, tagName){
         //#ifdef __ENABLE_TAB_ORDER
         //@todo vertically stacked buttons
         else {
+            if (this.$btnControl[this.$uniqueId])
+                return;
+            
             this.$dragging = true;
             
             var pos = apf.getAbsolutePosition(this.$button, this.parentNode.$ext);
-            var x = htmlEvent.clientX - pos[0];
+            var start = htmlEvent.clientX;
+            var x = start - pos[0];
             var t = apf.getAbsolutePosition(this.$button)[1];
             oHtml.style.left = (oHtml.offsetLeft) + "px";
             oHtml.style.top = (oHtml.offsetTop) + "px";
             oHtml.style.position = "absolute";
-            oHtml.style.zIndex = 1;
             
             var div = document.createElement("div");
             div.style.width = oHtml.offsetWidth + "px";
@@ -440,9 +443,17 @@ apf.page = function(struct, tagName){
             
             var marginWidth = Math.abs(apf.getMargin(div)[0]);
             
-            var mUp, mMove, _self = this;
+            var mUp, mMove, _self = this, started;
             apf.addListener(document, "mousemove", mMove = function(e){
                 if (!e) e = event;
+                
+                if (!started) {
+                    if (Math.abs(start - e.clientX) < 3)
+                        return;
+                    started = true;
+                    
+                    oHtml.style.zIndex = 1;
+                }
                 
                 oHtml.style.left = "-2000px";
                 
@@ -507,13 +518,14 @@ apf.page = function(struct, tagName){
                 if (!e) e = event;
                 
                 var aml = apf.findHost(_self.$lastPosition || div.nextSibling);
-                if (aml != _self.nextSibling) {
+                if (started && aml != _self.nextSibling) {
                     apf.tween.single(_self.$button, {
                         steps   : 20,
                         interval: 10,
                         from    : _self.$button.offsetLeft,
                         to      : _self.$lastLeft || div.offsetLeft,
                         type    : "left",
+                        control : _self.$btnControl[_self.$uniqueId] = {},
                         anim    : apf.tween.easeInOutCubic,
                         onstop  : function(){
                             
@@ -526,6 +538,8 @@ apf.page = function(struct, tagName){
                             
                             _self.parentNode.insertBefore(_self, aml);
                             div.parentNode.removeChild(div);
+                            
+                            delete _self.$btnControl[_self.$uniqueId];
                         }
                     });
                 }
