@@ -70,9 +70,9 @@ return keys.onLoad({
             "showsettings": "Command-,"
         },
         "tabbehaviors" : {
-            "closetab": "Command-Shift-W",
-            "closealltabs": "Command-Option-W",
-            "closeallbutme": "Command-Ctrl-W",
+            "closetab": "Option-W",
+            "closealltabs": "Option-Shift-W",
+            "closeallbutme": "Command-Option-W",
             "gototabright": "Command-]",
             "gototableft": "Command-[",
             "tab1": "Command-1",

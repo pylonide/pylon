@@ -259,7 +259,7 @@ module.exports = ext.register("ext/editors/editors", {
             fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
                 page.contentType = contentType;
                 page.$at     = new apf.actiontracker();
-                page.$doc    = doc;
+                page.$doc    = doc; doc.$page = page;
                 page.$editor = editor;
                 page.setAttribute("tooltip", "[@path]");
                 page.setAttribute("class",
@@ -533,6 +533,11 @@ module.exports = ext.register("ext/editors/editors", {
                 return true;
         });
         
+        ide.addEventListener("reload", function(e) {
+            var doc = e.doc;
+            doc.state = doc.$page.$editor.getState && doc.$page.$editor.getState(doc);
+        });
+        
         ide.addEventListener("afterreload", function(e) {
             var doc         = e.doc,
                 acesession  = doc.acesession,
@@ -542,6 +547,11 @@ module.exports = ext.register("ext/editors/editors", {
             acesession.getUndoManager().ignoreChange = true;
             acesession.replace(sel.getRange(), e.data);
             sel.clearSelection();
+            
+            if (doc.state) {
+                var editor = doc.$page.$editor;
+                editor.setState && editor.setState(doc, doc.state);
+            }
         });
     },
 

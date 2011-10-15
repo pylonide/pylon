@@ -131,10 +131,12 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 return;
             
             if (e.$isMoveWithinParent) {
-                page.$tabMenu.parentNode.insertBefore(page.$tabMenu,
-                    page.nextSibling ? page.nextSibling.$tabMenu : null);
-                
-                _self.updateState();
+                if (page.$tabMenu) {
+                    page.$tabMenu.parentNode.insertBefore(page.$tabMenu,
+                        page.nextSibling ? page.nextSibling.$tabMenu : null);
+                    
+                    _self.updateState();
+                }
             }
             else if (page.fake)
                 _self.addItem(page);
@@ -154,7 +156,6 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             var page = e.nextPage;
 
             if (!cycleKeyPressed) {
-                console.log("here");
                 _self.accessed.remove(page);
                 _self.accessed.push(page);
             }
@@ -437,7 +438,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         for (var i = 0, l = pages.length; i < l; ++i) {
             keyId = "tab" + (i + 1 == 10 ? 0 : i + 1);
             this.hotitems[keyId] = [pages[i].$tabMenu];
-            if (typeof this.commands[keyId].hotkey != "undefined")
+            if (pages[i].$tabMenu && this.commands[keyId] && typeof this.commands[keyId].hotkey != "undefined")
                 pages[i].$tabMenu.setAttribute("hotkey", this.commands[keyId].hotkey);
         }
     },

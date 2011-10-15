@@ -101,6 +101,16 @@ module.exports = ext.register("ext/save/save", {
                 caption : "Save",
                 onclick : this.quicksave.bind(this),
                 disabled : "{!!!tabEditors.activepage}"
+            }), ide.mnuFile.firstChild),
+            
+            ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
+            
+            ide.mnuFile.insertBefore(new apf.item({
+                caption : "Revert to Saved",
+                onclick : function(){
+                    _self.reverttosaved();
+                },
+                disabled : "{!!!tabEditors.activepage}"
             }), ide.mnuFile.firstChild)
         );
 
@@ -141,6 +151,10 @@ module.exports = ext.register("ext/save/save", {
                 delete winSaveAs.page;
             }
         });
+    },
+    
+    reverttosaved : function(){
+        ide.dispatchEvent("reload", {doc : tabEditors.getPage().$doc});
     },
 
     saveall : function(){
