@@ -48,9 +48,9 @@ return keys.onLoad({
             "gotofile": "Alt-Shift-R"
         },
         "newresource": {
-            "newfile": "Command-Shift-N",
-            "newfiletemplate": "Option-Shift-N",
-            "newfolder": "Option-Ctrl-N"
+            "newfile": "Option-Shift-N",
+            "newfiletemplate": "Option-Ctrl-N",
+            "newfolder": "Option-Ctrl-Shift-N"
         },
         "quicksearch": {
             "find": "Command-F",

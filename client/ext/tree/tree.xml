@@ -139,8 +139,6 @@
             <a:item match="[folder|project]" disabled="{!apf.clipboard.empty}" onclick="
                 apf.clipboard.pasteSelection(apf.activeElement);
             ">Paste</a:item>
-            <a:divider />
-            <a:item submenu="mnuNew">New</a:item>
         </a:menu>
     </a:window>
 </a:application>
