@@ -139,6 +139,10 @@
             <a:item match="[folder|project]" disabled="{!apf.clipboard.empty}" onclick="
                 apf.clipboard.pasteSelection(apf.activeElement);
             ">Paste</a:item>
+            <a:divider />
+            <a:item match="[file|folder|project]" onclick="
+                require('ext/filesystem/filesystem').createFolder();
+            ">New Folder</a:item>
         </a:menu>
     </a:window>
 </a:application>

@@ -4237,7 +4237,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Users/ruben/Development/packager/lib/../support/apf/core/lib/util/hotkey.js)SIZE(6456)TIME(Sat, 15 Oct 2011 01:29:47 GMT)*/
+/*FILEHEAD(/Users/ruben/Development/packager/lib/../support/apf/core/lib/util/hotkey.js)SIZE(6456)TIME(Sun, 16 Oct 2011 12:33:06 GMT)*/
 
 
 //@todo maybe generalize this to pub/sub event system??
@@ -5422,7 +5422,7 @@ apf.Init.run("nameserver");
 
 
 
-/*FILEHEAD(/Users/ruben/Development/packager/lib/../support/apf/core/lib/util/plane.js)SIZE(7451)TIME(Fri, 14 Oct 2011 08:55:12 GMT)*/
+/*FILEHEAD(/Users/ruben/Development/packager/lib/../support/apf/core/lib/util/plane.js)SIZE(7591)TIME(Sun, 16 Oct 2011 16:06:38 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5487,7 +5487,10 @@ apf.plane = {
 
     $factory : function(){
         var plane              = document.body.appendChild(document.createElement("DIV"));
-        plane.style.background = "url(images/spacer.gif)";
+        
+        var spacerPath = "url(" + (apf.skins.skins["default"] 
+            ? apf.skins.skins["default"].mediaPath + "spacer.gif" : "images/spacer.gif") + ")";
+        plane.style.background = spacerPath;
         plane.style.position   = "fixed";
         plane.style.left       = 0;
         plane.style.top        = 0;
@@ -5501,7 +5504,7 @@ apf.plane = {
             show : function(o, reAppend, copyCursor, useRealSize, options){
                 var plane = this.plane;
                 
-                this.plane.style.background = options && options.color || "url(images/spacer.gif)";
+                this.plane.style.background = options && options.color || spacerPath;
                 this.animate = options && options.animate;
                 this.protect = options && options.protect;
                 
@@ -40885,7 +40888,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/ruben/Development/packager/lib/../support/apf/core/window.js)SIZE(50527)TIME(Fri, 14 Oct 2011 23:58:51 GMT)*/
+/*FILEHEAD(/Users/ruben/Development/packager/lib/../support/apf/core/window.js)SIZE(50527)TIME(Sun, 16 Oct 2011 16:06:48 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66226,7 +66229,7 @@ apf.aml.setElement("script", apf.script);
 
 
 
-/*FILEHEAD(/Users/ruben/Development/packager/lib/../support/apf/elements/scrollbar.js)SIZE(25328)TIME(Fri, 14 Oct 2011 08:55:13 GMT)*/
+/*FILEHEAD(/Users/ruben/Development/packager/lib/../support/apf/elements/scrollbar.js)SIZE(25346)TIME(Sun, 16 Oct 2011 15:44:55 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66452,7 +66455,7 @@ apf.scrollbar = function(struct, tagName){
         }
         
         var oHtml = _self.$getHtmlHost();
-        oHtml.onscroll = function(){
+        apf.addListener(oHtml, "scroll", function(){
             if (_self.animating || !_self.$visible) 
                 return;
             
@@ -66467,7 +66470,7 @@ apf.scrollbar = function(struct, tagName){
                 return false;
             }
             scrolling = false;
-        }
+        });
         
         if ("HTML|BODY".indexOf(oHtml.tagName) > -1) {
             var lastHeight = oHtml.scrollHeight;
@@ -68854,7 +68857,7 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 
-/*FILEHEAD(/Users/ruben/Development/packager/lib/../support/apf/elements/splitter.js)SIZE(14901)TIME(Fri, 14 Oct 2011 08:55:13 GMT)*/
+/*FILEHEAD(/Users/ruben/Development/packager/lib/../support/apf/elements/splitter.js)SIZE(15121)TIME(Sun, 16 Oct 2011 15:58:37 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68997,7 +69000,7 @@ apf.splitter = function(struct, tagName){
                     this.$previous[method](osize, newPos);
             }
         }
-        
+
         if (apf.hasSingleResizeEvent)
             apf.layout.forceResize(this.$ext.parentNode);
     };
@@ -69058,7 +69061,9 @@ apf.splitter = function(struct, tagName){
         this.$ext.onmousedown = function(e){
             if (!e)
                 e = event;
-                
+            
+            apf.dragMode = true; //prevent selection
+            
             _self.$setSiblings();
 
             var changedPosition, pHtml = _self.parentNode.$int;
@@ -69136,8 +69141,9 @@ apf.splitter = function(struct, tagName){
                 }
             }
             
-            e.returnValue  = false;
-            e.cancelBubble = true;
+            //e.returnValue  = false;
+            //e.cancelBubble = true;
+            //apf.stopEvent(e);
             
             
             apf.plane.show(this);
@@ -69189,6 +69195,8 @@ apf.splitter = function(struct, tagName){
                 
                 document.onmouseup   = 
                 document.onmousemove = null;
+                
+                apf.dragMode = false; //return to default selection policy
             };
             
             //@todo convert to proper way
@@ -69210,8 +69218,9 @@ apf.splitter = function(struct, tagName){
                     }
                 }
                 
-                e.returnValue  = false;
-                e.cancelBubble = true;
+                apf.stopEvent(e);
+                //e.returnValue  = false;
+                //e.cancelBubble = true;
             };
         }
         
@@ -70485,7 +70494,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(/Users/ruben/Development/packager/lib/../support/apf/elements/text.js)SIZE(12317)TIME(Fri, 14 Oct 2011 08:55:13 GMT)*/
+/*FILEHEAD(/Users/ruben/Development/packager/lib/../support/apf/elements/text.js)SIZE(12620)TIME(Sun, 16 Oct 2011 15:54:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70576,12 +70585,16 @@ apf.text = function(struct, tagName){
         if (value) {
             //this.addEventListener("resize", this.$resize);
             this.$scrolldown = true;
-            this.$scrollArea.onscroll = function(){
+            apf.addListener(this.$scrollArea, "scroll", this.$scrollFunc = function(){
                 _self.$scrolldown = this.scrollTop >= this.scrollHeight
                     - this.offsetHeight + apf.getVerBorders(this);
-            }
+            });
             this.addEventListener("scroll", this.$scroll);
             this.addEventListener("afterload", this.$scroll);
+            this.addEventListener("resize", function(){
+                if (_self.$scrollArea && _self.$scrolldown && _self.scrolldown)
+                    _self.$scrollArea.scrollTop = _self.$scrollArea.scrollHeight;
+            });
             clearInterval(this.$textTimer);
             this.$textTimer = setInterval(function(){
                 if (_self.$scrollArea && _self.$scrolldown && _self.scrolldown)
@@ -70595,7 +70608,7 @@ apf.text = function(struct, tagName){
             this.removeEventListener("afterload", this.$scroll);
             clearInterval(this.$textTimer);
             if (this.$scrollArea)
-                this.$scrollArea.onscoll = null;
+                apf.removeListener(this.$scrollArea, "scoll", this.$scrollFunc);
         }
     }
     

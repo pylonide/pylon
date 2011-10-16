@@ -190,7 +190,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         options.needle = this.txtFind.getValue()
         options.scope = search.Search.SELECTION;
         this.$editor.replace(this.txtReplace.getValue() || "", options);
-        this.$editor.find(this.$crtSearch, options);
+        //this.$editor.find(this.$crtSearch, options);
+        this.findNext();
         ide.dispatchEvent("track_action", {type: "replace"});
     },
 
