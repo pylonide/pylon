@@ -904,6 +904,10 @@
             height             : 21px;
             width              : 22px;
         }
+        
+        .btn_icon_onlyDown.tabmenubtn {
+            z-index : 10000000;
+        }
 
         .dim22-22.btn_icon_only {
             width: 22px;
@@ -1352,10 +1356,15 @@
            text-shadow : none;
         }
 
+        .c9-menu-btnDown {
+            z-index : 100000000;
+        }
+
+        /* Why are we using an extra div here??? */
         .c9-menu-btnDown .c9-fix {
             height           : 3px;
             position         : absolute;
-            display          : block;
+            display          : none;
             bottom           : -1px;
             left             : 1px;
             right            : 1px;
@@ -5996,12 +6005,14 @@
         z-index: 10;
     }
     
+    .editor_tab .btnsesssioncontainer .loading_active .sessiontab_saving,
     .editor_tab .btnsesssioncontainer .saving_active .sessiontab_saving {
         height: 15px;
         width: 15px;
         background-image: url(images/tab-save-spinner-active.gif);
     }
     
+    .editor_tab .btnsesssioncontainer .loading .sessiontab_saving,
     .editor_tab .btnsesssioncontainer .saving .sessiontab_saving {
         height: 13px;
         width: 13px;
@@ -6019,13 +6030,13 @@
         background-image: url(images/save-indicator-inactive-tab.gif);
     }*/
     
-    .editor_tab .btnsesssioncontainer .loading_active .sessiontab_icon {
+    /*.editor_tab .btnsesssioncontainer .loading_active .sessiontab_icon {
         background-image: url(images/load-indicator-active-tab.gif);
     }
 
     .editor_tab .btnsesssioncontainer .loading .sessiontab_icon {
         background-image: url(images/load-indicator-inactive-tab.gif);
-    }
+    }*/
 
     .editor_tab .btnsesssioncontainer .session_btn .tab_middle .sessiontab_title {
         overflow : hidden;
@@ -6039,7 +6050,7 @@
 
     .editor_tab .btnsesssioncontainer .session_btn.btnclose .tab_middle .sessiontab_title {
         margin-right : 15px;
-        margin-left : 8px;
+        margin-left : 4px;
     }
 
     .editor_tab .scale .session_btn .sessiontab_title{

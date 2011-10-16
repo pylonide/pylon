@@ -116,11 +116,11 @@ module.exports = ext.register("ext/editors/editors", {
                     top   : 6,
                     left  : 3,
                     width : 19,
-                    height : 24,
+                    height : 23,
                     submenu : "mnuTabs",
                     skin : "btn_icon_only",
-                    background : "tabdropdown.png|horizontal|3|19",
-                    zindex : 10000000
+                    "class" : "tabmenubtn",
+                    background : "tabdropdown.png|horizontal|3|19"
                 }) /*,
                 new apf.hbox({
                     id      : "barButtons",
@@ -325,12 +325,13 @@ module.exports = ext.register("ext/editors/editors", {
 
         });*/
         
-        
         editor.enable();
         //editor.$itmEditor.select();
         //editor.$rbEditor.select();
 
         this.currentEditor = editor;
+        
+        settings.save();
     },
 
     close : function(page) {
@@ -370,6 +371,8 @@ module.exports = ext.register("ext/editors/editors", {
         //Destroy the app page if it has no application instance
         //if (!tabEditors.selectNodes("page[@type='" + page.type + "']").length && editorPage)
             //editorPage.destroy(true, true);
+        
+        settings.save();
     },
 
     switchfocus : function(e){
@@ -474,7 +477,8 @@ module.exports = ext.register("ext/editors/editors", {
                 var parent_path = apf.getDirname(path).replace(/\/$/, "");
                 trFiles.addEventListener("expand", function(e){
                     if (e.xmlNode && e.xmlNode.getAttribute("path") == parent_path) {
-                        doc.setNode(e.xmlNode.selectSingleNode("node()[@path='" + path + "']"));
+                        if (doc.getNode().getAttribute("newfile") != 1)
+                            doc.setNode(e.xmlNode.selectSingleNode("node()[@path='" + path + "']"));
                     }
                 });
             }
@@ -492,6 +496,13 @@ module.exports = ext.register("ext/editors/editors", {
                             doc.state = JSON.parse(state);
                     }
                     catch (ex) {}
+                    
+                    if (nodes[i].getAttribute("changed") == 1) {
+                        doc.cachedValue = nodes[i].firstChild.nodeValue
+                            .replace(/\n]\n]/g, "]]")
+                            .replace(/\\r/g, "\r")
+                            .replace(/\\n/g, "\n");
+                    }
                     
                     ide.dispatchEvent("openfile", {
                         doc    : doc,
@@ -528,7 +539,7 @@ module.exports = ext.register("ext/editors/editors", {
                         continue;
 
                     var copy = apf.xmldb.cleanNode(file.cloneNode(false));
-                    copy.removeAttribute("changed");
+                    //copy.removeAttribute("changed");
                     copy.removeAttribute("loading");
                     copy.removeAttribute("saving");
                     pNode.appendChild(copy);
@@ -536,6 +547,21 @@ module.exports = ext.register("ext/editors/editors", {
                     var state = pages[i].$editor.getState && pages[i].$editor.getState(pages[i].$doc);
                     if (state)
                         copy.setAttribute("state", apf.serialize(state));
+                    
+                    //@todo the second part of this if can be removed as soon
+                    //as the collab team implements stored changed settings
+                    //please note that for this to work on loadsettings we 
+                    //should check whether the file on disk has changed and 
+                    //popup a file watch dialog to ask if the user wants to
+                    //load the new file from disk, losing changes.
+                    if (copy.getAttribute("changed") == 1 && copy.getAttribute("newfile") == 1) {
+                        copy.appendChild(copy.ownerDocument.createCDATASection(
+                            pages[i].$doc.getValue()
+                                .replace(/\r/g, "\\r")
+                                .replace(/\n/g, "\\n")
+                                .replace(/\]\]/g, "\n]\n]")
+                        ));
+                    }
                 }
             }
 

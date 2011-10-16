@@ -50,7 +50,8 @@ return keys.onLoad({
         },
         "newresource": {
             "newfile": "Ctrl-N",
-            "newfolder": "Ctrl-Shift-N"
+            "newfiletemplate": "Ctrl-Shift-N",
+            "newfolder": "Ctrl-Alt-N"
         },
         "quicksearch": {
             "find": "Ctrl-F",

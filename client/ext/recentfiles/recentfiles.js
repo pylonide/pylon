@@ -87,8 +87,11 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
             return true;
         });
         
-        ide.addEventListener("afteropenfile", function(e){
-            var node = e.node;
+        function evHandler(e){
+            var node = e.node || e.xmlNode;
+            
+            if (e.name != "afterfilesave" && node.getAttribute("newfile") == 1)
+                return;
             
             var obj = {
                 caption : node.getAttribute("name"),
@@ -99,12 +102,18 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
             _self.currentSettings.shift(obj);
             
             _self.$add(obj);
-        });
+        }
+        
+        ide.addEventListener("afteropenfile", evHandler);
+        ide.addEventListener("afterfilesave", evHandler);
+        ide.addEventListener("closefile", evHandler);
     },
     
     $add : function(def) {
         var found, nodes = this.menu.childNodes;
         for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].nodeType != 1) continue;
+            
             if (nodes[i].localName == "item") {
                 if (nodes[i].value == def.value) {
                     found = nodes[i];
@@ -114,8 +123,9 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
             else break;
         }
         
-        if (found)
+        if (found) {
             this.menu.insertBefore(found, this.menu.firstChild);
+        }
         else {
             this.menu.insertBefore(new apf.item({
                 caption : def.caption,

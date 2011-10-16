@@ -418,7 +418,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 this.sep = mnuTabs.appendChild(new apf.divider());
         }
 
-        if (len < (force ? 9 : 10)) { // we already have 9 other menu items
+        if (len < (force ? 19 : 20)) { // we already have 9 other menu items
             if (this.more) {
                 this.more.destroy(true, true);
                 this.more = null;

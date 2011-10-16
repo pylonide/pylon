@@ -525,6 +525,10 @@
             height             : 21px;
             width              : 22px;
         }
+        
+        .btn_icon_onlyDown.tabmenubtn {
+            z-index : 10000000;
+        }
 
         .dim14-14 {
             width: 14px;
