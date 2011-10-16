@@ -42,9 +42,9 @@ module.exports = ext.register("ext/newresource/newresource", {
                 }
             }), ide.mnuFile.firstChild),
             ide.mnuFile.insertBefore(new apf.item({
-                caption : "New Template",
+                caption : "New Template...",
                 onclick : function(){
-                    _self.newfile();
+                    _self.newfiletemplate();
                 }
             }), ide.mnuFile.firstChild),
             ide.mnuFile.insertBefore(new apf.item({
@@ -60,11 +60,13 @@ module.exports = ext.register("ext/newresource/newresource", {
         this.hotitems["newfolder"] = [this.nodes[1]];
     },
 
-    newfile: function() {
+    newfile: function(type, value) {
+        if (!type) type = "";
+        
         var node = apf.getXml("<file />");
         
         var name = "Untitled", count = 1;
-        while(tabEditors.getPage(name + count)) {
+        while(tabEditors.getPage(name + count + type)) {
             count++;
         }
         
@@ -72,12 +74,19 @@ module.exports = ext.register("ext/newresource/newresource", {
         if (sel)
             path = sel.getAttribute("path").replace(/\/[^\/]*$/, "/");
         
-        node.setAttribute("name", name + count);
-        node.setAttribute("path", path + name + count);
+        node.setAttribute("name", name + count + type);
+        node.setAttribute("path", path + name + count + type);
         node.setAttribute("changed", "1");
         node.setAttribute("newfile", "1");
-        
-        ide.dispatchEvent("openfile", {doc: ide.createDocument(node), type: "newfile"});
+
+        var doc = ide.createDocument(node);
+        if (value)
+            doc.cachedValue = value;
+        ide.dispatchEvent("openfile", {doc: doc, type: "newfile"});
+    },
+    
+    newfiletemplate : function(){
+        winNewFileTemplate.show();
     },
 
     newfolder: function() {
