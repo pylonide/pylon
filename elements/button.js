@@ -569,7 +569,7 @@ apf.button  = function(struct, tagName){
 
     this.$draw  = function(){
         var pNode, isToolbarButton = (pNode = this.parentNode) 
-            && pNode.parentNode.localName == "toolbar";
+            && pNode.parentNode && pNode.parentNode.localName == "toolbar";
         
         if (isToolbarButton) {
             if (typeof this.focussable == "undefined")

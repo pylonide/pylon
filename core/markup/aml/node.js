@@ -279,6 +279,9 @@ apf.AmlNode = function(){
             else this.documentElement = amlNode; //@todo apf3.0 removal
         }
         
+        if (amlNode == beforeNode)
+            return amlNode;
+        
         if (this == amlNode) {
             throw new Error(apf.formatErrorString(0, this,
                 "Insertbefore DOM operation",

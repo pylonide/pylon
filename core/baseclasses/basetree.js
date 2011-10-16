@@ -319,7 +319,10 @@ apf.BaseTree = function(){
             container = this.$findContainer(htmlNode);
         
         //We don't slide open elements without children.
-        if (!container.childNodes.length && !this.getTraverseNodes(xmlNode).length)
+        if ((!container.childNodes.length || container.firstChild.nodeType == 3 
+          && container.firstChild.nodeValue.trim() == "")
+          && !this.$getBindRule("insert", xmlNode)
+          && !this.getTraverseNodes(xmlNode).length)
             return callback && callback(); 
 
         if (this.singleopen) {

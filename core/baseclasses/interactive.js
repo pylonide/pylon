@@ -136,9 +136,9 @@ apf.Interactive = function(){
 
     this.$propHandlers["resizable"] = function(value){
         if (apf.isFalse(value))
-            this.resizable = value = false;
+            this.resizable = false;
         else if (apf.isTrue(value))
-            this.resizable = value = true;
+            this.resizable = "true";
         
         this.$ext.style.cursor = "";
         
