@@ -62,17 +62,18 @@ module.exports = ext.register("ext/newresource/newresource", {
 
     newfile: function(type, value) {
         if (!type) type = "";
-        
+
         var node = apf.getXml("<file />");
         
-        var name = "Untitled", count = 1;
-        while(tabEditors.getPage(name + count + type)) {
-            count++;
-        }
         
         var path = "/workspace/", sel = trFiles.selected;
         if (sel)
             path = sel.getAttribute("path").replace(/\/[^\/]*$/, "/");
+        
+        var name = "Untitled", count = 1;
+        while(tabEditors.getPage(path + name + count + type)) {
+            count++;
+        }
         
         node.setAttribute("name", name + count + type);
         node.setAttribute("path", path + name + count + type);
