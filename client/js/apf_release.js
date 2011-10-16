@@ -7516,7 +7516,7 @@ apf.addListener(this.$scrollArea,"scroll",this.$scrollFunc=function(){_self.$scr
 });this.addEventListener("scroll",this.$scroll);this.addEventListener("afterload",this.$scroll);
 this.addEventListener("resize",function(){if(_self.$scrollArea&&_self.$scrolldown&&_self.scrolldown){_self.$scrollArea.scrollTop=_self.$scrollArea.scrollHeight;
 }});clearInterval(this.$textTimer);this.$textTimer=setInterval(function(){if(_self.$scrollArea&&_self.$scrolldown&&_self.scrolldown){_self.$scrollArea.scrollTop=_self.$scrollArea.scrollHeight;
-}},1000);}else{this.removeEventListener("scroll",this.$scroll);this.removeEventListener("afterload",this.$scroll);
+}},200);}else{this.removeEventListener("scroll",this.$scroll);this.removeEventListener("afterload",this.$scroll);
 clearInterval(this.$textTimer);if(this.$scrollArea){apf.removeListener(this.$scrollArea,"scoll",this.$scrollFunc);
 }}};this.$scroll=function(e){var html=this.$scrollArea;if(e.name=="afterload"){this.$scrolldown=true;
 html.scrollTop=html.scrollHeight;return;}this.$scrolldown=html.scrollTop>=html.scrollHeight-html.offsetHeight+apf.getVerBorders(html);

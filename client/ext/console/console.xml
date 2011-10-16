@@ -46,8 +46,8 @@
                       anchors    = "0 17 0 0"
                       flex       = "1"
                       scrolldown = "true"
-                      textselect = "true"
                       focussable = "true"
+                      textselect = "true"
                       class      = "console_text" />
                     <a:scrollbar
                       for       = "txtConsole"
@@ -63,8 +63,8 @@
                       anchors    = "0 17 0 0"
                       flex       = "1"
                       scrolldown = "true"
-                      textselect = "true"
                       focussable = "true"
+                      textselect = "true"
                       class      = "console_text" />
                     <a:scrollbar
                       for       = "txtOutput"
