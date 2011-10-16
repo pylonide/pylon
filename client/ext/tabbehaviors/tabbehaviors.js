@@ -398,7 +398,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 this.nodes.splice(i, 1);
                 idx   = i - this.menuOffset + 1;
                 keyId = "tab" + (idx == 10 ? 0 : idx);
-                if (typeof this.commands[keyId]["hotkey"] != "undefined")
+                if (this.commands[keyId] && typeof this.commands[keyId].hotkey != "undefined")
                     apf.hotkeys.remove(this.commands[keyId].hotkey);
                 return this.updateState();
             }
