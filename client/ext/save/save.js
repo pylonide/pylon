@@ -42,7 +42,8 @@ module.exports = ext.register("ext/save/save", {
             if (!at.undo_ptr)
                 at.undo_ptr = at.$undostack[0];
             if (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
-              || !at.undo_ptr && e.page.$doc.getNode().getAttribute("changed") == 1) {
+              || !at.undo_ptr && e.page.$doc.getNode().getAttribute("changed") == 1
+              && e.page.$doc.getValue()) {
                 ext.initExtension(_self);
 
                 winCloseConfirm.page = e.page;

@@ -85,6 +85,7 @@ module.exports = ext.register("ext/editors/editors", {
             new apf.bar({id:"tabPlaceholder", flex:1, skin:"basic"})
         );
 
+        var btn;
         var tab = new apf.bar({
             skin     : "basic",
             style    : "padding : 0 0 33px 0;position:absolute;", //53px
@@ -110,7 +111,21 @@ module.exports = ext.register("ext/editors/editors", {
                             return false;
                             
                         _self.close(e.page);
-                    }
+                    },
+                    childNodes : [
+                        btn = new apf.button({
+                            style : "display:inline-block;margin: 0 0 5px 13px;",
+                            right : 5,
+                            top   : 5,
+                            width : 28,
+                            height : 18,
+                            skin : "btn_icon_only",
+                            background : "plustabbtn.png|horizontal|3|28",
+                            onclick : function(){
+                                require("ext/newresource/newresource").newfile();
+                            }
+                        })
+                    ]
                 }),
                 new apf.button({
                     top   : 6,
@@ -134,6 +149,7 @@ module.exports = ext.register("ext/editors/editors", {
             ]
         });
         
+        tabEditors.$buttons.appendChild(btn.$ext);
         tabEditors.addEventListener("DOMNodeInserted",function(e){
             if (e.$isMoveWithinParent) {
                 //record position in settings
@@ -143,6 +159,21 @@ module.exports = ext.register("ext/editors/editors", {
                     return;
                 
                 settings.save();
+            }
+            
+            if (e.relatedNode == this) {
+                tabEditors.$buttons.appendChild(btn.$ext);
+                btn.$ext.style.position = "";
+                btn.$ext.style.right = "";
+                btn.$ext.style.top = "";
+            }
+        });
+        
+        tabEditors.addEventListener("DOMNodeRemoved",function(e){
+            if (e.relatedNode == this && this.getPages().length == 1) {
+                btn.$ext.style.position = "absolute";
+                btn.$ext.style.right = "5px";
+                btn.$ext.style.top = "5px";
             }
         });
         
