@@ -161,6 +161,11 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             }
         });
         
+        tabEditors.addEventListener("close", function(e) {
+            if (tabEditors.getPage() == e.page)
+                this.nextTabInLine = _self.accessed[_self.accessed.length - _self.$tabAccessCycle];
+        });
+        
         apf.addEventListener("keydown", function(eInfo) {
             if (eInfo.keyCode == cycleKey)
                 cycleKeyPressed = true;

@@ -377,10 +377,11 @@ module.exports = ext.register("ext/editors/editors", {
         mdl.setQueryValue("@changed", 0);
         page.$doc.dispatchEvent("close");
         
-        if(mdl.data) {
+        if (mdl.data) {
             mdl.removeXml("data");
-            ide.dispatchEvent("closefile", {xmlNode: mdl.data});
+            ide.dispatchEvent("closefile", {xmlNode: mdl.data, page: page});
         }
+        
         //mdl.unshare();
         mdl.destroy();
 
