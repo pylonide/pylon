@@ -61,7 +61,10 @@ apf.plane = {
 
     $factory : function(){
         var plane              = document.body.appendChild(document.createElement("DIV"));
-        plane.style.background = "url(images/spacer.gif)";
+        
+        var spacerPath = "url(" + (apf.skins.skins["default"] 
+            ? apf.skins.skins["default"].mediaPath + "spacer.gif" : "images/spacer.gif") + ")";
+        plane.style.background = spacerPath;
         plane.style.position   = "fixed";
         plane.style.left       = 0;
         plane.style.top        = 0;
@@ -75,7 +78,7 @@ apf.plane = {
             show : function(o, reAppend, copyCursor, useRealSize, options){
                 var plane = this.plane;
                 
-                this.plane.style.background = options && options.color || "url(images/spacer.gif)";
+                this.plane.style.background = options && options.color || spacerPath;
                 this.animate = options && options.animate;
                 this.protect = options && options.protect;
                 

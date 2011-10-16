@@ -131,7 +131,7 @@ apf.BaseTab = function(){
      */
     this.$propHandlers["activepage"]   = function(next, prop, force, callback, noEvent){
         if (!this.inited || apf.isNot(next) || next == -1) return;
-        
+
         if (!callback) {
             callback = this.$lastCallback;
             delete this.$lastCallback;
@@ -434,7 +434,11 @@ apf.BaseTab = function(){
                 this.$buildScaleAnim(anim, pg, node);
             
             //Set activetab if the current one is lost
-            if (this.$activepage == node) {
+            if (this.nextTabInLine) {
+                this.set(this.nextTabInLine);
+                delete this.nextTabInLine;
+            }
+            else if (this.$activepage == node) {
                 var ln = node.nextSibling;
                 while (ln && (!ln.$first || !ln.visible))
                     ln = ln.nextSibling;
@@ -1206,19 +1210,22 @@ apf.BaseTab = function(){
             return;
         
         if ((this.activepage || this.activepage == 0) && this.activepage != -1) {
-            var ln = amlNode.nextSibling;
-            while (ln && (!ln.$first || !ln.visible))
-                ln = ln.nextSibling;
-            var rn = amlNode.previousSibling;
-            while (rn && (!rn.$last || !rn.visible))
-                rn = rn.previousSibling;
-    
-            if (this.firstChild == amlNode && ln)
-                ln && ln.$first();
-            if (this.lastChild == amlNode && rn)
-                rn && rn.$last();
-    
-            if (this.$activepage == amlNode) {
+            if (this.nextTabInLine)
+                this.set(this.nextTabInLine);
+            
+            if (!this.nextTabInLine && this.$activepage == amlNode) {
+                var ln = amlNode.nextSibling;
+                while (ln && (!ln.$first || !ln.visible))
+                    ln = ln.nextSibling;
+                var rn = amlNode.previousSibling;
+                while (rn && (!rn.$last || !rn.visible))
+                    rn = rn.previousSibling;
+        
+                if (this.firstChild == amlNode && ln)
+                    ln && ln.$first();
+                if (this.lastChild == amlNode && rn)
+                    rn && rn.$last();
+                
                 if (ln || rn)
                     this.set(ln || rn);
                 else {
@@ -1243,6 +1250,8 @@ apf.BaseTab = function(){
                     this.$scaleinit();
                 //#endif
             }
+            
+            delete this.nextTabInLine;
         }
         
         //#ifdef __WITH_PROPERTY_BINDING

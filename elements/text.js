@@ -87,17 +87,21 @@ apf.text = function(struct, tagName){
         if (value) {
             //this.addEventListener("resize", this.$resize);
             this.$scrolldown = true;
-            this.$scrollArea.onscroll = function(){
+            apf.addListener(this.$scrollArea, "scroll", this.$scrollFunc = function(){
                 _self.$scrolldown = this.scrollTop >= this.scrollHeight
                     - this.offsetHeight + apf.getVerBorders(this);
-            }
+            });
             this.addEventListener("scroll", this.$scroll);
             this.addEventListener("afterload", this.$scroll);
+            this.addEventListener("resize", function(){
+                if (_self.$scrollArea && _self.$scrolldown && _self.scrolldown)
+                    _self.$scrollArea.scrollTop = _self.$scrollArea.scrollHeight;
+            });
             clearInterval(this.$textTimer);
             this.$textTimer = setInterval(function(){
                 if (_self.$scrollArea && _self.$scrolldown && _self.scrolldown)
                     _self.$scrollArea.scrollTop = _self.$scrollArea.scrollHeight;
-            }, 1000);
+            }, 200);
         }
         else {
             //this.removeEventListener("resize", this.$resize);
@@ -106,7 +110,7 @@ apf.text = function(struct, tagName){
             this.removeEventListener("afterload", this.$scroll);
             clearInterval(this.$textTimer);
             if (this.$scrollArea)
-                this.$scrollArea.onscoll = null;
+                apf.removeListener(this.$scrollArea, "scoll", this.$scrollFunc);
         }
     }
     

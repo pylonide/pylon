@@ -139,7 +139,7 @@ apf.splitter = function(struct, tagName){
                     this.$previous[method](osize, newPos);
             }
         }
-        
+
         if (apf.hasSingleResizeEvent)
             apf.layout.forceResize(this.$ext.parentNode);
     };
@@ -200,7 +200,9 @@ apf.splitter = function(struct, tagName){
         this.$ext.onmousedown = function(e){
             if (!e)
                 e = event;
-                
+            
+            apf.dragMode = true; //prevent selection
+            
             _self.$setSiblings();
 
             var changedPosition, pHtml = _self.parentNode.$int;
@@ -278,8 +280,9 @@ apf.splitter = function(struct, tagName){
                 }
             }
             
-            e.returnValue  = false;
-            e.cancelBubble = true;
+            //e.returnValue  = false;
+            //e.cancelBubble = true;
+            //apf.stopEvent(e);
             
             // #ifdef __WITH_PLANE
             apf.plane.show(this);
@@ -331,6 +334,8 @@ apf.splitter = function(struct, tagName){
                 
                 document.onmouseup   = 
                 document.onmousemove = null;
+                
+                apf.dragMode = false; //return to default selection policy
             };
             
             //@todo convert to proper way
@@ -352,8 +357,9 @@ apf.splitter = function(struct, tagName){
                     }
                 }
                 
-                e.returnValue  = false;
-                e.cancelBubble = true;
+                apf.stopEvent(e);
+                //e.returnValue  = false;
+                //e.cancelBubble = true;
             };
         }
         

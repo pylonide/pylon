@@ -222,7 +222,7 @@ apf.scrollbar = function(struct, tagName){
         }
         
         var oHtml = _self.$getHtmlHost();
-        oHtml.onscroll = function(){
+        apf.addListener(oHtml, "scroll", function(){
             if (_self.animating || !_self.$visible) 
                 return;
             
@@ -237,7 +237,7 @@ apf.scrollbar = function(struct, tagName){
                 return false;
             }
             scrolling = false;
-        }
+        });
         
         if ("HTML|BODY".indexOf(oHtml.tagName) > -1) {
             var lastHeight = oHtml.scrollHeight;
