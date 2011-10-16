@@ -37,7 +37,7 @@ module.exports = ext.register("ext/beautify/beautify", {
     hotitems: {},
 
     beautify: function () {
-        var editor = editors.currentEditor;
+        var editor = require("ext/editors/editors").currentEditor;
 
         var sel = editor.getSelection();
         var doc = editor.getDocument();
@@ -105,6 +105,26 @@ module.exports = ext.register("ext/beautify/beautify", {
             exec: function (env, args, request) {
                 _self.beautify();
             }
+        });
+        
+        editors.addBarButton(
+            new apf.button({
+                caption : "Beautify",
+                id : "btnSelectionBeautify",
+                skin : "editor-bar-btn",
+                disabled : "true",
+                onclick : function() {
+                    require("ext/beautify/beautify").beautify();
+                }
+            }), 2
+        );
+
+        ide.addEventListener("selectionNew", function(range) {
+            btnSelectionBeautify.enable();
+        });
+
+        ide.addEventListener("selectionClear", function() {
+            btnSelectionBeautify.disable();
         });
 
         ide.addEventListener("init.ext/settings/settings", function (e) {

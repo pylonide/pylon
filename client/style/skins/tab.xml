@@ -195,7 +195,6 @@
         overflow: hidden;
         position:relative;
         padding-top: 32px;
-        border-bottom: 1px solid white;
         background-color:#e8e8e8;
     }
 

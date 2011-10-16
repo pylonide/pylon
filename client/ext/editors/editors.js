@@ -12,6 +12,7 @@ var ext = require("core/ext");
 var util = require("core/util");
 var panels = require("ext/panels/panels");
 var dockpanel = require("ext/dockpanel/dockpanel");
+var markup = require("text!ext/editors/editors.xml");
 
 module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
@@ -21,6 +22,9 @@ module.exports = ext.register("ext/editors/editors", {
     nodes   : [],
     visible : true,
     alwayson : true,
+    editorButtons : [],
+
+    //markup : markup,
 
     contentTypes  : {},
 
@@ -86,13 +90,13 @@ module.exports = ext.register("ext/editors/editors", {
 
         var tab = new apf.bar({
             skin     : "basic",
-            style    : "padding : 0 0 33px 0;position:absolute;", //53px
+            style    : "padding : 0 0 29px 0;position:absolute;", //53px
             htmlNode : document.body,
             childNodes: [
                 new apf.tab({
                     id       : "tabEditors",
                     skin     : "editor_tab",
-                    style    : "height : 100%",
+                    /*style    : "height : 100%",*/
                     buttons  : "close,scale",
                     onfocus  : function(e){
                         _self.switchfocus(e);
@@ -109,24 +113,89 @@ module.exports = ext.register("ext/editors/editors", {
                             
                         _self.close(e.page);
                     }
-                })/*,
+                }),
                 new apf.hbox({
-                    id      : "barButtons",
-                    edge    : "0 0 0 6",
-                    "class" : "relative",
+                    edge    : "0 0 0 0",
                     zindex  : "1000",
                     bottom  : "0",
                     left    : "0",
-                    right   : "0"
-                })*/
+                    right   : "0",
+                    childNodes: [
+                        new apf.bar({
+                            id : "editorBar",
+                            flex : "1",
+                            height : "22",
+                            "class" : "editorBar",
+                            style : "border-top: 1px solid #7b7b7b",
+                            childNodes: [
+                                new apf.button({
+                                    skin : "editor-bar-btn",
+                                    background : "editor_cog.png|vertical|3|21",
+                                    id : "btnEditorSettings",
+                                    submenu : "mnuEditorSettings",
+                                    width : "29"
+                                }),
+                                /*new apf.button({
+                                    caption : "Clips",
+                                    skin : "editor-bar-btn",
+                                    style : "padding-left: 25px; background-image: url(static/style/images/editor_clips.png); background-position: 8px 4px"
+                                }),*/
+                                /*new apf.button({
+                                    caption : "AML to JS",
+                                    id : "btnSelectionAmlToJson",
+                                    skin : "editor-bar-btn",
+                                    disabled : "true"
+                                }),*/
+                                new apf.label({
+                                    id : "lblRowsColumns",
+                                    caption : "",
+                                    right : "58",
+                                    top : "2",
+                                    style : "color: #666; letter-spacing: 1px"
+                                }),
+                                new apf.button({
+                                    skin : "editor-bar-btn",
+                                    style : "border-right: none; border-left: 1px solid #7b7b7b;background-image: url(static/style/images/editor_revisions.png); background-position: 6px 3px",
+                                    width : "21",
+                                    right : "30",
+                                    onclick : function() {
+                                        
+                                    }
+                                }),
+                                new apf.button({
+                                    skin : "editor-bar-btn",
+                                    background : "editor_warning.png|vertical|3|22",
+                                    style : "border-right: none; border-left: 1px solid #7b7b7b;",
+                                    width : "29",
+                                    right : "0"
+                                })
+                            ]
+                        })
+                    ]
+                })
             ]
+        });
+        
+        setTimeout(function() {
+            for (var i = 0; i < _self.editorButtons.length; i++)
+                editorBar.insertBefore(_self.editorButtons[i].aml, _self.editorButtons[i].pos);
         });
         
         tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
             _self.setTabResizeValues(tab.$ext);
+            tabEditors.setHeight(tab.getHeight() - 18);
         });
+        
+        this.tabSectionAdded = true;
 
         return vbox;
+    },
+    
+    addBarButton : function(aml, position) {
+        if (this.tabSectionAdded)
+            editorBar.insertBefore(aml, editorBar.childNodes[position]);
+        else
+            this.editorButtons.push( { aml : aml, pos : position } );
     },
     
     /**
@@ -186,6 +255,33 @@ module.exports = ext.register("ext/editors/editors", {
         //Initialize Content of the page
         ext.initExtension(editor, editorPage);
 
+        var _self = this;
+
+        ceEditor.$editor.removeEventListener("changeSession", this.$changeSessionListener);
+        ceEditor.$editor.addEventListener("changeSession", this.$changeSessionListener = function(e) {
+            // Updates the editor bar's cursor position label
+            function setRCLabel() {
+                var pos = ceEditor.getSelection().getCursor();
+                lblRowsColumns.setAttribute("caption", (pos.row+1) + ":" + (pos.column+1));
+            }
+
+            setRCLabel();
+
+            // Detect changes in cursor position
+            e.oldSession.getSelection().removeEventListener("changeCursor", _self.$changeCursorListener);
+            e.oldSession.getSelection().removeEventListener("changeSelection", _self.$changeSelectionListener);
+            e.session.getSelection().addEventListener("changeCursor", _self.$changeCursorListener = function() {
+                setRCLabel();
+            });
+            e.session.getSelection().addEventListener("changeSelection", _self.$changeSelectionListener = function() {
+                var range = ceEditor.$editor.getSelectionRange();
+                if (range.start.column != range.end.column || range.start.row != range.end.row)
+                    ide.dispatchEvent("selectionNew", { range : range });
+                else
+                    ide.dispatchEvent("selectionClear");
+            });
+        });
+
         return editorPage;
     },
 
@@ -236,11 +332,11 @@ module.exports = ext.register("ext/editors/editors", {
 
         if (!editor.inited)
             this.initEditor(editor);
-        
+
         //Create Fake Page
         if (init)
             tabEditors.setAttribute("buttons", "close");
-        
+
         var model = new apf.model(), 
             fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
                 page.contentType = contentType;
@@ -254,7 +350,7 @@ module.exports = ext.register("ext/editors/editors", {
                 );
                 page.setAttribute("model", page.$model = model);
                 page.$model.load(xmlNode);
-                
+
                 //this is very bad, should be removed
                 setTimeout(function(){
                     editor.setState && editor.setState(doc, doc.state);
@@ -263,9 +359,9 @@ module.exports = ext.register("ext/editors/editors", {
 
         if (init)
             tabEditors.setAttribute("buttons", "close,scale");
-        
+
         var editorPage = tabEditors.getPage(tabEditors.activepage);
-        
+
         doc.addEventListener("setnode", function(e) {
             fake.$model.load(e.node);
             ide.dispatchEvent("afteropenfile", {doc: doc, node: e.node});
@@ -275,8 +371,8 @@ module.exports = ext.register("ext/editors/editors", {
             if (e.action == "reset") {
                 delete this.undo_ptr;
                 return;
-            }            
-            
+            }
+
             var val;
             if (fake.$at.ignoreChange) {
                 val = undefined;
@@ -285,32 +381,20 @@ module.exports = ext.register("ext/editors/editors", {
                 val = undefined;
             else
                 val = (this.$undostack[this.$undostack.length-1] !== this.undo_ptr) ? 1 : undefined;
-                
+
             if (fake.changed !== val) {
                 fake.changed = val;
                 model.setQueryValue("@changed", (val ? "1" : "0"));
             }
         });
-        
+
         if (init && !active)
             return;
-        
+
         //Set active page
         tabEditors.set(filepath);
 
-        //if (editorPage.model != model)
-            //this.beforeswitch({nextPage: fake});
-
-        //Open tab, set as active and wait until opened
-        /*fake.addEventListener("afteropen", function(){
-
-        });*/
-        
-        
         editor.enable();
-        //editor.$itmEditor.select();
-        //editor.$rbEditor.select();
-
         this.currentEditor = editor;
     },
 

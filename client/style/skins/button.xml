@@ -1128,6 +1128,63 @@
         </a:main>
     </a:presentation>
 </a:button>
+<a:button name="editor-bar-btn">
+    <a:style><![CDATA[
+        .editor-bar-btn {
+            height              : 19px;
+            float: left;
+            padding: 4px 12px 0px 12px;
+            overflow            : hidden;
+            cursor              : default;
+            position            : relative;
+            -moz-user-select    : none; 
+            -khtml-user-select  : none; 
+            user-select         : none;
+            /*background-position : center 3px;*/
+            background-repeat   : no-repeat;
+            border-right: 1px solid #7b7b7b;
+            color: #333;
+        }
+
+        .editor-bar-btnOver {
+            background-color: #eee;
+        }
+        
+        .editor-bar-btnDown {
+            background-color: #ccc;
+        }
+
+        .editor-bar-btnDisabled {
+            color: #aaa;
+        }
+
+        .editorBar {
+            background-image: linear-gradient(bottom, rgb(245,245,245) 49%, rgb(242,242,242) 50%, rgb(255,255,255) 50%);
+            background-image: -o-linear-gradient(bottom, rgb(245,245,245) 49%, rgb(242,242,242) 50%, rgb(255,255,255) 50%);
+            background-image: -moz-linear-gradient(bottom, rgb(245,245,245) 49%, rgb(242,242,242) 50%, rgb(255,255,255) 50%);
+            background-image: -webkit-linear-gradient(bottom, rgb(245,245,245) 49%, rgb(242,242,242) 50%, rgb(255,255,255) 50%);
+            background-image: -ms-linear-gradient(bottom, rgb(245,245,245) 49%, rgb(242,242,242) 50%, rgb(255,255,255) 50%);
+            
+            background-image: -webkit-gradient(
+                linear,
+                left bottom,
+                left top,
+                color-stop(0.49, rgb(245,245,245)),
+                color-stop(0.5, rgb(242,242,242)),
+                color-stop(0.5, rgb(255,255,255))
+            );
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "text()"
+          background = "."
+          icon       = ".">
+            <div class="editor-bar-btn"> </div>
+        </a:main>
+    </a:presentation>
+</a:button>
 <a:button name="dockheader">
     <a:style><![CDATA[
         .dockheader {

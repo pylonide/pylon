@@ -100,8 +100,12 @@ define(function(require, exports, module) {
         });
         
         //@todo this doesnt work
-        apf.addEventListener("exit", function(){
-            //return "Are you sure you want to close Cloud9? Your state will be saved and will be loaded next time you start Cloud9";
+        apf.addEventListener("exit", function(e){
+            var tePages = tabEditors.getPages();
+            for(var i = 0; i < tePages.length; i++) {
+                if (tePages[i].getModel().data.getAttribute("changed") === "1")
+                    return "You have unsaved changes. Are you sure you want to leave?";
+            }
         });
 
         ide.addEventListener("extload", function() {
