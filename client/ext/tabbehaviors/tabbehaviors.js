@@ -25,7 +25,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     menuOffset : 5,
     commands   : {
         "closetab": {hint: "close the tab that is currently active", msg: "Closing active tab."},
-        "closealltabs": {hint: "close all opened tabs": msg: "Closing all tabs."},
+        "closealltabs": {hint: "close all opened tabs", msg: "Closing all tabs."},
         "closeallbutme": {hint: "close all opened tabs, but the tab that is currently active", msg: "Closing tabs."},
         "gototabright": {hint: "navigate to the next tab, right to the tab that is currently active", msg: "Switching to right tab."},
         "gototableft": {hint: "navigate to the next tab, left to the tab that is currently active", msg: "Switching to left tab."},
