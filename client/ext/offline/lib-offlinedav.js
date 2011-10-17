@@ -110,14 +110,16 @@ WebdavHtml5FileSystem.isAvailable = function(){
         this.webfs.writeFile(new_path, data, function(error, buffer) {
             if (error)
                 return _self.handleError(callback, error);
-                
-            _self.sync.add(path, {
-                type: "webdav-write",
-                date: new Date().getTime(),
-                path: path,
-                data: data
-            });
-            callback(data, apf.SUCCESS, {});
+            
+            if (!ide.onLine) {
+                _self.sync.add(path, {
+                    type: "webdav-write",
+                    date: new Date().getTime(),
+                    path: path,
+                    data: data
+                });
+                callback(data, apf.SUCCESS, {});
+            }
         });
     };
     /**
@@ -179,13 +181,16 @@ WebdavHtml5FileSystem.isAvailable = function(){
         this.webfs.rename(new_from, new_to, function(error, newDirEntry) {
             if (error)
                 return _self.handleError(callback, error);
-            _self.sync.add(sFrom, {
-                type: "webdav-move",
-                date: new Date().getTime(),
-                path: sFrom,
-                data: sTo
-            });
-            callback("", apf.SUCCESS, {});
+                
+            if (!ide.onLine) {
+                _self.sync.add(sFrom, {
+                    type: "webdav-move",
+                    date: new Date().getTime(),
+                    path: sFrom,
+                    data: sTo
+                });
+                callback("", apf.SUCCESS, {});
+            }
         });
     };
     
@@ -196,13 +201,16 @@ WebdavHtml5FileSystem.isAvailable = function(){
         this.webfs.mkdir(new_path, function(error, directory) {
             if (error)
                 return _self.handleError(callback, error);
-            _self.sync.add(sPath, {
-                type: "webdav-mkdir",
-                date: new Date().getTime(),
-                path: sPath,
-                data: null
-            });
-           callback("", apf.SUCCESS, {});
+                
+            if (!ide.onLine) {
+                _self.sync.add(sPath, {
+                    type: "webdav-mkdir",
+                    date: new Date().getTime(),
+                    path: sPath,
+                    data: null
+                });
+               callback("", apf.SUCCESS, {});
+            }
         });
     };
     
@@ -216,12 +224,15 @@ WebdavHtml5FileSystem.isAvailable = function(){
         this.webfs.unlink(new_path, function(error) {
             if (error)
                 return _self.handleError(callback, error);
-            _self.sync.add(sPath, {
+                
+            if (!ide.onLine) {
+                _self.sync.add(sPath, {
                     type: "webdav-remove",
                     date: new Date().getTime(),
                     path: sPath
                 });
                 callback("", apf.SUCCESS, {});
+            }
         });
     };
     
@@ -236,13 +247,16 @@ WebdavHtml5FileSystem.isAvailable = function(){
         this.webfs.copy(new_from, new_to, function(error, newDirEntry) {
             if (error)
                 return _self.handleError(callback, error);
-            _self.sync.add(sFrom, {
-                type: "webdav-move",
-                date: new Date().getTime(),
-                path: sFrom,
-                data: sTo
-            });
-            callback("", apf.SUCCESS, {});
+            
+            if (!ide.onLine) {
+                _self.sync.add(sFrom, {
+                    type: "webdav-move",
+                    date: new Date().getTime(),
+                    path: sFrom,
+                    data: sTo
+                });
+                callback("", apf.SUCCESS, {});
+            }
         });
     };
     

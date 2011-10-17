@@ -18,7 +18,7 @@ return keys.onLoad({
         },
         "undo" : {
             "undo": "Command-Z",
-            "redo": "Command-Y"
+            "redo": "Command-Shift-Z"
         },
         "clipboard" : {
             "cut": "Shift-Command-X",
@@ -48,8 +48,9 @@ return keys.onLoad({
             "gotofile": "Alt-Shift-R"
         },
         "newresource": {
-            "newfile": "Command-N",
-            "newfolder": "Command-Shift-N"
+            "newfile": "Option-Shift-N",
+            "newfiletemplate": "Option-Ctrl-N",
+            "newfolder": "Option-Ctrl-Shift-N"
         },
         "quicksearch": {
             "find": "Command-F",
@@ -70,11 +71,11 @@ return keys.onLoad({
             "showsettings": "Command-,"
         },
         "tabbehaviors" : {
-            "closetab": "Command-W",
-            "closealltabs": "Command-Shift-W",
+            "closetab": "Option-W",
+            "closealltabs": "Option-Shift-W",
             "closeallbutme": "Command-Option-W",
-            "gototabright": "Command-Shift-]",
-            "gototableft": "Command-Shift-[",
+            "gototabright": "Command-]",
+            "gototableft": "Command-[",
             "tab1": "Command-1",
             "tab2": "Command-2",
             "tab3": "Command-3",
@@ -85,7 +86,9 @@ return keys.onLoad({
             "tab8": "Command-8",
             "tab9": "Command-9",
             "tab0": "Command-0",
-            "revealtab": "Command-Shift-L"
+            "revealtab": "Command-Shift-L",
+            "nexttab": "Option-Tab",
+            "previoustab": "Option-Shift-Tab"
         },
         "code" : {
             "selectall": "Command-A",

@@ -41,15 +41,17 @@ var WebdavLocalStorage = module.exports = function(callback, sync, fIdent) {
     };
     
     this.write = function(path, data, x, callback){
-        this.sync.add(path, {
-            type: "webdav-write",
-            date: fs.model.queryValue("//file[@path='" + path + "']/@modifieddate"),
-            path: path,
-            data: data
-        });
-        
-        if (callback)
-            callback("", apf.SUCCESS, {});
+        if (!ide.onLine) {
+            this.sync.add(path, {
+                type: "webdav-write",
+                date: fs.model.queryValue("//file[@path='" + path + "']/@modifieddate"),
+                path: path,
+                data: data
+            });
+            
+            if (callback)
+                callback("", apf.SUCCESS, {});
+        }
     };
     
     this.remove = function(path, lock, callback){

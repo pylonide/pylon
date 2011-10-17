@@ -604,7 +604,16 @@ module.exports = ext.register("ext/console/console", {
                 Logger.log("'" + path + "' is not a file.");
         });
         
-        winDbgConsole.previousSibling.hide();
+        winDbgConsole.previousSibling.hide(); //que?
+        
+        function kdHandler(e){
+            if (!e.ctrlKey && !e.metaKey && !e.altKey 
+              && !e.shiftKey && apf.isCharacter(e.keyCode)) 
+                txtConsoleInput.focus()
+        }
+        
+        txtOutput.addEventListener("keydown", kdHandler);
+        txtConsole.addEventListener("keydown", kdHandler);
     },
 
     enable : function(fromParent){

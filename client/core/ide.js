@@ -155,7 +155,7 @@ define(function(require, exports, module) {
                 }
 
                 if (message.type == "attached")
-                    ide.dispatchEvent("socketConnect");
+                    ide.dispatchEvent("socketConnect"); //This is called too often!!
 
                 ide.dispatchEvent("socketMessage", {
                     message: message

@@ -79,7 +79,12 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             }
         });
         
+        var _self = this;
         winQuickSearch.addEventListener("blur", function(e){
+            if (!apf.isChildOf(winQuickSearch, e.toElement))
+                _self.toggleDialog(-1);
+        });
+        txtQuickSearch.addEventListener("blur", function(e){
             if (!apf.isChildOf(winQuickSearch, e.toElement))
                 _self.toggleDialog(-1);
         });
@@ -149,13 +154,13 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             winQuickSearch.show();
             txtQuickSearch.focus();
             txtQuickSearch.select();
-
+            
             //Animate
             apf.tween.single(winQuickSearch, {
                 type     : "top",
                 anim     : apf.tween.easeInOutCubic,
-                from     : -30,
-                to       : 5,
+                from     : -27,
+                to       : 2,
                 steps    : 8,
                 interval : 10,
                 control  : (this.control = {})
