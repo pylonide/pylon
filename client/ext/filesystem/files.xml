@@ -242,7 +242,7 @@ function addMessage (from, text, time, _class) {
 }
 
 function updateRSS () {
-  var bytes = parseInt(rss);
+  var bytes = parseInt(rss, 10);
   if (bytes) {
     var megabytes = bytes / (1024*1024);
     megabytes = Math.round(megabytes*10)/10;

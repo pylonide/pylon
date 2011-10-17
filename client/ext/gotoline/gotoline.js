@@ -55,7 +55,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         var _self = this;
         lstLineNumber.addEventListener("afterchoose", function() {
             if (lstLineNumber.selected) {
-                _self.execGotoLine(parseInt(lstLineNumber.selected.getAttribute("nr")));
+                _self.execGotoLine(parseInt(lstLineNumber.selected.getAttribute("nr"), 10));
             }
             else
                 _self.execGotoLine();
@@ -185,7 +185,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         winGotoLine.hide();
 
         if (typeof line != "number")
-            line = parseInt(txtLineNr.getValue()) || 0;
+            line = parseInt(txtLineNr.getValue(), 10) || 0;
 
         var history = lstLineNumber.$model;
         var gotoline, lineEl = history.queryNode("gotoline/line[@nr='" + line + "']");

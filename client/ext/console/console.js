@@ -81,8 +81,8 @@ module.exports = ext.register("ext/console/console", {
     },
 
     jump: function(path, row, column) {
-        row = parseInt(row.slice(1));
-        column = column ? parseInt(column.slice(1)) : 0;
+        row = parseInt(row.slice(1), 10);
+        column = column ? parseInt(column.slice(1), 10) : 0;
         editors.showFile(path, row, column);
     },
 

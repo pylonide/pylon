@@ -305,7 +305,7 @@ module.exports = ext.register("ext/editors/editors", {
                 page.$editor = editor;
                 page.setAttribute("tooltip", "[@path]");
                 page.setAttribute("class",
-                    "{parseInt([@saving]) || parseInt([@lookup]) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
+                    "{parseInt([@saving], 10) || parseInt([@lookup], 10) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
                     ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"
                 );
                 page.setAttribute("model", page.$model = model);

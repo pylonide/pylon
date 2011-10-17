@@ -224,7 +224,7 @@ module.exports = ext.register("ext/tree/tree", {
                 filename = args[1].getAttribute("name");
 
             var count = 0;
-            filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1));
+            filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1, 10));
             while (args[0].selectSingleNode("node()[@name='" + filename.replace(/'/g, "\\'") + "']")) {
                 filename = filename.replace(/\.(\d+)$/, "") + "." + ++count;
             }

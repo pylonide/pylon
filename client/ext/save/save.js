@@ -245,7 +245,7 @@ module.exports = ext.register("ext/save/save", {
         }
 
         // check if we're already saving!
-        var saving = parseInt(node.getAttribute("saving"));
+        var saving = parseInt(node.getAttribute("saving"), 10);
         if (saving) {
             this.saveBuffer[path] = page;
             return;
@@ -350,7 +350,7 @@ module.exports = ext.register("ext/save/save", {
             newPath = lblPath.getProperty('caption') + txtSaveAs.getValue();
 
         // check if we're already saving!
-        var saving = parseInt(file.getAttribute("saving"));
+        var saving = parseInt(file.getAttribute("saving"), 10);
         if (saving) {
             this.saveBuffer[path] = page;
             return;
