@@ -116,11 +116,11 @@ module.exports = ext.register("ext/editors/editors", {
                         btn = new apf.button({
                             style : "display:inline-block;margin: 0 0 5px 13px;",
                             right : 5,
-                            top   : 5,
-                            width : 28,
-                            height : 18,
+                            top   : 8,
+                            width : 30,
+                            height : 17,
                             skin : "btn_icon_only",
-                            background : "plustabbtn.png|horizontal|3|28",
+                            background : "plustabbtn.png|horizontal|3|30",
                             onclick : function(){
                                 require("ext/newresource/newresource").newfile();
                             }
@@ -161,7 +161,7 @@ module.exports = ext.register("ext/editors/editors", {
                 settings.save();
             }
             
-            if (e.relatedNode == this) {
+            if (e.relatedNode == this && e.currentTarget.localName == "page") {
                 tabEditors.$buttons.appendChild(btn.$ext);
                 btn.$ext.style.position = "";
                 btn.$ext.style.right = "";
@@ -173,7 +173,7 @@ module.exports = ext.register("ext/editors/editors", {
             if (e.relatedNode == this && this.getPages().length == 1) {
                 btn.$ext.style.position = "absolute";
                 btn.$ext.style.right = "5px";
-                btn.$ext.style.top = "5px";
+                btn.$ext.style.top = "8px";
             }
         });
         
