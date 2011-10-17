@@ -1,5 +1,5 @@
 /**
- * Refactor Module for the Cloud9 IDE
+ * Adds a menu item with a submenu that lists all recently opened files
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>

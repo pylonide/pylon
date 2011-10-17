@@ -225,7 +225,7 @@ module.exports = ext.register("ext/save/save", {
         var doc  = page.$doc;
         var node = doc.getNode();
         
-        if (node.getAttribute('newfile')){
+        if (node.getAttribute("newfile")){
             this.saveas(page, callback);
             return;
         }
@@ -395,15 +395,16 @@ module.exports = ext.register("ext/save/save", {
                 if (file.getAttribute("newfile") == 1) {
                     apf.xmldb.removeAttribute(file, "newfile");
                     apf.xmldb.removeAttribute(file, "changed");
-                    var _xpath = newPath.replace(new RegExp('\/' + cloud9config.davPrefix.split('/')[1]), '')
-                                        .replace(new RegExp('\/' + file.getAttribute('name')), '')
+                    var xpath = newPath.replace(new RegExp("\/" + cloud9config.davPrefix.split("/")[1]), "")
+                                        .replace(new RegExp("\/" + file.getAttribute("name")), "")
                                         .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
                                         .replace(/\/node\(\)\[@name="workspace"\]/, "")
                                         .replace(/\//, "");
-                    if (_xpath)
-                        var _node  = trFiles.getModel().data.firstChild.selectSingleNode(_xpath);
-                    if (_node)
-                        apf.xmldb.appendChild(_node, file);
+                    if (xpath) {
+                        var oNode  = trFiles.getModel().data.firstChild.selectSingleNode(xpath);
+                        if (oNode)
+                            apf.xmldb.appendChild(oNode, file);
+                    }
                 }
                 //setTimeout(function () {
                 //  if (panel.caption == "Saved file " + newPath)

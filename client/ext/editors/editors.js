@@ -300,7 +300,8 @@ module.exports = ext.register("ext/editors/editors", {
             fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
                 page.contentType = contentType;
                 page.$at     = new apf.actiontracker();
-                page.$doc    = doc; doc.$page = page;
+                page.$doc    = doc;
+                doc.$page    = page;
                 page.$editor = editor;
                 page.setAttribute("tooltip", "[@path]");
                 page.setAttribute("class",
