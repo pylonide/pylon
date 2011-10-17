@@ -41,7 +41,6 @@
           group    = "ace"
           out      = "{cwd}/../../client/js/ace.js"
           filehead = "1" /-->
-
         <p:compress
           cmd      = "yuicompressor"
           in       = "{cwd}/build/apf_release.js"
@@ -471,17 +470,17 @@
         <p:define name="__WITH_SELECTION" value="1" />
 
 
-        <p:define name="__AMLPORTAL" value="1" />
-        <p:define name="__ENABLE_WINDOW_WIDGET" value="1" />
+        <p:define name="__AMLPORTAL" value="0" />
+        <p:define name="__ENABLE_WINDOW_WIDGET" value="0" />
         <p:define name="__ENABLE_TEXTBOX_AUTOCOMPLETE" value="1" />
         <p:define name="__AMLSELECT" value="1" />
-        <p:define name="__AMLLINESELECT" value="1" />
+        <p:define name="__AMLLINESELECT" value="0" />
         <p:define name="__AMLUPLOAD" value="1" />
         <p:define name="__AMLPROGRESSBAR" value="1" />
-        <p:define name="__AMLMARKUPEDIT" value="1" />
+        <p:define name="__AMLMARKUPEDIT" value="0" />
         <p:define name="__AMLSLIDER" value="1" />
         <p:define name="__AMLSTYLE" value="1" />
-        <p:define name="__WITH_XIFALLBACK" value="1" />
+        <p:define name="__WITH_XIFALLBACK" value="0" />
         <p:define name="__AMLSWITCH" value="1" />
         <p:define name="__WITH_RSB" value="1" />
         <p:define name="__AMLSELECT1" value="1" />
@@ -527,6 +526,7 @@
         <p:define name="__SUPPORT_SAFARI2" value="1" />
         <p:define name="__SUPPORT_IPHONE" value="1" /-->
         <p:define name="__AMLIMG" value="1" />
+<p:define name="__AMLPROGRESSBAR" value="1" />
         <!--p:define name="__PARSER_XSD" value="1" />
         <p:define name="__WITH_XSDUNION" value="1" />
         <p:define name="__WITH_XSDTOTALDIGITS" value="1" />
