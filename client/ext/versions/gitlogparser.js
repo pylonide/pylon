@@ -64,10 +64,8 @@ module.exports = (function() {
 
             switch (splitLine[0]) {
                 case "commit":
-                    if (this.currentLine.tree !== "") {
-                        this.currentLine.messageJoined = this.currentLine.message.join("\n");
+                    if (this.currentLine.tree !== "")
                         this.arrLogData.push(this.currentLine);
-                    }
 
                     this.currentLine = {
                         commit : splitLine[1],

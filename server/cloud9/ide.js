@@ -123,7 +123,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/dragdrop/dragdrop",
     "ext/beautify/beautify",
     "ext/offline/offline",
-    "ext/zen/zen"
+    "ext/zen/zen",
+    "ext/versions/versions"
     //"ext/acebugs/acebugs"
 ];
 

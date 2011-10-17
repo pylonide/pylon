@@ -18,6 +18,8 @@ require.paths.unshift(__dirname + "/uglify-js");
 require.paths.unshift(__dirname + "/ace/lib");
 require.paths.unshift(__dirname + "/ace/support/pilot/lib");
 require.paths.unshift(__dirname + "/lib-v8debug/lib");
+require.paths.unshift(__dirname + "/gitblame");
+require.paths.unshift(__dirname + "/gitlogparser");
 require.paths.unshift(__dirname);
 
 require.paths.unshift(__dirname + "/../demo/plugin");
