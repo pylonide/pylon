@@ -128,14 +128,14 @@ module.exports = ext.register("ext/editors/editors", {
                     ]
                 }),
                 new apf.button({
-                    top   : 6,
-                    left  : 3,
-                    width : 19,
-                    height : 23,
+                    top   : 8,
+                    left  : 5,
+                    width : 17,
+                    height : 17,
                     submenu : "mnuTabs",
                     skin : "btn_icon_only",
                     "class" : "tabmenubtn",
-                    background : "tabdropdown.png|horizontal|3|19"
+                    background : "tabdropdown.png|horizontal|3|17"
                 }) /*,
                 new apf.hbox({
                     id      : "barButtons",
