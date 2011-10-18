@@ -577,7 +577,9 @@ TEMPORARILY DISABLED
                               
                             for (var found = false, j = 0, jl = detailList.length; j < jl; j++) {
                                 // event, property or data is set during action on corrent element
-                                if ((check1 = details[dType][i]).name == (check2 = detailList[j]).name) {
+                                if ((check1 = details[dType][i]).name 
+                                  == (check2 = detailList[j]).name
+                                ) {
                                     
                                     // event, property or data set but different value
                                     if (check1.value 
@@ -639,6 +641,7 @@ TEMPORARILY DISABLED
     
     $getTargetName : function(eventName, e, amlNode) {
         var amlNode = amlNode || e.amlNode || e.currentTarget;
+            
         if (!amlNode) return;
         
         if ((amlNode.root && amlNode.isIE != undefined) 
@@ -669,13 +672,27 @@ TEMPORARILY DISABLED
         // html element
         else if (amlNode && e && e.htmlEvent) {
             // skip capturing event calls on html element, already captured on amlNodes
-            if (["keydown", "hotkey"].indexOf(eventName) > -1) return;
+            if (["keydown", "hotkey"].indexOf(eventName) > -1) 
+                return;
+                
             var htmlElement = e.htmlEvent.target || e.htmlEvent.srcElement;
-
             if (htmlElement.tagName.toLowerCase() != "html") {
-                if ((targetName = apf.xmlToXpath(htmlElement,apf.document)).substr(0, 8) == "html[1]/")
+                var host = apf.findHost(htmlElement);
+                if (host) {
+                    do {
+                        targetName = apf.xmlToXpath(htmlElement, host.$ext);
+                        if (targetName.substr(0, 8) == "HTML[1]/")
+                            host = host.parentNode;
+                        else {
+                            targetName = apf.xmlToXpath(host)
+                                + "/" + targetName;
+                            break;
+                        }
+                    } while (1);
+                }
+                
+                if (targetName.substr(0, 8) == "html[1]/")
                     targetName = targetName.substr(8);
-                ;//("&lt;" + htmlElement.tagName + "&gt; " + htmlElement.id) || "&lt;" + htmlElement.tagName + "&gt;";
             }
         }
         // apf
@@ -700,26 +717,29 @@ TEMPORARILY DISABLED
     captureEvent : function(eventName, e) {
         if (["DOMNodeRemovedFromDocument"].indexOf(eventName) > -1) 
             return;
-            
+        
         //if (!apf.uirecorder.$inited) return;
         //if (this.validEvents.indexOf(eventName) == -1) return;
         var target = this.$getTargetName(eventName, e);
         if (!target) 
             return;
-        
+
         var eventObj = {
             name        : eventName,
             event       : e
         }
         
         // save events to detailList
-        if (!this.$detailList[target.name]) this.$detailList[target.name] = {
-            caption     : target.name,
-            amlNode     : target.amlNode,
-            events      : [],
-            properties  : [],
-            data        : []
-        };
+        if (!this.$detailList[target.name]) {
+            this.$detailList[target.name] = {
+                caption     : target.name,
+                amlNode     : target.amlNode,
+                events      : [],
+                properties  : [],
+                data        : []
+            };
+        }
+        
         this.$detailList[target.name].events.push(eventObj);
         
         var eventData = true;
@@ -1194,12 +1214,12 @@ TEMPORARILY DISABLED
                     if (action.htmlElement.id) 
                         htmlElement.setAttribute("id", htmlNode.id);
                         
-                    htmlElement.setAttribute("type"     , htmlNode.type.toLowerCase());
-                    htmlElement.setAttribute("tagName"  , htmlNode.tagName.toLowerCase());
-                    htmlElement.setAttribute("x"        , htmlNode.x);
-                    htmlElement.setAttribute("y"        , htmlNode.y);
-                    htmlElement.setAttribute("width"    , htmlNode.width);
-                    htmlElement.setAttribute("height"   , htmlNode.height);
+                    htmlElement.setAttribute("type", htmlNode.type.toLowerCase());
+                    htmlElement.setAttribute("tagName", htmlNode.tagName.toLowerCase());
+                    htmlElement.setAttribute("x", htmlNode.x);
+                    htmlElement.setAttribute("y", htmlNode.y);
+                    htmlElement.setAttribute("width", htmlNode.width);
+                    htmlElement.setAttribute("height", htmlNode.height);
 
                     if (htmlNode.popup) 
                         htmlElement.setAttribute("popup", htmlNode.popup);
@@ -1219,13 +1239,13 @@ TEMPORARILY DISABLED
                 if (action.dropTarget.id) 
                     dropNode.setAttribute("id", dropTarget.id);
                     
-                dropNode.setAttribute("xpath"    , dropTarget.xpath);
-                dropNode.setAttribute("tagName"  , dropTarget.tagName);
-                dropNode.setAttribute("type"     , dropTarget.type);
-                dropNode.setAttribute("x"        , dropTarget.x);
-                dropNode.setAttribute("y"        , dropTarget.y);
-                dropNode.setAttribute("width"    , dropTarget.width);
-                dropNode.setAttribute("height"   , dropTarget.height);
+                dropNode.setAttribute("xpath", dropTarget.xpath);
+                dropNode.setAttribute("tagName", dropTarget.tagName);
+                dropNode.setAttribute("type", dropTarget.type);
+                dropNode.setAttribute("x", dropTarget.x);
+                dropNode.setAttribute("y", dropTarget.y);
+                dropNode.setAttribute("width", dropTarget.width);
+                dropNode.setAttribute("height", dropTarget.height);
                 
                 amlNode.appendChild(dropNode);
             }
@@ -1265,12 +1285,20 @@ TEMPORARILY DISABLED
                                 item = actionItem[di];
                                 iNode = testXml.ownerDocument.createElement(detailTypes[type]);
                                 iNode.setAttribute("name", item.name);
-                                
+
                                 if (item.value || typeof item.value == "boolean") {
-                                    if (typeof item.value === "string")
+                                    if (typeof item.value === "string" || typeof item.value == "number")
                                         iNode.appendChild(testXml.ownerDocument.createTextNode(item.value));
                                     else if (item.value.value != undefined)
                                         iNode.appendChild(testXml.ownerDocument.createTextNode(item.value.value));
+                                    else if (item.value.nodeFunc) {
+                                        var id = item.value.id
+                                            || apf.getChildNumber(item.value)
+                                            || "";
+                                        
+                                        iNode.setAttribute("objectref", "1");
+                                        iNode.appendChild(testXml.ownerDocument.createTextNode(id));
+                                    }
                                     //else
                                         //iNode.appendChild(testXml.ownerDocument.createTextNode(apf.serialize(item.value).split("<").join("&lt;").split(">").join("&gt;")))
                                 }
