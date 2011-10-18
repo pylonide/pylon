@@ -35,5 +35,5 @@
 	path = support/mime
 	url = http://github.com/bentomas/node-mime
 [submodule "qs"]
-	path = qs
+	path = support/qs
 	url = git://github.com/ajaxorg/qs.git
