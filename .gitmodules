@@ -31,3 +31,9 @@
 [submodule "support/uglify-js"]
 	path = support/uglify-js
 	url = https://github.com/ajaxorg/UglifyJS.git
+[submodule "support/mime"]
+	path = support/mime
+	url = http://github.com/bentomas/node-mime
+[submodule "qs"]
+	path = qs
+	url = git://github.com/ajaxorg/qs.git
