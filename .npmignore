@@ -1,8 +1,6 @@
 .*.gz
 build
 support/node-builds
-common/apf
-common/packager
 support/ace/support/requirejs
 support/ace/support/node-o3-xml
 support/ace/support/node-o3-xml-v4
@@ -15,10 +13,9 @@ support/ace/tool
 support/ace/demo
 support/apf/debugwin
 support/apf/test
-support/connect/support/expresso
-support/connect/support/less
-support/connect/support/sass
-support/connect/support/coffee-script
-support/socket.io/support/expresso
+support/connect
+support/socket.io
+support/qs
+support/mime
 support/gnu-builds
 *.psd

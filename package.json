@@ -14,7 +14,10 @@
         "cloud9" : "./bin/cloud9-npm.js"
     },
     "dependencies": {
-        "connect": ">= 1.7.1"
+        "connect": ">= 1.7.1",
+        "uglify-js": "1.1.x",
+        "socket.io": "0.8.x",
+        "mime": "1.2.x"
     },
     "licenses": [{
         "type": "GPLv3",
