@@ -1,26 +1,84 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:menu id="mnuNew" onitemclick="
-        var fs = require('ext/filesystem/filesystem');
-        if (event.value == 'folder')
-            fs.createFolder();
-        else
-            fs.createFile('Untitled.' + event.value);
-      ">
-        <a:item value="folder" icon="folder.png">Folder</a:item>
-        <a:divider />
-        <a:item value="txt" icon="page_white_text.png">Text file</a:item>
-        <a:item value="js" icon="page_white_code.png">JavaScript file</a:item>
-        <a:item value="coffee" icon="page_white_code.png">CoffeeScript file</a:item>
-        <a:item value="html" icon="html.png">HTML file</a:item>
-        <a:item value="xml" icon="page_white_code_red.png">XML file</a:item>
-        <a:item value="css" icon="css.png">CSS file</a:item>
-        <a:item value="scss" icon="css.png">SCSS file</a:item>
-        <a:item value="svg" icon="page_white_picture.png">SVG file</a:item>
-        <a:item value="py" icon="script_code.png">Python file</a:item>
-        <a:item value="php" icon="page_white_php.png">PHP file</a:item>
-        <a:item value="rb" icon="page_white_ruby.png">Ruby file</a:item>
-        <a:item value="mli" icon="page_white_code.png">OCaml file</a:item>
-        <a:item value="clj" icon="page_white_code.png">Clojure file</a:item>
-        <a:item value="md" icon="page_white_text.png">Markdown</a:item>
-    </a:menu>
+    <a:window 
+      id        = "winNewFileTemplate"
+      title     = "Choose a file template"
+      icon      = ""
+      center    = "true"
+      render    = "runtime"
+      width     = "350"
+      height    = "300"
+      skin      = "change_photo"
+      resizable = "true"
+      kbclose   = "true"
+      buttons   = "close">
+        <a:scrollbar
+            for      = "lstFileTemplates"
+            margin   = "2"
+            skin     = "sbios"
+            width    = "7"
+            overflow = "auto"
+            right    = "12"
+            top      = "12"
+            bottom   = "58"
+        />
+      
+        <a:vbox padding="10" anchors="0 0 0 0">
+            <a:list id="lstFileTemplates"
+              model     = "mdlFileTemplates" 
+              flex      = "1" 
+              margin    = "10 10 0 10"
+              caption   = "[@caption]" 
+              icon      = "[@icon]" 
+              each      = "item"
+              eachvalue = "[@value]" 
+              style     = "overflow:hidden"
+              onafterchoose = "
+                btnFileTemplateSave.dispatchEvent('click');
+              " />
+            <a:divider skin="hordivider" />
+            <a:hbox pack="end" padding="7" edge="0 10 5 5">
+                <a:button id="btnFileTemplateSave" width="80" default="2" 
+                  class="ui-btn-green" caption="Create" 
+                  onclick="
+                    require('ext/newresource/newresource').newfile(
+                        '.' + lstFileTemplates.value,
+                        lstFileTemplates.selected.firstChild.nodeValue
+                    );
+                    winNewFileTemplate.hide();
+                  "/>
+                <a:button id="btnFileTemplateCancel" width="80"
+                  onclick="winNewFileTemplate.hide()">Cancel</a:button>
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+    
+    <a:model id="mdlFileTemplates">
+        <templates>
+            <item value="txt" icon="page_white_text.png" caption="Text file"><![CDATA[]]></item>
+            <item value="js" icon="page_white_code.png" caption="JavaScript file"><![CDATA[]]></item>
+            <item value="coffee" icon="page_white_code.png" caption="CoffeeScript file"><![CDATA[]]></item>
+            <item value="html" icon="html.png" caption="HTML file"><![CDATA[<!DOCTYPE html>
+<html  xmlns="http://www.w3.org/1999/xhtml">
+    <head profile="http://www.w3.org/2005/10/profile">
+        <title> </title>
+    </head>
+    <body>
+        
+    </body>
+</html>
+]]></item>
+            <item value="xml" icon="page_white_code_red.png" caption="XML file"><![CDATA[]]></item>
+            <item value="css" icon="css.png" caption="CSS file"><![CDATA[]]></item>
+            <item value="scss" icon="css.png" caption="SCSS file"><![CDATA[]]></item>
+            <item value="svg" icon="page_white_picture.png" caption="SVG file"><![CDATA[]]></item>
+            <item value="py" icon="script_code.png" caption="Python file"><![CDATA[]]></item>
+            <item value="php" icon="page_white_php.png" caption="PHP file"><![CDATA[<?php
+
+?>]]></item>
+            <item value="rb" icon="page_white_ruby.png" caption="Ruby file"><![CDATA[]]></item>
+            <item value="mli" icon="page_white_code.png" caption="OCaml file"><![CDATA[]]></item>
+            <item value="clj" icon="page_white_code.png" caption="Clojure file"><![CDATA[]]></item>
+            <item value="md" icon="page_white_text.png" caption="Markdown"><![CDATA[]]></item>
+        </templates>
+    </a:model>
 </a:application>

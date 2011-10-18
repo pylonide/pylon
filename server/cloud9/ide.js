@@ -91,7 +91,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/filesystem/filesystem",
     "ext/settings/settings",
     "ext/editors/editors",
-    "ext/connect/connect",
+    //"ext/connect/connect",
     "ext/themes/themes",
     "ext/themes_default/themes_default",
     "ext/panels/panels",
@@ -99,6 +99,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/openfiles/openfiles",
     "ext/tree/tree",
     "ext/save/save",
+    "ext/recentfiles/recentfiles",
     "ext/gotofile/gotofile",
     "ext/newresource/newresource",
     "ext/undo/undo",
@@ -123,7 +124,9 @@ Ide.DEFAULT_PLUGINS = [
     "ext/dragdrop/dragdrop",
     "ext/beautify/beautify",
     "ext/offline/offline",
-    "ext/zen/zen"
+    "ext/stripws/stripws",
+    "ext/zen/zen",
+    "ext/codecomplete/codecomplete"
     //"ext/acebugs/acebugs"
 ];
 

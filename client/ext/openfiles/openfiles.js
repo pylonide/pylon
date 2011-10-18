@@ -147,6 +147,17 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         });
     },
 
+    show : function(){
+        if (navbar.current) {
+            if (navbar.current == this)
+                return;
+            navbar.current.disable();
+        }
+
+        panels.initPanel(this);
+        this.enable();
+    },
+
     enable : function(noButton){
         if (self.winOpenFiles) {
             winOpenFiles.show();

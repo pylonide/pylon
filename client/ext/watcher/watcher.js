@@ -206,7 +206,8 @@ module.exports = ext.register("ext/watcher/watcher", {
                 }
                 break;
             case "change":
-                if (!changedPaths[path]) {
+                if (!changedPaths[path] && 
+                    (new Date(message.lastmod).getTime() != new Date(tabEditors.getPage().$model.queryValue('@modifieddate')).getTime())) {
                     changedPaths[path] = path;
                     ++changedPathCount;
                     checkPage();

@@ -17,7 +17,7 @@ var Sync = module.exports = function(namespace){
 
 (function(){
     this.getLength = function(){
-        return this.items.length;
+        return this.items && this.items.length || 0;
     }
     
     /**
@@ -87,7 +87,7 @@ var Sync = module.exports = function(namespace){
             
             handler({
                 item     : item,
-                progress : parseInt((syncLength - syncItems.length)/syncLength*100),
+                progress : parseInt((syncLength - syncItems.length) / syncLength * 100, 10),
                 position : (syncLength - syncItems.length),
                 length   : syncLength
             }, next);

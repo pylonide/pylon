@@ -183,7 +183,7 @@ exports.calcName = function(xmlNode, useDisplay){
             break;
 
         path.unshift(!name.match(/^[a-z_\$][\w_\$]*$/i)
-            ? (parseInt(name) == name
+            ? (parseInt(name, 10) == name
                 ? "[" + name + "]"
                 : "[\"" + name.replace(/'/g, "\\'") + "\"]")
             : name);

@@ -252,6 +252,13 @@ module.exports = ext.register("ext/code/code", {
             _self.getCustomTypes(e.model);
         });
         
+        ide.addEventListener("afteropenfile", function(e) {
+            if(!e.editor)
+                return;
+
+            e.editor.setState && e.editor.setState(e.doc, e.doc.state);
+        });
+        
         // preload common language modes
         require(["ace/mode/javascript", "ace/mode/html", "ace/mode/css"], function() {});
     },

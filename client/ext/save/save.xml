@@ -72,6 +72,7 @@
                 <a:textbox
                   id           = "txtSaveAs"
                   flex         = "7"
+                  focusselect  = "true"
                   onkeydown    = "if (event.keyCode == 13) require('ext/save/save').choosePath(this.getValue())" />
             </a:hbox>
             <a:label id="lblPath" class="lbl_filepath" />
@@ -184,10 +185,12 @@
                   tooltip  = "Create folder">
                     Create folder
                 </a:button>
+                <a:filler />
                 <a:checkbox 
                   skin    = "db-checkbox" 
                   class   = "bluecheck" 
                   checked = "true" 
+                  width   = "120"
                   onafterchange="
                     if(this.checked)
                         trSaveAs.$ext.className = trSaveAs.$ext.className.replace(/hidefiles/, '');
@@ -206,6 +209,7 @@
                 </a:button>
                 <a:button
                   class    = "ui-btn-green"
+                  default  = "2"
                   onclick  = "require('ext/save/save').saveFileAs()">
                     Save
                 </a:button>

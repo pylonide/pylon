@@ -79,7 +79,7 @@
     .tab_console .btncontainer div.curbtn {
         color       : #cbfaa9;
         cursor      : default;
-        z-index     : 1;
+        z-index     : 10;
         background:url(images/console-tab-btn-curr.png) repeat-x 0 0;
         border-top: 1px solid #4f4f4f;
         z-index:101;
@@ -188,7 +188,7 @@
 </a:presentation>
 </a:tab>
 <a:tab name="editor_tab">
-<a:style><![CDATA[
+    <a:style><![CDATA[
     .editor_tab {
         padding : 0 0 0 0;
         margin : 0 auto;
@@ -200,7 +200,7 @@
     }
 
     .editor_tab .btnsesssioncontainer {
-        padding : 5px 20px 0 1px;
+        padding : 5px 40px 0 21px;
         z-index : 100;
         height: 25px;
         overflow: visible;
@@ -248,20 +248,71 @@
     }
 
     .editor_tab .btnsesssioncontainer .session_btn .tab_middle .sessiontab_icon {
-        height:16px;
+        height:8px;
         left:0;
         position:absolute;
-        top:5px;
-        width:16px;
+        top:10px;
+        width:5px;
     }
+
+    .editor_tab .btnsesssioncontainer .session_btn .sessiontab_icon {
+        background-repeat: no-repeat;
+        background-position: 0 0;
+    }
+    
+    .editor_tab .btnsesssioncontainer .sessiontab_saving {
+        position: absolute;
+        right: 0;
+        top: 7px;
+        z-index: 10;
+    }
+    
+    .editor_tab .btnsesssioncontainer .loading_active .sessiontab_saving,
+    .editor_tab .btnsesssioncontainer .saving_active .sessiontab_saving {
+        height: 15px;
+        width: 15px;
+        background-image: url(images/tab-save-spinner-active.gif);
+    }
+    
+    .editor_tab .btnsesssioncontainer .loading .sessiontab_saving,
+    .editor_tab .btnsesssioncontainer .saving .sessiontab_saving {
+        height: 13px;
+        width: 13px;
+        background-image: url(images/tab-save-spinner-inactive.gif);
+    }
+    
+    .editor_tab .btnsesssioncontainer .over .sessiontab_saving {
+        display: none;
+    }
+
+    /*.editor_tab .btnsesssioncontainer .saving_active .sessiontab_icon {
+        background-image: url(images/save-indicator-active-tab.gif);  
+    }
+    .editor_tab .btnsesssioncontainer .saving .sessiontab_icon {
+        background-image: url(images/save-indicator-inactive-tab.gif);
+    }*/
+    
+    /*.editor_tab .btnsesssioncontainer .loading_active .sessiontab_icon {
+        background-image: url(images/load-indicator-active-tab.gif);
+    }
+
+    .editor_tab .btnsesssioncontainer .loading .sessiontab_icon {
+        background-image: url(images/load-indicator-inactive-tab.gif);
+    }*/
 
     .editor_tab .btnsesssioncontainer .session_btn .tab_middle .sessiontab_title {
         overflow : hidden;
         padding  : 0 0 0 0;
+        -moz-user-select: -moz-none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+        -o-user-select: none;
+        user-select: none;
     }
 
     .editor_tab .btnsesssioncontainer .session_btn.btnclose .tab_middle .sessiontab_title {
         margin-right : 15px;
+        margin-left : 4px;
     }
 
     .editor_tab .scale .session_btn .sessiontab_title{
@@ -309,7 +360,7 @@
         color       : #333333;
         cursor      : default;
         text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
-        z-index     : 1;
+        z-index     : 10;
         height:25px;
         border-bottom:1px solid #e8e8e8;
     }
@@ -387,17 +438,21 @@
     }
 
     .editor_tab .editor_bg .editor_bg_content {
-        width: 315px;
-        margin: 80px auto 0;
+        width: 430px;
+        margin: 100px auto 0;
         background: url(images/empty_editor_icon.png) no-repeat center 0;
-        padding-top: 138px;
+        padding-top: 170px;
         text-align: center;
         color: #333333;
         text-shadow : rgba(255, 255, 255, .71) 1px 1px 1px;
         font-size: 18px;
     }
-
-    .editor_tab .editor_bg .editor_bg_content .editor_bg_message{
+    
+    .infraeditor.editor_tab .editor_bg .editor_bg_content {
+        margin-top: 0;
+    }
+    
+    .editor_tab .editor_bg .editor_bg_content .editor_bg_message2 {
         background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(237,237,237)),color-stop(1, rgb(255,255,255)));
         background: -moz-linear-gradient(center bottom,rgb(237,237,237) 0%,rgb(255,255,255) 100%);
         -webkit-box-shadow: 1px 1px 3px #aaaaaa;
@@ -414,6 +469,42 @@
         -webkit-border-radius: 4px;
     }
 
+    .editor_tab .editor_bg .editor_bg_content .editor_bg_message {
+        color: #489829;
+        font-family: georgia;
+        padding-top: 4px;
+        background: url(images/green-arrow-left.png) no-repeat 0 0;
+        text-shadow : rgba(240, 240, 240, .71) 1px 1px 1px;
+    }
+
+    .editor_tab .editor_bg .editor_bg_message-top {
+        color: #489829;
+        font-family: georgia;
+        padding-top: 4px;
+        text-shadow : rgba(240, 240, 240, .71) 0px 1px 1px;
+        font-size: 16px;
+        margin: 35px auto 0;
+        width: 430px;
+        text-align: center;
+        display: none;
+    }
+    
+    .infraeditor.editor_tab .editor_bg .editor_bg_message-top {
+        display: block;
+    }
+    
+    .editor_tab .editor_bg .editor_bg_message-top span {
+        color: #a1a1a1;
+        font-size: 12px;
+    }
+
+    .editor_tab .editor_bg .editor_divider {
+        background: url(images/empty_editor_divider.png) no-repeat center center;
+        height: 14px;
+        width: 430px;
+        margin-top: 20px;
+    }
+    
     .editor_tab .session_page {
         display : none;
         position : absolute;
@@ -440,12 +531,13 @@
         <div class="editor_tab">
             <div class="btnsesssioncontainer"> </div>
             <div class="editor_bg">
+                <div class="editor_bg_message-top">
+                    Invite people to this project by sharing the URL with them.
+<!--                    <span>To access private projects both parties must have a Premium Account.</span>-->
+                    <div class="editor_divider"></div>
+                </div>
                 <div class="editor_bg_content">
-                    No files opened yet...
-                    <div class="editor_bg_message">
-                        To get started double-click a supported file
-                        from the Files-panel on the left...
-                    </div>
+                    <div class="editor_bg_message">Open a file or create a new one to get started</div>
                 </div>
             </div>
         </div>
@@ -460,6 +552,7 @@
             <div class="tab_middle">
                 <div class="sessiontab_icon"> </div>
                 <div class="sessiontab_title">-</div>
+                <div class="sessiontab_saving"> </div>
             </div>
             <div class="tab_left"> </div>
             <div class="tab_right"> </div>
