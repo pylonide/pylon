@@ -144,7 +144,10 @@ apf.$x = apf.$loader
         "core/lib/storage/cookie.js",
 
         "core/lib/vector.js",
-        "core/markup/aml/node.js"
+        "core/markup/aml/node.js",
+        
+        "core/lib/uirecorder/capture.js",
+        "core/lib/uirecorder/playback.js"
     )
     .wait()
     .script(
