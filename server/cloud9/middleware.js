@@ -1,15 +1,16 @@
-var connect = require("connect"),
-    error   = require("./error"),
-    exec    = require("child_process").exec,
-    fs      = require("fs"),
-    parse   = require("url").parse,
-    path    = require("path"),
-    utils   = require("connect/lib/connect/utils");
+var connect = require("connect");
+var error   = require("./error");
+var exec    = require("child_process").exec;
+var fs      = require("fs");
+var parse   = require("url").parse;
+var path    = require("path");
+var Mime    = require("mime");
+var static  = require("connect/lib/middleware/static");
 
 exports.staticProvider = function (root, mount) {
     var staticGzip = exports.staticGzip({
-        root     : path.normalize(root),
-        compress : [
+        root: path.normalize(root),
+        compress: [
             "application/javascript",
             "application/xml",
             "text/css",
@@ -17,7 +18,7 @@ exports.staticProvider = function (root, mount) {
         ]
     });
 
-    var staticProvider  = connect.staticProvider(path.normalize(root));
+    var staticProvider = connect.static(path.normalize(root));
 
     return function (request, response, next) {
         var url      = request.url;
@@ -27,15 +28,22 @@ exports.staticProvider = function (root, mount) {
             request.url = url.replace(mount, "") || "/";
             staticGzip(request, response, function (err) {
                 if (err) {
-                    request.url = url;
-                    return next(err);
+                   request.url = url;
+                   return next(err);
                 }
+                
+                var isZipped = request.url.lastIndexOf(".gz") == request.url.length - 3;
 
-                staticProvider(request, response, function (err) {
+                static.send(request, response, function(err) {
                     request.url = url;
                     next(err);
+                }, {
+                    root: path.normalize(root),
+                    path: request.url,
+                    getOnly: true,
+                    hidden: isZipped
                 });
-            });
+             });
         } else
             next();
     };
@@ -103,19 +111,19 @@ exports.staticGzip = function(options){
         // Parse the url
         var url = parse(req.url),
             filename = path.join(root, url.pathname),
-            mime = utils.mime.type(filename).split(';')[0];
+            mime = Mime.lookup(filename).split(';')[0];
 
         // MIME type not white-listed
         if (!~compress.indexOf(mime))
             return next();
 
         // Check if gzipped static is available
-        gzipped(filename, function(err, path, ext){
-            if (err && err.errno === process.ENOENT) {
+        gzipped(filename, function(err, path, ext) {
+            if (err && err.code === "ENOENT") {
                 next();
                 // We were looking for a gzipped static,
                 // so lets gzip it!
-                if (err.path.indexOf(".gz") === err.path.length - 3)
+                if (err.path.lastIndexOf(".gz") === err.path.length - 3)
                     gzip(filename, path, flags, bin);
             }
             else if (err) {
@@ -140,7 +148,8 @@ exports.staticGzip = function(options){
 
 function gzipped(path, fn) {
     fs.stat(path, function(err, stat){
-        if (err) return fn(err);
+        if (err)
+            return fn(err);
         var ext = "." + Number(stat.mtime) + ".gz";
         path += ext;
         path = path.replace(/[^/]+$/, ".$&");

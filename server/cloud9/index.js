@@ -63,18 +63,17 @@ exports.main = function(options) {
         };
     };
 
-    var server = Connect.createServer();
-    //server.use(Connect.logger());
-    server.use(Connect.conditionalGet());
-    server.use(Connect.cookieDecoder());
+    var server = Connect();
+    server.use(Connect.cookieParser());
     server.use(Connect.session({
-        key: "cloud9.sid"
+        key: "cloud9.sid",
+        secret: "geheim"
     }));
     server.use(ideProvider(projectDir, server));
     server.use(middleware.staticProvider(Path.normalize(__dirname + "/../../support"), "/static/support"));
     server.use(middleware.staticProvider(Path.normalize(__dirname + "/../../client"), "/static"));
 
-    //obfuscate process rights if configured
+    // set process rights if configured
     if (group)
         process.setgid(group);
     if (user)

@@ -13,6 +13,9 @@
     "bin" : {
         "cloud9" : "./bin/cloud9-npm.js"
     },
+    "dependencies": {
+        "connect": ">= 1.7.1"
+    },
     "licenses": [{
         "type": "GPLv3",
         "url": "http://www.gnu.org/licenses/gpl-3.0.txt"}
