@@ -104,6 +104,7 @@ apf.BaseTree = function(){
      * @attribute {Boolean} nocollapse      whether the user cannot collapse a node. Defaults to false.
      * @attribute {Boolean} singleopen      whether the tree will expand a node by a single click. Defaults to false.
      * @attribute {Boolean} prerender       whether the tree will render all the nodes at load. Defaults to true.
+     * @attribute {Boolean} disableremove   whether the tree disallows removing nodes with the keyboard, by pressing DEL. Defaults to false.
      */
     this.$booleanProperties["openadd"]         = true;
     this.$booleanProperties["startcollapsed"]  = true;
@@ -113,13 +114,16 @@ apf.BaseTree = function(){
     this.$booleanProperties["prerender"]       = true;
     this.$booleanProperties["removecontainer"] = true;
     this.$booleanProperties["dragroot"]        = true;
+    this.$booleanProperties["disableremove"]   = true;
     
     this.$supportedProperties.push("openadd", "startcollapsed", "nocollapse",
-        "singleopen", "prerender", "removecontainer", "animation", "dragroot");
+        "singleopen", "prerender", "removecontainer", "animation", "dragroot",
+        "disableremove");
     
     this.openadd        = true;
     this.startcollapsed = 1;
     this.prerender      = true;
+    this.disableremove  = false;
     
     /**** Public Methods ****/
     
@@ -926,9 +930,12 @@ apf.BaseTree = function(){
                     this.select(this.caret, true);
                 return false;
             case 46:
+                if (this.disableremove)
+                    return;
+
                 if (this.$tempsel)
                     this.$selectTemp();
-            
+
                 //DELETE
                 //this.remove();
                 this.remove(this.caret); //this.mode != "check"
