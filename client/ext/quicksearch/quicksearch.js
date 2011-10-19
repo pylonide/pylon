@@ -193,7 +193,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     },
 
     quicksearch : function(){
-        this.toggleDialog(-1);
+        this.toggleDialog(1);
     },
 
     execSearch: function(close, backwards) {
@@ -244,7 +244,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     },
     
     find: function() {
-        this.toggleDialog(-1);
+        this.toggleDialog(1);
         return false;
     },
     
