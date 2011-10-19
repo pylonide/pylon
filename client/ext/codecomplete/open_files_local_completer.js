@@ -50,7 +50,13 @@ function removeDocumentFromCache(path) {
 
 exports.hook = function() {
     function reindex() {
-        var currentPath = tabEditors.getPage().getAttribute("id");
+        var page = tabEditors.getPage();
+        if (!page) return;
+        
+        if (!editors.currentEditor || !editors.currentEditor.ceEditor)
+            return;
+        
+        var currentPath = page.getAttribute("id");
         removeDocumentFromCache(currentPath);
         analyzeDocument(currentPath, editors.currentEditor.getDocument().getValue());
     }
@@ -58,8 +64,8 @@ exports.hook = function() {
     var deferred = lang.deferredCall(reindex);
     
     ide.addEventListener("afteropenfile", function(event){
-        if(!event.node) return;
-        if(!editors.currentEditor.ceEditor) // No editor, for some reason
+        if (!event.node) return;
+        if (!editors.currentEditor || !editors.currentEditor.ceEditor) // No editor, for some reason
             return;
         var path = event.node.getAttribute("path");
         analyzeDocument(path, event.doc.getValue() || "");
@@ -102,7 +108,11 @@ exports.complete = function(editor, callback) {
     var matches = completeUtil.findCompletions(identifier, allIdentifiers);
     
     // Filter out all results from the currently open file
-    var currentPath = tabEditors.getPage().getAttribute("id");
+    var page        = tabEditors.getPage();
+    if (!page)
+        return;
+    
+    var currentPath = page.getAttribute("id");
     matches = matches.filter(function(m) {
         return !globalWordFiles[m][currentPath];
     });

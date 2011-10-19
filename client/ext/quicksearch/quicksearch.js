@@ -59,7 +59,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     else
                         _self.execSearch(false, false);
                     return false;
-                break;
                 case 27: //ESCAPE
                     _self.toggleDialog(1);
                     if (e.htmlEvent)
@@ -67,7 +66,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     else if (e.stop)
                         e.stop();
                     return false;
-                break;
                 case 38: //UP
                     _self.navigateList("prev");
                 break;
@@ -86,6 +84,10 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         });
         
         winQuickSearch.addEventListener("blur", function(e) {
+            if (!apf.isChildOf(winQuickSearch, e.toElement))
+                _self.toggleDialog(-1);
+        });
+        txtQuickSearch.addEventListener("blur", function(e){
             if (!apf.isChildOf(winQuickSearch, e.toElement))
                 _self.toggleDialog(-1);
         });
@@ -159,13 +161,13 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             
             txtQuickSearch.focus();
             txtQuickSearch.select();
-
+            
             //Animate
             apf.tween.single(winQuickSearch, {
                 type     : "top",
                 anim     : apf.tween.easeInOutCubic,
-                from     : -30,
-                to       : 5,
+                from     : -27,
+                to       : 2,
                 steps    : 8,
                 interval : 10,
                 control  : (this.control = {})

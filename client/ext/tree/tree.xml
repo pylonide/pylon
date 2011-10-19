@@ -140,7 +140,9 @@
                 apf.clipboard.pasteSelection(apf.activeElement);
             ">Paste</a:item>
             <a:divider />
-            <a:item submenu="mnuNew">New</a:item>
+            <a:item match="[file|folder|project]" onclick="
+                require('ext/filesystem/filesystem').createFolder();
+            ">New Folder</a:item>
         </a:menu>
     </a:window>
 </a:application>

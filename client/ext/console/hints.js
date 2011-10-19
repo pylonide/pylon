@@ -118,7 +118,7 @@ exports.click = function(node) {
         base        = parts[0],
         cmdName     = parts[1],
         txtId       = parts[2],
-        insertPoint = parseInt(parts[3]),
+        insertPoint = parseInt(parts[3], 10),
         isCmd       = (parts[4] == "true");
 
     if (isCmd)

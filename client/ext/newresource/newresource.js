@@ -15,7 +15,7 @@ var markup = require("text!ext/newresource/newresource.xml");
 
 module.exports = ext.register("ext/newresource/newresource", {
     dev     : "Ajax.org",
-    name    : "Newresource",
+    name    : "New Resource",
     alone   : true,
     offline : false,
     type    : ext.GENERAL,
@@ -29,7 +29,8 @@ module.exports = ext.register("ext/newresource/newresource", {
         "newfolder": {
             hint: "create a new directory resource",
             msg: "New directory created."
-        }
+        },
+        "newfiletemplate": {hint: "open the new file template dialog"}
     },
     hotitems: {},
 
@@ -38,51 +39,61 @@ module.exports = ext.register("ext/newresource/newresource", {
     init : function(amlNode){
         var _self = this;
 
-        //ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(tbNewResource);
-
-        //btnNewFile.onclick   = this.newfile;
-        //btnNewFolder.onclick = this.newfolder;
-
         this.nodes.push(
             ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
             ide.mnuFile.insertBefore(new apf.item({
-                caption : "New",
-                submenu : "mnuNew"
+                caption : "New Folder",
+                onclick : function(){
+                    _self.newfolder();
+                }
+            }), ide.mnuFile.firstChild),
+            ide.mnuFile.insertBefore(new apf.item({
+                caption : "New Template...",
+                onclick : function(){
+                    _self.newfiletemplate();
+                }
+            }), ide.mnuFile.firstChild),
+            ide.mnuFile.insertBefore(new apf.item({
+                caption : "New File",
+                onclick : function(){
+                    _self.newfile();
+                }
             }), ide.mnuFile.firstChild)
         );
 
-        //this.hotitems["newfolder"] = [mnuNew.firstChild];
-        //this.hotitems["newfile"] = [mnuNew.childNodes[3]];
+        this.hotitems["newfile"] = [this.nodes[3]];
+        this.hotitems["newfiletemplate"] = [this.nodes[2]];
+        this.hotitems["newfolder"] = [this.nodes[1]];
     },
 
-    newfile: function() {
-        fs.createFile(null, true);
-        return false;
-        
-        var node = apf.getXml('<file path="/giannis/cloud9/workspace" type="file" size="" name="Untitled.txt" contenttype="text/plain; charset=utf-8" modifieddate="" creationdate="" lockable="false" hidden="false" executable="false"></file>');
+    newfile: function(type, value) {
+        if (!type) type = "";
 
-        if (this.webdav) {
-            var filename = "Untitled.txt",
-                prefix   = filename,
-                _self = this,
-                path  = node.getAttribute("path"),
-                index = 0;
-            
-            var test = function(exists) {
-                if (exists) {
-                    filename = prefix + "." + index++;
-                    _self.exists(path + "/" + filename, test);    
-                } else {
-                    node.setAttribute('name', filename);
-//                    ide.dispatchEvent("openfile", {doc: ide.createDocument(node), type:'newfile'});
-                }
-            };
-            
-            filename = prefix;
-            this.exists(path + "/" + filename, test);
+        var node = apf.getXml("<file />");
+        
+        
+        var path = "/workspace/", sel = trFiles.selected;
+        if (sel)
+            path = sel.getAttribute("path").replace(/\/[^\/]*$/, "/");
+        
+        var name = "Untitled", count = 1;
+        while(tabEditors.getPage(path + name + count + type)) {
+            count++;
         }
         
-        return false;
+        node.setAttribute("name", name + count + type);
+        node.setAttribute("path", path + name + count + type);
+        node.setAttribute("changed", "1");
+        node.setAttribute("newfile", "1");
+
+        var doc = ide.createDocument(node);
+        if (value)
+            doc.cachedValue = value;
+        ide.dispatchEvent("openfile", {doc: doc, type: "newfile"});
+    },
+    
+    newfiletemplate : function(){
+        winNewFileTemplate.show();
     },
 
     newfolder: function() {

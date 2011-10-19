@@ -30,7 +30,7 @@ module.exports = ext.register("ext/settings/settings", {
 
     nodes : [],
 
-    save : function(){
+    save : function() {
         var _self = this;
         clearTimeout(this.$customSaveTimer);
 
@@ -40,7 +40,10 @@ module.exports = ext.register("ext/settings/settings", {
         }, 100);
     },
 
-    saveToFile : function(){
+    saveToFile : function() {
+        if (!ide.socket)
+            return;
+            
         ide.socket.send(JSON.stringify({
             command: "settings",
             action: "set",

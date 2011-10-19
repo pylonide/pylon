@@ -1,7 +1,7 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:codeeditor id="ceEditor"
       flex              = "1"
-      anchors           = "6 0 4 0"
+      anchors           = "2 0 0 0"
       visible           = "false"
       syntax            = "{require('ext/code/code').getSyntax(%[.])}"
       theme             = "[{require('ext/settings/settings').model}::editors/code/@theme]"

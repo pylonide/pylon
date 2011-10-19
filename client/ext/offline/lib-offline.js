@@ -85,7 +85,7 @@ var Offline = module.exports = function(namespace, detectUrl){
     this.start = function(){
         // TODO: turned off because at this point the IDE is not up yet and
         // will result in JS errors
-        this.offlineTime = parseInt(localStorage[this.namespace + ".offlinetime"] || 0);
+        this.offlineTime = parseInt(localStorage[this.namespace + ".offlinetime"] || 0, 10);
 
         //If we were offline lets stay offline
         if (this.offlineTime)
