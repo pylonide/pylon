@@ -53,6 +53,9 @@ exports.hook = function() {
         var page = tabEditors.getPage();
         if (!page) return;
         
+        if (!editors.currentEditor || !editors.currentEditor.ceEditor)
+            return;
+        
         var currentPath = page.getAttribute("id");
         removeDocumentFromCache(currentPath);
         analyzeDocument(currentPath, editors.currentEditor.getDocument().getValue());
