@@ -366,7 +366,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 delete doc.cachedValue;
                 ide.dispatchEvent("afteropenfile", {doc: doc, node: node});
             }
-            else if ((!e.type || e.type != 'newfile') && node.getAttribute("newfile") != 1) {
+            else if ((!e.type || e.type != "newfile") && node.getAttribute("newfile") != 1) {
                 // add a way to hook into loading of files
                 if (ide.dispatchEvent("readfile", {doc: doc, node: node}) === false)
                     return;
@@ -383,7 +383,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                             fs.readFile(path, readfileCallback);
                             ide.removeEventListener("afteronline", arguments.callee);
                         });
-                    } else if (state != apf.SUCCESS) {
+                    }
+                    else if (state != apf.SUCCESS) {
                         if (extra.status == 404) {
                             ide.dispatchEvent("filenotfound", {
                                 node : node,
