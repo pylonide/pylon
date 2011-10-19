@@ -1,0 +1,105 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+    <a:bar name="codecomplete">
+        <a:style><![CDATA[
+            .code_complete_bar {
+                overflow: hidden;
+                position : relative;
+                color: #000;
+                background-color: #f5f5f5;
+                margin: 5px;
+                -webkit-box-shadow: 0 3px 7px rgba(0,0,0,.4);
+                box-shadow: 0 3px 7px rgba(0,0,0,.4);
+            }
+            
+            .code_complete_bar {
+                border: 1px solid #b7b7b7;
+                -webkit-border-bottom-right-radius: 5px;
+                border-bottom-right-radius: 5px;
+                -webkit-border-bottom-left-radius: 5px;
+                border-bottom-left-radius: 5px;
+            }
+
+            /* Need to do this to get the radius working in Chrome, FF works fine without */
+            .code_complete_bar div.code_complete_text {
+                -webkit-border-bottom-left-radius: 5px;
+                border-bottom-left-radius: 5px;
+            }
+
+            .code_complete_bar > div {
+                -webkit-border-bottom-left-radius: 5px;
+                border-bottom-left-radius: 5px;
+            }
+
+            .cc_complete_option {
+                padding: 1px 5px;
+                cursor: default;
+            }
+            
+            .cc_complete_option:active {
+                color: #000;
+            }
+
+            .cc_complete_option_selected {
+                background: #b9d0e4;
+                color: #333;
+                padding: 1px 5px;
+                cursor: default;
+            }
+            
+            .cc_complete_option_selected:last-child, .cc_complete_option:last-child {
+                -webkit-border-bottom-left-radius: 5px;
+                border-bottom-left-radius: 5px;
+            }
+            
+            .code_complete_bar span.meta {
+                color: #555;
+                float: right;
+                padding-left: 5px;
+                padding-right: 7px;
+            }
+        ]]></a:style>
+        <a:style condition="{apf.isWebkit}"><![CDATA[
+            .code_complete_bar > div > div {
+                margin-right: -11px;
+            }
+        ]]></a:style>
+        <a:style condition="{apf.isGecko}"><![CDATA[
+            .code_complete_bar > div > div > div {
+                margin-right: -11px;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main container=".">
+                <div class="code_complete_bar ace_editor" />
+            </a:main>
+        </a:presentation>
+    </a:bar>
+    
+    <a:text name="codecomplete_text">
+        <a:style><![CDATA[
+            .code_complete_text .cc_complete_option_selected {
+                text-shadow: none;
+            }
+            
+            .code_complete_text {
+                color: #333;
+                position: relative;
+                overflow: hidden;
+                border: 1px solid transparent;
+                border-top-color: #fff;
+            }
+            
+            .code_complete_text u {
+                text-decoration: none;
+                color: blue;
+                text-shadow: none;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main container=".">
+                <div class="code_complete_text"/>
+            </a:main>
+        </a:presentation>
+    </a:text>
+</a:skin>

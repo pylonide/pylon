@@ -68,7 +68,7 @@ var WebdavWrapper = module.exports = function(webdav, sync, fIdent, callback) {
         if (ide.onLine)
             this.realWebdav.write.apply(this.realWebdav, arguments);
         
-        this.localWebdav.write.call(this.localWebdav, path, data, x, ide.onLine ? apf.K : callback);
+        this.localWebdav.write.call(this.localWebdav, path, data, x, callback);
     };
     
     /**
@@ -80,7 +80,7 @@ var WebdavWrapper = module.exports = function(webdav, sync, fIdent, callback) {
         if (ide.onLine)
             this.realWebdav.remove.apply(this.realWebdav, arguments);
         
-        this.localWebdav.remove.call(this.localWebdav, sPath, bLock, ide.onLine ? apf.K : callback);
+        this.localWebdav.remove.call(this.localWebdav, sPath, bLock, callback);
     }
     
     /**
@@ -92,7 +92,7 @@ var WebdavWrapper = module.exports = function(webdav, sync, fIdent, callback) {
         if (ide.onLine)
             this.realWebdav.copy.apply(this.realWebdav, arguments);
         
-        this.localWebdav.copy.call(this.localWebdav, sFrom, sTo, bOverwrite, bLock, ide.onLine ? apf.K : callback);
+        this.localWebdav.copy.call(this.localWebdav, sFrom, sTo, bOverwrite, bLock, callback);
     }
     
     /**
@@ -105,7 +105,7 @@ var WebdavWrapper = module.exports = function(webdav, sync, fIdent, callback) {
         if (ide.onLine)
             this.realWebdav.move.apply(this.realWebdav, arguments);
         
-        this.localWebdav.move.call(this.localWebdav, sFrom, sTo, bOverwrite, bLock, ide.onLine ? apf.K : callback);
+        this.localWebdav.move.call(this.localWebdav, sFrom, sTo, bOverwrite, bLock, callback);
     }
     
     this.report = function(sPath, reportName, oProperties, callback) {
@@ -136,7 +136,7 @@ var WebdavWrapper = module.exports = function(webdav, sync, fIdent, callback) {
     this.exec = function(type, args, callback) {
         if (ide.onLine)
             this.realWebdav.exec.apply(this.realWebdav, arguments);
-        this.localWebdav.exec.call(this.localWebdav, type, args, ide.onLine ? apf.K : callback);
+        this.localWebdav.exec.call(this.localWebdav, type, args, callback);
     };
     
     this.handleError = function(callback, error) {

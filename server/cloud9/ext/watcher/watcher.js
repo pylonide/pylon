@@ -28,6 +28,7 @@ var cloud9WatcherPlugin = module.exports = function(ide, workspace) {
     this.hooks = ["disconnect", "command"];
     this.name = "watcher";
     this.filenames = {};
+    this.basePath  = ide.workspaceDir + "/";
 }
 
 sys.inherits(cloud9WatcherPlugin, Plugin);
@@ -56,7 +57,9 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
         with (message) {
             if (command != "watcher")
                 return false;
-
+            
+            path = this.basePath + path;
+            
             switch (type) {
             case "watchFile":
                 if (this.filenames[path]) 
@@ -101,7 +104,8 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                             "type"      : "watcher",
                             "subtype"   : subtype,
                             "path"      : path,
-                            "files"     : files
+                            "files"     : files,
+                            "lastmod"   : curr.mtime
                         });
                         //console.log("Sent " + subtype + " notification for file " + path);
                     });

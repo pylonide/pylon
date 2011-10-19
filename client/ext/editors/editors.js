@@ -12,6 +12,7 @@ var ext = require("core/ext");
 var util = require("core/util");
 var panels = require("ext/panels/panels");
 var dockpanel = require("ext/dockpanel/dockpanel");
+var settings = require("ext/settings/settings");
 
 module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
@@ -84,17 +85,19 @@ module.exports = ext.register("ext/editors/editors", {
             new apf.bar({id:"tabPlaceholder", flex:1, skin:"basic"})
         );
 
+        var btn;
         var tab = new apf.bar({
             skin     : "basic",
             style    : "padding : 0 0 33px 0;position:absolute;", //53px
             htmlNode : document.body,
             childNodes: [
                 new apf.tab({
-                    id       : "tabEditors",
-                    skin     : "editor_tab",
-                    style    : "height : 100%",
-                    buttons  : "close,scale",
-                    onfocus  : function(e){
+                    id      : "tabEditors",
+                    skin    : "editor_tab",
+                    style   : "height : 100%",
+                    buttons : "close,scale,order",
+                    overactivetab  : true,
+                    onfocus        : function(e){
                         _self.switchfocus(e);
                     },
                     onbeforeswitch : function(e){
@@ -108,8 +111,32 @@ module.exports = ext.register("ext/editors/editors", {
                             return false;
                             
                         _self.close(e.page);
-                    }
-                })/*,
+                    },
+                    childNodes : [
+                        btn = new apf.button({
+                            style : "display:inline-block;margin: 0 0 5px 13px;",
+                            right : 5,
+                            top   : 8,
+                            width : 30,
+                            height : 17,
+                            skin : "btn_icon_only",
+                            background : "plustabbtn.png|horizontal|3|30",
+                            onclick : function(){
+                                require("ext/newresource/newresource").newfile();
+                            }
+                        })
+                    ]
+                }),
+                new apf.button({
+                    top   : 8,
+                    left  : 5,
+                    width : 17,
+                    height : 17,
+                    submenu : "mnuTabs",
+                    skin : "btn_icon_only",
+                    "class" : "tabmenubtn",
+                    background : "tabdropdown.png|horizontal|3|17"
+                }) /*,
                 new apf.hbox({
                     id      : "barButtons",
                     edge    : "0 0 0 6",
@@ -120,6 +147,34 @@ module.exports = ext.register("ext/editors/editors", {
                     right   : "0"
                 })*/
             ]
+        });
+        
+        tabEditors.$buttons.appendChild(btn.$ext);
+        tabEditors.addEventListener("DOMNodeInserted",function(e){
+            if (e.$isMoveWithinParent) {
+                //record position in settings
+                
+                var amlNode = e.currentTarget;
+                if (amlNode.localName != "page" || e.relatedNode != this || amlNode.nodeType != 1)
+                    return;
+                
+                settings.save();
+            }
+            
+            if (e.relatedNode == this && e.currentTarget.localName == "page") {
+                tabEditors.$buttons.appendChild(btn.$ext);
+                btn.$ext.style.position = "";
+                btn.$ext.style.right = "";
+                btn.$ext.style.top = "";
+            }
+        });
+        
+        tabEditors.addEventListener("DOMNodeRemoved",function(e){
+            if (e.relatedNode == this && this.getPages().length == 1) {
+                btn.$ext.style.position = "absolute";
+                btn.$ext.style.right = "5px";
+                btn.$ext.style.top = "8px";
+            }
         });
         
         tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
@@ -246,29 +301,25 @@ module.exports = ext.register("ext/editors/editors", {
                 page.contentType = contentType;
                 page.$at     = new apf.actiontracker();
                 page.$doc    = doc;
+                doc.$page    = page;
                 page.$editor = editor;
                 page.setAttribute("tooltip", "[@path]");
                 page.setAttribute("class",
-                    "{parseInt([@saving]) || parseInt([@lookup]) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
+                    "{parseInt([@saving], 10) || parseInt([@lookup], 10) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
                     ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"
                 );
                 page.setAttribute("model", page.$model = model);
                 page.$model.load(xmlNode);
-                
-                //this is very bad, should be removed
-                setTimeout(function(){
-                    editor.setState && editor.setState(doc, doc.state);
-                }, 1000);
             });
 
         if (init)
-            tabEditors.setAttribute("buttons", "close,scale");
+            tabEditors.setAttribute("buttons", "close,scale,order");
         
         var editorPage = tabEditors.getPage(tabEditors.activepage);
         
         doc.addEventListener("setnode", function(e) {
             fake.$model.load(e.node);
-            ide.dispatchEvent("afteropenfile", {doc: doc, node: e.node});
+            ide.dispatchEvent("afteropenfile", {doc: doc, node: e.node, editor: editor});
         });
 
         fake.$at.addEventListener("afterchange", function(e) {
@@ -306,12 +357,13 @@ module.exports = ext.register("ext/editors/editors", {
 
         });*/
         
-        
         editor.enable();
         //editor.$itmEditor.select();
         //editor.$rbEditor.select();
 
         this.currentEditor = editor;
+        
+        settings.save();
     },
 
     close : function(page) {
@@ -326,10 +378,11 @@ module.exports = ext.register("ext/editors/editors", {
         mdl.setQueryValue("@changed", 0);
         page.$doc.dispatchEvent("close");
         
-        if(mdl.data) {
+        if (mdl.data) {
             mdl.removeXml("data");
-            ide.dispatchEvent("closefile", {xmlNode: mdl.data});
+            ide.dispatchEvent("closefile", {xmlNode: mdl.data, page: page});
         }
+        
         //mdl.unshare();
         mdl.destroy();
 
@@ -351,6 +404,8 @@ module.exports = ext.register("ext/editors/editors", {
         //Destroy the app page if it has no application instance
         //if (!tabEditors.selectNodes("page[@type='" + page.type + "']").length && editorPage)
             //editorPage.destroy(true, true);
+        
+        settings.save();
     },
 
     switchfocus : function(e){
@@ -455,7 +510,8 @@ module.exports = ext.register("ext/editors/editors", {
                 var parent_path = apf.getDirname(path).replace(/\/$/, "");
                 var expandEventListener = function(e) {
                     if (e.xmlNode && e.xmlNode.getAttribute("path") == parent_path) {
-                        doc.setNode(e.xmlNode.selectSingleNode("node()[@path='" + path + "']"));
+                        if (doc.getNode().getAttribute("newfile") != 1)
+                            doc.setNode(e.xmlNode.selectSingleNode("node()[@path='" + path + "']"));
                         trFiles.removeEventListener("expand", expandEventListener);
                     }
                 };
@@ -486,6 +542,13 @@ module.exports = ext.register("ext/editors/editors", {
                             doc.state = JSON.parse(state);
                     }
                     catch (ex) {}
+                    
+                    if (nodes[i].getAttribute("changed") == 1) {
+                        doc.cachedValue = nodes[i].firstChild.nodeValue
+                            .replace(/\n]\n]/g, "]]")
+                            .replace(/\\r/g, "\r")
+                            .replace(/\\n/g, "\n");
+                    }
                     
                     ide.dispatchEvent("openfile", {
                         doc    : doc,
@@ -522,7 +585,7 @@ module.exports = ext.register("ext/editors/editors", {
                         continue;
 
                     var copy = apf.xmldb.cleanNode(file.cloneNode(false));
-                    copy.removeAttribute("changed");
+                    //copy.removeAttribute("changed");
                     copy.removeAttribute("loading");
                     copy.removeAttribute("saving");
                     pNode.appendChild(copy);
@@ -530,11 +593,31 @@ module.exports = ext.register("ext/editors/editors", {
                     var state = pages[i].$editor.getState && pages[i].$editor.getState(pages[i].$doc);
                     if (state)
                         copy.setAttribute("state", apf.serialize(state));
+                    
+                    //@todo the second part of this if can be removed as soon
+                    //as the collab team implements stored changed settings
+                    //please note that for this to work on loadsettings we 
+                    //should check whether the file on disk has changed and 
+                    //popup a file watch dialog to ask if the user wants to
+                    //load the new file from disk, losing changes.
+                    if (copy.getAttribute("changed") == 1 && copy.getAttribute("newfile") == 1) {
+                        copy.appendChild(copy.ownerDocument.createCDATASection(
+                            pages[i].$doc.getValue()
+                                .replace(/\r/g, "\\r")
+                                .replace(/\n/g, "\\n")
+                                .replace(/\]\]/g, "\n]\n]")
+                        ));
+                    }
                 }
             }
 
             if (state != (pNode && pNode.xml))
                 return true;
+        });
+        
+        ide.addEventListener("reload", function(e) {
+            var doc = e.doc;
+            doc.state = doc.$page.$editor.getState && doc.$page.$editor.getState(doc);
         });
         
         ide.addEventListener("afterreload", function(e) {
@@ -546,6 +629,11 @@ module.exports = ext.register("ext/editors/editors", {
             acesession.getUndoManager().ignoreChange = true;
             acesession.replace(sel.getRange(), e.data);
             sel.clearSelection();
+            
+            if (doc.state) {
+                var editor = doc.$page.$editor;
+                editor.setState && editor.setState(doc, doc.state);
+            }
         });
     },
     

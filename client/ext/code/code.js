@@ -15,7 +15,8 @@ var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
 var Document = require("ace/document").Document;
 var ProxyDocument = require("ext/code/proxydocument");
 var markup = require("text!ext/code/code.xml");
-var settings = require("text!ext/code/settings.xml");
+var settings = require("ext/settings/settings");
+var markupSettings = require("text!ext/code/settings.xml");
 var editors = require("ext/editors/editors");
 
 apf.actiontracker.actions.aceupdate = function(undoObj, undo){
@@ -71,6 +72,7 @@ var contentTypes = {
     "js": "application/javascript",
     "json": "application/json",
     "css": "text/css",
+    "less": "text/css",
     "scss": "text/x-scss",
     "sass": "text/x-sass",
     
@@ -138,7 +140,7 @@ module.exports = ext.register("ext/code/code", {
     nodes : [],
     
     getState : function(doc){
-        var doc = doc ? doc.acesession : this.getDocument();
+        doc = doc ? doc.acesession : this.getDocument();
         if (!doc || typeof doc.getSelection != "function") 
             return;
         
@@ -159,24 +161,31 @@ module.exports = ext.register("ext/code/code", {
         
         //are those 3 lines set the values in per document base or are global for editor
         sel.setSelectionRange(state.selection, false);
-        ceEditor.$editor.renderer.scrollToY(state.scrolltop)
-        ceEditor.$editor.renderer.scrollToX(state.scrollleft)
+        ceEditor.$editor.renderer.scrollToY(state.scrolltop);
+        ceEditor.$editor.renderer.scrollToX(state.scrollleft);
     },
 
     getSyntax : function(node) {
-        if(!node) return "";
-        var customType = node.getAttribute("customtype");
-        if (!customType)
-            customType = contentTypes[node.getAttribute("name").split(".").pop()];
+        if (!node)
+            return "";
+        
+        var mime = node.getAttribute("customtype");
+        
+        if (!mime) {
+            var fileName = node.getAttribute("name");
 
-        if (customType) {
-            var mime = customType.split(";")[0];
+            if (fileName.lastIndexOf(".") != -1)
+                mime = contentTypes[fileName.split(".").pop()];
+            else
+                mime = contentTypes["*" + fileName];
+        }
 
+        if (mime) {
+            mime = mime.split(";")[0];
             return (SupportedModes[mime] || "text");
         }
-        else {
-            return "text";
-        }
+        
+        return "text";
     },
     
     getSelection : function(){
@@ -223,14 +232,15 @@ module.exports = ext.register("ext/code/code", {
         ceEditor.setProperty("value", doc.acesession);
     },
 
-    hook : function() {
-        var commitFunc = this.onCommit.bind(this),
-            name       = this.name;
+    hook: function() {
+        var _self      = this;
+        var commitFunc = this.onCommit.bind(this);
+        var name       = this.name;
         
         //Settings Support
-        ide.addEventListener("init.ext/settings/settings", function(e){
+        ide.addEventListener("init.ext/settings/settings", function(e) {
             e.ext.addSection("code", name, "editors", commitFunc);
-            barSettings.insertMarkup(settings);
+            barSettings.insertMarkup(markupSettings);
         });
         
         ide.addEventListener("loadsettings", function(e) {
@@ -238,32 +248,22 @@ module.exports = ext.register("ext/code/code", {
             var theme = e.model.queryValue("editors/code/@theme");
             if (theme) 
                 require([theme], function() {});
+            // pre load custom mime types
+            _self.getCustomTypes(e.model);
+        });
+        
+        ide.addEventListener("afteropenfile", function(e) {
+            if(!e.editor)
+                return;
+
+            e.editor.setState && e.editor.setState(e.doc, e.doc.state);
         });
         
         // preload common language modes
         require(["ace/mode/javascript", "ace/mode/html", "ace/mode/css"], function() {});
     },
 
-    init : function(amlPage) {
-        /*var def = ceEditor.getDefaults();
-        
-        ide.addEventListener("loadsettings", function() {
-            //check default settings...
-            var settings = require("ext/settings/settings"),
-                model    = settings.model,
-                base     = model.data.selectSingleNode("editors/code");
-            if (!base)
-                base = model.appendXml('<code name="' + this.name +'" />', "editors");
-                
-            // go through all default settings and append them to the XML if they're not there yet
-            for (var prop in def) {
-                if (!prop) continue;
-                if (!base.getAttribute(prop))
-                    base.setAttribute(prop, def[prop]);
-            }
-            apf.xmldb.applyChanges("synchronize", base);
-        });*/
-
+    init: function(amlPage) {
         amlPage.appendChild(ceEditor);
         ceEditor.show();
 
@@ -287,34 +287,7 @@ module.exports = ext.register("ext/code/code", {
                 submenu : "mnuSyntax"
             })),
 
-            /*mnuView.appendChild(new apf.item({
-                type    : "check",
-                caption : "Overwrite Mode",
-                checked : "{ceEditor.overwrite}"
-            })),*/
-
             mnuView.appendChild(new apf.divider()),
-
-            /*mnuView.appendChild(new apf.item({
-                type    : "check",
-                caption : "Select Full Line",
-                values  : "line|text",
-                value   : "[{require('ext/settings/settings').model}::editors/code/@selectstyle]",
-            })),*/
-
-            /*mnuView.appendChild(new apf.item({
-                type    : "check",
-                caption : "Read Only",
-                checked : "{ceEditor.readonly}"
-            })),*/
-
-            /*mnuView.appendChild(new apf.item({
-                type    : "check",
-                caption : "Highlight Active Line",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@activeline]"
-            })),
-
-            mnuView.appendChild(new apf.divider()),*/
 
             mnuView.appendChild(new apf.item({
                 type    : "check",
@@ -327,29 +300,42 @@ module.exports = ext.register("ext/code/code", {
                 caption : "Wrap Lines",
                 checked : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
             }))
-            // Wrap Lines (none),
-            // Overwrite mode (overwrite),
-            // Full line selection (selectstyle),
-            // Read only (readonly),
-            // Highlight active line (activeline),
-            // Show invisibles (showinvisibles),
-            // Show print margin (showprintmargin)
         );
 
+        
+        
         mnuSyntax.onitemclick = function(e) {
             var file = ide.getActivePageModel();
+            
             if (file) {
                 var value = e.relatedNode.value;
+                
                 if (value == "auto")
                     apf.xmldb.removeAttribute(file, "customtype", "");
                 else
                     apf.xmldb.setAttribute(file, "customtype", value);
+                
+                if (file.getAttribute("customtype")) {
+                    var fileName = file.getAttribute("name");
+                    
+                    if (contentTypes["*" + fileName])
+                        delete contentTypes["*" + fileName];
+                    
+                    var mime = value.split(";")[0];
+                    var fileExt = (fileName.lastIndexOf(".") != -1) ?
+                        fileName.split(".").pop() : null;
+                    
+                    if (fileExt && contentTypes[fileExt] !== mime)
+                        delete contentTypes[fileExt];
+                        
+                    var customType = fileExt ?
+                        contentTypes[fileExt] : contentTypes["*" + fileName];
+                    
+                    if (!customType)
+                        _self.setCustomType(fileExt ? fileExt : file, mime);
+                }
             }
         };
-
-        /*ide.addEventListener("clearfilecache", function(e){
-            ceEditor.clearCacheItem(e.xmlNode);
-        });*/
 
         ide.addEventListener("keybindingschange", function(e){
             if (typeof ceEditor == "undefined")
@@ -357,6 +343,51 @@ module.exports = ext.register("ext/code/code", {
                 
             var bindings = e.keybindings.code;
             ceEditor.$editor.setKeyboardHandler(new HashHandler(bindings));
+        });
+    },
+    
+    /**
+     * Saves custom syntax for extension type in settings.xml
+     * 
+     * @param {String|xmlNode} ext Contains the extension type shorthand
+     * @param {String} mime Mime type string the extension will be related to
+     */
+    setCustomType: function(ext, mime) {
+        var node;
+        
+        if (typeof ext === "string") {
+            node = settings.model.queryNode('auto/customtypes/mime[@ext="' + ext + '"]');
+            if (!node)
+                settings.model.appendXml('<mime name="' + mime + '" ext="' + ext + '" />', "auto/customtypes");
+        } else {
+            var name = ext.getAttribute("name") || "";
+            node = settings.model.queryNode('auto/customtypes/mime[@filename="' + name + '"]');
+            if (node)
+                apf.xmldb.removeAttribute(node, "ext");
+            else
+                settings.model.appendXml('<mime name="' + mime + '" filename="' + name + '" />', "auto/customtypes");
+        }
+        
+        apf.xmldb.setAttribute(node, "name", mime);
+        settings.save();
+    },
+    
+    /**
+     * Retrieves custom syntax for extensions saved in settings.xml
+     * 
+     * @param {Object} model Settings' model
+     */
+    getCustomTypes: function(model) {
+        var customTypes = model.queryNode("auto/customtypes");
+        if (!customTypes)
+            customTypes = apf.createNodeFromXpath(model.data, "auto/customtypes");
+        
+        var mimes = customTypes.selectNodes("mime");
+        mimes.forEach(function(n) {
+            if (n.getAttribute("filename"))
+                contentTypes["*" + n.getAttribute("filename")] = n.getAttribute("name");
+            else
+                contentTypes[n.getAttribute("ext")] = n.getAttribute("name");
         });
     },
 

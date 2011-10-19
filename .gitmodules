@@ -1,33 +1,33 @@
 [submodule "support/connect"]
 	path = support/connect
-	url = http://github.com/senchalabs/connect.git
+	url = https://github.com/ajaxorg/connect.git
 [submodule "support/asyncjs"]
 	path = support/asyncjs
-	url = git://github.com/ajaxorg/async.js.git
+	url = https://github.com/ajaxorg/async.js.git
 [submodule "support/jsdav"]
 	path = support/jsdav
-	url = git://github.com/ajaxorg/jsDAV.git
+	url = https://github.com/ajaxorg/jsDAV.git
 [submodule "support/lib-v8debug"]
 	path = support/lib-v8debug
-	url = http://github.com/ajaxorg/lib-v8debug.git
+	url = https://github.com/ajaxorg/lib-v8debug.git
 [submodule "support/ace"]
 	path = support/ace
-	url = http://github.com/ajaxorg/ace.git
+	url = https://github.com/ajaxorg/ace.git
 [submodule "support/apf"]
 	path = support/apf
-	url = http://github.com/ajaxorg/apf.git
+	url = https://github.com/ajaxorg/apf.git
 [submodule "support/node-builds-v4"]
 	path = support/node-builds-v4
-	url = http://github.com/ajaxorg/node-builds-v4.git
+	url = https://github.com/ajaxorg/node-builds-v4.git
 [submodule "support/gnu-builds"]
 	path = support/gnu-builds
-	url = git://github.com/ajaxorg/gnu-builds.git
+	url = https://github.com/ajaxorg/gnu-builds.git
 [submodule "support/socket.io"]
 	path = support/socket.io
-	url = git://github.com/ajaxorg/socket.io.git
+	url = https://github.com/ajaxorg/socket.io.git
 [submodule "support/socket.io-client"]
 	path = support/socket.io-client
-	url = git://github.com/ajaxorg/socket.io-client.git
+	url = https://github.com/ajaxorg/socket.io-client.git
 [submodule "support/uglify-js"]
 	path = support/uglify-js
-	url = git://github.com/ajaxorg/UglifyJS.git
+	url = https://github.com/ajaxorg/UglifyJS.git
