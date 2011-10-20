@@ -72,7 +72,7 @@ apf.uirecorder.capture = {
         apf.uirecorder.capture.dblclick     = function(e) {
             if (!_self.canCapture()) 
                 return;
-            apf.uirecorder.capture.$captureAction("dblClick", e || event);
+            apf.uirecorder.capture.$captureAction("dblclick", e || event);
         }
 
         document.documentElement.onmousedown = 
@@ -361,7 +361,8 @@ apf.uirecorder.capture = {
             actionObj.x = parseInt(e.clientX);
         if (e && e.clientX != undefined)
             actionObj.y = parseInt(e.clientY);
-        else debugger;
+        if (e && (e.button || e.which))
+            actionObj.button = e.button || e.which;
 
         if (value)
             actionObj.value = value;

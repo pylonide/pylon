@@ -10,7 +10,8 @@ apf.uirecorder = {
     isPaused        : false,
     captureDetails  : false,
     $o3             : null,
-    
+
     setTimeout      : self.setTimeout
-} 
+}
 //#endif
+

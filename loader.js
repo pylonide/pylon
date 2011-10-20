@@ -147,7 +147,8 @@ apf.$x = apf.$loader
         "core/markup/aml/node.js",
         
         "core/lib/uirecorder/capture.js",
-        "core/lib/uirecorder/playback.js"
+        "core/lib/uirecorder/playback.js",
+        "core/lib/uirecorder/selenium.js"
     )
     .wait()
     .script(
