@@ -125,7 +125,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         }
 
         if (this.webdav) {
-            var prefix = filename ? filename : "Untitled.txt";
+            var prefix = filename ? filename : "Untitled";
 
             if(!newFile)
                 trFiles.focus();
