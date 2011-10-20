@@ -4,8 +4,8 @@
     - xml properties need to be converted to xpaths
     - aml properties need to be converted to xpaths
     
-    - htmlElements in the action object dont have the xpath property (which is needed)
-    - for detailList, the items should have id, not caption
+    * htmlElements in the action object dont have the xpath property (which is needed)
+    * for detailList, the items should have id, not caption
     - The UI should allow the user to select which assertions he wants to use
     
     Bugs during records:
@@ -22,86 +22,127 @@ function SeleniumPlayer(browser){
     
     this.play = function(actionList){
         var script = this.compile(actionList);
-        eval(script);
+        (new Function('browser', script))(this.browser);
     }
     
     function getContext(item){
-        xpath = item.xpath;
+        var sel = item.id || item.xpath;
         if (item.selected)
-            xpath += "###" + item.selected.xpath
+            sel += "###" + item.selected.xpath
+        return sel;
     }
     
     this.compile = function(actionList){
-        var lines = [];
+        var rules = [], stack;
         var context, contexts = {};
+        var needsMove;
         
-        if (!this.realtime)
+        //if (!this.realtime)
             rules.push("browser.setMouseSpeed(1000);");
         
-        for (var item, temp, i = 0, l = actionList.length; i < l; i++) {
-            item = actionList[i];
+        for (var el, item, temp, i = 0, l = actionList.length; i < l; i++) {
+            item    = actionList[i];
+            el      = item.amlNode || item.htmlElement;
+            stack   = [];
             
-            context = getContext(item); //@todo need support for html elements
-            
-            if (!contexts[context]) {
-                contexts[context] = (item.amlNode.id
-                    ? "apfid=" + item.amlNode.id
-                    : "apfsinglenode=" + item.amlNode.xpath.replace(/'/g, "\\'"));
-                
-                rules.push("\n", 
-                    "browser.waitForElementPresent('" + contexts[context] + "');",
-                    "browser.assertElementPresent('" + contexts[context] + "');");
+            //@todo temporary!!
+            if (!el) {
+                console.log("EL is undefined!");
+                continue;
             }
             
-            rules.push("browser.waitForVisible('" + contexts[context] + "');");
+            context = getContext(el); //@todo need support for html elements
+
+            //@todo temporary!!
+            if (!context) {
+                console.log("CONTEXT is undefined!");
+                continue;
+            }
+            
+            if (!contexts[context]) {
+                contexts[context] = "apf=" + context.replace(/'/g, "\\'"); //I probably dont understand these selectors yet.
+                /*(el.id
+                    ? "apfid=" + el.id
+                    : "apfsinglenode=" + context.replace(/'/g, "\\'"));*/
+                
+                stack.push("", 
+                    "browser.waitForElementPresent('" + contexts[context] + "');",
+                    "browser.assertElementPresent('" + contexts[context] + "');",
+                    "browser.waitForVisible('" + contexts[context] + "');");
+            }
+            
+            //stack.push("browser.waitForVisible('" + contexts[context] + "');");
+            
+            var x  = item.x - el.x;
+            var y  = item.y - el.y;
             
             switch(item.name) {
                 case "mousemove":
-                    if (this.realtime) {
-                        var x = 
-                        
-                        rules.push("browser.mouseMoveAt('" + contexts[context] 
+                    // || !actionList[i + 1] || !actionList[i + 1].name == "mousemove"
+                    if (this.realtime)
+                        stack.push("browser.mouseMoveAt('apf=" + (el.id || el.xpath) //contexts[context] 
                             + "', '" + x + "," + y + "');");
+                    else {
+                        needsMove = true;
+                        continue;
                     }
-                    else if (!actionList[i + 1] 
-                      || !actionList[i + 1].name == "mousemove") {
                         
-                    }
                     break;
                 case "mousedown":
+                    if (needsMove) {
+                        stack.push("browser.mouseMoveAt('apf=" + (el.id || el.xpath) //contexts[context] 
+                            + "', '" + x + "," + y + "');");
+                        needsMove = false;
+                    }
+                    
                     if (item.button == 2) {
-                        
+                        stack.push("browser.mouseDownRightAt('" + contexts[context] 
+                            + "', '" + x + "," + y + "');");
                     }
                     //@todo think about moving this to a cleanup.
                     else if (
-                        (temp = actionsList[i + 1]) && getContext(temp) == context && temp.name == "mouseup" &&
-                        (temp = actionsList[i + 2]) && getContext(temp) == context && temp.name == "mousedown" &&
-                        (temp = actionsList[i + 3]) && getContext(temp) == context && temp.name == "mouseup" &&
-                        (temp = actionsList[i + 4]) && getContext(temp) == context && temp.name == "dblclick"
+                        (temp = actionList[i + 1]) && getContext(temp) == context && temp.name == "mouseup" &&
+                        (temp = actionList[i + 2]) && getContext(temp) == context && temp.name == "mousedown" &&
+                        (temp = actionList[i + 3]) && getContext(temp) == context && temp.name == "mouseup" &&
+                        (temp = actionList[i + 4]) && getContext(temp) == context && temp.name == "dblclick"
                     ) {
                         // double click detection
                         i += 3;
                         continue;
                     }
                     else {
-                        
+                        stack.push("browser.mouseDownAt('" + contexts[context] 
+                            + "', '" + x + "," + y + "');");
                     }
                     break;
                 case "mouseup":
+                    if (needsMove) {
+                        stack.push("browser.mouseMoveAt('apf=" + (el.id || el.xpath) //contexts[context] 
+                            + "', '" + x + "," + y + "');");
+                        needsMove = false;
+                    }
+                    
                     if (item.button == 2) {
-                        
+                        stack.push("browser.mouseUpRightAt('" + contexts[context] 
+                            + "', '" + x + "," + y + "');");
                     }
                     else {
-                        
+                        stack.push("browser.mouseUpAt('" + contexts[context] 
+                            + "', '" + x + "," + y + "');");
                     }
                     break;
                 case "mousescroll":
                     throw new Error("Selenium doesn't support the mouse wheel");
                     break;
                 case "dblclick":
-                    rules.push("this.browser.doubleClick('" + context + "')");
+                    stack.push("browser.doubleClickAt('" + contexts[context]
+                        + "', '" + x + "," + y + "');");
                     break;
                 case "keypress":
+                    //@todo !realtime
+                    
+                    stack.push("this.browser.typeKeys('apf=" + (el.id || el.xpath) //contexts[context]
+                        + ", '" + item.value + "');");
                     break;
             }
             
@@ -118,7 +159,7 @@ function SeleniumPlayer(browser){
             function genProp(item, name, value, rules){
                 if ("array|object".indexOf(typeof value)) {
                     var arg = "('" 
-                        + contextToExpression(getCaption(item)) + "." + name 
+                        + contextToExpression(getContext(item)) + "." + name 
                         + " == "
                         + (value.type == "aml"
                             ? contextToExpression(value.value)
@@ -139,21 +180,23 @@ function SeleniumPlayer(browser){
             
             //Assertions
             for (var prop in item.properties) {
-                genProp(item, prop, item.properties[prop], rules);
+                genProp(item, prop, item.properties[prop], stack);
             }
             
             var jProps, detailList = item.detailList;
             for (var j = 0, jl = detailList.length; j < jl; j++) {
-                if ((jProps = detailList[j].properties).length) {
+                if ((jProps = detailList[j].properties) && jProps.length) {
                     for (var p = 0; p < jProps.length; p++) {
-                        genProp(detailList[j], jProps[p].name, jProps[p].value, rules);
+                        genProp(detailList[j], jProps[p].name, jProps[p].value, stack);
                     }
                 }
             }
             
             if (this.realtime && actionList[i + 1])
-                rules.push("browser.pause(" + 
-                    (actionsList[i + 1].time - item.time) + ")");
+                stack.push("browser.pause(" + 
+                    (item.time - actionList[i + 1].time) + ")");
+            
+            rules = rules.concat(stack);
         }
         
         return rules.join("\n");

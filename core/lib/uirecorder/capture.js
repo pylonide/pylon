@@ -48,7 +48,6 @@ apf.uirecorder.capture = {
     stop : function() {
         apf.uirecorder.$inited      = false;
         apf.uirecorder.isRecording  = false;
-        this.$saveTest();
     },
     
     canCapture : function(){
@@ -308,6 +307,9 @@ apf.uirecorder.capture = {
         data.y          = pos[1];
         data.width      = htmlElement.offsetWidth;
         data.height     = htmlElement.offsetHeight;
+        
+        var xpath       = apf.xmlToXpath(htmlElement)
+        data.xpath      = xpath.substr(xpath.indexOf("/") + 1);
 
         if (apf.popup.last 
           && apf.isChildOf(apf.popup.cache[apf.popup.last].content, htmlElement, true))
@@ -733,6 +735,7 @@ TEMPORARILY DISABLED
         // save events to detailList
         if (!this.$detailList[target.name]) {
             this.$detailList[target.name] = {
+                id          : target.name,
                 caption     : target.name,
                 amlNode     : target.amlNode,
                 events      : [],
@@ -1044,17 +1047,122 @@ TEMPORARILY DISABLED
             }
         }
 
-        
-        
         return actionList;
     },
     
     /**
-     * save captured test data
+     * return captured test data as JSON
      */
-    $saveTest : function() {
+    toJson : function(){
+        var json = this.$cleanupActions().reverse();
+        
+        json.name = apf.uirecorder.capture.$curTestId;
+        json.file = apf.uirecorder.capture.$curTestFile;
+        
+        function sanitizeProperty(value, recur){
+            if (!value)
+                return value;
+            else if (value.dataType == apf.ARRAY) {
+                var newArr = [];
+                for (var i = 0; i < value.length; i++){
+                    newArr.push(sanitizeProperty(value[i]));
+                }
+                return newArr;
+            }
+            else if (typeof value == "function") {
+                return undefined;
+            }
+            else if (typeof value == "object") {
+                if (value == window || value == document || value == apf || value.initEvent) {
+                    return {};
+                }
+                else if (value.nodeFunc || value.style) {
+                    var xpath;
+                    try {
+                        xpath = apf.xmlToXpath(value);
+                    } catch(e) {
+                        return recur ? {} : undefined;
+                    }
+                    
+                    return {
+                        parse : 1,
+                        type  : "aml",
+                        value : "apf=" + xpath.substr(xpath.indexOf("/") + 1)
+                    }
+                }
+                else if (value.nodeType) {
+                    var expression, model = apf.xmldb.findModel(value);
+                    if (model.id) {
+                        expression = model.id;
+                    }
+                    else {
+                        expression = "apf.document.selectSingleNode('" 
+                            + apf.xmlToXpath(value).replace(/'/g, "\\'")
+                            + "')";
+                    }
+                    
+                    return {
+                        parse : 1,
+                        value : expression + ".queryNode('" 
+                            + apf.xmlToXpath(value).replace(/'/g, "\\'")
+                            + "')"
+                    };
+                }
+                else {
+                    var json = {};
+                    for (var prop in value) {
+                        json[prop] = sanitizeProperty(value[prop], true);
+                    }
+                    return json
+                }
+            }
+            else
+                return value;
+        }
+        
+        for (var item, i = 0, l = json.length; i < l; i++) {
+            item = json[i];
+            
+            if (item.name == "mousemove" && i >= 1 
+              && json[i-1] && json[i-1].name == "mousedown" 
+              && json[i+1] && json[i+1].name == "mouseup"
+            ){
+                continue;
+            }
+            
+            for (var prop in item.properties) {
+                item.properties[prop] = sanitizeProperty(item.properties[prop]);
+            }
+            
+            for (var prop in item.events) {
+                item.events[prop] = sanitizeProperty(item.events[prop]);
+            }
+            
+            var jProps, detailList = item.detailList;
+            for (var j = 0, jl = detailList.length; j < jl; j++) {
+                for (var prop in detailList[j]) {
+                    if (prop == "properties") 
+                        continue;
+                    detailList[j][prop] = sanitizeProperty(detailList[j][prop]);
+                }
+                
+                if ((jProps = detailList[j].properties) && jProps.length) {
+                    for (var p = 0; p < jProps.length; p++) {
+                        jProps[p].value = sanitizeProperty(jProps[p].value);
+                    }
+                }
+            }
+        }
+        
+        return json;
+    },
+    
+    /**
+     * return captured test data as XML
+     */
+    toXml : function() {
         var testXml = apf.getXml("<test />");
-        var actionList = this.$cleanupActions(testXml);
+        var actionList = this.$cleanupActions();
         
         // clean up/simplify actionlist based on recorded actions, also set name if specific action
         
@@ -1315,7 +1423,7 @@ TEMPORARILY DISABLED
             testXml.appendChild(aNode);
         }
 
-        this.outputXml = testXml;
+        return testXml;
     },
     
     getCaption : function(amlNode) {
