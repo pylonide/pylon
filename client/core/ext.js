@@ -185,9 +185,7 @@ module.exports = ext = {
         cmd = (cmd || "").trim();
         var oCmd = this.commandsLut[cmd];
         if (!oCmd || !oCmd.ext) {
-            return require(["ext/console/console"], function(oExt) {
-                oExt.write("Command not found.");
-            });
+            return;
         }
         var oExt = require(oCmd.ext);
         if (oExt && typeof oExt[cmd] === "function") {
