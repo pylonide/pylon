@@ -141,6 +141,9 @@
             ">Paste</a:item>
             <a:divider />
             <a:item match="[file|folder|project]" onclick="
+                require('ext/filesystem/filesystem').createFile();
+            ">New File</a:item>
+            <a:item match="[file|folder|project]" onclick="
                 require('ext/filesystem/filesystem').createFolder();
             ">New Folder</a:item>
         </a:menu>
