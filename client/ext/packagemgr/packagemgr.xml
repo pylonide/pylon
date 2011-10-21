@@ -1,0 +1,37 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:model id="mdlPackageMgr"/>
+    <a:window
+      id        = "winPack"
+      title     = "Package Manager"
+      icon      = ""
+      center    = "true"
+      resizable = "true"
+      buttons   = "close"
+      width     = "600"
+      height    = "550"
+      kbclose   = "true">
+        <a:vbox anchors="0 0 0 0" edge="10 10 5 10">
+            <a:hbox align="center" edge="0 0 5 0" padding="5">
+                <a:textbox id="tbPackQuery" flex="1" 
+                  realtime   = "true" />
+                <a:button width="80"
+                  default = "1"
+                  id = "pmSearch"
+                  caption = "Search"
+                  disabled = "{!tbPackQuery.value.trim()}" />
+            </a:hbox>
+            <a:datagrid id="dgExt" flex="1" model="mdlPackageMgr" each="[package]">
+                <a:column width="25%" value="[name]" caption="Name" /> 
+                <a:column width="25%" value="[version]" caption="Version" /> 
+                <!--<a:column width="30%" value="[@path]" caption="Path" /> 
+                <a:column width="15%" value="[@type]" caption="Type" /> 
+                <a:column width="20%" value="[@dev]" caption="Developer" /> 
+                <a:column width="10%" value="{[@enabled] == 1 ? 'Enabled' : 'Disabled'}" caption="Enabled" />-->
+            </a:datagrid>
+            <a:hbox edge="10 0 0 0">
+                <a:filler />
+                <a:button default="3" width="80" onclick="winPack.hide()">Done</a:button>
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+</a:application>
