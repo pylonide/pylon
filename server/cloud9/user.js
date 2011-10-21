@@ -45,8 +45,8 @@ User.VISITOR_PERMISSIONS = {
         "ext/noderunner/noderunner", //Add location rule
         "ext/watcher/watcher",
         "c9/ext/projectinfo/projectinfo",
-        
-        "ext/tabbehaviors/tabbehaviors"
+        "ext/tabbehaviors/tabbehaviors",
+        "ext/packagemgr/packagemgr"
     ].join("|"),
     server_exclude: [
         "git",
