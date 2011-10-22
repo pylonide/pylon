@@ -40,105 +40,71 @@ module.exports = ext.register("ext/versions/versions", {
                     childNodes : [
                         new apf.vbox({
                             flex : "1",
-                            margin : "20 50 40 50",
+                            margin : "20 30 20 30",
                             childNodes : [
                                 new apf.vbox({
-                                    height : "104", // 80 + 24 (24 == height of right-side zoom effect)
-                                    align: "center",
-                                    childNodes : [
-                                        new apf.text({
-                                            "class" : "versions_label",
-                                            height : "30",
-                                            value : "Current Document"
-                                        }),
-                                        new apf.hbox({
-                                            childNodes : [
-                                                new apf.text({
-                                                    margin : "10 0 10 0",
-                                                    padding : "12 15 12 15",
-                                                    value : "Details about the commit: author<br />time, message, etc",
-                                                    style : "background: none; color: #fff; font-size: 13px"
-                                                })
-                                            ]
-                                        })
-                                    ]
-                                }),
-                                new apf.codeeditor({
-                                    id                : "currentVersionEditor",
-                                    flex : "1",
-                                    visible           : "true",
-                                    syntax            : "javascript",
-                                    theme             : "[{require('ext/settings/settings').model}::editors/code/@theme]",
-                                    overwrite         : "[{require('ext/settings/settings').model}::editors/code/@overwrite]",
-                                    behaviors         : "[{require('ext/settings/settings').model}::editors/code/@behaviors]",
-                                    selectstyle       : "[{require('ext/settings/settings').model}::editors/code/@selectstyle]",
-                                    activeline        : "[{require('ext/settings/settings').model}::editors/code/@activeline]",
-                                    showinvisibles    : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]",
-                                    showprintmargin   : "false",
-                                    printmargincolumn : "[{require('ext/settings/settings').model}::editors/code/@printmargincolumn]",
-                                    softtabs          : "[{require('ext/settings/settings').model}::editors/code/@softtabs]",
-                                    tabsize           : "[{require('ext/settings/settings').model}::editors/code/@tabsize]",
-                                    scrollspeed       : "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]",
-        
-                                    fontsize          : "[{require('ext/settings/settings').model}::editors/code/@fontsize]",
-                                    wrapmode          : "false",
-                                    wraplimitmin      : "80",
-                                    wraplimitmax      : "80",
-                                    gutter            : "[{require('ext/settings/settings').model}::editors/code/@gutter]",
-                                    highlightselectedword : "[{require('ext/settings/settings').model}::editors/code/@highlightselectedword]",
-                                    autohidehorscrollbar  : "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]",
-        
-                                    "debugger"        : "null",
-                                    readonly          : "true",
-                                    style : "-webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.75); -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.75)"
-                                })
-                            ]
-                        }),
-                        new apf.vbox({
-                            flex : "1",
-                            margin : "20 50 40 50",
-                            childNodes : [
-                                new apf.vbox({
-                                    height : "80",
-                                    align : "center",
+                                    height : "104",
+                                    //align : "center",
                                     id : "vbHistoricalHeader",
                                     childNodes : [
                                         new apf.hbox({
                                             childNodes : [
-                                                new apf.button({
+                                                /*new apf.button({
                                                     id : "versions_nav_back",
                                                     "class" : "versions_navigate nav_backward",
                                                     onclick : function() {
                                                         _self.loadPreviousRevision();
                                                     }
-                                                }),
+                                                }),*/
                                                 new apf.text({
                                                     id : "versions_label",
                                                     "class" : "versions_label",
-                                                    value : ""
+                                                    value : "",
+                                                    flex : "1",
+                                                    height : "50",
+                                                    margin : "0 10 0 0"
                                                 }),
-                                                new apf.button({
+                                                /*new apf.button({
                                                     id : "versions_nav_fwd",
                                                     "class" : "versions_navigate nav_forward",
                                                     onclick : function() {
                                                         _self.loadNextRevision();
                                                     }
-                                                }),
+                                                }),*/
                                                 new apf.textbox({
-                                                    width : "150",
+                                                    width : "100",
+                                                    height : "25",
                                                     skin : "searchbox_textbox",
-                                                    "initial-message" : "Filter Revisions",
+                                                    "initial-message" : "Filter",
                                                     "class" : "versions_search",
-                                                    style : "position: absolute; top: 22px; right: 40px",
+                                                    margin: "0 30 0 0",
                                                     onkeyup : function() {
                                                         _self.applyFilter(this.getValue());
+                                                    },
+                                                    onfocus : function() {
+                                                        apf.tween.single(this.$ext, {
+                                                            type: "width",
+                                                            from: 100,
+                                                            to  : 140,
+                                                            anim : apf.tween.EASEOUT,
+                                                            steps : 20
+                                                        });
+                                                    },
+                                                    onblur : function() {
+                                                        apf.tween.single(this.$ext, {
+                                                            type: "width",
+                                                            from: 140,
+                                                            to  : 100,
+                                                            anim : apf.tween.EASEOUT,
+                                                            steps : 20
+                                                        });
                                                     }
                                                 })
                                             ]
                                         })
                                     ]
                                 }),
-                                new apf.vbox({
+                                /*new apf.vbox({
                                     align : "center",
                                     childNodes : [
                                         new apf.bar({
@@ -157,35 +123,68 @@ module.exports = ext.register("ext/versions/versions", {
                                             "class" : "historical_pages"
                                         })
                                     ]
+                                }),*/
+                                new apf.vbox({
+                                    id : "historicalVersionHolder",
+                                    flex : "1"
                                 }),
-                                new apf.codeeditor({
-                                    id                : "historicalVersionEditor",
-                                    flex : "1",
-                                    visible           : "true",
-                                    syntax            : "{require('ext/code/code').getSyntax(%[.])}",
-                                    theme             : "[{require('ext/settings/settings').model}::editors/code/@theme]",
-                                    overwrite         : "[{require('ext/settings/settings').model}::editors/code/@overwrite]",
-                                    behaviors         : "[{require('ext/settings/settings').model}::editors/code/@behaviors]",
-                                    selectstyle       : "[{require('ext/settings/settings').model}::editors/code/@selectstyle]",
-                                    activeline        : "[{require('ext/settings/settings').model}::editors/code/@activeline]",
-                                    showinvisibles    : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]",
-                                    showprintmargin   : "false",
-                                    printmargincolumn : "[{require('ext/settings/settings').model}::editors/code/@printmargincolumn]",
-                                    softtabs          : "[{require('ext/settings/settings').model}::editors/code/@softtabs]",
-                                    tabsize           : "[{require('ext/settings/settings').model}::editors/code/@tabsize]",
-                                    scrollspeed       : "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]",
-
-                                    fontsize          : "[{require('ext/settings/settings').model}::editors/code/@fontsize]",
-                                    wrapmode          : "false",
-                                    wraplimitmin      : "80",
-                                    wraplimitmax      : "80",
-                                    gutter            : "[{require('ext/settings/settings').model}::editors/code/@gutter]",
-                                    highlightselectedword : "[{require('ext/settings/settings').model}::editors/code/@highlightselectedword]",
-                                    autohidehorscrollbar  : "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]",
-
-                                    "debugger"        : "null",
-                                    readonly          : "true",
-                                    style : "-webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.75); -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.75)"
+                                new apf.hbox({
+                                    edge : "10 0 0 0",
+                                    height : "40",
+                                    pack : "end",
+                                    childNodes : [
+                                        new apf.button({
+                                            caption : "Done",
+                                            "class" : "",
+                                            margin : "0 10 0 0",
+                                            onclick : function() {
+                                                
+                                            }
+                                        }),
+                                        new apf.button({
+                                            caption : "Restore revision",
+                                            "class" : "ui-btn-red",
+                                            onclick : function() {
+                                                
+                                            }
+                                        })
+                                    ]
+                                })
+                            ]
+                        }),
+                        new apf.vbox({
+                            flex : "1",
+                            margin : "20 30 20 30",
+                            childNodes : [
+                                new apf.vbox({
+                                    height : "104", // 80 + 24 (24 == height of right-side zoom effect)
+                                    childNodes : [
+                                        new apf.hbox({
+                                            childNodes : [
+                                                new apf.text({
+                                                    "class" : "versions_label",
+                                                    id : "current_versions_label",
+                                                    value : "",
+                                                    flex : "1",
+                                                    margin : "0 10 0 0",
+                                                    height : "80"
+                                                }),
+                                                new apf.text({
+                                                    "class" : "current_label rounded",
+                                                    value : "Current Document",
+                                                    height : "30"
+                                                })
+                                            ]
+                                        })
+                                    ]
+                                }),
+                                new apf.vbox({
+                                    id : "currentVersionHolder",
+                                    flex : "1"
+                                }),
+                                new apf.hbox({
+                                    edge : "10 0 0 0",
+                                    height : "40"
                                 })
                             ]
                         })
@@ -193,27 +192,108 @@ module.exports = ext.register("ext/versions/versions", {
                 })
             ]
         }));
+        
+        this.historicalVersionEditor = new apf.codeeditor({
+            id                : "historicalVersionEditor",
+            visible           : "true",
+            syntax            : "{require('ext/code/code').getSyntax(%[.])}",
+            theme             : "[{require('ext/settings/settings').model}::editors/code/@theme]",
+            overwrite         : "[{require('ext/settings/settings').model}::editors/code/@overwrite]",
+            behaviors         : "[{require('ext/settings/settings').model}::editors/code/@behaviors]",
+            selectstyle       : "[{require('ext/settings/settings').model}::editors/code/@selectstyle]",
+            activeline        : "false",
+            showinvisibles    : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]",
+            showprintmargin   : "false",
+            printmargincolumn : "[{require('ext/settings/settings').model}::editors/code/@printmargincolumn]",
+            softtabs          : "[{require('ext/settings/settings').model}::editors/code/@softtabs]",
+            tabsize           : "[{require('ext/settings/settings').model}::editors/code/@tabsize]",
+            scrollspeed       : "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]",
+
+            fontsize          : "[{require('ext/settings/settings').model}::editors/code/@fontsize]",
+            wrapmode          : "false",
+            wraplimitmin      : "80",
+            wraplimitmax      : "80",
+            gutter            : "[{require('ext/settings/settings').model}::editors/code/@gutter]",
+            highlightselectedword : "false",
+            autohidehorscrollbar  : "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]",
+
+            "debugger"        : "null",
+            readonly          : "true",
+            style : "z-index : 99999; position: absolute"
+            //style : "-webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.75); -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.75)"
+        });
+
+        this.currentVersionEditor = new apf.codeeditor({
+            id                : "currentVersionEditor",
+            visible           : "true",
+            syntax            : "javascript",
+            theme             : "[{require('ext/settings/settings').model}::editors/code/@theme]",
+            overwrite         : "[{require('ext/settings/settings').model}::editors/code/@overwrite]",
+            behaviors         : "[{require('ext/settings/settings').model}::editors/code/@behaviors]",
+            selectstyle       : "[{require('ext/settings/settings').model}::editors/code/@selectstyle]",
+            activeline        : "false",
+            showinvisibles    : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]",
+            showprintmargin   : "false",
+            printmargincolumn : "[{require('ext/settings/settings').model}::editors/code/@printmargincolumn]",
+            softtabs          : "[{require('ext/settings/settings').model}::editors/code/@softtabs]",
+            tabsize           : "[{require('ext/settings/settings').model}::editors/code/@tabsize]",
+            scrollspeed       : "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]",
+
+            fontsize          : "[{require('ext/settings/settings').model}::editors/code/@fontsize]",
+            wrapmode          : "false",
+            wraplimitmin      : "80",
+            wraplimitmax      : "80",
+            gutter            : "[{require('ext/settings/settings').model}::editors/code/@gutter]",
+            highlightselectedword : "false",
+            autohidehorscrollbar  : "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]",
+
+            "debugger"        : "null",
+            readonly          : "true",
+            style : "z-index : 99999; position: absolute"
+            //style : "-webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.75); -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.75)"
+        })
 
         setTimeout(function() {
+            vbMain.parentNode.appendChild(_self.historicalVersionEditor);
+            vbMain.parentNode.appendChild(_self.currentVersionEditor);
+            
+            currentVersionEditor.$ext.childNodes[2].style.background = "transparent";
+            historicalVersionEditor.$ext.childNodes[2].style.background = "transparent";
+
             _self.sliderEl = document.createElement("div");
             _self.sliderEl.setAttribute("id", "versionsHistoricalSlider");
             vbHistoricalHeader.$ext.appendChild(_self.sliderEl);
 
+            _self.raphaelContainer = document.createElement("div");
+            _self.raphaelContainer.setAttribute("id", "raphaelContainer");
+            document.body.insertBefore(_self.raphaelContainer, vbVersions.$ext);
+
+            currentVersionEditor.$editor.getSession().setUseWrapMode(false);
             _self.currentScrollbar = currentVersionEditor.$editor.renderer.scrollBar;
             _self.currentScrollbar.addEventListener("scroll", function(e) {
                 historicalVersionEditor.$editor.renderer.scrollBar.setScrollTop(e.data);
             });
 
+            historicalVersionEditor.$editor.getSession().setUseWrapMode(false);
             _self.historicalScrollbar = historicalVersionEditor.$editor.renderer.scrollBar;
             _self.historicalScrollbar.addEventListener("scroll", function(e) {
-                //console.log("scrollin!", e);
                 currentVersionEditor.$editor.renderer.scrollBar.setScrollTop(e.data);
             });
-        });
+        }, 100);
+    },
+    
+    loadScript : function(src) {
+        var dmp = document.createElement("script");
+        dmp.setAttribute("type", "text/javascript");
+        dmp.setAttribute("src", src);
+        document.body.appendChild(dmp);
     },
 
     hook : function(){
         var _self = this;
+        this.loadScript("/static/js/diff_match_patch.js");
+        this.loadScript("/static/js/raphael-min.js");
+        
         editors.addBarButton(
             new apf.button({
                 skin : "editor-bar-btn",
@@ -229,8 +309,36 @@ module.exports = ext.register("ext/versions/versions", {
         this.gitLogParser = new GitLogParser();
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
+        
+        window.addEventListener("resize", function() {
+            if (_self.isFocused)
+                _self.resizeElements();
+        });
 
         ext.initExtension(this);
+    },
+    
+    resizeElements : function() {
+        var height = (window.innerHeight - 180) + "px";
+        var width = (window.innerWidth - 60) + "px";
+        
+        this.raphaelContainer.style.width = width;
+        this.raphaelContainer.style.height = height;
+
+        var ph;
+        var pos = apf.getAbsolutePosition(ph = currentVersionHolder.$ext);
+        currentVersionEditor.$ext.style.left = pos[0] + "px";
+        currentVersionEditor.$ext.style.top = pos[1] + "px";
+        var d = apf.getDiff(ext);
+        currentVersionEditor.$ext.style.width = (ph.offsetWidth + 2 - d[0]) + "px";
+        currentVersionEditor.$ext.style.height = (ph.offsetHeight - d[1]) + "px";
+        
+        var pos = apf.getAbsolutePosition(ph = historicalVersionHolder.$ext);
+        historicalVersionEditor.$ext.style.left = pos[0] + "px";
+        historicalVersionEditor.$ext.style.top = pos[1] + "px";
+        var d = apf.getDiff(ext);
+        historicalVersionEditor.$ext.style.width = (ph.offsetWidth + 2 - d[0]) + "px";
+        historicalVersionEditor.$ext.style.height = (ph.offsetHeight - d[1]) + "px";
     },
 
     loadPreviousRevision : function() {
@@ -244,6 +352,18 @@ module.exports = ext.register("ext/versions/versions", {
         var lastLog = fileData.lastLoadedGitLog;
         this.loadRevision(lastLog+1);
     },
+    
+    formulateRevisionMetaData : function(data) {
+        var timestamp = this.formulateVersionsLabelDate(data.author.timestamp);
+        var output = '<table cellspacing="0" cellpadding="0" border="0"><tr>';
+        output += '<tr><td class="rev_header">Author:</td><td>' + data.author.fullName
+            + " " + apf.htmlentities(data.author.email) + '</td></tr>'
+            + '<td class="rev_header">Date:</td><td>' + timestamp + '</td></tr>'
+            //+ "<br />Commit: " + data.commit.substr(0, 10)
+            + '<tr><td class="rev_header">Message:</td><td>' + data.message.join("<br />") + '</td></tr>';
+        output += '</table>';
+        return output;
+    },
 
     loadRevision : function(num) {
         var fileData = this.gitLogs[this.getFilePath()];
@@ -253,11 +373,12 @@ module.exports = ext.register("ext/versions/versions", {
             fileData.logData[fileData.lastLoadedGitLog].dotEl.setAttribute("class", "");
         fileData.logData[num].dotEl.setAttribute("class", "current");
         fileData.lastLoadedGitLog = num;
-        fileData.lastTimeString = this.formulateVersionsLabelDate(fileData.logData[num].author.timestamp);
+        //fileData.lastTimeString = this.formulateVersionsLabelDate(fileData.logData[num].author.timestamp);
 
-        versions_label.setValue(fileData.lastTimeString);
+        var output = this.formulateRevisionMetaData(fileData.logData[num]);
+        versions_label.setValue(output);
 
-        if (num == 0) {
+        /*if (num == 0) {
             versions_nav_back.disable();
             versions_nav_fwd.enable();
         } else if (num == (fileData.logData.length-1)) {
@@ -266,7 +387,7 @@ module.exports = ext.register("ext/versions/versions", {
         } else {
             versions_nav_back.enable();
             versions_nav_fwd.enable();
-        }
+        }*/
 
         this.requestGitShow(hash);
     },
@@ -280,6 +401,7 @@ module.exports = ext.register("ext/versions/versions", {
      * of the current document and its historical revisions
      */
     enterVersionMode : function() {
+        var _self = this;
         this.requestGitLog();
 
         var currentSession = ceEditor.$editor.getSession();
@@ -299,8 +421,26 @@ module.exports = ext.register("ext/versions/versions", {
         Firmin.animate(vbVersions.$ext, {
             opacity: "1"
         }, 0.5, function() {
-            
+            _self.resizeElements();
+            apf.layout.forceResize(document.body);
         });
+
+        this.isFocused = true;
+
+        var paper = Raphael(0, 0, "100%", 9000);
+
+        // Creates circle at x = 50, y = 40, with radius 10
+        var circle = paper.circle(50, 40, 10);
+        // Sets the fill attribute of the circle to red (#f00)
+        circle.attr("fill", "#f00");
+
+        // Sets the stroke attribute of the circle to white
+        circle.attr("stroke", "#fff");
+
+        var box = paper.rect(100, 40, 50, 50);
+        box.attr("fill", "#eee");
+
+        this.raphaelContainer.appendChild(paper.canvas);
     },
 
     /**
@@ -436,9 +576,13 @@ module.exports = ext.register("ext/versions/versions", {
         this.gitLogs[message.body.file].lastLoadedGitLog = logDataLength -1;
             //this.gitLogs[message.body.file].lastSliderValue = logDataLength;
 
-        this.gitLogs[message.body.file].lastTimeString =
+        /*this.gitLogs[message.body.file].lastTimeString =
             this.formulateVersionsLabelDate(logData[logDataLength-1].author.timestamp);
-        versions_label.setValue(this.gitLogs[message.body.file].lastTimeString);
+        versions_label.setValue(this.gitLogs[message.body.file].lastTimeString);*/
+        
+        var output = this.formulateRevisionMetaData(logData[logDataLength-1]);
+        versions_label.setValue(output);
+        current_versions_label.setValue(output);
 
         this.setupSliderEl(this.gitLogs[message.body.file].logData);
 
@@ -456,6 +600,25 @@ module.exports = ext.register("ext/versions/versions", {
 
         var hveSession = historicalVersionEditor.$editor.getSession();
         hveSession.setValue(message.body.out);
+
+        if (!this.dmp)
+            this.dmp = new diff_match_patch();
+
+        // set the raphael svg container to the height of the tallest doc
+        var lines = this.getTallestDocumentLines();
+        var height = lines * currentVersionEditor.$editor.renderer.lineHeight;
+        document.getElementById("raphaelContainer").childNodes[0].setAttribute("height", height);
+
+        // diff_match_patch
+        var diff = this.dmp.diff_main(message.body.out, currentVersionEditor.$editor.getSession().getValue());
+        this.dmp.diff_cleanupSemantic(diff);
+        console.log(diff);
+    },
+
+    getTallestDocumentLines : function() {
+        var hLength = historicalVersionEditor.$editor.getSession().getLength();
+        var cLength = currentVersionEditor.$editor.getSession().getLength();
+        return hLength > cLength ? hLength : cLength;
     },
     
     formulateVersionsLabelDate : function(ts) {
@@ -486,11 +649,13 @@ module.exports = ext.register("ext/versions/versions", {
             dotEl.addEventListener("mouseover", function() {
                 var it = this.getAttribute("rel");
                 var ts = logData[it].author.timestamp;
-                var dateStr = _self.formulateVersionsLabelDate(ts);
-                versions_label.setValue(dateStr);
+                //var dateStr = _self.formulateVersionsLabelDate(ts);
+                var output = _self.formulateRevisionMetaData(logData[it]);
+                versions_label.setValue(output);
+                //versions_label.setValue(dateStr);
             });
             dotEl.addEventListener("mouseout", function() {
-                versions_label.setValue(_self.gitLogs[_self.getFilePath()].lastTimeString);
+                //versions_label.setValue(_self.gitLogs[_self.getFilePath()].lastTimeString);
             });
             dotEl.addEventListener("click", function() {
                 _self.loadRevision(this.getAttribute("rel"));
