@@ -40,7 +40,7 @@ module.exports = ext.register("ext/versions/versions", {
                     childNodes : [
                         new apf.vbox({
                             flex : "1",
-                            margin : "20 30 20 30",
+                            margin : "20 30 0 30",
                             childNodes : [
                                 new apf.vbox({
                                     height : "104",
@@ -127,34 +127,12 @@ module.exports = ext.register("ext/versions/versions", {
                                 new apf.vbox({
                                     id : "historicalVersionHolder",
                                     flex : "1"
-                                }),
-                                new apf.hbox({
-                                    edge : "10 0 0 0",
-                                    height : "40",
-                                    pack : "end",
-                                    childNodes : [
-                                        new apf.button({
-                                            caption : "Done",
-                                            "class" : "",
-                                            margin : "0 10 0 0",
-                                            onclick : function() {
-                                                
-                                            }
-                                        }),
-                                        new apf.button({
-                                            caption : "Restore revision",
-                                            "class" : "ui-btn-red",
-                                            onclick : function() {
-                                                
-                                            }
-                                        })
-                                    ]
                                 })
                             ]
                         }),
                         new apf.vbox({
                             flex : "1",
-                            margin : "20 30 20 30",
+                            margin : "20 30 0 30",
                             childNodes : [
                                 new apf.vbox({
                                     height : "104", // 80 + 24 (24 == height of right-side zoom effect)
@@ -181,10 +159,41 @@ module.exports = ext.register("ext/versions/versions", {
                                 new apf.vbox({
                                     id : "currentVersionHolder",
                                     flex : "1"
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new apf.hbox({
+                    height : "75",
+                    align : "center",
+                    pack : "center",
+                    childNodes : [
+                        new apf.hbox({
+                            //width : "225",
+                            height : "45",
+                            padding : "4",
+                            align : "center",
+                            pack : "center",
+                            "class" : "current_label black",
+                            childNodes : [
+                                new apf.button({
+                                    caption : "Restore",
+                                    "class" : "ui-btn-red",
+                                    margin : "0 10 0 10",
+                                    width : "125",
+                                    onclick : function() {
+                                        
+                                    }
                                 }),
-                                new apf.hbox({
-                                    edge : "10 0 0 0",
-                                    height : "40"
+                                new apf.button({
+                                    caption : "Done",
+                                    "class" : "",
+                                    margin : "0 10 0 10",
+                                    width : "125",
+                                    onclick : function() {
+                                        
+                                    }
                                 })
                             ]
                         })
@@ -257,6 +266,9 @@ module.exports = ext.register("ext/versions/versions", {
             vbMain.parentNode.appendChild(_self.historicalVersionEditor);
             vbMain.parentNode.appendChild(_self.currentVersionEditor);
             
+            // Set Ace's gutter and scroll area background styles
+            currentVersionEditor.$ext.childNodes[1].style.background = "transparent";
+            historicalVersionEditor.$ext.childNodes[1].style.background = "transparent";
             currentVersionEditor.$ext.childNodes[2].style.background = "transparent";
             historicalVersionEditor.$ext.childNodes[2].style.background = "transparent";
 
@@ -268,20 +280,44 @@ module.exports = ext.register("ext/versions/versions", {
             _self.raphaelContainer.setAttribute("id", "raphaelContainer");
             document.body.insertBefore(_self.raphaelContainer, vbVersions.$ext);
 
+            // Background elements for Ace
+            _self.rBgElems = document.createElement("div");
+            _self.rBgElems.setAttribute("id", "rbgelems");
+
+            _self.rBgLeft = document.createElement("div");
+            _self.rBgLeft.setAttribute("class", "ace_bg");
+            _self.rBgElems.appendChild(_self.rBgLeft);
+            _self.rBgRight = document.createElement("div");
+            _self.rBgRight.setAttribute("class", "ace_bg");
+            _self.rBgElems.appendChild(_self.rBgRight);
+            _self.rGutterLeft = document.createElement("div");
+            _self.rGutterLeft.setAttribute("class", "gutter");
+            _self.rBgElems.appendChild(_self.rGutterLeft);
+            _self.rGutterRight = document.createElement("div");
+            _self.rGutterRight.setAttribute("class", "gutter");
+            _self.rBgElems.appendChild(_self.rGutterRight);
+            document.body.insertBefore(_self.rBgElems, _self.raphaelContainer);
+
             currentVersionEditor.$editor.getSession().setUseWrapMode(false);
             _self.currentScrollbar = currentVersionEditor.$editor.renderer.scrollBar;
             _self.currentScrollbar.addEventListener("scroll", function(e) {
                 historicalVersionEditor.$editor.renderer.scrollBar.setScrollTop(e.data);
+                _self.setRaphaelScroll(e.data);
             });
 
             historicalVersionEditor.$editor.getSession().setUseWrapMode(false);
             _self.historicalScrollbar = historicalVersionEditor.$editor.renderer.scrollBar;
             _self.historicalScrollbar.addEventListener("scroll", function(e) {
                 currentVersionEditor.$editor.renderer.scrollBar.setScrollTop(e.data);
+                _self.setRaphaelScroll(e.data);
             });
         }, 100);
     },
-    
+
+    setRaphaelScroll : function(top) {
+        this.raphaelContainer.childNodes[0].style.top = (-1 * top) + "px";
+    },
+
     loadScript : function(src) {
         var dmp = document.createElement("script");
         dmp.setAttribute("type", "text/javascript");
@@ -319,26 +355,37 @@ module.exports = ext.register("ext/versions/versions", {
     },
     
     resizeElements : function() {
-        var height = (window.innerHeight - 180) + "px";
+        var height = (window.innerHeight - 195) + "px";
         var width = (window.innerWidth - 60) + "px";
-        
+
         this.raphaelContainer.style.width = width;
         this.raphaelContainer.style.height = height;
 
+        this.rBgElems.style.width = width;
+        this.rBgElems.style.height = height;
+
         var ph;
-        var pos = apf.getAbsolutePosition(ph = currentVersionHolder.$ext);
-        currentVersionEditor.$ext.style.left = pos[0] + "px";
-        currentVersionEditor.$ext.style.top = pos[1] + "px";
+        var cPos = apf.getAbsolutePosition(ph = currentVersionHolder.$ext);
+        currentVersionEditor.$ext.style.left = cPos[0] + "px";
+        currentVersionEditor.$ext.style.top = cPos[1] + "px";
         var d = apf.getDiff(ext);
         currentVersionEditor.$ext.style.width = (ph.offsetWidth + 2 - d[0]) + "px";
         currentVersionEditor.$ext.style.height = (ph.offsetHeight - d[1]) + "px";
-        
+
         var pos = apf.getAbsolutePosition(ph = historicalVersionHolder.$ext);
         historicalVersionEditor.$ext.style.left = pos[0] + "px";
         historicalVersionEditor.$ext.style.top = pos[1] + "px";
         var d = apf.getDiff(ext);
-        historicalVersionEditor.$ext.style.width = (ph.offsetWidth + 2 - d[0]) + "px";
+        var hLeftWidth = ph.offsetWidth + 2 - d[0];
+        historicalVersionEditor.$ext.style.width = hLeftWidth + "px";
         historicalVersionEditor.$ext.style.height = (ph.offsetHeight - d[1]) + "px";
+
+        if (this.rBgLeft) {
+            this.rBgLeft.style.width = hLeftWidth + "px";
+            this.rBgRight.style.width = hLeftWidth + "px";
+            this.rBgRight.style.left = (cPos[0]-30) + "px";
+            this.rGutterRight.style.left = (cPos[0]-30) + "px";
+        }
     },
 
     loadPreviousRevision : function() {
@@ -427,20 +474,7 @@ module.exports = ext.register("ext/versions/versions", {
 
         this.isFocused = true;
 
-        var paper = Raphael(0, 0, "100%", 9000);
-
-        // Creates circle at x = 50, y = 40, with radius 10
-        var circle = paper.circle(50, 40, 10);
-        // Sets the fill attribute of the circle to red (#f00)
-        circle.attr("fill", "#f00");
-
-        // Sets the stroke attribute of the circle to white
-        circle.attr("stroke", "#fff");
-
-        var box = paper.rect(100, 40, 50, 50);
-        box.attr("fill", "#eee");
-
-        this.raphaelContainer.appendChild(paper.canvas);
+        this.raphaelPaper = Raphael(this.raphaelContainer, 0, 0, "100%", 9000);
     },
 
     /**
@@ -606,13 +640,34 @@ module.exports = ext.register("ext/versions/versions", {
 
         // set the raphael svg container to the height of the tallest doc
         var lines = this.getTallestDocumentLines();
-        var height = lines * currentVersionEditor.$editor.renderer.lineHeight;
-        document.getElementById("raphaelContainer").childNodes[0].setAttribute("height", height);
+        var lineHeight = currentVersionEditor.$editor.renderer.lineHeight;
+        var height = lines * lineHeight;
+
+        this.raphaelPaper.clear();
+        this.raphaelPaper.setSize("100%", height);
+
+        this.resizeElements();
 
         // diff_match_patch
         var diff = this.dmp.diff_main(message.body.out, currentVersionEditor.$editor.getSession().getValue());
         this.dmp.diff_cleanupSemantic(diff);
-        console.log(diff);
+
+        var numLines = 0;
+        for (var i = 0; i < diff.length; i++) {
+            var d = diff[i];
+            if (d[0] != 1) {
+                var tLines = d[1].split("\n").length;
+                if (d[0] == -1) {
+                    console.log(d[1], tLines, numLines);
+                    var removedLines = this.raphaelPaper.rect(50, (numLines*lineHeight)+2, 450, (tLines*lineHeight)+1);
+                    removedLines.attr("fill", "rgb(80, 140, 60)");
+                    removedLines.attr("stroke-width", "0");
+                }
+                numLines += (tLines-1);
+            }
+            //console.log(diff[i][1].split("\n"));
+        }
+        //console.log(diff);
     },
 
     getTallestDocumentLines : function() {

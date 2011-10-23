@@ -7,6 +7,29 @@
             overflow: hidden;
             z-index: 99999;
         }
+
+        #rbgelems {
+            z-index: 99999;
+            top: 122px;
+            margin: 0 30px 0 30px;
+            overflow: hidden;
+            position: absolute;
+        }
+
+        #rbgelems div {
+            position: absolute;
+            height: 3000px;
+        }
+
+        #rbgelems div.ace_bg {
+            background-color: rgb(50, 50, 50);
+        }
+
+        #rbgelems div.gutter {
+            width: 50px;
+            background-color: rgb(232, 232, 232);
+        }
+
         .historical_pages {
             background: #666;
             border: 1px solid #999;
@@ -19,7 +42,7 @@
             -webkit-box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.75);
             -moz-box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.75);
         }
-        
+
         .current_label {
             background: #575757;
             color: #fff;
@@ -34,6 +57,10 @@
             -moz-border-radius: 5px;
             -webkit-border-radius: 5px;
             border: 1px solid #999;
+        }
+
+        .current_label.black {
+            background-color: #333;
         }
 
         .versions_label {
