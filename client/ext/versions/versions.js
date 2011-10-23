@@ -650,20 +650,32 @@ module.exports = ext.register("ext/versions/versions", {
 
         // diff_match_patch
         var diff = this.dmp.diff_main(message.body.out, currentVersionEditor.$editor.getSession().getValue());
+        //console.log(diff);
+        // @TODO remove this and only use regular diff
         this.dmp.diff_cleanupSemantic(diff);
 
-        var numLines = 0;
+        var numLeftLines = 0, numRightLines = 0;
+        var d, tLines;
         for (var i = 0; i < diff.length; i++) {
-            var d = diff[i];
+            d = diff[i];
+            tLines = d[1].split("\n").length;
             if (d[0] != 1) {
-                var tLines = d[1].split("\n").length;
                 if (d[0] == -1) {
-                    console.log(d[1], tLines, numLines);
-                    var removedLines = this.raphaelPaper.rect(50, (numLines*lineHeight)+2, 450, (tLines*lineHeight)+1);
-                    removedLines.attr("fill", "rgb(80, 140, 60)");
+                    //console.log(numLeftLines, numRightLines);
+                    var removedLines = this.raphaelPaper.rect(50, (numLeftLines*lineHeight)+2, 450, (tLines*lineHeight)+1);
+                    removedLines.attr("fill", "rgba(255, 77, 64, 0.5)");
                     removedLines.attr("stroke-width", "0");
                 }
-                numLines += (tLines-1);
+                else
+                    numRightLines += (tLines-1);
+                numLeftLines += (tLines-1);
+            }
+
+            else {
+                var addedLines = this.raphaelPaper.rect(611, (numRightLines*lineHeight)+2, 450, (tLines*lineHeight)+1);
+                addedLines.attr("fill", "rgba(80, 140, 60, 0.5)");
+                addedLines.attr("stroke-width", "0");
+                numRightLines += (tLines-1);
             }
             //console.log(diff[i][1].split("\n"));
         }
