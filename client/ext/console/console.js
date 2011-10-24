@@ -388,7 +388,10 @@ module.exports = ext.register("ext/console/console", {
     },
 
     getPrompt: function() {
-        return "[guest@cloud9]:" + this.$cwd + "$";
+        if(!this.username)
+            this.username = (ide.workspaceId.match(/user\/(\w+)\//) || [,"guest"])[1];
+        
+        return "[" + this.username + "@cloud9]:" + this.$cwd + "$";
     },
 
     subCommands: function(cmds, prefix) {
