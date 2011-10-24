@@ -91,9 +91,9 @@ define(function(require, exports, module) {
                 var list = processList(message.body.out);
                 for (var ix = 0; ix < list.length; ix++) {
                     var item = list[ix];
-                    model.push({ name: item.name, version: item.version });
+                    model.push({ name: item.name, version: item.version, description: 'this is awesome package', uptodate: "Up to date" });
                 }
-                
+                                
                 if (activeCallbacks.list && typeof activeCallbacks.list === "function") {
                     activeCallbacks.list(model);
                     activeCallbacks.list = null; // clear callback
@@ -102,14 +102,14 @@ define(function(require, exports, module) {
             case "install":
                 var icb = activeCallbacks.install;
                 if (icb && typeof icb === "function") {
-                    icb(null);
+                    icb(message.body);
                     activeCallbacks.install = null;
                 }
                 break;
             case "uninstall":
                 var ucb = activeCallbacks.uninstall;
                 if (ucb && typeof ucb === "function") {
-                    ucb(null);
+                    ucb(message.body);
                     activeCallbacks.uninstall = null;
                 }               
                 break;
@@ -146,7 +146,9 @@ define(function(require, exports, module) {
             
             var indentation = indentationMatch[0].length;
             var level = (indentation - 4) / 2;
-            var name = line.match(/\w+@[\d\.]+/)[0];
+            var name = (line.match(/\w+@[\d\.]+/) || [""])[0];
+            
+            if (!name) continue;
             
             source.push({
                 indentation: level,

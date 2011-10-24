@@ -1,0 +1,35 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+   <div name="packageitem">
+        <a:style><![CDATA[
+            .pacman-window .list {
+                height: 400px;
+                overflow: auto;
+            }
+            .pacman-window .package {
+                clear:both;
+                border-top: 1px solid gray;
+                margin: 0 10px;
+            }
+            .pacman-window .package:first-child {
+                border-top: none;
+            }            
+            .pacman-window .col-l {
+                float: left;
+                max-width: 80%;
+            }
+            
+            .pacman-window .col-r {
+                float: right;
+                padding-top: 20px;
+            }
+            
+            .pacman-window .isuptodate {
+                display: block;
+                padding-right: 3px;
+                padding-top: 10px;
+                text-align: right;
+            }
+        ]]></a:style>
+    </div>
+</a:skin>

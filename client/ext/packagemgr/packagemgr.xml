@@ -1,9 +1,15 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:model id="mdlPackageMgr"/>
+    <a:skin id="pcmSkin" 
+      src       = "{require('ext/packagemgr/packagemgr').skin}" />
+      
+    <a:model id="mdlPacmanInstalled"/>
+    <a:model id="mdlPacmanSearchResult"/>
     <a:window
       id        = "winPack"
       title     = "Package Manager"
       icon      = ""
+      class     = "pacman-window"
+      skinset   = "pcmSkin"
       center    = "true"
       resizable = "true"
       buttons   = "close"
@@ -20,14 +26,38 @@
                   caption = "Search"
                   disabled = "{!tbPackQuery.value.trim()}" />
             </a:hbox>
-            <a:datagrid id="dgExt" flex="1" model="mdlPackageMgr" each="[package]">
-                <a:column width="25%" value="[name]" caption="Name" /> 
-                <a:column width="25%" value="[version]" caption="Version" /> 
-                <!--<a:column width="30%" value="[@path]" caption="Path" /> 
-                <a:column width="15%" value="[@type]" caption="Type" /> 
-                <a:column width="20%" value="[@dev]" caption="Developer" /> 
-                <a:column width="10%" value="{[@enabled] == 1 ? 'Enabled' : 'Disabled'}" caption="Enabled" />-->
-            </a:datagrid>
+            <div model="mdlPacmanInstalled" id="lstPacmanInstalled" class="list"><?lm
+                foreach([package]) {
+                  <div class="package">
+                    <div class="col-l">
+                        <h3>[name]</h3>
+                        <span class="version">[version]</span>
+                        <p class="description">[description]</p>
+                    </div>
+                    <div class="col-r">
+                        <button onclick="require('ext/packagemgr/packagemgr').uninstall('[name]')">Uninstall</button>
+                        <span class="isuptodate">[uptodate]</span>
+                    </div>
+                  </div>
+                }
+            ?></div>
+            <div model="mdlPacmanSearchResult" id="lstPacmanSearchResult" class="list" visible="false"><?lm
+                foreach([package]) {
+                  <div class="package">
+                    <div class="col-l">
+                        <h3>[name]</h3>
+                        <span class="version">[version]</span>
+                        <p class="description">[description]</p>
+                    </div>
+                    <div class="col-r">
+                        <button onclick="require('ext/packagemgr/packagemgr').install('[name]')"
+                        {(apf.isTrue([installDisabled]) ? " disabled='disabled'" : "")}>
+                            [installLabel]
+                        </button>
+                    </div>
+                  </div>
+                }
+            ?></div>      
             <a:hbox edge="10 0 0 0">
                 <a:filler />
                 <a:button default="3" width="80" onclick="winPack.hide()">Done</a:button>
