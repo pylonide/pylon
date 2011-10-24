@@ -42,7 +42,7 @@ module.exports = ext.register("ext/newresource/newresource", {
                 }
             }), ide.mnuFile.firstChild),
             ide.mnuFile.insertBefore(new apf.item({
-                caption : "New Template...",
+                caption : "New From Template...",
                 onclick : function(){
                     _self.newfiletemplate();
                 }
