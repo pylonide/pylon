@@ -27,7 +27,9 @@ define(function(require, exports, module) {
         
         nodes : [],
         
-        localPackages: {},
+        localPackagesHashtable: {},
+        localPackages: [],
+        outdated: null,
         
         models: {
             installed: null,
@@ -58,6 +60,18 @@ define(function(require, exports, module) {
          * @param {object} model The data to be bound
          */
         bindModel: function(targetModel, model) {
+            if (targetModel === this.models.installed) {
+                model = this.enrichModelWithOutdated(model, this.outdated);
+                
+                if (this.outdated && this.outdated.length) {
+                    var label = this.outdated.length === 1 ? "Update 1 package" : "Update " + this.outdated.length + " packages";
+                    pacUpdateButton.setAttribute("caption", label);
+                }
+                else {
+                    pacUpdateButton.setAttribute("caption", "All up to date");
+                }
+            }
+            
             targetModel.load(JSON.stringify({
                 "package": model
             }));
@@ -65,6 +79,9 @@ define(function(require, exports, module) {
             // switch view
             this.lists.installed.setAttribute("visible", targetModel === this.models.installed);
             this.lists.search.setAttribute("visible", targetModel === this.models.search);
+            
+            // show / hide update button
+            pacUpdateButton.setAttribute("visible", targetModel === this.models.installed);
         },
         
         init : function(amlNode) {
@@ -78,13 +95,21 @@ define(function(require, exports, module) {
             _self.lists.search = lstPacmanSearchResult;
             
             npm.listPackages(function (model) {
+                // make a hash table so we can quickly search the installed packages
                 var pckgs = {};
                 for (var ix = 0; ix < model.length; ix++) {
                     pckgs[model[ix].name] = model[ix];
                 }
-                _self.localPackages = pckgs;
+                _self.localPackagesHashtable = pckgs;
+                _self.localPackages = model;
                 
                 _self.bindModel(_self.models.installed, model);
+            }, function (outdated) {
+                _self.outdated = outdated;
+                
+                if (_self.localPackages) {
+                    _self.bindModel(_self.models.installed, _self.localPackages);
+                }
             });
             
             pmSearch.addEventListener("click", function(e) {
@@ -119,6 +144,35 @@ define(function(require, exports, module) {
             this.nodes = [];
         },
         
+        enrichModelWithOutdated: function (model, outdated) {
+            var outdatedHash = {};
+            if (outdated !== null) {
+                for (var oix = 0; oix < outdated.length; oix++) {
+                    outdatedHash[outdated[oix].name] = outdated[oix];
+                }
+            }
+            
+            for (var ix = 0, item = model[ix]; ix < model.length; item = model[++ix]) {
+                if (outdated === null) {
+                    item.uptodate = "...";
+                }
+                else if (outdatedHash[item.name] && outdatedHash[item.name].newVersion) {
+                    item.uptodate = "Version " + outdatedHash[item.name].newVersion + " available";
+                    item.updateAvailable = 1;
+                }
+                else if (outdatedHash[item.name]) {
+                    item.uptodate = "New version available";
+                    item.updateAvailable = 1;
+                }
+                else {
+                    item.uptodate = "Up to date";
+                    item.updateAvailable = 0;
+                }
+            }
+            
+            return model;
+        },
+        
         mapSearchModel: function(qry, model) {
             var full = new RegExp("^" + qry + "$", "i");
             var starts = new RegExp("^" + qry, "i");
@@ -141,7 +195,7 @@ define(function(require, exports, module) {
             for (var ix = 0; ix < model.length; ix++) {
                 var item = model[ix];
                 
-                if (this.localPackages[item.name]) {
+                if (this.localPackagesHashtable[item.name]) {
                     item.installDisabled = true;
                     item.installLabel = "Already installed";
                 } else {
@@ -179,6 +233,23 @@ define(function(require, exports, module) {
             var _self = this;
             
             npm.uninstall(name, function (body) {
+                if (body.err) {
+                    _self.errorHandler(body.err);
+                }
+                npm.listPackages(function (model) {
+                    _self.bindModel(_self.models.installed, model);
+                });
+            });
+        },
+        
+        /** Updates all outdated packages
+        */
+        updateAll: function () {
+            var _self = this;
+            
+            if (!_self.outdated || _self.outdated.length === 0) return;
+            
+            npm.update(function (body) {
                 if (body.err) {
                     _self.errorHandler(body.err);
                 }

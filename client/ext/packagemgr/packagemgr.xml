@@ -59,6 +59,7 @@
                 }
             ?></div>      
             <a:hbox edge="10 0 0 0">
+                <a:button id="pacUpdateButton" default="3" width="160" onclick="require('ext/packagemgr/packagemgr').updateAll()" enabled="false" caption="All up to date"></a:button>
                 <a:filler />
                 <a:button default="3" width="80" onclick="winPack.hide()">Done</a:button>
             </a:hbox>

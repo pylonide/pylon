@@ -22,13 +22,14 @@
             .pacman-window .col-r {
                 float: right;
                 padding-top: 20px;
+                text-align: right;
             }
             
             .pacman-window .isuptodate {
                 display: block;
                 padding-right: 3px;
                 padding-top: 10px;
-                text-align: right;
+                
             }
         ]]></a:style>
     </div>
