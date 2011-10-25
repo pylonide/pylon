@@ -26,14 +26,14 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     var indicator = this.indicator = document.body.appendChild(document.createElement("div"));
     indicator.style.position = "absolute";
     indicator.style.display = "none";
-    indicator.style.border = "3px solid #7ac7f4";
+    indicator.style.border = "3px solid #5c5c5c";
     indicator.style.zIndex = 1000000;
 };
 
 (function(){
     var whiledrag, lastInfo, diffPixel = 3;
     var menuCounter = 100;
-    
+    var panelSplittersCount = 0; 
     /**
      * Retrieve the current state of the layout as a JSON object
      * 
@@ -233,7 +233,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 width     : bar.$dockData && bar.$dockData.width || 260,
                 splitters : true,
                 vdock     : 1,
-                "class"   : "dockcol unselectable",
+                "class"   : "dockcol unselectable expandedpanel",
                 childNodes : [
                     new apf.button({
                         dock       : 1,
@@ -255,11 +255,13 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             
             bar.splitter = bar.parentNode.insertBefore(new apf.splitter({
                 scale   : "right",
+                "class" : "splitter-editor-right" + (panelSplittersCount > 0 ? " panelsplitter" : ""),
                 width   : "0"
             }), bar.vbox);
             
             bar.splitter.bar = 
             bar.vbox.bar     = bar;
+            panelSplittersCount++;
         }
         else {
             bar.parentNode.insertBefore(bar.vbox, bar);
@@ -461,7 +463,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         div.style.left = "2px";
                         div.style.right = "3px";
                         div.style.height = (aml.$ext.offsetHeight - 9) + "px";
-                        div.style.border = "2px solid #7ac7f4";
+                        div.style.border = "2px solid #5c5c5c";
                         div.style.webkitBorderRadius = "6px";
                     }
                     else {
@@ -469,7 +471,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                             + (info.position == "before_button" ? 0 : aml.$ext.offsetHeight) 
                             - 8) + "px";
                         div.style.width = "100%";
-                        div.style.borderBottom = "3px solid #7ac7f4";
+                        div.style.borderBottom = "3px solid #5c5c5c";
                     }
                     
                     break;
@@ -507,18 +509,18 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         div1.style.width = (matchAml.$button.offsetWidth - 5) + "px";
                         div1.style.height = "18px";
                         div1.style.margin = "-18px 0 0 0px";
-                        div1.style.border = "3px solid #7ac7f4";
+                        div1.style.border = "3px solid #5c5c5c";
                         div1.style.borderWidth = "3px 3px 0 3px";
                         
                         div2.style.left = (diff[0] + matchAml.$button.offsetWidth - 3) + "px";
                         div2.style.right = "0px";
                         div3.style.borderBottom =
-                        div2.style.borderBottom = "3px solid #7ac7f4";
+                        div2.style.borderBottom = "3px solid #5c5c5c";
                         
                         div3.style.left = "0px";
                         div3.style.right = (width - diff[0] - 3) + "px";
                         
-                        indicator.style.borderTop = "0px solid #7ac7f4";
+                        indicator.style.borderTop = "0px solid #5c5c5c";
                         indicator.style.top = (pos2[1] + 18) + "px";
                         height -= 18;
                     }
@@ -528,7 +530,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         indicator.firstChild.style.width = "5px";
                         indicator.firstChild.style.background = "rgba(122,199,244,0.5)";
                         indicator.firstChild.style.top = "0px";
-                        indicator.firstChild.firstChild.style.background = "#7ac7f4";
+                        indicator.firstChild.firstChild.style.background = "#5c5c5c";
                         indicator.firstChild.firstChild.style.height = "100%";
                         indicator.firstChild.firstChild.style.margin="0 2px 0 2px";
                         
@@ -563,7 +565,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     indicator.style.width = aml.$ext.offsetWidth + "px";
                     indicator.style.borderWidth = "0 0 0 0";
                     indicator.innerHTML = "<div style='margin:2px 0 2px 0'></div>";
-                    indicator.firstChild.style.backgroundColor = "#7ac7f4";
+                    indicator.firstChild.style.backgroundColor = "#5c5c5c";
                     indicator.firstChild.style.height = "1px";
                     indicator.style.backgroundColor = "rgba(122,199,244,0.5)";
                     return;
@@ -573,7 +575,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     
                     var div = indicator.firstChild;
                     div.style.top = "100%";
-                    div.style.borderTop = "3px solid #7ac7f4"
+                    div.style.borderTop = "3px solid #5c5c5c"
                     div.style.height = (dragged.localName == "vbox" ? dragged.$ext.offsetHeight : 50) + "px";
                     div.style.background = "rgba(172,172,172,0.5)";
                     div.style.width = "100%";
@@ -601,7 +603,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         div.style.right = "100%";
                         div.style.width = 0;
                         div.style.height = "100%";
-                        div.style.borderRight = "3px solid #7ac7f4"
+                        div.style.borderRight = "3px solid #5c5c5c"
                         div.style.background = "rgba(172,172,172,0.5)";
                         div.style.webkitBorderRadius = "4px 0 0 4px";
                         
@@ -1051,10 +1053,16 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
      * Creates a new menu
      */
     this.$addMenu = function(section){
+        if(!section)
+            section = {"$dockData":{}};
+        
+        if(!section.$dockData)
+            section["$dockData"] = {};
+        
         var _self = this,
             childNodes = [],
             menuId = section.$dockData.id || "submenu" + menuCounter++;
-        
+
         if(!section.$dockData.noTab) {
             childNodes = [
                 new apf.tab({
@@ -1110,6 +1118,13 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     menu.$ext.style.left = "";
                     menu.$ext.style.zIndex = "9999";
                 });
+                
+                if(menu.opener.$dockData && menu.opener.$dockData.caption) {
+                    var className = menu.$ext.getAttribute("class");
+                    menu.$ext.setAttribute("class", className.replace(/btn\w+Enable/, "") 
+                        + " btn" + menu.opener.$dockData.caption.replace(/\s+/, "").toLowerCase().uCaseFirst() 
+                        + "Enable");
+                }
             },
             onafterresize : function(){
                 var menu = this;
@@ -1290,6 +1305,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
      * Creates a new section
      */
     this.$addSection = function(bar, before, ident, sectionOpt){
+        if(!sectionOpt)
+            sectionOpt = {};
         var _self   = this;
         var section = bar.insertBefore(new apf.vbox({
             padding : 0,
@@ -1324,7 +1341,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 var pos = apf.getAbsolutePosition(section.$ext);
 
                 pNode.insertBefore(placeHolder, section);
-                placeHolder.$ext.style.background = "#acacac";
+                placeHolder.$ext.style.background = "#434343";
+                placeHolder.$ext.style.borderTop = "1px solid #373737";
                 placeHolder.$ext.style.height = (height - diff[1]) + "px";
 
                 section.setWidth(section.$ext.offsetWidth);

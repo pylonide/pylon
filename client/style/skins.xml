@@ -5354,6 +5354,7 @@
             right: 20px;
             top: 25px;
         }
+
     ]]></a:style>
 
     <a:presentation>
@@ -6303,6 +6304,10 @@
             width : 5px;
             margin-left : -3px;
             background : url(images/spacer.gif);
+        }
+        
+        .splitter.vertical.panelsplitter div {
+            margin-left: -5px;
         }
 
         .splitter.vertical.panelsplitter div {
@@ -7997,6 +8002,87 @@
     <a:presentation>
         <a:main input=".">
             <textarea type="text" class="ta"/>
+        </a:main>
+    </a:presentation>
+</a:textbox>
+
+<a:textbox name="textbox-modal">
+    <a:style><![CDATA[
+        .textbox-modal {
+            position : relative;
+            height   : 29px;
+            
+            border-bottom: 1px solid #E3E3E3;
+            border-radius: 0 0px 6px 6px;
+        }
+
+        .textbox-modal .sbtb_middle {
+            margin: 0;
+            outline: none;
+            font-family: Arial;
+            font-size: 11px;
+            text-overflow: ellipsis;
+            color: #333333;
+            
+            height           : 22px;
+            padding          : 2px 5px;
+            background-color: #ffffff;
+            
+            -webkit-box-shadow: inset 0px 1px 1px 0px #cccccc;
+            -moz-box-shadow: inset 0px 1px 1px 0px #cccccc;
+            box-shadow: inset 0px 1px 1px 0px #cccccc; 
+            
+            border-width: 1px;
+            border-style: solid;
+            border-color: #8d8d8e #9e9e9c #a5a5a5;
+            
+            -webkit-border-radius: 6px;
+            -moz-border-radius: 6px;
+            border-radius: 6px;
+        }
+        
+        .textbox-modal.required-tb .sbtb_middle {
+            background-color: #e9f3d0;
+        }
+        
+        .textbox-modal .sbtb_middle INPUT {
+            border           : 0;
+            height           : 21px;
+            font-size        : 11px;
+            color            : #333333;
+            font-family      : Arial;
+            outline          : none;
+            background-color : transparent;
+            width: 100%;
+        }
+
+        .textbox-modalInitial .sbtb_middle INPUT {
+            color : #bdbdbd;
+            text-shadow : #ffffff 0px 1px 0px;
+        }
+        .textbox-modalInitial.required-tb .sbtb_middle INPUT {
+            color : #9fa987;
+            text-shadow : #fbfff1 0px 1px 0px;
+        }
+
+        .textbox-modalDisabled .sbtb_middle INPUT {
+            color : #CCC;
+        }
+
+        .textbox-modalDisabled .sbtb_middle{
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(235,235,235)),color-stop(0.4, rgb(255,255,255)));
+            background: -moz-linear-gradient(center bottom,rgb(235,235,235) 0%,rgb(255,255,255) 40%);
+            cursor : default;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input="div[1]/input">
+            <div class="textbox-modal">
+                <div class="sbtb_middle">
+                    <input type="text"/>
+                </div>
+            </div>
         </a:main>
     </a:presentation>
 </a:textbox>
