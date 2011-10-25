@@ -49,7 +49,7 @@
           skin     = "c9-sidepanelsbutton"
           onclick  = "dbg.stepOut();"
           disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
-        <a:divider skin="c9-divider" />
+        <a:divider skin="c9-divider" class="runcommandsdivider" />
     </a:hbox>
     
     <a:hbox id="tbDebugNav" padding="3" edge="1 3 0" visible="false">
@@ -92,25 +92,28 @@
       title="New Run Configuration" 
       model="{lstRunCfg.selected}"
       buttons="close" 
-      modal="false"
+      modal="true"
       center="true" 
       width="350"
+      skin="bk-window"
+      visible="true"
       height="400"
       kbclose="true">
         <a:vbox anchors="0 0 0 0">
-        <a:toolbar>
+        <a:toolbar class="modal-toolbar">
             <a:bar>
             <a:button
-              icon="debugger/monitorexpression_tsk{this.disabled ? '_disabled' : ''}.gif"
+              icon="debugger/monitorexpression_tsk{this.disabled ? '_disabled' : ''}.png"
               caption="Add"
               onclick="require('ext/run/run').addConfig()"/>
             <a:button 
-              icon="debugger/copy_edit_co{this.disabled ? '_disabled' : ''}.gif" 
+              icon="debugger/copy_edit_co{this.disabled ? '_disabled' : ''}.png" 
               caption="Duplicate"
+              class="width_20"
               onclick="require('ext/run/run').duplicate()"
               disabled="{!lstRunCfg.selected}"/>
             <a:button 
-              icon="debugger/delete_config{this.disabled ? '_disabled' : ''}.gif"
+              icon="debugger/delete_config{this.disabled ? '_disabled' : ''}.png"
               caption="Remove"
               onclick="lstRunCfg.remove()"
               disabled="{!lstRunCfg.selected}"/>
@@ -118,25 +121,29 @@
         </a:toolbar>
         <a:list id="lstRunCfg" 
           skin="lineselect"
+          class="runconfig"
           model="mdlRunConfigurations"
           each="[config]"
           caption="[@name]"
           empty-message="no run configurations"
           autoselect="true"
           flex="1"/>				
-            <a:divider />
+            <a:divider class="modal-divider" />
             <a:hbox align="center" margin="5 10 5 10" padding="10">
-                <a:label width="130" textalign="right">Name</a:label>
+                <a:label width="130" textalign="right" class="modal-label">Name</a:label>
                 <a:textbox id="txtRunCfgName" 
                   flex="1"
                   realtime="true"
                   value="[@name]"
+                  initial-message="Give it a descriptive name" 
+                  class="required-tb"
+                  skin="textbox-modal"
                   disabled="{!lstRunCfg.selected}"/>
             </a:hbox>
-            <a:divider />
+            <a:divider class="modal-divider"/>
             <a:hbox align="center" id="hbRunCfg" margin="5 10" padding="10">
-                <a:label width="130" textalign="right">File path</a:label>
-                <a:textbox id="txtRunCfgName" flex="1" value="[@path]" disabled="{!lstRunCfg.selected}"/>
+                <a:label width="130" textalign="right" class="modal-label">File path</a:label>
+                <a:textbox id="txtRunCfgName" flex="1" value="[@path]" disabled="{!lstRunCfg.selected}" initial-message="Optional" skin="textbox-modal"/>
                 <a:button visible="false" icon="folder.png" disabled="true" tooltip="Browse ..."></a:button>
             </a:hbox>
             <!--a:divider />
@@ -159,19 +166,24 @@
                     </a:each>
                 </a:dropdown>
             </a:hbox-->
-            <a:hbox align="center" margin="5 10" padding="10">
-                <a:label width="130" textalign="right">Command line arguments</a:label>
-                <a:textbox id="txtRunCfgName" flex="1" value="[@args]" disabled="{!lstRunCfg.selected}"/>
+            <a:hbox align="center" margin="5 10 10" padding="10">
+                <a:label width="130" textalign="right" class="modal-label">Command line arguments</a:label>
+                <a:textbox id="txtRunCfgName" flex="1" value="[@args]" disabled="{!lstRunCfg.selected}" initial-message="Optional" skin="textbox-modal"/>
             </a:hbox>
-            <a:divider />
-            <a:hbox padding="5" pack="end" edge="10 10 5 10">
+            <a:hbox padding="10" pack="end" edge="10 10 10 20" align="center">
+                <a:button onclick="winRunCfgNew.hide()" skin="btn-default-simple">Cancel</a:button>
+                <a:filler />
+                <a:button  
+                  skin="btn-default-css3"
+                  onclick="winRunCfgNew.hide()"
+                  caption="Done"/>
                 <a:button 
                   default="2" 
-                  class="ui-btn-green" 
+                  skin="btn-default-css3"
+                  class="btn-green" 
                   onclick="require('ext/run/run').runConfig(lstRunCfg.selected, mdlRunConfigurations.data.getAttribute('debug') == '1');winRunCfgNew.hide()"
                   disabled="{!lstRunCfg.selected}"
                   caption="Run"/>
-                <a:button onclick="winRunCfgNew.hide()">Close</a:button>
             </a:hbox>        
         </a:vbox>
     </a:window>
