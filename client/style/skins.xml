@@ -1273,7 +1273,11 @@
             height: 16px;
             margin: -1px 4px 0 0;
         }
-
+        
+        .toolbar .subbar .toolbarbuttonIcon.width_20 span {
+            width: 20px;
+        }
+        
         .toolbar .subbar .toolbarbuttonIcon.toolbarbuttonOver span{
             background-position: 0 -16px;
         }
@@ -2031,6 +2035,275 @@
           background = "."
           icon       = ".">
             <div class="c9-topbar-btn"> </div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
+<a:button name="btn-default-css3">
+    <a:style><![CDATA[
+        .btn-default-css3 {
+            background-image: linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
+            
+            -moz-border-radius    : 6px;
+            -webkit-border-radius : 6px;
+            border-radius         : 6px;
+            
+            text-shadow   : #383838 0px 1px 0px;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 14px;
+            
+            -webkit-box-shadow: 0 0px 3px 0 #000000;
+            -moz-box-shadow: 0 0px 3px 0 #000000;
+            box-shadow: 0 0px 3px 0 #000000; 
+            
+            position: relative;
+        }
+
+        .btn-default-css3Over {
+            background-image: linear-gradient(bottom, rgb(92,92,98) 0%, rgb(116,116,119) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(92,92,98) 0%, rgb(116,116,119) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(92,92,98) 0%, rgb(116,116,119) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(92,92,98) 0%, rgb(116,116,119) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(92,92,98) 0%, rgb(116,116,119) 100%);
+        }
+        
+        .btn-default-css3Focus {
+            background-image: linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
+        }
+        
+        .btn-default-css3Down {
+            background-image: linear-gradient(bottom, rgb(100,100,104) 0%, rgb(73,73,80) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(100,100,104) 0%, rgb(73,73,80) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(100,100,104) 0%, rgb(73,73,80) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(100,100,104) 0%, rgb(73,73,80) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(100,100,104) 0%, rgb(73,73,80) 100%);
+        }
+        
+        .btn-default-css3Disable {
+            background-image: linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
+            
+            text-shadow   : #626267 0px 1px 0px;
+            color: #38383d;
+        }
+        
+        .btn-default-css3 .caption {
+            border-top: 1px solid #93939B;
+            padding: 4px 15px 5px;
+            -moz-border-radius    : 6px;
+            -webkit-border-radius : 6px;
+            border-radius         : 6px;
+            
+            cursor: default;
+        }
+        
+        .btn-default-css3.btn-default-css3Over .caption {
+            border-top: 1px solid #ababb1;
+        }
+        
+        .btn-default-css3.btn-default-css3Focus .caption {
+            border-top: 1px solid #6c6c74;
+        }
+        .btn-default-css3.btn-default-css3Down .caption {
+            border-top: 1px solid #93939b;
+        }
+        .btn-default-css3.btn-default-css3Disable .caption {
+            border-top: 1px solid #93939b;
+        }
+        
+        .btn-default-css3 .border {
+            display: none;
+            
+            border: 1px solid #ffffff;
+            
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            border-radius: 6px 6px 6px 6px;
+        }
+        .btn-default-css3.btn-default-css3Focus .border {
+            display: block;
+        }
+        /*-----------*/
+        
+        /*-- GREEN --*/
+        .btn-default-css3.btn-green {
+            background-image: linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
+            
+            text-shadow   : #068e02 0px 1px 0px;
+        }
+
+        .btn-default-css3Over.btn-green {
+            background-image: linear-gradient(bottom, rgb(53,164,51) 0%, rgb(109,183,67) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(53,164,51) 0%, rgb(109,183,67) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(53,164,51) 0%, rgb(109,183,67) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(53,164,51) 0%, rgb(109,183,67) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(53,164,51) 0%, rgb(109,183,67) 100%);
+        }
+        
+        .btn-default-css3Focus.btn-green {
+            background-image: linear-gradient(bottom, rgb(2,141,0) 0%, rgb(70,165,19) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(70,165,19) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(70,165,19) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(70,165,19) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(70,165,19) 100%);
+        }
+        
+        .btn-default-css3Down.btn-green {
+            background-image: linear-gradient(bottom, rgb(73,165,20) 0%, rgb(2,141,0) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(73,165,20) 0%, rgb(2,141,0) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(73,165,20) 0%, rgb(2,141,0) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(73,165,20) 0%, rgb(2,141,0) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(73,165,20) 0%, rgb(2,141,0) 100%);
+        }
+        
+        .btn-default-css3Disable.btn-green {
+            background-image: linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
+            
+            text-shadow   : #3da110 0px 1px 0px;
+            color: #037a01;
+        }
+        
+        .btn-default-css3.btn-green .caption {
+            border-top: 1px solid #88c464;
+        }
+        
+        .btn-default-css3.btn-default-css3Over.btn-green .caption {
+            border-top: 1px solid #57b357;
+        }
+        
+        .btn-default-css3.btn-default-css3Focus.btn-green .caption {
+            border-top: 1px solid #88c464;
+        }
+        .btn-default-css3.btn-default-css3Down.btn-green .caption {
+            border-top: 1px solid #88c464;
+        }
+        .btn-default-css3.btn-default-css3Disable.btn-green .caption {
+            border-top: 1px solid #88c464;
+        }
+        /*-----------*/
+        /*-- RED --*/
+        .btn-default-css3.btn-red {
+            background-image: linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            
+            text-shadow   : #b60000 0px 1px 0px;
+        }
+
+        .btn-default-css3Over.btn-red {
+            background-image: linear-gradient(bottom, rgb(197,51,51) 0%, rgb(213,51,51) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(197,51,51) 0%, rgb(213,51,51) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(197,51,51) 0%, rgb(213,51,51) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(197,51,51) 0%, rgb(213,51,51) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(197,51,51) 0%, rgb(213,51,51) 100%);
+        }
+        
+        .btn-default-css3Focus.btn-red {
+            background-image: linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+        }
+        
+        .btn-default-css3Down.btn-red {
+            background-image: linear-gradient(bottom, rgb(203,0,0) 0%, rgb(182,0,0) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(203,0,0) 0%, rgb(182,0,0) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(203,0,0) 0%, rgb(182,0,0) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(203,0,0) 0%, rgb(182,0,0) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(203,0,0) 0%, rgb(182,0,0) 100%);
+        }
+        
+        .btn-default-css3Disable.btn-red {
+            background-image: linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            
+            text-shadow   : #db0000 0px 1px 0px;
+            color: #9c0000;
+        }
+        
+        .btn-default-css3.btn-red .caption {
+            border-top: 1px solid #e47979;
+        }
+        
+        .btn-default-css3.btn-default-css3Over.btn-red .caption {
+            border-top: 1px solid #dd5757;
+        }
+        
+        .btn-default-css3.btn-default-css3Focus.btn-red .caption {
+            border-top: 1px solid #dd5757;
+        }
+        .btn-default-css3.btn-default-css3Down.btn-red .caption {
+            border-top: 1px solid #cf5757;
+        }
+        .btn-default-css3.btn-default-css3Disable.btn-red .caption {
+            border-top: 1px solid #dd5757;
+        }
+        /*-----------*/
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main
+          caption      = "div[1]/text()"
+          background = "."
+          icon       = ".">
+            <div class="btn-default-css3">
+                <div class="caption"> </div>
+                <div class="border"></div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
+<a:button name="btn-default-simple">
+    <a:style><![CDATA[
+        .btn-default-simple {
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: default;
+        }
+        
+        .btn-default-simpleOver {
+            color: #bfbfbf;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main
+          caption      = "text()"
+          background = "."
+          icon       = ".">
+            <div class="btn-default-simple">
+            </div>
         </a:main>
     </a:presentation>
 </a:button>
@@ -3352,6 +3625,10 @@
         .table .divider, .vbox .divider, .hbox .divider{
             margin : 0;
         }
+        
+        .modal-divider {
+            border-color : #b0b2b4 #E6E6E6 #E6E6E6 #b0b2b4;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -3421,6 +3698,9 @@
             height     : 23px;
             border-left:1px solid #000000;
             border-right:1px solid #404040;
+        }
+        .expandedpanel .c9-divider.runcommandsdivider {
+            display: none;
         }
     ]]></a:style>
 
@@ -3890,6 +4170,11 @@
             min-height : 37px;
             padding : 3px 0 0 45px;
         }
+        
+        .modal-label {
+            text-shadow: #f0f0f0 0px 1px 0px;
+            padding: 1px 2px 2px;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -3919,6 +4204,11 @@
 
             cursor: default;
         }
+        
+        .runconfig.lineselect {
+            border-color: #ffffff;
+            border-width: 1px 0 0;
+        }
         .lineselect>.selected{
             background-color: rgb(203, 205, 208);
             color: black;
@@ -3926,6 +4216,19 @@
         .lineselectFocus>.selected{
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
             background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
+            color : white;
+        }
+        
+        .runconfig.lineselect>.selected{
+            background-image: linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
+            
+            border-top: 1px solid #3783c4;
+            border-bottom: 1px solid #383838;
+            
             color : white;
         }
         .lineselect .empty, .lineselect .offline, .lineselect .loading{
@@ -4228,6 +4531,16 @@
             right: -17px;
             width: 17px;
             height: 21px;
+        }
+        
+        .btnBreakpointsEnable.dockwindowblack .arrow {
+            top: 39px;
+        }
+        .btnVariablesEnable.dockwindowblack .arrow {
+            top: 77px;
+        }
+        .btnInteractiveEnable.dockwindowblack .arrow {
+            top: 114px;
         }
         
         .dockwindowblack .noise_top {
@@ -4935,6 +5248,127 @@
     </a:presentation>
 </a:modalwindow>
 
+<a:modalwindow name="bk-window">
+    
+    <a:style><![CDATA[
+        .bk-window {
+            position : relative;
+            overflow : hidden;
+            z-index  : 10000;
+            padding  : 33px 0 0 0;
+            
+            -moz-border-radius    : 6px;
+            -webkit-border-radius : 6px;
+            border-radius         : 6px;
+            
+            -webkit-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
+            -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .bk-window .bk-header {
+            position : relative;
+            overflow : hidden;
+            height   : 33px;
+            top      : -33px;
+        }
+
+        .bk-window .bk-header .hcontent {
+            background    : url(images/bk-win-header.png)  repeat-x 0 0;
+            position      : relative;
+            overflow      : hidden;
+            height        : 26px;
+            padding       : 8px 14px 0;
+            font-family   : Arial;
+            font-size     : 14px;
+            line-height   : 16px;
+            font-weight   : bold;
+            color         : #ffffff;
+            cursor        : default;
+        }
+        
+        .bk-window .bk-header .hcontent .buttons {
+            position: absolute;
+            right: 7px;
+            top: 8px;
+        }
+        
+        .bk-window .bk-header .hcontent .buttons .close {
+            background: url(images/bk-close-btn.png)  no-repeat 0 0;
+            width: 13px;
+            height: 15px;
+        }
+        
+        .bk-window .bk-header .hcontent .buttons .close.hover {
+            background-position: 0 -15px;
+        }
+        
+        .bk-window .bk-content {
+            position:absolute;
+            overflow:visible;
+            left : 0;
+            top  : 33px;
+            right : 0;
+            bottom : 0;
+            background:url(images/modalbg.png) repeat 0 0;
+        }
+        
+        .bg-bk-content {
+            background:url(images/modalbg.png) repeat 0 0;
+            position: absolute;
+            top: 0;
+            bottom: 46px;
+            right: 0;
+            left: 0;
+        }
+        
+        .bk-window .bk-win-footer {
+            background:url(images/bk-win-footer.png) repeat-x 0 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 46px;
+            position: absolute;
+        }
+        
+        .bk-window-cover {
+            background:url(images/bg-overlay.png) repeat 0 0;
+            opacity: 1;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main
+          collapsed-height = "26"
+          minheight        = "50"
+          minwidth         = "50"
+          container        = "div[2]"
+          drag             = "div[1]/div[1]"
+          title            = "div[1]/div[1]/text()"
+          icon             = "div[1]/div[1]/div[1]"
+          buttons          = "div[1]/div[1]/div[2]">
+            <div class="bk-window">
+                <div class="bk-header">
+                    <div class="hcontent">
+                        -
+                        <div class="icon"></div>
+                        <div class="buttons"></div>
+                    </div>
+                </div>
+                <div class="bk-content"> 
+                    <div class="bg-bk-content"></div>
+                    <div class="bk-win-footer"></div>
+                </div>
+            </div>
+        </a:main>
+        <a:button>
+            <div/>
+        </a:button>
+        <a:cover>
+            <div class="bk-window-cover" opacity="1"> </div>
+        </a:cover>
+    </a:presentation>
+</a:modalwindow>
 <a:pages name="pages">
     <a:style><![CDATA[
         .pages{
@@ -5847,6 +6281,10 @@
             width : 5px;
             margin-left : -3px;
             background : url(images/spacer.gif);
+        }
+        
+        .splitter.vertical.panelsplitter div {
+            margin-left: -5px;
         }
 
         .splitter.horizontal{
@@ -7541,6 +7979,87 @@
     </a:presentation>
 </a:textbox>
 
+<a:textbox name="textbox-modal">
+    <a:style><![CDATA[
+        .textbox-modal {
+            position : relative;
+            height   : 29px;
+            
+            border-bottom: 1px solid #E3E3E3;
+            border-radius: 0 0px 6px 6px;
+        }
+
+        .textbox-modal .sbtb_middle {
+            margin: 0;
+            outline: none;
+            font-family: Arial;
+            font-size: 11px;
+            text-overflow: ellipsis;
+            color: #333333;
+            
+            height           : 22px;
+            padding          : 2px 5px;
+            background-color: #ffffff;
+            
+            -webkit-box-shadow: inset 0px 1px 1px 0px #cccccc;
+            -moz-box-shadow: inset 0px 1px 1px 0px #cccccc;
+            box-shadow: inset 0px 1px 1px 0px #cccccc; 
+            
+            border-width: 1px;
+            border-style: solid;
+            border-color: #8d8d8e #9e9e9c #a5a5a5;
+            
+            -webkit-border-radius: 6px;
+            -moz-border-radius: 6px;
+            border-radius: 6px;
+        }
+        
+        .textbox-modal.required-tb .sbtb_middle {
+            background-color: #e9f3d0;
+        }
+        
+        .textbox-modal .sbtb_middle INPUT {
+            border           : 0;
+            height           : 21px;
+            font-size        : 11px;
+            color            : #333333;
+            font-family      : Arial;
+            outline          : none;
+            background-color : transparent;
+            width: 100%;
+        }
+
+        .textbox-modalInitial .sbtb_middle INPUT {
+            color : #bdbdbd;
+            text-shadow : #ffffff 0px 1px 0px;
+        }
+        .textbox-modalInitial.required-tb .sbtb_middle INPUT {
+            color : #9fa987;
+            text-shadow : #fbfff1 0px 1px 0px;
+        }
+
+        .textbox-modalDisabled .sbtb_middle INPUT {
+            color : #CCC;
+        }
+
+        .textbox-modalDisabled .sbtb_middle{
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(235,235,235)),color-stop(0.4, rgb(255,255,255)));
+            background: -moz-linear-gradient(center bottom,rgb(235,235,235) 0%,rgb(255,255,255) 40%);
+            cursor : default;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input="div[1]/input">
+            <div class="textbox-modal">
+                <div class="sbtb_middle">
+                    <input type="text"/>
+                </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:textbox>
+
 <a:toolbar name="toolbar">
     <a:style><![CDATA[
         .toolbar .menubar {
@@ -7573,7 +8092,17 @@
             overflow : hidden;
             height : 27px;
         }
-
+        
+        .toolbar.modal-toolbar .subbar {
+            background-image: linear-gradient(bottom, rgb(217,217,217) 0%, rgb(237,237,237) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(217,217,217) 0%, rgb(237,237,237) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(217,217,217) 0%, rgb(237,237,237) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(217,217,217) 0%, rgb(237,237,237) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(217,217,217) 0%, rgb(237,237,237) 100%);
+            
+            border-top: 1px solid #f6f6f6;
+            border-bottom: 1px solid #bfbfbf;
+        }
         .toolbar .subbar.no_border {
             border-bottom: none;
             padding-top: 1px;
