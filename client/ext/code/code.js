@@ -65,7 +65,9 @@ var SupportedModes = {
     "application/x-latex": "latex",
     "text/x-lua": "lua",
     "text/x-script.powershell": "powershell",
-    "text/x-scala": "scala"
+    "text/x-scala": "scala",
+    "text/x-coldfusion": "coldfusion",
+    "text/x-sql": "sql"
 };
 
 var contentTypes = {
@@ -126,7 +128,9 @@ var contentTypes = {
     "pl": "text/x-script.perl",
     "pm": "text/x-script.perl-module",
     
-    "ps1": "text/x-script.powershell"
+    "ps1": "text/x-script.powershell",
+    "cfm": "text/x-coldfusion",
+    "sql": "text/x-sql"
 };
 
 module.exports = ext.register("ext/code/code", {

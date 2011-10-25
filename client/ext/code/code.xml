@@ -68,5 +68,7 @@
         <a:item type="radio" value="text/x-markdown">Markdown</a:item>
         <a:item type="radio" value="text/x-web-textile">Textile</a:item>
         <a:item type="radio" value="application/x-latex">Latex</a:item>
+        <a:item type="radio" value="text/x-coldfusion">Coldfusion</a:item>
+        <a:item type="radio" value="text/x-sql">SQL</a:item>
     </a:menu>
 </a:application>
