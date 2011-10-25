@@ -211,7 +211,7 @@ Ide.DEFAULT_PLUGINS = [
             }
             else {
                 settingsPlugin.loadSettings(user, function(err, settings) {
-                    replacements.settingsXml = err || !settings ? "defaults" : settings.replace("]]>", "]]&gt;");
+                    replacements.settingsXml = err || !settings ? "defaults" : settings.replace(/]]>/g, '&#093;&#093;&gt;');
                     index = template.fill(index, replacements);
                     res.end(index);
                 });
