@@ -7,7 +7,7 @@ var sys = require("sys");
 var NodeSocket = require("v8debug/NodeSocket");
 var StandaloneV8DebuggerService = require("v8debug/StandaloneV8DebuggerService");
 
-module.exports = DebugProxy = function(port) {
+var DebugProxy = module.exports = function(port) {
     process.EventEmitter.call(this);
     var _self = this;
 

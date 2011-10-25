@@ -247,7 +247,6 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             
             bar.splitter = bar.parentNode.insertBefore(new apf.splitter({
                 scale   : "right",
-                "class" : "splitter-editor-right",
                 width   : "0"
             }), bar.vbox);
             

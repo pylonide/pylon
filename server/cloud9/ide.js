@@ -16,7 +16,7 @@ var jsDAV = require("jsdav"),
     EventEmitter = require("events").EventEmitter,
     util = require("./util");
 
-module.exports = Ide = function(options, httpServer, exts, socket) {
+var Ide = module.exports = function(options, httpServer, exts, socket) {
     EventEmitter.call(this);
 
     this.httpServer = httpServer;
