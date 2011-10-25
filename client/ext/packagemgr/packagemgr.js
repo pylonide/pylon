@@ -60,7 +60,19 @@ define(function(require, exports, module) {
          * @param {object} model The data to be bound
          */
         bindModel: function(targetModel, model) {
-            if (targetModel === this.models.installed) {
+            if (targetModel === this.models.installed) {                
+                // make a hash table so we can quickly search the installed packages
+                var pckgs = {};
+                for (var ix = 0; ix < model.length; ix++) {
+                    pckgs[model[ix].name] = model[ix];
+                }
+                this.localPackagesHashtable = pckgs;
+                this.localPackages = model;
+                
+                if (!this.outdated) { // if the outdated package list isnt there, we'll return and come back later
+                    return;
+                }                
+                
                 model = this.enrichModelWithOutdated(model, this.outdated);
                 
                 if (this.outdated && this.outdated.length) {
@@ -82,6 +94,11 @@ define(function(require, exports, module) {
             
             // show / hide update button
             pacUpdateButton.setAttribute("visible", targetModel === this.models.installed);
+            
+            // add event listeners
+            for (var pix = 0, packages = document.getElementsByClassName("package"), ele = packages[pix]; pix < packages.length; ele = packages[++pix]) {
+                ele.addEventListener("click", this.packageOnClick);
+            }
         },
         
         init : function(amlNode) {
@@ -94,15 +111,7 @@ define(function(require, exports, module) {
             _self.lists.installed = lstPacmanInstalled;
             _self.lists.search = lstPacmanSearchResult;
             
-            npm.listPackages(function (model) {
-                // make a hash table so we can quickly search the installed packages
-                var pckgs = {};
-                for (var ix = 0; ix < model.length; ix++) {
-                    pckgs[model[ix].name] = model[ix];
-                }
-                _self.localPackagesHashtable = pckgs;
-                _self.localPackages = model;
-                
+            npm.listPackages(function (model) {                
                 _self.bindModel(_self.models.installed, model);
             }, function (outdated) {
                 _self.outdated = outdated;
@@ -207,6 +216,16 @@ define(function(require, exports, module) {
             return model;
         },
         
+        packageOnClick: function () {
+            var all = document.getElementsByClassName("package");
+            for (var ix = 0; ix < all.length; ix++) {
+                var ele = all[ix];
+                ele.className = ele.className.replace(/\bactive\b/, "");
+            }
+            
+            this.className += " active";
+        },
+        
         /* UI callbacks */
         /** Install a package for the current active repo
          * @param {string} name The package identifier
@@ -215,7 +234,7 @@ define(function(require, exports, module) {
             var _self = this;
             
             npm.install(name, function (body) {
-                if (body.err) {
+                if (body.err && !body.out) {
                     _self.errorHandler(body.err);
                 }
                 
@@ -233,7 +252,7 @@ define(function(require, exports, module) {
             var _self = this;
             
             npm.uninstall(name, function (body) {
-                if (body.err) {
+                if (body.err && !body.out) {
                     _self.errorHandler(body.err);
                 }
                 npm.listPackages(function (model) {
@@ -249,12 +268,20 @@ define(function(require, exports, module) {
             
             if (!_self.outdated || _self.outdated.length === 0) return;
             
-            npm.update(function (body) {
-                if (body.err) {
+            npm.update(function (body) {                
+                if (body.err && !body.out) {
                     _self.errorHandler(body.err);
                 }
+                
+                // reset outdated info
+                _self.outdated = null;
+                
                 npm.listPackages(function (model) {
                     _self.bindModel(_self.models.installed, model);
+                }, function (outdated) {
+                    _self.outdated = outdated;
+                    
+                    _self.bindModel(_self.models.installed, _self.localPackages);
                 });
             });
         },

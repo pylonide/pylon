@@ -6,17 +6,28 @@
                 height: 400px;
                 overflow: auto;
             }
+            
             .pacman-window .package {
                 clear:both;
-                border-top: 1px solid gray;
-                margin: 0 10px;
+                border-top: 1px solid white;
+                border-bottom: 1px solid #c3c3c3;
+                margin: 0 1px;
+                padding: 0 10px;
             }
-            .pacman-window .package:first-child {
-                border-top: none;
-            }            
+            
+            .pacman-window .package:after {
+                content: ".";
+                display: block;
+                height: 0;
+                clear: both;
+                visibility: hidden;
+            }
+            
+
+            
             .pacman-window .col-l {
                 float: left;
-                max-width: 80%;
+                max-width: 75%;
             }
             
             .pacman-window .col-r {
@@ -29,7 +40,22 @@
                 display: block;
                 padding-right: 3px;
                 padding-top: 10px;
-                
+            }
+            
+            .pacman-window .active {
+                font-weight: bold;
+            }
+            
+            .pacman-window .package.active {
+                font-weight: normal;
+                background: #e1ecf1;
+            }
+            
+            .pacman-window .package button.install, .pacman-window .package button.uninstall  {
+                visibility: hidden;
+            }
+            .pacman-window .package.active button.install, .pacman-window .package.active button.uninstall  {
+                visibility: visible;
             }
         ]]></a:style>
     </div>

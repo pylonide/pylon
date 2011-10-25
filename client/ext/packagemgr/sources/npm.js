@@ -111,7 +111,7 @@ define(function(require, exports, module) {
                 var list = processList(message.body.out);
                 for (var ix = 0; ix < list.length; ix++) {
                     var item = list[ix];
-                    model.push({ name: item.name, version: item.version, description: item.description });
+                    model.push({ name: item.name, version: item.version, description: item.description, url: item.url });
                 }
                                 
                 if (activeCallbacks.list && typeof activeCallbacks.list === "function") {
@@ -169,7 +169,7 @@ define(function(require, exports, module) {
         
         var outdated = [];
         var parseNewStyle = function(line) {
-                var parsed = line.match(/^(\w+)@([\d\.]+)/);
+                var parsed = line.match(/^(\w+)@([\d\.]+) \.\/node_modules\/\1/);
                 if (!parsed) return false;
                 outdated.push({
                     name: parsed[1],
@@ -220,14 +220,10 @@ define(function(require, exports, module) {
             
             var indentation = indentationMatch[0].length;
             
-            var nameRegex = new RegExp("\\w+@[\\d\\.]+");
+            var nameRegex = new RegExp("[\\w-]+@[\\d\\.]+");
             if (nameRegex.test(line)) {
                 if (currentItem) {
-                    source.push({
-                        indentation: currentItem.level,
-                        name: currentItem.name,
-                        description: currentItem.description
-                    });
+                    source.push(currentItem);
                 }
                 currentItem = {
                     name: line.match(nameRegex)[0],
@@ -240,14 +236,13 @@ define(function(require, exports, module) {
             else if (currentItem && !currentItem.description) {
                 currentItem.description = line.substring(indentation);
             }
+            else if (currentItem && !currentItem.url) {
+                currentItem.url = line.substring(indentation);
+            }
         }
         
         if (currentItem) {
-            source.push({
-                indentation: currentItem.level,
-                name: currentItem.name,
-                description: currentItem.description
-            });
+            source.push(currentItem);
         }
         
         // creates a node of itself + all its children
@@ -255,15 +250,25 @@ define(function(require, exports, module) {
             var curItem = fullSource[curIx];
             // find children
             var children = [];
-            while (fullSource[++curIx] && fullSource[curIx].indentation !== curItem.indentation) {
-                if (fullSource[curIx].indentation === curItem.indentation + 1) {
+            while (fullSource[++curIx] && fullSource[curIx].level !== curItem.level) {
+                if (fullSource[curIx].level === curItem.level + 1) {
                     children.push(proc(curIx, fullSource));
                 }
             }
-            var nv = curItem.name.match(/(\w+)@([\w\.]+)/);
+            var nv = curItem.name.match(/([\w\-]+)@([\w\.]+)/);
+            
+            if (curItem.url) {
+                // try match github url
+                var githubMatch = curItem.url.match(/git:\/\/(.*?).git/);
+                if (githubMatch) {
+                    curItem.url = "http://" + githubMatch[1];
+                }
+            }
+            
             return {
                 name: nv[1],
                 version: nv[2],
+                url: curItem.url,
                 description: curItem.description,
                 dependencies: children
             };
@@ -272,7 +277,7 @@ define(function(require, exports, module) {
         // recursive buildup of the tree
         var tree = [];
         for (var ix = 0, item = source[ix]; ix < source.length; item = source[++ix]) {
-            if (item.indentation === 0) {
+            if (item.level === 0) {
                 tree.push(proc(ix, source));
             }
         }

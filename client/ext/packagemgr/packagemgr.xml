@@ -26,16 +26,25 @@
                   caption = "Search"
                   disabled = "{!tbPackQuery.value.trim()}" />
             </a:hbox>
+            <!--<div class="sources">
+                <span class="{lstPacmanInstalled.visible ? 'active' : ''}">
+                    <a href="#" onclick="lstPacmanInstalled.setAttribute('visible', true); return false">Your packages</a>
+                </span> 
+                <span class="{lstPacmanSearchResult.visible ? 'active' : ''}">
+                    <a href="#" onclick="lstPacmanSearchResult.setAttribute('visible', true); return false">NPM</a>
+                </span>
+            </div>-->
             <div model="mdlPacmanInstalled" id="lstPacmanInstalled" class="list"><?lm
                 foreach([package]) {
                   <div class="package">
                     <div class="col-l">
                         <h3>[name]</h3>
-                        <span class="version">[version]</span>
+                        <span class="version">[version]</span><br/>
+                        <span class="url"><a href="[url]" target="_blank">[url]</a></span>
                         <p class="description">[description]</p>
                     </div>
                     <div class="col-r">
-                        <button onclick="require('ext/packagemgr/packagemgr').uninstall('[name]')">Uninstall</button>
+                        <button class="install" onclick="require('ext/packagemgr/packagemgr').uninstall('[name]')">Uninstall</button>
                         <span class="isuptodate">[uptodate]</span>
                     </div>
                   </div>
@@ -46,18 +55,19 @@
                   <div class="package">
                     <div class="col-l">
                         <h3>[name]</h3>
-                        <span class="version">[version]</span>
+                        <span class="version">[version]</span><br/>
+                        <span class="url"><a href="[url]" target="_blank">[url]</a></span>
                         <p class="description">[description]</p>
                     </div>
                     <div class="col-r">
-                        <button onclick="require('ext/packagemgr/packagemgr').install('[name]')"
+                        <button class="uninstall" onclick="require('ext/packagemgr/packagemgr').install('[name]')"
                         {(apf.isTrue([installDisabled]) ? " disabled='disabled'" : "")}>
                             [installLabel]
                         </button>
                     </div>
                   </div>
                 }
-            ?></div>      
+            ?></div>
             <a:hbox edge="10 0 0 0">
                 <a:button id="pacUpdateButton" default="3" width="160" onclick="require('ext/packagemgr/packagemgr').updateAll()" enabled="false" caption="All up to date"></a:button>
                 <a:filler />
