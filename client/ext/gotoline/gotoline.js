@@ -43,6 +43,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
 
         this.hotitems["gotoline"] = [this.nodes[1]];
 
+        canon.removeCommand("gotoline");
         canon.addCommand({
             name: "gotoline",
             exec: function(env, args, request) { 
@@ -65,7 +66,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                 txtLineNr.setValue(this.selected.getAttribute("nr"));
         });
 
-        var restricted = [38, 40, 36, 35]
+        var restricted = [38, 40, 36, 35];
         lstLineNumber.addEventListener("keydown", function(e) {
             if (e.keyCode == 13 && this.selected){
                 return false;
