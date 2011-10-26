@@ -89,7 +89,7 @@ define(function(require, exports, module) {
         activeCallbacks.uninstall = callback;        
     }
     
-    function update(callback) {
+    function updateAll(callback) {
         execCommand({
             command: "visualnpm",
             argv: ["visualnpm", "update"],
@@ -98,6 +98,16 @@ define(function(require, exports, module) {
         });
         activeCallbacks.update = callback;        
     }
+    
+    function update(name, callback) {
+        execCommand({
+            command: "visualnpm",
+            argv: ["visualnpm", "update", name],
+            cwd: ide.workspaceDir,
+            line: "visualnpm update " + name
+        });
+        activeCallbacks.update = callback;        
+    }    
     
     function onVisualNpmMessage(e) {
         var res, message = e.message;
@@ -110,8 +120,10 @@ define(function(require, exports, module) {
                 
                 var list = processList(message.body.out);
                 for (var ix = 0; ix < list.length; ix++) {
-                    var item = list[ix];
-                    model.push({ name: item.name, version: item.version, description: item.description, url: item.url });
+                    var items = mapListItemToModel(list[ix]);
+                    for (var iix = 0; iix < items.length; iix++) {
+                        model.push(items[iix]);
+                    }
                 }
                                 
                 if (activeCallbacks.list && typeof activeCallbacks.list === "function") {
@@ -150,6 +162,31 @@ define(function(require, exports, module) {
         }
     }
     
+    function mapListItemToModel(item) {
+        var map = function (item) {
+            return {
+                name: item.name,
+                version: item.version,
+                description: item.description,
+                url: item.url,
+                dependencies: getDependencies(item)
+            }; 
+        };
+        
+        var arr = [];
+        arr.push(map(item));
+        
+        // have to think how we are going to do this...
+        /*for (var ix = 0; ix < item.dependencies.length; ix++) {
+            var children = mapListItemToModel(item.dependencies[ix]);
+            
+            for (var cid = 0; cid < children.length; cid++) {
+                arr.push(children[cid]);
+            }
+        }*/
+        return arr;
+    }
+    
     function onPacmanMessage(e) {
         if (e.message.subtype !== "npm-search") return;
         
@@ -158,6 +195,22 @@ define(function(require, exports, module) {
             cb(e.message.body);
             activeCallbacks.search = null;
         }
+    }
+    
+    /** get list of packagenames that a given package depends on
+     * @returns {array} list of strings
+     */
+    function getDependencies(item) {
+        var dep = [];
+        for (var ix = 0; ix < item.dependencies.length; ix++) {
+            dep.push(item.dependencies[ix].name);
+            
+            var children = getDependencies(item.dependencies[ix]);
+            for (var cid = 0; cid < children.length; cid++) {
+                dep.push(children[cid]);
+            }
+        }
+        return dep;
     }
     
     /** process the raw output of 'npm outdated'
@@ -290,6 +343,7 @@ define(function(require, exports, module) {
         listPackages: listPackages,
         install: install,
         uninstall: uninstall,
+        updateAll: updateAll,
         update: update
     };
 });

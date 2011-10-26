@@ -3,8 +3,10 @@
    <div name="packageitem">
         <a:style><![CDATA[
             .pacman-window .list {
-                height: 400px;
+                height: 380px;
                 overflow: auto;
+                overflow: auto;
+                margin-top: -6px;
             }
             
             .pacman-window .package {
@@ -22,8 +24,6 @@
                 clear: both;
                 visibility: hidden;
             }
-            
-
             
             .pacman-window .col-l {
                 float: left;
@@ -57,6 +57,14 @@
             .pacman-window .package.active button.install, .pacman-window .package.active button.uninstall  {
                 visibility: visible;
             }
+            
+            .pacman-window .editor_tab .btnsesssioncontainer .session_btn .tab_left { background-position: 0 0; }
+            .pacman-window .editor_tab .btnsesssioncontainer .session_btn .tab_right { background-position: 0 -52px; }
+            .pacman-window .editor_tab .btnsesssioncontainer .session_btn .tab_middle { background-position: 0 -26px; color: #333333; }
+            
+            .pacman-window .editor_tab .btnsesssioncontainer, .pacman-window .editor_tab { background: none; }
+            
+            .pacman-window .editor_tab { margin: 0 0 -6px !important; }
         ]]></a:style>
     </div>
 </a:skin>

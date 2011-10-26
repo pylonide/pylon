@@ -28,6 +28,7 @@ define(function(require, exports, module) {
         nodes : [],
         
         localPackagesHashtable: {},
+        localPackagesDependencies: {},
         localPackages: [],
         outdated: null,
         
@@ -69,6 +70,21 @@ define(function(require, exports, module) {
                 this.localPackagesHashtable = pckgs;
                 this.localPackages = model;
                 
+                // make a hash table for dependencies as well
+                var dep = {};
+                for (var mix = 0; mix < model.length; mix++) {
+                    var item = model[mix];
+                    for (var dix = 0; dix < item.dependencies.length; dix++) {
+                        var dependency = item.dependencies[dix];
+                        
+                        dep[dependency] = dep[dependency] || [];
+                        if (!dep[dependency].contains(item.name)) {
+                            dep[dependency].push(item.name);
+                        }
+                    }
+                }
+                this.localPackagesDependencies = dep;
+                
                 if (!this.outdated) { // if the outdated package list isnt there, we'll return and come back later
                     return;
                 }                
@@ -88,16 +104,31 @@ define(function(require, exports, module) {
                 "package": model
             }));
             
+            // add event listeners
+            for (var pix = 0, packages = document.getElementsByClassName("package"), ele = packages[pix]; pix < packages.length; ele = packages[++pix]) {
+                ele.addEventListener("click", this.packageOnClick);
+            }
+            
+            this.switchView(targetModel);
+        },
+        
+        switchView: function(targetModel) {
             // switch view
             this.lists.installed.setAttribute("visible", targetModel === this.models.installed);
             this.lists.search.setAttribute("visible", targetModel === this.models.search);
             
             // show / hide update button
-            pacUpdateButton.setAttribute("visible", targetModel === this.models.installed);
-            
-            // add event listeners
-            for (var pix = 0, packages = document.getElementsByClassName("package"), ele = packages[pix]; pix < packages.length; ele = packages[++pix]) {
-                ele.addEventListener("click", this.packageOnClick);
+            pacUpdateButton.setAttribute("visible", (targetModel === this.models.installed) && (this.outdated) && (this.outdated.length > 0));            
+        },
+        
+        switchViewFromClient: function(target) {
+            switch (target) {
+                case "installed":
+                    this.switchView(this.models.installed);
+                    break;
+                case "npm":
+                    this.switchView(this.models.search);
+                    break;
             }
         },
         
@@ -166,11 +197,11 @@ define(function(require, exports, module) {
                     item.uptodate = "...";
                 }
                 else if (outdatedHash[item.name] && outdatedHash[item.name].newVersion) {
-                    item.uptodate = "Version " + outdatedHash[item.name].newVersion + " available";
+                    item.uptodate = "<a href='#' onclick=\"require('ext/packagemgr/packagemgr').update('" + item.name + "'); return false;\">Update to " + outdatedHash[item.name].newVersion + "</a>";
                     item.updateAvailable = 1;
                 }
                 else if (outdatedHash[item.name]) {
-                    item.uptodate = "New version available";
+                    item.uptodate = "<a href='#' onclick=\"require('ext/packagemgr/packagemgr').update('" + item.name + "'); return false;\">Update</a>";
                     item.updateAvailable = 1;
                 }
                 else {
@@ -251,6 +282,12 @@ define(function(require, exports, module) {
         uninstall: function (name) {
             var _self = this;
             
+            // check whether there are dependencies left?
+            if(_self.localPackagesDependencies[name]) {
+                _self.errorHandler("Cannot uninstall " + name + " as these packages depend on it:\n\n" + _self.localPackagesDependencies[name].join("\n"));
+                return;
+            }
+            
             npm.uninstall(name, function (body) {
                 if (body.err && !body.out) {
                     _self.errorHandler(body.err);
@@ -268,7 +305,7 @@ define(function(require, exports, module) {
             
             if (!_self.outdated || _self.outdated.length === 0) return;
             
-            npm.update(function (body) {                
+            npm.updateAll(function (body) {                
                 if (body.err && !body.out) {
                     _self.errorHandler(body.err);
                 }
@@ -284,6 +321,30 @@ define(function(require, exports, module) {
                     _self.bindModel(_self.models.installed, _self.localPackages);
                 });
             });
+        },
+        
+        /** Updates a single outdated package
+         * @param {string} name The official name as known by the package manager
+         */
+        update: function (name) {
+            var _self = this;
+            
+            npm.update(name, function (body) {                
+                if (body.err && !body.out) {
+                    _self.errorHandler(body.err);
+                }
+                
+                // reset outdated info
+                _self.outdated = null;
+                
+                npm.listPackages(function (model) {
+                    _self.bindModel(_self.models.installed, model);
+                }, function (outdated) {
+                    _self.outdated = outdated;
+                    
+                    _self.bindModel(_self.models.installed, _self.localPackages);
+                });
+            });            
         },
         
         /** Handles server side errors

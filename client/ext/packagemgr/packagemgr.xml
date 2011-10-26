@@ -26,6 +26,30 @@
                   caption = "Search"
                   disabled = "{!tbPackQuery.value.trim()}" />
             </a:hbox>
+            <div class="editor_tab">
+                <div class="btnsesssioncontainer">
+                    <div class="session_btn {lstPacmanInstalled.visible ? 'curbtn' : ''}"
+                         onclick="require('ext/packagemgr/packagemgr').switchViewFromClient('installed')">
+                        <div class="tab_middle">
+                            <div class="sessiontab_title">
+                                Installed
+                            </div>
+                        </div>
+                        <div class="tab_left"></div>
+                        <div class="tab_right"></div>
+                    </div>
+                    <div class="session_btn {lstPacmanSearchResult.visible ? 'curbtn' : ''}"
+                         onclick="require('ext/packagemgr/packagemgr').switchViewFromClient('npm')">
+                        <div class="tab_middle">
+                            <div class="sessiontab_title">
+                                NPM
+                            </div>
+                        </div>
+                        <div class="tab_left"></div>
+                        <div class="tab_right"></div>
+                    </div>                    
+                </div>
+            </div>
             <!--<div class="sources">
                 <span class="{lstPacmanInstalled.visible ? 'active' : ''}">
                     <a href="#" onclick="lstPacmanInstalled.setAttribute('visible', true); return false">Your packages</a>
@@ -34,7 +58,7 @@
                     <a href="#" onclick="lstPacmanSearchResult.setAttribute('visible', true); return false">NPM</a>
                 </span>
             </div>-->
-            <div model="mdlPacmanInstalled" id="lstPacmanInstalled" class="list"><?lm
+            <div model="mdlPacmanInstalled" id="lstPacmanInstalled" class="list" visible="true"><?lm
                 foreach([package]) {
                   <div class="package">
                     <div class="col-l">
@@ -69,7 +93,7 @@
                 }
             ?></div>
             <a:hbox edge="10 0 0 0">
-                <a:button id="pacUpdateButton" default="3" width="160" onclick="require('ext/packagemgr/packagemgr').updateAll()" enabled="false" caption="All up to date"></a:button>
+                <a:button id="pacUpdateButton" default="3" width="160" onclick="require('ext/packagemgr/packagemgr').updateAll()" visible="false" caption="All up to date"></a:button>
                 <a:filler />
                 <a:button default="3" width="80" onclick="winPack.hide()">Done</a:button>
             </a:hbox>
