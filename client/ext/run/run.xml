@@ -94,9 +94,9 @@
       buttons="close" 
       modal="true"
       center="true" 
-      width="350"
+      width="370"
+      
       skin="bk-window"
-      visible="true"
       height="400"
       kbclose="true">
         <a:vbox anchors="0 0 0 0">
@@ -129,8 +129,8 @@
           autoselect="true"
           flex="1"/>				
             <a:divider class="modal-divider" />
-            <a:hbox align="center" margin="5 10 5 10" padding="10">
-                <a:label width="130" textalign="right" class="modal-label">Name</a:label>
+            <a:hbox align="center" margin="5 10 5 10" padding="5">
+                <a:label width="140" textalign="right" class="modal-label">Name</a:label>
                 <a:textbox id="txtRunCfgName" 
                   flex="1"
                   realtime="true"
@@ -141,8 +141,8 @@
                   disabled="{!lstRunCfg.selected}"/>
             </a:hbox>
             <a:divider class="modal-divider"/>
-            <a:hbox align="center" id="hbRunCfg" margin="5 10" padding="10">
-                <a:label width="130" textalign="right" class="modal-label">File path</a:label>
+            <a:hbox align="center" id="hbRunCfg" margin="5 10 0" padding="5">
+                <a:label width="140" textalign="right" class="modal-label">File path</a:label>
                 <a:textbox id="txtRunCfgName" flex="1" value="[@path]" disabled="{!lstRunCfg.selected}" initial-message="Optional" skin="textbox-modal"/>
                 <a:button visible="false" icon="folder.png" disabled="true" tooltip="Browse ..."></a:button>
             </a:hbox>
@@ -154,7 +154,7 @@
                         <element caption="Python" value="py" />
                     </data>
                 </a:model>
-                <a:label width="130" textalign="right">Runner</a:label>
+                <a:label width="140" textalign="right">Runner</a:label>
                 <a:dropdown id="ddRunnerSelector"
                     model="mdlRunnerSelector"
                     flex="1"
@@ -166,8 +166,8 @@
                     </a:each>
                 </a:dropdown>
             </a:hbox-->
-            <a:hbox align="center" margin="5 10 10" padding="10">
-                <a:label width="130" textalign="right" class="modal-label">Command line arguments</a:label>
+            <a:hbox align="center" margin="5 10 10" padding="5">
+                <a:label width="140" textalign="right" class="modal-label">Command line arguments</a:label>
                 <a:textbox id="txtRunCfgName" flex="1" value="[@args]" disabled="{!lstRunCfg.selected}" initial-message="Optional" skin="textbox-modal"/>
             </a:hbox>
             <a:hbox padding="10" pack="end" edge="10 10 10 20" align="center">
