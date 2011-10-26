@@ -30,6 +30,7 @@ define(function(require, exports, module) {
 
             this.workspaceDir   = window.cloud9config.workspaceDir.replace(/\/+$/, "");
             this.davPrefix      = window.cloud9config.davPrefix.replace(/\/+$/, "");
+            this.staticPrefix   = window.cloud9config.staticUrl;
             this.sessionId      = window.cloud9config.sessionId;
             this.workspaceId    = window.cloud9config.workspaceId;
             this.readonly       = window.cloud9config.readonly;
