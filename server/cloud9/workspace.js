@@ -34,7 +34,6 @@ var Workspace = module.exports = function(config) {
     };
 
     this.execHook = function(hook, user /* varargs */) {
-        var plugin, hooks;
         var args = Array.prototype.slice.call(arguments, 1);
         var hook = hook.toLowerCase().trim();
 
@@ -43,8 +42,8 @@ var Workspace = module.exports = function(config) {
         for (var name in this.plugins) {
             if (server_exclude[name]) continue;
 
-            plugin = this.plugins[name];
-            hooks  = plugin.getHooks();
+            var plugin = this.plugins[name];
+            var hooks = plugin.getHooks();
             if (hooks.indexOf(hook) > -1 && plugin[hook].apply(plugin, args) === true) {
                 return;
             }
