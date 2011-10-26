@@ -5354,7 +5354,6 @@
             right: 20px;
             top: 25px;
         }
-
     ]]></a:style>
 
     <a:presentation>
@@ -8060,19 +8059,25 @@
             color : #bdbdbd;
             text-shadow : #ffffff 0px 1px 0px;
         }
+        
         .textbox-modalInitial.required-tb .sbtb_middle INPUT {
             color : #9fa987;
             text-shadow : #fbfff1 0px 1px 0px;
         }
-
-        .textbox-modalDisabled .sbtb_middle INPUT {
+        
+        .textbox-modalDisabled.required-tb .sbtb_middle INPUT {
             color : #CCC;
         }
-
+        
         .textbox-modalDisabled .sbtb_middle{
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(235,235,235)),color-stop(0.4, rgb(255,255,255)));
             background: -moz-linear-gradient(center bottom,rgb(235,235,235) 0%,rgb(255,255,255) 40%);
             cursor : default;
+            box-shadow: none;
+        }
+        
+        .textbox-modalDisabled .sbtb_middle INPUT {
+            color : #CCC;
         }
     ]]></a:style>
 
