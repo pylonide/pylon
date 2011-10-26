@@ -46,6 +46,7 @@ apf.plane = {
     },
     
     show : function(o, reAppend, copyCursor, useRealSize, options){
+        this.options = options || {};
         var item = this.$find(options && options.protect || "default");
         item.show(o, reAppend, copyCursor, useRealSize, options);
     },
@@ -60,11 +61,25 @@ apf.plane = {
     },
 
     $factory : function(){
-        var plane              = document.body.appendChild(document.createElement("DIV"));
+        var _self = this;
+        function getCover(){
+            var obj = document.createElement("DIV");
+            
+            if(!_self.options || !_self.options.customCover)
+                return obj;
+            
+            obj.innerHTML = apf.getXmlString(_self.options.customCover);
+            return obj.firstChild;
+        }
         
-        var spacerPath = "url(" + (apf.skins.skins["default"] 
-            ? apf.skins.skins["default"].mediaPath + "spacer.gif" : "images/spacer.gif") + ")";
-        plane.style.background = spacerPath;
+        var plane = document.body.appendChild(getCover());
+        
+        if(!this.options.customCover) {
+            var spacerPath = "url(" + (apf.skins.skins["default"] 
+                ? apf.skins.skins["default"].mediaPath + "spacer.gif" : "images/spacer.gif") + ")";
+            plane.style.background = spacerPath;
+        }
+        
         plane.style.position   = "fixed";
         plane.style.left       = 0;
         plane.style.top        = 0;
@@ -78,7 +93,8 @@ apf.plane = {
             show : function(o, reAppend, copyCursor, useRealSize, options){
                 var plane = this.plane;
                 
-                this.plane.style.background = options && options.color || spacerPath;
+                if(!options || !options.customCover)
+                    this.plane.style.background = options && options.color || spacerPath;
                 this.animate = options && options.animate;
                 this.protect = options && options.protect;
                 
