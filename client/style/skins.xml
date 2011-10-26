@@ -1178,8 +1178,8 @@
         .toolbar .subbar .toolbarbutton div {
             float: left;
             margin: 0;
-            height: 16px;
-            padding: 3px 4px 0 8px;
+            height: 15px;
+            padding: 4px 4px 0 8px;
             border: 0;
         }
 
@@ -1271,7 +1271,7 @@
             float:left;
             width: 16px;
             height: 16px;
-            margin: -1px 4px 0 0;
+            margin: -2px 4px 0 0;
         }
         
         .toolbar .subbar .toolbarbuttonIcon.width_20 span {
@@ -2101,7 +2101,7 @@
         
         .btn-default-css3 .caption {
             border-top: 1px solid #93939B;
-            padding: 4px 15px 5px;
+            padding: 3px 18px 4px;
             -moz-border-radius    : 6px;
             -webkit-border-radius : 6px;
             border-radius         : 6px;
@@ -4174,6 +4174,8 @@
         .modal-label {
             text-shadow: #f0f0f0 0px 1px 0px;
             padding: 1px 2px 2px;
+            color: #303030;
+            font-size: 12px;
         }
     ]]></a:style>
 
@@ -5335,6 +5337,23 @@
             background:url(images/bg-overlay.png) repeat 0 0;
             opacity: 1;
         }
+        
+        .bk-window-cover .header {
+            background: url(images/cover-heaeder.png) repeat-x 0 0;
+            height: 12px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+        }
+        .bk-window-cover .logo {
+            background: url(images/cover-logo.png) no-repeat 0 0;
+            width: 215px;
+            height: 44px;
+            position: absolute;
+            right: 20px;
+            top: 25px;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -5365,7 +5384,10 @@
             <div/>
         </a:button>
         <a:cover>
-            <div class="bk-window-cover" opacity="1"> </div>
+            <div class="bk-window-cover" opacity="1">
+                <div class="header"> </div>
+                <div class="logo"> </div>
+            </div>
         </a:cover>
     </a:presentation>
 </a:modalwindow>
@@ -8033,19 +8055,25 @@
             color : #bdbdbd;
             text-shadow : #ffffff 0px 1px 0px;
         }
+        
         .textbox-modalInitial.required-tb .sbtb_middle INPUT {
             color : #9fa987;
             text-shadow : #fbfff1 0px 1px 0px;
         }
-
-        .textbox-modalDisabled .sbtb_middle INPUT {
+        
+        .textbox-modalDisabled.required-tb .sbtb_middle INPUT {
             color : #CCC;
         }
-
+        
         .textbox-modalDisabled .sbtb_middle{
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(235,235,235)),color-stop(0.4, rgb(255,255,255)));
             background: -moz-linear-gradient(center bottom,rgb(235,235,235) 0%,rgb(255,255,255) 40%);
             cursor : default;
+            box-shadow: none;
+        }
+        
+        .textbox-modalDisabled .sbtb_middle INPUT {
+            color : #CCC;
         }
     ]]></a:style>
 
