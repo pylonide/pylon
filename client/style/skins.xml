@@ -5241,7 +5241,6 @@
 </a:modalwindow>
 
 <a:modalwindow name="bk-window">
-    
     <a:style><![CDATA[
         .bk-window {
             position : relative;
