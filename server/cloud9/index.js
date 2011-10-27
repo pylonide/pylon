@@ -5,6 +5,7 @@
 require("../../support/paths");
 
 var Connect = require("connect");
+var MemoryStore = require("connect/middleware/session/memory");
 var IO = require("socket.io");
 var Fs = require("fs");
 var Path = require("path");
@@ -22,8 +23,7 @@ exports.main = function(options) {
     if (!Path.existsSync(projectDir))
         throw new Error("Workspace directory does not exist: " + projectDir);
 
-    var ideProvider = function(projectDir, server) {
-        var uid = "owner" + Math.random().toString().slice(2);
+    var ideProvider = function(projectDir, server, sessionStore) {
         // load plugins:
         var exts = {};
         Fs.readdirSync(Path.normalize(__dirname + "/ext")).forEach(function(name){
@@ -39,9 +39,24 @@ exports.main = function(options) {
         socketIo.set("heartbeat interval", 5);
         socketIo.set("polling duration", 5);
         socketIo.sockets.on("connection", function(client) {
-            ide.addUser(uid, User.OWNER_PERMISSIONS);
-            ide.addClientConnection(uid, client, null);
+            client.on("message", function(data) {
+                var message;
+                try {
+                    message = JSON.parse(data);
+                } catch(e) {
+                    return;
+                }
+                if (message.command === "attach") {
+                    sessionStore.get(message.sessionId, function(err, session) {
+                        if (err || !session || !session.uid)
+                            return;
+
+                        ide.addClientConnection(session.uid, client, data);
+                    });
+                }
+            });
         });
+        
 
         var name = projectDir.split("/").pop();
         var serverOptions = {
@@ -57,20 +72,25 @@ exports.main = function(options) {
         var ide = new IdeServer(serverOptions, server, exts);
 
         return function(req, res, next) {
-            req.session.uid = uid;
-            ide.addUser(uid, User.OWNER_PERMISSIONS);
+            if (!req.session.uid)
+                req.session.uid = "owner_" + req.sessionID;
+                
+            ide.addUser(req.session.uid, User.OWNER_PERMISSIONS);
             ide.handle(req, res, next);
         };
     };
 
     var server = Connect.createServer();
-    //server.use(Connect.logger());
-    server.use(Connect.conditionalGet());
+
     server.use(Connect.cookieDecoder());
+
+    var sessionStore = new MemoryStore({ reapInterval: -1 });
     server.use(Connect.session({
+        store: sessionStore,
         key: "cloud9.sid"
     }));
-    server.use(ideProvider(projectDir, server));
+    
+    server.use(ideProvider(projectDir, server, sessionStore));
     server.use(middleware.staticProvider(Path.normalize(__dirname + "/../../support"), "/static/support"));
     server.use(middleware.staticProvider(Path.normalize(__dirname + "/../../client"), "/static"));
 

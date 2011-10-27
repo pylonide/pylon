@@ -218,6 +218,26 @@ define(function(require, exports, module) {
             };
         });
         
+        ide.$msgQueue = [];
+        ide.addEventListener("socketConnect", function() {
+            while(ide.$msgQueue.length) {
+                var q = ide.$msgQueue;
+                ide.$msgQueue = [];
+                q.forEach(function(msg) {
+                    ide.socket.send(msg);
+                });
+            }
+        });
+        
+        ide.send = function(msg) {
+            if (!ide.socket || !ide.socket.connected) {
+                ide.$msgQueue.push(msg);
+                return;
+            }
+            
+            ide.socket.send(msg);
+        };
+        
         ide.getActivePageModel = function() {
             page = tabEditors.getPage();
             if (!page)
