@@ -95,7 +95,6 @@
       modal="true"
       center="true" 
       width="370"
-      
       skin="bk-window"
       height="400"
       kbclose="true">

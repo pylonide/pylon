@@ -1117,14 +1117,15 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     menu.$ext.style.right = (width - pos[0] + 6) + "px";
                     menu.$ext.style.left = "";
                     menu.$ext.style.zIndex = "9999";
+                    if(menu.opener.$dockData && menu.opener.$dockData.caption) {
+                        var btnPos = apf.getAbsolutePosition(menu.opener.$ext),
+                            arrow;
+                        if(typeof menu.$ext.getElementsByClassName == "function" && (arrow = menu.$ext.getElementsByClassName("arrow")[0])) {
+                            arrow.style.top = btnPos[1] - apf.getAbsolutePosition(menu.$ext)[1] + 8 + "px"
+                        }
+                    }
                 });
                 
-                if(menu.opener.$dockData && menu.opener.$dockData.caption) {
-                    var className = menu.$ext.getAttribute("class");
-                    menu.$ext.setAttribute("class", className.replace(/btn\w+Enable/, "") 
-                        + " btn" + menu.opener.$dockData.caption.replace(/\s+/, "").toLowerCase().uCaseFirst() 
-                        + "Enable");
-                }
             },
             onafterresize : function(){
                 var menu = this;
