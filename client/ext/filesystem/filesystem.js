@@ -332,7 +332,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         });*/
 
         function openHandler(e) {
-            ide.socket.send(JSON.stringify({
+            ide.send(JSON.stringify({
                 command: "internal-isfile",
                 argv: e.data.argv,
                 cwd: e.data.cwd,
