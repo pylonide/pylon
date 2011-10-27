@@ -4177,7 +4177,7 @@
         
         .modal-label {
             text-shadow: #f0f0f0 0px 1px 0px;
-            padding: 1px 2px 2px;
+            padding: 0px 2px 2px;
             color: #303030;
             font-size: 12px;
         }
@@ -4533,20 +4533,10 @@
         .dockwindowblack .arrow {
             background: url(images/black-panel_arrow.png) no-repeat 0 0;
             position: absolute;
-            top: 42px;
+            top: 39px;
             right: -17px;
             width: 17px;
             height: 21px;
-        }
-        
-        .btnBreakpointsEnable.dockwindowblack .arrow {
-            top: 39px;
-        }
-        .btnVariablesEnable.dockwindowblack .arrow {
-            top: 77px;
-        }
-        .btnInteractiveEnable.dockwindowblack .arrow {
-            top: 114px;
         }
         
         .dockwindowblack .noise_top {
@@ -5259,9 +5249,9 @@
             z-index  : 10000;
             padding  : 33px 0 0 0;
             
-            -moz-border-radius    : 6px;
-            -webkit-border-radius : 6px;
-            border-radius         : 6px;
+            -moz-border-radius    : 6px 6px 6px 6px;
+            -webkit-border-radius : 6px 6px 6px 6px;
+            border-radius         : 6px 6px 6px 6px;
             
             -webkit-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
             -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
@@ -5287,6 +5277,10 @@
             font-weight   : bold;
             color         : #ffffff;
             cursor        : default;
+            
+            -moz-border-radius    : 6px 6px 0 0;
+            -webkit-border-radius : 6px 6px 0 0;
+            border-radius         : 6px 6px 0 0;
         }
         
         .bk-window .bk-header .hcontent .buttons {
@@ -5312,7 +5306,6 @@
             top  : 33px;
             right : 0;
             bottom : 0;
-            background:url(images/modalbg.png) repeat 0 0;
         }
         
         .bg-bk-content {
@@ -5331,6 +5324,10 @@
             right: 0;
             height: 46px;
             position: absolute;
+            
+            -moz-border-radius    : 0 0 6px 6px;
+            -webkit-border-radius : 0 0 6px 6px;
+            border-radius         : 0 0 6px 6px;
         }
         
         .bk-window-cover {
@@ -8080,7 +8077,11 @@
             color : #CCC;
         }
     ]]></a:style>
-
+    <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
+        .textbox-modal .sbtb_middle {
+            padding: 1px 5px 3px;
+        }
+    ]]></a:style>
     <a:presentation>
         <a:main input="div[1]/input">
             <div class="textbox-modal">
