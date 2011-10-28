@@ -230,7 +230,7 @@ define(function(require, exports, module) {
         });
         
         ide.send = function(msg) {
-            if (!ide.socket || !ide.socket.connected) {
+            if (!ide.socket || !ide.socket.socket.connected) {
                 ide.$msgQueue.push(msg);
                 return;
             }
