@@ -185,7 +185,9 @@ define(function(require, exports, module) {
                 if (socketIoScriptEl) {
                     apf.ajax(socketIoScriptEl.src, {
                         callback: function(data, state, extra) {
-                            try{var status = parseInt(extra.http.status);}catch(ex){}
+                            try {
+                                var status = parseInt(extra.http.status, 10);
+                            } catch(ex) {}
                             apf.dispatchEvent("error", {
                                 message: "socket.io client lib not loaded",
                                 error: {
