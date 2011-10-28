@@ -283,6 +283,12 @@ module.exports = ext.register("ext/console/console", {
                         break;
                     }
                     else {
+                        if (cmd.trim().charAt(0) == "!") {
+                            cmd = "bash";
+                            parser.argv[0] = parser.argv[0].replace(/^\s*!/, "");
+                            line = line.replace(/^\s*!/, "");
+                        }
+                            
                         var data = {
                             command: cmd,
                             argv: parser.argv,
@@ -312,7 +318,6 @@ module.exports = ext.register("ext/console/console", {
             
         if (message.type == "node-data")
             return Logger.logNodeStream(message.data, message.stream, true);
-        
         if (message.type != "result")
             return;
 
