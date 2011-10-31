@@ -6,10 +6,11 @@
       center    = "true"
       resizable = "true"
       buttons   = "close"
+      skin      = "bk-window"
       width     = "550"
       height    = "400"
       kbclose   = "true">
-        <a:vbox anchors="0 0 0 0" edge="10 10 5 10">
+        <a:vbox anchors="0 0 0 0" edge="8 10 11">
             <a:hbox align="center" edge="0 0 5 0" padding="5">
                 <a:textbox id="tbModuleName" flex="1" 
                   realtime   = "true" />
@@ -36,8 +37,9 @@
                 <a:column width="20%" value="[@dev]" caption="Developer" /> 
                 <a:column width="10%" value="{[@enabled] == 1 ? 'Enabled' : 'Disabled'}" caption="Enabled" /> 
             </a:datagrid>
-            <a:hbox edge="10 0 0 0">
-                <a:button width="80"
+            <a:hbox edge="18 0 0 0">
+                <a:button
+                  skin    = "btn-default-css3"
                   caption = "{[{dgExt.selected}::@enabled] == 1 ? 'Disable' : 'Enable'}" 
                   onclick = "
                     if ([{dgExt.selected}::@enabled] == 1)
@@ -46,7 +48,7 @@
                         require('core/ext').register(dgExt.value, require(dgExt.value));
                   " />
                 <a:filler />
-                <a:button default="3" width="80" onclick="winExt.hide()">Done</a:button>
+                <a:button default="3" onclick="winExt.hide()" skin="btn-default-css3">Done</a:button>
             </a:hbox>
         </a:vbox>
     </a:window>
