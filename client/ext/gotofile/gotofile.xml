@@ -8,6 +8,8 @@
       height    = "300"
       resizable = "true"
       kbclose   = "true"
+      skin      = "bk-window"
+      class     = "nofooter"
       zindex    = "999999"
       onshow    = "
         txtGoToFile.select();

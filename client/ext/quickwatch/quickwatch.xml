@@ -4,7 +4,9 @@
       buttons   = "close" 
       modal     = "false" 
       center    = "true"
-      width     = "500" 
+      width     = "500"
+      skin      = "bk-window"
+      class     = "nofooter"
       height    = "350"
       kbclose   = "true">
         <a:vbox anchors="0 0 0 0">

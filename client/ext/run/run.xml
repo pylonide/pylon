@@ -99,34 +99,34 @@
       height="400"
       kbclose="true">
         <a:vbox anchors="0 0 0 0">
-        <a:toolbar class="modal-toolbar">
-            <a:bar>
-            <a:button
-              icon="debugger/monitorexpression_tsk{this.disabled ? '_disabled' : ''}.png"
-              caption="Add"
-              onclick="require('ext/run/run').addConfig()"/>
-            <a:button 
-              icon="debugger/copy_edit_co{this.disabled ? '_disabled' : ''}.png" 
-              caption="Duplicate"
-              class="width_20"
-              onclick="require('ext/run/run').duplicate()"
-              disabled="{!lstRunCfg.selected}"/>
-            <a:button 
-              icon="debugger/delete_config{this.disabled ? '_disabled' : ''}.png"
-              caption="Remove"
-              onclick="lstRunCfg.remove()"
-              disabled="{!lstRunCfg.selected}"/>
-            </a:bar>
-        </a:toolbar>
-        <a:list id="lstRunCfg" 
-          skin="lineselect"
-          class="runconfig"
-          model="mdlRunConfigurations"
-          each="[config]"
-          caption="[@name]"
-          empty-message="no run configurations"
-          autoselect="true"
-          flex="1"/>				
+            <a:toolbar class="modal-toolbar">
+                <a:bar>
+                <a:button
+                  icon="debugger/monitorexpression_tsk{this.disabled ? '_disabled' : ''}.png"
+                  caption="Add"
+                  onclick="require('ext/run/run').addConfig()"/>
+                <a:button 
+                  icon="debugger/copy_edit_co{this.disabled ? '_disabled' : ''}.png" 
+                  caption="Duplicate"
+                  class="width_20"
+                  onclick="require('ext/run/run').duplicate()"
+                  disabled="{!lstRunCfg.selected}"/>
+                <a:button 
+                  icon="debugger/delete_config{this.disabled ? '_disabled' : ''}.png"
+                  caption="Remove"
+                  onclick="lstRunCfg.remove()"
+                  disabled="{!lstRunCfg.selected}"/>
+                </a:bar>
+            </a:toolbar>
+            <a:list id="lstRunCfg" 
+              skin="lineselect"
+              class="runconfig"
+              model="mdlRunConfigurations"
+              each="[config]"
+              caption="[@name]"
+              empty-message="no run configurations"
+              autoselect="true"
+              flex="1"/>				
             <a:divider class="modal-divider" />
             <a:hbox align="center" margin="5 10 5 10" padding="5">
                 <a:label width="140" textalign="right" class="modal-label">Name</a:label>
