@@ -94,22 +94,5 @@
                 <a:button id="btnQuestionNo" skin="btn-default-css3" class="btn-red">No</a:button>
             </a:hbox>
         </a:vbox>
-    </a:window> 
-    
-    
-    <a:window title="Refactor your project" buttons="close" id="winRefactor" modal="false" center="true" width="300" height="400" skin      = "bk-window" class="relative">
-        <a:table cols="100,*">
-            <a:label>Search</a:label>
-            <a:textbox id="txtRefactorWords" />
-            <a:label>Replace</a:label>
-            <a:textbox />
-        </a:table>
-        <a:divider />
-        <a:hbox pack="right">
-            <a:button>Replace</a:button>
-            <a:button>Close</a:button>
-        </a:hbox>
-    </a:window>
-    
-    
+    </a:window>     
 </a:application>
