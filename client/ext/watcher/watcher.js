@@ -33,7 +33,7 @@ module.exports = ext.register("ext/watcher/watcher", {
             _self               = this;
             
         function sendWatchFile(path) {
-            ide.socket.send(JSON.stringify({
+            ide.send(JSON.stringify({
                 "command"     : "watcher",
                 "type"        : "watchFile",
                 "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
@@ -41,7 +41,7 @@ module.exports = ext.register("ext/watcher/watcher", {
         }
         
         function sendUnwatchFile(path) {
-            ide.socket.send(JSON.stringify({
+            ide.send(JSON.stringify({
                 "command"     : "watcher",
                 "type"        : "unwatchFile",
                 "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
@@ -149,26 +149,14 @@ module.exports = ext.register("ext/watcher/watcher", {
             var path = e.doc.getNode().getAttribute("path");
 
             // console.log("Opened file " + path);
-            if (ide.socket)
-                sendWatchFile(path);
-            else
-                stServerConnected.addEventListener("activate", function () {
-                    sendWatchFile(path);
-                    stServerConnected.removeEventListener("activate", arguments.callee);
-                });
+            sendWatchFile(path);
         });        
 
         ide.addEventListener("closefile", function(e) {
             if (_self.disabled) return;
             
             var path = e.xmlNode.getAttribute("path");
-            if (ide.socket)
-                sendUnwatchFile(path);
-            else
-                stServerConnected.addEventListener("activate", function () {
-                    sendUnwatchFile(path);
-                    stServerConnected.removeEventListener("activate", arguments.callee);
-                });
+            sendUnwatchFile(path);
         });
         
         ide.addEventListener("socketMessage", function(e) {

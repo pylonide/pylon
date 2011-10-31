@@ -16,7 +16,7 @@ var jsDAV = require("jsdav"),
     EventEmitter = require("events").EventEmitter,
     util = require("./util");
 
-module.exports = Ide = function(options, httpServer, exts, socket) {
+var Ide = module.exports = function(options, httpServer, exts, socket) {
     EventEmitter.call(this);
 
     this.httpServer = httpServer;
@@ -212,7 +212,7 @@ Ide.DEFAULT_PLUGINS = [
             }
             else {
                 settingsPlugin.loadSettings(user, function(err, settings) {
-                    replacements.settingsXml = err || !settings ? "defaults" : settings.replace("]]>", "]]&gt;");
+                    replacements.settingsXml = err || !settings ? "defaults" : settings.replace(/]]>/g, '&#093;&#093;&gt;');
                     index = template.fill(index, replacements);
                     res.end(index);
                 });

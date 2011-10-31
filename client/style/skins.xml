@@ -5582,23 +5582,12 @@
         }
 
         .dockcol .splitter.horizontal{
-            height : 1px;
-            background-color: #38393A;
-            border-top: 1px solid #000000;
-            /*background : #333;*/
-        }
-        
-        .dockcol > div:nth-child(2) {
-            display: none !important;
+            height : 3px;
+            background : #333;
         }
         .dockcol .splitter.horizontal div{
             height : 3px;
             margin-top : 0;
-        }
-        
-        .splitter-editor-right {
-            background: url(images/editor_header.png) repeat-x 0 0;
-            border-right: 1px solid #1E1E1E;
         }
     ]]></a:style>
 
@@ -6713,12 +6702,6 @@
             background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
             width : auto;
         }
-        .dockcol .docktab .btncontainer{
-            padding-top: 6px;
-            padding-left: 3px;
-            padding-right: 5px;
-        }
-
         .docktab .btncontainer>div {
             display: block;
             display : inline-block;
@@ -6850,13 +6833,6 @@
             border-bottom: 1px solid #8c8c8c;*/
             overflow: hidden;
         }
-        
-        .dockcol .docktab .page {
-            top: 26px;
-            right: 5px;
-            left: 3px;
-            bottom: 5px;
-        }
 
         .docktab .page.curpage{
             display : block;
@@ -6869,10 +6845,8 @@
     </a:style>
 
     <a:presentation>
-        <a:main pages="." buttons="div[3]">
+        <a:main pages="." buttons="div[1]">
             <div class="docktab">
-                <div class="expand-panel-bg"></div>
-                <div class="noise_bg"></div>
                 <div class="btncontainer"> </div>
             </div>
         </a:main>

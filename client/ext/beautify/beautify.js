@@ -29,7 +29,8 @@ module.exports = ext.register("ext/beautify/beautify", {
 
     commands: {
         "beautify": {
-            hint: "reformat selected JavaScript code in the editor"
+            hint: "reformat selected JavaScript code in the editor",
+            msg: "Beautifying selection."
         }
     },
 
@@ -109,7 +110,7 @@ module.exports = ext.register("ext/beautify/beautify", {
 
         ide.addEventListener("init.ext/settings/settings", function (e) {
             e.ext.addSection("jsbeautify", _self.name, "beautify", function () {});
-//            barSettings.insertMarkup(settings);
+            barSettings.insertMarkup(settings);
         });
     },
 

@@ -30,6 +30,7 @@ define(function(require, exports, module) {
 
             this.workspaceDir   = window.cloud9config.workspaceDir.replace(/\/+$/, "");
             this.davPrefix      = window.cloud9config.davPrefix.replace(/\/+$/, "");
+            this.staticPrefix   = window.cloud9config.staticUrl;
             this.sessionId      = window.cloud9config.sessionId;
             this.workspaceId    = window.cloud9config.workspaceId;
             this.readonly       = window.cloud9config.readonly;
@@ -184,7 +185,9 @@ define(function(require, exports, module) {
                 if (socketIoScriptEl) {
                     apf.ajax(socketIoScriptEl.src, {
                         callback: function(data, state, extra) {
-                            try{var status = parseInt(extra.http.status);}catch(ex){}
+                            try {
+                                var status = parseInt(extra.http.status, 10);
+                            } catch(ex) {}
                             apf.dispatchEvent("error", {
                                 message: "socket.io client lib not loaded",
                                 error: {
@@ -216,6 +219,26 @@ define(function(require, exports, module) {
                 _oldsend.call(ide.socket, msg, function() {});
             };
         });
+        
+        ide.$msgQueue = [];
+        ide.addEventListener("socketConnect", function() {
+            while(ide.$msgQueue.length) {
+                var q = ide.$msgQueue;
+                ide.$msgQueue = [];
+                q.forEach(function(msg) {
+                    ide.socket.send(msg);
+                });
+            }
+        });
+        
+        ide.send = function(msg) {
+            if (!ide.socket || !ide.socket.socket.connected) {
+                ide.$msgQueue.push(msg);
+                return;
+            }
+            
+            ide.socket.send(msg);
+        };
         
         ide.getActivePageModel = function() {
             page = tabEditors.getPage();

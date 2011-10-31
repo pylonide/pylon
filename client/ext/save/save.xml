@@ -73,7 +73,7 @@
                   id           = "txtSaveAs"
                   flex         = "7"
                   focusselect  = "true"
-                  onkeydown    = "if (event.keyCode == 13) require('ext/save/save').choosePath(this.getValue())" />
+                  onkeydown    = "if (event.keyCode == 13) require('ext/save/save').choosePath(lblPath.getProperty('caption') + this.getValue())" />
             </a:hbox>
             <a:label id="lblPath" class="lbl_filepath" />
          

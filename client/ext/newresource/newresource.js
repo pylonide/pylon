@@ -22,9 +22,15 @@ module.exports = ext.register("ext/newresource/newresource", {
     markup  : markup,
     deps    : [fs],
     commands : {
-        "newfile": {hint: "create a new file resource"},
-        "newfiletemplate": {hint: "open the new file template dialog"},
-        "newfolder": {hint: "create a new directory resource"}
+        "newfile": {
+            hint: "create a new file resource",
+            msg: "New file created."
+        },
+        "newfolder": {
+            hint: "create a new directory resource",
+            msg: "New directory created."
+        },
+        "newfiletemplate": {hint: "open the new file template dialog"}
     },
     hotitems: {},
 
@@ -42,7 +48,7 @@ module.exports = ext.register("ext/newresource/newresource", {
                 }
             }), ide.mnuFile.firstChild),
             ide.mnuFile.insertBefore(new apf.item({
-                caption : "New Template...",
+                caption : "New From Template...",
                 onclick : function(){
                     _self.newfiletemplate();
                 }
@@ -67,9 +73,13 @@ module.exports = ext.register("ext/newresource/newresource", {
         
         
         var path = "/workspace/", sel = trFiles.selected;
-        if (sel)
-            path = sel.getAttribute("path").replace(/\/[^\/]*$/, "/");
-        
+        if (sel) {
+            path = sel.getAttribute("path");
+            if(trFiles.selected.getAttribute("type") == "file")
+                path = path.replace(/\/[^\/]*$/, "/");
+            else
+                path = path + "/";
+        }
         var name = "Untitled", count = 1;
         while(tabEditors.getPage(path + name + count + type)) {
             count++;

@@ -25,8 +25,14 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     commands : {
         "quicksearch": {hint: "quickly search for a string inside the active document, without further options (see 'search')"},
         "find": {hint: "open the quicksearch dialog to quickly search for a phrase"},
-        "findnext": {hint: "search for the next occurrence of the search query your entered last"},
-        "findprevious": {hint: "search for the previous occurrence of the search query your entered last"}
+        "findnext": {
+            hint: "search for the next occurrence of the search query your entered last",
+            msg: "Navigating to next match."
+        },
+        "findprevious": {
+            hint: "search for the previous occurrence of the search query your entered last",
+            msg: "Navigating to previous match."
+        }
     },
     hotitems: {},
 
@@ -53,7 +59,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     else
                         _self.execSearch(false, false);
                     return false;
-                break;
                 case 27: //ESCAPE
                     _self.toggleDialog(-1);
                     if (e.htmlEvent)
@@ -61,7 +66,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     else if (e.stop)
                         e.stop();
                     return false;
-                break;
                 case 38: //UP
                     _self.navigateList("prev");
                 break;
@@ -79,7 +83,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             }
         });
         
-        var _self = this;
         winQuickSearch.addEventListener("blur", function(e){
             if (!apf.isChildOf(winQuickSearch, e.toElement))
                 _self.toggleDialog(-1);

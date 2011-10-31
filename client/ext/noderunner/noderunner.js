@@ -40,7 +40,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         stDebugProcessRunning.addEventListener("deactivate", this.$onDebugProcessDeactivate.bind(this));
 
         ide.addEventListener("consolecommand.run", function(e) {
-            ide.socket.send(JSON.stringify({
+            ide.send(JSON.stringify({
                 command: "internal-isfile",
                 argv: e.data.argv,
                 cwd: e.data.cwd,
@@ -124,7 +124,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                     });
                 }
                 
-                ide.socket.send('{"command": "state"}');
+                ide.send('{"command": "state"}');
                 break;
         }
     },
@@ -138,7 +138,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             "command" : "RunDebugChrome",
             "file"    : ""
         };
-        ide.socket.send(JSON.stringify(command));
+        ide.send(JSON.stringify(command));
     },
 
     debug : function() {
@@ -159,7 +159,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 "C9_SELECTED_FILE": page ? page.getAttribute("path").slice(ide.davPrefix.length) : ""
             }
         };
-        ide.socket.send(JSON.stringify(command));
+        ide.send(JSON.stringify(command));
 
         if (debug)
             stDebugProcessRunning.activate();
@@ -171,7 +171,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         if (!stProcessRunning.active)
             return;
 
-        ide.socket.send(JSON.stringify({
+        ide.send(JSON.stringify({
             "command": "kill",
             "runner"  : "node" //ddRunnerSelector.value // Explicit addition; trying to affect as less logic as possible for now...
         }));

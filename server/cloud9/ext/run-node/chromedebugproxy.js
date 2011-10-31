@@ -10,7 +10,7 @@ var ChromeDebugMessageStream = require("v8debug/ChromeDebugMessageStream");
 var DevToolsMessage = require("v8debug/DevToolsMessage");
 
 
-module.exports = DebugProxy = function(port) {
+var DebugProxy = module.exports = function(port) {
     process.EventEmitter.call(this);
     var _self = this;
 

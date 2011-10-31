@@ -71,8 +71,8 @@ return keys.onLoad({
             "showsettings": "Command-,"
         },
         "tabbehaviors" : {
-            "closetab": "Command-W|Option-W",
-            "closealltabs": "Command-Shift-W|Option-Shift-W",
+            "closetab": "Option-W",
+            "closealltabs": "Option-Shift-W",
             "closeallbutme": "Command-Option-W",
             "gototabright": "Command-]",
             "gototableft": "Command-[",
