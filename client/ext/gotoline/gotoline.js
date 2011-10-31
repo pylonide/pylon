@@ -48,9 +48,9 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             skin : "editor-bar-btn",
             style : "padding-left: 25px; background-image: url(static/style/images/editor_gotoline.png); background-position: 9px 5px",
             onclick : function() {
-                _self.gotoline(1);
+                _self.gotoline(0);
             }
-        }), 2);
+        }), 1);
 
         canon.addCommand({
             name: "gotoline",

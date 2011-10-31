@@ -1,8 +1,7 @@
 /**
- * Ace Bugs extension for Cloud9. Displays a window in the dock panel
- * showing warnings and errors retrieved from Ace
+ * Ace Bugs extension for Cloud9 IDE
  * 
- * @copyright 2011, Ajax.org B.V.
+ * @copyright 2011, Cloud9 IDE, Inc.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
@@ -10,13 +9,12 @@ define(function(require, exports, module) {
 
 var ext     = require("core/ext");
 var ide     = require("core/ide");
-var dock    = require("ext/dockpanel/dockpanel");
 var editors = require("ext/editors/editors");
 var markup  = require("text!ext/acebugs/acebugs.xml");
 
 module.exports = ext.register("ext/acebugs/acebugs", {
     name: "Ace Bugs",
-    dev: "Ajax.org",
+    dev: "Cloud9 IDE, Inc.",
     alone: true,
     type: ext.GENERAL,
     markup: markup,
@@ -42,8 +40,9 @@ module.exports = ext.register("ext/acebugs/acebugs", {
             if (e.data.outXml == _self.lastAnnotations)
                 return;
 
-            if (e.data.errors > 0)
-                dock.increaseNotificationCount("aceAnnotations", e.data.errors);
+            if (e.data.errors > 0) {
+                //dock.increaseNotificationCount("aceAnnotations", e.data.errors);
+            }
             mdlAceAnnotations.load(apf.getXml(e.data.outXml.replace(/&/g, "&amp;")));
         };
 
@@ -67,22 +66,16 @@ module.exports = ext.register("ext/acebugs/acebugs", {
             }
         });
 
-        this.section = dock.getSection(this.name, {
-            width  : 260,
-            height : 360
-        });
-
-        dock.registerPage(this.section, null, function() {
-            ext.initExtension(_self);
-            return aceAnnotations;
-        }, {
-            ident   : "aceAnnotations",
-            primary : {
-                backgroundImage: "/static/style/images/debugicons.png",
-                defaultState: { x: -6, y: -391 },
-                activeState: { x: -6, y: -391 }
-            }
-        });
+        editors.addBarButton(
+            new apf.button({
+                id : "editorAceBugs",
+                skin : "editor-bar-btn",
+                background : "editor_warning.png|vertical|3|22",
+                style : "border-right: none; border-left: 1px solid #7b7b7b;",
+                width : "29",
+                submenu : "mnuEditorAceBugs"
+            }), 1000
+        );
 
         ext.initExtension(this);
     },
@@ -94,7 +87,7 @@ module.exports = ext.register("ext/acebugs/acebugs", {
 
         this.ceEditor = ce.ceEditor;
         var editorSession = this.ceEditor.getSession();
-        dock.resetNotificationCount("aceAnnotations");
+        //dock.resetNotificationCount("aceAnnotations");
         this.annotationWorker.postMessage(editorSession.getAnnotations());
     },
 

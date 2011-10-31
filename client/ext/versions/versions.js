@@ -338,7 +338,7 @@ module.exports = ext.register("ext/versions/versions", {
                 onclick : function() {
                     _self.enterVersionMode();
                 }
-            }), 2
+            }), 1
         );
 
         this.blamejs = new BlameJS();

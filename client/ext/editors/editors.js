@@ -128,46 +128,27 @@ module.exports = ext.register("ext/editors/editors", {
                             "class" : "editorBar",
                             style : "border-top: 1px solid #7b7b7b",
                             childNodes: [
-                                new apf.button({
-                                    skin : "editor-bar-btn",
-                                    background : "editor_cog.png|vertical|3|21",
-                                    id : "btnEditorSettings",
-                                    submenu : "mnuEditorSettings",
-                                    width : "29"
-                                }),
-                                /*new apf.button({
-                                    caption : "Clips",
-                                    skin : "editor-bar-btn",
-                                    style : "padding-left: 25px; background-image: url(static/style/images/editor_clips.png); background-position: 8px 4px"
-                                }),*/
-                                /*new apf.button({
-                                    caption : "AML to JS",
-                                    id : "btnSelectionAmlToJson",
-                                    skin : "editor-bar-btn",
-                                    disabled : "true"
-                                }),*/
-                                new apf.label({
-                                    id : "lblRowsColumns",
-                                    caption : "",
-                                    right : "58",
-                                    top : "2",
-                                    style : "color: #666; letter-spacing: 1px"
-                                }),
-                                new apf.button({
-                                    skin : "editor-bar-btn",
-                                    style : "border-right: none; border-left: 1px solid #7b7b7b;background-image: url(static/style/images/editor_revisions.png); background-position: 6px 3px",
-                                    width : "21",
-                                    right : "30",
-                                    onclick : function() {
-                                        
-                                    }
-                                }),
-                                new apf.button({
-                                    skin : "editor-bar-btn",
-                                    background : "editor_warning.png|vertical|3|22",
-                                    style : "border-right: none; border-left: 1px solid #7b7b7b;",
-                                    width : "29",
-                                    right : "0"
+                                new apf.hbox({
+                                    height : "22",
+                                    id : "editorBarHbox",
+                                    childNodes: [
+                                        new apf.button({
+                                            skin : "editor-bar-btn",
+                                            background : "editor_cog.png|vertical|3|21",
+                                            id : "btnEditorSettings",
+                                            submenu : "mnuEditorSettings",
+                                            width : "29"
+                                        }),
+                                        new apf.filler({
+                                            id : "editorBarFiller"
+                                        }),
+                                        new apf.label({
+                                            id : "lblRowsColumns",
+                                            caption : "",
+                                            margin : "2 5 0 0",
+                                            style : "color: #666; letter-spacing: 1px"
+                                        })
+                                    ]
                                 })
                             ]
                         })
@@ -178,7 +159,7 @@ module.exports = ext.register("ext/editors/editors", {
         
         setTimeout(function() {
             for (var i = 0; i < _self.editorButtons.length; i++)
-                editorBar.insertBefore(_self.editorButtons[i].aml, _self.editorButtons[i].pos);
+                editorBarHbox.insertBefore(_self.editorButtons[i].aml, editorBarHbox.childNodes[_self.editorButtons[i].pos]);
         });
         
         tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
@@ -193,7 +174,7 @@ module.exports = ext.register("ext/editors/editors", {
     
     addBarButton : function(aml, position) {
         if (this.tabSectionAdded)
-            editorBar.insertBefore(aml, editorBar.childNodes[position]);
+            editorBarHbox.insertBefore(aml, editorBarHbox.childNodes[position]);
         else
             this.editorButtons.push( { aml : aml, pos : position } );
     },

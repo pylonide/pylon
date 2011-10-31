@@ -116,7 +116,7 @@ module.exports = ext.register("ext/beautify/beautify", {
                 onclick : function() {
                     require("ext/beautify/beautify").beautify();
                 }
-            }), 2
+            }), 1
         );
 
         ide.addEventListener("selectionNew", function(range) {
