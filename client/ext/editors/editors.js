@@ -24,7 +24,7 @@ module.exports = ext.register("ext/editors/editors", {
     alwayson : true,
     editorButtons : [],
 
-    //markup : markup,
+    markup : markup,
 
     contentTypes  : {},
 
