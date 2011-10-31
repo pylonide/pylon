@@ -267,7 +267,7 @@ module.exports = ext.register("ext/code/code", {
         amlPage.appendChild(ceEditor);
         ceEditor.show();
 
-        this.ceEditor = ceEditor;
+        this.ceEditor = this.amlEditor = ceEditor;
 
         var _self = this;
 
@@ -301,8 +301,6 @@ module.exports = ext.register("ext/code/code", {
                 checked : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
             }))
         );
-
-        
         
         mnuSyntax.onitemclick = function(e) {
             var file = ide.getActivePageModel();

@@ -46,7 +46,8 @@ module.exports = ext.register("ext/imgview/imgview", {
     nodes : [],
 
     setDocument : function(doc, actiontracker){
-        imgEditor.setProperty("value", doc.getNode().getAttribute("path"));
+        doc.session = doc.getNode().getAttribute("path");
+        imgEditor.setProperty("value", doc.session);
     },
 
     hook : function() {
@@ -57,7 +58,7 @@ module.exports = ext.register("ext/imgview/imgview", {
         amlPage.appendChild(imgEditor);
         imgEditor.show();
 
-        this.imgEditor = imgEditor;
+        this.imgEditor = this.amlEditor = imgEditor;
         //this.nodes.push();
     },
 

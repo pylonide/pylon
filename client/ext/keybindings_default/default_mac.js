@@ -90,6 +90,10 @@ return keys.onLoad({
             "nexttab": "Command-Tab|Option-Tab",
             "previoustab": "Command-Shift-Tab|Option-Shift-Tab"
         },
+        "splitview" : {
+            "mergetableft": "Command-Option-[",
+            "mergetabright": "Command-Option-]"
+        },
         "code" : {
             "selectall": "Command-A",
             "removeline": "Command-D",
