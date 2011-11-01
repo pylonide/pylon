@@ -7610,8 +7610,8 @@
     <a:presentation>
         <a:main pages="." buttons="div[3]">
             <div class="docktab">
-                <div class="expand-panel-bg"></div>
-                <div class="noise_bg"></div>
+                <div class="expand-panel-bg"> </div>
+                <div class="noise_bg"> </div>
                 <div class="btncontainer"> </div>
             </div>
         </a:main>

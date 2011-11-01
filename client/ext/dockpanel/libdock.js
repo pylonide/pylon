@@ -255,7 +255,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             
             bar.splitter = bar.parentNode.insertBefore(new apf.splitter({
                 scale   : "right",
-                "class" : "splitter-editor-right" + (panelSplittersCount > 0 ? " panelsplitter" : ""),
+                "class" : "splitter-editor-right" + " panelsplitter",//+ (panelSplittersCount > 0 ? " panelsplitter" : ""),
                 width   : "0"
             }), bar.vbox);
             
@@ -1068,7 +1068,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 new apf.tab({
                     anchors : "4 4 4 4", 
                     skin : "docktab",
-                    buttons : "scale",
+                    buttons : "scale, close",
                     dock    : 1,
                     activepage : 0,
                     onclose : function(e){

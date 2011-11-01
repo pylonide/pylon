@@ -91,6 +91,7 @@ module.exports = ext.register("ext/debugger/debugger", {
                 { caption: "Call Stack", ext : [name, "dbgCallStack"] }
             ]
         });
+
         dock.addDockable({
             hidden  : false,
             buttons : [
