@@ -80,7 +80,6 @@
       modal  = "false"
       model  = "{require('ext/settings/settings').model}">
         <a:vbox>
-            <!-- skin="editor-btn-menu"-->
             <a:label id = "lblSyntaxHl" class = "lblSyntaxHl" margin = "0 0 4 0"
               onmouseover = "require('ext/code/code').winSyntaxToggle(this)"
               onmouseout  = "require('ext/code/code').winSyntaxToggle(this)">
@@ -145,8 +144,10 @@
       width="150" height="250"
       onmouseout="require('ext/code/code').winSyntaxOut(this)"
       onmouseover="require('ext/code/code').winSyntaxOver(this)">
-        <a:list model="mdlSyntax" anchors="0 0 0 0" margin="8 0 8 0" flex="1" class="win_syntax_list">
-            <a:each match="[item]" sort="[@caption]" order="ascending">
+        <a:list id="lstMdlSyntax" model="mdlSyntax" anchors="0 0 0 0" margin="8 0 8 0"
+          flex="1" class="win_syntax_list"
+          onafterselect="require('ext/code/code').selectSyntaxHl()">
+            <a:each match="[item]">
                 <a:caption match="[@caption]" />
             </a:each>
         </a:list>

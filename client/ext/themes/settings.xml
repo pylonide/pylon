@@ -1,0 +1,13 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:model id="mdlThemes"><data></data></a:model>
+    <a:window id="winThemesList" class="win_editor_settings syntax_list" modal="false"
+      width="150" height="190">
+        <a:list id="lstThemes" model="mdlThemes" anchors="0 0 0 0" margin="8 0 8 0"
+          flex="1" class="win_syntax_list"
+          onafterselect="require('ext/themes/themes').selectTheme()">
+            <a:each match="[item]">
+                <a:caption match="[@caption]" />
+            </a:each>
+        </a:list>
+    </a:window>
+</a:application>

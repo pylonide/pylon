@@ -238,7 +238,7 @@ module.exports = ext.register("ext/code/code", {
         var name       = this.name;
         
         apf.document.body.insertMarkup(markupSettings);
-        
+
         ide.addEventListener("loadsettings", function(e) {
             // pre load theme
             var theme = e.model.queryValue("editors/code/@theme");
@@ -293,46 +293,8 @@ module.exports = ext.register("ext/code/code", {
             //Add a panel to the statusbar showing the length of the document
             sbMain.appendChild(new apf.section({
                 caption : "Length: {ceEditor.value.length}"
-            }))/*,
-
-            mnuView.appendChild(new apf.item({
-                caption : "Syntax Highlighting",
-                submenu : "mnuSyntax"
-            }))*/
+            }))
         );
-
-        mnuSyntax.onitemclick = function(e) {
-            var file = ide.getActivePageModel();
-            
-            if (file) {
-                var value = e.relatedNode.value;
-                
-                if (value == "auto")
-                    apf.xmldb.removeAttribute(file, "customtype", "");
-                else
-                    apf.xmldb.setAttribute(file, "customtype", value);
-                
-                if (file.getAttribute("customtype")) {
-                    var fileName = file.getAttribute("name");
-                    
-                    if (contentTypes["*" + fileName])
-                        delete contentTypes["*" + fileName];
-                    
-                    var mime = value.split(";")[0];
-                    var fileExt = (fileName.lastIndexOf(".") != -1) ?
-                        fileName.split(".").pop() : null;
-                    
-                    if (fileExt && contentTypes[fileExt] !== mime)
-                        delete contentTypes[fileExt];
-                        
-                    var customType = fileExt ?
-                        contentTypes[fileExt] : contentTypes["*" + fileName];
-                    
-                    if (!customType)
-                        _self.setCustomType(fileExt ? fileExt : file, mime);
-                }
-            }
-        };
 
         ide.addEventListener("keybindingschange", function(e){
             if (typeof ceEditor == "undefined")
@@ -352,10 +314,43 @@ module.exports = ext.register("ext/code/code", {
         });
     },
     
+    selectSyntaxHl : function() {
+        var file = ide.getActivePageModel();
+            
+        if (file) {
+            var value = lstMdlSyntax.selected.getAttribute("value");
+            
+            if (value == "auto")
+                apf.xmldb.removeAttribute(file, "customtype", "");
+            else
+                apf.xmldb.setAttribute(file, "customtype", value);
+            
+            if (file.getAttribute("customtype")) {
+                var fileName = file.getAttribute("name");
+                
+                if (contentTypes["*" + fileName])
+                    delete contentTypes["*" + fileName];
+                
+                var mime = value.split(";")[0];
+                var fileExt = (fileName.lastIndexOf(".") != -1) ?
+                    fileName.split(".").pop() : null;
+                
+                if (fileExt && contentTypes[fileExt] !== mime)
+                    delete contentTypes[fileExt];
+                    
+                var customType = fileExt ?
+                    contentTypes[fileExt] : contentTypes["*" + fileName];
+                
+                if (!customType)
+                    this.setCustomType(fileExt ? fileExt : file, mime);
+            }
+        }
+    },
+    
     winSyntaxHide : function() {
         this.winSyntaxTimer = setTimeout(function() {
-            //winSyntaxList.hide();
-            //lblSyntaxHl.setAttribute("class", "lblSyntaxHl");
+            winSyntaxList.hide();
+            lblSyntaxHl.setAttribute("class", "lblSyntaxHl");
         }, 200);
     },
     
@@ -372,14 +367,6 @@ module.exports = ext.register("ext/code/code", {
             winSyntaxList.show();
             el.setAttribute("class", "lblSyntaxHl hover");
         }
-    },
-    
-    winSyntaxOver : function(el) {
-        console.log("Over!");
-    },
-    
-    winSyntaxOut : function(el) {
-        console.log("And out!");
     },
     
     /**
