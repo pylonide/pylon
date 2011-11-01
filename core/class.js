@@ -1104,7 +1104,7 @@ apf.Class.prototype = new (function(){
             if (this.nodeType == 1 && this.localName != "a")
                 this.$ext.oncontextmenu = this.$ext.host = null;
             if (clean) {
-                if (this.localName != "collection")
+                if (this.localName != "collection" && this.$ext.parentNode)
                     this.$ext.parentNode.removeChild(this.$ext);
             }
         }
