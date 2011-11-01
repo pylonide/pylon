@@ -12,7 +12,6 @@ var ext = require("core/ext");
 var util = require("core/util");
 var panels = require("ext/panels/panels");
 var dockpanel = require("ext/dockpanel/dockpanel");
-var markup = require("text!ext/editors/editors.xml");
 
 module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
@@ -23,8 +22,6 @@ module.exports = ext.register("ext/editors/editors", {
     visible : true,
     alwayson : true,
     editorButtons : [],
-
-    markup : markup,
 
     contentTypes  : {},
 
@@ -132,13 +129,6 @@ module.exports = ext.register("ext/editors/editors", {
                                     height : "22",
                                     id : "editorBarHbox",
                                     childNodes: [
-                                        new apf.button({
-                                            skin : "editor-bar-btn",
-                                            background : "editor_cog.png|vertical|3|21",
-                                            id : "btnEditorSettings",
-                                            submenu : "mnuEditorSettings",
-                                            width : "29"
-                                        }),
                                         new apf.filler({
                                             id : "editorBarFiller"
                                         }),
@@ -158,8 +148,24 @@ module.exports = ext.register("ext/editors/editors", {
         });
         
         setTimeout(function() {
-            for (var i = 0; i < _self.editorButtons.length; i++)
-                editorBarHbox.insertBefore(_self.editorButtons[i].aml, editorBarHbox.childNodes[_self.editorButtons[i].pos]);
+            for (var i = 0; i < _self.editorButtons.length; i++) {
+                var aml = _self.editorButtons[i].aml;
+                var position = _self.editorButtons[i].pos;
+                if (_self.editorButtons[i].side == "left") {
+                    if (typeof position !== "undefined") {
+                        if (position > apf.getChildNumber(editorBarFiller))
+                            editorBarHbox.insertBefore(aml, editorBarFiller);
+                        else
+                            editorBarHbox.insertBefore(aml, editorBarHbox.childNodes[position]);
+                    }
+                    else {
+                        editorBarHbox.insertBefore(aml, editorBarFiller);
+                    }
+                }
+                else {
+                    editorBarHbox.insertBefore(_self.editorButtons[i].aml, editorBarHbox.childNodes[9999]);
+                }
+            }
         });
         
         tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
@@ -172,11 +178,26 @@ module.exports = ext.register("ext/editors/editors", {
         return vbox;
     },
     
-    addBarButton : function(aml, position) {
-        if (this.tabSectionAdded)
-            editorBarHbox.insertBefore(aml, editorBarHbox.childNodes[position]);
-        else
-            this.editorButtons.push( { aml : aml, pos : position } );
+    addBarButton : function(aml, side, position) {
+        if (this.tabSectionAdded) {
+            if (side == "left") {
+                if (typeof position !== "undefined") {
+                    if (position > apf.getChildNumber(editorBarFiller))
+                        editorBarHbox.insertBefore(aml, editorBarFiller);
+                    else
+                        editorBarHbox.insertBefore(aml, editorBarHbox.childNodes[position]);
+                }
+                else {
+                    editorBarHbox.insertBefore(aml, editorBarFiller);
+                }
+            }
+            else {
+                editorBarHbox.insertBefore(aml, editorBarHbox.childNodes[9999]);
+            }
+        }
+        else {
+            this.editorButtons.push( { aml : aml, side : side, pos : position } );
+        }
     },
     
     /**

@@ -66,7 +66,7 @@ module.exports = ext.register("ext/acebugs/acebugs", {
             }
         });
 
-        editors.addBarButton(
+        /*editors.addBarButton(
             new apf.button({
                 id : "editorAceBugs",
                 skin : "editor-bar-btn",
@@ -75,7 +75,7 @@ module.exports = ext.register("ext/acebugs/acebugs", {
                 width : "29",
                 submenu : "mnuEditorAceBugs"
             }), 1000
-        );
+        );*/
 
         ext.initExtension(this);
     },

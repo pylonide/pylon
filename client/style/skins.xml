@@ -1639,7 +1639,6 @@
             -moz-user-select    : none; 
             -khtml-user-select  : none; 
             user-select         : none;
-            /*background-position : center 3px;*/
             background-repeat   : no-repeat;
             border-right: 1px solid #7b7b7b;
             color: #333;
@@ -1651,6 +1650,13 @@
         
         .editor-bar-btnDown {
             background-color: #ccc;
+        }
+        
+        .editor-bar-btn.focused {
+            background-color: #ddd;
+            -webkit-box-shadow: inset 0px 0px 5px rgba(0, 0, 0, 0.5);
+            -moz-box-shadow: inset 0px 0px 5px rgba(0, 0, 0, 0.5);
+            box-shadow: inset 0px 0px 5px rgba(0, 0, 0, 0.5);
         }
         
         .editor-bar-btnDisabled {
