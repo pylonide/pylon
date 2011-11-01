@@ -296,21 +296,21 @@ module.exports = ext.register("ext/editors/editors", {
         if (init)
             tabEditors.setAttribute("buttons", "close");
         
-        var model = new apf.model(), 
-            fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
-                page.contentType = contentType;
-                page.$at     = new apf.actiontracker();
-                page.$doc    = doc;
-                doc.$page    = page;
-                page.$editor = editor;
-                page.setAttribute("tooltip", "[@path]");
-                page.setAttribute("class",
-                    "{parseInt([@saving], 10) || parseInt([@lookup], 10) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
-                    ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"
-                );
-                page.setAttribute("model", page.$model = model);
-                page.$model.load(xmlNode);
-            });
+        var model = new apf.model();
+        var fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
+            page.contentType = contentType;
+            page.$at     = new apf.actiontracker();
+            page.$doc    = doc;
+            doc.$page    = page;
+            page.$editor = editor;
+            page.setAttribute("tooltip", "[@path]");
+            page.setAttribute("class",
+                "{parseInt([@saving], 10) || parseInt([@lookup], 10) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
+                ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"
+            );
+            page.setAttribute("model", page.$model = model);
+            page.$model.load(xmlNode);
+        });
 
         if (init)
             tabEditors.setAttribute("buttons", "close,scale,order");
@@ -321,28 +321,9 @@ module.exports = ext.register("ext/editors/editors", {
             fake.$model.load(e.node);
             ide.dispatchEvent("afteropenfile", {doc: doc, node: e.node, editor: editor});
         });
-
-        fake.$at.addEventListener("afterchange", function(e) {
-            if (e.action == "reset") {
-                delete this.undo_ptr;
-                return;
-            }            
-            
-            var val;
-            if (fake.$at.ignoreChange) {
-                val = undefined;
-                fake.$at.ignoreChange = false;
-            } else if(this.undolength === 0 && !this.undo_ptr)
-                val = undefined;
-            else
-                val = (this.$undostack[this.$undostack.length-1] !== this.undo_ptr) ? 1 : undefined;
-                
-            if (fake.changed !== val) {
-                fake.changed = val;
-                model.setQueryValue("@changed", (val ? "1" : "0"));
-            }
-        });
         
+        this.initEditorEvents(fake, model);
+
         if (init && !active)
             return;
         
@@ -364,6 +345,34 @@ module.exports = ext.register("ext/editors/editors", {
         this.currentEditor = editor;
         
         settings.save();
+    },
+    
+    initEditorEvents: function(fake, model) {
+        fake.$at.addEventListener("afterchange", function(e) {
+            if (e.action == "reset") {
+                delete this.undo_ptr;
+                return;
+            }
+            
+            var val;
+            if (fake.$at.ignoreChange) {
+                val = undefined;
+                fake.$at.ignoreChange = false;
+            }
+            else if(this.undolength === 0 && !this.undo_ptr) {
+                val = undefined;
+            }
+            else {
+                val = (this.$undostack[this.$undostack.length - 1] !== this.undo_ptr) 
+                    ? 1 
+                    : undefined;
+            }
+
+            if (fake.changed !== val) {
+                fake.changed = val;
+                model.setQueryValue("@changed", (val ? "1" : "0"));
+            }
+        });
     },
 
     close : function(page) {
@@ -423,6 +432,11 @@ module.exports = ext.register("ext/editors/editors", {
             editorPage.setAttribute("actiontracker", page.$at);
         
         page.$editor.setDocument && page.$editor.setDocument(page.$doc, page.$at);
+        
+        ide.dispatchEvent("editorswitch", {
+            previousPage: e.previousPage,
+            nextPage: e.nextPage
+        });
     },
 
     afterswitch : function(e) {
