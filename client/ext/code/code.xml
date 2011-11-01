@@ -41,7 +41,6 @@
         <a:divider visible="{stDebugProcessRunning.active and !stRunning.active}" />
         <a:item onclick="ceEditor.$editor.getSelection().selectAll()">Select All</a:item>
     </a:menu>
-    
     <a:menu id="mnuSyntax">
         <a:item type="radio" value="auto">Auto Select</a:item>
         <a:divider />

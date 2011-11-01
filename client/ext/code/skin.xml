@@ -1,0 +1,24 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <a:button name="editor-btn-menu">
+        <a:style><![CDATA[
+        .editor-btn-menu div.submenu span{
+            background: url(images/submenu_arrow.gif) no-repeat right -15px;
+            width: 4px;
+            height: 7px;
+            display: block;
+            position: absolute;
+            right: 8px;
+            margin: 3px 0 0 0;
+            z-index: 10;
+        }
+
+        .menu div.hover span{
+            background-position : right -15px;
+        }
+        ]]></a:style>
+    
+        <a:presentation>
+        </a:presentation>
+    </a:bar>
+</a:skin>

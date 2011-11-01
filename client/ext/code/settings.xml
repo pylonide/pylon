@@ -1,35 +1,154 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <div class="header">
-        <span></span><div>Code Editor</div>
-    </div>
-    <a:checkbox class="underlined" label="Auto pair characters (quotes, etc.)" value="[editors/code/@behaviors]"  />
-    <a:checkbox class="underlined" label="Overwrite Mode" value="[editors/code/@overwrite]"  />
-    <a:checkbox class="underlined" label="Full Line Selection" value="[editors/code/@selectstyle]" values="line|text" />
-    <a:checkbox class="underlined" label="Highlight Active Line" value="[editors/code/@activeline]" />
-    <a:checkbox class="underlined" id="cbsh"  label="Show Invisibles" value="[editors/code/@showinvisibles]" />
-    <a:checkbox class="underlined" label="Show Gutter" value="[editors/code/@gutter]" />
-    <a:checkbox class="underlined" label="Highlight Selected Word" value="[editors/code/@highlightselectedword]" />
-    <a:checkbox class="underlined" label="Auto-hide Horizontal Scrollbar" value="[editors/code/@autohidehorscrollbar]" />
-    
-    <a:hbox edge="0 5 2 0" align="center" class="underlined">
-        <a:label flex="1">Font Size</a:label>
-        <a:spinner value="[editors/code/@fontsize]" realtime="true" min="1" max="72" width="50" class="fixMargin2" />
-    </a:hbox>
-    <a:hbox edge="0 5 0 0" align="center" class="underlined">
-        <a:checkbox label="Show print margin" value="[editors/code/@showprintmargin]" flex="1"/>
-        <a:spinner value="[editors/code/@printmargincolumn]" realtime="true" min="1" max="200" width="50" class="fixMargin5" />
-    </a:hbox>
-    <!--a:hbox edge="0 5 0 0" class="underlined" align="center" padding="5">
-        <a:checkbox label="Wrap Mode" value="[editors/code/@wrapmode]"  flex="1" />
-        <a:spinner value="[editors/code/@wraplimitmin]" realtime="true" min="1" max="200" width="50" />
-        <a:spinner value="[editors/code/@wraplimitmax]" realtime="true" min="1" max="200" width="50" />
-    </a:hbox-->
-    <a:hbox edge="0 5 0 0" align="center" class="underlined">
-        <a:checkbox label="Soft tabs" value="[editors/code/@softtabs]" style="margin-bottom:5px" flex="1" />
-        <a:spinner value="[editors/code/@tabsize]" realtime="true" min="1" max="64" width="50" class="fixMargin5" />
-    </a:hbox>
-    <a:hbox edge="5 5 2 5" align="center">
-        <a:label flex="1">Mouse Scroll speed</a:label>
-        <a:spinner value="[editors/code/@scrollspeed]" realtime="true" min="1" max="8" width="50" class="fixMargin5" />
-    </a:hbox>
+    <a:style><![CDATA[
+        .winadv.win_editor_settings {
+            padding: 0;
+            background: #fff;
+            -webkit-border-top-left-radius: 8px;
+            -webkit-border-top-right-radius: 8px;
+            -moz-border-radius-topleft: 8px;
+            -moz-border-radius-topright: 8px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            -moz-box-shadow: 3px -2px 5px rgba(0, 0, 0, 0.3);
+            -webkit-box-shadow: 3px -2px 5px rgba(0, 0, 0, 0.3);
+            box-shadow: 3px -2px 5px rgba(0, 0, 0, 0.3);
+            border: 1px solid #777;
+        }
+
+        .win_editor_settings > div {
+            display: none;
+        }
+        
+        .win_editor_settings > div.wn_cp_content {
+            display: block;
+            padding: 12px 12px 8px 15px;
+            width: auto;
+            -webkit-border-top-left-radius: 8px;
+            -webkit-border-top-right-radius: 8px;
+            -moz-border-radius-topleft: 8px;
+            -moz-border-radius-topright: 8px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            background: #f7f7f7;
+        }
+        
+        .lblSyntaxHl {
+            padding: 2px 4px 4px 2px;
+            background: transparent url(/static/style/images/submenu_arrow.gif) no-repeat 208px 6px;
+        }
+        
+        .lblSyntaxHl.hover {
+            padding-left: 5px;
+            color: #fff;
+            background: #c4c4c4;
+            background: url(/static/style/images/submenu_arrow.gif) no-repeat 208px -9px, -moz-linear-gradient(top, #c4c4c4 0%, #6b6b6b 100%);
+            background: url(/static/style/images/submenu_arrow.gif) no-repeat 208px -9px, -webkit-gradient(linear, left top, left bottom, color-stop(0%,#c4c4c4), color-stop(100%,#6b6b6b));
+            background: url(/static/style/images/submenu_arrow.gif) no-repeat 208px -9px, -webkit-linear-gradient(top,  #c4c4c4 0%,#6b6b6b 100%);
+            background: url(/static/style/images/submenu_arrow.gif) no-repeat 208px -9px, -o-linear-gradient(top,  #c4c4c4 0%,#6b6b6b 100%);
+            background: url(/static/style/images/submenu_arrow.gif) no-repeat 208px -9px, -ms-linear-gradient(top,  #c4c4c4 0%,#6b6b6b 100%);
+            background: url(/static/style/images/submenu_arrow.gif) no-repeat 208px -9px, linear-gradient(top,  #c4c4c4 0%,#6b6b6b 100%);
+            -moz-border-radius: 3px;
+            -webkit-border-radius: 3px;
+            border-radius: 3px;
+        }
+        
+        .winadv.win_editor_settings.syntax_list {
+            -webkit-border-radius: 8px;
+            -moz-border-radius: 8px;
+            border-radius: 8px;
+            -moz-box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+            -webkit-box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .syntax_list > div.wn_cp_content {
+            background: none;
+            padding: 0;
+        }
+        
+        .win_syntax_list {
+            background: none;
+            border: none;
+        }
+    ]]></a:style>
+    <a:window
+      id     = "winEditorSettings"
+      class  = "win_editor_settings"
+      width  = "245"
+      left   = "200"
+      bottom = "80"
+      modal  = "false"
+      model  = "{require('ext/settings/settings').model}">
+        <a:vbox>
+            <!-- skin="editor-btn-menu"-->
+            <a:label id = "lblSyntaxHl" class = "lblSyntaxHl" margin = "0 0 4 0"
+              onmouseover = "require('ext/code/code').winSyntaxToggle(this)"
+              onmouseout  = "require('ext/code/code').winSyntaxToggle(this)">
+                Syntax Highlighting
+            </a:label>
+            <a:checkbox label="Auto pair characters (quotes, etc.)" value="[editors/code/@behaviors]"  />
+            <a:checkbox label="Overwrite Mode" value="[editors/code/@overwrite]"  />
+            <a:checkbox label="Wrap Mode" value="[editors/code/@wrapmode]" />
+            <a:checkbox label="Full Line Selection" value="[editors/code/@selectstyle]" values="line|text" />
+            <a:checkbox label="Highlight Active Line" value="[editors/code/@activeline]" />
+            <a:checkbox label="Show Invisibles" value="[editors/code/@showinvisibles]" />
+            <a:checkbox label="Show Gutter" value="[editors/code/@gutter]" />
+            <a:checkbox label="Highlight Selected Word" value="[editors/code/@highlightselectedword]" />
+            <a:checkbox label="Auto-hide Horizontal Scrollbar" value="[editors/code/@autohidehorscrollbar]" />
+        </a:vbox>
+        <a:hbox edge="5 5 2 0" align="center" class="underlined">
+            <a:label flex="1">Font Size</a:label>
+            <a:spinner value="[editors/code/@fontsize]" realtime="true" min="1" max="72" width="50" class="fixMargin2" />
+        </a:hbox>
+        <a:hbox edge="0 5 0 0" align="center" class="underlined">
+            <a:checkbox label="Show print margin" value="[editors/code/@showprintmargin]" flex="1"/>
+            <a:spinner value="[editors/code/@printmargincolumn]" realtime="true" min="1" max="200" width="50" class="fixMargin5" />
+        </a:hbox>
+        <a:hbox edge="0 5 0 0" align="center" class="underlined">
+            <a:checkbox label="Soft tabs" value="[editors/code/@softtabs]" style="margin-bottom:5px" flex="1" />
+            <a:spinner value="[editors/code/@tabsize]" realtime="true" min="1" max="64" width="50" class="fixMargin5" />
+        </a:hbox>
+        <a:hbox edge="5 5 0 0" align="center">
+            <a:label flex="1">Mouse Scroll speed</a:label>
+            <a:spinner value="[editors/code/@scrollspeed]" realtime="true" min="1" max="8" width="50" class="fixMargin5" />
+        </a:hbox>
+    </a:window>
+    <a:model id="mdlSyntax">
+        <data>
+            <item value="auto" caption="Auto Select"></item>
+            <item value="text/plain" caption="Plain Text"></item>
+            <item value="application/javascript" caption="JavaScript"></item>
+            <item value="text/x-script.coffeescript" caption="CoffeeScript"></item>
+            <item value="text/css" caption="CSS"></item>
+            <item value="text/x-scss" caption="SCSS"></item>
+            <item value="text/html" caption="(X)HTML"></item>
+            <item value="application/xml" caption="XML"></item>
+            <item value="text/x-script.python" caption="Python"></item>
+            <item value="application/x-httpd-php" caption="PHP"></item>
+            <item value="text/x-script.ruby" caption="Ruby"></item>
+            <item value="text/x-script.perl" caption="Perl"></item>
+            <item value="text/x-script.powershell" caption="Powershell"></item>
+            <item value="text/x-c" caption="C/C++"></item>
+            <item value="text/x-java-source" caption="Java"></item>
+            <item value="text/x-groovy" caption="Groovy"></item>
+            <item value="text/x-script.clojure" caption="Clojure"></item>
+            <item value="text/x-scala" caption="Scala"></item>
+            <item value="text/x-csharp" caption="C#"></item>
+            <item value="text/x-script.ocaml" caption="OCaml"></item>
+            <item value="text/x-lua" caption="Lua"></item>
+            <item value="text/x-markdown" caption="Markdown"></item>
+            <item value="text/x-web-textile" caption="Textile"></item>
+            <item value="application/x-latex" caption="Latex"></item>
+        </data>
+    </a:model>
+    <a:window id="winSyntaxList" class="win_editor_settings syntax_list" modal="false"
+      width="150" height="250"
+      onmouseout="require('ext/code/code').winSyntaxOut(this)"
+      onmouseover="require('ext/code/code').winSyntaxOver(this)">
+        <a:list model="mdlSyntax" anchors="0 0 0 0" margin="8 0 8 0" flex="1" class="win_syntax_list">
+            <a:each match="[item]" sort="[@caption]" order="ascending">
+                <a:caption match="[@caption]" />
+            </a:each>
+        </a:list>
+    </a:window>
 </a:application>

@@ -237,11 +237,7 @@ module.exports = ext.register("ext/code/code", {
         var commitFunc = this.onCommit.bind(this);
         var name       = this.name;
         
-        //Settings Support
-        ide.addEventListener("init.ext/settings/settings", function(e) {
-            e.ext.addSection("code", name, "editors", commitFunc);
-            barSettings.insertMarkup(markupSettings);
-        });
+        apf.document.body.insertMarkup(markupSettings);
         
         ide.addEventListener("loadsettings", function(e) {
             // pre load theme
@@ -254,6 +250,30 @@ module.exports = ext.register("ext/code/code", {
         
         // preload common language modes
         require(["ace/mode/javascript", "ace/mode/html", "ace/mode/css"], function() {});
+
+        // Insert settings button in editor bar
+        editors.addBarButton(
+            new apf.button({
+                skin : "editor-bar-btn",
+                background : "editor_cog.png|vertical|3|21",
+                id : "btnEditorSettings",
+                width : "29",
+                onclick : function() {
+                    if (this.getAttribute("class") == "focused") {
+                        this.setAttribute("class", "");
+                        winEditorSettings.hide();
+                    }
+                    else {
+                        this.setAttribute("class", "focused");
+                        var pos = apf.getAbsolutePosition(btnEditorSettings.$ext);
+                        var bottom = window.innerHeight - pos[1];
+                        winEditorSettings.setAttribute("bottom", bottom);
+                        winEditorSettings.setAttribute("left", pos[0] + 1);
+                        winEditorSettings.show();
+                    }
+                }
+            }), "left", 0
+        );
     },
 
     init: function(amlPage) {
@@ -273,30 +293,14 @@ module.exports = ext.register("ext/code/code", {
             //Add a panel to the statusbar showing the length of the document
             sbMain.appendChild(new apf.section({
                 caption : "Length: {ceEditor.value.length}"
-            })),
+            }))/*,
 
             mnuView.appendChild(new apf.item({
                 caption : "Syntax Highlighting",
                 submenu : "mnuSyntax"
-            })),
-
-            mnuView.appendChild(new apf.divider()),
-
-            mnuView.appendChild(new apf.item({
-                type    : "check",
-                caption : "Show Invisibles",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
-            })),
-
-            mnuView.appendChild(new apf.item({
-                type    : "check",
-                caption : "Wrap Lines",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
-            }))
+            }))*/
         );
 
-        
-        
         mnuSyntax.onitemclick = function(e) {
             var file = ide.getActivePageModel();
             
@@ -337,6 +341,45 @@ module.exports = ext.register("ext/code/code", {
             var bindings = e.keybindings.code;
             ceEditor.$editor.setKeyboardHandler(new HashHandler(bindings));
         });
+        
+        winSyntaxList.$ext.addEventListener("mouseover", function(e) {
+            if (_self.winSyntaxTimer)
+                clearTimeout(_self.winSyntaxTimer);
+        });
+        
+        winSyntaxList.$ext.addEventListener("mouseout", function(e) {
+            _self.winSyntaxHide();
+        });
+    },
+    
+    winSyntaxHide : function() {
+        this.winSyntaxTimer = setTimeout(function() {
+            //winSyntaxList.hide();
+            //lblSyntaxHl.setAttribute("class", "lblSyntaxHl");
+        }, 200);
+    },
+    
+    winSyntaxToggle : function(el) {
+        if(winSyntaxList.visible) {
+            this.winSyntaxHide();
+        }
+        else {
+            if (this.winSyntaxTimer)
+                clearTimeout(this.winSyntaxTimer);
+            var pos = apf.getAbsolutePosition(lblSyntaxHl.$ext);
+            winSyntaxList.setAttribute("top", pos[1] - (winSyntaxList.getAttribute("height") / 2));
+            winSyntaxList.setAttribute("left", pos[0] + lblSyntaxHl.getWidth());
+            winSyntaxList.show();
+            el.setAttribute("class", "lblSyntaxHl hover");
+        }
+    },
+    
+    winSyntaxOver : function(el) {
+        console.log("Over!");
+    },
+    
+    winSyntaxOut : function(el) {
+        console.log("And out!");
     },
     
     /**
