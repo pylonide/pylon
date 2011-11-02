@@ -91,6 +91,10 @@ return keys.onLoad({
             "nexttab": "Ctrl-Tab",
             "previoustab": "Ctrl-Shift-Tab"
         },
+        "splitview" : {
+            "mergetableft": "Ctrl-Alt-[",
+            "mergetabright": "Ctrl-Alt-]"
+        },
         "code" : {
             "selectall": "Ctrl-A",
             "removeline": "Ctrl-D",
