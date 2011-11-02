@@ -1,8 +1,10 @@
 /*
+    - AmlNodes collected, should be collected during recording not converted afterwards
+
     - Probably need wait hints for when xmlHttpReq is used or setTimeout / setInterval
     - When clicking on tab button it only registers the page, it should also add the specific html element
-    - xml properties need to be converted to xpaths
-    - aml properties need to be converted to xpaths
+    * xml properties need to be converted to xpaths
+    * aml properties need to be converted to xpaths
     
     * htmlElements in the action object dont have the xpath property (which is needed)
     * for detailList, the items should have id, not caption
@@ -25,9 +27,9 @@ function SeleniumPlayer(browser){
         (new Function('browser', script))(this.browser);
     }
     
-    function getContext(item){
+    function getContext(item, nosel){
         var sel = item.id || item.xpath;
-        if (item.selected)
+        if (item.selected && !nosel)
             sel += "###" + item.selected.xpath
         return sel;
     }
@@ -37,12 +39,14 @@ function SeleniumPlayer(browser){
         var context, contexts = {};
         var needsMove;
         
+        actionList = actionList.reverse();
+        
         //if (!this.realtime)
             rules.push("browser.setMouseSpeed(1000);");
         
         for (var el, item, temp, i = 0, l = actionList.length; i < l; i++) {
             item    = actionList[i];
-            el      = item.amlNode || item.htmlElement;
+            el      = item.dropTarget || item.amlNode || item.htmlElement;
             stack   = [];
             
             //@todo temporary!!
@@ -73,14 +77,14 @@ function SeleniumPlayer(browser){
             
             //stack.push("browser.waitForVisible('" + contexts[context] + "');");
             
-            var x  = item.x - el.x;
-            var y  = item.y - el.y;
+            var x  = (item.selected ? item.selected.x : item.x) - el.x;
+            var y  = (item.selected ? item.selected.y : item.y) - el.y;
             
             switch(item.name) {
                 case "mousemove":
                     // || !actionList[i + 1] || !actionList[i + 1].name == "mousemove"
                     if (this.realtime)
-                        stack.push("browser.mouseMoveAt('apf=" + (el.id || el.xpath) //contexts[context] 
+                        stack.push("browser.mouseMoveAt('apf=" + contexts[context] 
                             + "', '" + x + "," + y + "');");
                     else {
                         needsMove = true;
@@ -90,7 +94,7 @@ function SeleniumPlayer(browser){
                     break;
                 case "mousedown":
                     if (needsMove) {
-                        stack.push("browser.mouseMoveAt('apf=" + (el.id || el.xpath) //contexts[context] 
+                        stack.push("browser.mouseMoveAt('apf=" + contexts[context] 
                             + "', '" + x + "," + y + "');");
                         needsMove = false;
                     }
@@ -141,37 +145,43 @@ function SeleniumPlayer(browser){
                 case "keypress":
                     //@todo !realtime
                     
-                    stack.push("this.browser.typeKeys('apf=" + (el.id || el.xpath) //contexts[context]
+                    stack.push("browser.typeKeys('apf=" + (el.id || el.xpath) //contexts[context]
                         + ", '" + item.value + "');");
                     break;
             }
             
             function contextToExpression(def, extra){
+                if (!def) debugger;
                 var s = def.split("###");
-                return "apf.document.selectSingleNode('" 
-                    + s[0].replace(/'/g, "\\'") + "')" 
-                    + (s[1] 
-                      ? ".$xmlRoot.selectSingleNode('"
-                        + s[2].replace(/'/g, "\\'") + "')"
-                      : "");
+                return (s[0].indexOf("/") > -1
+                    ? "apf.document.selectSingleNode('" 
+                      + s[0].replace(/'/g, "\\'") + "')" 
+                    : s[0])
+                  + (s[1] 
+                    ? ".$xmlRoot.selectSingleNode('"
+                      + s[1].replace(/'/g, "\\'") + "')"
+                    : "");
             }
             
             function genProp(item, name, value, rules){
-                if ("array|object".indexOf(typeof value)) {
-                    var arg = "('" 
-                        + contextToExpression(getContext(item)) + "." + name 
-                        + " == "
+                var ident = contextToExpression(getContext(item.amlNode || item.htmlElement, true));
+                
+                //@todo change this to a compare function
+                if ("array|object".indexOf(typeof value) > -1) {
+                    var arg = "('apf.isEqual(" + ident
+                        + "." + name + ", "
                         + (value.type == "aml"
                             ? contextToExpression(value.value)
-                            : value.value) //expression
-                        + "')";
+                            : value.value).replace(/'/g, "\\'") //expression
+                        + "'));";
                         
                     rules.push("browser.waitForExpression" + arg,
                                "browser.assertForExpression" + arg);
                 }
                 else {
-                    var args = "('" + name + "', 'exact:" 
-                        + value.replace(/'/g, "\\'") + "')";
+                    var args = "('apf=" + ident
+                        + "@" + name + "', 'exact:" 
+                        + String(value).replace(/'/g, "\\'") + "');";
                         
                     rules.push("browser.waitForAttribute" + args,
                                "browser.assertForAttribute" + args);
@@ -185,9 +195,11 @@ function SeleniumPlayer(browser){
             
             var jProps, detailList = item.detailList;
             for (var j = 0, jl = detailList.length; j < jl; j++) {
-                if ((jProps = detailList[j].properties) && jProps.length) {
-                    for (var p = 0; p < jProps.length; p++) {
-                        genProp(detailList[j], jProps[p].name, jProps[p].value, stack);
+                for (var k in detailList[j]) {
+                    if ((jProps = detailList[j][k].properties) && jProps.length) {
+                        for (var p = 0; p < jProps.length; p++) {
+                            genProp(detailList[j][k], jProps[p].name, jProps[p].value, stack);
+                        }
                     }
                 }
             }

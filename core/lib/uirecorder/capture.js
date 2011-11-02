@@ -193,7 +193,8 @@ apf.uirecorder.capture = {
      * get all neccessary information about amlNode
      */
     $getAmlNodeData : function(amlNode, htmlElement, eventName, value) {
-        if (amlNode.tagName == "html" || amlNode.tagName == "body") return;
+        if (amlNode.tagName == "html" || amlNode.tagName == "body" || !amlNode.parentNode) 
+            return;
         var data = {};
 
         // action on item of multiselect
@@ -218,14 +219,17 @@ apf.uirecorder.capture = {
         else if (eventName == "keypress") 
             data.value = value;
             
-        if (amlNode.label) data.label = amlNode.label;
-        
-        var pos = apf.getAbsolutePosition(amlNode.$ext, document.body);
-        data.x          = pos[0];
-        data.y          = pos[1];
-        data.width      = amlNode.$ext.offsetWidth;
-        data.height     = amlNode.$ext.offsetHeight;
+        if (amlNode.label) 
+            data.label = amlNode.label;
 
+        if (amlNode.$ext) {
+            var pos = apf.getAbsolutePosition(amlNode.$ext, document.body);
+            data.x          = pos[0];
+            data.y          = pos[1];
+            data.width      = amlNode.$ext.offsetWidth;
+            data.height     = amlNode.$ext.offsetHeight;
+        }
+        
         // multiselect amlNode
         if (amlNode.hasFeature(apf.__MULTISELECT__)) {
             if (amlNode.localName == "dropdown" && !amlNode.isOpen) {
@@ -1054,7 +1058,8 @@ TEMPORARILY DISABLED
      * return captured test data as JSON
      */
     toJson : function(){
-        var json = this.$cleanupActions().reverse();
+        var json  = this.$cleanupActions();//.reverse();
+        var _self = this;
         
         json.name = apf.uirecorder.capture.$curTestId;
         json.file = apf.uirecorder.capture.$curTestFile;
@@ -1065,18 +1070,26 @@ TEMPORARILY DISABLED
             else if (value.dataType == apf.ARRAY) {
                 var newArr = [];
                 for (var i = 0; i < value.length; i++){
-                    newArr.push(sanitizeProperty(value[i]));
+                    newArr.push(sanitizeProperty(value[i], true));
                 }
-                return newArr;
+                return recur ? newArr : {
+                    value : "[" + newArr.join(",") + "]"
+                };
             }
             else if (typeof value == "function") {
                 return undefined;
             }
             else if (typeof value == "object") {
-                if (value == window || value == document || value == apf || value.initEvent) {
+                if (value == window || value == document 
+                  || value == apf || value.initEvent) {
                     return {};
                 }
-                else if (value.nodeFunc || value.style) {
+                else if (value.style) {
+                    return _self.$getHtmlElementData(value)
+                }
+                else if (value.nodeFunc) {
+                    return _self.$getAmlNodeData(value);
+                    /*
                     var xpath;
                     try {
                         xpath = apf.xmlToXpath(value);
@@ -1084,11 +1097,12 @@ TEMPORARILY DISABLED
                         return recur ? {} : undefined;
                     }
                     
-                    return {
+                    //@todo - what about by ID?
+                    return recur ? "apf.document.selectSingleNode('" + xpath + "')" : {
                         parse : 1,
                         type  : "aml",
                         value : "apf=" + xpath.substr(xpath.indexOf("/") + 1)
-                    }
+                    }*/
                 }
                 else if (value.nodeType) {
                     var expression, model = apf.xmldb.findModel(value);
@@ -1101,11 +1115,13 @@ TEMPORARILY DISABLED
                             + "')";
                     }
                     
-                    return {
+                    expression += ".queryNode('" 
+                        + apf.xmlToXpath(value).replace(/'/g, "\\'")
+                        + "')";
+                    
+                    return recur ? expression : {
                         parse : 1,
-                        value : expression + ".queryNode('" 
-                            + apf.xmlToXpath(value).replace(/'/g, "\\'")
-                            + "')"
+                        value : expression
                     };
                 }
                 else {
@@ -1140,15 +1156,23 @@ TEMPORARILY DISABLED
             
             var jProps, detailList = item.detailList;
             for (var j = 0, jl = detailList.length; j < jl; j++) {
-                for (var prop in detailList[j]) {
-                    if (prop == "properties") 
-                        continue;
-                    detailList[j][prop] = sanitizeProperty(detailList[j][prop]);
-                }
-                
-                if ((jProps = detailList[j].properties) && jProps.length) {
-                    for (var p = 0; p < jProps.length; p++) {
-                        jProps[p].value = sanitizeProperty(jProps[p].value);
+                for (var k in detailList[j]) {
+                    for (var prop in detailList[j][k]) {
+                        if (prop == "properties" || prop == "events") 
+                            continue;
+                        detailList[j][k][prop] = sanitizeProperty(detailList[j][k][prop]);
+                    }
+                    
+                    if ((jProps = detailList[j][k].properties) && jProps.length) {
+                        for (var p = 0; p < jProps.length; p++) {
+                            jProps[p].value = sanitizeProperty(jProps[p].value);
+                        }
+                    }
+                    
+                    if ((jProps = detailList[j][k].events) && jProps.length) {
+                        for (var p = 0; p < jProps.length; p++) {
+                            jProps[p] = sanitizeProperty(jProps[p]);
+                        }
                     }
                 }
             }
