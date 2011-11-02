@@ -1,0 +1,67 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:skin id="outline_skin"
+      src       = "{require('ext/jsoutline/jsoutline').skin}"/>
+
+    <a:bar id="barOutline" skinset="outline_skin" skin="outline" width="300">
+        <a:vbox anchors="0 0 0 0">
+            <a:toolbar>
+                <a:bar height = "36">
+                    <a:hbox edge="5">
+                        <a:textbox 
+                          id              = "tbOutlineSearch"
+                          realtime        = "true"
+                          flex            = "1"
+                          skin            = "searchbox_textbox"
+                          class           = "small_font"
+                          focusselect     = "true"
+                          initial-message = "Search Outline"
+                        />
+                    </a:hbox>
+                </a:bar>
+            </a:toolbar>
+            <a:hbox flex="1">
+                <a:model id="mdlOutline">
+                    <data>
+                        <entry name="item 1">
+                            <entry name="sub 1"/>
+                        </entry>
+                        <entry name="item 2"/>
+                        <entry name="item 3"/>
+                    </data>
+                </a:model>
+                <a:tree
+                  id              = "treeOutline"
+                  skin            = "outline-tree"
+                  opencloseaction = "onmouseup"
+                  onafterchoose   = "require('ext/jsoutline/jsoutline').jumpToAndClose(this.selected)"
+                  onafterselect   = "require('ext/jsoutline/jsoutline').jumpTo(this.selected)"
+                  onkeyup         = "require('ext/jsoutline/jsoutline').escapeOutline(event)"
+                  model           = "mdlOutline"
+                  openadd         = "false"
+                  startcollapsed  = "false"
+                  empty-message   = "No outline avaialble"
+                  flex            = "1"
+                  anchors = "0 0 0 0">
+                    <a:each
+                      match         = "[entry]"
+                      filter        = "{tbOutlineSearch.value}"
+                      filter-groups = "entry"
+                      filter-fields = "@name"
+                    >
+                        <a:caption><?lm
+                            [@name]
+                        ?>
+                        </a:caption>
+                    </a:each>
+                </a:tree>
+                <a:scrollbar
+                  for      = "treeOutline"
+                  id       = "sbOutline"
+                  margin   = "2"
+                  skin     = "sbios"
+                  width    = "7"
+                  overflow2 = "auto"/>
+              </a:hbox>
+        </a:vbox>
+    </a:bar>
+</a:application>

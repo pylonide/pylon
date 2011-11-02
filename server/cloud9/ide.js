@@ -31,7 +31,8 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
             "pilot": staticUrl + "/support/ace/support/pilot/lib/pilot",
             "ace": staticUrl + "/support/ace/lib/ace",
             "debug": staticUrl + "/support/lib-v8debug/lib/v8debug",
-            "apf": staticUrl + "/support/apf"
+            "apf": staticUrl + "/support/apf",
+            "treehugger": staticUrl + "/support/treehugger/lib/treehugger"
         },
         waitSeconds: 30
     };
@@ -127,7 +128,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/stripws/stripws",
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",
-    "ext/splitview/splitview"
+    "ext/splitview/splitview",
+    "ext/jsoutline/jsoutline"
     //"ext/acebugs/acebugs"
 ];
 

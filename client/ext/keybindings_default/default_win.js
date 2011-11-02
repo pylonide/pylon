@@ -141,6 +141,9 @@ return keys.onLoad({
             "backspace": "Backspace",
             "outdent": "Shift-Tab",
             "indent": "Tab"
+        },
+        "jsoutline": {
+            "outline": "Ctrl-Shift-O"
         }
     }
 });
