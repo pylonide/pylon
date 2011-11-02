@@ -86,19 +86,19 @@ module.exports = ext.register("ext/jsoutline/jsoutline", {
         var xmlS = '';
         for (var i = 0; i < array.length; i++) {
             var elem = array[i];
-            xmlS += '<entry name="' + elem.name + '" sl="' + elem.pos.sl + '" el="' + elem.pos.el + '" sc="' + elem.pos.sc + '" ec="' + elem.pos.ec + '"' + (elem === selected ? ' selected="true"' : '') + '>\n';
+            xmlS += '<entry name="' + elem.name + '" sl="' + elem.pos.sl + '" el="' + elem.pos.el + '"' + (elem === selected ? ' selected="true"' : '') + '>\n';
             xmlS += this.outlineJsonToXml(elem.items, selected);
             xmlS += '</entry>';
         }
         return xmlS;
     },
     
-    findCursorInJson: function(json, cursor) {
+    findCursorInOutline: function(json, cursor) {
         for (var i = 0; i < json.length; i++) {
             var elem = json[i];
             if(cursor.row < elem.pos.sl || cursor.row > elem.pos.el)
                 continue;
-            var inChildren = this.findCursorInJson(elem.items, cursor);
+            var inChildren = this.findCursorInOutline(elem.items, cursor);
             return inChildren ? inChildren : elem;
         }
         return null;
@@ -106,10 +106,9 @@ module.exports = ext.register("ext/jsoutline/jsoutline", {
     
     renderOutline : function(event) {
         var ace = editors.currentEditor.ceEditor.$editor;
-        var _self = this;
         this.outline = event.data;
         
-        var selected = this.findCursorInJson(this.outline, this.editor.getCursorPosition());
+        var selected = this.findCursorInOutline(this.outline, this.editor.getCursorPosition());
         mdlOutline.load(apf.getXml('<data>' + this.outlineJsonToXml(this.outline, selected) + '</data>'));
         
         var node = mdlOutline.queryNode("//entry[@selected]");
@@ -118,7 +117,7 @@ module.exports = ext.register("ext/jsoutline/jsoutline", {
             var htmlNode = apf.xmldb.getHtmlNode(node, treeOutline);
             htmlNode.scrollIntoView();
         }
-        document.addEventListener("click", this.closeOutline);
+        //document.addEventListener("click", this.closeOutline);
         ace.container.addEventListener("DOMMouseScroll", this.closeOutline);
         ace.container.addEventListener("mousewheel", this.closeOutline);
 
@@ -154,7 +153,11 @@ module.exports = ext.register("ext/jsoutline/jsoutline", {
         this.closeOutline();
     },
     
-    closeOutline : function() {
+    closeOutline : function(event) {
+        var ace = editors.currentEditor.ceEditor.$editor;
+        //document.removeEventListener("click", this.closeOutline);
+        ace.container.removeEventListener("DOMMouseScroll", this.closeOutline);
+        ace.container.removeEventListener("mousewheel", this.closeOutline);
         barOutline.$ext.style.display = "none";
         setTimeout(function() {
             editors.currentEditor.ceEditor.$editor.focus();
