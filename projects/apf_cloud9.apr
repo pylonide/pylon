@@ -351,7 +351,7 @@
         <p:define name="__ENABLE_BUTTON_ACTIONS" value="1" />
         <p:define name="__ENABLE_TEXTBOX_MASKING" value="1" />
         <p:define name="__ENABLE_TABSCROLL" value="1" />
-	<p:define name="__ENABLE_TAB_ORDER" value="1" />
+        <p:define name="__ENABLE_TAB_ORDER" value="1" />
 
         <!-- new defines -->
         <p:define name="__WITH_PROPERTY_INHERITANCE" value="1" />
@@ -508,9 +508,9 @@
         <p:define name="__WITH_ICONMAP" value="1" />
         <p:define name="__WITH_LANG_SUPPORT_BINDING" value="1" />
         <p:define name="__WITH_LANG_SUPPORT" value="1" />
-        <p:define name="__WITH_LOCKING" value="1" />
+        <p:define name="__WITH_LOCKING" value="1" /-->
         <p:define name="__WITH_COLORS" value="1" />
-        <p:define name="__WITH_PRINTER" value="1" />
+        <!--p:define name="__WITH_PRINTER" value="1" />
         <p:define name="__WITH_IEPNGFIX" value="1" /-->
         <!-- include all available Local Storage objects -->
         <!--p:define name="__WITH_STORAGE" value="1" />
@@ -526,7 +526,7 @@
         <p:define name="__SUPPORT_SAFARI2" value="1" />
         <p:define name="__SUPPORT_IPHONE" value="1" /-->
         <p:define name="__AMLIMG" value="1" />
-<p:define name="__AMLPROGRESSBAR" value="1" />
+        <p:define name="__AMLPROGRESSBAR" value="1" />
         <!--p:define name="__PARSER_XSD" value="1" />
         <p:define name="__WITH_XSDUNION" value="1" />
         <p:define name="__WITH_XSDTOTALDIGITS" value="1" />
@@ -573,9 +573,9 @@
         <p:define name="__AMLCALDROPDOWN" value="1" />
         <p:define name="__AMLACCORDION" value="1" />
         <p:define name="__AMLFLASHPLAYER" value="1" />
-        <p:define name="__AMLICONMAP" value="1" />        
+        <p:define name="__AMLICONMAP" value="1" /-->
         <p:define name="__AMLCOLORPICKER" value="1" />
-        <p:define name="__AMLCHART" value="1" />
+        <!--p:define name="__AMLCHART" value="1" />
         <p:define name="__AMLCOLLECTION" value="1" />
         <p:define name="__AMLREPEAT" value="1" /-->
 
