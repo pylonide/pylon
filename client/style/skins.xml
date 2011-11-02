@@ -1642,6 +1642,7 @@
             background-repeat   : no-repeat;
             border-right: 1px solid #7b7b7b;
             color: #333;
+            font-size: 11px;
         }
 
         .editor-bar-btnOver {

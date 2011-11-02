@@ -39,7 +39,7 @@ module.exports = ext.register("ext/themes/themes", {
         this.winThemesTimer = setTimeout(function() {
             winThemesList.hide();
             lblThemes.setAttribute("class", "lblSyntaxHl");
-        }, 200);
+        }, 100);
     },
 
     winThemesToggle : function(el) {

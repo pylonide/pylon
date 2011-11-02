@@ -351,7 +351,7 @@ module.exports = ext.register("ext/code/code", {
         this.winSyntaxTimer = setTimeout(function() {
             winSyntaxList.hide();
             lblSyntaxHl.setAttribute("class", "lblSyntaxHl");
-        }, 200);
+        }, 100);
     },
     
     winSyntaxToggle : function(el) {
