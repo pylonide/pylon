@@ -219,62 +219,125 @@ apf.colorpicker = function(struct, tagName){
 
         //append APF widgets for additional controls
         var skin = apf.getInheritedAttribute(this.parentNode, "skinset");
-        new apf.table({
+        new apf.hbox({
             htmlNode: this.oInputs,
             skinset: skin,
-            left: 206,
+            left: 212,
             top: 52,
             width: 150,
-            columns: "50%,50%",
-            cellheight: 26,
+            padding: 3,
             childNodes: [
-                new apf.spinner({
-                    id: this.id + "_hue",
-                    width: 62,
-                    min: 0,
-                    max: 360,
-                    value: "{" + this.id + ".hue}",
-                    onafterchange: spinnerChange
+                new apf.vbox({
+                    padding: 3,
+                    childNodes: [
+                        new apf.hbox({
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "R:",
+                                    "for": this.id + "_red"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_red",
+                                    width: 45,
+                                    min: 0,
+                                    max: 255,
+                                    value: "{" + this.id + ".red}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        }),
+                        new apf.hbox({
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "G:",
+                                    "for": this.id + "_green"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_green",
+                                    width: 45,
+                                    min: 0,
+                                    max: 255,
+                                    value: "{" + this.id + ".green}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        }),
+                        new apf.hbox({
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "B:",
+                                    "for": this.id + "_blue"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_blue",
+                                    width: 45,
+                                    min: 0,
+                                    max: 255,
+                                    value: "{" + this.id + ".blue}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        })
+                    ]
                 }),
-                new apf.spinner({
-                    id: this.id + "_red",
-                    width: 62,
-                    min: 0,
-                    max: 255,
-                    value: "{" + this.id + ".red}",
-                    onafterchange: spinnerChange
-                }),
-                new apf.spinner({
-                    id: this.id + "_saturation",
-                    width: 62,
-                    min: 0,
-                    max: 100,
-                    value: "{" + this.id + ".saturation}",
-                    onafterchange: spinnerChange
-                }),
-                new apf.spinner({
-                    id: this.id + "_green",
-                    width: 62,
-                    min: 0,
-                    max: 255,
-                    value: "{" + this.id + ".green}",
-                    onafterchange: spinnerChange
-                }),
-                new apf.spinner({
-                    id: this.id + "_brightness",
-                    width: 62,
-                    min: 0,
-                    max: 100,
-                    value: "{" + this.id + ".brightness}",
-                    onafterchange: spinnerChange
-                }),
-                new apf.spinner({
-                    id: this.id + "_blue",
-                    width: 62,
-                    min: 0,
-                    max: 255,
-                    value: "{" + this.id + ".blue}",
-                    onafterchange: spinnerChange
+                new apf.vbox({
+                    padding: 3,
+                    childNodes: [
+                        new apf.hbox({
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "H:",
+                                    "for": this.id + "_hue"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_hue",
+                                    width: 45,
+                                    min: 0,
+                                    max: 360,
+                                    value: "{" + this.id + ".hue}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        }),
+                        new apf.hbox({
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "S:",
+                                    "for": this.id + "_saturation"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_saturation",
+                                    width: 45,
+                                    min: 0,
+                                    max: 100,
+                                    value: "{" + this.id + ".saturation}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        }),
+                        new apf.hbox({
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "B:",
+                                    "for": this.id + "_brightness"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_brightness",
+                                    width: 45,
+                                    min: 0,
+                                    max: 100,
+                                    value: "{" + this.id + ".brightness}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        })
+                    ]
                 })
             ]
         });
@@ -284,8 +347,8 @@ apf.colorpicker = function(struct, tagName){
             skinset: skin,
             left: 212,
             top: 142,
-            width: 7,
-            value: "#",
+            width: 14,
+            caption: "#",
             "for": this.id + "_hex"
         });
 

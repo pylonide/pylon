@@ -269,6 +269,8 @@ apf.actiontracker = function(struct, tagName){
      *                              responsible for the action
      */
     this.execute = function(options){
+        if (this.$paused)
+            return;
         if (this.dispatchEvent("beforechange", options) === false)
             return false;
 
@@ -315,6 +317,18 @@ apf.actiontracker = function(struct, tagName){
 
         //return stack id of action
         return UndoObj;
+    };
+    
+    this.pauseTracking = function() {
+        this.$paused = true;
+    };
+    
+    this.resumeTracking = function() {
+        this.$paused = false;
+    };
+    
+    this.isTracking = function() {
+        return !!this.$paused;
     };
 
     //deprecated??
@@ -545,7 +559,7 @@ apf.actiontracker = function(struct, tagName){
         this.begin(dataNode);
         func();
         this.commit(dataNode);
-    }
+    };
 
     var domCharMod = function(e){
         if (e.$didtrans || !e.currentTarget.$amlLoaded)
@@ -628,6 +642,7 @@ apf.actiontracker = function(struct, tagName){
      */
     this.reset = function(){
         this.$undostack.length = this.$redostack.length = 0;
+        this.$paused = false;
 
         this.setProperty("undolength", 0);
         this.setProperty("redolength", 0);
