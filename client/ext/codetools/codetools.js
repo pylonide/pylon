@@ -104,6 +104,9 @@ module.exports = ext.register("ext/codetools/codetools", {
     },
     
     showColorTooltip: function(pos, editor, line, colors) {
+        if (this.colorpicker.visible)
+            return;
+
         var markers = [];
         colors.forEach(function(color) {
             var id = color + pos.row;
