@@ -314,6 +314,14 @@ apf.page = function(struct, tagName){
             this.dispatchEvent("prop.visible", {value:false});
         }
     };
+    
+    this.$deactivateButton = function() {
+        if (this.parentNode.$hasButtons) {
+            if (this.$position > 0)
+                this.parentNode.$setStyleClass(this.$button, "", ["firstcurbtn"]);
+            this.parentNode.$setStyleClass(this.$button, "", ["curbtn"]);
+        }
+    };
 
     this.$activate = function(){
         //if (this.disabled)
@@ -379,6 +387,31 @@ apf.page = function(struct, tagName){
             this.dispatchEvent("prop.visible", {value:true});
         }
     };
+    
+    this.$activateButton = function() {
+        if (this.$active)
+            return;
+
+        if (!this.$drawn) {
+            var f;
+            this.addEventListener("DOMNodeInsertedIntoDocument", f = function(e){
+                this.removeEventListener("DOMNodeInsertedIntoDocument", f);
+                this.$activateButton();
+            });
+            return;
+        }
+        
+        if (this.parentNode.$hasButtons) {
+            if (this.$isFirst)
+                this.parentNode.$setStyleClass(this.$button, "firstcurbtn");
+            this.parentNode.$setStyleClass(this.$button, "curbtn");
+        }
+        
+        // #ifdef __WITH_DELAYEDRENDER
+        if (this.$render)
+            this.$render();
+        // #endif
+    };
 
     this.addEventListener("$skinchange", function(){
         if (this.caption)
@@ -413,6 +446,12 @@ apf.page = function(struct, tagName){
             this.parentNode.contextPage = this;
             return;
         }
+        
+        if (this.parentNode.dispatchEvent("tabselectclick", {
+            page: this,
+            htmlEvent: htmlEvent
+        }) === false)
+            return;
         
         this.$btnPressed = true;
         

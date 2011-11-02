@@ -323,9 +323,10 @@ apf.AmlWindow = function(struct, tagName){
         if (value) {
             if (this.visible)
                 apf.plane.show(this.$ext, false, null, null, {
-                    color   : "black", 
-                    opacity : 0.5,
-                    protect : this.$uniqueId
+                    color       : "black", 
+                    opacity     : this.cover && this.cover.getAttribute("opacity") || 0.5,
+                    protect     : this.$uniqueId,
+                    customCover : this.cover || ""
                 });
         }
         else { 
@@ -400,9 +401,10 @@ apf.AmlWindow = function(struct, tagName){
             
             if (this.modal){
                 apf.plane.show(this.$ext, false, null, null, {
-                    color   : "black", 
-                    opacity : 0.5,
-                    protect : this.$uniqueId
+                    color       : "black", 
+                    opacity     : this.cover && this.cover.getAttribute("opacity") || 0.5,
+                    protect     : this.$uniqueId,
+                    customCover : this.cover || ""
                 });
             }
 
@@ -565,6 +567,7 @@ apf.AmlWindow = function(struct, tagName){
         this.oIcon    = this.$getLayoutNode("main", "icon",  this.$ext);
         this.oDrag    = this.$getLayoutNode("main", "drag",  this.$ext);
         this.$buttons = this.$getLayoutNode("main", "buttons",  this.$ext);
+        this.cover    = this.$getLayoutNode("cover");
 
         if (this.popout)
             this.$ext.style.position = "absolute";

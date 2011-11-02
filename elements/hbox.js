@@ -265,10 +265,10 @@ apf.vbox = function(struct, tagName){
         //#endif
         
         //@todo this can be more optimized by calcing if it WAS the last vis child.
-        //if (isLastVisibleChild(this)) {
+        if (this.parentNode.$propHandlers["padding"]) {// && isLastVisibleChild(this)) {
             this.parentNode.$propHandlers["padding"]
                 .call(this.parentNode, this.parentNode.padding);
-        //}
+        }
         
         apf.layout.forceResize(this.parentNode.$int);
         
