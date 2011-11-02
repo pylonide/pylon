@@ -8,15 +8,15 @@ var lang = require("pilot/lang");
 
 var AnalysisWorker = exports.AnalysisWorker = function(sender) {
     var _self = this;
-    this.$isJavascript = false;
-    Mirror.call(this, sender);
-    this.setTimeout(500);
-    
-    sender.on("outline", function() {
-        _self.onOutline();
-    });
+    if(sender) {
+        Mirror.call(this, sender);
+        this.setTimeout(500);
+        
+        sender.on("outline", function() {
+            _self.onOutline();
+        });
+    }
 };
-
 
 oop.inherits(AnalysisWorker, Mirror);
 
@@ -67,6 +67,15 @@ oop.inherits(AnalysisWorker, Mirror);
                 outline.push({
                     type: 'function',
                     name: name + fargsToString(b.fargs),
+                    pos: this[1].getPos(),
+                    items: _self.extractOutline(b.body)
+                });
+                return this;
+            },
+            'VarDeclInit(x, Function(name, fargs, body))', function(b) {
+                outline.push({
+                    type: 'function',
+                    name: b.x.value + fargsToString(b.fargs),
                     pos: this[1].getPos(),
                     items: _self.extractOutline(b.body)
                 });

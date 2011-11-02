@@ -45,7 +45,6 @@
                     <a:each
                       match         = "[entry]"
                       filter        = "{tbOutlineSearch.value}"
-                      filter-groups = "entry"
                       filter-fields = "@name"
                     >
                         <a:caption><?lm
