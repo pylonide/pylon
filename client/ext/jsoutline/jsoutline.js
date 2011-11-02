@@ -110,13 +110,14 @@ module.exports = ext.register("ext/jsoutline/jsoutline", {
         this.outline = event.data;
         
         var selected = this.findCursorInJson(this.outline, this.editor.getCursorPosition());
-        console.log('<data>' + this.outlineJsonToXml(this.outline, selected) + '</data>');
         mdlOutline.load(apf.getXml('<data>' + this.outlineJsonToXml(this.outline, selected) + '</data>'));
         
         var node = mdlOutline.queryNode("//entry[@selected]");
-        treeOutline.select(node);
-        var htmlNode = apf.xmldb.getHtmlNode(node, treeOutline);
-        htmlNode.scrollIntoView();
+        if(node) {
+            treeOutline.select(node);
+            var htmlNode = apf.xmldb.getHtmlNode(node, treeOutline);
+            htmlNode.scrollIntoView();
+        }
         document.addEventListener("click", this.closeOutline);
         ace.container.addEventListener("DOMMouseScroll", this.closeOutline);
         ace.container.addEventListener("mousewheel", this.closeOutline);
