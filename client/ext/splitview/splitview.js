@@ -634,6 +634,14 @@ module.exports = ext.register("ext/splitview/splitview", {
             if (!activeSplit) {
                 if (page === activePage)
                     return true;
+                
+                // check whether 'page' is already part of a split view
+                var pageToBeJoinedInSplitView = this.getSplitViewByPage(page);
+                if (pageToBeJoinedInSplitView) {
+                    // if active, then find that split and remove it
+                    this.splits.splice(this.splits.indexOf(this.getSplitViewByPage(page)))
+                }
+                    
                 activeSplit = createSplitView.call(this, activePage);
                 var oEditor = activePage.$editor.amlEditor;
                 oEditor.setAttribute("model", activePage.$model);
