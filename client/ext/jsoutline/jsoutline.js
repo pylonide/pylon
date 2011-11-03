@@ -30,7 +30,8 @@ module.exports = ext.register("ext/jsoutline/jsoutline", {
 	},
 
     init : function() {
-    	language.registerLanguageHandler('ext/jsoutline/outline_handler', "OutlineHandler");
+        language.registerLanguageHandler('ext/jsoutline/outline_handler', "OutlineHandler");
+        language.registerLanguageHandler('ext/jsoutline/json_outline_handler', "OutlineHandler");
         console.log("Hooked js analysis!");
     },
     

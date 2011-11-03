@@ -7,19 +7,19 @@ if (typeof process !== "undefined") {
 
 define(function(require, exports, module) {
 
-var AnalysisWorker = require("ext/jsoutline/worker").AnalysisWorker;
+var OutlineHandler = require("ext/jsoutline/outline_handler").OutlineHandler;
 var parser = require("treehugger/js/parse");
 var assert = require("ace/test/assertions");
 
-var microtime = require("microtime");
+//var microtime = require("microtime");
 
 module.exports = {
     "test basic outline" : function() {
         var node = parser.parse(""+require('text!ext/jsoutline/test/test1.js'));
-        var worker = new AnalysisWorker();
-        var outline = worker.extractOutline(node);
-        console.log(""+node);
-        console.log(JSON.stringify(outline, null, 2));
+        var handler = new OutlineHandler();
+        var outline = handler.outline(node);
+        //console.log(""+node);
+        //console.log(JSON.stringify(outline, null, 2));
         assert.equal(outline[0].name, 'simpleFunction()');
         assert.equal(outline[1].name, 'simpleFunctionNested(a, b)');
         assert.equal(outline[1].items[0].name, 'nested(c)');
@@ -28,13 +28,13 @@ module.exports = {
     },
 
     "test jquery" : function() {
-        var worker = new AnalysisWorker();
-        var now = microtime.now();
+        var handler = new OutlineHandler();
+        //var now = microtime.now();
         var node = parser.parse(""+require('text!jquery.js'));
-        console.log("Parsing time: " + (microtime.now() - now)/1000 + "ms");
-        var now = microtime.now();
-        var outline = worker.extractOutline(node);
-        console.log("Outline time: " + (microtime.now() - now)/1000 + "ms");
+        //console.log("Parsing time: " + (microtime.now() - now)/1000 + "ms");
+        //var now = microtime.now();
+        var outline = handler.outline(node);
+        //console.log("Outline time: " + (microtime.now() - now)/1000 + "ms");
     }
 
 };
