@@ -616,11 +616,8 @@ module.exports = ext.register("ext/splitview/splitview", {
             
             // use setTimout to circumvent the APF layout manager to go bonkers
             setTimeout(function() {
-                try {
-                    page.$deactivateButton();
-                }
-                catch (ex) { }
-                
+                page.$deactivateButton();
+
                 clearSplitViewStyles(page);
                 editor.hide();
                 if (tabEditors.getPage() !== activeSplit.pages[0])
@@ -637,6 +634,14 @@ module.exports = ext.register("ext/splitview/splitview", {
             if (!activeSplit) {
                 if (page === activePage)
                     return true;
+                
+                // check whether 'page' is already part of a split view
+                var pageToBeJoinedInSplitView = this.getSplitViewByPage(page);
+                if (pageToBeJoinedInSplitView) {
+                    // if active, then find that split and remove it
+                    this.splits.splice(this.splits.indexOf(this.getSplitViewByPage(page)))
+                }
+                    
                 activeSplit = createSplitView.call(this, activePage);
                 var oEditor = activePage.$editor.amlEditor;
                 oEditor.setAttribute("model", activePage.$model);
