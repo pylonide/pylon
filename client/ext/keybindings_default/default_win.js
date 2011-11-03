@@ -142,7 +142,7 @@ return keys.onLoad({
             "outdent": "Shift-Tab",
             "indent": "Tab"
         },
-        "jsoutline": {
+        "language": {
             "outline": "Ctrl-Shift-O"
         }
     }

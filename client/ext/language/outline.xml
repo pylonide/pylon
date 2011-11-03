@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:skin id="outline_skin"
-      src       = "{require('ext/jsoutline/jsoutline').skin}"/>
+      src       = "{require('ext/language/language').skin}"/>
 
     <a:bar id="barOutline" skinset="outline_skin" skin="outline" width="300">
         <a:vbox anchors="0 0 0 0">
@@ -33,9 +33,9 @@
                   id              = "treeOutline"
                   skin            = "outline-tree"
                   opencloseaction = "onmouseup"
-                  onafterchoose   = "require('ext/jsoutline/jsoutline').jumpToAndClose(this.selected)"
-                  onafterselect   = "require('ext/jsoutline/jsoutline').jumpTo(this.selected)"
-                  onkeyup         = "require('ext/jsoutline/jsoutline').escapeOutline(event)"
+                  onafterchoose   = "require('ext/language/outline').jumpToAndClose(this.selected)"
+                  onafterselect   = "require('ext/language/outline').jumpTo(this.selected)"
+                  onkeyup         = "require('ext/language/outline').escapeOutline(event)"
                   model           = "mdlOutline"
                   openadd         = "false"
                   startcollapsed  = "false"

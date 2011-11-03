@@ -1,38 +1,27 @@
 define(function(require, exports, module) {
 
 var oop = require("pilot/oop");
-var Mirror = require("ace/worker/mirror").Mirror;
 var parser = require("treehugger/js/parse");
 require("treehugger/traverse");
-var lang = require("pilot/lang");
+var BaseLanguageHandler = require('ext/language/base_handler').BaseLanguageHandler;
 
-var AnalysisWorker = exports.AnalysisWorker = function(sender) {
-    var _self = this;
-    if(sender) {
-        Mirror.call(this, sender);
-        this.setTimeout(500);
-        
-        sender.on("outline", function() {
-            _self.onOutline();
-        });
-    }
+var OutlineHandler = exports.OutlineHandler = function(sender) {
 };
 
-oop.inherits(AnalysisWorker, Mirror);
+oop.inherits(OutlineHandler, BaseLanguageHandler);
 
 (function() {
 
-    this.onOutline = function() {
-        if(!this.$enabled) return;
-        try {
-            var value = this.doc.getValue();
-            var node = parser.parse(value);
-            //console.log(node.toPrettyString());
-            var outline = this.extractOutline(node);
-            this.sender.emit("outline", outline);
-        } catch(e) {
-            console.log("Error: " + e.message);
-        }
+    this.handlesPath = function(path) {
+        return path.substring(path.length-3) === '.js';
+    };
+    
+    this.parse = function(code) {
+        return parser.parse(code);
+    };
+    
+    this.outline = function(ast) {
+        return extractOutline(ast);
     };
     
     function fargsToString(fargs) {
@@ -56,9 +45,8 @@ oop.inherits(AnalysisWorker, Mirror);
     }
     
     // This is where the fun stuff happens
-    this.extractOutline = function(node) {
+    function extractOutline(node) {
         var outline = [];
-        var _self = this;
         node.traverseTopDown(
             // e.x = function(...) { ... }  -> name is x
             'Assign(e, Function(name, fargs, body))', function(b) {
@@ -68,7 +56,7 @@ oop.inherits(AnalysisWorker, Mirror);
                     type: 'function',
                     name: name + fargsToString(b.fargs),
                     pos: this[1].getPos(),
-                    items: _self.extractOutline(b.body)
+                    items: extractOutline(b.body)
                 });
                 return this;
             },
@@ -77,7 +65,7 @@ oop.inherits(AnalysisWorker, Mirror);
                     type: 'function',
                     name: b.x.value + fargsToString(b.fargs),
                     pos: this[1].getPos(),
-                    items: _self.extractOutline(b.body)
+                    items: extractOutline(b.body)
                 });
                 return this;
             },
@@ -87,7 +75,7 @@ oop.inherits(AnalysisWorker, Mirror);
                     type: 'function',
                     name: b.x.value + fargsToString(b.fargs),
                     pos: this[1].getPos(),
-                    items: _self.extractOutline(b.body)
+                    items: extractOutline(b.body)
                 });
                 return this;
             },
@@ -99,7 +87,7 @@ oop.inherits(AnalysisWorker, Mirror);
                     type: 'function',
                     name: name + '[' + b.s.value + ']' + fargsToString(b.fargs),
                     pos: this.getPos(),
-                    items: _self.extractOutline(b.body)
+                    items: extractOutline(b.body)
                 });
                 return this;
             },
@@ -116,7 +104,7 @@ oop.inherits(AnalysisWorker, Mirror);
                             type: 'function',
                             name: name + '[callback]' + fargsToString(b.fargs),
                             pos: this.getPos(),
-                            items: _self.extractOutline(b.body)
+                            items: extractOutline(b.body)
                         });
                         foundFunction = true;
                     }
@@ -129,7 +117,7 @@ oop.inherits(AnalysisWorker, Mirror);
                     type: 'function',
                     name: b.name.value + fargsToString(b.fargs),
                     pos: this.getPos(),
-                    items: _self.extractOutline(b.body)
+                    items: extractOutline(b.body)
                 });
                 return this;
             }
@@ -137,10 +125,6 @@ oop.inherits(AnalysisWorker, Mirror);
         return outline;
     };
 
-    this.setEnabled = function(enabled) {
-        this.$enabled = enabled;
-    };
-
-}).call(AnalysisWorker.prototype);
+}).call(OutlineHandler.prototype);
 
 });
