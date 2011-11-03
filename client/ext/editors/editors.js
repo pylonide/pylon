@@ -12,12 +12,14 @@ var ext = require("core/ext");
 var util = require("core/util");
 var panels = require("ext/panels/panels");
 var dockpanel = require("ext/dockpanel/dockpanel");
+var markup = require("text!ext/editors/editors.xml");
 
 module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
     dev     : "Ajax.org",
     alone   : true,
     type    : ext.GENERAL,
+    markup  : markup,
     nodes   : [],
     visible : true,
     alwayson : true,
@@ -134,9 +136,9 @@ module.exports = ext.register("ext/editors/editors", {
                                         }),
                                         new apf.label({
                                             id : "lblRowsColumns",
+                                            "class" : "editor_label",
                                             caption : "",
-                                            margin : "2 5 0 0",
-                                            style : "color: #666; letter-spacing: 1px"
+                                            margin : "2 5 0 0"
                                         })
                                     ]
                                 })
@@ -261,6 +263,8 @@ module.exports = ext.register("ext/editors/editors", {
 
         ceEditor.$editor.removeEventListener("changeSession", this.$changeSessionListener);
         ceEditor.$editor.addEventListener("changeSession", this.$changeSessionListener = function(e) {
+            ide.dispatchEvent("changeAceSession", { e : e });
+
             // Updates the editor bar's cursor position label
             function setRCLabel() {
                 var pos = ceEditor.getSelection().getCursor();
@@ -631,6 +635,20 @@ module.exports = ext.register("ext/editors/editors", {
             .node();
 
         this.jump(node, row, column, text);
+    },
+    
+    /**
+     * Retrieves the file path for the currently selected file tab
+     * 
+     * @param {string} filePath If we already have it and want to normalize it
+     */
+    getFilePath : function(filePath) {
+        if (typeof filePath === "undefined")
+            filePath = tabEditors.getPage().$model.data.getAttribute("path");
+        if (filePath.indexOf("/workspace/") === 0)
+            filePath = filePath.substr(11);
+
+        return filePath;
     },
 
     jump : function(fileEl, row, column, text, doc, page) {

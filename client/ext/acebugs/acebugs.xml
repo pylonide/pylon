@@ -1,4 +1,19 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:style><![CDATA[
+        .editor_warning {
+            background-image : url("/static/style/images/editor_warning.png");
+            background-repeat : no-repeat;
+            background-position : 0px 0px;
+        }
+
+        .editor_warning.warning {
+            background-position: -27px -44px;
+        }
+
+        .editor_warning.error {
+            background-position: -53px -44px;
+        }
+    ]]></a:style>
     <a:model id="mdlAceAnnotations"></a:model>
     <a:menu id="mnuEditorAceBugs" width="300" height="300">
         <a:datagrid id="dgAceAnnotations"

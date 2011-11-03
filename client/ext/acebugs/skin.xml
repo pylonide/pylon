@@ -1,0 +1,39 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <a:button name="btn-bug-nav">
+        <a:style><![CDATA[
+            .btn-bug-nav {
+                display : block;
+                float : left;
+                border : 1px solid #666;
+                width : 18px;
+                height : 10px;
+            }
+
+            .btn-bug-nav.left {
+                -webkit-border-top-left-radius: 8px;
+                -webkit-border-bottom-left-radius: 8px;
+                -moz-border-radius-topleft: 8px;
+                -moz-border-radius-bottomleft: 8px;
+                border-top-left-radius: 8px;
+                border-bottom-left-radius: 8px;
+            }
+
+            .btn-bug-nav.right {
+                -webkit-border-top-right-radius: 8px;
+                -webkit-border-bottom-right-radius: 8px;
+                -moz-border-radius-topright: 8px;
+                -moz-border-radius-bottomright: 8px;
+                border-top-right-radius: 8px;
+                border-bottom-right-radius: 8px;
+            }
+        ]]></a:style>
+
+        <a:presentation>
+            <a:main caption="." label="." background=".">
+                <div class="btn-bug-nav">
+                </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
+</a:skin>

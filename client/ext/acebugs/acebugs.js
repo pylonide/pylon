@@ -20,6 +20,9 @@ module.exports = ext.register("ext/acebugs/acebugs", {
     markup: markup,
 
     nodes: [],
+    
+    fileAnnoData : {},
+    currentAnnoData : null,
 
     init: function(amlNode) {
         var currEditor = editors.currentEditor;
@@ -35,30 +38,44 @@ module.exports = ext.register("ext/acebugs/acebugs", {
     hook: function() {
         var _self = this;
         this.annotationWorker = new Worker("/static/ext/acebugs/annotation_worker.js");
-        this.lastAnnotations = "";
         this.annotationWorker.onmessage = function(e) {
-            if (e.data.outXml == _self.lastAnnotations)
-                return;
+            var fileName = editors.getFilePath();
 
-            if (e.data.errors > 0) {
-                //dock.increaseNotificationCount("aceAnnotations", e.data.errors);
+            if (!_self.fileAnnoData[fileName] || _self.fileAnnoData[fileName].xml != e.data.outXml) {
+                _self.fileAnnoData[fileName] = {
+                    xml : e.data.outXml,
+                    lines : e.data.lineNums,
+                    lastPos : -1,
+                    numLines : e.data.lineNums.length
+                };
             }
-            mdlAceAnnotations.load(apf.getXml(e.data.outXml.replace(/&/g, "&amp;")));
+
+            acebugsNumber.setAttribute("caption", e.data.errors + e.data.warnings);
+            if (e.data.errors)
+                btnAceBugs.setAttribute("class", "editor_warning error");
+            else if (e.data.warnings)
+                btnAceBugs.setAttribute("class", "editor_warning warning");
+            else
+                btnAceBugs.setAttribute("class", "editor_warning");
+
+            _self.currentAnnoData = _self.fileAnnoData[fileName];
+            _self.restoreState();
+
+            //mdlAceAnnotations.load(apf.getXml(e.data.outXml.replace(/&/g, "&amp;")));
         };
 
-        this.annotationWorker.onerror = function(e) {
-
-        };
+        this.annotationWorker.onerror = function(e) {};
 
         ide.addEventListener("afteropenfile", function(e) {
             _self.updateAnnotations();
         });
 
-        tabEditors.addEventListener("afterswitch", function(e){
+        ide.addEventListener("changeAceSession", function(e){
             var ce = editors.currentEditor;
             if (ce) {
                 _self.editorSession = ce.ceEditor.getSession();
-                _self.editorSession.on("changeAnnotation", function(e) {
+                _self.editorSession.removeEventListener("changeAnnotation", _self.$listenChangeAnno);
+                _self.editorSession.addEventListener("changeAnnotation", _self.$listenChangeAnno = function(e) {
                     _self.updateAnnotations();
                 });
 
@@ -66,16 +83,103 @@ module.exports = ext.register("ext/acebugs/acebugs", {
             }
         });
 
-        /*editors.addBarButton(
-            new apf.button({
-                id : "editorAceBugs",
-                skin : "editor-bar-btn",
-                background : "editor_warning.png|vertical|3|22",
-                style : "border-right: none; border-left: 1px solid #7b7b7b;",
+        this.setupUI();
+    },
+
+    restoreState : function() {
+        if (this.currentAnnoData.numLines === 0) {
+            acebugsNavBack.disable();
+            acebugsNavFwd.disable();
+        }
+        else {
+            acebugsNavBack.enable();
+            acebugsNavFwd.enable();
+        }
+    },
+
+    goToNext : function() {
+        this.currentAnnoData.lastPos++;
+        if (this.currentAnnoData.lastPos >= this.currentAnnoData.numLines)
+            this.currentAnnoData.lastPos = 0;
+        var lineNum = this.currentAnnoData.lines[this.currentAnnoData.lastPos];
+        this.ceEditor.$editor.gotoLine(lineNum);
+    },
+
+    goToPrevious : function() {
+        this.currentAnnoData.lastPos--;
+        if (this.currentAnnoData.lastPos < 0)
+            this.currentAnnoData.lastPos = (this.currentAnnoData.numLines-1);
+        var lineNum = this.currentAnnoData.lines[this.currentAnnoData.lastPos];
+        this.ceEditor.$editor.gotoLine(lineNum);
+    },
+
+    setupUI : function() {
+        var _self = this;
+        editors.addBarButton(
+            new apf.hbox({
+                id : "acebugsContainer",
                 width : "29",
-                submenu : "mnuEditorAceBugs"
-            }), 1000
-        );*/
+                childNodes : [
+                    new apf.button({
+                        id : "btnAceBugs",
+                        skin : "editor-bar-btn",
+                        "class" : "editor_warning",
+                        style : "border-right: none; border-left: 1px solid #7b7b7b;",
+                        width : "29",
+                        onclick : function() {
+                            if (acebugsContainer.getWidth() > 50) {
+                                apf.tween.single(acebugsContainer.$ext, {
+                                    type: "width",
+                                    from: 90,
+                                    to  : 29,
+                                    anim : apf.tween.linear,
+                                    steps : 5
+                                });
+                            }
+                            else {
+                                apf.tween.single(acebugsContainer.$ext, {
+                                    type: "width",
+                                    from: 29,
+                                    to  : 90,
+                                    anim : apf.tween.linear,
+                                    steps : 5
+                                });
+                            }
+                        }
+                    }),
+                    new apf.label({
+                        id : "acebugsNumber",
+                        "class" : "editor_label",
+                        caption : "0",
+                        width : "16",
+                        style : "text-align: center",
+                        margin : "2 5 0 0"
+                    }),
+                    new apf.button({
+                        id : "acebugsNavBack",
+                        skin : "btn-bug-nav",
+                        "class" : "left",
+                        margin : "4 0 0 0",
+                        width : "18",
+                        height : "14",
+                        onclick : function(e) {
+                            _self.goToPrevious();
+                        }
+                    }),
+                    new apf.button({
+                        id : "acebugsNavFwd",
+                        skin : "btn-bug-nav",
+                        "class" : "right",
+                        margin : "4 0 0 0",
+                        width : "18",
+                        height : "14",
+                        onclick : function(e) {
+                            _self.goToNext();
+                        }
+                    })
+                ]
+            }), "right"
+        );
 
         ext.initExtension(this);
     },
@@ -87,7 +191,6 @@ module.exports = ext.register("ext/acebugs/acebugs", {
 
         this.ceEditor = ce.ceEditor;
         var editorSession = this.ceEditor.getSession();
-        //dock.resetNotificationCount("aceAnnotations");
         this.annotationWorker.postMessage(editorSession.getAnnotations());
     },
 

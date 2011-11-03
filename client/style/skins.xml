@@ -772,6 +772,58 @@
         </a:main>
     </a:presentation>
 </a:button>
+<a:button name="btn-bug-nav">
+    <a:style><![CDATA[
+        .btn-bug-nav {
+            display : block;
+            border : 1px solid #888;
+            width : 18px;
+            height : 14px;
+            background: rgb(255,255,255);
+            background: -moz-linear-gradient(top,  rgba(255,255,255,1) 0%, rgba(241,241,241,1) 50%, rgba(225,225,225,1) 51%, rgba(246,246,246,1) 100%);
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(50%,rgba(241,241,241,1)), color-stop(51%,rgba(225,225,225,1)), color-stop(100%,rgba(246,246,246,1)));
+            background: -webkit-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%);
+            background: -o-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%);
+            background: -ms-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%);
+            background: linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(241,241,241,1) 50%,rgba(225,225,225,1) 51%,rgba(246,246,246,1) 100%);
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#f6f6f6',GradientType=0 );
+        }
+
+        .btn-bug-navDisabled {
+            border : 1px solid #bbb;
+        }
+        
+        .btn-bug-navOver {
+            border : 1px solid #333;
+        }
+
+        .btn-bug-nav.left {
+            -webkit-border-top-left-radius: 8px;
+            -webkit-border-bottom-left-radius: 8px;
+            -moz-border-radius-topleft: 8px;
+            -moz-border-radius-bottomleft: 8px;
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+
+        .btn-bug-nav.right {
+            -webkit-border-top-right-radius: 8px;
+            -webkit-border-bottom-right-radius: 8px;
+            -moz-border-radius-topright: 8px;
+            -moz-border-radius-bottomright: 8px;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+            border-left: none;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main caption="." label="." background=".">
+            <div class="btn-bug-nav">
+            </div>
+        </a:main>
+    </a:presentation>
+</a:button>
 <a:button name="github-button">
         <a:style><![CDATA[
             .github-button {
