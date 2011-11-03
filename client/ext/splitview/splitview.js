@@ -616,11 +616,8 @@ module.exports = ext.register("ext/splitview/splitview", {
             
             // use setTimout to circumvent the APF layout manager to go bonkers
             setTimeout(function() {
-                try {
-                    page.$deactivateButton();
-                }
-                catch (ex) { }
-                
+                page.$deactivateButton();
+
                 clearSplitViewStyles(page);
                 editor.hide();
                 if (tabEditors.getPage() !== activeSplit.pages[0])
