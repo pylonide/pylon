@@ -109,6 +109,7 @@ apf.actiontracker = function(struct, tagName){
 
 (function(){
     this.$lastExecStackItem = null;
+    this.$paused = false
 
     this.realtime   = true;
     this.undolength = 0;
@@ -328,7 +329,7 @@ apf.actiontracker = function(struct, tagName){
     };
     
     this.isTracking = function() {
-        return !!this.$paused;
+        return !this.$paused;
     };
 
     //deprecated??
