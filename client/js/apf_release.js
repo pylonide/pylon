@@ -5108,7 +5108,7 @@ for(var node,i=0,l=nodes.length;i<l;i++){if((node=nodes[i]).nodeType!=1){continu
 });}).call(apf.actions.prototype=new apf.AmlElement());apf.aml.setElement("actions",apf.actions);
 apf.actiontracker=function(struct,tagName){this.$init(tagName||"actiontracker",apf.NODE_HIDDEN,struct);
 this.$undostack=[];this.$redostack=[];this.$execstack=[];};(function(){this.$lastExecStackItem=null;
-this.realtime=true;this.undolength=0;this.redolength=0;this.$booleanProperties={};
+this.$paused=false;this.realtime=true;this.undolength=0;this.redolength=0;this.$booleanProperties={};
 this.$booleanProperties.realtime=true;this.$supportedProperties=["realtime","undolength","redolength","alias","length","position"];
 this.$handlePropSet=function(prop,value,force){if(this.$booleanProperties[prop]){value=apf.isTrue(value);
 }switch(prop){case"undolength":this.undolength=this.$undostack.length;break;case"redolength":this.redolength=this.$redostack.length;
@@ -5128,7 +5128,7 @@ i<l;++i){if(!(o=this.$redostack[i])||!o.timestamp){continue;}if(o.timestamp<=tim
 if(UndoObj.multiple){this.$addToQueue(UndoObj.multiple,false,true);}else{this.$addToQueue(UndoObj,false);
 }if(!options.rdb){this.$redostack.length=0;this.setProperty("redolength",this.$redostack.length);
 }this.dispatchEvent("afterchange",{action:"do"});return UndoObj;};this.pauseTracking=function(){this.$paused=true;
-};this.resumeTracking=function(){this.$paused=false;};this.isTracking=function(){return !!this.$paused;
+};this.resumeTracking=function(){this.$paused=false;};this.isTracking=function(){return !this.$paused;
 };this.purge=function(nogrouping,forcegrouping){if(true){if(this.$execstack.length){this.$execstack[0].undoObj.saveChange(this.$execstack[0].undo,this);
 this.$lastExecStackItem=this.$execstack[this.$execstack.length-1];}}else{if(parent){this.reset();
 }}};this.reset=function(){this.$undostack.length=this.$redostack.length=0;this.$paused=false;
@@ -6808,7 +6808,7 @@ this.$position=this.$position|2;this.parentNode.$setStyleClass(this.$button,"las
 }this.parentNode.$setStyleClass(this.$button,"",["curbtn"]);}if((!this.fake||this.relPage)&&!fakeOther){this.parentNode.$setStyleClass(this.fake?this.relPage.$ext:this.$ext,"",["curpage"]);
 if(this.fake){if(!this.relPage.visible){this.relPage.$ext.style.display="none";
 }this.relPage.dispatchEvent("prop.visible",{value:false});}this.dispatchEvent("prop.visible",{value:false});
-}};this.$deactivateButton=function(){if(this.parentNode.$hasButtons){if(this.$position>0){this.parentNode.$setStyleClass(this.$button,"",["firstcurbtn"]);
+}};this.$deactivateButton=function(){if(this.parentNode&&this.parentNode.$hasButtons){if(this.$position>0){this.parentNode.$setStyleClass(this.$button,"",["firstcurbtn"]);
 }this.parentNode.$setStyleClass(this.$button,"",["curbtn"]);}};this.$activate=function(){this.$active=true;
 if(!this.$drawn){var f;this.addEventListener("DOMNodeInsertedIntoDocument",f=function(e){this.removeEventListener("DOMNodeInsertedIntoDocument",f);
 if(!this.$active){return;}this.$activate();});return;}if(this.parentNode.$hasButtons){if(this.$isFirst){this.parentNode.$setStyleClass(this.$button,"firstcurbtn");
@@ -6820,7 +6820,7 @@ if(this.relPage.$render){this.relPage.$render();}this.relPage.dispatchEvent("pro
 this.$ext.className="rnd"+Math.random();this.$ext.className=cls;}this.dispatchEvent("prop.visible",{value:true});
 }};this.$activateButton=function(){if(this.$active){return;}if(!this.$drawn){var f;
 this.addEventListener("DOMNodeInsertedIntoDocument",f=function(e){this.removeEventListener("DOMNodeInsertedIntoDocument",f);
-this.$activateButton();});return;}if(this.parentNode.$hasButtons){if(this.$isFirst){this.parentNode.$setStyleClass(this.$button,"firstcurbtn");
+this.$activateButton();});return;}if(this.parentNode&&this.parentNode.$hasButtons){if(this.$isFirst){this.parentNode.$setStyleClass(this.$button,"firstcurbtn");
 }this.parentNode.$setStyleClass(this.$button,"curbtn");}if(this.$render){this.$render();
 }};this.addEventListener("$skinchange",function(){if(this.caption){this.$propHandlers.caption.call(this,this.caption);
 }if(this.icon){this.$propHandlers.icon.call(this,this.icon);}});this.$enable=function(){if(this.$button){this.$setStyleClass(this.$button,null,["btnDisabled"]);

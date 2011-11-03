@@ -1,0 +1,7 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:skin id="colorpicker" 
+      src        = "{require('ext/colorpicker/colorpicker').skin}" 
+      media-path = "/static/ext/colorpicker/images/" />
+
+    <a:colorpicker id="clrCodeTools" skinset="colorpicker" visible="false" />
+</a:application>
