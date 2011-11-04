@@ -596,11 +596,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         var activeSplit = this.getSplitViewByPage(activePage);
         var pageIdx = activeSplit ? activeSplit.pages.indexOf(page) : -1;
         var _self = this;
-        
-        // TODO: support multiple editor types
-//        if (page.$editor.name.indexOf("Code") === -1 && !activeSplit.clone)
-//            return;
-        
+                
         // Remove an editor from the split view
         if (pageIdx > -1) {
             if (activeSplit.clone && activeSplit.clone === page)
