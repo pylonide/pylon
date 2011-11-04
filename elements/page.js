@@ -581,6 +581,8 @@ apf.page = function(struct, tagName){
                             div.parentNode.removeChild(div);
                             
                             delete _self.$btnControl[_self.$uniqueId];
+                            
+                            _self.parentNode.dispatchEvent("tabselectmouseup");
                         }
                     });
                 }
@@ -613,6 +615,8 @@ apf.page = function(struct, tagName){
         }
         
         this.$btnPressed = false;
+        
+        this.parentNode.dispatchEvent("tabselectmouseup");
     }
     
     this.$btnOut = function(oHtml){
