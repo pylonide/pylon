@@ -73,13 +73,18 @@ module.exports = ext.register("ext/newresource/newresource", {
         
         
         var path = "/workspace/", sel = trFiles.selected;
-        if (sel) {
-            path = sel.getAttribute("path");
-            if(trFiles.selected.getAttribute("type") == "file")
-                path = path.replace(/\/[^\/]*$/, "/");
-            else
-                path = path + "/";
+        
+        if (!sel) {
+            trFiles.select(trFiles.$model.queryNode('folder'));
+            sel = trFiles.selected
         }
+            
+        path = sel.getAttribute("path");
+        if(trFiles.selected.getAttribute("type") == "file")
+            path = path.replace(/\/[^\/]*$/, "/");
+        else
+            path = path + "/";
+
         var name = "Untitled", count = 1;
         while(tabEditors.getPage(path + name + count + type)) {
             count++;
