@@ -501,8 +501,11 @@ apf.xmldb = new (function(){
             oldNode = oldNode.selectSingleNode(xpath);
 
         // @todo: only do this once! - should store on the undo object
-        if (oldNode.ownerDocument.importNode && newNode.ownerDocument != oldNode.ownerDocument)
+        if (oldNode.ownerDocument.importNode && newNode.ownerDocument != oldNode.ownerDocument) {
+            var oldNodeS = xmlNode;
             newNode = oldNode.ownerDocument.importNode(newNode, true); //Safari issue not auto importing nodes
+            oldNodeS.parentNode.removeChild(oldNodeS);
+        }
 
         // #ifdef __WITH_RDB
         this.applyRDB(["replaceNode", oldNode, this.cleanXml(newNode.xml), xpath], undoObj || {xmlNode: oldNode});
@@ -592,8 +595,11 @@ apf.xmldb = new (function(){
             this.cleanNode(xmlNode);
 
         // @todo: only do this once! - should store on the undo object
-        if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument)
+        if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument) {
+            var oldNode = xmlNode;
             xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
+            oldNode.parentNode.removeChild(oldNode);
+        }
 
         // #ifdef __WITH_RDB
         this.applyRDB(["appendChild", pNode, this.cleanXml(xmlNode.xml), beforeNode, unique, xpath], undoObj || {xmlNode: pNode});
@@ -656,8 +662,11 @@ apf.xmldb = new (function(){
         }*/
 
         // @todo: only do this once! - should store on the undo object
-        if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument)
+        if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument) {
+            var oldNode = xmlNode;
             xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
+            oldNode.parentNode.removeChild(oldNode);
+        }
 
         // #ifdef __WITH_RDB
         this.applyRDB(["moveNode", pNode, xmlNode, beforeNode, xpath], undoObj || {xmlNode: pNode}); //note: important that transport of rdb is async

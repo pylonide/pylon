@@ -22,9 +22,37 @@ function SeleniumPlayer(browser){
 (function(){
     this.realtime = true;
     
-    this.play = function(actionList){
+    this.play = function(name, actionList){
         var script = this.compile(actionList);
-        (new Function('browser', script))(this.browser);
+        
+        var Runner = require('../../../runner.sjs');
+        var utils = require('../../../utils.sjs');
+        
+        var tests = {
+            setUp: function(browser) {
+                browser.open('/');
+                this.fileName   = 'text.txt';
+                this.folderName = 'text';
+                this.newFileName   = 'text2.txt';
+                this.newFolderName = 'text2';
+            }
+        }
+        tests[name] = new Function('browser', script);
+        
+        module.exports.tests = tests;
+        
+        Runner.runTests(Runner.browser, function() {
+            Runner.browser.setTimeout(5000);
+            Runner.browser.setSpeed(100);
+        }, tests);
+    }
+    
+    this.writeTestFile = function(actionList, filename, name) {
+        
+    }
+    
+    this.writeTestOnly = function(actionList, filename){
+        
     }
     
     function getContext(item, nosel){
@@ -39,7 +67,7 @@ function SeleniumPlayer(browser){
         var context, contexts = {};
         var needsMove;
         
-        actionList = actionList.reverse();
+        //actionList = actionList.reverse();
         
         //if (!this.realtime)
             rules.push("browser.setMouseSpeed(1000);");
@@ -77,8 +105,8 @@ function SeleniumPlayer(browser){
             
             //stack.push("browser.waitForVisible('" + contexts[context] + "');");
             
-            var x  = (item.selected ? item.selected.x : item.x) - el.x;
-            var y  = (item.selected ? item.selected.y : item.y) - el.y;
+            var x  = (item.selected ? item.selected.x : item.x);// - el.x;
+            var y  = (item.selected ? item.selected.y : item.y);//- el.y;
             
             switch(item.name) {
                 case "mousemove":
@@ -146,20 +174,19 @@ function SeleniumPlayer(browser){
                     //@todo !realtime
                     
                     stack.push("browser.typeKeys('apf=" + (el.id || el.xpath) //contexts[context]
-                        + ", '" + item.value + "');");
+                        + "', '" + item.value + "');");
                     break;
             }
             
             function contextToExpression(def, extra){
-                if (!def) debugger;
                 var s = def.split("###");
                 return (s[0].indexOf("/") > -1
-                    ? "apf.document.selectSingleNode('" 
-                      + s[0].replace(/'/g, "\\'") + "')" 
+                    ? "apf.document.selectSingleNode(\"" 
+                      + s[0].replace(/"/g, "\\\"") + "\")" 
                     : s[0])
                   + (s[1] 
                     ? ".$xmlRoot.selectSingleNode('"
-                      + s[1].replace(/'/g, "\\'") + "')"
+                      + s[1].replace(/"/g, "\\\"") + "')"
                     : "");
             }
             
@@ -173,7 +200,7 @@ function SeleniumPlayer(browser){
                         + (value.type == "aml"
                             ? contextToExpression(value.value)
                             : value.value).replace(/'/g, "\\'") //expression
-                        + "'));";
+                        + "');";
                         
                     rules.push("browser.waitForExpression" + arg,
                                "browser.assertForExpression" + arg);
