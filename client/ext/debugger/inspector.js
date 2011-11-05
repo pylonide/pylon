@@ -72,7 +72,7 @@ exports.consoleTextHandler = function(e) {
                 className = body.className;
 
             if (className == "Function") {
-                var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/console/console\").showObject(null, ["
+                var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/debugger/inspector\").showObject(null, ["
                     + body.scriptId + ", " + body.line + ", " + body.position + ", "
                     + body.handle + ",\"" + (body.name || body.inferredName) + "\"], \""
                     + (expression || "").split(";").pop().replace(/"/g, "\\&quot;") + "\")'>";
@@ -81,7 +81,7 @@ exports.consoleTextHandler = function(e) {
                 Logger.log(name + "()", "log", pre, post, txtOutput);
             }
             else if (className == "Array") {
-                var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/console/console\").showObject(\""
+                var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/debugger/inspector\").showObject(\""
                     + apf.escapeXML(xmlNode.xml.replace(/"/g, "\\\"")) + "\", "
                     + ref + ", \"" + apf.escapeXML((expression || "").trim().split(/;|\n/).pop().trim().replace(/"/g, "\\\"")) + "\")'>";
                 var post = " }</a>";
@@ -94,7 +94,7 @@ exports.consoleTextHandler = function(e) {
                 for (var i = 0, l = body.properties.length; i < l; i++)
                     refs.push(props[i].ref);
 
-                var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/console/console\").showObject(\""
+                var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/debugger/inspector\").showObject(\""
                     + apf.escapeXML(xmlNode.xml.replace(/"/g, "\\\"")) + "\", "
                     + ref + ", \"" + apf.escapeXML((expression || "").trim().split(/;|\n/).pop().trim().replace(/"/g, "\\\"")) + "\")'>";
                 var post = " }</a>";
