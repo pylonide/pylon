@@ -316,7 +316,7 @@ apf.page = function(struct, tagName){
     };
     
     this.$deactivateButton = function() {
-        if (this.parentNode.$hasButtons) {
+        if (this.parentNode && this.parentNode.$hasButtons) {
             if (this.$position > 0)
                 this.parentNode.$setStyleClass(this.$button, "", ["firstcurbtn"]);
             this.parentNode.$setStyleClass(this.$button, "", ["curbtn"]);
@@ -401,7 +401,7 @@ apf.page = function(struct, tagName){
             return;
         }
         
-        if (this.parentNode.$hasButtons) {
+        if (this.parentNode && this.parentNode.$hasButtons) {
             if (this.$isFirst)
                 this.parentNode.$setStyleClass(this.$button, "firstcurbtn");
             this.parentNode.$setStyleClass(this.$button, "curbtn");
@@ -581,6 +581,8 @@ apf.page = function(struct, tagName){
                             div.parentNode.removeChild(div);
                             
                             delete _self.$btnControl[_self.$uniqueId];
+                            
+                            _self.parentNode.dispatchEvent("tabselectmouseup");
                         }
                     });
                 }
@@ -613,6 +615,8 @@ apf.page = function(struct, tagName){
         }
         
         this.$btnPressed = false;
+        
+        this.parentNode.dispatchEvent("tabselectmouseup");
     }
     
     this.$btnOut = function(oHtml){
