@@ -730,15 +730,6 @@ apf.Class.prototype = new (function(){
             
         //Check if property has changed
         if (isChanged) {
-            //#ifdef __WITH_UIRECORDER
-            if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10) {
-                if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
-                    if (this.ownerDocument && this.$aml)
-                        apf.uirecorder.capture.capturePropertyChange(this, prop, value, oldvalue); 
-                }
-            }
-            //#endif
-            
             if (!forceOnMe) { //Recursion protection
                 //Check if this property is bound to data
                 if (typeof value != OBJ //this.xmlRoot &&
@@ -749,6 +740,15 @@ apf.Class.prototype = new (function(){
 
                     //Check if rule has single xpath
                     if (r.cvalue.type == 3) {
+                        //#ifdef __WITH_UIRECORDER
+                        if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10) {
+                            if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
+                                if (this.ownerDocument && this.$aml)
+                                    apf.uirecorder.capture.capturePropertyChange(this, prop, value, oldvalue); 
+                            }
+                        }
+                        //#endif
+                        
                         //Set the xml value - this should probably use execProperty
                         return apf.setNodeValue(
                             this.$getDataNode(prop.toLowerCase(), this.xmlRoot, true),
@@ -774,6 +774,15 @@ apf.Class.prototype = new (function(){
 
             if (this.$handlePropSet(prop, value, forceOnMe) === false)
                 return;
+            
+            //#ifdef __WITH_UIRECORDER
+            if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10) {
+                if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
+                    if (this.ownerDocument && this.$aml)
+                        apf.uirecorder.capture.capturePropertyChange(this, prop, this[prop], oldvalue); 
+                }
+            }
+            //#endif
             
             value = this[prop];
         }

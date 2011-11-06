@@ -1255,7 +1255,7 @@ apf.BaseTab = function(){
         }
         
         //#ifdef __WITH_PROPERTY_BINDING
-        this.setProperty("length", this.childNodes.length);
+        this.setProperty("length", this.getPages().length - 1);
         //#endif
     });
 
@@ -1305,7 +1305,7 @@ apf.BaseTab = function(){
         }
         
         //#ifdef __WITH_PROPERTY_BINDING
-        this.setProperty("length", this.childNodes.length);
+        this.setProperty("length", this.getPages().length);
         //#endif
     });
 
@@ -1547,7 +1547,7 @@ apf.BaseTab = function(){
         }
 
         //#ifdef __WITH_PROPERTY_BINDING
-        this.setProperty("length", j);
+        this.setProperty("length", this.getPages().length);
         //#endif
 
         this.ready = true;

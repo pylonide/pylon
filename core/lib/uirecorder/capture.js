@@ -292,7 +292,7 @@ apf.uirecorder.capture = {
     
     // get all neccessary information about htmlElement
     // @todo set info based on type of element
-    $getHtmlElementData : function(htmlElement) {
+    $getHtmlElementData : function(htmlElement, amlNode, amlNodeData) {
         // ignore body/html tags
         if (["body", "html"].indexOf(htmlElement.tagName.toLowerCase()) > -1) 
             return;
@@ -312,21 +312,36 @@ apf.uirecorder.capture = {
         data.y          = pos[1];
         data.width      = htmlElement.offsetWidth;
         data.height     = htmlElement.offsetHeight;
-        
-        var xpath, host = apf.findHost(htmlElement);
-        if (host && host.localName != "html") {
-            do {
-                xpath = apf.xmlToXpath(htmlElement, host.$ext);
-                if (xpath.substr(0, 8) == "HTML[1]/")
-                    host = host.parentNode;
-                else {
-                    xpath = [apf.xmlToXpath(host).replace(/^html\[1\]\//i, ""), xpath];
-                    break;
-                }
-            } while (1);
+
+        if (amlNode) {
+            var el = amlNode[amlNodeData
+                && amlNodeData.activeElement 
+                && amlNodeData.activeElement.name
+                || "$ext"];
+            xpath = ["", apf.xmlToXpath(htmlElement, el)];
         }
         else {
-            xpath = apf.xmlToXpath(htmlElement).replace(/^html\[1\]\//i, "");
+            var xpath, host = apf.findHost(htmlElement), loopNode = htmlElement;
+            while (host && host.namespaceURI != apf.ns.aml) {
+                loopNode = loopNode.parentNode;
+                host = apf.findHost(loopNode);
+            }
+            
+            if (host && host.localName != "html") {
+                do {
+                    xpath = apf.xmlToXpath(htmlElement, host.$ext);
+                    if (xpath.substr(0, 8) == "HTML[1]/")
+                        host = host.parentNode;
+                    else {
+                        xpath = [apf.xmlToXpath(host).replace(/^html\[1\]\//i, ""), xpath];
+                        break;
+                    }
+                } while (1);
+            }
+            //@todo this if is only here because this is not done realtime
+            else if (htmlElement.parentNode) {
+                xpath = apf.xmlToXpath(htmlElement).replace(/^html\[1\]\//i, "");
+            }
         }
         
         data.xpath = xpath;
@@ -359,8 +374,8 @@ apf.uirecorder.capture = {
                 amlNodeData = 
                     this.$getAmlNodeData(amlNode, htmlElement, eventName, value);
             }
-            else if (htmlElement && htmlElement.tagName) {
-                htmlElementData = this.$getHtmlElementData(htmlElement);
+            if (htmlElement && htmlElement.tagName) {
+                htmlElementData = this.$getHtmlElementData(htmlElement, amlNode, amlNodeData);
             }
 //        }
 
@@ -529,6 +544,9 @@ TEMPORARILY DISABLED
                 }, ms);
             }
         }
+        else if (this.current) {
+            apf.uirecorder.capture.$runInContext();
+        }
     },
     
     $runInContext : function(state, f){
@@ -538,7 +556,7 @@ TEMPORARILY DISABLED
         //Set the new stuff on the past action
         if (typeof f == "string")
             apf.jsexec(f)
-        else
+        else if (f)
             f();
 
         this.$setDelayedDetails(state);
@@ -880,11 +898,12 @@ TEMPORARILY DISABLED
             var kaFirst  = this.$keyActions[0];
             var kaSecond = this.$keyActions[1];
             
-            if ((kaLast.events && kaLast.events["afterdrag"]) 
+            if (((kaLast.events && kaLast.events["afterdrag"]) 
               || (kaFirst.events && kaFirst.events["dragstart"] && kaLast.events 
               && kaLast.events["dragdrop"])
               || (kaFirst.events && kaFirst.events["beforedragstart"] 
-              && kaLast.events && kaLast.events["beforedrag"])
+              && kaLast.events && kaLast.events["beforedrag"]))
+              && kaLast.amlNode
             ) {
                 if (kaLast.amlNode.selected && kaLast.dropTarget) {
                     apf.uirecorder.capture.$curTestId = "drag '" 
@@ -1097,7 +1116,7 @@ TEMPORARILY DISABLED
                   || value == apf || value.initEvent) {
                     return {};
                 }
-                else if (value.style) {
+                else if (typeof value.style == "object") {
                     return _self.$getHtmlElementData(value)
                 }
                 else if (value.nodeFunc) {

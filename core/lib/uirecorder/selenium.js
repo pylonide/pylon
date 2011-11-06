@@ -39,6 +39,9 @@ function SeleniumPlayer(browser){
         var data = item.dropTarget || item.amlNode
         var searchObj = {};
         
+        if (!data && item.htmlElement)
+            return item.htmlElement.xpath;
+        
         if (data.id)
             searchObj.id = data.id;
         else if (data.xpath)
@@ -50,7 +53,7 @@ function SeleniumPlayer(browser){
             searchObj.xml = data.selected.xpath;
         
         if (item.htmlElement && typeof item.htmlElement.xpath != "string")
-            searchObj.html = item.htmlElement.xpath[1];
+            searchObj.htmlXpath = item.htmlElement.xpath[1];
         
         if (data.activeElement)
             searchObj.property = data.activeElement.name;
@@ -61,34 +64,33 @@ function SeleniumPlayer(browser){
         return JSON.stringify(searchObj);
     }
     
-    function findHtmlElement(data, contexts, stack) {
-        var elName, xpath = data.htmlElement.xpath;
-        if (!contexts[xpath]) {
-            elName = contexts[xpath] = "elId" + contexts.length++; 
-            stack.push("", 
-                'var ' + elName + ' = browser.element("xpath", "'
-                + xpath.replace(/"/g, '\\"')
-                + '");');
-        }
-        else
-            elName = contexts[xpath];
-        
-        return elName;
-    }
-    
     function findElement(data, contexts, stack, extra) {
-        if (!data.amlNode)
-            return findHtmlElement(data, contexts, stack);
-        
         var serialized = getFindQuery(data, extra);
         
         var elName;
         if (!contexts[serialized]) {
             elName = contexts[serialized] = "elId" + contexts.length++; 
-            stack.push("", 
-                'var ' + elName + ' = browser.findApfElement('
-                + serialized
-                + ');');
+            if (data.amlNode) {
+                stack.push("", 
+                    'var ' + elName + ' = browser.findApfElement('
+                    + serialized
+                    + ');');
+            }
+            else if (typeof serialized == "string") {
+                stack.push("", 
+                    'var ' + elName + ' = browser.element("xpath", "'
+                    + serialized.replace(/"/g, '\\"')
+                    + '");');
+            }
+            else {
+                stack.push("", 
+                    'var ' + elName + ' = browser.findApfElement('
+                    + JSON.stringify({
+                        xpath: serialized[0].replace(/^\/html\[1\]\//i, ""), 
+                        htmlXpath: serialized[1]
+                      })
+                    + ');');
+            }
         }
         else
             elName = contexts[serialized];
@@ -103,16 +105,21 @@ function SeleniumPlayer(browser){
         
         //actionList = actionList.reverse();
         
-        var minLength, elId, el, item, temp;
+        var minLength, elId, el, item, temp, lastMouseDown;
         for (var i = 0, l = actionList.length; i < l; i++) {
             item    = actionList[i];
             el      = item.dropTarget || item.amlNode || item.htmlElement;
             stack   = [];
-            
+
+            if (!el) {
+                console.log("Found item without any element");
+                continue;
+            }
+
             elId = findElement(item, contexts, stack);
 
-            var x  = (el.selected ? el.selected.x : item.x) - (el.activeElement ? el.activeElement.x : el.x);
-            var y  = (el.selected ? el.selected.y : item.y) - (el.activeElement ? el.activeElement.y : el.y);
+            var x  = (el.selected ? el.selected.x : item.x) - (item.htmlElement ? item.htmlElement.x : (el.activeElement ? el.activeElement.x : el.x));
+            var y  = (el.selected ? el.selected.y : item.y) - (item.htmlElement ? item.htmlElement.y : (el.activeElement ? el.activeElement.y : el.y));
             
             switch(item.name) {
                 case "mousemove":
@@ -122,6 +129,8 @@ function SeleniumPlayer(browser){
                             + ", " + x + ", " + y + ");");
                     break;
                 case "mousedown":
+                    lastMouseDown = [elId, item.x, item.y];
+                    
                     stack.push("browser.moveTo(" + elId 
                         + ", " + x + ", " + y + ");");
                     
@@ -145,6 +154,12 @@ function SeleniumPlayer(browser){
                     }
                     break;
                 case "mouseup":
+                    if (lastMouseDown && lastMouseDown[0] == elId) {
+                        x += item.x - lastMouseDown[1];
+                        y += item.y - lastMouseDown[2];
+                        lastMouseDown = null;
+                    }
+                    
                     stack.push("browser.moveTo(" + elId 
                         + ", " + x + ", " + y + ");");
                     
@@ -199,8 +214,8 @@ function SeleniumPlayer(browser){
                 var ident = contextToExpression(item.amlNode || item.htmlElement, true);
                 rules.push("browser.assert('" 
                     + ident + "." + name + "', '"
-                    + (value.type == "aml"
-                        ? contextToExpression(value.value)
+                    + (value.type == "aml" || value.xpath
+                        ? contextToExpression(value.xpath ? value : value.value)
                         : value.value || JSON.stringify(value)).replace(/'/g, "\\'")
                     + "');");
             }
