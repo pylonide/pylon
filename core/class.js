@@ -731,7 +731,7 @@ apf.Class.prototype = new (function(){
         //Check if property has changed
         if (isChanged) {
             //#ifdef __WITH_UIRECORDER
-            if (apf.uirecorder && apf.uirecorder.captureDetails) {
+            if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10) {
                 if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
                     if (this.ownerDocument && this.$aml)
                         apf.uirecorder.capture.capturePropertyChange(this, prop, value, oldvalue); 

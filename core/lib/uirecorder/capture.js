@@ -209,7 +209,7 @@ apf.uirecorder.capture = {
 
         data.tagName    = amlNode.tagName;
         data.type       = amlNode.localName;
-        var xpath       = apf.xmlToXpath(amlNode)
+        var xpath       = apf.xmlToXpath(amlNode).replace(/^html\[1\]\//i, "");
         data.xpath      = xpath.substr(xpath.indexOf("/") + 1);
         
         if (amlNode.getValue 
@@ -241,7 +241,8 @@ apf.uirecorder.capture = {
                 data.selected = {};
                 if (amlNode.getValue)
                     data.selected.value = amlNode.getValue();
-                var xpath = apf.xmlToXpath(amlNode.selected);
+                var xpath = apf.xmlToXpath(amlNode.selected, 
+                    amlNode.selected.ownerDocument.documentElement);
                 data.selected.xpath     = xpath.substr(xpath.indexOf("/")+1);
                 
                 if (amlNode.$selected) {
@@ -312,8 +313,23 @@ apf.uirecorder.capture = {
         data.width      = htmlElement.offsetWidth;
         data.height     = htmlElement.offsetHeight;
         
-        var xpath       = apf.xmlToXpath(htmlElement)
-        data.xpath      = xpath.substr(xpath.indexOf("/") + 1);
+        var xpath, host = apf.findHost(htmlElement);
+        if (host && host.localName != "html") {
+            do {
+                xpath = apf.xmlToXpath(htmlElement, host.$ext);
+                if (xpath.substr(0, 8) == "HTML[1]/")
+                    host = host.parentNode;
+                else {
+                    xpath = [apf.xmlToXpath(host).replace(/^html\[1\]\//i, ""), xpath];
+                    break;
+                }
+            } while (1);
+        }
+        else {
+            xpath = apf.xmlToXpath(htmlElement).replace(/^html\[1\]\//i, "");
+        }
+        
+        data.xpath = xpath;
 
         if (apf.popup.last 
           && apf.isChildOf(apf.popup.cache[apf.popup.last].content, htmlElement, true))
@@ -665,12 +681,10 @@ TEMPORARILY DISABLED
 
         // aml element
         if (amlNode && amlNode.parentNode && amlNode.tagName 
-          && !apf.xmlToXpath(amlNode,apf.document) != "html[1]") {
+          && !apf.xmlToXpath(amlNode, apf.document) != "html[1]") {
             targetName = (amlNode.id) 
                 ? amlNode.id 
-                : ((targetName = apf.xmlToXpath(amlNode,apf.document)).substr(0, 8) == "html[1]/"
-                    ? targetName = targetName.substr(8)
-                    : targetName);
+                : apf.xmlToXpath(amlNode, apf.document).replace(/^html\[1\]\//i, "");
             if (targetName.indexOf("/text()") > -1) {
                 targetName = 
                     targetName.substr(0, targetName.length - "/text()[x]".length);    
@@ -698,8 +712,7 @@ TEMPORARILY DISABLED
                     } while (1);
                 }
                 
-                if (targetName.substr(0, 8) == "html[1]/")
-                    targetName = targetName.substr(8);
+                targetName = targetName.toLowerCase().replace(/^html\[1\]\//i, "");
             }
         }
         // apf
@@ -766,7 +779,7 @@ TEMPORARILY DISABLED
         var target = this.$getTargetName(null, null, amlNode);
         if (!target) 
             return;
-
+            
         var propObj = {
             name        : prop,
             value       : value,
@@ -1105,18 +1118,21 @@ TEMPORARILY DISABLED
                     }*/
                 }
                 else if (value.nodeType) {
+                    if (!value.parentNode) 
+                        return ""; //@todo big hack. This needs to be done during recording
+                    
                     var expression, model = apf.xmldb.findModel(value);
                     if (model.id) {
                         expression = model.id;
                     }
                     else {
                         expression = "apf.document.selectSingleNode('" 
-                            + apf.xmlToXpath(value).replace(/'/g, "\\'")
+                            + apf.xmlToXpath(value).replace(/^html\[1\]\//i, "").replace(/'/g, "\\'")
                             + "')";
                     }
                     
                     expression += ".queryNode('" 
-                        + apf.xmlToXpath(value).replace(/'/g, "\\'")
+                        + apf.xmlToXpath(value, value.ownerDocument.documentElement).replace(/'/g, "\\'")
                         + "')";
                     
                     return recur ? expression : {

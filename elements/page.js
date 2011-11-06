@@ -742,7 +742,7 @@ apf.page = function(struct, tagName){
         // init $activeElements
         if (!this.$activeElements) {
             this.$activeElements = {
-                $tab       : this.$button
+                $button : this.$button
             }
         }
 

@@ -557,14 +557,14 @@ apf.MultiselectBinding = function(){
 
     var actionFeature = {
         "insert"      : 127,//11111110
-        "replacenode" : 127,//11110110
-        "attribute"   : 255,//11110111
+        "replacenode" : 127,//11111110
+        "attribute"   : 255,//11111111
         "add"         : 251,//11110111
-        "remove"      : 46, //01011100
+        "remove"      : 110, //01011110
         "redo-remove" : 79, //10011110
         "synchronize" : 127,//11111110
-        "move-away"   : 233,//11010011
-        "move"        : 77  //10011011
+        "move-away"   : 297,//11010111
+        "move"        : 141  //10011111
     };
 
     /**
@@ -907,6 +907,8 @@ apf.MultiselectBinding = function(){
         if (actionFeature[action] & 64) {
             if (!length)
                 length = this.xmlRoot.selectNodes(this.each).length;
+            if (action == "remove")
+                length--;
             if (length != this.length)
                 this.setProperty("length", length);
         }
