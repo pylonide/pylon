@@ -504,7 +504,8 @@ apf.xmldb = new (function(){
         if (oldNode.ownerDocument.importNode && newNode.ownerDocument != oldNode.ownerDocument) {
             var oldNodeS = xmlNode;
             newNode = oldNode.ownerDocument.importNode(newNode, true); //Safari issue not auto importing nodes
-            oldNodeS.parentNode.removeChild(oldNodeS);
+            if (oldNodeS.parentNode)
+                oldNodeS.parentNode.removeChild(oldNodeS);
         }
 
         // #ifdef __WITH_RDB
@@ -598,7 +599,8 @@ apf.xmldb = new (function(){
         if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument) {
             var oldNode = xmlNode;
             xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
-            oldNode.parentNode.removeChild(oldNode);
+            if (oldNode.parentNode)
+                oldNode.parentNode.removeChild(oldNode);
         }
 
         // #ifdef __WITH_RDB
@@ -665,7 +667,8 @@ apf.xmldb = new (function(){
         if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument) {
             var oldNode = xmlNode;
             xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
-            oldNode.parentNode.removeChild(oldNode);
+            if (oldNode.parentNode)
+                oldNode.parentNode.removeChild(oldNode);
         }
 
         // #ifdef __WITH_RDB
