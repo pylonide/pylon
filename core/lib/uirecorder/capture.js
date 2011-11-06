@@ -1116,7 +1116,7 @@ TEMPORARILY DISABLED
                   || value == apf || value.initEvent) {
                     return {};
                 }
-                else if (typeof value.style == "object") {
+                else if (value.style && typeof value.style != "string") {
                     return _self.$getHtmlElementData(value)
                 }
                 else if (value.nodeFunc) {

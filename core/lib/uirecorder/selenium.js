@@ -76,7 +76,7 @@ function SeleniumPlayer(browser){
                     + serialized
                     + ');');
             }
-            else if (typeof serialized == "string") {
+            else if (typeof serialized == "string" || !serialized[0] && (serialized = serialized[1])) {
                 stack.push("", 
                     'var ' + elName + ' = browser.element("xpath", "'
                     + serialized.replace(/"/g, '\\"')
@@ -86,7 +86,7 @@ function SeleniumPlayer(browser){
                 stack.push("", 
                     'var ' + elName + ' = browser.findApfElement('
                     + JSON.stringify({
-                        xpath: serialized[0].replace(/^\/html\[1\]\//i, ""), 
+                        xpath: serialized[0].replace(/^\/html\[1\]\//i, "") || ".", 
                         htmlXpath: serialized[1]
                       })
                     + ');');
