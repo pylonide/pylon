@@ -760,21 +760,20 @@ apf.Interactive = function(){
         var cursor  = "", 
             tcursor = "";
         posAbs = "absolute|fixed".indexOf(apf.getStyle(_self.$ext, "position")) > -1;
-
-        if (_self.resizable == true || _self.resizable == "vertical" || _self.resizable.indexOf('top') > -1 || _self.resizable.indexOf('bottom') > -1) {
-            if (y < rszborder + marginBox[0] && _self.resizable.indexOf('top') > -1)
+        if (_self.resizable == "true" || _self.resizable == "vertical" || _self.resizable.indexOf('top') > -1 || _self.resizable.indexOf('bottom') > -1) {
+            if (y < rszborder + marginBox[0] && _self.resizable.indexOf('bottom') == -1)
                 cursor = posAbs ? "n" : "";
-            else if (y > this.offsetHeight - rszborder && _self.resizable.indexOf('bottom') > -1) //marginBox[0] - marginBox[2] - 
+            else if (y > this.offsetHeight - rszborder && _self.resizable.indexOf('top') == -1) //marginBox[0] - marginBox[2] - 
                 cursor = "s";
         }
         
-        if (_self.resizable == true || _self.resizable == "horizontal" || _self.resizable.indexOf('left') > -1 || _self.resizable.indexOf('right') > -1) {
-            if (x < (cursor ? rszcorner : rszborder) + marginBox[0] && _self.resizable.indexOf('left') > -1)
+        if (_self.resizable == "true" || _self.resizable == "horizontal" || _self.resizable.indexOf('left') > -1 || _self.resizable.indexOf('right') > -1) {
+            if (x < (cursor ? rszcorner : rszborder) + marginBox[0] && _self.resizable.indexOf('right') == -1)
                 cursor += tcursor + (posAbs ? "w" : "");
-            else if (x > this.offsetWidth - (cursor || tcursor ? rszcorner : rszborder) && _self.resizable.indexOf('right') > -1) //marginBox[1] - marginBox[3] - 
+            else if (x > this.offsetWidth - (cursor || tcursor ? rszcorner : rszborder) && _self.resizable.indexOf('left') == -1) //marginBox[1] - marginBox[3] - 
                 cursor += tcursor + "e";
         }
-        
+
         return cursor;
     }
     
