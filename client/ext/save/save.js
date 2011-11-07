@@ -418,7 +418,10 @@ module.exports = ext.register("ext/save/save", {
             at.undo_ptr = at.$undostack[at.$undostack.length-1];
             page.$at.dispatchEvent("afterchange");
         };
-
+        console.log('save file ass ######################################')
+        console.log('path ' + path)
+        console.log('newPath ' + newPath)
+        console.log('newfile attr  ' + file.getAttribute("newfile"))
         if (path != newPath || file.getAttribute("newfile") == 1) {
             fs.exists(newPath, function (exists) {
                 if (exists) {
