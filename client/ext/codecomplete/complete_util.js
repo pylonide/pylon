@@ -45,44 +45,7 @@ function findCompletions(prefix, allIdentifiers) {
     return matches;
 }
 
-/**
- * Replaces the preceeding identifier (`prefix`) with `newText`, where ^^
- * indicates the cursor position after the replacement
- */
-function replaceText(editor, prefix, newText) {
-    var pos = editor.getCursorPosition();
-    var line = editor.getSession().getLine(pos.row);
-    var doc = editor.getSession().getDocument();
-    
-    if(newText.indexOf("^^") === -1)
-        newText += "^^";
-
-    // Find prefix whitespace of current line
-    for(var i = 0; i < line.length && (line[i] === ' ' || line[i] === "\t");)
-        i++;
-    
-    var prefixWhitespace = line.substring(0, i);
-    
-    // Pad the text to be inserted
-    var paddedLines = newText.split("\n").join("\n" + prefixWhitespace);
-    var splitPaddedLines = paddedLines.split("\n");
-    var colOffset;
-    for(var rowOffset = 0; rowOffset < splitPaddedLines.length; rowOffset++) {
-        colOffset = splitPaddedLines[rowOffset].indexOf("^^");
-        if(colOffset !== -1)
-            break;
-    }
-    // Remove cursor marker
-    paddedLines = paddedLines.replace("^^", "");
-    
-    doc.removeInLine(pos.row, pos.column - prefix.length, pos.column);
-    doc.insert({row: pos.row, column: pos.column - prefix.length}, paddedLines);
-    editor.moveCursorTo(pos.row + rowOffset, pos.column + colOffset - prefix.length);
-}
-    
-
 exports.retrievePreceedingIdentifier = retrievePreceedingIdentifier;
 exports.findCompletions = findCompletions;
-exports.replaceText = replaceText;
 
 });
