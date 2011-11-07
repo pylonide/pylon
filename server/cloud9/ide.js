@@ -163,7 +163,7 @@ Ide.DEFAULT_PLUGINS = [
     };
 
     this.$serveIndex = function(req, res, next) {
-        var _self = this;
+        var plugin, _self = this;
         fs.readFile(__dirname + "/view/ide.tmpl.html", "utf8", function(err, index) {
             if (err)
                 return next(err);
