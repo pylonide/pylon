@@ -533,7 +533,7 @@ apf.Interactive = function(){
         if (!options || !options.nocursor) {
             if (lastCursor === null)
                 lastCursor = document.body.style.cursor;//apf.getStyle(document.body, "cursor");
-            document.body.style.cursor = resizeType + "-resize";
+            document.body.style.cursor = getCssCursor(resizeType) + "-resize";
         }
         
         document.onmousemove = resizeMove;
@@ -795,10 +795,27 @@ apf.Interactive = function(){
             originalCursor = apf.getStyle(this, "cursor");
 
         var cursor = getResizeType.call(_self.$ext, x, y);
+        
         this.style.cursor = cursor 
-            ? cursor + "-resize" 
+            ? getCssCursor(cursor) + "-resize" 
             : originalCursor || "default";
     };
+    
+    function getCssCursor(cursor){
+        var cssCursor = cursor;
+        if (apf.isWebkit) {
+            if (cursor == "se" || cursor == "nw")
+                cssCursor = "nwse";
+            else if (cursor == "sw" || cursor == "ne")
+                cssCursor = "nesw";
+            else if (cursor == "s" || cursor == "n")
+                cssCursor = "ns";
+            else if (cursor == "e" || cursor == "w")
+                cssCursor = "ew";
+        }
+        
+        return cssCursor;
+    }
 
     var oOutline;
     //#ifdef __WITH_OUTLINE
