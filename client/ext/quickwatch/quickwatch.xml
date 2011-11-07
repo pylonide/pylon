@@ -6,6 +6,7 @@
       center    = "true"
       width     = "500" 
       height    = "350"
+      resizable = "true"
       kbclose   = "true">
         <a:vbox anchors="0 0 0 0">
             <a:textbox id="txtCurObject" 
