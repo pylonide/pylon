@@ -391,7 +391,7 @@ apf.uirecorder.capture = {
         
         if (!amlNode)
             amlNode = apf.findHost(htmlNode);
-        
+
         var xmlNode, context, searchObj = {};
         
         if (amlNode && amlNode.nodeType == 1) {
@@ -421,17 +421,20 @@ apf.uirecorder.capture = {
             }
             
             if (!context) {
-                if (apf.isChildOf(amlNode.$ext, htmlNode, true))
-                    context = amlNode.$ext;
-                else if (amlNode.$getActiveElements) {
+                if (amlNode.$getActiveElements) {
                     var activeElements = amlNode.$getActiveElements();
                     for (var name in activeElements) {
                         if (apf.isChildOf(activeElements[name], htmlNode, true)) {
-                            context = activeElements[name];
+                            searchObj.property = name;
+                            context            = activeElements[name];
                             break;
                         }
                     }
                 }
+                
+                if (context) {}
+                else if (apf.isChildOf(amlNode.$ext, htmlNode, true))
+                    context = amlNode.$ext;
                 else {
                     throw new Error ("Could not determine context for " 
                         + amlNode.serialize(true));
