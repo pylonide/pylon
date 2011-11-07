@@ -210,8 +210,35 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         };
         cp.setProperty("value", color);
         var coords = ceEditor.$editor.renderer.textToScreenCoordinates(pos.row, line.indexOf(orig) + orig.length);
-        cp.$ext.style.top = (coords.pageY - 15) + "px";
-        cp.$ext.style.left = (coords.pageX + 15 + (type == "rgb" ? 320 : 0)) + "px";
+        
+        var y = coords.pageY;
+        var x = coords.pageX;
+        var pOverflow = apf.getOverflowParent(cp.$ext);
+        var height = cp.$ext.offsetHeight;
+        var width = cp.$ext.offsetWidth;
+        var edgeY = (pOverflow == document.documentElement
+            ? (apf.isIE 
+                ? pOverflow.offsetHeight 
+                : (window.innerHeight + window.pageYOffset)) + pOverflow.scrollTop
+            : pOverflow.offsetHeight + pOverflow.scrollTop);
+        var edgeX = (pOverflow == document.documentElement
+            ? (apf.isIE 
+                ? pOverflow.offsetWidth
+                : (window.innerWidth + window.pageXOffset)) + pOverflow.scrollLeft
+            : pOverflow.offsetWidth + pOverflow.scrollLeft);
+        
+        if (y + height > edgeY) {
+            y = edgeY - height;
+            if (y < 0)
+                y = 0;
+        }
+        if (x + width > edgeX) {
+            x = edgeX - width;
+            if (x < 0)
+                x = 0;
+        }
+        cp.$ext.style.top = (y - 15) + "px";
+        cp.$ext.style.left = (x + 15 + (type == "rgb" ? 320 : 0)) + "px";
     },
     
     onColorPicked: function(old, color) {
