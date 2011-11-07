@@ -763,7 +763,7 @@ apf.Interactive = function(){
         if (_self.resizable == "true" || _self.resizable == "vertical" || _self.resizable.indexOf('top') > -1 || _self.resizable.indexOf('bottom') > -1) {
             if (y < rszborder + marginBox[0] && _self.resizable.indexOf('bottom') == -1)
                 cursor = posAbs ? "n" : "";
-            else if (y > this.offsetHeight - rszborder && _self.resizable.indexOf('top') == -1) //marginBox[0] - marginBox[2] - 
+            else if (y > this.offsetHeight - (rszcorner || rszborder) && _self.resizable.indexOf('top') == -1) //marginBox[0] - marginBox[2] - 
                 cursor = "s";
         }
         
