@@ -190,7 +190,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         if (!node)
             node = trFiles.xmlRoot.selectSingleNode("folder");
             
-        if (node.getAttribute("type") != "folder")
+        if (node.getAttribute("type") != "folder" && node.tagName != "folder")
             node = node.parentNode;
             
         var path     = node.getAttribute("path");

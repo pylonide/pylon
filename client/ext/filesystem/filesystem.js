@@ -62,7 +62,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         var node = tree.selected;
         if (!node)
             node = tree.xmlRoot.selectSingleNode("folder");
-        if (node.getAttribute("type") != "folder")
+        if (node.getAttribute("type") != "folder" && node.tagName != "folder")
             node = node.parentNode;
 
         if (this.webdav) {
@@ -117,7 +117,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             node = trFiles.selected;
             if (!node)
                 node = trFiles.xmlRoot.selectSingleNode("folder");
-            if (node.getAttribute("type") != "folder")
+            if (node.getAttribute("type") != "folder" && node.tagName != "folder")
                 node = node.parentNode;
         }
         else {
