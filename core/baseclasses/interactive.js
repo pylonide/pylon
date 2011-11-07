@@ -629,7 +629,7 @@ apf.Interactive = function(){
                 if (!_self.top)
                     htmlNode.style.top = "";
             }
-        
+
             if ((left || left === 0) && (!hasRight || hasLeft)) 
                 _self.setProperty("left", left, 0, _self.editable);
             if ((top || top === 0) && (!hasBottom || hasTop)) 

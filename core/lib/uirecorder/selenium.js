@@ -1,17 +1,9 @@
 /*
-    - AmlNodes collected, should be collected during recording not converted afterwards
-
-    - Probably need wait hints for when xmlHttpReq is used or setTimeout / setInterval
-    - When clicking on tab button it only registers the page, it should also add the specific html element
-    * xml properties need to be converted to xpaths
-    * aml properties need to be converted to xpaths
-    
-    * htmlElements in the action object dont have the xpath property (which is needed)
-    * for detailList, the items should have id, not caption
+    IDEAS:
+    - Element Picker in UI
+    - A way to break up a recording in multiple movies (tree-datagrid?)
     - The UI should allow the user to select which assertions he wants to use
-    
-    Bugs during records:
-    - Focus is in last event
+    - The user should have an easy way to add assertions
 */
 
 // #ifdef __ENABLE_SELENIUM_PLAYER
