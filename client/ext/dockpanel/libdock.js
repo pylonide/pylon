@@ -251,7 +251,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             }), bar);
             
             //style hack
-            bar.vbox.$ext.style.borderLeft = "1px solid #333";
+            //bar.vbox.$ext.style.borderLeft = "1px solid #333";
             
             bar.splitter = bar.parentNode.insertBefore(new apf.splitter({
                 scale   : "right",
@@ -1082,6 +1082,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             childNodes = [
                 new apf.bar({
                     skin: "basic",
+                    "class": "runbtns",
                     dock: 1,
                     anchors : "4 4 4 4"
                 })

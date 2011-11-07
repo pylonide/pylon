@@ -49,6 +49,11 @@
         .dockwin_runbtns .basic {
             margin-top: -3px;
         }
+        
+        .expandedpanel .basic.runbtns {
+            border-bottom: 1px solid #000000;
+            box-shadow: 0 1px 0 #505053;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -2298,6 +2303,10 @@
         
         .btn-default-simpleOver {
             color: #bfbfbf;
+        }
+        
+        .win-deploy-target .btn-default-simple {
+            font-size          : 11px;
         }
     ]]></a:style>
 
@@ -5257,6 +5266,10 @@
             box-shadow: 0 2px 10px 1px #000000; 
         }
         
+        .win-deploy-target.bk-window {
+            overflow: visible;
+        }
+        
         .bk-window.relative {
             padding-top: 0;
         }
@@ -6324,13 +6337,10 @@
             margin-left : -3px;
             background : url(images/spacer.gif);
         }
-        
-        .splitter.vertical.panelsplitter div {
-            margin-left: -5px;
-        }
 
         .splitter.vertical.panelsplitter div {
-            margin-left: -5px;
+            /*margin-left: -5px;*/
+            width: 3px;
         }
 
         .splitter.horizontal{
@@ -6352,14 +6362,11 @@
             /*background : #333;*/
         }
         
-        .dockcol > div:nth-child(2) {
+        .dockcol > div:nth-child(2),
+        .dockcol > div:nth-child(4) {
             display: none !important;
             height : 3px;
             /*background : #333;*/
-        }
-        
-        .dockcol > div:nth-child(2) {
-            display: none !important;
         }
         .dockcol .splitter.horizontal div{
             height : 3px;
@@ -6369,6 +6376,11 @@
         .splitter-editor-right {
             background: url(images/editor_header.png) repeat-x 0 0;
             border-right: 1px solid #1E1E1E;
+        }
+        
+        .splitter-editor-right.panelsplitter {
+            border-left: 1px solid #1E1E1E;
+            border-right: 1px solid #333333;
         }
     ]]></a:style>
     <a:presentation>
@@ -7492,7 +7504,7 @@
         .docktab .btncontainer{
             padding : 0;
             z-index : 100;
-            height: 22px;
+            height: 24px;
             overflow: visible;
             white-space: nowrap;
             width : auto;
@@ -7517,14 +7529,14 @@
         }
 
         .docktab .btncontainer .btntab {
-            padding       : 2px 2px 3px;
+            padding       : 3px 2px 4px;
             position      : relative;
             text-align    : center;
             border-right  : 1px solid #464646;
             border-bottom : 1px solid #464646;
             
-            -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.26) inset;
-            -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.26) inset;
+            -moz-box-shadow: 0 1px 0 rgba(100, 100, 100, 0.26) inset;
+            -webkit-box-shadow: 0 1px 0 rgba(100, 100, 100, 0.26) inset;
             
             background: url(images/black-tab_btn_bg.png) 0 0;
             
@@ -7558,7 +7570,7 @@
             padding  : 1px 0 0 2px;
             color    : #bbbbbb;
 
-            text-shadow : rgba(0,0,0,0.7) 0px 1px 0px;
+            text-shadow : #303030 0px 1px 0px;
             font-family : "Arial", Tahoma;
             font-size : 12px;
         }
@@ -7613,11 +7625,11 @@
             display             : block;
             position            : absolute;
             right               : 1px;
-            top                 : 3px;
+            top                 : 5px;
             /*cursor              : pointer;*/
             background-image    : url(images/close_tab_btn.png);
             background-repeat   : no-repeat;
-            background-position : 0 0;
+            background-position : 0 -14px;
         }
 
         .docktab .btncontainer .btnclose strong:hover {
@@ -7630,7 +7642,7 @@
 
         .docktab .btncontainer .curbtn.btnclose strong {
             background-position : 0 0;
-            top: 3px;
+            top: 4px;
         }
 
         .docktab .btncontainer .curbtn.btnclose strong:hover {
@@ -7659,7 +7671,7 @@
         .docktab .page {
             display : none;
             position : absolute;
-            top : 21px;
+            top : 23px;
             bottom : 0;
             left : 0;
             right : 0;

@@ -66,10 +66,25 @@
                             });
                         });
                     });
+                    preloaderImgs();
                 });
                 //if (apf.started)
                 //    apf.onstart();
             });
+            function preloaderImgs() {
+                var preloadImgs = [
+                    "[%staticUrl%]/style/images/bg-overlay.png",
+                    "[%staticUrl%]/style/images/cover-heaeder.png",
+                    "[%staticUrl%]/style/images/cover-logo.png"
+                ];
+                if (document.images) {
+                    var img;
+                    for(var i = 0; i < preloadImgs.length; i++) {
+                        img = new Image();
+                        img.src = preloadImgs[i];
+                    }
+                }
+            }
         //]]>
         </script>
     </head>
