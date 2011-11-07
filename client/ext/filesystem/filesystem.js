@@ -217,7 +217,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
         for (var i = 0; i < length; ++i) {
             var childNode = childNodes[i];
-            if(!childNode)
+            if(!childNode || childNode.nodeType != 1)
                 continue;
             
             // The 'name' variable is redeclared here for some fucked up reason.

@@ -80,7 +80,7 @@ module.exports = ext.register("ext/newresource/newresource", {
         }
             
         path = sel.getAttribute("path");
-        if(trFiles.selected.getAttribute("type") == "file")
+        if(trFiles.selected.getAttribute("type") == "file" || trFiles.selected.tagName == "file")
             path = path.replace(/\/[^\/]*$/, "/");
         else
             path = path + "/";
@@ -99,12 +99,6 @@ module.exports = ext.register("ext/newresource/newresource", {
         if (value)
             doc.cachedValue = value;
         ide.dispatchEvent("openfile", {doc: doc, type: "newfile"});
-        setTimeout(function() {
-            console.log(tabEditors.activepage)
-            if(tabEditors.activepage != path + name + count + type) {
-                tabEditors.set(path + name + count + type);
-            }
-        })
     },
     
     newfiletemplate : function(){
