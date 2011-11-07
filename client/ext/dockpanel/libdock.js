@@ -1377,6 +1377,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         
         if (options && (tmp = options.primary)) {
             var span = button.$ext.getElementsByTagName("span");
+            
+            span[2].title = options.menu.split("/").pop();
+            
             span[2].style.background = 'url("' 
                 + tmp.backgroundImage + '") '
                 + tmp.defaultState.x + 'px '
