@@ -39,7 +39,7 @@ module.exports = ext.register("ext/codetools/codetools", {
                 return;
             prevRow = row;
             
-            ide.dispatchEvent("codetool.rowchange", {
+            ide.dispatchEvent("codetools.rowchange", {
                 amlEditor: amlEditor,
                 editor: editor,
                 pos: pos,
@@ -47,11 +47,11 @@ module.exports = ext.register("ext/codetools/codetools", {
             });
         });
         
-        editor.addEventListener("mousedown", function(e) {
+        editor.addEventListener("click", function(e) {
             var pos = e.getDocumentPosition();
             var doc = editor.session.doc;
             
-            ide.dispatchEvent("codetool.codeclick", {
+            ide.dispatchEvent("codetools.codeclick", {
                 amlEditor: amlEditor,
                 editor: editor,
                 pos: pos,

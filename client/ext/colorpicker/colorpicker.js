@@ -28,6 +28,15 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
 
     nodes : [],
     
+    init: function(amlNode) {
+        apf.document.body.insertMarkup(markup);
+        cp = this.colorpicker = clrCodeTools;
+        var _self = this;
+        this.colorpicker.addEventListener("prop.hex", function(e) {
+            _self.onColorPicked(e.oldvalue, e.value);
+        });
+    },
+    
     hook: function() {
         apf.importCssString(css || "");
 
@@ -48,7 +57,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         
         var _self = this;
         
-        ide.addEventListener("codetool.rowchange", function(e) {
+        ide.addEventListener("codetools.rowchange", function(e) {
             var doc = e.doc;
             var pos = e.pos;
             var editor = e.editor;
@@ -65,13 +74,17 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 _self.hideColorTooltips(editor);
         });
         
-        ide.addEventListener("codetool.codeclick", function(e) {
+        ide.addEventListener("codetools.codeclick", function(e) {
             var doc = e.doc;
             var pos = e.pos;
             var editor = e.editor;
 
             var line = doc.getLine(1);
             if (!(e.amlEditor.syntax == "css" || e.amlEditor.syntax == "svg" || (line && line.indexOf("<a:skin") > -1)))
+                return;
+            //do not show anything when a selection is made...
+            var range = editor.selection.getRange();
+            if (range.start.row !== range.end.row || range.start.column !== range.end.column)
                 return;
 
             var line = doc.getLine(pos.row);
@@ -141,16 +154,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
     },
     
     toggleColorPicker: function(pos, editor, line, color) {
-        var _self = this;
+        ext.initExtension(this);
         var cp = this.colorpicker;
-        if (!cp) {
-            apf.document.body.insertMarkup(markup);
-            cp = this.colorpicker = clrCodeTools;
-            this.colorpicker.addEventListener("prop.hex", function(e) {
-                _self.onColorPicked(e.oldvalue, e.value);
-            });
-            this.$at = new UndoManager();
-        }
         
         var type = "hex";
         var rgb = color.match(/(?:rgba?\(\s*([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\s*,\s*([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\s*,\s*([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\s*(:?\s*,\s*(?:1|0|0?\.[0-9]{1,2})\s*)?\))|(rgba?\(\s*(\d?\d%|100%)+\s*,\s*(\d?\d%|100%)+\s*,\s*(\d?\d%|100%)+\s*(:?\s*,\s*(?:1|0|0?\.[0-9]{1,2})\s*)?\))/);
@@ -259,11 +264,15 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         this.$colorPickTimer = setTimeout(function() {
             a.at.resumeTracking();
             ++a.changed;
-            doc.removeLines(a.row, a.row);
-            doc.insertLines(a.row, [newLine]);
             //doing this across the board would be much more efficient, but the
             //ACE UndoManager just won't play nice.
-            //doc.replace(a.marker[0], color);
+            //if (a.type == "hex") {
+            //    doc.replace(a.marker[0], "#" + color);
+            //}
+            //else {
+                doc.removeLines(a.row, a.row);
+                doc.insertLines(a.row, [newLine]);
+            //}
             a.editor.session.$informUndoManager.call();
             a.at.pauseTracking();
         }, 200);
