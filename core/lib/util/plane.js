@@ -61,7 +61,10 @@ apf.plane = {
     },
 
     $factory : function(){
-        var _self = this;
+        var _self = this,
+            spacerPath = "url(" + (apf.skins.skins["default"] 
+            ? apf.skins.skins["default"].mediaPath + "spacer.gif" : "images/spacer.gif") + ")";
+        
         function getCover(){
             var obj = document.createElement("DIV");
             
@@ -72,29 +75,39 @@ apf.plane = {
             return obj.firstChild;
         }
         
-        var plane = document.body.appendChild(getCover());
-        
-        if(!this.options.customCover) {
-            var spacerPath = "url(" + (apf.skins.skins["default"] 
-                ? apf.skins.skins["default"].mediaPath + "spacer.gif" : "images/spacer.gif") + ")";
-            plane.style.background = spacerPath;
+        function createCover(){
+            var cover = document.body.appendChild(getCover());
+            if(!_self.options.customCover)
+                cover.style.background = spacerPath;
+
+            cover.style.position = "fixed";
+            cover.style.left     = 0;
+            cover.style.top      = 0;
+            cover.host           = false;
+            
+            return cover;
         }
         
-        plane.style.position   = "fixed";
-        plane.style.left       = 0;
-        plane.style.top        = 0;
-        plane.host             = false;
+        var plane = createCover();
         
         return {
-            host       : this,
-            plane      : plane,
-            lastCursor : null,
+            host          : this,
+            plane         : plane,
+            lastCursor    : null,
+            lastCoverType :"default",
             
             show : function(o, reAppend, copyCursor, useRealSize, options){
-                var plane = this.plane;
+                var coverType = options && options.customCover ? "custom" : "default",
+                    plane;
                 
+                if(coverType == "custom" || this.lastCoverType != coverType)
+                    this.plane = createCover();
+                
+                plane = this.plane;
+            
                 if(!options || !options.customCover)
                     this.plane.style.background = options && options.color || spacerPath;
+                
                 this.animate = options && options.animate;
                 this.protect = options && options.protect;
                 
@@ -149,6 +162,8 @@ apf.plane = {
                 var diff = apf.getDiff(plane);
                 this.plane.style.width  = "100%";//(pWidth - diff[0]) + "px";
                 this.plane.style.height = "100%";//(pHeight - diff[1]) + "px";
+        
+                this.lastCoverType = options && options.customCover ? "custom" : "default";
         
                 return plane;
             },
