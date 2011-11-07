@@ -56,6 +56,9 @@ apf.isChildOf = function(pNode, childnode, orItself){
  * @returns {String}     The escaped string
  */
 apf.escapeXML = function(str) {
+    // gigo
+    if (typeof str !== "string") return str;
+    
     return ((str || "")
         .replace(/&/g, "&amp;")
         .replace(/"/g, "&quot;")
