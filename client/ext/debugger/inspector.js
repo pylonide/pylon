@@ -191,7 +191,7 @@ exports.calcName = function(xmlNode, useDisplay){
         path.unshift(!name.match(/^[a-z_\$][\w_\$]*$/i)
             ? (parseInt(name, 10) == name
                 ? "[" + name + "]"
-                : "[\"" + name.replace(/'/g, "\\'") + "\"]")
+                : "[\"" + name + "\"]")
             : name);
         loopNode = loopNode.parentNode;
         if (isMethod) {
