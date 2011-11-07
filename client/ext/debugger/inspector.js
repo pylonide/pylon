@@ -14,9 +14,7 @@ exports.evaluate = function(expression, callback){
     var _self = this;
     var frame = (self.dgStack && dgStack.selected && dgStack.selected.getAttribute("ref")) || null;
     
-    dbg.evaluate(expression, frame, null, null, callback || function(xmlNode){
-        exports.showObject(xmlNode);
-    });
+    dbg.evaluate(expression, frame, null, null, callback || exports.showObject);
 };
 
 exports.checkChange = function(xmlNode){
@@ -181,6 +179,14 @@ exports.calcName = function(xmlNode, useDisplay){
 
         if (!name)
             break;
+        
+        var xmlDecode = function (input) {
+            var e = document.createElement('div');
+            e.innerHTML = input;
+            return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+        }
+        
+        name = xmlDecode(name);
 
         path.unshift(!name.match(/^[a-z_\$][\w_\$]*$/i)
             ? (parseInt(name, 10) == name
