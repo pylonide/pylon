@@ -109,7 +109,7 @@ apf.actiontracker = function(struct, tagName){
 
 (function(){
     this.$lastExecStackItem = null;
-    this.$paused = false
+    this.$paused = false;
 
     this.realtime   = true;
     this.undolength = 0;
@@ -270,8 +270,6 @@ apf.actiontracker = function(struct, tagName){
      *                              responsible for the action
      */
     this.execute = function(options){
-        if (this.$paused)
-            return;
         if (this.dispatchEvent("beforechange", options) === false)
             return false;
 
@@ -280,8 +278,10 @@ apf.actiontracker = function(struct, tagName){
         if (options.action && !options.transaction)
             apf.actiontracker.actions[options.action](UndoObj, false, this);
 
-        //Add action to stack
-        UndoObj.id = this.$undostack.push(UndoObj) - 1;
+        if (!this.$paused) {
+            //Add action to stack
+            UndoObj.id = this.$undostack.push(UndoObj) - 1;
+        }
 
         this.setProperty("undolength", this.$undostack.length);
 
