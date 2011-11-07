@@ -24,7 +24,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
 
     nodes          : [],
     dockpanels     : [],
-    sections       : [],
+    sections       : {},
     
     loaded : false,
     
@@ -35,7 +35,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         var _self = this;
         
         var vManager = new apf.visibilitymanager();
-        this.layout = new DockableLayout(hboxDockPanel, 
+        this.layout = new DockableLayout(hboxMain, 
             //Find Page
             function(arrExtension){
                 if (!arrExtension || !_self.dockpanels[arrExtension[0]])
@@ -48,11 +48,11 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 var page = item.getPage();
                 page.$arrExtension = arrExtension;
 
-                /*vManager.permanent(page, function(e){
+                vManager.permanent(page, function(e){
                     item.mnuItem.check();
                 }, function(){
                     item.mnuItem.uncheck();
-                });*/
+                });
 
                 return page;
             }, 
@@ -62,11 +62,15 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 var item = _self.dockpanels[arrExtension[0]][arrExtension[1]];
                 item.page = amlPage;
 
-                _self.sections[arrExtension[0]][arrExtension[1]] = {
-                    buttons : [
-                        { ext : [arrExtension[0], arrExtension[1]] }
-                    ]
-                };
+                if (!_self.sections[arrExtension[0]])
+                    _self.sections[arrExtension[0]] = {};
+                if (!_self.sections[arrExtension[0]][arrExtension[1]]) {
+                    _self.sections[arrExtension[0]][arrExtension[1]] = {
+                        buttons : [
+                            { ext : [arrExtension[0], arrExtension[1]] }
+                        ]
+                    };
+                }
 
                 item.mnuItem.uncheck();
 
@@ -90,7 +94,6 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         ide.addEventListener("loadsettings", function(e){
             var model = e.model;
             var strSettings = model.queryValue("auto/dockpanel");
-            
             var settings = _self.defaultState;
             if (strSettings) {
                 // JSON parse COULD fail
@@ -101,8 +104,10 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 }
                 catch (ex) {}
             }
-            
-            _self.layout.loadState(_self.defaultState);
+
+            // @TODO update collaboration to be sympatico with settings being loaded
+            // and re-enable this
+            _self.layout.loadState(/*settings ||*/ _self.defaultState);
             _self.loaded = true;
         });
 
@@ -159,17 +164,71 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 }
             }
         }));
-        
-        
     },
-
+    
+    $filterPositionedButtons : function(def) {
+        var _self = this;
+        function searchSection(section) {
+            var buttons = section.buttons;
+            for (var button, i = buttons.length - 1; i >= 0; i--) {
+                if (checkButton(buttons[i])) {
+                    buttons.length--;
+                }
+            }
+            return !buttons.length;
+        }
+        
+        function checkButton(button){
+            if (button.position) {
+                var section = _self.layout.$findSection(button.position);
+                if (section) {
+                    randomAccessButtons.unshift(button);
+                    button.refSection = section;
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        var randomAccessButtons = [];
+        if (def.sections) {
+            var sections = def.sections;
+            for (var section, j = sections.length - 1; j >= 0; j--) {
+                if (searchSection(sections[j]))
+                    sections.length--;
+            }
+            if (!sections.length)
+                def = false;
+        }
+        else if (def.buttons) {
+            if (searchSection(def))
+                def = false;
+        }
+        else {
+            if (checkButton(def))
+                def = false;
+        }
+        
+        for (var i = 0; i < randomAccessButtons.length; i++) {
+            this.layout.addButtonToSection(randomAccessButtons[i]);
+        }
+        
+        return def;
+    },
+    
     addDockable : function(def){
+        //See if we have positioned buttons
+        def = this.$filterPositionedButtons(def);
+        if (!def)
+            return;
+        
         if (this.loaded) {
             this.layout.addItem(def);
             return;
         }
         
         var state = this.defaultState;
+        //Add a bar
         if (def.sections) {
             state.bars.push(def);
             return;
@@ -188,9 +247,11 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             state.bars[0] = {expanded: false, width: 200, sections: []};
 
         var bar = state.bars[0];
+        //Add a section
         if (def.buttons) {
             bar.sections.push(def);
         }
+        //Add a button
         else {
             bar.sections.push({
                 flex    : 2,
@@ -199,78 +260,18 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 buttons : [def]
             });
         }
-        
-        return bar.sections.slice(-1);
     }, //properties.forceShow ??
-    
+
     //@todo removal of pages
-    
+
     /**
      * Increases the notification number count by one
      * 
-     * @windowIdent identifier of the dock object
+     * @param {array} ext Identifier
      */
-    increaseNotificationCount: function(windowIdent){
-        /*for(var doi = 0; doi < this.dockObjects.length; doi++) {
-            if(this.dockObjects[doi].ident == windowIdent) {
-                // Only increase notification count if window is hidden
-                if(this.dockObjects[doi].btn.value == false) {
-                    if(this.dockObjects[doi].notCount >= 99)
-                        return true;
-
-                    this.dockObjects[doi].notCount++;
-                    this.updateNotificationElement(
-                            this.dockObjects[doi].btn
-                            , this.dockObjects[doi].notCount
-                    );
-                }
-                
-                return true;
-            }
-        }
-        
-        return false;*/
+    setCounter: function(ext, value){
+        this.layout.setCounter(ext, value);
     },
-
-    /**
-     * Resets the notification count to 0
-     */
-    resetNotificationCount: function(windowIdent){
-        if(windowIdent == -1) return;
-
-        for(var doi = 0; doi < this.dockObjects.length; doi++) {
-            if(this.dockObjects[doi].ident == windowIdent) {
-                this.dockObjects[doi].notCount = 0;
-                this.updateNotificationElement(this.dockObjects[doi].btn, 0);
-                return true;
-            }
-        }
-        
-        return false;
-    },
-    
-    /**
-     * Updates the notification element to visually reflect notCount
-     */
-    updateNotificationElement: function(btnObj, count){
-        if(count == 0) {
-            var countInner = "";
-        }
-        
-        else {
-            var countInner = count;
-        }
-
-        if(apf.isGecko) {
-            btnObj.$ext.getElementsByClassName("dock_notification")[0].textContent = countInner;
-        }
-            
-        else {
-            btnObj.$ext.getElementsByClassName("dock_notification")[0].innerText = countInner;
-        }
-        
-        return true;
-    }
 });
 
     }
