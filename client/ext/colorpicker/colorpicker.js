@@ -179,7 +179,21 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             return cp.hide();
         }
         
-        apf.addEventListener("keydown", this.onKeyDown);
+        var onKeyDown, _self = this;
+        apf.addEventListener("keydown", onKeyDown = function(e) {
+            var a = _self.$activeColor;
+            
+            if (!cp || !a || !cp.visible || e.keyCode != 27) 
+                return;
+                
+            clearTimeout(_self.$colorPickTimer);
+            a.at.resumeTracking();
+            delete _self.$activeColor;
+            cp.hide();
+            if (a.changed)
+                a.at.undo(a.at.undolength - a.start);
+            apf.removeEventListener("keydown", onKeyDown);
+        });
 
         this.hideColorTooltips(editor);
         cp.show();
@@ -198,22 +212,6 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         var coords = ceEditor.$editor.renderer.textToScreenCoordinates(pos.row, line.indexOf(orig) + orig.length);
         cp.$ext.style.top = (coords.pageY - 15) + "px";
         cp.$ext.style.left = (coords.pageX + 15 + (type == "rgb" ? 320 : 0)) + "px";
-    },
-    
-    onKeyDown: function(e) {
-        var _self = require("ext/colorpicker/colorpicker");
-        var cp = _self.colorpicker;
-        var a = _self.$activeColor;
-        
-        if (cp && a && cp.visible && e.keyCode == 27) {
-            clearTimeout(_self.$colorPickTimer);
-            a.at.resumeTracking();
-            delete _self.$activeColor;
-            cp.hide();
-            if (a.changed)
-                a.at.undo(a.at.undolength - a.start);
-            apf.removeEventListener("keydown", _self.onKeyDown);
-        }
     },
     
     onColorPicked: function(old, color) {
