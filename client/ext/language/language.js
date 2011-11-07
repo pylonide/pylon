@@ -15,7 +15,9 @@ var tree = require('treehugger/tree');
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
 
 var outline = require('ext/language/outline');
-var markup = require("text!ext/language/outline.xml");
+var complete = require('ext/language/complete');
+
+var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
 
 module.exports = ext.register("ext/language/language", {
@@ -27,41 +29,52 @@ module.exports = ext.register("ext/language/language", {
     alone   : true,
     markup  : markup,
     skin    : skin,
+    worker  : null,
+    
     commands : {
-        "outline": {hint: "show outline"}
+        "outline": {hint: "show outline"},
+        "complete": {hint: "code complete"}
     },
 
     hook : function() {
 		var _self = this;
-        console.log("Hooked language support.");
 
-		ide.addEventListener("afteropenfile", function(){
+		ide.addEventListener("afteropenfile", function(event){
             ext.initExtension(_self);
+            if (!event.node) return;
+            if (!editors.currentEditor || !editors.currentEditor.ceEditor) // No editor, for some reason
+                return;
+            var path = event.node.getAttribute("path");
+            worker.call("setPath", [path, event.doc.getValue()]);
+            event.doc.addEventListener("close", function() {
+                worker.emit("documentClose", {data: path});
+            });
 	    });
-	},
-
-    init : function() {
-        var _self = this;
-        var worker = this.$worker = new WorkerClient(["treehugger", "pilot", "ext", "ace", "c9"], null, "ext/language/worker", "LanguageWorker");
-        var currentPath = tabEditors.getPage().getAttribute("id");
-        this.editor = editors.currentEditor.ceEditor.$editor;
-        this.$onCursorChange = this.onCursorChange.bind(this);
-        this.editor.selection.on("changeCursor", this.$onCursorChange);
-        var oldSelection = this.editor.selection;
-        worker.call("setPath", [currentPath]);
-        worker.call("setValue", [this.editor.getSession().getValue()]);
-        
+        var worker = this.worker = new WorkerClient(["treehugger", "pilot", "ext", "ace", "c9"], null, "ext/language/worker", "LanguageWorker");
+        complete.setWorker(worker);
         // Language features
         worker.on("outline", function(event) {
             outline.renderOutline(event);
         });
+        worker.on("complete", function(event) {
+            complete.onComplete(event);
+        });
+	},
 
+    init : function() {
+        var _self = this;
+        var worker = this.worker;
+        this.editor = editors.currentEditor.ceEditor.$editor;
+        this.$onCursorChange = this.onCursorChange.bind(this);
+        this.editor.selection.on("changeCursor", this.$onCursorChange);
+        var oldSelection = this.editor.selection;
+        this.setPath();
+        
         this.editor.on("changeSession", function(event) {
             // Time out a litle, to let the page path be updated
             $setTimeout(function() {
                 var currentPath = tabEditors.getPage().getAttribute("id");
-                worker.call("setValue", [event.session.getValue()]);
-                worker.call("setPath", [currentPath]);
+                _self.setPath();
                 oldSelection.removeEventListener("changeCursor", _self.$onCursorChange);
                 _self.editor.selection.on("changeCursor", _self.$onCursorChange);
                 oldSelection = _self.editor.selection;
@@ -77,19 +90,34 @@ module.exports = ext.register("ext/language/language", {
         });
     },
     
+    setPath: function() {
+        var _self = this;
+        setTimeout(function() {
+            var currentPath = tabEditors.getPage().getAttribute("id");
+            _self.worker.call("setPath", [currentPath, _self.editor.getSession().getValue()]);
+        }, 0);
+    },
+    
     /**
      * Method attached to key combo for outline
      */
     outline : function() {
-        this.$worker.emit("outline", {});
+        this.worker.emit("outline", {});
+    },
+    
+    /**
+     * Method attached to key combo for complete
+     */
+    complete: function() {
+        complete.invoke();
     },
     
     registerLanguageHandler: function(modulePath, className) {
-        this.$worker.call("register", [modulePath, className]);
+        this.worker.call("register", [modulePath, className]);
     },
 
     onCursorChange: function() {
-        this.$worker.emit("cursormove", {data: this.editor.getCursorPosition()});
+        this.worker.emit("cursormove", {data: this.editor.getCursorPosition()});
     },
 
     enable : function() {

@@ -143,7 +143,8 @@ return keys.onLoad({
             "indent": "Tab"
         },
         "language": {
-            "outline": "Ctrl-Shift-O"
+            "outline": "Ctrl-Shift-O",
+            "complete": "Ctrl-Space|Alt-Space"
         }
     }
 });

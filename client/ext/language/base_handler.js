@@ -5,6 +5,8 @@ var BaseLanguageHandler = exports.BaseLanguageHandler = function() {
 
 (function() {
     
+    this.path = null;
+    
     // OVERRIDABLE METHODS
 
     /**
@@ -21,7 +23,7 @@ var BaseLanguageHandler = exports.BaseLanguageHandler = function() {
      * @param code code to parse
      * @return treehugger AST or null if not implemented
      */
-    this.parse = function(code) {
+    this.parse = function(doc) {
         return null;
     };
     
@@ -39,7 +41,20 @@ var BaseLanguageHandler = exports.BaseLanguageHandler = function() {
      */
     this.onParse = function(ast) {
     };
-
+    
+    /**
+     * Invoked when the document has been updated (possibly after a certain interval)
+     * @param doc the document object
+     */
+    this.onUpdate = function(doc) {
+    };
+    
+    this.onDocumentOpen = function(path, doc, oldPath) {
+    };
+    
+    this.onDocumentClose = function(path) {
+    };
+    
     /**
      * Invoked when an outline is required
      * @return a JSON outline structure or null if not supported
@@ -49,12 +64,20 @@ var BaseLanguageHandler = exports.BaseLanguageHandler = function() {
     };
     
     /**
+     * Returns whether the completion engine requires an AST representation of the code
+     */
+    this.completionRequiresParsing = function() {
+        return false;
+    };
+    
+    /**
      * Performs code completion for the user based on the current cursor position
+     * @param doc the entire source code as string
      * @param fullAst the entire AST of the current file
      * @param cursorPos the current cursor position (object with keys 'row' and 'column')
      * @param currentNode the AST node the cursor is currently at
      */
-    this.complete = function(fullAst, cursorPos, currentNode) {
+    this.complete = function(doc, fullAst, cursorPos, currentNode) {
         return null;
     };
     
