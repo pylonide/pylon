@@ -22,7 +22,6 @@
 */
 
 apf.uirecorder.capture = {
-    actions        : [],
     validKeys      : [ 37, 38, 39, 40,  //arrowkeys
                         27,             // Esc
                         16, 17, 18,     // Shift, Ctrl, Alt
@@ -32,12 +31,12 @@ apf.uirecorder.capture = {
                       ],
     
     // start capturing
-    record : function(file, testId, captureDetails) {
+    record : function() {
         // init capturing
         apf.uirecorder.capture.init();
 
-        this.actions   = [];
-        this.startTime = new Date().getTime();
+        this.actions    = [];
+        this.startTime  = new Date().getTime();
 
         // start capturing
         this.createStream();
@@ -48,11 +47,14 @@ apf.uirecorder.capture = {
     
     // stop capturing, save recorded data in this.outputXml
     stop : function() {
-        apf.uirecorder.$inited      = false;
-        apf.uirecorder.isRecording  = false;
+        apf.uirecorder.isRecording = false;
 
         if (!this.lastStream.name)
             this.actions.length--;
+        
+        this.lastStream = null;
+        
+        $setTimeout = apf.uirecorder.setTimeout;
     },
 
     canCapture : function(){
@@ -203,17 +205,17 @@ apf.uirecorder.capture = {
     },
     
     captureHtmlEvent : function(eventName, e, value) {
-        // elapsed time since start of recording/playback
-        var time = parseInt(new Date().getTime() - this.startTime);
-
         if (this.lastStream.name)
             throw new Error("Stream collission error");
 
         // Set action object
         
         var stream = this.lastStream;
-        stream.time = time;
-        stream.name = eventName;
+        
+        // elapsed time since start of recording/playback
+        stream.abstime = new Date().getTime();
+        stream.time    = parseInt(stream.abstime - this.startTime);
+        stream.name    = eventName;
         
         // Determine Context
         
@@ -224,8 +226,8 @@ apf.uirecorder.capture = {
         if (e) {
             stream.x = parseInt(e.clientX) || undefined;
             stream.y = parseInt(e.clientY) || undefined;
-            stream.offsetX = e.offsetX || e.layerX;
-            stream.offsetY = e.offsetY || e.layerY;
+            stream.offsetX = e.offsetX;
+            stream.offsetY = e.offsetY;
             
             if (e.button || e.which)
                 stream.button = e.button || e.which;
@@ -271,6 +273,7 @@ apf.uirecorder.capture = {
             return apf.uirecorder.setTimeout.call(window, function(){
                 var lastStream   = _self.lastStream; //Later in time, so potentially a different stream;
                 _self.lastStream = stream;
+                stream.async = true;
                 
                 if (typeof f == "string")
                     apf.jsexec(f)
@@ -291,6 +294,7 @@ apf.uirecorder.capture = {
         options.callback = function(data, state, extra){
             var lastStream   = _self.lastStream; //Later in time, so potentially a different stream;
             _self.lastStream = stream;
+            stream.async = true;
             
             stream.http.push({
                 url      : url,
@@ -317,17 +321,33 @@ apf.uirecorder.capture = {
         }
     },
     
-    validEvents : ["beforedrag", "afterdrag", "dragstart", "dragdrop", "beforestatechange", "afterstatechange"],
     captureEvent : function(eventName, e) {
         if (["DOMNodeRemovedFromDocument"].indexOf(eventName) > -1) 
             return;
-        
         var target = this.getTargetNode(eventName, e);
         if (!target || this.shouldIgnoreEvent(eventName, target)) 
             return;
 
+        // Special case for drag&drop
+        if (eventName == "dragstop" && !e.success || eventName == "dragdrop") {
+            this.lastStream.dragIndicator = this.lastStream.element;
+            
+            e.indicator.style.top = "-2000px";
+            
+            var htmlNode = 
+                document.elementFromPoint(e.htmlEvent.x, e.htmlEvent.y);
+            this.lastStream.element = 
+                this.getElementLookupDef(htmlNode);
+            
+            var pos = apf.getAbsolutePosition(htmlNode);
+            this.lastStream.offsetX = e.htmlEvent.x - pos[0];
+            this.lastStream.offsetY = e.htmlEvent.y - pos[1];
+        }
+        
         this.lastStream.events.push({
             name        : eventName,
+            async       : this.lastStream.async,
+            time        : new Date().getTime() - this.lastStream.abstime,
             event       : this.getCleanCopy(e),
             element     : this.getElementLookupDef(null, target)
         });
@@ -340,6 +360,8 @@ apf.uirecorder.capture = {
             
         this.lastStream.properties.push({
             name        : prop,
+            async       : this.lastStream.async,
+            time        : new Date().getTime() - this.lastStream.abstime,
             value       : this.getCleanCopy(value),
             oldvalue    : this.getCleanCopy(oldvalue),
             element     : this.getElementLookupDef(null, target)
@@ -353,6 +375,8 @@ apf.uirecorder.capture = {
 
         this.lastStream.data.push({
             name        : params.action,
+            async       : this.lastStream.async,
+            time        : new Date().getTime() - this.lastStream.abstime,
             xmlNode     : apf.xmlToXpath(params.xmlNode, params.amlNode.data),
             element     : this.getElementLookupDef(null, target)
             //@todo params.UndoObj??
@@ -392,7 +416,7 @@ apf.uirecorder.capture = {
         if (!amlNode)
             amlNode = apf.findHost(htmlNode);
 
-        var xmlNode, context, searchObj = {};
+        var context, searchObj = {};
         
         if (amlNode && amlNode.nodeType == 1) {
             if (amlNode.id) {
@@ -415,8 +439,11 @@ apf.uirecorder.capture = {
             if (amlNode.hasFeature(apf.__MULTISELECT__)) {
                 xmlNode = apf.xmldb.findXmlNode(htmlNode);
                 if (xmlNode) {
-                    searchObj.xml = apf.xmlToXpath(xmlNode, amlNode.xmlRoot);
-                    context       = apf.xmldb.getHtmlNode(xmlNode, amlNode);
+                    var xpath = apf.xmlToXpath(xmlNode, amlNode.xmlRoot);
+                    if (xpath != ".") {
+                        searchObj.xml = xpath
+                        context       = apf.xmldb.getHtmlNode(xmlNode, amlNode);
+                    }
                 }
             }
             
@@ -454,6 +481,7 @@ apf.uirecorder.capture = {
         if (!obj || "object|array".indexOf(typeof obj) == -1)
             o = obj;
         else if (obj.dataType == apf.ARRAY) {
+            o = [];
             for (var i = 0; i < obj.length; i++) {
                 o[i] = this.getCleanCopy(obj[i]);
             }

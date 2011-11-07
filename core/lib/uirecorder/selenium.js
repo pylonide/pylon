@@ -22,75 +22,30 @@ function SeleniumPlayer(browser){
 (function(){
     this.realtime = true;
     
-    this.play = function(name, actionList){
-        var script = this.compile(actionList);
+    this.play = function(name, actions){
+        var script = this.compile(actions);
         new Function('browser', script)();
     }
     
-    this.writeTestFile = function(actionList, filename, name) {
+    this.writeTestFile = function(actions, filename, name) {
         
     }
     
-    this.writeTestOnly = function(actionList, filename){
+    this.writeTestOnly = function(actions, filename){
         
     }
     
-    function getFindQuery(item, extra) {
-        var data = item.dropTarget || item.amlNode
-        var searchObj = {};
-        
-        if (!data && item.htmlElement)
-            return item.htmlElement.xpath;
-        
-        if (data.id)
-            searchObj.id = data.id;
-        else if (data.xpath)
-            searchObj.xpath = data.xpath.toLowerCase().replace(/^html\[1\]\//i, ""); //@todo toLowerCase should be removed when capturing is done in realtime
-        else
-            debugger;
-        
-        if (data.selected)
-            searchObj.xml = data.selected.xpath;
-        
-        if (item.htmlElement && typeof item.htmlElement.xpath != "string")
-            searchObj.htmlXpath = item.htmlElement.xpath[1];
-        
-        if (data.activeElement)
-            searchObj.property = data.activeElement.name;
-        
-        if (extra)
-            apf.extend(searchObj, extra);
-        
-        return JSON.stringify(searchObj);
-    }
-    
-    function findElement(data, contexts, stack, extra) {
-        var serialized = getFindQuery(data, extra);
-        
+    function findElement(element, contexts, stack, extra) {
         var elName;
+        var obj = extra ? apf.extend({}, element, extra) : element;
+        var serialized = JSON.stringify(obj);
+        
         if (!contexts[serialized]) {
             elName = contexts[serialized] = "elId" + contexts.length++; 
-            if (data.amlNode) {
-                stack.push("", 
-                    'var ' + elName + ' = browser.findApfElement('
-                    + serialized
-                    + ');');
-            }
-            else if (typeof serialized == "string" || !serialized[0] && (serialized = serialized[1])) {
-                stack.push("", 
-                    'var ' + elName + ' = browser.element("xpath", "'
-                    + serialized.replace(/"/g, '\\"')
-                    + '");');
-            }
-            else {
-                stack.push("", 
-                    'var ' + elName + ' = browser.findApfElement('
-                    + JSON.stringify({
-                        xpath: serialized[0].replace(/^\/html\[1\]\//i, "") || ".", 
-                        htmlXpath: serialized[1]
-                      })
-                    + ');');
-            }
+            stack.push("", 
+                'var ' + elName + ' = browser.findApfElement('
+                + serialized
+                + ');');
         }
         else
             elName = contexts[serialized];
@@ -98,35 +53,52 @@ function SeleniumPlayer(browser){
         return elName;
     }
     
-    this.compile = function(actionList){
+    var keys = [
+        {name: "ctrlKey",  char: "\uE009", state: false}, 
+        {name: "metaKey",  char: "\uE03E", state: false},
+        {name: "shiftKey", char: "\uE008", state: false},
+        {name: "altKey",   char: "\uE00A", state: false}
+    ];
+    
+    this.compile = function(actions){
         var rules = [], stack;
         var context, contexts = {length: 0};
         var needsMove;
         
-        //actionList = actionList.reverse();
-        
-        var minLength, elId, el, item, temp, lastMouseDown;
-        for (var i = 0, l = actionList.length; i < l; i++) {
-            item    = actionList[i];
-            el      = item.dropTarget || item.amlNode || item.htmlElement;
+        var minLength, elId, el, item, temp, lastMouseDown, lastCoords;
+        for (var i = 0, l = actions.length; i < l; i++) {
+            item    = actions[i];
+            el      = item.element;
             stack   = [];
 
             if (!el) {
                 console.log("Found item without any element");
                 continue;
             }
+            
+            if (!this.realtime && item.name == "mousemove")
+                continue;
 
-            elId = findElement(item, contexts, stack);
+            elId = findElement(item.element, contexts, stack);
 
-            var x  = (el.selected ? el.selected.x : item.x) - (item.htmlElement ? item.htmlElement.x : (el.activeElement ? el.activeElement.x : el.x));
-            var y  = (el.selected ? el.selected.y : item.y) - (item.htmlElement ? item.htmlElement.y : (el.activeElement ? el.activeElement.y : el.y));
+            var x  = item.offsetX;
+            var y  = item.offsetY;
+            
+            if (!item.name.indexOf("key")) {
+                keys.each(function(info){
+                    if (item[info.name] != info.state) {
+                        info.state = !info.state;
+                        stack.push("browser.keyToggle('" + info.char + "');")
+                    }
+                });
+            }
             
             switch(item.name) {
                 case "mousemove":
-                    // || !actionList[i + 1] || !actionList[i + 1].name == "mousemove"
-                    if (this.realtime)
-                        stack.push("browser.moveTo(" + elId 
-                            + ", " + x + ", " + y + ");");
+                    // || !actions[i + 1] || !actions[i + 1].name == "mousemove"
+                    stack.push("browser.moveTo(" + elId 
+                        + ", " + x + ", " + y + ");"); //@todo make these absolute
+                        
                     break;
                 case "mousedown":
                     lastMouseDown = [elId, item.x, item.y];
@@ -135,15 +107,18 @@ function SeleniumPlayer(browser){
                         + ", " + x + ", " + y + ");");
                     
                     if (item.button == 2) {
-                        stack.push("browser.click('" + elId 
-                            + ", 2);");
+                        stack.push("browser.click('" + elId + ", 2);");
                     }
                     //@todo think about moving this to a cleanup.
                     else if (
-                        (temp = actionList[i + 1]) && contexts[getFindQuery(temp)] == elId && temp.name == "mouseup" &&
-                        (temp = actionList[i + 2]) && contexts[getFindQuery(temp)] == elId && temp.name == "mousedown" &&
-                        (temp = actionList[i + 3]) && contexts[getFindQuery(temp)] == elId && temp.name == "mouseup" &&
-                        (temp = actionList[i + 4]) && contexts[getFindQuery(temp)] == elid && temp.name == "dblclick"
+                        (temp = actions[i + 1]) && contexts[temp.element] == elId 
+                            && temp.name == "mouseup" &&
+                        (temp = actions[i + 2]) && contexts[temp.element] == elId
+                            && temp.name == "mousedown" &&
+                        (temp = actions[i + 3]) && contexts[temp.element] == elId
+                            && temp.name == "mouseup" &&
+                        (temp = actions[i + 4]) && contexts[temp.element] == elid
+                            && temp.name == "dblclick"
                     ) {
                         // double click detection
                         i += 3;
@@ -155,13 +130,19 @@ function SeleniumPlayer(browser){
                     break;
                 case "mouseup":
                     if (lastMouseDown && lastMouseDown[0] == elId) {
-                        x += item.x - lastMouseDown[1];
-                        y += item.y - lastMouseDown[2];
-                        lastMouseDown = null;
+                        if (lastMouseDown[1] != item.x || lastMouseDown[2] != item.y) {
+                            x += item.x - lastMouseDown[1];
+                            y += item.y - lastMouseDown[2];
+                            lastMouseDown = null;
+                            
+                            stack.push("browser.moveTo(" + elId 
+                                + ", " + x + ", " + y + ");");
+                        }
                     }
-                    
-                    stack.push("browser.moveTo(" + elId 
-                        + ", " + x + ", " + y + ");");
+                    else {
+                        stack.push("browser.moveTo(" + elId 
+                            + ", " + x + ", " + y + ");");
+                    }
                     
                     if (item.button == 2) {
                         //Ignore
@@ -177,14 +158,22 @@ function SeleniumPlayer(browser){
                     stack.push("browser.moveTo(" + elId 
                         + ", " + x + ", " + y + ");");
                     
-                    stack.push("browser.doubleclick();");
+                    //stack.push("browser.doubleclick();");
+                    stack.push("browser.buttonDown();");
+                    stack.push("browser.buttonUp();");
+                    stack.push("browser.buttonDown();");
+                    stack.push("browser.buttonUp();");
+                    break;
+                case "keydown":
+                    break;
+                case "keyup":
                     break;
                 case "keypress":
                     //@todo !realtime
                     //@todo modifier Keys
                     //@todo This should be keydown and keyup
                     
-                    var inputId = findElement(item, contexts, stack, {
+                    var inputId = findElement(item.element, contexts, stack, {
                         html : ["input", "*[contenteditable]", ""]
                     });
 
@@ -192,6 +181,8 @@ function SeleniumPlayer(browser){
                         + "', ['" + item.value + "']);");
                     break;
             }
+            
+            /**** Assertions ****/
             
             function contextToExpression(def, nosel){
                 var res;
@@ -203,42 +194,63 @@ function SeleniumPlayer(browser){
                         .replace(/^html\[1\]\//i, "")
                         .replace(/"/g, "\\\"") + "\")";
                 
-                if (!nosel && def.selected)
+                if (def.xml)
                     res += ".$xmlRoot.selectSingleNode('"
-                      + def.selected.xpath.replace(/"/g, "\\\"") + "')";
+                      + def.xml.replace(/"/g, "\\\"") + "')";
                 
                 return res;
             }
             
-            function genProp(item, name, value, rules){
-                var ident = contextToExpression(item.amlNode || item.htmlElement, true);
-                rules.push("browser.assert('" 
-                    + ident + "." + name + "', '"
-                    + (value.type == "aml" || value.xpath
-                        ? contextToExpression(value.xpath ? value : value.value)
-                        : value.value || JSON.stringify(value)).replace(/'/g, "\\'")
-                    + "');");
-            }
-            
-            //Assertions
-//            for (var prop in item.properties) {
-//                genProp(item, prop, item.properties[prop], stack);
-//            }
-
-            var jProps, detailList = item.detailList;
-            for (var j = 0, jl = detailList.length; j < jl; j++) {
-                for (var k in detailList[j]) {
-                    if ((jProps = detailList[j][k].properties) && jProps.length) {
-                        for (var p = 0; p < jProps.length; p++) {
-                            genProp(detailList[j][k], jProps[p].name, jProps[p].value, stack);
-                        }
+            //@todo this function can be expanded to cover all cases
+            //      but I haven't seen them occur yet
+            function serializeValue(value) {
+                if (value && (value.id || value.xpath 
+                  || value.htmlXpath || value.xml || value.eval))
+                    return contextToExpression(prop.value);
+                else if (value.dataType == apf.ARRAY) {
+                    var o = [];
+                    for (var i = 0; i < value.length; i++) {
+                        o.push(value[i] && value[i].eval
+                            ? value[i].eval
+                            : JSON.stringify(value[i]));
                     }
+                    return "[" + o.toString() + "]";
                 }
+//                else if (typeof value == "object") {
+//                    
+//                }
+                else
+                    return JSON.stringify(value);
             }
             
-//            if (this.realtime && actionList[i + 1])
-//                stack.push("browser.pause(" + 
-//                    (item.time - actionList[i + 1].time) + ")");
+            // Properties
+            var time = 0;
+            for (var prop, j = 0; j < item.properties.length; j++) {
+                prop = item.properties[j];
+                var ident = contextToExpression(prop.element);
+                
+                if (prop.async && prop.time > time) {
+                    stack.push("hold(" + ((prop.time - time) * 3) + ")");
+                    time = prop.time;
+                }
+                
+                stack.push("browser.assert('" 
+                    + ident + "." + prop.name + "', '"
+                    + serializeValue(prop.value).replace(/'/g, "\\'")
+                    + "');");
+                
+                if (stack[stack.length - 1].indexOf("Could not serialize") > -1)
+                    stack.pop();
+            }
+            
+            // HTTP
+            //@todo
+            
+            // Data
+            //@todo
+            
+            if (this.realtime && actions[i + 1])
+                stack.push("hold(10);");
             
             rules = rules.concat(stack);
         }

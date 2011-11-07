@@ -901,10 +901,12 @@ apf.DragServer = {
         document.onmouseup   = this.onmouseup;
     },
 
-    stop : function(runEvent, success){
+    stop : function(runEvent, success, e){
         if (this.last) this.dragout();
         
-        this.dragdata.host.dispatchEvent("dragstop");
+        this.dragdata.host.dispatchEvent("dragstop", apf.extend(this.dragdata, {
+            success: success
+        }));
         
         //Reset Objects
         this.dragdata.host.dragging = 0;
@@ -1138,7 +1140,7 @@ apf.DragServer = {
         if (apf.isIphone) {
             e.preventDefault();
             if (!e.touches)
-                return apf.DragServer.stop(true);
+                return apf.DragServer.stop(true, null, e);
             e = e.touches[0];
         }
         //#endif
@@ -1208,7 +1210,7 @@ apf.DragServer = {
         if (apf.isIphone) {
             e.preventDefault();
             if (!e.changedTouches)
-                return apf.DragServer.stop(true);
+                return apf.DragServer.stop(true, null, e);
             e = e.changedTouches[0];
         }
         //#endif
@@ -1221,7 +1223,7 @@ apf.DragServer = {
         if (!apf.DragServer.dragdata.started
           && Math.abs(apf.DragServer.coordinates.clientX - c.clientX) < 6
           && Math.abs(apf.DragServer.coordinates.clientY - c.clientY) < 6) {
-            apf.DragServer.stop(true)
+            apf.DragServer.stop(true, null, e)
             return;
         }
 
@@ -1256,7 +1258,7 @@ apf.DragServer = {
         if (apf.DragServer.host && host != apf.DragServer.host)
             apf.DragServer.dragout(apf.DragServer.host, e);
         var success = apf.DragServer.dragdrop(host, el, apf.DragServer.dragdata.host, e);
-        apf.DragServer.stop(true, success);
+        apf.DragServer.stop(true, success, e);
     }
 };
 
