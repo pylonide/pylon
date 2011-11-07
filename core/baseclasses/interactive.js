@@ -666,7 +666,7 @@ apf.Interactive = function(){
                 clientX: e.clientX,
                 clientY: e.clientY
             }
-            timer = setTimeout(function(){
+            timer = $setTimeout(function(){
                 doResize(z);
             }, 10);
             return;

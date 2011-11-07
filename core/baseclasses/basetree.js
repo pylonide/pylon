@@ -222,7 +222,7 @@ apf.BaseTree = function(){
                     function(part, next2, index) {
                         apf.queue.empty();
                         //This timeout is here to workaround a bug in chrome7 (and perhaps earlier)
-                        setTimeout(function(){
+                        $setTimeout(function(){
                             var xmlNode = (lastNode || root).selectSingleNode(part);
                             if (xmlNode) {
                                 //if (index == paths.length - 1)
@@ -800,7 +800,7 @@ apf.BaseTree = function(){
             this.$setLoadStatus(xmlNode, "loading");
             
             var _self = this;
-            (this.$timers || (this.$timers = {}))[xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = setTimeout(function(){;
+            (this.$timers || (this.$timers = {}))[xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = $setTimeout(function(){;
                 _self.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), "loading");
             }, 100);
             

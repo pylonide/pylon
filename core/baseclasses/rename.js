@@ -223,7 +223,7 @@ apf.Rename = function(){
             catch(e) {}
         };
         if (apf.isIE) f() 
-        else setTimeout(f);
+        else $setTimeout(f);
     };
 
     /**

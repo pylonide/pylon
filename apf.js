@@ -2225,17 +2225,17 @@ var apf = {
             el.fireEvent("on" + type, e);
     },
     
-    addListener : function(el, type, fn){
+    addListener : function(el, type, fn, capture){
         if (el.addEventListener)
-            el.addEventListener(type, fn, false);
+            el.addEventListener(type, fn, capture || false);
         else if (el.attachEvent)
             el.attachEvent("on" + type, fn);
         return this;
     },
     
-    removeListener : function(el, type, fn){
+    removeListener : function(el, type, fn, capture){
         if (el.removeEventListener)
-            el.removeEventListener(type, fn, false);
+            el.removeEventListener(type, fn, capture || false);
         else if (el.detachEvent)
             el.detachEvent("on" + type, fn);
         return this;

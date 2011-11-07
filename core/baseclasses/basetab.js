@@ -642,7 +642,7 @@ apf.BaseTab = function(){
         if (preventNext !== false && pageOut)
             this.$createAnim(pageOut, animOut, true, pageIn);
 
-        setTimeout(function(){
+        $setTimeout(function(){
             _self.$transInfo.start();
         });
     }

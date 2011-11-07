@@ -935,7 +935,7 @@ apf.model = function(struct, tagName){
         
         if (action == "replacenode" && xmlNode == this.data.ownerDocument.documentElement) {
             var _self = this;
-            setTimeout(function(){
+            $setTimeout(function(){
                 _self.load(xmlNode);
             });
             return;

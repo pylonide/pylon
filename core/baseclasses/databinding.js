@@ -1214,7 +1214,7 @@ apf.DataBinding = function(){
                             if (m.model) {
                                 this.removeEventListener("prop." + prop, arguments.callee);
                                 var _self = this;
-                                setTimeout(function(){
+                                $setTimeout(function(){
                                     _self.$clearDynamicProperty(prop);
                                     _self.$setDynamicProperty(prop, expression);
                                 }, 10);
