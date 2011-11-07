@@ -7,7 +7,7 @@ var completeUtil = require("ext/codecomplete/complete_util");
 var ID_REGEX = /[a-zA-Z_0-9\$]/;
 var SPLIT_REGEX = /[^a-zA-Z_0-9\$]+/;
 
-var Completer = exports.Completer = function(sender) {
+var Completer = exports.Completer = function() {
 
 };
 

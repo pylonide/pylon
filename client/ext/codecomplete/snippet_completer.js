@@ -5,24 +5,12 @@ var completeUtil = require("ext/codecomplete/complete_util");
 var oop = require("pilot/oop");
 var BaseLanguageHandler = require('ext/language/base_handler').BaseLanguageHandler;
 
-var Completer = exports.Completer = function(sender) {
+var Completer = exports.Completer = function() {
 
 };
 
 oop.inherits(Completer, BaseLanguageHandler);
 
-function fetchText(path) {
-    var chunks = path.split("/");
-    chunks[0] = require.tlns[chunks[0]] || chunks[0];
-    var url = chunks.join("/");
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, false);
-    xhr.send();
-    if(xhr.status === 200)
-        return xhr.responseText;
-    else
-        return false;
-}
 
 (function() {
     
@@ -32,6 +20,19 @@ function fetchText(path) {
         return true;
     };
 
+    this.fetchText = function(path) {
+        var chunks = path.split("/");
+        chunks[0] = require.tlns[chunks[0]] || chunks[0];
+        var url = chunks.join("/");
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, false);
+        xhr.send();
+        if(xhr.status === 200)
+            return xhr.responseText;
+        else
+            return false;
+    };
+    
     this.complete = function(doc, fullAst, pos, currentNode) {
         var line = doc.getLine(pos.row);
         var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
@@ -41,7 +42,7 @@ function fetchText(path) {
         var snippets = this.snippetCache[ext];
         
         if(snippets === undefined) {
-            var text = fetchText('ext/codecomplete/snippets/' + ext + '.json');
+            var text = this.fetchText('ext/codecomplete/snippets/' + ext + '.json');
             snippets = text ? JSON.parse(text) : {};
             // Cache
             this.snippetCache[ext] = snippets;

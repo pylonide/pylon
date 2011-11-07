@@ -17,26 +17,6 @@ var dom = require("pilot/dom");
 var completeUtil = require("ext/codecomplete/complete_util");
 var language = require("ext/language/language");
 
-/**
- * Asynchrounously performs `fn` on every element of `array` in parallel, then
- * calls callback
- */
-function asyncParForEach(array, fn, callback) {
-    var completed = 0;
-    var arLength = array.length;
-    if (arLength === 0) {
-        callback();
-    }
-    for (var i = 0; i < arLength; i++) {
-        fn(array[i], function(result, err) {
-            completed++;
-            if (completed === arLength) {
-                callback(result, err);
-            }
-        });
-    }
-}
-
 module.exports = ext.register("ext/codecomplete/codecomplete", {
     name    : "Code Complete",
     dev     : "Ajax.org",
