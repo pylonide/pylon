@@ -1084,7 +1084,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     skin: "basic",
                     "class": "runbtns",
                     dock: 1,
-                    anchors : "4 4 4 4"
+                    anchors : "1 4 4 4"
                 })
             ]
         }

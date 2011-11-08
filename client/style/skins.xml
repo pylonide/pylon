@@ -47,7 +47,7 @@
             position : relative;
         }
         .dockwin_runbtns .basic {
-            margin-top: -3px;
+            
         }
         
         .expandedpanel .basic.runbtns {
@@ -4626,7 +4626,13 @@
             width: 11px;
         }
     ]]></a:style>
-
+    
+    <a:style condition="apf.isSafari || apf.isChrome"><![CDATA[
+        .dockwin_runbtns {
+            margin-top : 13px;
+        }
+    ]]></a:style>
+    
     <a:presentation>
         <a:main container=".">
             <div class="dockwin_runbtns">
@@ -7698,6 +7704,18 @@
     <a:style condition="apf.isWebkit">
         .docktab .btncontainer .btntab {
             padding : 2px 2px 3px 2px;
+        }
+        
+        .docktab .page {
+            top: 21px;
+        }
+        
+        .docktab .btncontainer .btnclose strong {
+            top: 4px;
+        }
+        
+        .docktab .btncontainer .curbtn.btnclose strong {
+            top: 3px;
         }
     </a:style>
 
