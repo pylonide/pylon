@@ -390,6 +390,10 @@ module.exports = ext.register("ext/splitview/splitview", {
             _self.updateSplitView(e.previousPage, e.nextPage);
         });
         
+        ide.addEventListener("closefile", function(e) {
+            _self.onFileClose(e);
+        });
+        
         ide.addEventListener("beforecycletab", function(e) {
             _self.onCycleTab(e);
         });
@@ -423,6 +427,19 @@ module.exports = ext.register("ext/splitview/splitview", {
 
         this.mutateSplitView(pages[idx]);
         return false;
+    },
+    
+    /**
+     * Invoked when a file is closed
+     *
+     * @param {AmlEvent} e
+     */
+    onFileClose: function(e) {
+        var page = e.page;
+        
+        if (this.isSplitViewPage(page)) {
+            this.mutateSplitView(page);
+        }
     },
     
     /**
@@ -600,6 +617,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             // use setTimout to circumvent the APF layout manager to go bonkers
             setTimeout(function() {
                 page.$deactivateButton();
+
                 clearSplitViewStyles(page);
                 editor.hide();
                 if (tabEditors.getPage() !== activeSplit.pages[0])
@@ -616,6 +634,14 @@ module.exports = ext.register("ext/splitview/splitview", {
             if (!activeSplit) {
                 if (page === activePage)
                     return true;
+                
+                // check whether 'page' is already part of a split view
+                var pageToBeJoinedInSplitView = this.getSplitViewByPage(page);
+                if (pageToBeJoinedInSplitView) {
+                    // if active, then find that split and remove it
+                    this.splits.splice(this.splits.indexOf(this.getSplitViewByPage(page)))
+                }
+                    
                 activeSplit = createSplitView.call(this, activePage);
                 var oEditor = activePage.$editor.amlEditor;
                 oEditor.setAttribute("model", activePage.$model);
