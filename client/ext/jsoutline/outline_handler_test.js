@@ -7,7 +7,7 @@ if (typeof process !== "undefined") {
 
 define(function(require, exports, module) {
 
-var OutlineHandler = require("ext/jsoutline/outline_handler").OutlineHandler;
+var handler = require("ext/jsoutline/outline_handler");
 var parser = require("treehugger/js/parse");
 var assert = require("ace/test/assertions");
 
@@ -16,7 +16,6 @@ var assert = require("ace/test/assertions");
 module.exports = {
     "test basic outline" : function() {
         var node = parser.parse(""+require('text!ext/jsoutline/test/test1.js'));
-        var handler = new OutlineHandler();
         var outline = handler.outline(node);
         //console.log(""+node);
         //console.log(JSON.stringify(outline, null, 2));
@@ -28,7 +27,6 @@ module.exports = {
     },
 
     "test jquery" : function() {
-        var handler = new OutlineHandler();
         //var now = microtime.now();
         var node = parser.parse(""+require('text!jquery.js'));
         //console.log("Parsing time: " + (microtime.now() - now)/1000 + "ms");

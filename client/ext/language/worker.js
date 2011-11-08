@@ -22,7 +22,9 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
         sender.on("documentClose", function(event) {
             _self.documentClose(event);
         });
-        
+        sender.on("analyze", function(event) {
+            _self.analyze(event);
+        });
     }
 };
 
@@ -35,7 +37,7 @@ oop.inherits(LanguageWorker, Mirror);
         // Parse first
         for (var i = 0; i < this.handlers.length; i++) {
             var handler = this.handlers[i];
-            if(handler.handlesPath(this.$path)) {
+            if(handler.handlesLanguage(this.$language)) {
                 try {
                     var ast = handler.parse(this.doc.getValue());
                     if(ast)
@@ -55,7 +57,7 @@ oop.inherits(LanguageWorker, Mirror);
         try {
             for (var i = 0; i < this.handlers.length; i++) {
                 var handler = this.handlers[i];
-                if(handler.handlesPath(this.$path)) {
+                if(handler.handlesLanguage(this.$language)) {
                     var outline = handler.outline(ast);
                     if(outline) {
                         this.sender.emit("outline", outline);
@@ -67,31 +69,51 @@ oop.inherits(LanguageWorker, Mirror);
             console.log("Outline exception: " + e.message);
         }
     };
+    
+    this.analyze = function() {
+        var ast = this.parse();
+        console.log(""+ast);
+        if(!ast) return;
+        var markers = [];
+        for(var i = 0; i < this.handlers.length; i++) {
+            var handler = this.handlers[i];
+            if(handler.handlesLanguage(this.$language)) {
+                var result = handler.analyze(this.doc, ast);
+                if(result)
+                    markers = markers.concat(result);
+            }
+        }
+        console.log(JSON.stringify(markers));
+        if(markers.length > 0) {
+            this.sender.emit("markers", markers);
+        }
+    };
 
     this.onUpdate = function() {
         for(var i = 0; i < this.handlers.length; i++) {
             var handler = this.handlers[i];
-            if(handler.handlesPath(this.$path)) {
+            if(handler.handlesLanguage(this.$language)) {
                 handler.onUpdate(this.doc);
             }
         }
     };
     
-    this.register = function(path, className) {
-        console.log("Registering: " + path + " class: " + className);
-        var module = require(path);
-        var Handler = module[className];
-        var handler = new Handler();
+    this.register = function(path) {
+        console.log("Registering: " + path);
+        var handler = require(path);
         this.handlers.push(handler);
     };
     
-    this.setPath = function(path, code) {
+    this.switchFile = function(path, language, code) {
         var oldPath = this.$path;
         this.$path = path;
+        this.$language = language;
         this.setValue(code);
         for(var i = 0; i < this.handlers.length; i++) {
-            this.handlers[i].path = path;
-            this.handlers[i].onDocumentOpen(path, this.doc, oldPath);
+            var handler = this.handlers[i];
+            handler.path = path;
+            handler.language = language;
+            handler.onDocumentOpen(path, this.doc, oldPath);
         }
     };
     
@@ -137,7 +159,7 @@ oop.inherits(LanguageWorker, Mirror);
         var ast, currentNode;
         for (var i = 0; i < this.handlers.length; i++) {
             var handler = this.handlers[i];
-            if(handler.handlesPath(this.$path) && handler.completionRequiresParsing()) {
+            if(handler.handlesLanguage(this.$language) && handler.completionRequiresParsing()) {
                 ast = this.parse();
                 currentNode = ast.findNode({line: pos.row, col: pos.column});
                 break;
@@ -148,7 +170,7 @@ oop.inherits(LanguageWorker, Mirror);
         
         for (var i = 0; i < this.handlers.length; i++) {
             var handler = this.handlers[i];
-            if(handler.handlesPath(this.$path)) {
+            if(handler.handlesLanguage(this.$language)) {
                 var completions = handler.complete(this.doc, ast, pos, currentNode);
                 if(completions)
                     matches = matches.concat(completions);

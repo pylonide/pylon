@@ -9,7 +9,7 @@ define(function(require, exports, module) {
 var Document = require("ace/document").Document;
 var assert = require("ace/test/assertions");
 
-var Completer = require("ext/codecomplete/local_completer").Completer;
+var completer = require("ext/codecomplete/local_completer");
 
 function matchSorter(matches) {
     matches.sort(function(a, b) {
@@ -30,7 +30,6 @@ module.exports = {
 
     "test basic completion" : function() {
         var doc = new Document("hel hello2 hello3  hello2 abc");
-        var completer = new Completer();
         var matches = completer.complete(doc, null, {row: 0, column: 3});
 
         matchSorter(matches);
@@ -44,7 +43,6 @@ module.exports = {
 
     "test basic completion 2" : function() {
         var doc = new Document("assert.equal(matchers[0].name, matches[0].score);\nassert.eq(matches[0].name, mat[0].score);\n");
-        var completer = new Completer();
         var matches = completer.complete(doc, null, {row: 1, column: 9}); // .eq|
         matchSorter(matches);
         assert.equal(matches.length, 1);

@@ -9,28 +9,7 @@ var editors = require("ext/editors/editors");
 var canon = require("pilot/canon");
 var dom = require("pilot/dom");
 
-/**
- * Asynchrounously performs `fn` on every element of `array` in parallel, then
- * calls callback
- */
-function asyncParForEach(array, fn, callback) {
-    var completed = 0;
-    var arLength = array.length;
-    if (arLength === 0) {
-        callback();
-    }
-    for (var i = 0; i < arLength; i++) {
-        fn(array[i], function(result, err) {
-            completed++;
-            if (completed === arLength) {
-                callback(result, err);
-            }
-        });
-    }
-}
-
 var oldCommandKey;
-
 
 var ID_REGEX = /[a-zA-Z_0-9\$]/;
 

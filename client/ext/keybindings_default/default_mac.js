@@ -144,7 +144,8 @@ return keys.onLoad({
         },
         "language": {
             "outline": "Command-Shift-O",
-            "complete": "Ctrl-Space|Alt-Space"
+            "complete": "Ctrl-Space|Alt-Space",
+            "analyze": "Command-Shift-A"
         }
     }
 });

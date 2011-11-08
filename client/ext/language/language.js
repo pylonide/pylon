@@ -13,6 +13,7 @@ var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var tree = require('treehugger/tree');
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
+var Range = require("ace/range").Range;
 
 var outline = require('ext/language/outline');
 var complete = require('ext/language/complete');
@@ -33,7 +34,8 @@ module.exports = ext.register("ext/language/language", {
     
     commands : {
         "outline": {hint: "show outline"},
-        "complete": {hint: "code complete"}
+        "complete": {hint: "code complete"},
+        "analyze": {hint: "analyze code"}
     },
 
     hook : function() {
@@ -45,7 +47,7 @@ module.exports = ext.register("ext/language/language", {
             if (!editors.currentEditor || !editors.currentEditor.ceEditor) // No editor, for some reason
                 return;
             var path = event.node.getAttribute("path");
-            worker.call("setPath", [path, event.doc.getValue()]);
+            worker.call("switchFile", [path, editors.currentEditor.ceEditor.syntax, event.doc.getValue()]);
             event.doc.addEventListener("close", function() {
                 worker.emit("documentClose", {data: path});
             });
@@ -58,6 +60,9 @@ module.exports = ext.register("ext/language/language", {
         });
         worker.on("complete", function(event) {
             complete.onComplete(event);
+        });
+        worker.on("markers", function(event) {
+            _self.markers(event);
         });
 	},
 
@@ -94,7 +99,7 @@ module.exports = ext.register("ext/language/language", {
         var _self = this;
         setTimeout(function() {
             var currentPath = tabEditors.getPage().getAttribute("id");
-            _self.worker.call("setPath", [currentPath, _self.editor.getSession().getValue()]);
+            _self.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, _self.editor.getSession().getValue()]);
         }, 0);
     },
     
@@ -110,6 +115,52 @@ module.exports = ext.register("ext/language/language", {
      */
     complete: function() {
         complete.invoke();
+    },
+    
+    /**
+     * Method attached to key combo for outline
+     */
+    analyze : function() {
+        console.log("Triggered analysis");
+        this.worker.emit("analyze", {});
+    },
+    
+    currentMarkers: [],
+    
+    markers: function(event) {
+        var annos = event.data;
+        var session = this.editor.session;
+        var _self = this;
+        
+        for (var i = 0; i < this.currentMarkers.length; i++) {
+            session.removeMarker(this.currentMarkers[i]);
+        }
+        this.currentMarkers = [];
+        
+        annos.forEach(function(anno) { 
+            var range = Range.fromPoints({
+                row: anno.node.sl,
+                column: anno.node.sc
+            }, {
+                row: anno.node.el,
+                column: anno.node.ec
+            });
+            var text = session.getTextRange(range);
+            console.log("Text: " + text);
+            var spaces = '';
+            for (var i = 0; i < text.length; i++) {
+                spaces += '&nbsp;';
+            }
+            _self.currentMarkers.push(session.addMarker(range, "language_highlight", function(stringBuilder, range, left, top, viewport) {
+                stringBuilder.push(
+                    "<span class='language_highlight' onclick='alert(\'bla\')' style='border-bottom: dotted 2px red; ",
+                    "left:", left, "px;",
+                    "top:", top, "px;",
+                    "height:", viewport.lineHeight, "px;",
+                    "'>", text, "</span>"
+                );
+            }, true));
+        });
     },
     
     registerLanguageHandler: function(modulePath, className) {

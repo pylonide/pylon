@@ -23,8 +23,9 @@ module.exports = ext.register("ext/jsoutline/jsoutline", {
     outline : [],
 
     init : function() {
-        language.registerLanguageHandler('ext/jsoutline/outline_handler', "OutlineHandler");
-        language.registerLanguageHandler('ext/jsoutline/json_outline_handler', "OutlineHandler");
+        language.registerLanguageHandler('ext/jsoutline/outline_handler');
+        language.registerLanguageHandler('ext/jsoutline/json_outline_handler');
+        language.registerLanguageHandler('ext/jsoutline/semantic_highlighter');
     },
     
     enable : function() {
