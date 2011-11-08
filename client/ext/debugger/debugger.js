@@ -93,12 +93,7 @@ module.exports = ext.register("ext/debugger/debugger", {
                 activeState: { x: -6, y: -217 }
             }
         }, function(type) {
-            ext.initExtension(_self);
-            
-            dbgCallStack.addEventListener("prop.visible", function (e) {
-                console.trace(e); 
-            });
-            
+            ext.initExtension(_self);            
             return dbgCallStack;
         });
         
