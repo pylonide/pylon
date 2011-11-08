@@ -1,14 +1,14 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:window id="winSearchReplace"
-      onhide="require('ext/searchreplace/searchreplace').onHide()"
-      title="Search &amp; Replace" 
-      buttons="close" 
-      modal="false" 
-      center="true" 
-      skin      = "bk-window"
-      class     = "relative"
-      width="390" 
-      kbclose="true">
+      onhide  = "require('ext/searchreplace/searchreplace').onHide()"
+      title   = "Search &amp; Replace" 
+      buttons = "close" 
+      modal   = "false" 
+      center  = "true" 
+      skin    = "bk-window"
+      class   = "relative"
+      width   = "390" 
+      kbclose = "true">
         <a:vbox edge="10" padding="5">
             <a:hbox align="center">
                 <a:label width="75">Search</a:label>

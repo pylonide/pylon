@@ -8,7 +8,8 @@
       center    = "true"
       render    = "runtime"
       kbclose   = "true"
-      width     = "512">
+      width     = "512"
+      draggable = "false">
         <a:vbox width="100%">
             <a:hbox edge="15 10 20 10" padding="10">
                 <div class="alertWarn" margin="0 10 0 10"/>
@@ -33,7 +34,8 @@
       kbclose   = "false"
       skin      = "bk-window"
       class     = "relative nofooter"
-      width     = "512">
+      width     = "512"
+      draggable = "false">
         <a:vbox width="100%">
             <a:hbox edge="15 10 20 10" padding="10">
                 <div class="alertWarn" margin="0 10 0 10"/>
@@ -54,7 +56,8 @@
       kbclose   = "true"
       width     = "512"
       skin      = "bk-window"
-      class     = "relative">
+      class     = "relative"
+      draggable = "false">
         <a:vbox padding="10" edge="15 20 20 20">
             <h3 id="winConfirmHeader"></h3>
             <div id="winConfirmMsg" class="alertMsg">An unexpected error occurred. Please refresh your browser window.</div>
@@ -78,7 +81,8 @@
       kbclose   = "true"
       width     = "512"
       skin      = "bk-window"
-      class     = "relative">
+      class     = "relative"
+      draggable = "false">
         <a:vbox padding="10" edge="15 20 20 20">
             <h3 id="winQuestionHeader"></h3>
             <div id="winQuestionMsg" class="alertMsg">An unexpected error occurred. Please refresh your browser window.</div>

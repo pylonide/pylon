@@ -10,7 +10,8 @@
       skin      = "bk-window"
       resizable = "true"
       kbclose   = "true"
-      buttons   = "close">
+      buttons   = "close"
+      draggable = "false">
         <a:scrollbar
             for      = "lstFileTemplates"
             margin   = "2"

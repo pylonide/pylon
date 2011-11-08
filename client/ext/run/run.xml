@@ -89,15 +89,15 @@
     </a:hbox>
     
     <a:window id="winRunCfgNew" 
-      title="New Run Configuration" 
-      model="{lstRunCfg.selected}"
-      buttons="close" 
-      modal="true"
-      center="true" 
-      width="370"
-      skin="bk-window"
-      height="400"
-      kbclose="true">
+      title   = "New Run Configuration" 
+      model   = "{lstRunCfg.selected}"
+      buttons = "close" 
+      modal   = "false"
+      center  = "true" 
+      width   = "370"
+      skin    = "bk-window"
+      height  = "400"
+      kbclose = "true">
         <a:vbox anchors="0 0 0 0">
             <a:toolbar class="modal-toolbar">
                 <a:bar>

@@ -7,6 +7,7 @@
       render    = "runtime"
       width     = "512"
       skin      = "bk-window"
+      draggable = "false"
       class     = "relative">
         <a:vbox padding="10" edge="15 20 10 20">
             <h3 class="wheader">Save this file?</h3>
@@ -63,7 +64,8 @@
       resizable = "true"
       title     = "Save As"
       onshow    = "require('ext/save/save').expandTree();"
-      width     = "480">
+      width     = "480"
+      draggable = "false">
         <a:vbox
           anchors   = "10 10 0 10"
           padding   = "5">

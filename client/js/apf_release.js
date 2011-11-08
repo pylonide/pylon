@@ -4219,7 +4219,7 @@ amlNode.removeEventListener("DOMNodeRemoved",removeFocus);}if(amlNode.$isWindowC
 amlNode.removeEventListener("blur",trackChildFocus);}};var focusLoopDetect;this.$focus=function(amlNode,e,force){var aEl=this.document.activeElement;
 if(aEl==amlNode&&!force){return;}this.$settingFocus=amlNode;if(!e){e={};}e.toElement=amlNode;
 e.fromElement=aEl;if(aEl&&aEl!=amlNode&&focusLoopDetect!=aEl){focusLoopDetect=aEl;
-aEl.blur(true,e);if(focusLoopDetect!=aEl){return false;}}(apf.activeElement=this.document.activeElement=amlNode).focus(true,e);
+aEl.blur(true,e);if(focusLoopDetect!=aEl){return false;}}(apf.activeElement=this.document.activeElement=this.document.documentElement.$lastFocussed=amlNode).focus(true,e);
 this.$settingFocus=null;apf.dispatchEvent("movefocus",{toElement:amlNode});};this.$blur=function(amlNode){var aEl=this.document.activeElement;
 if(aEl!=amlNode){return false;}aEl.$focusParent.$lastFocussed=null;apf.activeElement=this.document.activeElement=null;
 apf.dispatchEvent("movefocus",{fromElement:amlNode});};var lastFocusParent;this.$focusDefault=function(amlNode,e){var fParent=findFocusParent(amlNode);
