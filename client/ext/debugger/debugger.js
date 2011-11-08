@@ -133,6 +133,14 @@ module.exports = ext.register("ext/debugger/debugger", {
             }
         }, function(type) {
             ext.initExtension(_self);
+            
+            // when visible -> make sure to refresh the grid
+            dbgVariable.addEventListener("prop.visible", function(e) {
+                if (e.value) {
+                    dgVars.reload();
+                }
+            });
+            
             return dbgVariable;
         });
         
