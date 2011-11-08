@@ -158,6 +158,12 @@ module.exports = ext.register("ext/debugger/debugger", {
                 this.nodesAll.push(button);
             }
         }
+        
+        // restore the breakpoints from the IDE settings
+        var bpFromIde = require("ext/settings/settings").model.data.selectSingleNode("//breakpoints");
+        if (bpFromIde) {
+            mdlDbgBreakpoints.load(bpFromIde);
+        }
 
         this.hotitems["resume"]   = [btnResume];
         this.hotitems["stepinto"] = [btnStepInto];
@@ -201,6 +207,31 @@ module.exports = ext.register("ext/debugger/debugger", {
                 e.selected && require("ext/debugger/debugger")
                     .showDebugFile(e.selected.getAttribute("scriptid"));
             });
+        });
+        
+        mdlDbgBreakpoints.addEventListener("update", function(e) {
+            // when the breakpoint model is updated
+            // get the current IDE settings
+            var settings = require("ext/settings/settings").model.data;
+            // create a new element
+            var node = settings.ownerDocument.createElement("breakpoints");
+            
+            // find out all the breakpoints in the breakpoint model and iterate over them
+            var breakpoints = e.currentTarget.data.selectNodes("//breakpoint");
+            for (var ix = 0; ix < breakpoints.length; ix++) {
+                // clone and add to our new element
+                var cln = breakpoints[ix].cloneNode();
+                node.appendChild(cln);
+            }
+            
+            // if there is already a breakpoints section in the IDE settings remove it
+            var bpInSettingsFile = settings.selectSingleNode("//breakpoints");
+            if (bpInSettingsFile) {
+                bpInSettingsFile.parentNode.removeChild(bpInSettingsFile);
+            }
+            
+            // then append the current breakpoints to the IDE settings, tah dah
+            settings.appendChild(node);
         });
 
         ide.addEventListener("afterfilesave", function(e) {
