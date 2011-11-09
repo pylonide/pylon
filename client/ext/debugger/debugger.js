@@ -15,6 +15,7 @@ var fs = require("ext/filesystem/filesystem");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/debugger/debugger.xml");
 var inspector = require("ext/debugger/inspector");
+var settings = require("ext/settings/settings");
 
 module.exports = ext.register("ext/debugger/debugger", {
     name    : "Debug",
@@ -51,9 +52,9 @@ module.exports = ext.register("ext/debugger/debugger", {
             return false;
         });
         
-        ide.addEventListener("loadsettings", function() {
+        ide.addEventListener("loadsettings", function (e) {
             // restore the breakpoints from the IDE settings
-            var bpFromIde = require("ext/settings/settings").model.data.selectSingleNode("//breakpoints");
+            var bpFromIde = e.model.data.selectSingleNode("//breakpoints");
             if (bpFromIde) {
                 mdlDbgBreakpoints.load(bpFromIde);
             }
@@ -214,9 +215,9 @@ module.exports = ext.register("ext/debugger/debugger", {
         mdlDbgBreakpoints.addEventListener("update", function(e) {
             // when the breakpoint model is updated
             // get the current IDE settings
-            var settings = require("ext/settings/settings").model.data;
+            var settingsMdl = settings.model.data;
             // create a new element
-            var node = settings.ownerDocument.createElement("breakpoints");
+            var node = settingsMdl.ownerDocument.createElement("breakpoints");
             
             // find out all the breakpoints in the breakpoint model and iterate over them
             var breakpoints = e.currentTarget.data.selectNodes("//breakpoint");
@@ -227,13 +228,13 @@ module.exports = ext.register("ext/debugger/debugger", {
             }
             
             // if there is already a breakpoints section in the IDE settings remove it
-            var bpInSettingsFile = settings.selectSingleNode("//breakpoints");
+            var bpInSettingsFile = settingsMdl.selectSingleNode("//breakpoints");
             if (bpInSettingsFile) {
                 bpInSettingsFile.parentNode.removeChild(bpInSettingsFile);
             }
             
             // then append the current breakpoints to the IDE settings, tah dah
-            settings.appendChild(node);
+            settingsMdl.appendChild(node);
         });
 
         ide.addEventListener("afterfilesave", function(e) {
