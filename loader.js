@@ -148,6 +148,7 @@ apf.$x = apf.$loader
         
         "core/lib/uirecorder/capture.js",
         "core/lib/uirecorder/playback.js",
+        "core/lib/uirecorder/ui.js",
         "core/lib/uirecorder/selenium.js"
     )
     .wait()

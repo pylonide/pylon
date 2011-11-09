@@ -1,0 +1,58 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window id="winUiRecorder" zindex="1000001" title="UI Test Recorder" right="20" bottom="20" width="450" height="300" modal="false" resizable="true">
+        <a:vbox anchors="0 0 0 0" padding="3">
+            <a:hbox align="center" padding="5" pack="center">
+                <a:button id="btnUiRecordStart" onclick="apf.uirecorder.ui.start()">Record</a:button>
+                <a:button id="btnUiRecordStop" disabled="true" onclick="apf.uirecorder.ui.stop()">Stop</a:button>
+                <a:button id="btnUiRecordWrite" disabled="true" onclick="apf.uirecorder.ui.write()">Write</a:button>
+                <a:button id="btnUiRecordRemove" disabled="{!dgUiRecorder.selected}" onclick="dgUiRecorder.remove()">Remove</a:button>
+                <a:button id="btnUiRecordAddAssert" disabled="{'action|assert'.indexOf(dgUiRecorder.selected and dgUiRecorder.selected.localName) == -1}" onclick="apf.uirecorder.ui.startAddAssert()">Add Assertion</a:button>
+            </a:hbox>
+            <a:datagrid 
+              id   = "dgUiRecorder"
+              flex = "1"
+              skin2 = "dgcheck"
+              each = "[action|assert|test]"
+              onmouseover = "apf.uirecorder.ui.highlightElement(event)"
+              onmouseout  = "apf.uirecorder.ui.hideHighlightElements(event)">
+                <a:column caption="Name" width="40%" value="[@name]" tree="1" check2="1" editor="textbox" />
+                <a:column caption="Value" width="60%" value="[@value]" editor="textbox" />
+                <a:column caption="Element" width="50"><?lm
+                    <a:button>Pick</a:button>
+                ?></a:column>
+                
+                <a:css match="[test]" value="testhead" />
+                
+                <a:drag match="[action|assert|test]" />
+                <a:drop 
+                  match  = "[action]" 
+                  target = "[action]" 
+                  action = "insert-before" />
+                <a:drop 
+                  match  = "[action]" 
+                  target = "[test]" 
+                  action = "tree-append" />
+                <a:drop 
+                  match  = "[test]" 
+                  target = "[test]" 
+                  action = "insert-before" />
+                <a:drop 
+                  match  = "[assert]" 
+                  target = "[action]" 
+                  action = "tree-append" />
+            </a:datagrid>
+        </a:vbox>
+    </a:window>
+    
+    <!--a:menu id="mnuUiProps" width="200" height="300">
+        <a:datagrid 
+          id   = "dgUiProps"
+          anchors = "2 2 2 2"
+          each = "[prop]">
+            <a:column caption="Name" width="40%" value="[@name]" />
+            <a:column caption="Value" width="60%" value="[@value]" />
+            
+            <a:model />
+        </a:datagrid>
+    </a:menu-->
+</a:application>

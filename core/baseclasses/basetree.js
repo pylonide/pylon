@@ -1209,7 +1209,11 @@ apf.BaseTree = function(){
     };
     
     this.$selectDefault = function(xmlNode){
-        if (this.select(this.getFirstTraverseNode(xmlNode), null, null, null, true)) {
+        var firstNode = this.getFirstTraverseNode(xmlNode);
+        if (!firstNode)
+            return;
+        
+        if (this.select(firstNode, null, null, null, true)) {
             return true;
         }
         else {

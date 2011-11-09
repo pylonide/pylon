@@ -1,11 +1,3 @@
-/*
-    IDEAS:
-    - Element Picker in UI
-    - A way to break up a recording in multiple movies (tree-datagrid?)
-    - The UI should allow the user to select which assertions he wants to use
-    - The user should have an easy way to add assertions
-*/
-
 // #ifdef __ENABLE_SELENIUM_PLAYER
 function SeleniumPlayer(browser){
     this.browser = browser;

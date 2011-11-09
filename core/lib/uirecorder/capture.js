@@ -1,27 +1,10 @@
 // #ifdef __WITH_UIRECORDER
 
 /*
-    Refactoring capturing:
-    - Capture mouse and keyboard events (and touch events later)
-    - For each event capture
-        - A way to find the context node
-            - AmlElement
-                - AmlProperty
-            - XmlElement
-            - HTMLElement
-        - Events Called
-        - Properties Changed
-        - HTTP Calls
-        - Socket.io communication
-        - XML Data in Models changed (RSB message format)
-    - Specific Problems to solve:
-        - Maintaining record of causal flow of async calls
-            - setTimeout
-            - HTTP
-            - Socket.io
+    @todo Socket.io support
 */
 
-apf.uirecorder.capture = {
+apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
     validKeys      : [ 37, 38, 39, 40,  //arrowkeys
                         27,             // Esc
                         16, 17, 18,     // Shift, Ctrl, Alt
@@ -29,6 +12,8 @@ apf.uirecorder.capture = {
                         8, 46, 36, 35,  // Backspace, Del, Home, End
                         9               // Tab
                       ],
+    
+    $ignoreRecorder : true,
     
     // start capturing
     record : function() {
@@ -43,6 +28,8 @@ apf.uirecorder.capture = {
         
         apf.uirecorder.captureDetails = true;
         apf.uirecorder.isRecording    = true;
+        
+        this.dispatchEvent("record");
     },
     
     // stop capturing, save recorded data in this.outputXml
@@ -55,6 +42,16 @@ apf.uirecorder.capture = {
         this.lastStream = null;
         
         $setTimeout = apf.uirecorder.setTimeout;
+        
+        this.dispatchEvent("stop");
+    },
+    
+    pause : function(){
+        apf.uirecorder.isRecording = false;
+    },
+    
+    unpause : function(){
+        apf.uirecorder.isRecording = true;
     },
 
     canCapture : function(){
@@ -155,6 +152,9 @@ apf.uirecorder.capture = {
                 if (_self.validKeys.indexOf(keycode) == -1)
                     return;
     
+                if (apf.document.activeElement.$ignoreRecorder)
+                    return;
+    
                 _self.captureHtmlEvent("keyup", e, 
                     String.fromCharCode(keycode));
             }, true);
@@ -169,7 +169,10 @@ apf.uirecorder.capture = {
                 var keycode = e.keyCode || e.which;
                 if (_self.validKeys.indexOf(keycode) == -1) 
                     return;
-                
+
+                if (apf.document.activeElement.$ignoreRecorder)
+                    return;
+
                 _self.captureHtmlEvent("keydown", e, 
                     String.fromCharCode(keycode));
             }, true);
@@ -221,6 +224,12 @@ apf.uirecorder.capture = {
         
         stream.element = this.getElementLookupDef(null, null, e);
         
+        if (!stream.element) {
+            this.actions.pop();
+            this.createStream();
+            return;
+        }
+        
         // Set mouse properties
         
         if (e) {
@@ -254,9 +263,16 @@ apf.uirecorder.capture = {
         apf.addListener(document, eventName, this.lastCleanUpCallback = function(){
             _self.nextStream(eventName);
         });
+        
+        this.dispatchEvent("action", {
+            stream : stream
+        });
     },
     
     nextStream : function(eventName){
+        if (!apf.uirecorder.isRecording)
+            return;
+        
         if (this.lastStream.name)
             this.createStream();
 
@@ -308,6 +324,10 @@ apf.uirecorder.capture = {
                 }
             });
             
+            _self.dispatchEvent("capture.http", {
+                stream : stream
+            });
+            
             _self.replaceTimeout(stream); //Make sure timeouts follow this stream
             
             if (callback)
@@ -329,7 +349,8 @@ apf.uirecorder.capture = {
             return;
 
         // Special case for drag&drop
-        if (eventName == "dragstop" && !e.success || eventName == "dragdrop") {
+        if ((eventName == "dragstop" && !e.success || eventName == "dragdrop")
+          && e.htmlEvent) {
             this.lastStream.dragIndicator = this.lastStream.element;
             
             e.indicator.style.top = "-2000px";
@@ -344,12 +365,18 @@ apf.uirecorder.capture = {
             this.lastStream.offsetY = e.htmlEvent.y - pos[1];
         }
         
-        this.lastStream.events.push({
+        var event;
+        this.lastStream.events.push(event = {
             name        : eventName,
             async       : this.lastStream.async,
             time        : new Date().getTime() - this.lastStream.abstime,
             event       : this.getCleanCopy(e),
             element     : this.getElementLookupDef(null, target)
+        });
+        
+        this.dispatchEvent("capture.event", {
+            stream : this.lastStream,
+            event  : event
         });
     },
     
@@ -358,13 +385,19 @@ apf.uirecorder.capture = {
         if (!target || this.shouldIgnoreEvent(null, target)) 
             return;
             
-        this.lastStream.properties.push({
+        var prop;
+        this.lastStream.properties.push(prop = {
             name        : prop,
             async       : this.lastStream.async,
             time        : new Date().getTime() - this.lastStream.abstime,
             value       : this.getCleanCopy(value),
             oldvalue    : this.getCleanCopy(oldvalue),
             element     : this.getElementLookupDef(null, target)
+        });
+        
+        this.dispatchEvent("capture.prop", {
+            stream : this.lastStream,
+            prop   : prop
         });
     },
     
@@ -373,13 +406,19 @@ apf.uirecorder.capture = {
         if (!target) 
             return;
 
-        this.lastStream.data.push({
+        var data;
+        this.lastStream.data.push(data = {
             name        : params.action,
             async       : this.lastStream.async,
             time        : new Date().getTime() - this.lastStream.abstime,
             xmlNode     : apf.xmlToXpath(params.xmlNode, params.amlNode.data),
             element     : this.getElementLookupDef(null, target)
             //@todo params.UndoObj??
+        });
+        
+        this.dispatchEvent("capture.data", {
+            stream : this.lastStream,
+            data   : data
         });
     },
     
@@ -391,6 +430,9 @@ apf.uirecorder.capture = {
             return true;
             
         if (eventName && ["hotkey"].indexOf(eventName) > -1) 
+            return true;
+        
+        if (amlNode.$ignoreRecorder)
             return true;
         
         return false;
@@ -415,6 +457,9 @@ apf.uirecorder.capture = {
         
         if (!amlNode)
             amlNode = apf.findHost(htmlNode);
+
+        if (amlNode && amlNode.$ignoreRecorder)
+            return false;
 
         var context, searchObj = {};
         
@@ -529,6 +574,92 @@ apf.uirecorder.capture = {
         this.actions.push(stream);
         
         return (this.lastStream = stream);
+    },
+    
+    /**** OUTPUT Functions ****/
+
+    toXml : function(){
+        var xml = apf.getXml("<recording />");
+        var doc = xml.ownerDocument;
+        
+        var action, item;
+        for (var i = 0; i < this.actions.length; i++) {
+            item = this.actions[i];
+            
+            action = xml.appendChild(doc.createElement("action"));
+            action.setAttribute("name", item.name);
+            action.appendChild(doc.createTextNode(JSON.stringify(item)));
+        }
+        
+        return xml.xml;
     }
-}
+});
+
+//#ifdef __ENABLE_UIRECORDER_XML
+apf.uirecorder.capture.addEventListener("record", function(e){
+    if (!this.model) {
+        this.model = new apf.model();
+        this.model.$ignoreRecorder = true;
+        this.model.load("<tests><test name='Test recording 1' /></tests>");
+    }
+    else {
+        var nr = this.model.queryNodes("test").length + 1;
+        this.model.appendXml("<test name='Test recording " + nr + "' />");
+    }
+});
+apf.uirecorder.capture.addEventListener("stop", function(e){
+    var nodes = this.model.queryNodes("test[last()]/action");
+    for (var i = 0; i < nodes.length; i++) {
+        nodes[i].setAttribute("json", 
+            JSON.stringify(this.actions[nodes[i].getAttribute("index")]));
+    }
+});
+apf.uirecorder.capture.addEventListener("action", function(e){
+    if (e.stream.name == "mousemove")
+        return;
+    
+    var doc = this.model.data.ownerDocument;
+    
+    var actionNode = doc.createElement("action");
+    actionNode.setAttribute("name", e.stream.name);
+    actionNode.setAttribute("element", JSON.stringify(e.stream.element));
+    actionNode.setAttribute("index", this.actions.indexOf(e.stream));
+    actionNode.setAttribute("value", e.stream.value || "");
+    
+    this.model.appendXml(actionNode, "test[last()]");
+});
+apf.uirecorder.capture.addEventListener("capture.http", function(e){
+    
+});
+apf.uirecorder.capture.addEventListener("capture.prop", function(e){
+    if (!e.stream.name || e.stream.name == "mousemove")
+        return;
+
+    if (JSON.stringify(e.prop.value).indexOf("Could not serialize") > -1)
+        return;
+
+    var doc         = this.model.data.ownerDocument;
+    var index       = this.actions.indexOf(e.stream);
+    
+    var assertNode  = doc.createElement("assert");
+    assertNode.setAttribute("element", JSON.stringify(e.prop.element));
+    assertNode.setAttribute("name", e.prop.name);
+    assertNode.setAttribute("value", JSON.stringify(e.prop.value));
+    assertNode.setAttribute("json", JSON.stringify(e.prop));
+    
+    this.model.appendXml(assertNode, "test[last()]/action[@index=" + index + "]");
+});
+apf.uirecorder.capture.addEventListener("capture.event", function(e){
+    if ("dragstop|dragdrop".indexOf(e.event.name) > -1) {
+        this.model.setQueryValue("test[last()]/action[@index=" 
+          + this.actions.indexOf(e.stream) + "]/@element", 
+            JSON.stringify(e.stream.element));
+    }
+});
+apf.uirecorder.capture.addEventListener("capture.data", function(e){
+    
+});
+//#endif
+
+
 //#endif

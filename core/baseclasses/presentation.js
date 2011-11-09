@@ -389,7 +389,7 @@ apf.Presentation = function(){
           && (skinName = this.$canLeechSkin.dataType == apf.STRING 
             ? this.$canLeechSkin 
             : this.localName)
-          && pNode.$originalNodes 
+          && pNode && pNode.$originalNodes 
           && (skinNode = pNode.$originalNodes[skinName])
           && skinNode.getAttribute("inherit")) {
             var link = skinNode.getAttribute("link");
