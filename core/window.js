@@ -398,7 +398,7 @@ apf.window = function(){
                 return false;
         }
 
-        (apf.activeElement = this.document.activeElement = amlNode).focus(true, e);
+        (apf.activeElement = this.document.activeElement = this.document.documentElement.$lastFocussed = amlNode).focus(true, e);
 
         this.$settingFocus = null;
 

@@ -452,7 +452,7 @@ var V8Debugger = module.exports = function(dbg, host) {
     this.evaluate = function(expression, frame, global, disableBreak, callback){
         this.$debugger.evaluate(expression, frame, global, disableBreak, function(body, refs, error){
             var str = [];
-            var name = expression.trim().split(/;|\n/).pop().trim().replace(/"/g, "&quot;");
+            var name = expression.trim();
             if (error) {
                 str.push("<item type='.error' name=\"", apf.escapeXML(name),
                     "\" value='", error.message, "' />");
