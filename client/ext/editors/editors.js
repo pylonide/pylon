@@ -721,7 +721,7 @@ module.exports = ext.register("ext/editors/editors", {
 
     jump : function(fileEl, row, column, text, doc, page) {
         var path    = fileEl.getAttribute("path");
-        var hasData = page && tabEditors.getPage(path).$doc ? true : false;
+        var hasData = page && (tabEditors.getPage(path) || { }).$doc ? true : false;
 
         if (row !== undefined) {
             var jumpTo = function(){
