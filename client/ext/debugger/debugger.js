@@ -51,6 +51,14 @@ module.exports = ext.register("ext/debugger/debugger", {
             return false;
         });
         
+        ide.addEventListener("loadsettings", function() {
+            // restore the breakpoints from the IDE settings
+            var bpFromIde = require("ext/settings/settings").model.data.selectSingleNode("//breakpoints");
+            if (bpFromIde) {
+                mdlDbgBreakpoints.load(bpFromIde);
+            }
+        });
+        
         stDebugProcessRunning.addEventListener("activate", function() {
             _self.activate();
         });
@@ -157,12 +165,6 @@ module.exports = ext.register("ext/debugger/debugger", {
             if (button.nodeType == 1) {
                 this.nodesAll.push(button);
             }
-        }
-        
-        // restore the breakpoints from the IDE settings
-        var bpFromIde = require("ext/settings/settings").model.data.selectSingleNode("//breakpoints");
-        if (bpFromIde) {
-            mdlDbgBreakpoints.load(bpFromIde);
         }
 
         this.hotitems["resume"]   = [btnResume];
