@@ -887,7 +887,7 @@ apf.MultiSelect = function(){
             }) === false)
                 return false;
         }
-        
+
         //Deselect html nodes
         var htmlNode;
         for (var i = this.$valueList.length - 1; i >= 0; i--) {

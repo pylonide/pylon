@@ -752,7 +752,7 @@ apf.datagrid = function(struct, tagName){
     
     this.$updateNode = function(xmlNode, htmlNode){
         if (!htmlNode) return;
-        
+
         var nodes     = this.$head.childNodes,
             htmlNodes = htmlNode.childNodes,
             cell, p;
@@ -797,11 +797,11 @@ apf.datagrid = function(struct, tagName){
                         h.cvalue2.hasAml = h.value.indexOf("<a:") > -1;
                     //#endif
                 }
-                
+
                 //#ifdef __WITH_AML_BINDINGS
                 if (!h.cvalue2.hasAml)
                 //#endif
-                    cell.innerHTML = h.cvalue2(xmlNode) || "";
+                    cell.innerHTML = h.cvalue2(xmlNode) || "&nbsp";
             }
             
             if (h.icon) {

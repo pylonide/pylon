@@ -1,24 +1,37 @@
 /*
     Ideas:
         * Hover over the datagrid highlights the element it pertains
-        - Easily remove and add assertions/actions
-            - add assertion by picking element
-            - then present datagrid of properties in context menu style
-            - check one or more properties
+        * Easily remove and add assertions/actions
+            * add assertion by picking element
+            * then present datagrid of properties in context menu style
+            * check one or more properties
             * allow to change the value in assertion datagrid
         * drag&drop assertions and actions
         * instead of dividers, make them headings and allow for rename to set test name
             * parent element instead of divider
             * default the name "Recorded Test 1"
-        - hide and show advanced view
+        * hide and show advanced view
         - load previous tests
         - Allow to easily play tests locally or on saucelabs
             - The latter should show a movie
             - and make assertions green/red - also should scroll dg
         - Locally play test to return to state
-
+        - Context Menu
+            - Play until here
+            - Play this test
+            - 
+        * Run should be disabled until a test is loaded/recorded
+        * Datagrid needs drag indicators (seemed to have some before)
+        - Datagrid should automatically scroll down during recording, unless
+          the user scrolled it up manually
+        * Multiselect drag&drop
+        
     Bug:
-        - Update element of action after drag&drop
+        - Datagrid + textbox editing doesnt work (2nd time broken, skin bad)
+        * Update element of action after drag&drop
+        - After drag&drop the datagrid isnt expanded
+        - After assertion (disabling all children) the dynamic props are gone
+        - double clicking also registers the mouseup and down
 
 */
 apf.uirecorder.ui = {
@@ -57,7 +70,7 @@ apf.uirecorder.ui = {
         btnUiRecordStart.enable();
         btnUiRecordStop.disable();
         
-        btnUiRecordWrite.setAttribute("disabled", 
+        btnUiRecordRun.setAttribute("disabled", 
             !apf.uirecorder.capture.actions.length);
         
         apf.setOpacity(winUiRecorder.$ext, 1);
@@ -73,8 +86,10 @@ apf.uirecorder.ui = {
         apf.addListener(document, "mousemove", this.assertHandlers[0], true);
         apf.addListener(document, "mousedown", this.assertHandlers[1], true);
         apf.addListener(document, "mouseout", this.assertHandlers[2], true);
+
+        barUiRecorder.disable();
         
-        btnUiRecordAddAssert.disable();
+        apf.uirecorder.capture.pause();
     },
     
     assertHandlers : [
@@ -109,7 +124,7 @@ apf.uirecorder.ui = {
         },
         function(e){
             if (!e) e = event;
-            
+
             var div = apf.uirecorder.ui.divs[0];
             var lastTop = div.style.top;
             div.style.top = "-20000px";
@@ -153,7 +168,7 @@ apf.uirecorder.ui = {
                     if (dgUiRecorder.selected) {
                         var node = dgUiRecorder.selected;
                         if (node.localName == "assert")
-                            node = node.parentNodel
+                            node = node.parentNode;
                         
                         var doc = node.ownerDocument;
                         var assert = doc.createElement("assert");
@@ -209,8 +224,10 @@ apf.uirecorder.ui = {
         apf.removeListener(document, "mousedown", this.assertHandlers[1], true);
         apf.removeListener(document, "mouseout", this.assertHandlers[2], true);
         
-        btnUiRecordAddAssert.enable();
+        barUiRecorder.enable();
         this.pickingAssertion = false;
+        
+        apf.uirecorder.capture.unpause();
     },
     
     findElement : function (options){

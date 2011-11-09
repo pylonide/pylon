@@ -28,6 +28,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
         
         apf.uirecorder.captureDetails = true;
         apf.uirecorder.isRecording    = true;
+        this.setProperty("isRecording", true);
         
         this.dispatchEvent("record");
     },
@@ -35,6 +36,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
     // stop capturing, save recorded data in this.outputXml
     stop : function() {
         apf.uirecorder.isRecording = false;
+        this.setProperty("isRecording", false);
 
         if (!this.lastStream.name)
             this.actions.length--;
@@ -47,11 +49,23 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
     },
     
     pause : function(){
+        if (this.paused)
+            return;
+            
+        this.paused = true;
+        this.wasRecording = this.isRecording;
         apf.uirecorder.isRecording = false;
+        
+        //???
+        //$setTimeout = apf.uirecorder.setTimeout;
     },
     
     unpause : function(){
-        apf.uirecorder.isRecording = true;
+        if (!this.paused)
+            return;
+        
+        apf.uirecorder.isRecording = this.wasRecording;
+        this.paused = false;
     },
 
     canCapture : function(){

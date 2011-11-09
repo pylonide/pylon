@@ -94,7 +94,7 @@ apf.menu = function(struct, tagName){
 
     /**** Properties and Attributes ****/
     
-    this.zindex    = 10000000;
+    //this.zindex    = 10000000;
     this.visible   = false;
     this.matchhide = false;
 
@@ -280,7 +280,8 @@ apf.menu = function(struct, tagName){
                     ref          : (this.ref || opener).$ext,
                     allowTogether: openMenuId,
                     autohide     : !this.pinned,
-                    noleft       : this.left !== undefined
+                    noleft       : this.left !== undefined,
+                    setZindex    : this.zindex ? false : true
                 });
             }
             else {
@@ -292,7 +293,8 @@ apf.menu = function(struct, tagName){
                     steps        : 10,
                     //ref          : this.$ext.offsetParent,
                     allowTogether: openMenuId,
-                    autohide     : !this.pinned
+                    autohide     : !this.pinned,
+                    setZindex    : this.zindex ? false : true
                     //autoCorrect  : false
                 });
             }
