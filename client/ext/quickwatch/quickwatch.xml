@@ -8,6 +8,7 @@
       skin      = "bk-window"
       class     = "nofooter"
       height    = "350"
+      resizable = "true"
       kbclose   = "true">
         <a:vbox anchors="0 0 0 0">
             <a:textbox id="txtCurObject" 
@@ -45,7 +46,7 @@
                     <a:insert match="[item[@children]]" get="{adbg.loadObjects(dbg, %[.])}" />
                     <a:expanded match="[node()[@expand]]" />
                     <a:column caption="Property" value="{[@name] || 'Globals'}" width="120" icon="debugger/genericvariable_obj.gif" tree="true" />
-                    <a:column caption="Value" value="[@value]" width="100%" editor="textbox" />
+                    <a:column caption="Value" value="{apf.escapeXML([@value])}" width="100%" editor="textbox" />
                     <a:column caption="Type" value="[@type]" width="80"/>
                 </a:each>
                 <a:change set="{require('ext/debugger/inspector').applyChange(xmlNode);}" />

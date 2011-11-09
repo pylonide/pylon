@@ -25,7 +25,6 @@ var DebugProxy = module.exports = function(port) {
         _self.emit("connection");
     });
     this.service.addEventListener("debugger_command_0", function(msg) {
-        //console.log("REC ", msg.data);
         _self.emit("message", msg.data);
     });
 };
@@ -39,7 +38,6 @@ sys.inherits(DebugProxy, process.EventEmitter);
     };
 
     this.send = function(msgJson) {
-        //console.log("SEND " + JSON.stringify(msgJson))
         this.service.debuggerCommand(0, JSON.stringify(msgJson));
     };
 
