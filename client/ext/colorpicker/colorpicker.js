@@ -15,9 +15,22 @@ var Range = require("ace/range").Range;
 var UndoManager = require("ace/undomanager").UndoManager;
 
 var Colors = {};
+var colorsRe = /(#([0-9A-Fa-f]{3,6})\b)|(rgba?\(\s*\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\b\s*,\s*\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\b\s*,\s*\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\b\s*(:?\s*,\s*(?:1|0|0?\.[0-9]{1,2})\s*)?\))|(rgba?\(\s*(\d?\d%|100%)+\s*,\s*(\d?\d%|100%)+\s*,\s*(\d?\d%|100%)+\s*(:?\s*,\s*(?:1|0|0?\.[0-9]{1,2})\s*)?\))/gi;
+var RGBRe = /(?:rgba?\(\s*([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\s*,\s*([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\s*,\s*([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\s*(:?\s*,\s*(?:1|0|0?\.[0-9]{1,2})\s*)?\))|(rgba?\(\s*(\d?\d%|100%)+\s*,\s*(\d?\d%|100%)+\s*,\s*(\d?\d%|100%)+\s*(:?\s*,\s*(?:1|0|0?\.[0-9]{1,2})\s*)?\))/;
 var css = require("text!ext/colorpicker/colorpicker.css");
 var markup = require("text!ext/colorpicker/colorpicker.xml");
 var skin = require("text!ext/colorpicker/skin.xml");
+
+function createColorRange(row, line, color) {
+    var col = line.indexOf(color);
+    return Range.fromPoints({
+        row: row,
+        column: col
+    }, {
+        row: row,
+        column: col + color.length
+    });
+}
 
 module.exports = ext.register("ext/colorpicker/colorpicker", {
     dev    : "Ajax.org",
@@ -35,13 +48,25 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         this.colorpicker.addEventListener("prop.hex", function(e) {
             _self.onColorPicked(e.oldvalue, e.value);
         });
+        this.colorpicker.addEventListener("prop.visible", function(e) {
+            // when the the colorpicker hides, hide all tooltip markers
+            if (!e.value) {
+                var a = _self.$activeColor;
+                if (a) {
+                    apf.removeEventListener("keydown", a.listeners.onKeyDown);
+                    a.editor.removeEventListener("mousewheel", a.listeners.onScroll);
+                    delete _self.$activeColor;
+                    _self.hideColorTooltips(a.editor);
+                }
+            }
+        });
     },
     
     hook: function() {
         apf.importCssString(css || "");
 
         function detectColors(pos, line) {
-            var colors = line.match(/(#([0-9A-Fa-f]{3,6})\b)|(rgba?\(\s*\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\b\s*,\s*\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\b\s*,\s*\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\b\s*(:?\s*,\s*(?:1|0|0?\.[0-9]{1,2})\s*)?\))|(rgba?\(\s*(\d?\d%|100%)+\s*,\s*(\d?\d%|100%)+\s*,\s*(\d?\d%|100%)+\s*(:?\s*,\s*(?:1|0|0?\.[0-9]{1,2})\s*)?\))/gi);
+            var colors = line.match(colorsRe);
             if (!colors || !colors.length)
                 return [];
             var start, end;
@@ -93,33 +118,22 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 _self.toggleColorPicker(pos, editor, line, colors[1]);
             }
             else if (_self.colorpicker && _self.colorpicker.visible) {
-                if (_self.$activeColor) {
-                    _self.$activeColor.at.resumeTracking();
-                    delete _self.$activeColor;
-                }
                 _self.colorpicker.hide();
             }
         });
     },
     
-    showColorTooltip: function(pos, editor, line, colors) {
-        if (this.colorpicker && this.colorpicker.visible)
+    showColorTooltip: function(pos, editor, line, colors, markerId) {
+        if (this.colorpicker && this.colorpicker.visible && !markerId)
             return;
 
         var markers = [];
         colors.forEach(function(color) {
-            var id = color + pos.row;
+            var id = markerId || color + pos.row;
             var marker = Colors[id];
             // the tooltip DOM node is stored in the third element of the selection array
             if (!marker) {
-                var col = line.indexOf(color);
-                var range = Range.fromPoints({
-                    row: pos.row,
-                    column: col
-                }, {
-                    row: pos.row,
-                    column: col + color.length
-                });
+                var range = createColorRange(pos.row, line, color);
                 var marker = editor.session.addMarker(range, "codetools_colorpicker", function(stringBuilder, range, left, top, viewport) {
                     stringBuilder.push(
                         "<span class='codetools_colorpicker' style='",
@@ -127,7 +141,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                         "top:", top - 1, "px;",
                         "height:", viewport.lineHeight, "px;",
                         "' onclick='require(\'ext/codetools/codetools\').toggleColorPicker({row:",
-                        pos.row, ",column:", pos.column, ",color:\'", color, "\'});'>", color, "</span>"
+                        pos.row, ",column:", pos.column, ",color:\'", color, "\'});'", (markerId ? " id='" + markerId + "'" : ""), ">", color, "</span>"
                     );
                 }, true);
                 Colors[id] = [range, marker];
@@ -139,8 +153,10 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
     },
     
     hideColorTooltips: function(editor, exceptions) {
-        //if (!exceptions && this.colorpicker.visible)
-        //    this.colorpicker.hide();
+        if (this.$activeColor)
+            return;
+        if (!exceptions && this.colorpicker && this.colorpicker.visible)
+            this.colorpicker.hide();
         if (exceptions && !apf.isArray(exceptions))
             exceptions = [exceptions];
         var marker;
@@ -158,7 +174,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         var cp = this.colorpicker;
         
         var type = "hex";
-        var rgb = color.match(/(?:rgba?\(\s*([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\s*,\s*([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\s*,\s*([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\s*(:?\s*,\s*(?:1|0|0?\.[0-9]{1,2})\s*)?\))|(rgba?\(\s*(\d?\d%|100%)+\s*,\s*(\d?\d%|100%)+\s*,\s*(\d?\d%|100%)+\s*(:?\s*,\s*(?:1|0|0?\.[0-9]{1,2})\s*)?\))/);
+        var orig = color;// = color.replace("#", "");
+        var rgb = color.match(RGBRe);
         if (rgb && rgb.length >= 3) {
             rgb = {
                 r: rgb[1], 
@@ -168,49 +185,63 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             color = apf.color.RGBToHex(rgb);
             type = "rgb";
         }
+        else
+            color = "#" + apf.color.fixHex(color.replace("#", ""));
         
-        var marker = Colors[color + pos.row];
-        var orig = color.replace("#", "");
-        color = apf.color.fixHex(orig);
-        
-        if (cp.visible && color == this.$activeColor.color && pos.row == this.$activeColor.row) {
-            this.$activeColor.at.resumeTracking();
-            delete this.$activeColor;
+        if (cp.visible && color == this.$activeColor.color && pos.row == this.$activeColor.row)
             return cp.hide();
-        }
         
-        var onKeyDown, _self = this;
+        // set appropriate event listeners, that will be removed when the colorpicker
+        // hides.
+        var onKeyDown, onScroll, _self = this;
         apf.addEventListener("keydown", onKeyDown = function(e) {
             var a = _self.$activeColor;
             
-            if (!cp || !a || !cp.visible || e.keyCode != 27) 
+            if (!cp || !a || !cp.visible) 
                 return;
                 
-            clearTimeout(_self.$colorPickTimer);
-            a.at.resumeTracking();
-            delete _self.$activeColor;
             cp.hide();
-            if (a.changed)
-                a.at.undo(a.at.undolength - a.start);
-            apf.removeEventListener("keydown", onKeyDown);
+            // when ESC is pressed, undo all changes made by the colorpicker
+            if (e.keyCode === 27) {
+                clearTimeout(_self.$colorPickTimer);
+                var at = editor.session.$undoManager;
+                if (at.undolength > a.start)
+                    at.undo(at.undolength - a.start);
+            }
+        });
+        
+        editor.addEventListener("mousewheel", onScroll = function(e) {
+            var a = _self.$activeColor;
+            
+            if (!cp || !a || !cp.visible) 
+                return;
+                
+            cp.hide();
         });
 
+        var id = "colorpicker" + color + pos.row;
         this.hideColorTooltips(editor);
+        this.showColorTooltip(pos, editor, line, [orig], id);
         cp.show();
         this.$activeColor = {
             color: color,
+            markerNode: id,
             orig: orig,
+            current: orig,
             type: type,
-            row: pos.row,
-            marker: marker,
+            pos: pos,
+            marker: Colors[id],
             editor: editor,
-            changed: 0,
             start: editor.session.$undoManager.undolength,
-            at: editor.session.$undoManager
+            listeners: {
+                onKeyDown: onKeyDown,
+                onScroll: onScroll
+            }
         };
         cp.setProperty("value", color);
-        var coords = ceEditor.$editor.renderer.textToScreenCoordinates(pos.row, line.indexOf(orig) + orig.length);
         
+        // calculate the x and y (top and left) position of the colorpicker
+        var coords = ceEditor.$editor.renderer.textToScreenCoordinates(pos.row, line.indexOf(orig) + orig.length);
         var y = coords.pageY;
         var x = coords.pageX;
         var pOverflow = apf.getOverflowParent(cp.$ext);
@@ -238,7 +269,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 x = 0;
         }
         cp.$ext.style.top = (y - 15) + "px";
-        cp.$ext.style.left = (x + 15 + (type == "rgb" ? 320 : 0)) + "px";
+        cp.$ext.style.left = (x + 15) + "px";
     },
     
     onColorPicked: function(old, color) {
@@ -247,59 +278,39 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             return;
         
         clearTimeout(this.$colorPickTimer);
-        if (a.at.isTracking())
-            a.at.pauseTracking();
 
         var doc = a.editor.session.doc;
-        var line = doc.getLine(a.row);
-        var newLine;
-        if (a.type == "hex") {
-            var start = line.indexOf(a.color);
-            if (start === -1) {
-                start = line.indexOf(a.orig);
-                if (start === -1)
-                    return;
-                else
-                    newLine = line.replace(a.orig, color);
-            }
+        var line = doc.getLine(a.pos.row);
+        if (typeof a.markerNode == "string") {
+            var node = document.getElementById(a.markerNode);
+            if (node)
+                a.markerNode = node;
             else
-                newLine = line.replace(a.color, color);
-            doc.replace(a.marker[0], "#" + color);
+                return;
+        }
+        var newLine, newColor;
+        if (a.type == "hex") {
+            newColor = "#" + color;
         }
         else if (a.type == "rgb") {
-            var oldRGB = apf.color.hexToRGB(old);
-            var regex = new RegExp("(rgba?)\\(\\s*" + oldRGB.r + "\\s*,\\s*" + oldRGB.g + "\\s*,\\s*" + oldRGB.b, "i");
-            if (!line.match(regex)) {
-                // in case the colorpicker was still holding on to a previous value:
-                oldRGB = apf.color.hexToRGB(a.orig);
-                regex = new RegExp("(rgba?)\\(\\s*" + oldRGB.r + "\\s*,\\s*" + oldRGB.g + "\\s*,\\s*" + oldRGB.b, "i");
-                if (!line.match(regex))
-                    return;
-            }
+            var m = a.current.match(RGBRe);
+            var regex = new RegExp("(rgba?)\\(\\s*" + m[1] + "\\s*,\\s*" + m[2] + "\\s*,\\s*" + m[3] + "(\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\)", "i");
+            if (!line.match(regex))
+                return;
             var RGB = apf.color.hexToRGB(color);
-            newLine = line.replace(regex, function(m, prefix) {
-                return prefix + "(" + RGB.r + ", " + RGB.g + ", " + RGB.b;
+            newLine = line.replace(regex, function(m, prefix, suffix) {
+                return (newColor = prefix + "(" + RGB.r + ", " + RGB.g + ", " + RGB.b + (suffix || "") + ")");
             });
-            doc.removeLines(a.row, a.row);
-            doc.insertLines(a.row, [newLine]);
         }
         a.color = color;
         
+        a.markerNode.innerHTML = newColor;
+        
         var _self = this;
         this.$colorPickTimer = setTimeout(function() {
-            a.at.resumeTracking();
-            ++a.changed;
-            //doing this across the board would be much more efficient, but the
-            //ACE UndoManager just won't play nice.
-            //if (a.type == "hex") {
-            //    doc.replace(a.marker[0], "#" + color);
-            //}
-            //else {
-                doc.removeLines(a.row, a.row);
-                doc.insertLines(a.row, [newLine]);
-            //}
-            a.editor.session.$informUndoManager.call();
-            a.at.pauseTracking();
+            a.marker[0] = createColorRange(a.pos.row, line, a.current);
+            doc.replace(a.marker[0], newColor);
+            a.current = newColor;
         }, 200);
     },
     
