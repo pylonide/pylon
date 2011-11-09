@@ -20,6 +20,8 @@ var complete = require('ext/language/complete');
 
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
+var lang = require("pilot/lang");
+
 
 module.exports = ext.register("ext/language/language", {
     name    : "Javascript Outline",
@@ -40,6 +42,10 @@ module.exports = ext.register("ext/language/language", {
 
     hook : function() {
 		var _self = this;
+        
+        var deferred = lang.deferredCall(function() {
+            _self.setPath();
+        });
 
 		ide.addEventListener("afteropenfile", function(event){
             ext.initExtension(_self);
@@ -47,10 +53,13 @@ module.exports = ext.register("ext/language/language", {
             if (!editors.currentEditor || !editors.currentEditor.ceEditor) // No editor, for some reason
                 return;
             var path = event.node.getAttribute("path");
+            console.log("Open file: " + path);
             worker.call("switchFile", [path, editors.currentEditor.ceEditor.syntax, event.doc.getValue()]);
             event.doc.addEventListener("close", function() {
                 worker.emit("documentClose", {data: path});
             });
+            // This is necessary to know which file was opened last, for some reason the afteropenfile event happens out of sequence
+            deferred.cancel().schedule(100);
 	    });
         var worker = this.worker = new WorkerClient(["treehugger", "pilot", "ext", "ace", "c9"], null, "ext/language/worker", "LanguageWorker");
         complete.setWorker(worker);
@@ -76,8 +85,9 @@ module.exports = ext.register("ext/language/language", {
         this.setPath();
         
         this.editor.on("changeSession", function(event) {
+            console.log("Change session");
             // Time out a litle, to let the page path be updated
-            $setTimeout(function() {
+            setTimeout(function() {
                 var currentPath = tabEditors.getPage().getAttribute("id");
                 _self.setPath();
                 oldSelection.removeEventListener("changeCursor", _self.$onCursorChange);
@@ -97,10 +107,11 @@ module.exports = ext.register("ext/language/language", {
     
     setPath: function() {
         var _self = this;
-        setTimeout(function() {
-            var currentPath = tabEditors.getPage().getAttribute("id");
-            _self.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, _self.editor.getSession().getValue()]);
-        }, 0);
+        //setTimeout(function() {
+        var currentPath = tabEditors.getPage().getAttribute("id");
+        console.log(currentPath);
+        _self.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, _self.editor.getSession().getValue()]);
+        //}, 0);
     },
     
     /**
@@ -153,11 +164,11 @@ module.exports = ext.register("ext/language/language", {
             }
             _self.currentMarkers.push(session.addMarker(range, "language_highlight", function(stringBuilder, range, left, top, viewport) {
                 stringBuilder.push(
-                    "<span class='language_highlight' onclick='alert(\'bla\')' style='border-bottom: dotted 2px red; ",
+                    "<span id='myelement' class='language_highlight' onclick='whatever()' style='border-bottom: dotted 1px red; ",
                     "left:", left, "px;",
                     "top:", top, "px;",
                     "height:", viewport.lineHeight, "px;",
-                    "'>", text, "</span>"
+                    "'>", spaces, "</span>"
                 );
             }, true));
         });
