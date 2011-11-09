@@ -1,3 +1,4 @@
+// #ifdef __WITH_UIRECORDER
 /*
     Ideas:
         * Hover over the datagrid highlights the element it pertains
@@ -496,3 +497,4 @@ apf.uirecorder.ui = {
 apf.registerHotkey("Command-F10", function(){
     apf.uirecorder.ui.show();
 });
+// #endif
