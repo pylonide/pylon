@@ -13,10 +13,11 @@ handler.analyze = function(doc, ast) {
     ast.traverseTopDown(
         'New(_, _)', function(b) {
             annos.push({
-                node: this.getPos(),
+                pos: this.getPos(),
                 type: 'error',
                 message: 'You look like a Java programmer, are you?'
             });
+            return this;
         }
     );
     return annos;

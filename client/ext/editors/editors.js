@@ -563,7 +563,7 @@ module.exports = ext.register("ext/editors/editors", {
                     }
                     catch (ex) {}
                     
-                    if (nodes[i].getAttribute("changed") == 1) {
+                    if (nodes[i].getAttribute("changed") == 1 && nodes[i].firstChild) {
                         doc.cachedValue = nodes[i].firstChild.nodeValue
                             .replace(/\n]\n]/g, "]]")
                             .replace(/\\r/g, "\r")

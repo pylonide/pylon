@@ -24,6 +24,14 @@
                 position: absolute;
                 z-index: 2000;
             }
+            
+            .languageToolTip {
+                background-color: yellow;
+                -webkit-box-shadow: 0 3px 7px rgba(0,0,0,.4);
+                box-shadow: 0 3px 7px rgba(0,0,0,.4);
+                padding: 4px;
+                -webkit-border-radius: 3px;
+        }
 
         ]]></a:style>
         <a:presentation>

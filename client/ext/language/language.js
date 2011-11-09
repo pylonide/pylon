@@ -21,13 +21,14 @@ var complete = require('ext/language/complete');
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
 var lang = require("pilot/lang");
-
+var codetools = require("ext/codetools/codetools");
+var tree = require('treehugger/tree');
 
 module.exports = ext.register("ext/language/language", {
     name    : "Javascript Outline",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
-    deps    : [editors],
+    deps    : [editors, codetools],
     nodes   : [],
     alone   : true,
     markup  : markup,
@@ -61,6 +62,9 @@ module.exports = ext.register("ext/language/language", {
             // This is necessary to know which file was opened last, for some reason the afteropenfile event happens out of sequence
             deferred.cancel().schedule(100);
 	    });
+        ide.addEventListener("codetools.hoverchange", function(event) {
+            _self.checkHover(event);
+        });
         var worker = this.worker = new WorkerClient(["treehugger", "pilot", "ext", "ace", "c9"], null, "ext/language/worker", "LanguageWorker");
         complete.setWorker(worker);
         // Language features
@@ -136,6 +140,7 @@ module.exports = ext.register("ext/language/language", {
         this.worker.emit("analyze", {});
     },
     
+    currentMarkerIds: [],
     currentMarkers: [],
     
     markers: function(event) {
@@ -146,25 +151,25 @@ module.exports = ext.register("ext/language/language", {
         for (var i = 0; i < this.currentMarkers.length; i++) {
             session.removeMarker(this.currentMarkers[i]);
         }
-        this.currentMarkers = [];
+        this.currentMarkerIds = [];
+        this.currentMarkers = annos;
         
         annos.forEach(function(anno) { 
             var range = Range.fromPoints({
-                row: anno.node.sl,
-                column: anno.node.sc
+                row: anno.pos.sl,
+                column: anno.pos.sc
             }, {
-                row: anno.node.el,
-                column: anno.node.ec
+                row: anno.pos.el,
+                column: anno.pos.ec
             });
             var text = session.getTextRange(range);
-            console.log("Text: " + text);
             var spaces = '';
             for (var i = 0; i < text.length; i++) {
                 spaces += '&nbsp;';
             }
-            _self.currentMarkers.push(session.addMarker(range, "language_highlight", function(stringBuilder, range, left, top, viewport) {
+            _self.currentMarkerIds.push(session.addMarker(range, "language_highlight", function(stringBuilder, range, left, top, viewport) {
                 stringBuilder.push(
-                    "<span id='myelement' class='language_highlight' onclick='alert(\'hello\')' style='border-bottom: dotted 1px red; ",
+                    "<span id='myelement' class='language_highlight' style='border-bottom: dotted 1px red; ",
                     "left:", left, "px;",
                     "top:", top, "px;",
                     "height:", viewport.lineHeight, "px;",
@@ -172,6 +177,36 @@ module.exports = ext.register("ext/language/language", {
                 );
             }, true));
         });
+    },
+    
+    // TODO: Optimize this by ordering currentMarkers by line, then doing binary search rather than linear
+    checkHover: function(event) {
+        var pos = event.pos;
+        var currentMarkers = this.currentMarkers;
+        var pos = {line: pos.row, col: pos.column};
+        var foundOne = false;
+        for (var i = 0; i < currentMarkers.length; i++) {
+            if(tree.inRange(currentMarkers[i].pos, pos)) {
+                this.showAnnotationTooltip(currentMarkers[i], event.originalEvent);
+                foundOne = true;
+                break;
+            }
+        }
+        if(!foundOne)        
+            apf.popup.hide();
+    },
+    
+    showAnnotationTooltip: function(anno, event) {
+        var el = this.tooltipEl;
+        if(!el) {
+            this.tooltipEl = el = document.createElement("div");
+            document.body.appendChild(el);
+            el.className = "languageToolTip";
+        }
+        el.innerHTML = anno.message;
+        
+        apf.popup.setContent("languageAnnotationTooltip", el);
+        apf.popup.show("languageAnnotationTooltip", { x : event.pageX, y : event.pageY });
     },
     
     registerLanguageHandler: function(modulePath, className) {
