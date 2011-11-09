@@ -164,7 +164,7 @@ module.exports = ext.register("ext/language/language", {
             }
             _self.currentMarkers.push(session.addMarker(range, "language_highlight", function(stringBuilder, range, left, top, viewport) {
                 stringBuilder.push(
-                    "<span id='myelement' class='language_highlight' onclick='whatever()' style='border-bottom: dotted 1px red; ",
+                    "<span id='myelement' class='language_highlight' onclick='alert(\'hello\')' style='border-bottom: dotted 1px red; ",
                     "left:", left, "px;",
                     "top:", top, "px;",
                     "height:", viewport.lineHeight, "px;",
