@@ -18,8 +18,8 @@ define(function(require, exports, module) {
 var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbChange) {
     this.columnCounter  = 0;
     this.$parentHBox    = parentHBox;
-    this.$cbStorePage   = cbStorePage;
     this.$cbFindPage    = cbFindPage;
+    this.$cbStorePage   = cbStorePage;
     this.$cbChange      = cbChange;
     this.$cbFindOptions = cbFindOptions;
     
@@ -39,7 +39,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
      * 
      */
     this.getState = function(){
-        var state = {bars: []};
+        var state = {bars: [], type: "new"};
         
         var bar = this.$parentHBox.lastChild;
         while (bar) {
@@ -54,12 +54,12 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 for (var i = 0; i < sections.length; i++) {
                     var sectionInfo = {buttons: []};
                     var buttons = sections[i].selectNodes("button");
-                    sectionInfo.flex = buttons[0].$dockpage.parentNode.flex || 1;
+                    sectionInfo.flex = buttons[0].$dockpage.parentNode.flex || false;
                     
                     var menu = self[buttons[0].submenu];
                     sectionInfo.width = menu.width;
                     sectionInfo.height = menu.height;
-                    
+                    sectionInfo.options = sections[i].$dockData.options;
                     for (var j = 0; j < buttons.length; j++) {
                         var buttonInfo = {};
                         buttonInfo.ext     = buttons[j].$dockData.ext;
@@ -128,6 +128,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 var section = null, 
                     menu, info;
                     
+                if(!sections[j].options)
+                    sections[j].options = {};
+                
                 if (sections[j].sectionIdent) {
                     section = this.$getSection(bar, sections[j].sectionIdent);
                     
@@ -137,7 +140,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     }
                 }
                 if (!section) {
-                    section = this.$addSection(bar, bar.childNodes[sections[j].position], sections[j].sectionIdent, sections[j]);
+                    section = this.$addSection(bar, bar.childNodes[sections[j].options.position], sections[j].sectionIdent, sections[j]);
                     info = section.$dockData = sections[j];
                     menu = this.$addMenu(section);
                     section.$menu = menu;
@@ -147,7 +150,6 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 }
 
                 var buttons = sections[j].buttons;
-                
                 for (var k = 0; k < buttons.length; k++) {
                     var button = this.$addButton(section, menu, 
                         this.$addPage(
@@ -486,7 +488,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     var pNode = aml.parentNode;
                     var pos2 = apf.getAbsolutePosition(pNode.$ext);
                     indicator.style.left = pos2[0] + "px";
-                    indicator.style.top  = pos2[1] + "px";
+                    indicator.style.top  = (pos2[1] + 3) + "px";
                     width = pNode.$ext.offsetWidth;
                     height = pNode.$ext.offsetHeight;
                     
@@ -505,10 +507,10 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         var div1 = indicator.firstChild;
                         var div2 = indicator.childNodes[1];
                         var div3 = indicator.childNodes[2];
-                        div1.style.left = diff[0] + "px";
-                        div1.style.width = (matchAml.$button.offsetWidth - 5) + "px";
-                        div1.style.height = "18px";
-                        div1.style.margin = "-18px 0 0 0px";
+                        div1.style.left = (diff[0] - 6) + "px";
+                        div1.style.width = (matchAml.$button.offsetWidth - 1) + "px";
+                        div1.style.height = "20px";
+                        div1.style.margin = "-19px 0 0 0px";
                         div1.style.border = "3px solid #5c5c5c";
                         div1.style.borderWidth = "3px 3px 0 3px";
                         
@@ -518,15 +520,16 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         div2.style.borderBottom = "3px solid #5c5c5c";
                         
                         div3.style.left = "0px";
-                        div3.style.right = (width - diff[0] - 3) + "px";
+                        div3.style.right = (width - diff[0] - 4) + "px";
                         
                         indicator.style.borderTop = "0px solid #5c5c5c";
-                        indicator.style.top = (pos2[1] + 18) + "px";
-                        height -= 18;
+                        indicator.style.top = (pos2[1] + 22) + "px";
+                        height -= 24;
+                        width  -= 1;
                     }
                     else {
                         indicator.innerHTML = "<div style='position:absolute;'><div></div></div>";
-                        indicator.firstChild.style.height = "16px";
+                        indicator.firstChild.style.height = "19px";
                         indicator.firstChild.style.width = "5px";
                         indicator.firstChild.style.background = "rgba(122,199,244,0.5)";
                         indicator.firstChild.style.top = "0px";
@@ -543,6 +546,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                             indicator.firstChild.firstChild.style.marginLeft = "0px";
                         }
                         indicator.firstChild.style.left = left + "px";
+                        height -= 5;
+                        width  -= 1;
                     }
                     break;
                 case "before_tab":
@@ -555,6 +560,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     indicator.style.borderWidth = "0 0 0 0";
                     indicator.style.backgroundColor = "rgba(122,199,244," 
                         + (!aml.nextSibling ? 1 : 0.8) + ")";
+                    
                     return;
                 case "before_section":
                     height = 0;
@@ -1061,9 +1067,10 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         
         var _self = this,
             childNodes = [],
-            menuId = section.$dockData.id || "submenu" + menuCounter++;
+            dockOpt = section.$dockData.options || {},
+            menuId  = dockOpt.id || "submenu" + menuCounter++;
 
-        if(!section.$dockData.noTab) {
+        if(!dockOpt.noTab) {
             childNodes = [
                 new apf.tab({
                     anchors : "4 4 4 4", 
@@ -1096,8 +1103,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             ref       : section,
             pinned    : "true",
             animate   : "false",
-            skin      : section.$dockData.skin ? section.$dockData.skin : "dockwindowblack",
-            resizable : section.$dockData.resizable === false ? false : "left bottom",
+            skin      : dockOpt.skin ? dockOpt.skin : "dockwindowblack",
+            resizable : dockOpt.resizable === false ? false : "left bottom",
             dock      : 1,
             ondisplay : function(){
                 if (_self.$currentMenu && _self.$currentMenu != this)
@@ -1141,7 +1148,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             childNodes : childNodes
         });
         
-        if(section.$dockData.noTab) {
+        if(dockOpt.noTab) {
             tbDebugNav.show();
         }
         

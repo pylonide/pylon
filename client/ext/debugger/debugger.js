@@ -69,20 +69,28 @@ module.exports = ext.register("ext/debugger/debugger", {
         });
         
         var name = "ext/debugger/debugger"; //this.name
-        
-        dock.addDockable({
-            hidden  : false,
-            buttons : [
-                { caption: "Call Stack", ext : [name, "dbgCallStack"] }
-            ]
-        });
 
         dock.addDockable({
-            hidden  : false,
-            buttons : [
-                { caption: "Interactive", ext : [name, "dbInteractive"] },
-                { caption: "Variables", ext : [name, "dbgVariable"] },
-                { caption: "Breakpoints", ext : [name, "dbgBreakpoints"] }
+            expanded : false,
+            hidden : false,
+            width : 300,
+            barNum  : 0,
+            sections : [
+                {
+                    hidden  : false,
+                        buttons : [
+                            { caption: "Interactive", ext : [name, "dbInteractive"] },
+                            { caption: "Variables", ext : [name, "dbgVariable"] },
+                            { caption: "Breakpoints", ext : [name, "dbgBreakpoints"] }
+                        ]
+                },
+                {
+                    hidden  : false,
+                    buttons : [
+                        { caption: "Call Stack", ext : [name, "dbgCallStack"] }
+                    ]
+                }
+                
             ]
         });
 

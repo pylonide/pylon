@@ -2097,7 +2097,7 @@
             background-image: -ms-linear-gradient(bottom, rgb(100,100,104) 0%, rgb(73,73,80) 100%);
         }
         
-        .btn-default-css3Disable {
+        .btn-default-css3Disabled {
             background-image: linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
             background-image: -o-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
             background-image: -moz-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
@@ -2128,7 +2128,7 @@
         .btn-default-css3.btn-default-css3Down .caption {
             border-top: 1px solid #93939b;
         }
-        .btn-default-css3.btn-default-css3Disable .caption {
+        .btn-default-css3.btn-default-css3Disabled .caption {
             border-top: 1px solid #93939b;
         }
         
@@ -2184,7 +2184,7 @@
             background-image: -ms-linear-gradient(bottom, rgb(73,165,20) 0%, rgb(2,141,0) 100%);
         }
         
-        .btn-default-css3Disable.btn-green {
+        .btn-default-css3Disabled.btn-green {
             background-image: linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
             background-image: -o-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
             background-image: -moz-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
@@ -2209,7 +2209,7 @@
         .btn-default-css3.btn-default-css3Down.btn-green .caption {
             border-top: 1px solid #88c464;
         }
-        .btn-default-css3.btn-default-css3Disable.btn-green .caption {
+        .btn-default-css3.btn-default-css3Disabled.btn-green .caption {
             border-top: 1px solid #88c464;
         }
         /*-----------*/
@@ -2248,7 +2248,7 @@
             background-image: -ms-linear-gradient(bottom, rgb(203,0,0) 0%, rgb(182,0,0) 100%);
         }
         
-        .btn-default-css3Disable.btn-red {
+        .btn-default-css3Disabled.btn-red {
             background-image: linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
             background-image: -o-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
             background-image: -moz-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
@@ -2273,7 +2273,7 @@
         .btn-default-css3.btn-default-css3Down.btn-red .caption {
             border-top: 1px solid #cf5757;
         }
-        .btn-default-css3.btn-default-css3Disable.btn-red .caption {
+        .btn-default-css3.btn-default-css3Disabled.btn-red .caption {
             border-top: 1px solid #dd5757;
         }
         /*-----------*/
@@ -3678,27 +3678,48 @@
         .divider-debugpanel {
             position      : relative;
             overflow      : hidden;
-            border-top    : 1px dotted #000000;
-            border-bottom : 1px dotted #39393b;
             height        : 4px;
         }
 
-        .divider-debugpanel DIV {
+        .divider-debugpanel .container {
+            border-top    : 1px dotted #000000;
+            border-bottom : 1px dotted #39393b;
+        }
+        
+        .divider-debugpanel .inner_container {
             border-bottom : 1px dotted #000000;
             border-top    : 1px dotted #39393b;
         }
+        
+        .divider-debugpanel:hover {
+            position      : relative;
+            overflow      : hidden;
+            height        : 4px;
+        }
+
+        .divider-debugpanel:hover .container {
+            border-top    : 1px dotted #737373;
+            border-bottom : 1px dotted #040404;
+        }
+        
+        .divider-debugpanel:hover .inner_container {
+            border-bottom : 1px dotted #737373;
+            border-top    : 1px dotted #040404;
+        }
     ]]></a:style>
     <a:style condition="apf.isGecko">
-        .divider-debugpanel DIV {
+        .divider-debugpanel div div {
             position : relative;
             left : -1px;
         }
     </a:style>
 
     <a:presentation>
-        <a:main container="div" caption="div">
+        <a:main container="div/div" caption="div/div">
             <div class="divider-debugpanel">
-                <div/>
+                <div class="container">
+                    <div class="inner_container"> </div>
+                </div>
             </div>
         </a:main>
     </a:presentation>
@@ -7760,16 +7781,20 @@
         .docktab .btncontainer .btnclose strong {
             width               : 14px;
             height              : 14px;
-            display             : block;
+            display             : none;
             position            : absolute;
-            right               : 1px;
+            right               : 2px;
             top                 : 5px;
             /*cursor              : pointer;*/
             background-image    : url(images/close_tab_btn.png);
             background-repeat   : no-repeat;
             background-position : 0 -14px;
         }
-
+        
+        .docktab .btncontainer .btnclose:hover strong {
+            display: block;
+        }
+        
         .docktab .btncontainer .btnclose strong:hover {
             background-position : -14px -14px;
         }

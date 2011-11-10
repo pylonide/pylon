@@ -37,15 +37,17 @@ module.exports = ext.register("ext/run/run", {
         var name = "ext/run/run"; //this.name
         
         dock.addDockable({
-            id: "mnuRunCommands",
-            hidden     : false,
-            height     : 30,
-            width      : 179,
-            resizable  : false,
-            skin       : "dockwin_runbtns",
-            noTab      : true,
-            position   : 1,
-            draggable  : false,
+            hidden  : false,
+            height  : 30,
+            width   : 179,
+            barNum  : 0,
+            options : {
+                id: "mnuRunCommands",
+                resizable  : false,
+                skin       : "dockwin_runbtns",
+                noTab      : true,
+                position   : 1
+            },
             buttons : [{
                 id      : "btnRunCommands",
                 caption : "Run Commands", 
