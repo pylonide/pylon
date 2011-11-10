@@ -11,12 +11,12 @@ define(function(require, exports, module) {
 var ext = require("core/ext");
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
-var tree = require('treehugger/tree');
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
 var Range = require("ace/range").Range;
 
 var outline = require('ext/language/outline');
 var complete = require('ext/language/complete');
+var marker = require('ext/language/marker');
 
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
@@ -37,8 +37,7 @@ module.exports = ext.register("ext/language/language", {
     
     commands : {
         "outline": {hint: "show outline"},
-        "complete": {hint: "code complete"},
-        "analyze": {hint: "analyze code"}
+        "complete": {hint: "code complete"}
     },
 
     hook : function() {
@@ -54,7 +53,6 @@ module.exports = ext.register("ext/language/language", {
             if (!editors.currentEditor || !editors.currentEditor.ceEditor) // No editor, for some reason
                 return;
             var path = event.node.getAttribute("path");
-            console.log("Open file: " + path);
             worker.call("switchFile", [path, editors.currentEditor.ceEditor.syntax, event.doc.getValue()]);
             event.doc.addEventListener("close", function() {
                 worker.emit("documentClose", {data: path});
@@ -63,7 +61,7 @@ module.exports = ext.register("ext/language/language", {
             deferred.cancel().schedule(100);
 	    });
         ide.addEventListener("codetools.hoverchange", function(event) {
-            _self.checkHover(event);
+            marker.checkForAnno(event.pos, true);
         });
         var worker = this.worker = new WorkerClient(["treehugger", "pilot", "ext", "ace", "c9"], null, "ext/language/worker", "LanguageWorker");
         complete.setWorker(worker);
@@ -75,7 +73,7 @@ module.exports = ext.register("ext/language/language", {
             complete.onComplete(event);
         });
         worker.on("markers", function(event) {
-            _self.markers(event);
+            marker.markers(event, _self.editor);
         });
 	},
 
@@ -83,13 +81,12 @@ module.exports = ext.register("ext/language/language", {
         var _self = this;
         var worker = this.worker;
         this.editor = editors.currentEditor.ceEditor.$editor;
-        this.$onCursorChange = this.onCursorChange.bind(this);
+        this.$onCursorChange = this.onCursorChangeDefer.bind(this);
         this.editor.selection.on("changeCursor", this.$onCursorChange);
         var oldSelection = this.editor.selection;
         this.setPath();
         
         this.editor.on("changeSession", function(event) {
-            console.log("Change session");
             // Time out a litle, to let the page path be updated
             setTimeout(function() {
                 var currentPath = tabEditors.getPage().getAttribute("id");
@@ -101,6 +98,7 @@ module.exports = ext.register("ext/language/language", {
         });
 
         this.editor.addEventListener("change", function(e) {
+            marker.removeMarkers(_self.editor);
             e.range = {
                 start: e.data.range.start,
                 end: e.data.range.end
@@ -111,11 +109,8 @@ module.exports = ext.register("ext/language/language", {
     
     setPath: function() {
         var _self = this;
-        //setTimeout(function() {
         var currentPath = tabEditors.getPage().getAttribute("id");
-        console.log(currentPath);
         _self.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, _self.editor.getSession().getValue()]);
-        //}, 0);
     },
     
     /**
@@ -132,89 +127,21 @@ module.exports = ext.register("ext/language/language", {
         complete.invoke();
     },
     
-    /**
-     * Method attached to key combo for outline
-     */
-    analyze : function() {
-        console.log("Triggered analysis");
-        this.worker.emit("analyze", {});
-    },
-    
-    currentMarkerIds: [],
-    currentMarkers: [],
-    
-    markers: function(event) {
-        var annos = event.data;
-        var session = this.editor.session;
-        var _self = this;
-        
-        for (var i = 0; i < this.currentMarkers.length; i++) {
-            session.removeMarker(this.currentMarkers[i]);
-        }
-        this.currentMarkerIds = [];
-        this.currentMarkers = annos;
-        
-        annos.forEach(function(anno) { 
-            var range = Range.fromPoints({
-                row: anno.pos.sl,
-                column: anno.pos.sc
-            }, {
-                row: anno.pos.el,
-                column: anno.pos.ec
-            });
-            var text = session.getTextRange(range);
-            var spaces = '';
-            for (var i = 0; i < text.length; i++) {
-                spaces += '&nbsp;';
-            }
-            _self.currentMarkerIds.push(session.addMarker(range, "language_highlight", function(stringBuilder, range, left, top, viewport) {
-                stringBuilder.push(
-                    "<span id='myelement' class='language_highlight' style='border-bottom: dotted 1px red; ",
-                    "left:", left, "px;",
-                    "top:", top, "px;",
-                    "height:", viewport.lineHeight, "px;",
-                    "'>", spaces, "</span>"
-                );
-            }, true));
-        });
-    },
-    
-    // TODO: Optimize this by ordering currentMarkers by line, then doing binary search rather than linear
-    checkHover: function(event) {
-        var pos = event.pos;
-        var currentMarkers = this.currentMarkers;
-        var pos = {line: pos.row, col: pos.column};
-        var foundOne = false;
-        for (var i = 0; i < currentMarkers.length; i++) {
-            if(tree.inRange(currentMarkers[i].pos, pos)) {
-                this.showAnnotationTooltip(currentMarkers[i], event.originalEvent);
-                foundOne = true;
-                break;
-            }
-        }
-        if(!foundOne)        
-            apf.popup.hide();
-    },
-    
-    showAnnotationTooltip: function(anno, event) {
-        var el = this.tooltipEl;
-        if(!el) {
-            this.tooltipEl = el = document.createElement("div");
-            document.body.appendChild(el);
-            el.className = "languageToolTip";
-        }
-        el.innerHTML = anno.message;
-        
-        apf.popup.setContent("languageAnnotationTooltip", el);
-        apf.popup.show("languageAnnotationTooltip", { x : event.pageX, y : event.pageY });
-    },
-    
     registerLanguageHandler: function(modulePath, className) {
         this.worker.call("register", [modulePath, className]);
     },
-
+    
+    onCursorChangeDefer: function() {
+        if(!this.onCursorChangeDeferred) {
+            this.onCursorChangeDeferred = lang.deferredCall(this.onCursorChange.bind(this));
+        }
+        this.onCursorChangeDeferred.cancel().schedule(300);
+    },
+    
     onCursorChange: function() {
-        this.worker.emit("cursormove", {data: this.editor.getCursorPosition()});
+        var pos = this.editor.getCursorPosition();
+        this.worker.emit("cursormove", {data: pos});
+        marker.checkForAnno(pos, false);
     },
 
     enable : function() {

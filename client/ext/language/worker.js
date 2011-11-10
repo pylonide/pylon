@@ -72,7 +72,7 @@ oop.inherits(LanguageWorker, Mirror);
     
     this.analyze = function() {
         var ast = this.parse();
-        console.log(""+ast);
+        //console.log(""+ast);
         if(!ast) return;
         var markers = [];
         for(var i = 0; i < this.handlers.length; i++) {
@@ -83,7 +83,6 @@ oop.inherits(LanguageWorker, Mirror);
                     markers = markers.concat(result);
             }
         }
-        console.log(JSON.stringify(markers));
         if(markers.length > 0) {
             this.sender.emit("markers", markers);
         }
@@ -96,6 +95,7 @@ oop.inherits(LanguageWorker, Mirror);
                 handler.onUpdate(this.doc);
             }
         }
+        this.analyze();
     };
     
     this.register = function(path) {

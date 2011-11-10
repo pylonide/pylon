@@ -30,7 +30,7 @@ module.exports = {
         var ace = editors.currentEditor.ceEditor.$editor;
         var outline = event.data;
         
-        
+        barOutline.setAttribute('visible', true);
         var selected = this.findCursorInOutline(outline, ace.getCursorPosition());
         mdlOutline.load(apf.getXml('<data>' + this.outlineJsonToXml(outline, selected) + '</data>'));
         
