@@ -1,6 +1,6 @@
 define(function (require, exports, module) {
 
-var oop = require('pilot/oop');
+var oop = require('ace/lib/oop');
 var Document = require('ace/document').Document;
 
 var ProxyDocument = function (document) {
