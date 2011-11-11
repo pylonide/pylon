@@ -150,6 +150,7 @@ function createSplitView(page, layout, type) {
 }
 
 function sortEditorsAndPages(split) {
+    // lstOpenFiles.$model.data.selectNodes("//file")
     var pages = tabEditors.getPages();
     var p = [];
     var e = [];
@@ -401,6 +402,15 @@ module.exports = ext.register("ext/splitview/splitview", {
         tabEditors.addEventListener("tabselectclick", function(e) {
             return _self.onTabClick(e);
         });
+        
+        tabEditors.addEventListener("tabselectmouseup", function(e) {
+            var page = this.$activepage;
+            var split = _self.getSplitViewByPage(page);
+            
+            if (split) {
+                updateSplitViewGrid(split);
+            }
+        });
     },
     
     mergetableft: function() {
@@ -470,6 +480,11 @@ module.exports = ext.register("ext/splitview/splitview", {
                 tabEditors.set(split.pages[0]);
                 ret = false;
             }
+            
+            if (!shiftKey) {
+                return true;
+            }
+            
             return ret;
         }
 
@@ -596,11 +611,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         var activeSplit = this.getSplitViewByPage(activePage);
         var pageIdx = activeSplit ? activeSplit.pages.indexOf(page) : -1;
         var _self = this;
-        
-        // TODO: support multiple editor types
-        if (page.$editor.name.indexOf("Code") === -1 && !activeSplit.clone)
-            return;
-        
+                
         // Remove an editor from the split view
         if (pageIdx > -1) {
             if (activeSplit.clone && activeSplit.clone === page)
