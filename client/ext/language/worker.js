@@ -4,10 +4,13 @@ var oop = require("pilot/oop");
 var Mirror = require("ace/worker/mirror").Mirror;
 var parser = require("treehugger/js/parse");
 var lang = require("pilot/lang");
+var tree = require('treehugger/tree');
 
 var LanguageWorker = exports.LanguageWorker = function(sender) {
     var _self = this;
     this.handlers = [];
+    this.currentMarkers = [];
+    this.lastAggregateActions = {markers: [], hint: null};
     
     if(sender) {
         Mirror.call(this, sender);
@@ -25,13 +28,15 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
         sender.on("analyze", function(event) {
             _self.analyze(event);
         });
+        sender.on("cursormove", function(event) {
+            _self.onCursorMove(event);
+        });
     }
 };
 
 oop.inherits(LanguageWorker, Mirror);
 
 (function() {
-    
     
     this.parse = function() {
         // Parse first
@@ -40,13 +45,16 @@ oop.inherits(LanguageWorker, Mirror);
             if(handler.handlesLanguage(this.$language)) {
                 try {
                     var ast = handler.parse(this.doc.getValue());
-                    if(ast)
+                    if(ast) {
+                        this.cachedAst = ast;
                         return ast;
+                    }
                 } catch(e) {
                     console.log("Parse exception: " + e.message);
                 }
             }
         }
+        this.cachedAst = null;
         return null;
     };
 
@@ -83,9 +91,65 @@ oop.inherits(LanguageWorker, Mirror);
                     markers = markers.concat(result);
             }
         }
+        if(this.lastAggregateActions.markers.length > 0)
+            markers = markers.concat(this.lastAggregateActions.markers);
         if(markers.length > 0) {
             this.sender.emit("markers", markers);
         }
+        this.currentMarkers = markers;
+    };
+
+
+    this.checkForMarker = function(pos) {
+        var astPos = {line: pos.row, col: pos.column};
+        var foundOne = false;
+        if(!this.currentMarkers) return;
+        for (var i = 0; i < this.currentMarkers.length; i++) {
+            var currentMarker = this.currentMarkers[i];
+            if(currentMarker.message && tree.inRange(currentMarker.pos, astPos)) {
+                return currentMarker.message;
+            }
+        }
+    };
+
+    this.onCursorMove = function(event) {
+        var pos = event.data;
+        var hintMessage = this.checkForMarker(pos);
+        // Not going to pare for this, only if already parsed successfully
+        if(this.cachedAst) {
+            var ast = this.cachedAst;
+            var currentNode = ast.findNode({line: pos.row, col: pos.column});
+            if(currentNode !== this.lastCurrentNode) {
+                var aggregateActions = {markers: [], hint: null};
+                for(var i = 0; i < this.handlers.length; i++) {
+                    var handler = this.handlers[i];
+                    if(handler.handlesLanguage(this.$language)) {
+                        var response = handler.onCursorMovedNode(this.doc, ast, pos, currentNode);
+                        if(response && response.markers && response.markers.length > 0) {
+                            aggregateActions.markers = aggregateActions.markers.concat(response.markers);
+                        }
+                        if(response && response.hint) {
+                            // Last one wins, support multiple?
+                            aggregateActions.hint = response.hint;
+                        }
+                    }
+                }
+                if(aggregateActions.hint && !hintMessage) {
+                    this.sender.emit("hint", aggregateActions.hint);
+                }
+                // Show markers when we found new ones here, or if we did before but not now
+                if(aggregateActions.markers.length > 0 || this.lastAggregateActions.markers.length > 0) {
+                    this.sender.emit("markers", this.currentMarkers.concat(aggregateActions.markers));
+                }
+                this.lastCurrentNode = currentNode;
+                this.lastAggregateActions = aggregateActions;
+            }
+        }
+        if(hintMessage)
+            this.sender.emit("hint", hintMessage);
+        if(!hintMessage && !this.lastAggregateActions.hint)
+            this.sender.emit("hidehint", {});
+        
     };
 
     this.onUpdate = function() {

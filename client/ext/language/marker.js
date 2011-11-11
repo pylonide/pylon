@@ -7,15 +7,20 @@ var dom = require('pilot/dom');
 
 module.exports = {
     currentMarkerIds: [],
-    currentMarkers: [],
+    //currentMarkers: [],
     
     removeMarkers: function(editor) {
         var session = editor.session;
-        for (var i = 0; i < this.currentMarkerIds.length; i++) {
+        var markers = session.getMarkers();
+        for(var id in markers) {
+            if(markers[id].clazz === 'language_highlight') {
+                session.removeMarker(id);
+            }
+        }
+        /*for (var i = 0; i < this.currentMarkerIds.length; i++) {
             session.removeMarker(this.currentMarkerIds[i]);
         }
-        this.currentMarkerIds = [];
-        this.currentMarkers = [];
+        this.currentMarkerIds = [];*/
     },
     
     markers: function(event, editor) {
@@ -24,8 +29,7 @@ module.exports = {
         var _self = this;
         
         this.removeMarkers(editor);
-        this.currentMarkers = annos;
-        
+
         annos.forEach(function(anno) { 
             var range = Range.fromPoints({
                 row: anno.pos.sl,
@@ -39,7 +43,8 @@ module.exports = {
             for (var i = 0; i < text.length; i++) {
                 spaces += '&nbsp;';
             }
-            _self.currentMarkerIds.push(session.addMarker(range, "language_highlight", function(stringBuilder, range, left, top, viewport) {
+            //_self.currentMarkerIds.push(
+            session.addMarker(range, "language_highlight", function(stringBuilder, range, left, top, viewport) {
                 var style = anno.style;
                 if(!style && anno.type === 'error') {
                     style = 'border-bottom: solid 1px red;';
@@ -53,35 +58,17 @@ module.exports = {
                     "height:", viewport.lineHeight, "px;",
                     "'>", spaces, "</span>"
                 );
-            }, false));
+            });
         });
     },
     
-    // TODO: Optimize
-    checkForAnno: function(pos, activatedByMouseOver) {
-        var currentMarkers = this.currentMarkers;
-        var astPos = {line: pos.row, col: pos.column};
-        var foundOne = false;
-        for (var i = 0; i < currentMarkers.length; i++) {
-            if(tree.inRange(currentMarkers[i].pos, astPos)) {
-                this.showAnnotationTooltip(currentMarkers[i]);
-                foundOne = true;
-                break;
-            }
-        }
-        // Ensure that when the cursor is on the AST node with annotation
-        // the popup is not hidden when the mouse moves away
-        if(!foundOne && !(activatedByMouseOver && this.cursorOnAnno))
-            barLanguageHint.setAttribute('visible', false);
-        if(!activatedByMouseOver && foundOne)
-            this.cursorOnAnno = true;
-        else if(!activatedByMouseOver && !foundOne)
-            this.cursorOnAnno = false;
+    hideHint: function() {
+        barLanguageHint.setAttribute('visible', false);
     },
     
-    showAnnotationTooltip: function(anno) {
+    showHint: function(hint) {
         barLanguageHint.setAttribute('visible', true);
-        txtLanguageHint.$ext.innerHTML = "<b>Error: </b>" + anno.message;
+        txtLanguageHint.$ext.innerHTML = hint;
         var style = dom.computedStyle(editors.currentEditor.ceEditor.$ext);
         var containerHeight = parseInt(style.height, 10);
         var containerWidth = parseInt(style.width, 10);

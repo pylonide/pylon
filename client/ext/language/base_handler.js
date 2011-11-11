@@ -53,6 +53,12 @@ module.exports = {
     },
     
     /**
+     * @return a JSON object with two optional keys: {markers: [...], hint: {message: ...}}
+     */
+    onCursorMovedNode: function(doc, fullAst, cursorPos, currentNode) {
+    },
+    
+    /**
      * Invoked when an outline is required
      * @return a JSON outline structure or null if not supported
      */

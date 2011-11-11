@@ -46,7 +46,7 @@ module.exports = ext.register("ext/codetools/codetools", {
                     doc: doc
                 });
             }
-            if(prevRow !== row || prevColumn !== column) {
+            /*if(prevRow !== row || prevColumn !== column) {
                 prevColumn = column;
                 
                 ide.dispatchEvent("codetools.hoverchange", {
@@ -56,7 +56,7 @@ module.exports = ext.register("ext/codetools/codetools", {
                     doc: doc,
                     originalEvent: e
                 });
-            }
+            }*/
         });
         
         editor.addEventListener("click", function(e) {
@@ -67,7 +67,8 @@ module.exports = ext.register("ext/codetools/codetools", {
                 amlEditor: amlEditor,
                 editor: editor,
                 pos: pos,
-                doc: doc
+                doc: doc,
+                originalEvent: e
             });
         });
     },

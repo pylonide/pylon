@@ -22,7 +22,6 @@ var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
 var lang = require("pilot/lang");
 var codetools = require("ext/codetools/codetools");
-var tree = require('treehugger/tree');
 
 module.exports = ext.register("ext/language/language", {
     name    : "Javascript Outline",
@@ -47,6 +46,8 @@ module.exports = ext.register("ext/language/language", {
             _self.setPath();
         });
 
+        var worker = this.worker = new WorkerClient(["treehugger", "pilot", "ext", "ace", "c9"], null, "ext/language/worker", "LanguageWorker");
+        complete.setWorker(worker);
 		ide.addEventListener("afteropenfile", function(event){
             ext.initExtension(_self);
             if (!event.node) return;
@@ -60,11 +61,11 @@ module.exports = ext.register("ext/language/language", {
             // This is necessary to know which file was opened last, for some reason the afteropenfile event happens out of sequence
             deferred.cancel().schedule(100);
 	    });
+        /*
         ide.addEventListener("codetools.hoverchange", function(event) {
             marker.checkForAnno(event.pos, true);
         });
-        var worker = this.worker = new WorkerClient(["treehugger", "pilot", "ext", "ace", "c9"], null, "ext/language/worker", "LanguageWorker");
-        complete.setWorker(worker);
+        */
         // Language features
         worker.on("outline", function(event) {
             outline.renderOutline(event);
@@ -74,6 +75,12 @@ module.exports = ext.register("ext/language/language", {
         });
         worker.on("markers", function(event) {
             marker.markers(event, _self.editor);
+        });
+        worker.on("hint", function(event) {
+            marker.showHint(event.data);
+        });
+        worker.on("hidehint", function() {
+            marker.hideHint();
         });
 	},
 
@@ -135,13 +142,12 @@ module.exports = ext.register("ext/language/language", {
         if(!this.onCursorChangeDeferred) {
             this.onCursorChangeDeferred = lang.deferredCall(this.onCursorChange.bind(this));
         }
-        this.onCursorChangeDeferred.cancel().schedule(300);
+        this.onCursorChangeDeferred.cancel().schedule(505);
     },
     
     onCursorChange: function() {
-        var pos = this.editor.getCursorPosition();
-        this.worker.emit("cursormove", {data: pos});
-        marker.checkForAnno(pos, false);
+        this.worker.emit("cursormove", {data: this.editor.getCursorPosition()});
+        //marker.checkForAnno(pos, false);
     },
 
     enable : function() {
