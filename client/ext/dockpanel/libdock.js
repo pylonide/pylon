@@ -65,6 +65,12 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         buttonInfo.ext     = buttons[j].$dockData.ext;
                         buttonInfo.caption = buttons[j].$dockpage.caption;
                         
+                        if(buttons[j].$dockData["class"])
+                            buttonInfo["class"] = buttons[j].$dockData["class"];
+                        
+                        if(buttons[j].$dockData.id)
+                            buttonInfo.id = buttons[j].$dockData.id;
+                        
                         sectionInfo.buttons.push(buttonInfo);
                     }
                     barInfo.sections.push(sectionInfo);
@@ -1411,7 +1417,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             skin    : "dockButton",
             submenu : submenu.id,
             dock    : 1,
-            "class" : options["class"],
+            "class" : options["class"] || "",
             draggable : "true",
             onmousedown  : function(){
                 btnLock = true;

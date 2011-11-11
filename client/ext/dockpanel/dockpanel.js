@@ -169,12 +169,23 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         
     },
 
-    addDockable : function(def){
+    addDockable : function(def){        
         if (this.loaded) {
             this.layout.addItem(def);
             return;
         }
-        var state = this.defaultState;
+        var _self = this,
+            state = this.defaultState;
+            
+        function collectSections(buttons){
+//            var buttons = def.buttons;
+            for (var i = 0; i < buttons.length; i++) {
+                var ext = buttons[i].ext;
+                (_self.sections[ext[0]] || (_self.sections[ext[0]] = {}))[ext[1]] = def;
+            }
+        }
+        
+        
         if (def.sections) {
             if(def.barNum || def.barNum === 0) {
                 if(state.bars[def.barNum])
@@ -184,15 +195,21 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             }
             else
                 state.bars.push(def);
+            
+            for(var i = 0, l = def.sections.length; i < l; i++)
+                collectSections(def.sections[i].buttons);
+                
             return;
         }
         
+        
 //        if (def.hidden) {
-            var buttons = def.buttons;
-            for (var i = 0; i < buttons.length; i++) {
-                var ext = buttons[i].ext;
-                (this.sections[ext[0]] || (this.sections[ext[0]] = {}))[ext[1]] = def;
-            }
+        collectSections(def.buttons);
+//            var buttons = def.buttons;
+//            for (var i = 0; i < buttons.length; i++) {
+//                var ext = buttons[i].ext;
+//                (this.sections[ext[0]] || (this.sections[ext[0]] = {}))[ext[1]] = def;
+//            }
 //            return;
 //        }
 

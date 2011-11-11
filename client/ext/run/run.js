@@ -206,7 +206,8 @@ module.exports = ext.register("ext/run/run", {
 
     stop : function() {
         noderunner.stop();
-        self[btnRunCommands.submenu].hide();
+        if(self['btnRunCommands'])
+            self[btnRunCommands.submenu].hide();
     },
 
     enable : function(){
