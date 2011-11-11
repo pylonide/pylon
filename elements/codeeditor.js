@@ -177,8 +177,12 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             _self.$removeDocListeners = _self.$addDocListeners(doc);
 
             _self.$editor.setShowPrintMargin(_self.showprintmargin);
+            
+            // remove existing markers
+            _self.$clearMarker();
             _self.$editor.setSession(doc);
 
+            // update markers
             _self.$updateMarker();
             _self.$updateBreakpoints(doc);
         //})
@@ -200,18 +204,19 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             doc.getSelection().removeEventListener("changeCursor", onCursorChange);
         };
     };
-
-    //@todo fix that this is not called three times
-    this.$updateMarker = function(removeOnly) {
+    
+    this.$clearMarker = function () {
         if (this.$marker) {
             this.$editor.renderer.removeGutterDecoration(this.$lastRow[0], this.$lastRow[1]);
             this.$editor.getSession().removeMarker(this.$marker);
             this.$marker = null;
-            
-            if (removeOnly)
-                return;
         }
+    };
 
+    //@todo fix that this is not called three times
+    this.$updateMarker = function() {
+        this.$clearMarker();
+        
         if (!this.$debugger)
             return;
 
@@ -416,7 +421,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             _self.$updateMarker();
         };
         this.$onBeforeContinue = function() {
-            _self.$updateMarker(true);
+            _self.$clearMarker();
         };
         this.$debugger.addEventListener("changeframe", this.$onChangeActiveFrame);
         this.$debugger.addEventListener("break", this.$onChangeActiveFrame);
