@@ -214,7 +214,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
 
     //@todo fix that this is not called three times
-    this.$updateMarker = function(removeOnly) {
+    this.$updateMarker = function() {
         this.$clearMarker();
         
         if (!this.$debugger)
