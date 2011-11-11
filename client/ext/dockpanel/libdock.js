@@ -147,7 +147,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 }
                 if (!section) {
                     section = this.$addSection(bar, bar.childNodes[sections[j].options.position], sections[j].sectionIdent, sections[j]);
-                    info = section.$dockData = sections[j];
+                    info = sections[j];
                     menu = this.$addMenu(section);
                     section.$menu = menu;
                     menu.firstChild.setAttribute("flex", info.flex);
@@ -783,8 +783,10 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     position = "after_page";
             }
             else if (aml.localName == "menu") {
-                var pages = aml.firstChild.getPages();
-                aml = pages[pages.length - 1];
+                if(aml.firstChild.getPages) {
+                    var pages = aml.firstChild.getPages();
+                    aml = pages[pages.length - 1];
+                }
                 position = "after_page";
             }
             else if (aml.localName == "tab") {
@@ -909,7 +911,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 var sections = bar.selectNodes("vbox");
                 var section = this.$addSection(bar, info.position == "before_tab"
                     ? sections[0]
-                    : sections[childNr + 1]);
+                    : sections[childNr + 1], null, original && original.$dockData);
                 
                 //reconstruct menu
                 var submenu = this.$addMenu(section);
@@ -929,7 +931,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     ? aml
                     : (info.position == "in_column"
                         ? null
-                        : aml.nextSibling));
+                        : aml.nextSibling), null, original && original.$dockData);
                 
                 //reconstruct menu
                 var submenu = this.$addMenu(section);
@@ -951,7 +953,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 var bar = this.$addBar(aml);
                 //Single Tab Case
                 //create new section
-                var section = this.$addSection(bar);
+                var section = this.$addSection(bar, null, null, original && original.$dockData);
                 var submenu = this.$addMenu(section);
                 var dragAml = whiledrag.original;
                 
@@ -961,7 +963,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 var bar = this.$addBar(aml.nextSibling);
                 //Single Tab Case
                 //create new section
-                var section = this.$addSection(bar);
+                var section = this.$addSection(bar, null, null, original && original.$dockData);
                 
                 //reconstruct menu
                 var submenu = this.$addMenu(section);
@@ -1002,12 +1004,13 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 return;
     
             button.setAttribute("submenu", submenu.id);
-            
+//            if(submenu.id == 'mnuRunCommands')
+//            debugger;
             var newPNode = tab || submenu.firstChild;
             if (newPNode) {
                 newPNode.insertBefore(page, beforePage);
                 
-                if (newPNode.getPages().length == 1) {
+                if (!newPNode.getPages || newPNode.getPages().length == 1) {
                 	var mnu = self[page.$dockbutton.submenu];
                 	mnu.setAttribute("width", oldMenu.width);
                 	mnu.setAttribute("height", oldMenu.height);
@@ -1033,7 +1036,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             //add button to section
             parentNode.insertBefore(button, beforeButton);
     
-            if (!pNode.getPages().length) {
+            if (!pNode.getPages || !pNode.getPages().length) {
                 var barParent = btnPNode.parentNode;
                 oldMenu.destroy(true, true);
                 if (pNode.parentNode)
@@ -1079,7 +1082,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         if(!dockOpt.noTab) {
             childNodes = [
                 new apf.tab({
-                    anchors : "4 4 4 4", 
+                    anchors : "5 4 4 4", 
                     skin : "docktab",
                     buttons : "scale, close",
                     dock    : 1,
@@ -1274,7 +1277,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             
             this.removeNode();
             
-            if (!pNode.getPages().length) {
+            if (!pNode.getPages || !pNode.getPages().length) {
                 var barParent = btnPNode.parentNode;
                 if (pNode.parentNode.localName == "menu")
                     pNode.parentNode.destroy(true, true);
@@ -1404,6 +1407,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             });
         }
         
+        section.$dockData = sectionOpt;
         return section;
     }
     

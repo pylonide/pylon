@@ -1432,7 +1432,7 @@
             width:23px;
             height:19px;
             position:absolute;
-            top:1px;
+            top:2px;
             left:2px;
             background-position : 0 0;
             background-repeat   : no-repeat;
@@ -1467,7 +1467,8 @@
             color:#d6d6d6;
             line-height:14px;
             height:15px;
-            padding:3px 6px 0 6px;
+            padding:1px 6px 0 6px;
+            margin-top: 3px;
         }
 
         .c9-toolbarbuttonEmpty .c9-icon {
@@ -1479,7 +1480,7 @@
         }
 
         .c9-toolbarbuttonIcon .c9-label{
-            padding:3px 6px 0 22px;
+            padding:1px 6px 0 22px;
         }
 
         .c9-toolbarbuttonIcon.preview .c9-label {
@@ -2072,7 +2073,11 @@
             
             position: relative;
         }
-
+        
+        .win-deploy-target .btn-default-css3 {
+            font-size: 13px;
+        }
+        
         .btn-default-css3Over {
             background-image: linear-gradient(bottom, rgb(92,92,98) 0%, rgb(116,116,119) 100%);
             background-image: -o-linear-gradient(bottom, rgb(92,92,98) 0%, rgb(116,116,119) 100%);
@@ -4549,7 +4554,7 @@
             border-radius         : 8px;
             background            : -webkit-gradient(linear,left bottom,left top,color-stop(0, #202020),color-stop(1, #2f2f2f));
             background            : -moz-linear-gradient(center bottom,#202020 0%, #2f2f2f 100%);
-            padding               : 4px;
+            padding               : 5px 4px 4px;
             
             
             margin-left : -42px;

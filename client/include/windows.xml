@@ -89,7 +89,6 @@
         </a:vbox>
     
         <a:vbox edge="0 0 4 0" padding="8">
-            <a:divider skin="hordivider" />
             <a:hbox pack="end" padding="7" edge="6 10 10">
                 <a:button id="btnQuestionYesToAll" skin="btn-default-css3" class="btn-green" visible="false">Yes to all</a:button>
                 <a:button id="btnQuestionNoToAll" skin="btn-default-css3" class="btn-red" visible="false">No to all</a:button>

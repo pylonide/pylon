@@ -42,7 +42,6 @@ module.exports = ext.register("ext/run/run", {
             width   : 179,
             barNum  : 0,
             options : {
-                id: "mnuRunCommands",
                 resizable  : false,
                 skin       : "dockwin_runbtns",
                 noTab      : true,
