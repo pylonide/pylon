@@ -438,7 +438,7 @@ module.exports = ext.register("ext/editors/editors", {
             editorPage.setAttribute("actiontracker", page.$at);
         
         page.$editor.setDocument && page.$editor.setDocument(page.$doc, page.$at);
-        
+                
         ide.dispatchEvent("editorswitch", {
             previousPage: e.previousPage,
             nextPage: e.nextPage
@@ -449,8 +449,11 @@ module.exports = ext.register("ext/editors/editors", {
         var page = e.nextPage;
         var fromHandler, toHandler = ext.extLut[page.type];
 
-        if (e.previousPage && e.previousPage != e.nextPage)
+        if (e.previousPage && e.previousPage != e.nextPage) {
             fromHandler = ext.extLut[e.previousPage.type];
+        }
+        
+        this.updateMarkers(page);
 
         if (fromHandler != toHandler) {
             if (fromHandler)
@@ -477,6 +480,13 @@ module.exports = ext.register("ext/editors/editors", {
             app.navigateTo(page.appid + "/" + page.id);
         else if (!page.id)
             app.navigateTo(app.loc || (app.loc = "myhome"));*/
+    },
+    
+    updateMarkers: function (page) {
+        // make sure to update the markers
+        if (page.$editor.ceEditor) {
+            page.$editor.ceEditor.$updateMarker();
+        }
     },
 
     /**** Init ****/
@@ -507,6 +517,10 @@ module.exports = ext.register("ext/editors/editors", {
 
         ide.addEventListener("openfile", function(e){
             _self.openEditor(e.doc, e.init, e.active);
+        });
+        
+        ide.addEventListener("afteropenfile", function(e) {
+            _self.updateMarkers(tabEditors.getPage(e.node.getAttribute("path")));
         });
 
         ide.addEventListener("filenotfound", function(e) {
