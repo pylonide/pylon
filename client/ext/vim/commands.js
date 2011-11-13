@@ -113,11 +113,11 @@ function isBang(params) {
     return "!" === params["!"];
 }
 
-var NUMBER       = 1;
-var OPERATOR     = 2;
-var MOTION       = 3;
-var MOTION_PARAM = 4;
-var SELECTION    = 5;
+var NUMBER    = 1;
+var OPERATOR  = 2;
+var MOTION    = 3;
+var ACTION    = 4;
+var SELECTION = 5;
 
 var motions = {
     "w": {
@@ -196,8 +196,32 @@ var motions = {
 };
 
 var operators = {
-    "d": function(env, range) {
-        env.editor.session.remove(range);
+    "d": function(env, range, count, param) {
+        count = parseInt(count || 1);
+        switch (param) {
+            case "d":
+                for (var i=0; i<count; i++)
+                    env.editor.removeLines();
+
+                break;
+            default:
+                env.editor.session.remove(range);
+        }
+    }
+};
+
+var actions = {
+    "g": function(env, range, count, param) {
+        switch(param) {
+            case "m":
+                console.log("Middle line")
+                break;
+            case "e":
+                console.log("End of prev word")
+                break;
+            case "g":
+                env.editor.gotoLine(count || 0);
+        }
     }
 };
 
@@ -208,7 +232,7 @@ var repeat = function repeat(fn, count, args) {
 
 var inputBuffer = exports.inputBuffer = {
     buffer: [],
-    accepting: [NUMBER, OPERATOR, MOTION, MOTION_PARAM],
+    accepting: [NUMBER, OPERATOR, MOTION, ACTION],
     currentCmd: null,
     currentCount: "",
 
@@ -220,16 +244,18 @@ var inputBuffer = exports.inputBuffer = {
     push: function(env, char) {
         var isFirst = this.buffer.length === 0;
 
-        if (this.waitingForParam) {
-            this.exec(env, this.waitingForParam, char);
+        var wObj = this.waitingForParam;
+        if (wObj) {
+            this.exec(env, wObj, char);
             this.waitingForParam = null;
         }
+        // If it is a number (that doesn't start with 0)
         else if (!(char === "0" && isFirst) &&
             (char.match(/^\d+$/) && this.isAccepting(NUMBER))) {
             // Assuming that char is always of type String, and not Number
             this.currentCount += char;
             this.currentCmd = NUMBER;
-            this.accepting = [NUMBER, OPERATOR, MOTION, MOTION_PARAM];
+            this.accepting = [NUMBER, OPERATOR, MOTION, ACTION];
         }
         else if (!this.operator && this.isAccepting(OPERATOR) && operators[char]) {
             this.operator = {
@@ -237,7 +263,7 @@ var inputBuffer = exports.inputBuffer = {
                 count: this.getCount()
             };
             this.currentCmd = OPERATOR;
-            this.accepting = [NUMBER, MOTION, MOTION_PARAM];
+            this.accepting = [NUMBER, MOTION, ACTION];
         }
         else if (motions[char] && this.isAccepting(MOTION)) {
             this.currentCmd = MOTION;
@@ -256,13 +282,25 @@ var inputBuffer = exports.inputBuffer = {
             else
                 this.exec(env, ctx);
         }
+        else if (actions[char] && this.isAccepting(ACTION)) {
+            this.waitingForParam = {
+                action: {
+                    fn: actions[char],
+                    count: this.getCount(),
+                }
+            };
+        }
+        else if (this.operator) {
+            console.log("this operator")
+            this.exec(env, { operator: this.operator }, char);
+        }
         else {
             this.reset();
         }
     },
 
     getCount: function() {
-        var count = this.currentCount;// || 1;
+        var count = this.currentCount;
         this.currentCount = "";
         return count;
     },
@@ -270,25 +308,37 @@ var inputBuffer = exports.inputBuffer = {
     exec: function(env, action, param) {
         var m = action.motion;
         var o = action.operator;
-        if (!o) {
-            if (m) { // There should always be a motion
-                if (m.count)
-                    repeat(motions[m.char].nav, m.count, [env, param]);
-                else
-                    motions[m.char].nav(env, param);
+        var a = action.action;
+
+        // There is an operator, but no motion or action. We try to pass the
+        // current char to the operator to see if it responds to it (an example
+        // of this is the 'dd' operator).
+        if (!m && !a && o) {
+            operators[o.char](env, env.editor.getSelectionRange(), o.count, param);
+        }
+        else if (m) {
+            var run = function(fn) {
+                if (fn && typeof fn === "function") { // There should always be a motion
+                    if (m.count)
+                        repeat(fn, m.count, [env, param]);
+                    else
+                        fn(env, param);
+                }
+            };
+
+            var motionObj = motions[m.char];
+            if (!o) {
+                run(motionObj.nav);
+            }
+            else {
+                repeat(function() {
+                    run(motionObj.sel);
+                    operators[o.char](env, env.editor.getSelectionRange(), o.count, param);
+                }, o.count);
             }
         }
-        else {
-            repeat(function() {
-                var selectionFn = m && motions[m.char].sel;
-                if (selectionFn) { // There should always be a motion
-                    if (m.count)
-                        repeat(selectionFn, m.count, [env, param]);
-                    else
-                        selectionFn(env, param);
-                }
-                operators[o.char](env, env.editor.getSelectionRange());
-            }, o.count);
+        else if (a) {
+            a.fn(env, env.editor.getSelectionRange(), a.count, param);
         }
         this.reset();
     },
@@ -305,7 +355,7 @@ var inputBuffer = exports.inputBuffer = {
         this.motionCount = null;
 
         this.current = null;
-        this.accepting = [NUMBER, OPERATOR, MOTION, MOTION_PARAM];
+        this.accepting = [NUMBER, OPERATOR, MOTION, ACTION];
     }
 }
 
@@ -341,7 +391,7 @@ var commands = exports.commands = {
     stop: {
         description: 'Start **normal** mode',
         exec: function stop(env, params, request) {
-            normalMode(env);
+            util.normalMode(env);
         }
     },
     // Append text after the cursor / word (if !) word.
@@ -508,7 +558,6 @@ var commands = exports.commands = {
             row: topLine + visibleLines - parseInt(params.count) - 2,
             column: 0
         });
-
     },
     moveToColumn: function(env, params) {
         var ace = env.editor;
