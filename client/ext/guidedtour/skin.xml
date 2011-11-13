@@ -1,0 +1,77 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+    <a:window name="guidetool">
+        <a:style><![CDATA[
+            .guidetool {
+                position : relative;
+                overflow : visible;
+                z-index  : 10000;
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
+                border-radius: 6px;
+            }
+            .guidetool .gt-header {
+                display : none;
+            }
+            .guidetool .gt-content {
+                background : #fff;
+                border : 1px solid #999;
+                border-radius: 6px;
+                padding: 10px 15px;
+            }
+            .guidetool .gt-arrow {
+                position: absolute;
+                width : 15px;
+                height : 15px;
+                background : #fff;
+                border: 1px solid #999;
+            }
+            .guidetool.top .gt-arrow {
+                left: 40%;
+                margin-top: -1px;
+                border-top: none;
+            }
+            .guidetool.bottom .gt-arrow {
+                left: 40%;
+                top: 0;
+                margin-top: -14px;
+                border-bottom: none;
+            }
+            .guidetool.left .gt-arrow {
+                right: 0px;
+                top: 40%;
+                margin-left: 15px;
+                border-left: none;
+            }
+            .guidetool.right .gt-arrow {
+                left: 0px;
+                top: 40%;
+                margin-left: -15px;
+                border-right: none;
+            }
+        ]]></a:style>
+    
+        <a:presentation>
+            <a:main
+              collapsed-height = "30"
+              minheight        = "30"
+              minwidth         = "60"
+              container        = "div[2]"
+              drag             = "div[2]"
+              title            = "div[1]/div[1]/text()"
+              icon             = "div[1]/div[1]/div[1]"
+              buttons          = "div[1]/div[1]/div[2]">
+                <div class="guidetool">
+                    <div class="gt-header">
+                        <div class="hcontent">-<div class="icon"></div><div class="buttons"></div></div>
+                        <div class="right"></div>
+                    </div>
+                    <div class="gt-content"> </div>
+                    <div class="gt-arrow"></div>
+                </div>
+            </a:main>
+            <a:button>
+                <div> </div>
+            </a:button>
+        </a:presentation>
+    </a:window>
+</a:skin>
