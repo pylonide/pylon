@@ -126,8 +126,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/offline/offline",
     "ext/stripws/stripws",
     "ext/zen/zen",
-    "ext/codecomplete/codecomplete"
-    //"ext/acebugs/acebugs"
+    "ext/codecomplete/codecomplete",
+    "ext/vim/vim"
 ];
 
 (function () {
