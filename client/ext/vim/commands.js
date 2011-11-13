@@ -170,10 +170,10 @@ var motions = {
     },
     "f": {
         param: true,
-        nav: function(env, param) {
+        nav: function(env, range, count, param) {
             console.log("fnav", param);
         },
-        sel: function(env, param) {
+        sel: function(env, range, count, param) {
             console.log("fsel", param);
         }
     },
@@ -193,6 +193,21 @@ var motions = {
             ed.navigateTo(ed.selection.selectionLead.row, 0);
         }
     },
+    "g": {
+        param: true,
+        nav: function(env, range, count, param) {
+            switch(param) {
+                case "m":
+                    console.log("Middle line")
+                    break;
+                case "e":
+                    console.log("End of prev word")
+                    break;
+                case "g":
+                    env.editor.gotoLine(count || 0);
+            }
+        }
+    }
 };
 
 var operators = {
@@ -211,18 +226,7 @@ var operators = {
 };
 
 var actions = {
-    "g": function(env, range, count, param) {
-        switch(param) {
-            case "m":
-                console.log("Middle line")
-                break;
-            case "e":
-                console.log("End of prev word")
-                break;
-            case "g":
-                env.editor.gotoLine(count || 0);
-        }
-    }
+
 };
 
 var repeat = function repeat(fn, count, args) {
@@ -320,9 +324,9 @@ var inputBuffer = exports.inputBuffer = {
             var run = function(fn) {
                 if (fn && typeof fn === "function") { // There should always be a motion
                     if (m.count)
-                        repeat(fn, m.count, [env, param]);
+                        repeat(fn, m.count, [env, null, m.count, param]);
                     else
-                        fn(env, param);
+                        fn(env, null, m.count, param);
                 }
             };
 
