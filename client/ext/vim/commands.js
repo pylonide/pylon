@@ -55,12 +55,6 @@ var util = exports.util = {
     rmNextChars: function(env, count) {
         env.editor.removeRight();
     },
-    gotoEndWordRight: function(env, count) {
-        env.editor.navigateWordRight();
-    },
-    gotoEndWordLeft: function(env, count) {
-        env.editor.navigateWordLeft();
-    },
     removeWordRight: function(env, count) {
         env.editor.removeWordRight();
     },
@@ -180,17 +174,45 @@ var motions = {
     "shift-6": {
         nav: function(env) {
             env.editor.navigateLineStart();
+        },
+        sel: function(env) {
+            env.editor.selection.selectLineStart();
         }
     },
     "shift-4": {
         nav: function(env) {
             env.editor.navigateLineEnd();
+        },
+        sel: function(env) {
+            env.editor.selection.selectLineEnd();
         }
     },
     "0": {
         nav: function(env) {
             var ed = env.editor;
             ed.navigateTo(ed.selection.selectionLead.row, 0);
+        },
+        sel: function(env) {
+            var ed = env.editor;
+            ed.selectTo(ed.selection.selectionLead.row, 0);
+        }
+    },
+    "shift-g": {
+        nav: function(env, range, count, param) {
+            var ed = env.editor;
+            count = parseInt(count);
+            if (!count && count !== 0) // Stupid JS
+                count = ed.session.getLength();
+
+            ed.gotoLine(count);
+        },
+        sel: function(env, range, count, param) {
+            var ed = env.editor;
+            count = parseInt(count);
+            if (!count && count !== 0) // Stupid JS
+                count = ed.session.getLength();
+
+            ed.selectTo(count, 0);
         }
     },
     "g": {
@@ -205,6 +227,18 @@ var motions = {
                     break;
                 case "g":
                     env.editor.gotoLine(count || 0);
+            }
+        },
+        sel: function(env, range, count, param) {
+            switch(param) {
+                case "m":
+                    console.log("Middle line")
+                    break;
+                case "e":
+                    console.log("End of prev word")
+                    break;
+                case "g":
+                    env.editor.selection.selectTo(count || 0, 0);
             }
         }
     }
@@ -222,11 +256,20 @@ var operators = {
             default:
                 env.editor.session.remove(range);
         }
+    },
+    "r": function(env, range, count, param) {
+        count = parseInt(count || 1);
     }
 };
 
 var actions = {
-
+    "z": function(env, range, count, param) {
+        switch (param) {
+            case "z":
+                // env.editor.scrollToRow()
+                break;
+        }
+    }
 };
 
 var repeat = function repeat(fn, count, args) {
@@ -338,7 +381,7 @@ var inputBuffer = exports.inputBuffer = {
                 repeat(function() {
                     run(motionObj.sel);
                     operators[o.char](env, env.editor.getSelectionRange(), o.count, param);
-                }, o.count);
+                }, o.count || 1);
             }
         }
         else if (a) {
@@ -455,31 +498,7 @@ var commands = exports.commands = {
         env.editor.gotoLine(params.line);
     },
 
-    //Basic movement
-    moveUp: {
-        params: [ types.count ],
-        exec: function(env, params, request) {
-            env.editor.navigateUp(params.count)
-        }
-    },
-    moveDown: {
-        params: [ types.count ],
-        exec: function(env, params, request) {
-            env.editor.navigateDown(params.count);
-        }
-    },
-    moveLeft: {
-        params: [ types.count ],
-        exec: function(env, params, request) {
-            env.editor.navigateLeft(params.count);
-        }
-    },
-    moveRight: {
-        params: [ types.count ],
-        exec: function(env, params, request) {
-            env.editor.navigateRight(params.count);
-        }
-    },
+
 
     // Word-based movement
     goToEndWord: function(env, params, request) {

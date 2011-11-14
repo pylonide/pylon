@@ -15,13 +15,12 @@ var matchChar = function(buffer, hashId, key, symbolicName) {
 
     if (matched) {
         canon.addCommand({
-            name: "builder1",
+            name: "builder",
             exec: function(env, params, request) {
                 cmds.inputBuffer.push.call(cmds.inputBuffer, env, symbolicName);
             }
         });
     }
-
     return matched;
 };
 
@@ -217,7 +216,7 @@ var states = exports.states = {
     {
         comment: "Catch some keyboard input to stop it here",
         match: matchChar,
-        exec: "builder1"
+        exec: "builder"
     }
     ],
 
