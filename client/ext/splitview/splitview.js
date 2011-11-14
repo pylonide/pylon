@@ -341,6 +341,7 @@ function clearSplitViewStyles(splitOrPage) {
 }
 
 module.exports = ext.register("ext/splitview/splitview", {
+    name     : "Split View",
     dev      : "Ajax.org",
     alone    : true,
     type     : ext.GENERAL,

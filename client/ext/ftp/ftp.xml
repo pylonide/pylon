@@ -1,3 +1,4 @@
+<?xml version='1.0'?>
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:hbox id="ftpConsoleHbox" anchors="0 0 0 0">
         <a:text id="txtFtpConsole"
