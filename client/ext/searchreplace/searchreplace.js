@@ -53,7 +53,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         
         code.commandManager.addCommand({
             name: "replace",
-            exec: function() { 
+            exec: function(editor) { 
                 _self.setEditor(editor, editor.getSelection()).toggleDialog(true, true);
             }
         });
