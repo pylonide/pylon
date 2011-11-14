@@ -8,7 +8,7 @@
 define(function(require, exports, module) {
 
 var Ide = require("core/ide");
-var Lang = require("pilot/lang");
+var Lang = require("ace/lib/lang");
 
 exports.logNodeStream = function(data, stream, useOutput) {
     var colors = {

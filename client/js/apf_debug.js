@@ -53366,7 +53366,7 @@ if (!apf.hasRequireJS)
     apf.aml.setElement("codeeditor", apf.textbox);
 else
     define("apf/elements/codeeditor",
-        ["module", "ace/editor", "ace/edit_session", "ace/virtual_renderer", "ace/undomanager", "ace/range", "pilot/fixoldbrowsers"],
+        ["module", "ace/editor", "ace/edit_session", "ace/virtual_renderer", "ace/undomanager", "ace/range", "ace/lib/fixoldbrowsers"],
         function(module, Editor, EditSession, VirtualRenderer, UndoManager, Range) {
 
 Editor = Editor.Editor;

@@ -1,4 +1,4 @@
-var lang = require("pilot/lang");
+var lang = require("ace/lib/lang");
 
 var Workspace = module.exports = function(config) {
     if (config)
