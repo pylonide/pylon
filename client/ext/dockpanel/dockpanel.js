@@ -102,7 +102,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 catch (ex) {}
             }
             
-            if(!state.type || state.type != 'new')
+            if(!state.type || state.type != 'new2')
                 state = _self.defaultState;
             
             _self.layout.loadState(state);
@@ -232,6 +232,24 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         
         return bar.sections.slice(-1);
     }, //properties.forceShow ??
+    
+    hideSection: function(section){
+        if(typeof section == "string")
+            return this.layout.hideSection(section);
+        
+        for(var i = 0, l = section.length; i < l; i++) {
+            this.layout.hideSection(section[i]);
+        }
+    },
+    
+    showSection: function(section, expand){
+        if(typeof section == "string")
+            return this.layout.showSection(section, expand);
+        
+        for(var i = 0, l = section.length; i < l; i++) {
+            this.layout.showSection(section[i], expand);
+        }
+    },
     
     //@todo removal of pages
     

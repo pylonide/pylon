@@ -51,7 +51,8 @@ module.exports = ext.register("ext/run/run", {
                 id      : "btnRunCommands",
                 caption : "Run Commands", 
                 "class" : "btn-runcommands",
-                ext     : [name, "tbDebugNav"] 
+                ext     : [name, "tbDebugNav"],
+                hidden  : true
             }]
         });
         
@@ -152,8 +153,9 @@ module.exports = ext.register("ext/run/run", {
         }
         
         if(debug) {
-            var pos  = apf.getAbsolutePosition(btnRunCommands.$ext);
-            self[btnRunCommands.submenu].display(pos[0]-1, pos[1]-11, false, btnRunCommands)
+//            var pos  = apf.getAbsolutePosition(btnRunCommands.$ext);
+//            self[btnRunCommands.submenu].display(pos[0]-1, pos[1]-11, false, btnRunCommands)
+            dock.showSection(["ext/debugger/debugger", "ext/run/run"], true);
         }
     },
 
@@ -205,8 +207,7 @@ module.exports = ext.register("ext/run/run", {
 
     stop : function() {
         noderunner.stop();
-        if(self['btnRunCommands'])
-            self[btnRunCommands.submenu].hide();
+        dock.hideSection(["ext/run/run", "ext/debugger/debugger"]);
     },
 
     enable : function(){
