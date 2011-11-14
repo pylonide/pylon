@@ -308,8 +308,9 @@ module.exports = ext.register("ext/save/save", {
 
                     trSaveAs.select(node);
                 });
-            } else
-                _self.saveFileAs();
+            } 
+            //else
+                //_self.saveFileAs();
         });
     },
 
@@ -401,8 +402,8 @@ module.exports = ext.register("ext/save/save", {
                                         .replace(/\/node\(\)\[@name="workspace"\]/, "")
                                         .replace(/\//, "");
                     if (xpath) {
-                        var oNode  = trFiles.getModel().data.firstChild.selectSingleNode(xpath);
-                        if (oNode)
+                        var oNode  = trFiles.queryNode(xpath);//trFiles.getModel().data.firstChild.selectSingleNode(xpath);
+                        if (oNode && !trFiles.queryNode('//node()[@path="' + newPath + '"]'))
                             apf.xmldb.appendChild(oNode, file);
                     }
                 }
@@ -418,7 +419,7 @@ module.exports = ext.register("ext/save/save", {
             at.undo_ptr = at.$undostack[at.$undostack.length-1];
             page.$at.dispatchEvent("afterchange");
         };
-
+        
         if (path != newPath || file.getAttribute("newfile") == 1) {
             fs.exists(newPath, function (exists) {
                 if (exists) {
