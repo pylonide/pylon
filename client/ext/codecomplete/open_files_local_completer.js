@@ -3,7 +3,7 @@ define(function(require, exports, module) {
 var completeUtil = require("ext/codecomplete/complete_util");
 var editors = require("ext/editors/editors");
 var ide = require("core/ide");
-var lang = require("pilot/lang");
+var lang = require("ace/lib/lang");
 
 var ID_REGEX = /[a-zA-Z_0-9\$]/;
 

@@ -1,5 +1,5 @@
 var sys = require("sys");
-var lang = require("pilot/lang");
+var lang = require("ace/lib/lang");
 var EventEmitter = require("events").EventEmitter;
 
 var User = function (uid, permissions, data) {
