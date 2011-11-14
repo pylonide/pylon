@@ -119,6 +119,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/console/console",
     "ext/tabbehaviors/tabbehaviors",
     "ext/keybindings/keybindings",
+    "ext/keybindings_default/keybindings_default",
     "ext/watcher/watcher",
     "ext/dragdrop/dragdrop",
     "ext/beautify/beautify",
