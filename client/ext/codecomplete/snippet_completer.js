@@ -1,3 +1,4 @@
+var globalRequire = require;
 define(function(require, exports, module) {
 
 var completeUtil = require("ext/codecomplete/complete_util");
@@ -14,7 +15,7 @@ completer.handlesLanguage = function(language) {
 
 completer.fetchText = function(path) {
     var chunks = path.split("/");
-    chunks[0] = require.tlns[chunks[0]] || chunks[0];
+    chunks[0] = globalRequire.tlns[chunks[0]] || chunks[0];
     var url = chunks.join("/");
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, false);

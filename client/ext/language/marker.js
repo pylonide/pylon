@@ -3,7 +3,7 @@ define(function(require, exports, module) {
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
 var tree = require('treehugger/tree');
-var dom = require('pilot/dom');
+var dom = require('ace/lib/dom');
 
 module.exports = {
     currentMarkerIds: [],

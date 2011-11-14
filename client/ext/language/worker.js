@@ -1,9 +1,9 @@
 define(function(require, exports, module) {
 
-var oop = require("pilot/oop");
+var oop = require("ace/lib/oop");
 var Mirror = require("ace/worker/mirror").Mirror;
 var parser = require("treehugger/js/parse");
-var lang = require("pilot/lang");
+var lang = require("ace/lib/lang");
 var tree = require('treehugger/tree');
 
 var LanguageWorker = exports.LanguageWorker = function(sender) {

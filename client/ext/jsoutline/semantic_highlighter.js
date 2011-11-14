@@ -3,7 +3,7 @@ define(function(require, exports, module) {
 var baseLanguageHandler = require('ext/language/base_handler');
 
 var handler = module.exports = Object.create(baseLanguageHandler);
-var lang = require("pilot/lang");
+var lang = require("ace/lib/lang");
 
 handler.handlesLanguage = function(language) {
     return language === 'javascript';

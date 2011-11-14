@@ -20,7 +20,7 @@ var marker = require('ext/language/marker');
 
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
-var lang = require("pilot/lang");
+var lang = require("ace/lib/lang");
 var codetools = require("ext/codetools/codetools");
 
 module.exports = ext.register("ext/language/language", {
@@ -46,7 +46,7 @@ module.exports = ext.register("ext/language/language", {
             _self.setPath();
         });
 
-        var worker = this.worker = new WorkerClient(["treehugger", "pilot", "ext", "ace", "c9"], null, "ext/language/worker", "LanguageWorker");
+        var worker = this.worker = new WorkerClient(["treehugger", "ext", "ace", "c9"], null, "ext/language/worker", "LanguageWorker");
         complete.setWorker(worker);
 		ide.addEventListener("afteropenfile", function(event){
             ext.initExtension(_self);

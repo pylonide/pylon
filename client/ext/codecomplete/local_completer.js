@@ -1,6 +1,6 @@
 define(function(require, exports, module) {
 
-var oop = require("pilot/oop");
+var oop = require("ace/lib/oop");
 var baseLanguageHandler = require('ext/language/base_handler');
 var completeUtil = require("ext/codecomplete/complete_util");
 

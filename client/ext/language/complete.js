@@ -6,8 +6,7 @@ var Range = require("ace/range").Range;
 var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
-var canon = require("pilot/canon");
-var dom = require("pilot/dom");
+var dom = require("ace/lib/dom");
 
 var oldCommandKey;
 

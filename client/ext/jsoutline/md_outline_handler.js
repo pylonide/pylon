@@ -1,6 +1,6 @@
 define(function(require, exports, module) {
 
-var oop = require("pilot/oop");
+var oop = require("ace/lib/oop");
 var tree = require("treehugger/tree");
 require("treehugger/traverse");
 var BaseLanguageHandler = require('ext/language/base_handler').BaseLanguageHandler;
