@@ -95,8 +95,10 @@ module.exports = ext.register("ext/language/language", {
         
         this.editor.on("changeSession", function(event) {
             // Time out a litle, to let the page path be updated
-            if(event.oldSession)
+            if(event.oldSession) {
                 marker.removeMarkers(event.oldSession);
+                event.oldSession.clearAnnotations();
+            }
             setTimeout(function() {
                 var currentPath = tabEditors.getPage().getAttribute("id");
                 _self.setPath();
@@ -107,7 +109,7 @@ module.exports = ext.register("ext/language/language", {
         });
 
         this.editor.addEventListener("change", function(e) {
-            marker.removeMarkers(_self.editor.session);
+            //marker.removeMarkers(_self.editor.session);
             e.range = {
                 start: e.data.range.start,
                 end: e.data.range.end

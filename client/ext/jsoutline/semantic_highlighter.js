@@ -135,7 +135,7 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
             highlightVariable(this.getAnnotation("scope")[b.x.value]);
         }
     );
-    return {markers: markers, hint: ""+currentNode};
+    return {markers: markers}; //, hint: ""+currentNode};
 };
     
 });
