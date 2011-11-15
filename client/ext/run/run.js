@@ -40,6 +40,7 @@ module.exports = ext.register("ext/run/run", {
             hidden  : false,
             height  : 30,
             width   : 179,
+            draggable: false,
             barNum  : 0,
             options : {
                 resizable  : false,
@@ -52,6 +53,7 @@ module.exports = ext.register("ext/run/run", {
                 caption : "Run Commands", 
                 "class" : "btn-runcommands",
                 ext     : [name, "tbDebugNav"],
+                draggable: false,
                 hidden  : true
             }]
         });

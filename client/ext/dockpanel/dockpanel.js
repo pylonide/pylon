@@ -234,21 +234,11 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
     }, //properties.forceShow ??
     
     hideSection: function(section){
-        if(typeof section == "string")
-            return this.layout.hideSection(section);
-        
-        for(var i = 0, l = section.length; i < l; i++) {
-            this.layout.hideSection(section[i]);
-        }
+        this.layout.hideSection(section);
     },
     
     showSection: function(section, expand){
-        if(typeof section == "string")
-            return this.layout.showSection(section, expand);
-        
-        for(var i = 0, l = section.length; i < l; i++) {
-            this.layout.showSection(section[i], expand);
-        }
+        this.layout.showSection(section, expand);
     },
     
     //@todo removal of pages

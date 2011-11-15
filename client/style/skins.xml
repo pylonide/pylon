@@ -4618,7 +4618,7 @@
             position              : relative;
             padding               : 5px 4px;
             margin-left : -42px;
-            margin-top : 15px;
+            margin-top : 13px;
         }
         
         .dockwin_runbtns .dockwin_runbtns-bg {
@@ -7715,6 +7715,10 @@
             -moz-border-radius-topright: 4px;
             border-top-left-radius: 4px;
             border-top-right-radius: 4px;*/
+        }
+
+        .expandedpanel .docktab .btncontainer .btntab {
+            padding-top: 2px;
         }
 
         /*.docktab .btncontainer div.firstbtn {
