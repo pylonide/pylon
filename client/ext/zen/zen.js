@@ -16,7 +16,6 @@ require("ext/zen/firmin-all-min");
 
 var ext = require("core/ext");
 var ide = require("core/ide");
-var canon = require("pilot/canon");
 var editors = require("ext/editors/editors");
 var settings = require("ext/settings/settings");
 var markup = require("text!ext/zen/zen.xml");

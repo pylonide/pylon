@@ -11,8 +11,8 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
-var canon = require("pilot/canon");
-var dom = require("pilot/dom");
+var code = require("ext/code/code");
+var dom = require("ace/lib/dom");
 
 var completeUtil = require("ext/codecomplete/complete_util");
 var localCompleter = require("ext/codecomplete/local_completer");
@@ -58,7 +58,7 @@ module.exports = ext.register("ext/codecomplete/codecomplete", {
 
     hook : function() {
         var _self = this;
-        canon.addCommand({
+        code.commandManager.addCommand({
             name: "codecomplete",
             bindKey: {
                 win: "Ctrl-Space|Alt-Space",

@@ -5614,7 +5614,7 @@ if(this.validate){this.validate(true);}return true;};this.$draw=function(){this.
 this.$input=this.$getLayoutNode("main","input",this.$ext);this.$notfromext=this.$input&&this.$input!=this.$ext;
 this.$setupEvents();};this.$childProperty="label";this.addEventListener("$skinchange",function(){if(this.label){this.$propHandlers.label.call(this,this.label);
 }});}).call(apf.checkbox.prototype=new apf.BaseButton());apf.aml.setElement("checkbox",apf.checkbox);
-if(!apf.hasRequireJS){apf.aml.setElement("codeeditor",apf.textbox);}else{define("apf/elements/codeeditor",["module","ace/editor","ace/edit_session","ace/virtual_renderer","ace/undomanager","ace/range","pilot/fixoldbrowsers"],function(module,Editor,EditSession,VirtualRenderer,UndoManager,Range){Editor=Editor.Editor;
+if(!apf.hasRequireJS){apf.aml.setElement("codeeditor",apf.textbox);}else{define("apf/elements/codeeditor",["module","ace/editor","ace/edit_session","ace/virtual_renderer","ace/undomanager","ace/range","ace/lib/fixoldbrowsers"],function(module,Editor,EditSession,VirtualRenderer,UndoManager,Range){Editor=Editor.Editor;
 EditSession=EditSession.EditSession;VirtualRenderer=VirtualRenderer.VirtualRenderer;
 UndoManager=UndoManager.UndoManager;Range=Range.Range;apf.codeeditor=module.exports=function(struct,tagName){this.$init(tagName||"codeeditor",apf.NODE_VISIBLE,struct);
 this.documents=[];this.$cache={};this.setProperty("line",1);this.setProperty("col",1);
@@ -5639,14 +5639,14 @@ doc.hasValue=true;}}_self.$getMode(_self.syntax,function(mode){doc.setMode(mode)
 });doc.setTabSize(parseInt(_self.tabsize,10));doc.setUseSoftTabs(_self.softtabs);
 doc.setUseWrapMode(_self.wrapmode);doc.setWrapLimitRange(_self.wraplimitmin,_self.wraplimitmax);
 _self.$removeDocListeners&&_self.$removeDocListeners();_self.$removeDocListeners=_self.$addDocListeners(doc);
-_self.$editor.setShowPrintMargin(_self.showprintmargin);_self.$editor.setSession(doc);
+_self.$editor.setShowPrintMargin(_self.showprintmargin);_self.$clearMarker();_self.$editor.setSession(doc);
 _self.$updateMarker();_self.$updateBreakpoints(doc);};this.$addDocListeners=function(doc){var _self=this;
 var onCursorChange=function(){var cursor=doc.getSelection().getCursor();_self.setProperty("line",cursor.row+1);
 _self.setProperty("col",cursor.column+1);};doc.getSelection().addEventListener("changeCursor",onCursorChange);
 onCursorChange();return function(){doc.getSelection().removeEventListener("changeCursor",onCursorChange);
-};};this.$updateMarker=function(removeOnly){if(this.$marker){this.$editor.renderer.removeGutterDecoration(this.$lastRow[0],this.$lastRow[1]);
-this.$editor.getSession().removeMarker(this.$marker);this.$marker=null;if(removeOnly){return;
-}}if(!this.$debugger){return;}var frame=this.$debugger.activeframe;if(!frame){return;
+};};this.$clearMarker=function(){if(this.$marker){this.$editor.renderer.removeGutterDecoration(this.$lastRow[0],this.$lastRow[1]);
+this.$editor.getSession().removeMarker(this.$marker);this.$marker=null;}};this.$updateMarker=function(){this.$clearMarker();
+if(!this.$debugger){return;}var frame=this.$debugger.activeframe;if(!frame){return;
 }var script=this.xmlRoot;if(script.getAttribute("scriptid")!==frame.getAttribute("scriptid")){return;
 }var head=this.$debugger.$mdlStack.queryNode("frame[1]");var isTop=frame==head;
 var lineOffset=parseInt(script.getAttribute("lineoffset")||"0",10);var row=parseInt(frame.getAttribute("line"),10)-lineOffset;
@@ -5691,7 +5691,7 @@ this.$debugger.removeEventListener("break",this.$onChangeActiveFrame);this.$debu
 }else{this.$debugger=value;}if(!this.$breakpoints||this.$debuggerBreakpoints){this.setProperty("model-breakpoints",this.$debugger?this.$debugger.$mdlBreakpoints:null);
 this.$debuggerBreakpoints=true;}if(!this.$debugger){this.$updateMarker();return;
 }this.$updateMarker();var _self=this;this.$onChangeActiveFrame=function(e){_self.$updateMarker();
-};this.$onBeforeContinue=function(){_self.$updateMarker(true);};this.$debugger.addEventListener("changeframe",this.$onChangeActiveFrame);
+};this.$onBeforeContinue=function(){_self.$clearMarker();};this.$debugger.addEventListener("changeframe",this.$onChangeActiveFrame);
 this.$debugger.addEventListener("break",this.$onChangeActiveFrame);this.$debugger.addEventListener("beforecontinue",this.$onBeforeContinue);
 };var propModelHandler=this.$propHandlers.model;this.$propHandlers.model=function(value){propModelHandler.call(this,value);
 this.$updateMarker();this.$updateBreakpoints();};this.addEventListener("xmlupdate",function(e){var id=e.xmlNode.getAttribute(apf.xmldb.xmlIdTag);
@@ -6792,7 +6792,7 @@ var l=this.parentNode.getPages().length;this.$button.style.width=Math.round(Math
 }this.$button.host=this;}if(this.fake){return;}if(this.$ext){this.$ext.parentNode.removeChild(this.$ext);
 }this.$ext=this.parentNode.$getExternal("page",this.parentNode.oPages,null,this);
 this.$ext.host=this;this.$int=this.parentNode.$getLayoutNode("page","container",this.$ext);
-if(this.$isLast){this.$last();}if(this.$isFirst){this.$first();}};this.$destroy=function(){if(this.$button){if(!this.parentNode.$amlDestroyed){this.$button.parentNode.removeChild(this.$button);
+if(this.$isLast){this.$last();}if(this.$isFirst){this.$first();}};this.$destroy=function(){if(this.$button){if(this.parentNode&&!this.parentNode.$amlDestroyed){this.$button.parentNode.removeChild(this.$button);
 }this.$button.host=null;this.$button=null;}};}).call(apf.page.prototype=new apf.Presentation());
 apf.aml.setElement("page",apf.page);apf.pager=function(struct,tagName){this.$init(tagName||"pager",apf.NODE_VISIBLE,struct);
 };(function(){this.previous="Previous";this.next="Next";this.range=5;this.curpage=1;
