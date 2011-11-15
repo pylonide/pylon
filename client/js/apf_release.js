@@ -6273,8 +6273,8 @@ function submenu(){if(ps&&ps.visible){ps.hide();if(_self.parentNode.$showingSubM
 }};this.$submenu=function(hide,force){if(!this.submenu){return true;}var menu=self[this.submenu];
 if(!menu){return;}if(!hide){this.parentNode.$showingSubMenu=menu;var pos=apf.getAbsolutePosition(this.$ext,this.parentNode.$ext.offsetParent);
 menu.display(pos[0]+this.$ext.offsetWidth-3,pos[1]+3,true,this,this.parentNode.xmlReference,this.parentNode.$uniqueId);
-menu.setAttribute("zindex",(this.parentNode.zindex||1)+1);}else{if(menu.visible&&!force){return false;
-}if(this.parentNode.$showingSubMenu==menu){this.parentNode.$showingSubMenu=null;
+menu.setAttribute("zindex",(this.parentNode.zindex||this.parentNode.$ext.style.zIndex||1)+1);
+}else{if(menu.visible&&!force){return false;}if(this.parentNode.$showingSubMenu==menu){this.parentNode.$showingSubMenu=null;
 }apf.setStyleClass(this.$ext,"",["hover"]);menu.hide();return true;}};this.$draw=function(isSkinSwitch){var p=this.parentNode;
 while(p.$canLeechSkin=="item"){p=p.parentNode;}if(p.hasFeature(apf.__MULTISELECT__)){var _self=this;
 if(!this.$hasSetSkinListener){var f;this.parentNode.addEventListener("$skinchange",f=function(){if(_self.$amlDestroyed){return;
@@ -6792,7 +6792,7 @@ var l=this.parentNode.getPages().length;this.$button.style.width=Math.round(Math
 }this.$button.host=this;}if(this.fake){return;}if(this.$ext){this.$ext.parentNode.removeChild(this.$ext);
 }this.$ext=this.parentNode.$getExternal("page",this.parentNode.oPages,null,this);
 this.$ext.host=this;this.$int=this.parentNode.$getLayoutNode("page","container",this.$ext);
-if(this.$isLast){this.$last();}if(this.$isFirst){this.$first();}};this.$destroy=function(){if(this.$button){if(this.parentNode&&!this.parentNode.$amlDestroyed){this.$button.parentNode.removeChild(this.$button);
+if(this.$isLast){this.$last();}if(this.$isFirst){this.$first();}};this.$destroy=function(){if(this.$button){if(!this.parentNode.$amlDestroyed){this.$button.parentNode.removeChild(this.$button);
 }this.$button.host=null;this.$button=null;}};}).call(apf.page.prototype=new apf.Presentation());
 apf.aml.setElement("page",apf.page);apf.pager=function(struct,tagName){this.$init(tagName||"pager",apf.NODE_VISIBLE,struct);
 };(function(){this.previous="Previous";this.next="Next";this.range=5;this.curpage=1;
