@@ -12,6 +12,8 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     this.currentMarkers = [];
     this.lastAggregateActions = {markers: [], hint: null};
     
+    this.emitCache = {};
+    
     if(sender) {
         Mirror.call(this, sender);
         this.setTimeout(500);
@@ -30,6 +32,10 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
         });
         sender.on("cursormove", function(event) {
             _self.onCursorMove(event);
+        });
+        
+        sender.on("change", function(e) {
+            _self.scheduledUpdate = true;
         });
     }
 };
@@ -78,10 +84,18 @@ oop.inherits(LanguageWorker, Mirror);
         }
     };
     
+    this.scheduleEmit = function(messageType, data) {
+        var cached = this.emitCache[messageType];
+        if(!cached || JSON.stringify(data) !== JSON.stringify(cached)) {
+            this.emitCache[messageType] = data;
+            this.sender.emit(messageType, data);
+        }
+    };
+    
     this.analyze = function() {
         var ast = this.parse();
-        //console.log(""+ast);
         if(!ast) return;
+        console.log("Analyzing");
         var markers = [];
         for(var i = 0; i < this.handlers.length; i++) {
             var handler = this.handlers[i];
@@ -91,19 +105,19 @@ oop.inherits(LanguageWorker, Mirror);
                     markers = markers.concat(result);
             }
         }
+        var extendedMakers = markers;
         if(this.lastAggregateActions.markers.length > 0)
-            markers = markers.concat(this.lastAggregateActions.markers);
-        if(markers.length > 0) {
-            this.sender.emit("markers", markers);
-        }
+            extendedMakers = markers.concat(this.lastAggregateActions.markers);
+        this.scheduleEmit("markers", extendedMakers);
         this.currentMarkers = markers;
+        if(this.postponedCursorMove) {
+            this.onCursorMove(this.postponedCursorMove);
+        }
     };
-
 
     this.checkForMarker = function(pos) {
         var astPos = {line: pos.row, col: pos.column};
         var foundOne = false;
-        if(!this.currentMarkers) return;
         for (var i = 0; i < this.currentMarkers.length; i++) {
             var currentMarker = this.currentMarkers[i];
             if(currentMarker.message && tree.inRange(currentMarker.pos, astPos)) {
@@ -113,9 +127,14 @@ oop.inherits(LanguageWorker, Mirror);
     };
 
     this.onCursorMove = function(event) {
+        if(this.scheduledUpdate) {
+            // Postpone the cursor move until the update propagates
+            this.postponedCursorMove = event;
+            return;
+        }
         var pos = event.data;
-        var hintMessage = this.checkForMarker(pos);
-        // Not going to pare for this, only if already parsed successfully
+        var hintMessage = this.checkForMarker(pos) || "";
+        // Not going to parse for this, only if already parsed successfully
         if(this.cachedAst) {
             var ast = this.cachedAst;
             var currentNode = ast.findNode({line: pos.row, col: pos.column});
@@ -135,24 +154,18 @@ oop.inherits(LanguageWorker, Mirror);
                     }
                 }
                 if(aggregateActions.hint && !hintMessage) {
-                    this.sender.emit("hint", aggregateActions.hint);
+                    hintMessage = aggregateActions.hint;
                 }
-                // Show markers when we found new ones here, or if we did before but not now
-                if(aggregateActions.markers.length > 0 || this.lastAggregateActions.markers.length > 0) {
-                    this.sender.emit("markers", this.currentMarkers.concat(aggregateActions.markers));
-                }
+                this.scheduleEmit("markers", this.currentMarkers.concat(aggregateActions.markers));
                 this.lastCurrentNode = currentNode;
                 this.lastAggregateActions = aggregateActions;
             }
         }
-        if(hintMessage)
-            this.sender.emit("hint", hintMessage);
-        if(!hintMessage && !this.lastAggregateActions.hint)
-            this.sender.emit("hidehint", {});
-        
+        this.scheduleEmit("hint", hintMessage);
     };
 
     this.onUpdate = function() {
+        this.scheduledUpdate = false;
         for(var i = 0; i < this.handlers.length; i++) {
             var handler = this.handlers[i];
             if(handler.handlesLanguage(this.$language)) {
@@ -172,7 +185,9 @@ oop.inherits(LanguageWorker, Mirror);
         var oldPath = this.$path;
         this.$path = path;
         this.$language = language;
+        this.cachedAst = null;
         this.setValue(code);
+        console.log("Current file: " + path);
         for(var i = 0; i < this.handlers.length; i++) {
             var handler = this.handlers[i];
             handler.path = path;

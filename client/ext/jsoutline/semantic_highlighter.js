@@ -80,7 +80,6 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
                 style: 'border: solid 1px #BFC0C1;'
             });
         v.uses.forEach(function(node) {
-            if(node === currentNode) return;
             markers.push({
                 pos: node.getPos(),
                 style: 'border: solid 1px #D1D2D3;'

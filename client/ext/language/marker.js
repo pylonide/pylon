@@ -7,20 +7,14 @@ var dom = require('ace/lib/dom');
 
 module.exports = {
     currentMarkerIds: [],
-    //currentMarkers: [],
     
-    removeMarkers: function(editor) {
-        var session = editor.session;
-        var markers = session.getMarkers();
+    removeMarkers: function(session) {
+        var markers = session.getMarkers(false);
         for(var id in markers) {
             if(markers[id].clazz === 'language_highlight') {
                 session.removeMarker(id);
             }
         }
-        /*for (var i = 0; i < this.currentMarkerIds.length; i++) {
-            session.removeMarker(this.currentMarkerIds[i]);
-        }
-        this.currentMarkerIds = [];*/
     },
     
     markers: function(event, editor) {
@@ -28,7 +22,7 @@ module.exports = {
         var session = editor.session;
         var _self = this;
         
-        this.removeMarkers(editor);
+        this.removeMarkers(editor.session);
 
         annos.forEach(function(anno) { 
             var range = Range.fromPoints({

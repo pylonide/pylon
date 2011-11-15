@@ -77,10 +77,11 @@ module.exports = ext.register("ext/language/language", {
             marker.markers(event, _self.editor);
         });
         worker.on("hint", function(event) {
-            marker.showHint(event.data);
-        });
-        worker.on("hidehint", function() {
-            marker.hideHint();
+            if(event.data) {
+                marker.showHint(event.data);
+            } else {
+                marker.hideHint();
+            }
         });
 	},
 
@@ -95,6 +96,8 @@ module.exports = ext.register("ext/language/language", {
         
         this.editor.on("changeSession", function(event) {
             // Time out a litle, to let the page path be updated
+            if(event.oldSession)
+                marker.removeMarkers(event.oldSession);
             setTimeout(function() {
                 var currentPath = tabEditors.getPage().getAttribute("id");
                 _self.setPath();
@@ -105,7 +108,7 @@ module.exports = ext.register("ext/language/language", {
         });
 
         this.editor.addEventListener("change", function(e) {
-            marker.removeMarkers(_self.editor);
+            marker.removeMarkers(_self.editor.session);
             e.range = {
                 start: e.data.range.start,
                 end: e.data.range.end
@@ -142,12 +145,11 @@ module.exports = ext.register("ext/language/language", {
         if(!this.onCursorChangeDeferred) {
             this.onCursorChangeDeferred = lang.deferredCall(this.onCursorChange.bind(this));
         }
-        this.onCursorChangeDeferred.cancel().schedule(505);
+        this.onCursorChangeDeferred.cancel().schedule(250);
     },
     
     onCursorChange: function() {
         this.worker.emit("cursormove", {data: this.editor.getCursorPosition()});
-        //marker.checkForAnno(pos, false);
     },
 
     enable : function() {
