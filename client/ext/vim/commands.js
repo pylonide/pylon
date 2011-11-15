@@ -41,8 +41,9 @@ var util = exports.util = {
         cursor.style.opacity = ".5";
         cursor.style.border = "0";
 
-        if (!env.editor.getOverwrite())
+        if (!env.editor.getOverwrite()) {
             env.editor.navigateLeft();
+        }
 
         env.editor.setOverwrite(true);
     },
@@ -74,7 +75,7 @@ var util = exports.util = {
         var matches = line.substr(0, cursor.column + 1).split(char);
 
         return n < matches.length ? matches.slice(-1 * n).join(char).length + 1: 0;
-    },
+    }
 };
 
 function isBang(params) {
@@ -139,7 +140,7 @@ var motions = {
     "f": {
         param: true,
         nav: function(env, range, count, param) {
-            count = parseInt(count) || 1;
+            count = parseInt(count, 10) || 1;
             var ed = env.editor;
             var cursor = ed.getCursorPosition();
             var column = util.getRightNthChar(env, cursor, param, count);
@@ -150,7 +151,7 @@ var motions = {
             }
         },
         sel: function(env, range, count, param) {
-            count = parseInt(count) || 1;
+            count = parseInt(count, 10) || 1;
             var ed = env.editor;
             var cursor = ed.getCursorPosition();
             var column = util.getRightNthChar(env, cursor, param, count);
@@ -163,7 +164,7 @@ var motions = {
     "t": {
         param: true,
         nav: function(env, range, count, param) {
-            count = parseInt(count) || 1;
+            count = parseInt(count, 10) || 1;
             var ed = env.editor;
             var cursor = ed.getCursorPosition();
             var column = util.getRightNthChar(env, cursor, param, count);
@@ -174,7 +175,7 @@ var motions = {
             }
         },
         sel: function(env, range, count, param) {
-            count = parseInt(count) || 1;
+            count = parseInt(count, 10) || 1;
             var ed = env.editor;
             var cursor = ed.getCursorPosition();
             var column = util.getRightNthChar(env, cursor, param, count);
@@ -187,8 +188,9 @@ var motions = {
     "x": {
         nav: function(env, range, count, param) {
             var ed = env.editor;
-            if (ed.selection.isEmpty())
+            if (ed.selection.isEmpty()) {
                 ed.selection.selectRight();
+            }
 
             ed.session.remove(ed.getSelectionRange());
             ed.clearSelection();
@@ -197,8 +199,9 @@ var motions = {
     "shift-x": {
         nav: function(env, range, count, param) {
             var ed = env.editor;
-            if (ed.selection.isEmpty())
+            if (ed.selection.isEmpty()) {
                 ed.selection.selectLeft();
+            }
 
             ed.session.remove(ed.getSelectionRange());
             ed.clearSelection();
@@ -233,17 +236,19 @@ var motions = {
     "shift-g": {
         nav: function(env, range, count, param) {
             var ed = env.editor;
-            count = parseInt(count);
-            if (!count && count !== 0) // Stupid JS
+            count = parseInt(count, 10);
+            if (!count && count !== 0) { // Stupid JS
                 count = ed.session.getLength();
+            }
 
             ed.gotoLine(count);
         },
         sel: function(env, range, count, param) {
             var ed = env.editor;
-            count = parseInt(count);
-            if (!count && count !== 0) // Stupid JS
+            count = parseInt(count, 10);
+            if (!count && count !== 0) {// Stupid JS
                 count = ed.session.getLength();
+            }
 
             ed.selectTo(count, 0);
         }
@@ -253,10 +258,10 @@ var motions = {
         nav: function(env, range, count, param) {
             switch(param) {
                 case "m":
-                    console.log("Middle line")
+                    console.log("Middle line");
                     break;
                 case "e":
-                    console.log("End of prev word")
+                    console.log("End of prev word");
                     break;
                 case "g":
                     env.editor.gotoLine(count || 0);
@@ -265,10 +270,10 @@ var motions = {
         sel: function(env, range, count, param) {
             switch(param) {
                 case "m":
-                    console.log("Middle line")
+                    console.log("Middle line");
                     break;
                 case "e":
-                    console.log("End of prev word")
+                    console.log("End of prev word");
                     break;
                 case "g":
                     env.editor.selection.selectTo(count || 0, 0);
@@ -279,11 +284,12 @@ var motions = {
 
 var operators = {
     "d": function(env, range, count, param) {
-        count = parseInt(count || 1);
+        count = parseInt(count || 1, 10);
         switch (param) {
             case "d":
-                for (var i=0; i<count; i++)
+                for (var i=0; i<count; i++) {
                     env.editor.removeLines();
+                }
 
                 break;
             default:
