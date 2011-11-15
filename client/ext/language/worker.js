@@ -85,21 +85,21 @@ oop.inherits(LanguageWorker, Mirror);
     };
     
     this.scheduleEmit = function(messageType, data) {
-        var cached = this.emitCache[messageType];
+        /*var cached = this.emitCache[messageType];
         if(!cached || JSON.stringify(data) !== JSON.stringify(cached)) {
-            this.emitCache[messageType] = data;
-            this.sender.emit(messageType, data);
-        }
+            this.emitCache[messageType] = data;*/
+        this.sender.emit(messageType, data);
+        //}
     };
     
     this.analyze = function() {
         var ast = this.parse();
-        if(!ast) return;
+        //if(!ast) return;
         console.log("Analyzing");
         var markers = [];
         for(var i = 0; i < this.handlers.length; i++) {
             var handler = this.handlers[i];
-            if(handler.handlesLanguage(this.$language)) {
+            if(handler.handlesLanguage(this.$language) && (ast || !handler.analysisRequiresParsing())) {
                 var result = handler.analyze(this.doc, ast);
                 if(result)
                     markers = markers.concat(result);

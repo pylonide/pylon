@@ -2,8 +2,9 @@ define(function(require, exports, module) {
 
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
-var tree = require('treehugger/tree');
 var dom = require('ace/lib/dom');
+
+var JavaScriptMode = require('ace/mode/javascript').Mode;
 
 module.exports = {
     currentMarkerIds: [],
@@ -20,11 +21,29 @@ module.exports = {
     markers: function(event, editor) {
         var annos = event.data;
         var session = editor.session;
-        var _self = this;
         
         this.removeMarkers(editor.session);
+        var annotations = session.getAnnotations();
+        var newAnnos = [];
+        for(var p in annotations) {
+            var annoArray = annotations[p];
+            for (var i = 0; i < annoArray.length; i++) {
+                if(!annoArray[i].langAnno) {
+                    newAnnos.push(annoArray[i]);
+                }
+            }
+        }
 
         annos.forEach(function(anno) { 
+            if(!anno.pos.sc && !anno.pos.ec) {
+                newAnnos.push({
+                    row: anno.pos.sl,
+                    text: anno.message,
+                    type: anno.type,
+                    langAnno: true
+                });
+                return;
+            }
             var range = Range.fromPoints({
                 row: anno.pos.sl,
                 column: anno.pos.sc
@@ -37,7 +56,14 @@ module.exports = {
             for (var i = 0; i < text.length; i++) {
                 spaces += '&nbsp;';
             }
-            //_self.currentMarkerIds.push(
+            if(anno.type === 'note' || anno.type === 'error' || anno.type === 'warning') {
+                newAnnos.push({
+                    row: anno.pos.sl,
+                    text: anno.message,
+                    type: anno.type,
+                    langAnno: true
+                });
+            }
             session.addMarker(range, "language_highlight", function(stringBuilder, range, left, top, viewport) {
                 var style = anno.style;
                 if(!style && anno.type === 'error') {
@@ -54,6 +80,7 @@ module.exports = {
                 );
             });
         });
+        session.setAnnotations(newAnnos);
     },
     
     hideHint: function() {
@@ -81,6 +108,11 @@ module.exports = {
             }
         });
     }
-
 };
+
+// Monkeypatching ACE's JS mode to disable worker
+JavaScriptMode.prototype.createWorker = function() {
+    return null;
+};
+
 });

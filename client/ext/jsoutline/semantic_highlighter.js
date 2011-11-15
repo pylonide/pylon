@@ -9,7 +9,7 @@ handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
 
-var KNOWN_GLOBALS = lang.arrayToMap(["require", "define", "console", "true", "false", "null", "Error", "Array", "Math", "Number", "parseInt", "parseDouble", "JSON", "Object"]);
+var KNOWN_GLOBALS = lang.arrayToMap(["console", "true", "false", "null", "Error", "Array", "Math", "Number", "parseInt", "parseDouble", "JSON", "Object", "isNaN", "setTimeout", "setInterval"]);
 
 function Variable(declaration) {
     this.declaration = declaration;
@@ -22,23 +22,10 @@ Variable.prototype.addUse = function(node) {
 
 handler.analyze = function(doc, ast) {
     var markers = [];
-    // TODO: Take hoisting into account
-    function scopeAnalyzer(scope, node) {
+    
+    // Preclare, more like
+    function preDeclareHoisted(scope, node) {
         node.traverseTopDown(
-            'Function(x, fargs, body)', function(b) {
-                this.setAnnotation("scope", scope);
-                if(b.x.value) {
-                    scope[b.x.value] = new Variable(this[0]);
-                }
-                var newScope = Object.create(scope);
-                newScope['this'] = new Variable();
-                b.fargs.forEach(function(farg) {
-                    farg.setAnnotation("scope", newScope);
-                    newScope[farg[0].value] = new Variable(farg);
-                });
-                scopeAnalyzer(newScope, b.body);
-                return this;
-            },
             'VarDecl(x)', function(b) {
                 this.setAnnotation("scope", scope);
                 scope[b.x.value] = new Variable(b.x);
@@ -46,6 +33,29 @@ handler.analyze = function(doc, ast) {
             'VarDeclInit(x, _)', function(b) {
                 this.setAnnotation("scope", scope);
                 scope[b.x.value] = new Variable(b.x);
+            },
+            'Function(x, _, _)', function(b) {
+                this.setAnnotation("scope", scope);
+                if(b.x.value) {
+                    scope[b.x.value] = new Variable(b.x);
+                }
+                return this;
+            },
+            'Catch(_, _, _)', function(b) {
+                return this;
+            }
+        );
+    }
+    
+    function scopeAnalyzer(scope, node) {
+        preDeclareHoisted(scope, node);
+        var localVariables = [];
+        node.traverseTopDown(
+            'VarDecl(x)', function(b) {
+                localVariables.push(scope[b.x.value]);
+            },
+            'VarDeclInit(x, _)', function(b) {
+                localVariables.push(scope[b.x.value]);
             },
             'Var(x)', function(b) {
                 this.setAnnotation("scope", scope);
@@ -60,10 +70,35 @@ handler.analyze = function(doc, ast) {
                     scope[b.x.value].addUse(this);
                 }
                 return this;
+            },
+            'Function(x, fargs, body)', function(b) {
+                var newScope = Object.create(scope);
+                newScope['this'] = new Variable();
+                b.fargs.forEach(function(farg) {
+                    farg.setAnnotation("scope", newScope);
+                    newScope[farg[0].value] = new Variable(farg);
+                });
+                scopeAnalyzer(newScope, b.body);
+                return this;
+            },
+            'Catch(x, body)', function(b) {
+                var newScope = Object.create(scope);
+                newScope[b.x.value] = new Variable(b.x);
+                scopeAnalyzer(newScope, b.body);
+                return this;
             }
         );
+        for (var i = 0; i < localVariables.length; i++) {
+            if(localVariables[i].uses.length === 0) {
+                var v = localVariables[i];
+                markers.push({
+                    pos: v.declaration.getPos(),
+                    type: 'warning',
+                    message: 'Unused variable'
+                });
+            }
+        }
     }
-    
     scopeAnalyzer({}, ast);
     return markers;
 };
@@ -82,7 +117,7 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
         v.uses.forEach(function(node) {
             markers.push({
                 pos: node.getPos(),
-                style: 'border: solid 1px #D1D2D3;'
+                style: 'border: dotted 1px #BFC0C1;'
             });
         });
     }

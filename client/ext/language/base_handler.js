@@ -83,6 +83,10 @@ module.exports = {
     complete: function(doc, fullAst, cursorPos, currentNode) {
         return null;
     },
+
+    analysisRequiresParsing: function() {
+        return true;
+    },
     
     analyze: function(doc, fullAst) {
         return null;

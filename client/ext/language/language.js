@@ -12,7 +12,6 @@ var ext = require("core/ext");
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
-var Range = require("ace/range").Range;
 
 var outline = require('ext/language/outline');
 var complete = require('ext/language/complete');

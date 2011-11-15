@@ -9,7 +9,6 @@
 define(function(require, exports, module) {
 
 var ext = require("core/ext");
-var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var language = require("ext/language/language");
 
@@ -26,6 +25,7 @@ module.exports = ext.register("ext/jsoutline/jsoutline", {
         language.registerLanguageHandler('ext/jsoutline/outline_handler');
         language.registerLanguageHandler('ext/jsoutline/json_outline_handler');
         language.registerLanguageHandler('ext/jsoutline/semantic_highlighter');
+        language.registerLanguageHandler('ext/jsoutline/narcissus_jshint');
     },
     
     enable : function() {
