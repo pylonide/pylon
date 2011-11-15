@@ -4,7 +4,7 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
@@ -17,15 +17,17 @@ var Trie = require("ext/console/trie");
 var Hints = require("ext/console/hints");
 var css = require("text!ext/console/console.css");
 var markup = require("text!ext/console/console.xml");
+// Some hardcoded commands and their responses
+var Output = require("ext/console/output");
 
-var trieCommands, 
-    commands     = {},
-    cmdTries     = {},
-    cmdFetched   = false,
-    cmdHistory   = [],
-    cmdBuffer    = "",
-    lastSearch   = null,
-    parser       = new Parser();
+var trieCommands;
+var commands   = {};
+var cmdTries   = {};
+var cmdFetched = false;
+var cmdHistory = [];
+var cmdBuffer  = "";
+var lastSearch = null;
+var parser     = new Parser();
 
 module.exports = ext.register("ext/console/console", {
     name   : "Console",
@@ -34,7 +36,7 @@ module.exports = ext.register("ext/console/console", {
     alone  : true,
     markup : markup,
     css    : css,
-    
+
     commandHistoryIndex : 0,
     excludeParent : true,
     commands : {
@@ -54,11 +56,11 @@ module.exports = ext.register("ext/console/console", {
         }
         Logger.logNodeStream(text.join("\n"));
     },
-    
+
     clear : function() {
         this.inited && txtOutput.clear();
     },
-    
+
     switchconsole : function() {
         if (apf.activeElement == txtConsoleInput) {
             if (window.ceEditor) {
@@ -75,7 +77,7 @@ module.exports = ext.register("ext/console/console", {
         return true;
     },
 
-    
+
     showOutput : function(){
         tabConsole.set(1);
     },
@@ -113,25 +115,27 @@ module.exports = ext.register("ext/console/console", {
     },
 
     commandTextHandler: function(e) {
-        var line      = e.currentTarget.getValue(),
-            //idx       = cmdHistory.indexOf(line),
-            hisLength = cmdHistory.length,
-            newVal    = "",
-            code      = e.keyCode;
-        if (cmdBuffer === null || (this.commandHistoryIndex == 0 && cmdBuffer !== line))
+        var line = e.currentTarget.getValue();
+        if (cmdBuffer === null ||
+            (this.commandHistoryIndex == 0 && cmdBuffer !== line)) {
             cmdBuffer = line;
+        }
+
         parser.parseLine(line);
 
+        var newVal = "";
+        var code = e.keyCode;
+        var hisLength = cmdHistory.length;
         if (code == 38) { //UP
             if (Hints.visible()) {
                 Hints.selectUp();
             }
-            else {
-                if (!hisLength)
-                    return;
+            else if (hisLength) {
                 newVal = cmdHistory[--this.commandHistoryIndex];
+
                 if (this.commandHistoryIndex < 0)
                     this.commandHistoryIndex = 0;
+
                 if (newVal)
                     e.currentTarget.setValue(newVal);
             }
@@ -141,12 +145,12 @@ module.exports = ext.register("ext/console/console", {
             if (Hints.visible()) {
                 Hints.selectDown();
             }
-            else {
-                if (!hisLength)
-                    return;
-                newVal = cmdHistory[++this.commandHistoryIndex] || "";//(++idx > hisLength - 1 || idx === 0) ? (cmdBuffer || "") : 
+            else if (hisLength) {
+                newVal = cmdHistory[++this.commandHistoryIndex] || "";
+
                 if (this.commandHistoryIndex >= cmdHistory.length)
                     this.commandHistoryIndex = cmdHistory.length;
+
                 e.currentTarget.setValue(newVal);
             }
             return false;
@@ -158,26 +162,15 @@ module.exports = ext.register("ext/console/console", {
             this.autoComplete(e, parser, 2);
             return;
         }
-        
+
         if (Hints.visible() && Hints.selected())
             return Hints.click(Hints.selected());
 
-        if (parser.argv.length === 0) {
-            // no commmand line input
-
-            if (e.name == "keydown") {
-                //Logger.log(this.getPrompt(), "prompt");
-                //this.enable();
-            }
-        }
-        else if (parser.argQL[0]) {
+        if (parser.argQL[0]) {
             // first argument quoted -> error
             this.write("Syntax error: first argument quoted.");
         }
         else {
-            var s,
-                cmd = parser.argv[parser.argc++];
-
             if (code == 9) {
                 this.autoComplete(e, parser, 1);
                 return false;
@@ -192,95 +185,26 @@ module.exports = ext.register("ext/console/console", {
             this.enable();
             tabConsole.set("console");
 
-            switch (cmd) {
-                case "help":
+            var cmd = parser.argv[parser.argc++];
+            if (Output[cmd]) {
+                var rest = parser.argv.join(" ").replace(new RegExp("^" + cmd), "").trim();
+                var msg = Output[cmd][rest];
+
+                if (Output[cmd][rest])
+                    this.write(msg);
+                else
+                    this.write(Output[cmd].__default__.replace("%s", cmd));
+            }
+            else {
+                if (cmd === "help")
                     this.help();
-                    break;
-                case "clear":
+                else if (cmd === "clear")
                     txtConsole.clear();
-                    break;
-                case "sudo":
-                    s = parser.argv.join(" ").trim();
-                    if (s == "sudo make me a sandwich") {
-                        this.write("Okay.");
-                        break;
-                    }
-                    else if (s == "sudo apt-get moo") {
-                        //this.clear();
-                        this.write([" ",
-                            "        (__)",
-                            "        (oo)",
-                            "  /------\\/ ",
-                            " / |    ||  ",
-                            "*  /\\---/\\  ",
-                            "   ~~   ~~  ",
-                            "....\"Have you mooed today?\"...",
-                            " "]);
-                        break;
-                    }
-                    else {
-                        this.write("E: Invalid operation " + parser.argv[parser.argc++]);
-                        break;
-                    }
-                case "man":
-                    var pages = {
-                        "last": "Man, last night was AWESOME.",
-                        "help": "Man, help me out here.",
-                        "next": "Request confirmed; you will be reincarnated as a man next.",
-                        "cat":  "You are now riding a half-man half-cat."
-                    };
-                    this.write((pages[parser.argv[parser.argc++]]
-                        || "Oh, I'm sure you can figure it out."));
-                    break;
-                case "locate":
-                    var keywords = {
-                        "ninja": "Ninja can not be found!",
-                        "keys": "Have you checked your coat pocket?",
-                        "joke": "Joke found on user.",
-                        "problem": "Problem exists between keyboard and chair.",
-                        "raptor": "BEHIND YOU!!!"
-                    };
-                    this.write((keywords[parser.argv[parser.argc++]] || "Locate what?"));
-                    break;
-                default:
-                    var jokes = {
-                        "make me a sandwich": "What? Make it yourself.",
-                        "make love": "I put on my robe and wizard hat.",
-                        "i read the source code": "<3",
-                        //"pwd": "You are in a maze of twisty passages, all alike.",
-                        "lpr": "PC LOAD LETTER",
-                        "hello joshua": "How about a nice game of Global Thermonuclear War?",
-                        "xyzzy": "Nothing happens.",
-                        "date": "March 32nd",
-                        "hello": "Why hello there!",
-                        "who": "Doctor Who?",
-                        "su": "God mode activated. Remember, with great power comes great ... aw, screw it, go have fun.",
-                        "fuck": "I have a headache.",
-                        "whoami": "You are Richard Stallman.",
-                        "nano": "Seriously? Why don't you just use Notepad.exe? Or MS Paint?",
-                        "top": "It's up there --^",
-                        "moo":"moo",
-                        "ping": "There is another submarine three miles ahead, bearing 225, forty fathoms down.",
-                        "find": "What do you want to find? Kitten would be nice.",
-                        "more":"Oh, yes! More! More!",
-                        "your gay": "Keep your hands off it!",
-                        "hi":"Hi.",
-                        "echo": "Echo ... echo ... echo ...",
-                        "bash": "You bash your head against the wall. It's not very effective.",
-                        "ssh": "ssh, this is a library.",
-                        "uname": "Illudium Q-36 Explosive Space Modulator",
-                        "finger": "Mmmmmm...",
-                        "kill": "Terminator deployed to 1984.",
-                        "use the force luke": "I believe you mean source.",
-                        "use the source luke": "I'm not luke, you're luke!",
-                        "serenity": "You can't take the sky from me.",
-                        "enable time travel": "TARDIS error: Time Lord missing.",
-                        "ed": "You are not a diety."
-                    };
-                    s = parser.argv.join(" ").trim();
-                    if (jokes[s]) {
-                        this.write(jokes[s]);
-                        break;
+                else {
+                    var rest = parser.argv.join(" ").trim();
+
+                    if (Output[rest]) {
+                        this.write(Output[rest]);
                     }
                     else {
                         if (cmd.trim().charAt(0) == "!") {
@@ -288,26 +212,30 @@ module.exports = ext.register("ext/console/console", {
                             parser.argv[0] = parser.argv[0].replace(/^\s*!/, "");
                             line = line.replace(/^\s*!/, "");
                         }
-                            
+
                         var data = {
                             command: cmd,
                             argv: parser.argv,
                             line: line,
                             cwd: this.getCwd()
                         };
-                        ide.dispatchEvent("track_action", {type: "console", cmd: cmd});
+
+                        ide.dispatchEvent("track_action", {
+                            type: "console",
+                            cmd: cmd
+                        });
+
                         if (ext.execCommand(cmd, data) !== false) {
-                            if (ide.dispatchEvent("consolecommand." + cmd, {
-                              data: data
-                            }) !== false) {
+                            var evtName = "consolecommand." + cmd;
+                            if (ide.dispatchEvent(evtName, { data: data }) !== false) {
                                 if (!ide.onLine)
                                     this.write("Cannot execute command. You are currently offline.");
                                 else
                                     ide.send(JSON.stringify(data));
                             }
                         }
-                        return;
                     }
+                }
             }
         }
     },
@@ -315,9 +243,10 @@ module.exports = ext.register("ext/console/console", {
     onMessage: function(e) {
         var res,
             message = e.message;
-            
+
         if (message.type == "node-data")
             return Logger.logNodeStream(message.data, message.stream, true);
+
         if (message.type != "result")
             return;
 
@@ -357,7 +286,7 @@ module.exports = ext.register("ext/console/console", {
                 res = message.body;
                 ide.dispatchEvent("treecreate", {
                     type : "folder",
-                    path : this.$cwd + "/" + res.argv[res.argv.length - 1] 
+                    path : this.$cwd + "/" + res.argv[res.argv.length - 1]
                 });
                 break;
             case "error":
@@ -395,7 +324,7 @@ module.exports = ext.register("ext/console/console", {
     getPrompt: function() {
         if(!this.username)
             this.username = (ide.workspaceId.match(/user\/(\w+)\//) || [,"guest"])[1];
-        
+
         return "[" + this.username + "@cloud9]:" + this.$cwd + "$";
     },
 
@@ -456,7 +385,7 @@ module.exports = ext.register("ext/console/console", {
         --cursorPos;
 
         if (!cmdFetched) {
-            // the 'commandhints' command retreives a list of available commands 
+            // the 'commandhints' command retreives a list of available commands
             // from all the server plugins, to support git auto-completion, for
             // example.
             ide.send(JSON.stringify({
@@ -578,7 +507,7 @@ module.exports = ext.register("ext/console/console", {
             Hints.hide();
         }
     },
-    
+
     /**** Init ****/
 
     hook : function(){
@@ -595,13 +524,13 @@ module.exports = ext.register("ext/console/console", {
         mainRow.appendChild(winDbgConsole); //selectSingleNode("a:hbox[1]/a:vbox[2]").
 
         apf.importCssString((this.css || "") + " .console_date{display:inline}");
-        
+
         stProcessRunning.addEventListener("activate", function() {
             _self.clear();
             _self.showOutput();
             _self.enable();
         });
-        
+
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
         ide.addEventListener("consoleresult.internal-isfile", function(e) {
             var data = e.data;
@@ -611,15 +540,15 @@ module.exports = ext.register("ext/console/console", {
             else
                 Logger.log("'" + path + "' is not a file.");
         });
-        
+
         winDbgConsole.previousSibling.hide(); //que?
-        
+
         function kdHandler(e){
-            if (!e.ctrlKey && !e.metaKey && !e.altKey 
-              && !e.shiftKey && apf.isCharacter(e.keyCode)) 
+            if (!e.ctrlKey && !e.metaKey && !e.altKey
+              && !e.shiftKey && apf.isCharacter(e.keyCode))
                 txtConsoleInput.focus()
         }
-        
+
         txtOutput.addEventListener("keydown", kdHandler);
         txtConsole.addEventListener("keydown", kdHandler);
     },
@@ -640,7 +569,7 @@ module.exports = ext.register("ext/console/console", {
         if (winDbgConsole.height == 41)
             winDbgConsole.setAttribute("height", this.height || 200);
         winDbgConsole.previousSibling.show();
-        
+
         apf.layout.forceResize();
         apf.setStyleClass(btnCollapseConsole.$ext, "btn_console_openOpen");
 
@@ -660,7 +589,7 @@ module.exports = ext.register("ext/console/console", {
             this.height = winDbgConsole.height;
         winDbgConsole.setAttribute("height", 41);
         winDbgConsole.previousSibling.hide();
-        
+
         apf.layout.forceResize();
         apf.setStyleClass(btnCollapseConsole.$ext, '' , ['btn_console_openOpen']);
     },
