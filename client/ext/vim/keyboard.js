@@ -29,7 +29,7 @@ var states = exports.states = {
     {
         key: "esc",
         exec: "stop",
-        then: "start"
+        //then: "start"
     },
     {
         regex: "^:$",
@@ -43,25 +43,25 @@ var states = exports.states = {
         regex:  "^i$",
         params: [ types.count ],
         exec: "start",
-        then: "insertMode"
+        //then: "insertMode"
     },
     {
         regex: "^shift-i$",
         params: [ types.bang ],
         exec: "start",
-        then: "insertMode"
+        //then: "insertMode"
     },
     {
         regex: "^a$",
         params: [ types.count ],
         exec: "append",
-        then: "insertMode"
+        //then: "insertMode"
     },
     {
         regex: "^shift-a$",
         params: [ types.count, types.bang ],
         exec: "append",
-        then: "insertMode"
+        //then: "insertMode"
     },
 /*    {*/
         //regex: [ types.count.regex, "o" ],
@@ -224,7 +224,7 @@ var states = exports.states = {
     {
         key: "esc",
         exec: "stop",
-        then: "start"
+        //then: "start"
     },
     {
         key: "backspace",

@@ -75,32 +75,6 @@ var util = exports.util = {
 
         return n < matches.length ? matches.slice(-1 * n).join(char).length + 1: 0;
     },
-    gotoRightNthChar: function(env, char, n) {
-        var ed = env.editor;
-        var cursor = ed.getCursorPosition();
-        var column = util.getRightNthChar(env, cursor, column, char, n);
-        var row = cursor.row;
-
-        if (column) {
-            ed.moveCursorToPosition({
-                row: row,
-                column: column
-            });
-        }
-    },
-    gotoLeftNthChar: function(env, char, n) {
-        var ed = env.editor;
-        var cursor = ed.getCursorPosition();
-        var column = util.getLeftNthChar(env, cursor, column, char, n);
-        var row = cursor.row;
-
-        if (column) {
-            ed.moveCursorToPosition({
-                row: row,
-                column: column
-            });
-        }
-    }
 };
 
 function isBang(params) {
@@ -165,10 +139,69 @@ var motions = {
     "f": {
         param: true,
         nav: function(env, range, count, param) {
-            console.log("fnav", param);
+            count = parseInt(count) || 1;
+            var ed = env.editor;
+            var cursor = ed.getCursorPosition();
+            var column = util.getRightNthChar(env, cursor, param, count);
+
+            if (typeof column === "number") {
+                ed.selection.clearSelection(); // Why does it select in the first place?
+                ed.moveCursorTo(cursor.row, column + cursor.column + 1);
+            }
         },
         sel: function(env, range, count, param) {
-            console.log("fsel", param);
+            count = parseInt(count) || 1;
+            var ed = env.editor;
+            var cursor = ed.getCursorPosition();
+            var column = util.getRightNthChar(env, cursor, param, count);
+
+            if (typeof column === "number") {
+                ed.moveCursorTo(cursor.row, column + cursor.column + 1);
+            }
+        }
+    },
+    "t": {
+        param: true,
+        nav: function(env, range, count, param) {
+            count = parseInt(count) || 1;
+            var ed = env.editor;
+            var cursor = ed.getCursorPosition();
+            var column = util.getRightNthChar(env, cursor, param, count);
+
+            if (typeof column === "number") {
+                ed.selection.clearSelection(); // Why does it select in the first place?
+                ed.moveCursorTo(cursor.row, column + cursor.column);
+            }
+        },
+        sel: function(env, range, count, param) {
+            count = parseInt(count) || 1;
+            var ed = env.editor;
+            var cursor = ed.getCursorPosition();
+            var column = util.getRightNthChar(env, cursor, param, count);
+
+            if (typeof column === "number") {
+                ed.moveCursorTo(cursor.row, column + cursor.column);
+            }
+        }
+    },
+    "x": {
+        nav: function(env, range, count, param) {
+            var ed = env.editor;
+            if (ed.selection.isEmpty())
+                ed.selection.selectRight();
+
+            ed.session.remove(ed.getSelectionRange());
+            ed.clearSelection();
+        }
+    },
+    "shift-x": {
+        nav: function(env, range, count, param) {
+            var ed = env.editor;
+            if (ed.selection.isEmpty())
+                ed.selection.selectLeft();
+
+            ed.session.remove(ed.getSelectionRange());
+            ed.clearSelection();
         }
     },
     "shift-6": {
@@ -257,6 +290,7 @@ var operators = {
                 env.editor.session.remove(range);
         }
     },
+
     "r": function(env, range, count, param) {
         count = parseInt(count || 1);
     }
@@ -377,7 +411,7 @@ var inputBuffer = exports.inputBuffer = {
             if (!o) {
                 run(motionObj.nav);
             }
-            else {
+            else if (motionObj.sel) {
                 repeat(function() {
                     run(motionObj.sel);
                     operators[o.char](env, env.editor.getSelectionRange(), o.count, param);
