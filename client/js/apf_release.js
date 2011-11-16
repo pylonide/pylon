@@ -6365,7 +6365,7 @@ function submenu(){if(ps&&ps.visible){ps.hide();if(_self.parentNode.$showingSubM
 }};this.$submenu=function(hide,force){if(!this.submenu){return true;}var menu=self[this.submenu];
 if(!menu){return;}if(!hide){this.parentNode.$showingSubMenu=menu;var pos=apf.getAbsolutePosition(this.$ext,this.parentNode.$ext.offsetParent);
 menu.display(pos[0]+this.$ext.offsetWidth-3,pos[1]+3,true,this,this.parentNode.xmlReference,this.parentNode.$uniqueId);
-menu.setAttribute("zindex",(this.parentNode.zindex||1)+1);}else{if(menu.visible&&!force){return false;
+menu.setAttribute("zindex",(this.parentNode.zindex||this.parentNode.$ext.style.zIndex||1)+1);}else{if(menu.visible&&!force){return false;
 }if(this.parentNode.$showingSubMenu==menu){this.parentNode.$showingSubMenu=null;
 }apf.setStyleClass(this.$ext,"",["hover"]);menu.hide();return true;}};this.$draw=function(isSkinSwitch){var p=this.parentNode;
 while(p.$canLeechSkin=="item"){p=p.parentNode;}if(p.hasFeature(apf.__MULTISELECT__)){var _self=this;
