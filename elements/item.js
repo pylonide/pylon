@@ -494,7 +494,7 @@ apf.item  = function(struct, tagName){
             menu.display(pos[0] + this.$ext.offsetWidth - 3,
                 pos[1] + 3, true, this,
                 this.parentNode.xmlReference, this.parentNode.$uniqueId);
-            menu.setAttribute("zindex", (this.parentNode.zindex || 1) + 1);
+            menu.setAttribute("zindex", (this.parentNode.zindex || this.parentNode.$ext.style.zIndex || 1) + 1);
         }
         else {
             if (menu.visible && !force) {

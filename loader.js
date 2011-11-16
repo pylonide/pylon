@@ -441,7 +441,7 @@ apf.$x = apf.$loader
         else {
             if (typeof requirejs !== "undefined") {
                 require([
-                    "pilot/fixoldbrowsers",
+                    "ace/lib/fixoldbrowsers",
                     "apf/elements/codeeditor",
                     "apf/elements/debugger",
                     "apf/elements/debughost"

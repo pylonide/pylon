@@ -733,7 +733,7 @@ apf.page = function(struct, tagName){
 
     this.$destroy = function(){
         if (this.$button) {
-            if (!this.parentNode.$amlDestroyed)
+            if (this.parentNode && !this.parentNode.$amlDestroyed)
                 this.$button.parentNode.removeChild(this.$button);
             
             this.$button.host = null;

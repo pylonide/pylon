@@ -497,5 +497,4 @@ apf.uirecorder.ui = {
 apf.registerHotkey("Command-F10", function(){
     apf.uirecorder.ui.show();
 });
-
-//#endif
+// #endif
