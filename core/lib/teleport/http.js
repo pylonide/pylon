@@ -717,10 +717,10 @@ apf.http = function(){
         clearInterval(qItem.timer);
         //#endif
 
-        if (self.navigator && navigator.onLine === false 
-          && (location.protocol != "file:"
+        /*if (self.navigator && navigator.onLine === false &&
+          (location.protocol != "file:"
           || qItem.url.indexOf("http://") > -1))
-            return false;
+            return false;*/
 
         // Test if HTTP object is ready
         if (qItem.async) {
