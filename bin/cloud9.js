@@ -5,8 +5,6 @@
  */
 require ("../support/paths");
 
-throw new exception('fsd');
-
 var Sys = require("sys"),
     Fs  = require("fs"),
     Parser = require("cloud9/optparse");
