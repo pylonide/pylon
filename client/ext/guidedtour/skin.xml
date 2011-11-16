@@ -6,8 +6,8 @@
                 position : relative;
                 overflow : visible;
                 z-index  : 10000;
-                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
-                border-radius: 6px;
+                box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.25);
+                border-radius: 4px;
             }
             .guidetool .gt-header {
                 display : none;
@@ -15,37 +15,45 @@
             .guidetool .gt-content {
                 background : #fff;
                 border : 1px solid #999;
-                border-radius: 6px;
+                border-radius: 4px;
                 padding: 10px 15px;
+                text-align: center;
+            }
+            .guidetool .gt-content .text {
+                color: #555;
             }
             .guidetool .gt-arrow {
                 position: absolute;
-                width : 15px;
-                height : 15px;
+                width : 16px;
+                height : 16px;
                 background : #fff;
                 border: 1px solid #999;
             }
             .guidetool.top .gt-arrow {
-                left: 40%;
+                left: 50%;
+                margin-left: -8px;
                 margin-top: -1px;
                 border-top: none;
             }
             .guidetool.bottom .gt-arrow {
-                left: 40%;
+                left: 50%;
+                margin-left: -8px;
                 top: 0;
-                margin-top: -14px;
+                margin-top: -15px;
                 border-bottom: none;
             }
             .guidetool.left .gt-arrow {
                 right: 0px;
-                top: 40%;
-                margin-left: 15px;
+                top: 50%;
+                margin-top: -8px;
+                margin-left: 16px;
                 border-left: none;
             }
             .guidetool.right .gt-arrow {
                 left: 0px;
-                top: 40%;
-                margin-left: -15px;
+                top: 50%;
+                margin-top: -8px;
+                margin-left: -16px;
                 border-right: none;
             }
         ]]></a:style>
