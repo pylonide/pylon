@@ -38,7 +38,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
         apf.uirecorder.isRecording = false;
         this.setProperty("isRecording", false);
 
-        if (!this.lastStream.name)
+        if (this.lastStream && !this.lastStream.name)
             this.actions.length--;
         
         this.lastStream = null;
@@ -85,12 +85,12 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
         var _self = this;
 
         // listeners for user mouse interaction
-        apf.addListener(document, "dblclick", 
+        /*apf.addListener(document, "dblclick", 
             _self.dblclick = function(e) {
                 if (!_self.canCapture())
                     return;
                 _self.captureHtmlEvent("dblclick", e || event);
-            }, true);
+            }, true);*/
 
         apf.addListener(document, "mousedown",
             _self.mousedown = function(e) {
