@@ -10,7 +10,6 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
-var canon = require("pilot/canon");
 var editors = require("ext/editors/editors");
 var ideConsole = require("ext/console/console");
 var skin = require("text!ext/searchinfiles/skin.xml");

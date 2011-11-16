@@ -35,7 +35,7 @@
         
         function chooseSaveAsFolder(folder) {
             var fooPath = folder.getAttribute("path");
-            if(folder.getAttribute("type") != 'folder') {
+            if(folder.getAttribute("type") != 'folder' && folder.tagName != "folder") {
                 var fooPath = fooPath.split('/');
                 txtSaveAs.setValue(fooPath.pop());
                 fooPath = fooPath.join('/');
@@ -44,7 +44,7 @@
         }
                     
         function chooseFile(file) {
-            if (file.getAttribute("type") == "file") 
+            if (file.getAttribute("type") == "file" || file.tagName == "file") 
                 require("ext/save/save").saveas();
             else
                 trSaveAs.expandAndSelect(file);

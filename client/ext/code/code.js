@@ -12,8 +12,11 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var EditSession = require("ace/edit_session").EditSession;
 var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
+var useragent = require("ace/lib/useragent");
 var Document = require("ace/document").Document;
 var ProxyDocument = require("ext/code/proxydocument");
+var CommandManager = require("ace/commands/command_manager").CommandManager;
+var defaultCommands = require("ace/commands/default_commands").commands;
 var markup = require("text!ext/code/code.xml");
 var settings = require("ext/settings/settings");
 var markupSettings = require("text!ext/code/settings.xml");
@@ -142,6 +145,7 @@ module.exports = ext.register("ext/code/code", {
     deps    : [editors],
     
     nodes : [],
+    commandManager: new CommandManager(useragent.isMac ? "mac" : "win", defaultCommands),
     
     getState : function(doc){
         doc = doc ? doc.acesession : this.getDocument();
@@ -272,6 +276,7 @@ module.exports = ext.register("ext/code/code", {
         ceEditor.show();
 
         this.ceEditor = this.amlEditor = ceEditor;
+        ceEditor.$editor.commands = this.commandManager;
 
         var _self = this;
 
