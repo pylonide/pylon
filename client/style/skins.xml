@@ -6680,6 +6680,137 @@
         </a:page>
     </a:presentation>
 </a:tab>
+<a:tab name="extensions_tab">
+    <a:style><![CDATA[
+        .extensions_tab {
+            padding : 0 0 0 0;
+            border: 0px solid #c3c3c3;
+            margin : 0 auto;
+            overflow: hidden;
+            position:relative;
+        }
+
+        .extensions_tab .btncontainer{
+            float: left;
+            z-index : 100;
+            white-space: nowrap;
+            color: #404040;
+            text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
+            font-family : Tahoma, Arial;
+            font-size : 11px;
+
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
+            background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
+            width : auto;
+        }
+
+        .extensions_tab .btncontainer>div {
+            display: block;
+            margin: 0 0 0 0;
+            padding: 0;
+            position : relative;
+        }
+
+        .extensions_tab .btncontainer .btntab {
+            padding      : 10px;
+            position     : relative;
+            border-bottom : 1px solid #8c8c8c;
+            cursor : default;
+            width : 110px;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(234,234,234)),color-stop(1, rgb(255,255,255)));
+            background: -moz-linear-gradient(center bottom,rgb(234,234,234) 50%,rgb(255,255,255) 100%);
+        }
+
+        .extensions_tab .btncontainer .btntab .tab_icon {
+            height:16px;
+            left:1px;
+            position:absolute;
+            top:1px;
+            width:16px;
+        }
+
+        .extensions_tab .btncontainer .btntab .tab_title {
+            overflow : hidden;
+            padding  : 0 0 0 0;
+            font-size: 12px;
+        }
+
+        .extensions_tab .btncontainer .btntab.btnclose .tab_title {
+            margin-right : 15px;
+        }
+
+        .extensions_tab .scale .btntab .tab_title{
+            display : block;
+            overflow : hidden;
+            text-overflow : ellipsis;
+            white-space : nowrap;
+        }
+
+        .extensions_tab .btncontainer div.over {
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
+            background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
+        }
+
+        .extensions_tab .btncontainer div.curbtn {
+            color       : #202020;
+            z-index     : 1;
+            /*background: -webkit-gradient(linear,left bottom,left top,color-stop(0.6 rgb(246,246,246)),color-stop(1, rgb(237,237,237)));
+            background: -moz-linear-gradient(center bottom,rgb(246,246,246) 60%,rgb(237,237,237) 100%);*/
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
+            background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
+            -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2) inset;
+            -moz-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2) inset;
+        }
+
+        .extensions_tab .scale .btntab .tab_middle {
+            display : block;
+            overflow : hidden;
+            text-overflow : ellipsis;
+            white-space : nowrap;
+        }
+
+        .extensions_tab .page {
+            display : none;
+            position : absolute;
+            padding: 10px 14px;
+            top : 0;
+            bottom : 0;
+            left : 130px;
+            right : 0;
+            z-index : 10;
+            background-color: #f6f6f6;
+            overflow: hidden;
+            clear: both;
+            font-family : Arial;
+            font-family: 12px;
+        }
+
+        .extensions_tab .page.curpage{
+            display : block;
+            border-left : 1px solid #8c8c8c;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main pages="." buttons="div[1]">
+            <div class="extensions_tab">
+                <div class="btncontainer"> </div>
+            </div>
+        </a:main>
+        <a:button caption="div[1]/text()" container="div" maxwidth="90" minwidth="10">
+            <div class="btntab">
+                <!--div class="tab_icon"> </div-->
+                <div class="tab_title">-</div>
+            </div>
+        </a:button>
+        <a:btnclose>
+            <strong> </strong>
+        </a:btnclose>
+        <a:page container=".">
+            <div class="page"> </div>
+        </a:page>
+    </a:presentation>
+</a:tab>
 <a:tab name="docktab">
     <a:style><![CDATA[
         .docktab {

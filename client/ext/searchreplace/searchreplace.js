@@ -10,7 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
  
-var canon = require("pilot/canon");
+var code = require("ext/code/code");
 var search = require("ace/search");
 var editors = require("ext/editors/editors");
 var markup = require("text!ext/searchreplace/searchreplace.xml");
@@ -51,10 +51,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         this.hotitems["search"] = [this.nodes[1]];
         this.hotitems["searchreplace"] = [this.nodes[2]];
         
-        canon.addCommand({
+        code.commandManager.addCommand({
             name: "replace",
-            exec: function(env, args, request) { 
-                _self.setEditor(env.editor, env.selection).toggleDialog(true, true);
+            exec: function(editor) { 
+                _self.setEditor(editor, editor.getSelection()).toggleDialog(true, true);
             }
         });
         
