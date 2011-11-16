@@ -2329,9 +2329,21 @@
             background: #fdfdfd;
         }
 
-        .datagrid .records .selected, .datagrid .records .selected span{
+        .datagrid .records .testhead{
+            height : 22px;
         }
-        .datagridFocus .records .selected, .datagridFocus .records .selected span{
+        
+        .datagrid .records .testhead span {
+            border-top : 4px solid #c3c3c3;
+            /*background : #ddd;*/
+        }
+
+        .datagrid .records .selected, .datagrid .records .selected span{
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(176,176,176)),color-stop(1, rgb(190,190,190)));
+            background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
+        }
+        .datagridFocus .records .selected, .datagridFocus .records .selected span,
+        .datagridFocus .records .dragAppend, .datagridFocus .records .dragAppend span{
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
             background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
             color : white;
@@ -2343,7 +2355,7 @@
         .datagridFocus .records .selected span u{
             border-left : 1px solid #8bc0ed;
         }
-
+        
         .datagrid .move_pointer{
             height : 100px;
             width : 2px;
@@ -2466,14 +2478,12 @@
         }
 
         .datagrid .records .dragInsert{
-            border-top : 2px solid gray;
-            height : 17px;
+            height : 19px;
+            margin-top : -1px;
         }
 
         .datagrid .records .dragInsert span{
-            padding-top : 0px;
-            margin-bottom : 0;
-            background-position : 0 0;
+            border-top : 1px solid gray;
         }
 
         .datagrid blockquote{
@@ -3150,6 +3160,8 @@
         <a:checkcell caption="u" check="b"><span class="checkcell"><b> </b><u>-</u></span></a:checkcell>
 
         <a:treecell caption="u" check="b" openclose="strong"><span class="treecell"><strong> </strong><b> </b><u>-</u></span></a:treecell>
+        
+        <a:treecheckcell caption="u" check="b" openclose="strong"><span class="treecell"><strong> </strong><b> </b><u>-</u></span></a:treecheckcell>
 
         <a:container container=".">
             <div class="dginfo">-</div>
@@ -3940,27 +3952,20 @@
             background         :-moz-linear-gradient(center bottom, #262626 0%, #1c1c1c 20%) repeat scroll 0 0 transparent;
         }
 
-        .menu blockquote {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            border: 0;
-        }
-
-        .menu div{
+        .menu>div.menu_item{
             padding: 3px 16px 5px 23px;
             white-space: nowrap;
             cursor : default;
             z-index:1100000;
         }
-        .menu>div{
+        .menu>div.menu_item{
             height: 13px;
         }
-        .menu div.hover {
+        .menu>div.menu_item.hover {
             background-color : #393939;
         }
 
-        .menu div.menu_divider{
+        .menu>div.menu_divider{
             overflow: visible;
             padding: 0;
             font-size: 1px;
@@ -3974,7 +3979,7 @@
             height: 0;
         }
 
-        .menu div span{
+        .menu>div.menu_item>span{
             right: 15px;
             margin-top: 0px;
             z-index: 10;
@@ -3985,7 +3990,7 @@
             float : right;
         }
 
-        .menu div.submenu span{
+        .menu>div.submenu>span{
             background: url(images/submenu_arrow.gif) no-repeat right -15px;
             width: 4px;
             height: 7px;
@@ -3996,19 +4001,19 @@
             z-index: 10;
         }
 
-        .menu div.hover span{
+        .menu>div.menu_item.hover>span{
             background-position : right -15px;
         }
 
-        .menu div.disabled{
+        .menu>div.menu_item.disabled{
             color: gray;
             /*text-shadow : rgba(255, 255, 255, .71) 1px 1px 1px;*/
         }
-        .menu div.disabled span{
+        .menu>div.menu_item.disabled>span{
             display : none;
         }
 
-        .menu u{
+        .menu>div.menu_item>u{
             width: 16px;
             height: 16px;
             position: absolute;
@@ -4016,28 +4021,26 @@
             margin-top : -1px;
         }
 
-        .menu div.selected u{
+        .menu>div.menu_item.selected>u{
             background-image: url(images/radio.gif);
             background-repeat: no-repeat;
             background-position: 0 -16px;
         }
 
-        .menu div.checked u{
+        .menu>div.menu_item.checked>u{
             background-image: url(images/check.gif);
             background-repeat: no-repeat;
             background-position: 0 -16px;
         }
     ]]></a:style>
     <a:presentation>
-        <a:main container="blockquote" overlay="strong">
+        <a:main container="." overlay="strong">
             <blockquote class='menu'>
-                <blockquote>
 
-                </blockquote>
             </blockquote>
         </a:main>
         <a:item caption="text()" icon="u" hotkey="span" inherit="true">
-            <div><span> </span><u> </u>-</div>
+            <div class="menu_item"><span> </span><u> </u>-</div>
         </a:item>
         <a:divider inherit="true">
             <div class='menu_divider'></div>

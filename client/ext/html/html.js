@@ -25,6 +25,7 @@ module.exports = ext.register("ext/html/html", {
         var _self = this;
         tabEditors.addEventListener("afterswitch", function(e){
             var mime = e.nextPage.contentType;
+
             if (mime == "text/html" || mime == "application/xhtml+xml"
               || mime == "text/javascript" || mime == "text/plain"
               || mime == "application/xml") {
