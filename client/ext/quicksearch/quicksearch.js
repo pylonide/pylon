@@ -9,7 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var canon = require("pilot/canon");
+var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
 var Search = require("ace/search").Search;
 var skin = require("text!ext/quicksearch/skin.xml");
@@ -40,7 +40,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
     hook : function(){
         var _self = this;
-        canon.addCommand({
+        code.commandManager.addCommand({
             name: "find",
             exec: function(env, args, request) {
                 _self.toggleDialog(1);

@@ -8,7 +8,7 @@
 define(function(require, exports, module) {
 
 var Ide = require("core/ide");
-var Lang = require("pilot/lang");
+var Lang = require("ace/lib/lang");
 
 exports.logNodeStream = function(data, stream, useOutput) {
     var colors = {
@@ -33,18 +33,18 @@ exports.logNodeStream = function(data, stream, useOutput) {
     // relative workspace files
     var wsrRe = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+(?:\.[\w\_\$]+))?(\:\d+)(\:\d+)*/g;
     // url
-    var urlRe = /\b((?:[a-z][\w\-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()[\]{};:'".,<>?«»“”‘’]))/i;
+    var urlRe = /\b((?:(?:https?):(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()[\]{};:'".,<>?«»“”‘’]))/i;
 
     for (var i = 0, l = lines.length; i < l; i++) {
         if (!lines[i])
             continue;
         log.push("<div class='item'><span style='" + style + "'>" + apf.htmlentities(lines[i])
+            .replace(urlRe, "<a href='$1' target='_blank'>$1</a>")
             .replace(wsRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>" + workspaceDir + "/$1$2$3</a>")
             .replace(wsrRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>$1$2$3</a>")
             .replace(/\s{2,}/g, function(str) {
                 return Lang.stringRepeat("&nbsp;", str.length);
             })
-            .replace(urlRe, "<a href='$1' target='_blank'>$1</a>")
             // tty escape sequences (http://ascii-table.com/ansi-escape-sequences.php)
             .replace(/(\u0007|\u001b)\[(K|2J)/g, "")
             .replace(/\033\[(?:(\d+);)?(\d+)m/g, function(m, extra, color) {

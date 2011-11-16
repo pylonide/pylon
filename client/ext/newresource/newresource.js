@@ -80,7 +80,7 @@ module.exports = ext.register("ext/newresource/newresource", {
         }
             
         path = sel.getAttribute("path");
-        if(trFiles.selected.getAttribute("type") == "file")
+        if(trFiles.selected.getAttribute("type") == "file" || trFiles.selected.tagName == "file")
             path = path.replace(/\/[^\/]*$/, "/");
         else
             path = path + "/";

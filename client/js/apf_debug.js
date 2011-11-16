@@ -1,9 +1,9 @@
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/jpack_begin.js)SIZE(0)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/jpack_begin.js)SIZE(0)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/apf.js)SIZE(95795)TIME(Thu, 08 Sep 2011 14:48:35 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/apf.js)SIZE(95921)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -361,6 +361,7 @@ VERSION:'3.0beta',
         this.supportOverflowComponent  = apf.isIE;
         // http://robertnyman.com/2010/12/02/css3-flexible-box-layout-module-aka-flex-box-introduction-and-demostest-cases/
         this.hasFlexibleBox            = apf.versionGecko >= 3 || (apf.isWebkit && apf.versionWebkit >= 3.2);
+        this.hasFileApi                = !!(window["File"] && window["FileReader"] && window["Blob"] && window["FileError"]);
         this.hasEventSrcElement        = apf.isIE;
         this.canHaveHtmlOverSelects    = !apf.isIE6 && !apf.isIE5;
         this.hasInnerText              = apf.isIE;
@@ -1762,7 +1763,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/class.js)SIZE(44597)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/class.js)SIZE(44666)TIME(Tue, 01 Nov 2011 14:24:54 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2780,7 +2781,7 @@ apf.Class.prototype = new (function(){
             if (this.nodeType == 1 && this.localName != "a")
                 this.$ext.oncontextmenu = this.$ext.host = null;
             if (clean) {
-                if (this.localName != "collection")
+                if (this.localName != "collection" && this.$ext.parentNode)
                     this.$ext.parentNode.removeChild(this.$ext);
             }
         }
@@ -2858,7 +2859,7 @@ apf.Init.run("class");
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/color.js)SIZE(10887)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/color.js)SIZE(10887)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3093,7 +3094,7 @@ apf.color = {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/abstractevent.js)SIZE(4316)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/abstractevent.js)SIZE(4316)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3230,7 +3231,7 @@ apf.AbstractEvent.stop = function(event) {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/async.js)SIZE(4124)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/async.js)SIZE(4124)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3374,7 +3375,7 @@ apf.asyncChain = function(funcs) {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/cookie.js)SIZE(3073)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/cookie.js)SIZE(3073)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3400,7 +3401,7 @@ apf.asyncChain = function(funcs) {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/ecmaext.js)SIZE(25941)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/ecmaext.js)SIZE(25941)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4184,7 +4185,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/flash.js)SIZE(22995)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/flash.js)SIZE(22995)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4210,7 +4211,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/hook.js)SIZE(10100)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/hook.js)SIZE(10100)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4236,7 +4237,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/hotkey.js)SIZE(6278)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/hotkey.js)SIZE(6456)TIME(Tue, 18 Oct 2011 13:03:04 GMT)*/
 
 
 //@todo maybe generalize this to pub/sub event system??
@@ -4318,7 +4319,7 @@ apf.hotkeys = {};
 
     var _self = this, trace = 0;
     
-    function register(hotkey, handler) {
+    function register(hotkey, handler, remove) {
         var key,
             hashId = 0,
             keys   = hotkey.splitSafe("\\-", null, true),
@@ -4338,7 +4339,13 @@ apf.hotkeys = {};
 
         if (!_self.$keys[hashId])
             _self.$keys[hashId] = {};
-        _self.$keys[hashId][key] = handler;
+
+        if (remove) {
+            if (handler == _self.$keys[hashId][key])
+                _self.$keys[hashId][key] = null;
+        }
+        else
+            _self.$keys[hashId][key] = handler;
     }
 
     /**
@@ -4386,12 +4393,12 @@ apf.hotkeys = {};
      * Removes a registered hotkey.
      * @param {String} hotkey the hotkey combination.
      */
-    apf.removeHotkey = this.remove = this.unregister = function(hotkey) {
+    apf.removeHotkey = this.remove = this.unregister = function(hotkey, handler) {
         var parts = hotkey.split("|"),
             i     = 0,
             l     = parts.length;
         for (; i < l; ++i)
-            register(parts[i], null);
+            register(parts[i], handler, true);
     };
     
     function toMacNotation(hotkey, bHtml) {
@@ -4459,7 +4466,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/iepngfix.js)SIZE(3570)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/iepngfix.js)SIZE(3570)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4485,7 +4492,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/json.js)SIZE(26243)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/json.js)SIZE(26243)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5200,8 +5207,9 @@ apf.unserialize = function(str){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/nameserver.js)SIZE(5807)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/nameserver.js)SIZE(5807)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
+<<<<<<< HEAD
 /*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
@@ -5388,6 +5396,297 @@ apf.registry.get = function(key, namespace){
 apf.Init.run("nameserver");
 
 
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/o3.js)SIZE(8157)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+=======
+>>>>>>> origin/master
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/plane.js)SIZE(8075)TIME(Tue, 01 Nov 2011 14:24:35 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+=======
+>>>>>>> origin/master
+/**
+ * @private
+ */
+apf.nameserver = {
+    lookup : {},
+    
+    add : function(type, item){
+        if (!this.lookup[type])
+            this.lookup[type] = [];
+        
+        
+        
+        return this.lookup[type].push(item) - 1;
+    },
+    
+    register : function(type, id, item){
+        if (!this.lookup[type])
+            this.lookup[type] = {};
+
+        
+        
+        if (this.waiting[id]) {
+            var list = this.waiting[id];
+            for (var i = 0; i < list.length; i++) {
+                list[i]();
+            }
+            delete this.waiting[id];
+        }
+
+        return (this.lookup[type][id] = item);
+    },
+    
+<<<<<<< HEAD
+    show : function(o, reAppend, copyCursor, useRealSize, options){
+        this.options = options || {};
+        var item = this.$find(options && options.protect || "default");
+        item.show(o, reAppend, copyCursor, useRealSize, options);
+=======
+    waiting : {},
+    waitFor : function(name, callback){
+        (this.waiting[name] || (this.waiting[name] = [])).push(callback);
+>>>>>>> origin/master
+    },
+    
+    remove : function(type, item){
+        var list = this.lookup[type];
+        if (list) {
+            for (var prop in list) {
+                if (list[prop] == item) {
+                    delete list[prop];
+                }
+            }
+        }
+    },
+<<<<<<< HEAD
+
+    $factory : function(){
+        var _self = this;
+        function getCover(){
+            var obj = document.createElement("DIV");
+            
+            if(!_self.options || !_self.options.customCover)
+                return obj;
+            
+            obj.innerHTML = apf.getXmlString(_self.options.customCover);
+            return obj.firstChild;
+        }
+        
+        var plane = document.body.appendChild(getCover());
+        
+        if(!this.options.customCover) {
+            var spacerPath = "url(" + (apf.skins.skins["default"] 
+                ? apf.skins.skins["default"].mediaPath + "spacer.gif" : "images/spacer.gif") + ")";
+            plane.style.background = spacerPath;
+        }
+        
+        plane.style.position   = "fixed";
+        plane.style.left       = 0;
+        plane.style.top        = 0;
+        plane.host             = false;
+        
+        return {
+            host       : this,
+            plane      : plane,
+            lastCursor : null,
+            
+            show : function(o, reAppend, copyCursor, useRealSize, options){
+                var plane = this.plane;
+                
+                if(!options || !options.customCover)
+                    this.plane.style.background = options && options.color || spacerPath;
+                this.animate = options && options.animate;
+                this.protect = options && options.protect;
+                
+                if (this.protect)
+                    apf.setProperty("planes", (apf.planes || 0) + 1);
+                
+                if (o) { //@experimental
+                    this.current = o;
+                    if (reAppend) { 
+                        this.$originalPlace = [o.parentNode, o.nextSibling];
+                        this.plane.appendChild(o);
+                    }
+                }
+                apf.window.zManager.set("plane", this.plane, !reAppend && o);
+                
+                useRealSize = apf.isIE;
+                var pWidth = (plane.parentNode == document.body
+                    ? useRealSize ? document.documentElement.offsetWidth : apf.getWindowWidth()
+                    : plane.parentNode.offsetWidth);
+         
+                var pHeight = (plane.parentNode == document.body
+                    ? useRealSize ? document.documentElement.offsetHeight : apf.getWindowHeight()
+                    : plane.parentNode.offsetHeight);
+=======
+    
+    get : function(type, id){
+        return this.lookup[type] ? this.lookup[type][id] : null;
+    },
+    
+    getAll : function(type){
+        var name, arr = [], l = this.lookup[type];
+        if (!l) return arr;
+        
+        if (l.dataType == apf.ARRAY) {
+            for (var i = 0; i < l.length; i++) {
+                arr.push(l[i]);
+            }
+        }
+        else {
+            for (name in l) {
+>>>>>>> origin/master
+                
+                
+                
+                arr.push(l[name]);
+            }
+        }
+        
+        return arr;
+    }, 
+    
+    getAllNames : function(type){
+        var name, arr = [];
+        for (name in this.lookup[type]){
+            if (parseInt(name) == name) continue;
+            arr.push(name);
+        }
+        return arr;
+    }
+};
+
+
+
+
+/**
+ * Object which provides a means to store key values pairs in a named context.
+ * This objects primary purpose is to provide a way to serialize the state
+ * of all the custom state you introduce when building the application. This way
+ * you can use {@link element.offline apf.offline} to start the application in 
+ * the exact state it was when your user closed the app.
+ *
+ * @see core.storage
+ */
+apf.registry = apf.extend({
+    /**
+     * Stores a key value pair.
+     * @param {String} key       the identifier of the information.
+     * @param {mixed}  value     the information to store.
+     * @param {String} namespace the named context into which to store the key value pair.
+     */
+    put : function(key, value, namespace){
+        this.register(namespace, key, value);
+    },
+    
+    /**
+     * @private
+     */
+    getNamespaces : function(){
+        
+    },
+    
+    /**
+     * Retrieves all the keys of a namespace.
+     * @param {String} namespace the named context of the keys to retrieve.
+     * @return {Array} the list of keys in the namespace.
+     */
+    getKeys : function(namespace){
+        return this.getAllNames(namespace);
+    },
+    
+    /**
+     * Removes a key in a namespace.
+     * @param {String} key       the identifier of the information.
+     * @param {String} namespace the named context of the keys to remove.
+     */
+    remove : function(key, namespace){
+        delete this.lookup[namespace][key];
+    },
+    
+    /**
+     * @private
+     */
+    clear : function(namespace){
+        this.lookup = {}; //@todo
+    },
+    
+    
+    
+    $export : function(storage){
+        var namespace, key;
+
+        for (namespace in this.lookup) {
+            for (key in this.lookup[namespace]) {
+                storage.put(key, this.lookup[key][namespace], namespace);
+            }
+        }
+    }
+}, apf.nameserver);
+
+/**
+ * @private
+ */
+apf.registry.lookup = {};
+
+apf.registry.get = function(key, namespace){
+    return this.lookup[namespace] ? this.lookup[namespace][key] : null;
+};
+
+apf.Init.run("nameserver");
+
+
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/popup.js)SIZE(11754)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/o3.js)SIZE(8157)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
@@ -5614,6 +5913,7 @@ apf.plane = {
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/popup.js)SIZE(11754)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5968,7 +6268,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/silverlight.js)SIZE(25659)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/silverlight.js)SIZE(25659)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5994,7 +6294,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/style.js)SIZE(18143)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/style.js)SIZE(18143)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6481,7 +6781,62 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/syntax.js)SIZE(12610)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/syntax.js)SIZE(12610)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+<<<<<<< HEAD
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/textdiff.js)SIZE(89290)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+=======
+>>>>>>> origin/master
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+<<<<<<< HEAD
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/utilities.js)SIZE(19540)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6506,7 +6861,531 @@ apf.getViewPort = function(win) {
 
 
 
+/**
+ * Opens a window with the string in it
+ * @param {String} str the html string displayed in the new window.
+ */
+apf.pasteWindow = function(str){
+    var win = window.open("about:blank");
+    win.document.write(str);
+};
+
+
+
+/**
+ * @private
+ */
+apf.xmlEntityMap = {
+    "quot": "34", "amp": "38", "apos": "39", "lt": "60", "gt": "62",
+    "nbsp": "160", "iexcl": "161", "cent": "162", "pound": "163", "curren": "164",
+    "yen": "165", "brvbar": "166", "sect": "167", "uml": "168", "copy": "169",
+    "ordf": "170", "laquo": "171", "not": "172", "shy": "173", "reg": "174",
+    "macr": "175", "deg": "176", "plusmn": "177", "sup2": "178", "sup3": "179",
+    "acute": "180", "micro": "181", "para": "182", "middot": "183", "cedil": "184",
+    "sup1": "185", "ordm": "186", "raquo": "187", "frac14": "188", "frac12": "189",
+    "frac34": "190", "iquest": "191", "agrave": "192", "aacute": "193",
+    "acirc": "194", "atilde": "195", "auml": "196", "aring": "197", "aelig": "198",
+    "ccedil": "199", "egrave": "200", "eacute": "201", "ecirc": "202",
+    "euml": "203", "igrave": "204", "iacute": "205", "icirc": "206", "iuml": "207",
+    "eth": "208", "ntilde": "209", "ograve": "210", "oacute": "211", "ocirc": "212",
+    "otilde": "213", "ouml": "214", "times": "215", "oslash": "216", "ugrave": "217",
+    "uacute": "218", "ucirc": "219", "uuml": "220", "yacute": "221", "thorn": "222",
+    "szlig": "223", "agrave": "224", "aacute": "225", "acirc": "226", "atilde": "227",
+    "auml": "228", "aring": "229", "aelig": "230", "ccedil": "231", "egrave": "232",
+    "eacute": "233", "ecirc": "234", "euml": "235", "igrave": "236", "iacute": "237",
+    "icirc": "238", "iuml": "239", "eth": "240", "ntilde": "241", "ograve": "242",
+    "oacute": "243", "ocirc": "244", "otilde": "245", "ouml": "246", "divide": "247",
+    "oslash": "248", "ugrave": "249", "uacute": "250", "ucirc": "251", "uuml": "252",
+    "yacute": "253", "thorn": "254", "yuml": "255", "oelig": "338", "oelig": "339",
+    "scaron": "352", "scaron": "353", "yuml": "376", "fnof": "402", "circ": "710",
+    "tilde": "732", "alpha": "913", "beta": "914", "gamma": "915", "delta": "916",
+    "epsilon": "917", "zeta": "918", "eta": "919", "theta": "920", "iota": "921",
+    "kappa": "922", "lambda": "923", "mu": "924", "nu": "925", "xi": "926",
+    "omicron": "927", "pi": "928", "rho": "929", "sigma": "931", "tau": "932",
+    "upsilon": "933", "phi": "934", "chi": "935", "psi": "936", "omega": "937",
+    "alpha": "945", "beta": "946", "gamma": "947", "delta": "948", "epsilon": "949",
+    "zeta": "950", "eta": "951", "theta": "952", "iota": "953", "kappa": "954",
+    "lambda": "955", "mu": "956", "nu": "957", "xi": "958", "omicron": "959",
+    "pi": "960", "rho": "961", "sigmaf": "962", "sigma": "963", "tau": "964",
+    "upsilon": "965", "phi": "966", "chi": "967", "psi": "968", "omega": "969",
+    "thetasym": "977", "upsih": "978", "piv": "982", "ensp": "8194", "emsp": "8195",
+    "thinsp": "8201", "zwnj": "8204", "zwj": "8205", "lrm": "8206", "rlm": "8207",
+    "ndash": "8211", "mdash": "8212", "lsquo": "8216", "rsquo": "8217",
+    "sbquo": "8218", "ldquo": "8220", "rdquo": "8221", "bdquo": "8222",
+    "dagger": "8224", "dagger": "8225", "bull": "8226", "hellip": "8230",
+    "permil": "8240", "prime": "8242", "prime": "8243", "lsaquo": "8249",
+    "rsaquo": "8250", "oline": "8254", "frasl": "8260", "euro": "8364",
+    "image": "8465", "weierp": "8472", "real": "8476", "trade": "8482",
+    "alefsym": "8501", "larr": "8592", "uarr": "8593", "rarr": "8594",
+    "darr": "8595", "harr": "8596", "crarr": "8629", "larr": "8656", "uarr": "8657",
+    "rarr": "8658", "darr": "8659", "harr": "8660", "forall": "8704", "part": "8706",
+    "exist": "8707", "empty": "8709", "nabla": "8711", "isin": "8712",
+    "notin": "8713", "ni": "8715", "prod": "8719", "sum": "8721", "minus": "8722",
+    "lowast": "8727", "radic": "8730", "prop": "8733", "infin": "8734",
+    "ang": "8736", "and": "8743", "or": "8744", "cap": "8745", "cup": "8746",
+    "int": "8747", "there4": "8756", "sim": "8764", "cong": "8773", "asymp": "8776",
+    "ne": "8800", "equiv": "8801", "le": "8804", "ge": "8805", "sub": "8834",
+    "sup": "8835", "nsub": "8836", "sube": "8838", "supe": "8839", "oplus": "8853",
+    "otimes": "8855", "perp": "8869", "sdot": "8901", "lceil": "8968",
+    "rceil": "8969", "lfloor": "8970", "rfloor": "8971", "lang": "9001",
+    "rang": "9002", "loz": "9674", "spades": "9824", "clubs": "9827",
+    "hearts": "9829", "diams": "9830"
+};
+
+/**
+ * see string#escapeHTML
+ * @param {String} str the html to be escaped.
+ * @return {String} the escaped string.
+ */
+apf.htmlentities = function(str){
+    return str.escapeHTML();
+};
+
+/**
+ * Escape an xml string making it ascii compatible.
+ * @param {String} str the xml string to escape.
+ * @return {String} the escaped string.
+ *
+ * @todo This function does something completely different from htmlentities, 
+ *       the name is confusing and misleading.
+ */
+apf.xmlentities = function(str) {
+    return str.replace(/&([a-z]+);/gi, function(a, m) {
+        if (apf.xmlEntityMap[m = m.toLowerCase()])
+            return '&#' + apf.xmlEntityMap[m] + ';';
+        return a;
+    });
+};
+
+/**
+ * Unescape an html string.
+ * @param {String} str the string to unescape.
+ * @return {String} the unescaped string.
+ */
+apf.html_entity_decode = function(str){
+    return (str || "").replace(/\&\#38;/g, "&").replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/&nbsp;/g, " ");
+};
+
+
+
+/**
+ * Determines whether the keyboard input was a character that can influence
+ * the value of an element (like a textbox).
+ * @param {Number} charCode The ascii character code.
+ */
+apf.isCharacter = function(charCode){
+    return (charCode < 112 || charCode > 122)
+      && (charCode == 32 || charCode > 42 || charCode == 8);
+};
+
+/**
+ * This random number generator has been added to provide a more robust and
+ * reliable random number spitter than the native Ecmascript Math.random()
+ * function.
+ * is an implementation of the Park-Miller algorithm. (See 'Random Number
+ * Generators: Good Ones Are Hard to Find', by Stephen K. Park and Keith W.
+ * Miller, Communications of the ACM, 31(10):1192-1201, 1988.)
+ * @author David N. Smith of IBM's T. J. Watson Research Center.
+ * @author Mike de Boer (mike AT javeline DOT com)
+ * @class randomGenerator
+ */
+apf.randomGenerator = {
+    d: new Date(),
+    seed: null,
+    A: 48271,
+    M: 2147483647,
+    Q: null,
+    R: null,
+    oneOverM: null,
+
+    /**
+     * Generates a random Number between a lower and upper boundary.
+     * The algorithm uses the system time, in minutes and seconds, to 'seed'
+     * itself, that is, to create the initial values from which it will generate
+     * a sequence of numbers. If you are familiar with random number generators,
+     * you might have reason to use some other value for the seed. Otherwise,
+     * you should probably not change it.
+     * @param {Number} lnr Lower boundary
+     * @param {Number} unr Upper boundary
+     * @result A random number between <i>lnr</i> and <i>unr</i>
+     * @type Number
+     */
+    generate: function(lnr, unr) {
+        if (this.seed == null)
+            this.seed = 2345678901 + (this.d.getSeconds() * 0xFFFFFF) + (this.d.getMinutes() * 0xFFFF);
+        this.Q = this.M / this.A;
+        this.R = this.M % this.A;
+        this.oneOverM = 1.0 / this.M;
+        return Math.floor((unr - lnr + 1) * this.next() + lnr);
+    },
+
+    /**
+     * Returns a new random number, based on the 'seed', generated by the
+     * <i>generate</i> method.
+     * @type Number
+     */
+    next: function() {
+        var hi = this.seed / this.Q;
+        var lo = this.seed % this.Q;
+        var test = this.A * lo - this.R * hi;
+        if (test > 0)
+            this.seed = test;
+        else
+            this.seed = test + this.M;
+        return (this.seed * this.oneOverM);
+    }
+};
+
+/**
+ * Adds a time stamp to the url to prevent the browser from caching it.
+ * @param {String} url the url to add the timestamp to.
+ * @return {String} the url with timestamp.
+ */
+apf.getNoCacheUrl = function(url){
+    return url
+        + (url.indexOf("?") == -1 ? "?" : "&")
+        + "nocache=" + new Date().getTime();
+};
+
+/**
+ * Checks if the string contains curly braces at the start and end. If so it's
+ * processed as javascript, else the original string is returned.
+ * @param {String} str the string to parse.
+ * @return {String} the result of the parsing.
+ */
+apf.parseExpression = function(str){
+    if (!apf.parseExpression.regexp.test(str))
+        return str;
+
+    
+        return eval(RegExp.$1);
+    
+};
+apf.parseExpression.regexp = /^\{([\s\S]*)\}$/;
+
+/**
+ * @private
+ */
+apf.formatNumber = function(num, prefix){
+    var nr = parseFloat(num);
+    if (!nr) return num;
+
+    var str = new String(Math.round(nr * 100) / 100).replace(/(\.\d?\d?)$/, function(m1){
+        return m1.pad(3, "0", apf.PAD_RIGHT);
+    });
+    if (str.indexOf(".") == -1)
+        str += ".00";
+
+    return prefix + str;
+};
+
+/**
+ * Execute a script in the global scope.
+ *
+ * @param {String} str  the javascript code to execute.
+ * @return {String} the javascript code executed.
+ */
+apf.jsexec = function(str, win){
+    if (!str)
+        return str;
+    if (!win)
+        win = self;
+
+    if (apf.isO3)
+        eval(str, self);
+    else if (apf.hasExecScript) {
+        win.execScript(str);
+    }
+    else {
+        var head = win.document.getElementsByTagName("head")[0];
+        if (head) {
+            var script = win.document.createElement('script');
+            script.setAttribute('type', 'text/javascript');
+            script.text = str;
+            head.appendChild(script);
+            head.removeChild(script);
+        } else
+            eval(str, win);
+    }
+
+    return str;
+};
+
+/**
+ * Shorthand for an empty function.
+ */
+apf.K = function(){};
+
+
+
+/**
+ * Reliably determines whether a variable is a Number.
+ *
+ * @param {mixed}   value The variable to check
+ * @type  {Boolean}
+ */
+apf.isNumber = function(value){
+    return parseFloat(value) == value;
+};
+
+/**
+ * Reliably determines whether a variable is an array.
+ * @see http://thinkweb2.com/projects/prototype/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
+ *
+ * @param {mixed}   value The variable to check
+ * @type  {Boolean}
+ */
+apf.isArray = function(value) {
+    return Object.prototype.toString.call(value) === "[object Array]";
+};
+
+/**
+ * Determines whether a string is true in the html attribute sense.
+ * @param {mixed} value the variable to check
+ *   Possible values:
+ *   true   The function returns true.
+ *   'true' The function returns true.
+ *   'on'   The function returns true.
+ *   1      The function returns true.
+ *   '1'    The function returns true.
+ * @return {Boolean} whether the string is considered to imply truth.
+ */
+apf.isTrue = function(c){
+    return (c === true || c === "true" || c === "on" || typeof c == "number" && c > 0 || c === "1");
+};
+
+/**
+ * Determines whether a string is false in the html attribute sense.
+ * @param {mixed} value the variable to check
+ *   Possible values:
+ *   false   The function returns true.
+ *   'false' The function returns true.
+ *   'off'   The function returns true.
+ *   0       The function returns true.
+ *   '0'     The function returns true.
+ * @return {Boolean} whether the string is considered to imply untruth.
+ */
+apf.isFalse = function(c){
+    return (c === false || c === "false" || c === "off" || c === 0 || c === "0");
+};
+
+/**
+ * Determines whether a value should be considered false. This excludes amongst
+ * others the number 0.
+ * @param {mixed} value the variable to check
+ * @return {Boolean} whether the variable is considered false.
+ */
+apf.isNot = function(c){
+    // a var that is null, false, undefined, Infinity, NaN and c isn't a string
+    return (!c && typeof c != "string" && c !== 0 || (typeof c == "number" && !isFinite(c)));
+};
+
+/**
+ * Creates a relative url based on an absolute url.
+ * @param {String} base the start of the url to which relative url's work.
+ * @param {String} url  the url to transform.
+ * @return {String} the relative url.
+ */
+apf.removePathContext = function(base, url){
+    if (!url)  return "";
+
+    if (url.indexOf(base) > -1)
+        return url.substr(base.length);
+
+    return url;
+};
+
+/**
+ * @private
+ * @todo why is this done like this?
+ */
+apf.cancelBubble = function(e, o, noPropagate){
+    if (e.stopPropagation)
+        e.stopPropagation()
+    else 
+        e.cancelBubble = true;
+    
+    //if (o.$focussable && !o.disabled)
+        //apf.window.$focus(o);
+    
+    
+    /*if (apf.isIE)
+        o.$ext.fireEvent("on" + e.type, e);
+    else 
+        o.$ext.dispatchEvent(e.name, e);*/
+    
+    if (!noPropagate) {
+        if (o && o.$ext && o.$ext["on" + (e.type || e.name)])
+            o.$ext["on" + (e.type || e.name)](e);
+        apf.window.$mousedown(e);
+    }
+    //if (apf.isGecko)
+        //apf.window.$mousedown(e);
+    
+    
+};
+
+
+
+/**
+ * Attempt to fix memory leaks
+ * @private
+ */
+apf.destroyHtmlNode = function (element) {
+    if (!element) return;
+
+    if (!apf.isIE || element.ownerDocument != document) {
+        if (element.parentNode)
+            element.parentNode.removeChild(element);
+        return;
+    }
+
+    var garbageBin = document.getElementById('IELeakGarbageBin');
+    if (!garbageBin) {
+        garbageBin    = document.createElement('DIV');
+        garbageBin.id = 'IELeakGarbageBin';
+        garbageBin.style.display = 'none';
+        document.body.appendChild(garbageBin);
+    }
+
+    // move the element to the garbage bin
+    garbageBin.appendChild(element);
+    garbageBin.innerHTML = '';
+};
+
+
+/**
+ * @private
+ */
+apf.getRules = function(node){
+    var rules = {};
+
+    for (var w = node.firstChild; w; w = w.nextSibling){
+        if (w.nodeType != 1)
+            continue;
+        else {
+            if (!rules[w[apf.TAGNAME]])
+                rules[w[apf.TAGNAME]] = [];
+            rules[w[apf.TAGNAME]].push(w);
+        }
+    }
+
+    return rules;
+};
+
+
+apf.isCoord = function (n){
+    return n || n === 0;
+}
+
+apf.getCoord = function (n, other){
+    return n || n === 0 ? n : other;
+}
+
+/**
+ * @private
+ */
+apf.getBox = function(value, base){
+    if (!base) base = 0;
+
+    if (value == null || (!parseInt(value) && parseInt(value) != 0))
+        return [0, 0, 0, 0];
+
+    var x = String(value).splitSafe(" ");
+    for (var i = 0; i < x.length; i++)
+        x[i] = parseInt(x[i]) || 0;
+    switch (x.length) {
+        case 1:
+            x[1] = x[0];
+            x[2] = x[0];
+            x[3] = x[0];
+            break;
+        case 2:
+            x[2] = x[0];
+            x[3] = x[1];
+            break;
+        case 3:
+            x[3] = x[1];
+            break;
+    }
+
+    return x;
+};
+
+/**
+ * @private
+ */
+apf.getNode = function(data, tree){
+    var nc = 0;//nodeCount
+    //node = 1
+    if (data != null) {
+        for (var i = 0; i < data.childNodes.length; i++) {
+            if (data.childNodes[i].nodeType == 1) {
+                if (nc == tree[0]) {
+                    data = data.childNodes[i];
+                    if (tree.length > 1) {
+                        tree.shift();
+                        data = this.getNode(data, tree);
+                    }
+                    return data;
+                }
+                nc++
+            }
+        }
+    }
+
+    return null;
+};
+
+/**
+ * Retrieves the first xml node with nodeType 1 from the children of an xml element.
+ * @param {XMLElement} xmlNode the xml element that is the parent of the element to select.
+ * @return {XMLElement} the first child element of the xml parent.
+ * @throw error when no child element is found.
+ */
+apf.getFirstElement = function(xmlNode){
+    
+
+    return xmlNode.firstChild.nodeType == 1
+        ? xmlNode.firstChild
+        : xmlNode.firstChild.nextSibling;
+};
+
+/**
+ * Retrieves the last xml node with nodeType 1 from the children of an xml element.
+ * @param {XMLElement} xmlNode the xml element that is the parent of the element to select.
+ * @return {XMLElement} the last child element of the xml parent.
+ * @throw error when no child element is found.
+ */
+apf.getLastElement = function(xmlNode){
+    
+
+    return xmlNode.lastChild.nodeType == 1
+        ? xmlNode.lastChild
+        : xmlNode.lastChild.previousSibling;
+};
+
+/**
+ * Selects the content of an html element. Currently only works in
+ * internet explorer.
+ * @param {HTMLElement} oHtml the container in which the content receives the selection.
+ */
+apf.selectTextHtml = function(oHtml){
+    if (!apf.hasMsRangeObject) return;// oHtml.focus();
+
+    var r = document.selection.createRange();
+    try {r.moveToElementText(oHtml);} catch(e){}
+    r.select();
+};
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/visibilitymanager.js)SIZE(4965)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/textdiff.js)SIZE(89290)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6532,6 +7411,9 @@ apf.getViewPort = function(win) {
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/xml.js)SIZE(45361)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/utilities.js)SIZE(19540)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
 
 /*
@@ -7241,6 +8123,7 @@ apf.visibilitymanager = function(){
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/xml.js)SIZE(45361)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8596,7 +9479,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/xmldiff.js)SIZE(36580)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/xmldiff.js)SIZE(36580)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9483,7 +10366,7 @@ apf.xmlDiff = function (doc1, doc2){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/util/zmanager.js)SIZE(2524)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/util/zmanager.js)SIZE(2524)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9564,7 +10447,7 @@ apf.zmanager = function(){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/history.js)SIZE(9996)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/history.js)SIZE(9996)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9843,7 +10726,7 @@ apf.history = {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/config.js)SIZE(8175)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/config.js)SIZE(8175)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9868,6 +10751,9 @@ apf.history = {
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline.js)SIZE(20264)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 apf.config = new apf.Class().$init();
 apf.extend(apf.config, {
     //Defaults
@@ -9895,6 +10781,7 @@ apf.extend(apf.config, {
     
     skinset            : "default",
     name               : apf.isO3 ? "o3App" : self.window && window.location.href.replace(/[^0-9A-Za-z_]/g, "_"),
+>>>>>>> origin/master
 
     tags               : {},
     defaults           : {},
@@ -9934,6 +10821,9 @@ apf.extend(apf.config, {
         }
     },
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/application.js)SIZE(11733)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     $handlePropSet : function(name, value){
         //this[name] = value;
         //@todo I dont want to go through all the code again, maybe later
@@ -9997,6 +10887,7 @@ apf.extend(apf.config, {
         }
     }
 });
+>>>>>>> origin/master
 
 
 if (apf.history)
@@ -10005,11 +10896,18 @@ if (apf.history)
     });
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/gears.js)SIZE(4771)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+>>>>>>> origin/master
 
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/offline.js)SIZE(20264)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/detector.js)SIZE(4827)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
@@ -10030,6 +10928,7 @@ if (apf.history)
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
+>>>>>>> origin/master
 
 
 apf.offline = {
@@ -10037,6 +10936,10 @@ apf.offline = {
 }
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/models.js)SIZE(5471)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+>>>>>>> origin/master
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/application.js)SIZE(11733)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
 
@@ -10063,6 +10966,10 @@ apf.offline = {
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/queue.js)SIZE(7008)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+>>>>>>> origin/master
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/gears.js)SIZE(4771)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
 
@@ -10088,6 +10995,10 @@ apf.offline = {
  */
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/state.js)SIZE(7978)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+>>>>>>> origin/master
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/detector.js)SIZE(4827)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
@@ -10113,11 +11024,18 @@ apf.offline = {
  *
  */
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/transactions.js)SIZE(9780)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+>>>>>>> origin/master
 
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/models.js)SIZE(5471)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/data.js)SIZE(16420)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
@@ -10138,11 +11056,16 @@ apf.offline = {
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
+>>>>>>> origin/master
 
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/date.js)SIZE(40737)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/queue.js)SIZE(7008)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11689,7 +12612,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/draw.js)SIZE(66997)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/draw.js)SIZE(66997)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11713,33 +12636,7 @@ apf.setModel = function(instruction, amlNode){
  */
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/flow.js)SIZE(71086)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/flow2.js)SIZE(70664)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/flow.js)SIZE(71086)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11765,7 +12662,33 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/geolocation.js)SIZE(11303)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/flow2.js)SIZE(70664)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/geolocation.js)SIZE(11303)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11791,7 +12714,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/html.js)SIZE(15348)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/html.js)SIZE(15348)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12151,7 +13074,7 @@ apf.htmlCleaner = (function() {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/language.js)SIZE(8586)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/language.js)SIZE(8586)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12177,7 +13100,7 @@ apf.htmlCleaner = (function() {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/layout.js)SIZE(13658)TIME(Mon, 12 Sep 2011 12:54:46 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/layout.js)SIZE(13658)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12603,7 +13526,7 @@ apf.getWindowHeight = function(){
     return apf.isIE ? document.documentElement.offsetHeight - apf.windowVerBorder : window.innerHeight;
 }
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/printer.js)SIZE(5120)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/printer.js)SIZE(5120)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12629,7 +13552,7 @@ apf.getWindowHeight = function(){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/queue.js)SIZE(2950)TIME(Fri, 15 Jul 2011 15:38:55 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/queue.js)SIZE(2950)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12736,7 +13659,7 @@ apf.queue = {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/resize.js)SIZE(13139)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/resize.js)SIZE(13139)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13132,7 +14055,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/resize2.js)SIZE(10417)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/resize2.js)SIZE(10417)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13157,7 +14080,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/selection.js)SIZE(32184)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/selection.js)SIZE(32184)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13182,7 +14105,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/skins.js)SIZE(12705)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/skins.js)SIZE(12705)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13516,7 +14439,7 @@ apf.skins = {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/sort.js)SIZE(8239)TIME(Sat, 13 Aug 2011 16:27:02 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/sort.js)SIZE(8239)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13744,7 +14667,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/storage.js)SIZE(9036)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage.js)SIZE(9036)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13770,7 +14693,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/tween.js)SIZE(35448)TIME(Mon, 12 Sep 2011 12:54:46 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/tween.js)SIZE(35448)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14744,13 +15667,15 @@ return {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/uirecorder.js)SIZE(86788)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/uirecorder.js)SIZE(386)TIME(Tue, 01 Nov 2011 14:24:35 GMT)*/
 
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/vector.js)SIZE(46289)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
 
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/vector.js)SIZE(46289)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+<<<<<<< HEAD
 /*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
@@ -14775,7 +15700,7 @@ return {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/xmldb.js)SIZE(40521)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/xmldb.js)SIZE(40620)TIME(Tue, 01 Nov 2011 14:24:54 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14983,6 +15908,1184 @@ apf.xmldb = new (function(){
         )) {
             if (htmlNode.host && htmlNode.host.$ext == htmlNode)
                 return htmlNode.host.xmlRoot;
+
+            htmlNode = htmlNode.parentNode;
+        }
+        if (!htmlNode || htmlNode.nodeType != 1)
+            return false;
+
+        if (htmlNode.tagName.toLowerCase() == "body")
+            return false;
+
+        return this.getNode(htmlNode);
+    };
+
+    this.getXml = apf.getXml;
+
+    /**
+     * @private
+     */
+    this.nodeConnect = function(documentId, xmlNode, htmlNode, o){
+        if (!this.$nodeCount[documentId])
+            this.$nodeCount[documentId] = 0;
+
+        var xmlId;
+        xmlId = xmlNode.getAttribute(this.xmlIdTag)
+          || xmlNode.setAttribute(this.xmlIdTag, (xmlId = documentId
+               + "|" + ++this.$nodeCount[documentId])) || xmlId;
+
+        if (!o)
+            return xmlId;
+
+        var htmlId = xmlId + "|" + o.$uniqueId;
+        if (htmlNode)
+            htmlNode.setAttribute(this.htmlIdTag, htmlId);
+
+        return htmlId;
+    };
+
+    /**
+     * @private
+     * @todo this is cleanup hell! Listeners should be completely rearchitected
+     */
+    
+    // make sure that "0" is never a listener index
+    this.$listeners = [null];
+    this.addNodeListener = function(xmlNode, o, uId){
+        
+
+        var id, listen = String(xmlNode.getAttribute(this.xmlListenTag) || "");
+        //id || (id = String(o.$uniqueId));
+
+        if (!uId) uId = String(o.$uniqueId);
+        if (uId.charAt(0) == "p") {
+            var sUId = uId.split("|");
+            id = this.$listeners.push(function(args){
+                //@todo apf3.0 should this be exactly like in class.js?
+                //@todo optimize this to check the async flag: parsed[3] & 4
+
+                var amlNode = apf.all[sUId[1]]; //It's possible the aml node dissapeared in this loop.
+                if (amlNode) {
+                    var model = apf.all[sUId[3]];
+                    if (!model)
+                        return;
+                    
+                    if(model.$propBinds[sUId[1]][sUId[2]]) {
+                        var xpath = model.$propBinds[sUId[1]][sUId[2]].listen; //root
+                        var node  = xpath
+                            ? apf.queryNode(model.data, xpath)
+                            : xmlNode;
+                    }
+                    if (node)
+                        amlNode.$execProperty(sUId[2], node, args[3]);
+                }
+            }) - 1;
+            this.$listeners[uId] = id;
+        }
+        else {
+            //@todo apf3 potential cleanup problem
+            id = "e" + uId;
+            if (!this.$listeners[id]) {
+                this.$listeners[id] = function(args){
+                    var amlNode = apf.all[uId];
+                    if (amlNode)
+                        amlNode.$xmlUpdate.apply(amlNode, args);
+                };
+            }
+
+            
+            if (xmlNode.$regbase) {
+                var lut = {
+                    "DOMCharacterDataModified" : "text",
+                    "DOMAttrModified"          : "attribute",
+                    "DOMNodeInserted"          : "add",
+                    "DOMNodeRemoved"           : "remove"
+                }
+                var rFn = this.$listeners[id].rFn || (this.$listeners[id].rFn = function(e){
+                    var node = e.relatedNode && e.relatedNode.nodeType != 1
+                        ? e.relatedNode
+                        : e.currentTarget;
+
+                    if (node.nodeName && node.nodeName.substr(0, 2) == "a_")
+                        return;
+
+                    var action = lut[e.name];
+                    if (node.nodeType != 1) {
+                        action = node.nodeType == 2 ? "attribute" : "text";
+                        node = node.parentNode || node.ownerElement;
+                    }
+
+                    //if ((node.parentNode && node.parentNode.nodeType == 1))
+                        apf.xmldb.$listeners[id]([action, node, this, null, node.parentNode]);
+                });
+                xmlNode.addEventListener("DOMCharacterDataModified", rFn);
+                xmlNode.addEventListener("DOMAttrModified",          rFn);
+                xmlNode.addEventListener("DOMNodeInserted",          rFn);
+                xmlNode.addEventListener("DOMNodeRemoved",           rFn);
+                return;
+            }
+            
+        }
+
+        if (!listen || listen.indexOf(";" + id + ";") == -1)
+            xmlNode.setAttribute(this.xmlListenTag, (listen ? listen + id : ";" + id) + ";");
+
+        return xmlNode;
+    };
+
+    /**
+     * @todo  Use this function when an element really unbinds from a
+     *        piece of data and does not uses it for caching
+     * @private
+     */
+    this.removeNodeListener = function(xmlNode, o, id){
+        var listen = xmlNode.getAttribute(this.xmlListenTag);
+        var nodes = (listen ? listen.split(";") : []);
+        if (id && id.charAt(0) == "p") {
+            id = this.$listeners[id];
+            delete this.$listeners[id];
+        }
+        else {
+            id = "e" + o.$uniqueId;
+
+            
+            if (xmlNode.$regbase) {
+                var rFn = this.$listeners[id].rFn;
+                xmlNode.removeEventListener("DOMCharacterDataModified", rFn);
+                xmlNode.removeEventListener("DOMAttrModified",          rFn);
+                xmlNode.removeEventListener("DOMNodeInserted",          rFn);
+                xmlNode.removeEventListener("DOMNodeRemoved",           rFn);
+            }
+            
+        }
+
+        for (var newnodes = [], i = 0; i < nodes.length; i++) {
+            if (nodes[i] != id)
+                newnodes.push(nodes[i]);
+        }
+
+        xmlNode.setAttribute(this.xmlListenTag, newnodes.join(";"));// + ";"
+
+        return xmlNode;
+    };
+
+    /**
+     * Sets the value of a text node. If the node doesn't exists it is created.
+     * Changes are propagated to the databound elements listening for changes
+     * on the data changed.
+     *
+     * @param {XMLElement} pNode     the parent of the text node.
+     * @param {String}     value     the value of the text node.
+     * @param {String}     [xpath]   the xpath statement which selects the text node.
+     * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
+     */
+    this.setTextNode =
+    apf.setTextNode  = function(pNode, value, xpath, undoObj, range){
+        var tNode;
+
+        if (xpath) {
+            tNode = pNode.selectSingleNode(xpath);
+            if (!tNode)
+                return;
+            pNode = tNode.nodeType == 1 ? tNode : null;
+        }
+        if (pNode.nodeType != 1)
+            tNode = pNode;
+        else if (pNode || !tNode) {
+            tNode = pNode.selectSingleNode("text()");
+
+            if (!tNode)
+                tNode = pNode.appendChild(pNode.ownerDocument.createTextNode(""));//createCDATASection
+        }
+
+        //Action Tracker Support
+        if (undoObj && !undoObj.$filled) {
+            undoObj.extra.oldValue = tNode.nodeValue;
+            undoObj.$filled = true;
+        }
+
+        //Apply Changes
+        if (range) { //@todo apf3.0 range
+            undoObj.extra.range = range;
+
+        }
+        else {
+            tNode.nodeValue = value;
+
+            if (tNode.$regbase)
+                tNode.$setValue(value);
+        }
+
+        this.applyChanges("text", tNode.parentNode, undoObj);
+
+        
+    };
+
+    /**
+     * Sets an attribute on a node. Changes are propagated to the databound
+     * elements listening for changes on the data changed.
+     *
+     * @param {XMLElement} xmlNode   the xml node to set the attribute on.
+     * @param {String}     name      the name of the attribute.
+     * @param {String}     value     the value of the attribute.
+     * @param {String}     [xpath]   the xpath statement to select the attribute.
+     * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
+     */
+    this.setAttribute =
+    apf.setAttribute  = function(xmlNode, name, value, xpath, undoObj, range){
+        //Action Tracker Support
+        if (undoObj && !undoObj.$filled) {
+            undoObj.name = name;
+            undoObj.$filled = true;
+        }
+        
+        //Apply Changes
+        if (range) { //@todo apf3.0 range
+            undoObj.extra.range = range;
+        }
+        else
+            (xpath ? xmlNode.selectSingleNode(xpath) : xmlNode).setAttribute(name, value);
+
+        this.applyChanges("attribute", xmlNode, undoObj);
+        
+    };
+
+    /**
+     * Removes an attribute of an xml node. Changes are propagated to the
+     * databound elements listening for changes on the data changed.
+     *
+     * @param {XMLElement} xmlNode   the xml node to delete the attribute from
+     * @param {String}     name      the name of the attribute.
+     * @param {String}     [xpath]   the xpath statement to select the attribute.
+     * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
+     */
+    this.removeAttribute =
+    apf.removeAttribute  = function(xmlNode, name, xpath, undoObj){
+        //if(xmlNode.nodeType != 1) xmlNode.nodeValue = value;
+
+        //Action Tracker Support
+        if (undoObj && !undoObj.$filled) {
+            undoObj.name = name;
+            undoObj.$filled = true;
+        }
+
+        //Apply Changes
+        (xpath ? xmlNode.selectSingleNode(xpath) : xmlNode).removeAttribute(name);
+        this.applyChanges("attribute", xmlNode, undoObj);
+
+        
+    };
+
+    /**
+     * Replace one node with another. Changes are propagated to the
+     * databound elements listening for changes on the data changed.
+     *
+     * @param {XMLElement} oldNode   the xml node to remove.
+     * @param {XMLElement} newNode   the xml node to set.
+     * @param {String}     [xpath]   the xpath statement to select the attribute.
+     * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
+     */
+    this.replaceNode =
+    apf.replaceNode  = function(newNode, oldNode, xpath, undoObj){
+        //if(xmlNode.nodeType != 1) xmlNode.nodeValue = value;
+
+        //Apply Changes
+        if (xpath)
+            oldNode = oldNode.selectSingleNode(xpath);
+
+        // @todo: only do this once! - should store on the undo object
+        if (oldNode.ownerDocument.importNode && newNode.ownerDocument != oldNode.ownerDocument)
+            newNode = oldNode.ownerDocument.importNode(newNode, true); //Safari issue not auto importing nodes
+
+        
+
+        //Action Tracker Support
+        if (undoObj && !undoObj.$filled) {
+            undoObj.$filled = true;
+            undoObj.oldNode = oldNode;
+            undoObj.xmlNode = newNode;
+        }
+        
+        this.cleanNode(newNode);
+        
+        var parentNode = oldNode.parentNode;
+        if (!parentNode)
+            return;
+        
+        parentNode.replaceChild(newNode, oldNode);
+        this.copyConnections(oldNode, newNode);
+
+        this.applyChanges("replacenode", newNode, undoObj);
+
+        return newNode;
+    };
+
+    /**
+     * Creates a new element under a parent xml node. Changes are propagated
+     * to the databound elements listening for changes on the data changed.
+     *
+     * @param {XMLElement} pNode       the parent xml node to add the new element to.
+     * @param {String}     tagName     the tagName of the {@link term.datanode data node} to add.
+     * @param {Array}      attr        list of the attributes to set. Each item is another array with the name and value.
+     * @param {XMLElement} beforeNode  the xml node which indicates the insertion point.
+     * @param {String}     [xpath]     the xpath statement to select the attribute.
+     * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
+     */
+    this.addChildNode =
+    apf.addChildNode  = function(pNode, tagName, attr, beforeNode, undoObj){
+        //Create New Node
+        var xmlNode = pNode.insertBefore(pNode.ownerDocument
+            .createElement(tagName), beforeNode);
+
+        //Set Attributes
+        for (var i = 0; i < attr.length; i++)
+            xmlNode.setAttribute(attr[i][0], attr[i][1]);
+
+        //Action Tracker Support
+        if (undoObj && !undoObj.$filled) {
+            undoObj.extra.addedNode = xmlNode;
+            undoObj.$filled = true;
+        }
+
+        this.applyChanges("add", xmlNode, undoObj);
+
+        
+
+        return xmlNode;
+    };
+
+    /**
+     * Appends an xml node to a parent. Changes are propagated
+     * to the databound elements listening for changes on the data changed.
+     *
+     * @param {XMLElement} pNode       the parent xml node to add the element to.
+     * @param {XMLElement} xmlNode     the xml node to insert.
+     * @param {XMLElement} beforeNode  Node  the xml node which indicates the insertion point.
+     * @param {Boolean}    unique      whether the parent can only contain one element with a certain tagName.
+     * @param {String}     [xpath]     the xpath statement to select the parent node.
+     * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
+     */
+    this.appendChild =
+    apf.appendChild  = function(pNode, xmlNode, beforeNode, unique, xpath, undoObj){
+        if (pNode == xmlNode.parentNode)
+            return apf.xmldb.moveNode(pNode, xmlNode, beforeNode, null, xpath, undoObj);
+        
+        if (unique && pNode.selectSingleNode(xmlNode.tagName))
+            return false;
+        
+        if (undoObj && !undoObj.$filled) {
+            undoObj.$filled = true;
+            this.cleanNode(xmlNode);
+        }
+        else
+            this.cleanNode(xmlNode);
+
+        // @todo: only do this once! - should store on the undo object
+        if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument)
+            xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
+
+        
+
+        //Add xmlNode to parent pNode or one selected by xpath statement
+        if (xpath) {
+            var addedNodes = [];
+            pNode = apf.createNodeFromXpath(pNode, xpath, addedNodes);
+            if (addedNodes.length) {
+                pNode.appendChild(xmlNode);
+                while(addedNodes.length) {
+                    if (pNode == addedNodes.pop() && addedNodes.length)
+                        pNode = pNode.parentNode;
+                }
+            }
+        }
+        else if (xmlNode.parentNode)
+            this.removeNode(xmlNode);
+
+        pNode.insertBefore(xmlNode, beforeNode);
+
+        //detect if xmlNode should be removed somewhere else
+        //- [17-2-2004] changed pNode (2nd arg applychange) into xmlNode
+
+        this.applyChanges("add", xmlNode, undoObj);
+
+        return xmlNode;
+    };
+
+    /**
+     * Moves an xml node to a parent node. Changes are propagated
+     * to the databound elements listening for changes on the data changed.
+     *
+     * @param {XMLElement} pNode       the new parent xml node of the node.
+     * @param {XMLElement} xmlNode     the xml node to move.
+     * @param {XMLElement} beforeNode  the xml node which indicates the insertion point.
+     * @param {String}     [xpath]     the xpath statement to select the parent node.
+     * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
+     */
+    this.moveNode =
+    apf.moveNode  = function(pNode, xmlNode, beforeNode, xpath, undoObj){
+        //Action Tracker Support
+        if (!undoObj)
+            undoObj = {extra:{}};
+
+        undoObj.extra.oldParent  = xmlNode.parentNode;
+        undoObj.extra.beforeNode = xmlNode.nextSibling;
+        undoObj.extra.parent     = (xpath ? pNode.selectSingleNode(xpath) : pNode);
+
+        this.applyChanges("move-away", xmlNode, undoObj);
+
+        //Set new id if the node change document (for safari this should be fixed)
+        //@todo I don't get this if...
+        /*if (!apf.isWebkit 
+          && xmlNode.getAttribute(this.xmlIdTag)
+          && apf.xmldb.getXmlDocId(xmlNode) != apf.xmldb.getXmlDocId(pNode)) {
+            xmlNode.removeAttribute(this.xmlIdTag));
+            this.nodeConnect(apf.xmldb.getXmlDocId(pNode), xmlNode);
+        }*/
+
+        // @todo: only do this once! - should store on the undo object
+        if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument)
+            xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
+
+        
+
+        undoObj.extra.parent.insertBefore(xmlNode, beforeNode);
+        this.applyChanges("move", xmlNode, undoObj);
+    };
+
+    /**
+     * Removes an xml node from it's parent. Changes are propagated
+     * to the databound elements listening for changes on the data changed.
+     *
+     * @param {XMLElement} xmlNode     the xml node to remove from the dom tree.
+     * @param {String}     [xpath]     the xpath statement to select the parent node.
+     * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
+     */
+    this.removeNode =
+    apf.removeNode  = function(xmlNode, xpath, undoObj){
+        if (xpath)
+            xmlNode = xmlNode.selectSingleNode(xpath);
+
+        //ActionTracker Support
+        if (undoObj && !undoObj.$filled) {
+            undoObj.$filled           = true;
+            undoObj.extra.parent      = xmlNode.parentNode;
+            undoObj.extra.removedNode = xmlNode;
+            undoObj.extra.beforeNode  = xmlNode.nextSibling;
+        }
+
+        
+
+        //Apply Changes
+        this.applyChanges("remove", xmlNode, undoObj);
+        var p = xmlNode.parentNode;
+        if (!p)
+            return;
+        
+        p.removeChild(xmlNode);
+        this.applyChanges("redo-remove", xmlNode, null, p);//undoObj
+
+        //@todo clean xmlNode after removal??
+    };
+
+    /**
+     * Removes a list of xml nodes from their parent. Changes are propagated
+     * to the databound elements listening for changes on the data changed.
+     *
+     * @param {Array}   xmlNodeList list of xml nodes to remove.
+     * @param {UndoObj} [undoObj]   the undo object that is responsible for archiving the changes.
+     */
+    this.removeNodeList =
+    apf.removeNodeList  = function(xmlNodeList, undoObj){
+        
+        
+        //if(xpath) xmlNode = xmlNode.selectSingleNode(xpath);
+        for (var rData = [], i = 0; i < xmlNodeList.length; i++) { //This can be optimized by looping nearer to xmlUpdate
+            //ActionTracker Support
+            if (undoObj) {
+                rData.push({
+                    pNode      : xmlNodeList[i].parentNode,
+                    removedNode: xmlNodeList[i],
+                    beforeNode : xmlNodeList[i].nextSibling
+                });
+            }
+
+            //Apply Changes
+            this.applyChanges("remove", xmlNodeList[i], undoObj);
+            var p = xmlNodeList[i].parentNode;
+            p.removeChild(xmlNodeList[i]);
+            this.applyChanges("redo-remove", xmlNodeList[i], null, p);//undoObj
+        }
+
+        if (undoObj && !undoObj.$filled) {
+            undoObj.$filled          = true;
+            undoObj.extra.removeList = rData;
+        }
+    };
+
+    /**
+     * Looks for this.$listeners and executes their $xmlUpdate methods.
+     * @private
+     */
+    var notifyQueue = {}, notifyTimer;
+    this.$hasQueue = false;
+    this.applyChanges = function(action, xmlNode, undoObj, nextloop){
+        if (undoObj && undoObj.$dontapply) return;
+        
+
+        if (undoObj && !undoObj.xmlNode) //@todo are we sure about this?
+            undoObj.xmlNode = xmlNode;
+
+        //Set Variables
+        var oParent  = nextloop,
+            loopNode = (xmlNode.nodeType == 1 ? xmlNode : xmlNode.parentNode);
+
+        //var xmlId = xmlNode.getAttribute(this.xmlIdTag);
+
+        if (!this.delayUpdate && "|remove|move-away|".indexOf("|" + action + "|") > -1)
+            this.notifyQueued(); //empty queue
+
+        var listen, uId, uIds, i, j, hash, info, amlNode, runTimer, found, done = {};
+        while (loopNode && loopNode.nodeType == 1) {
+            //Get List of Node this.$listeners ID's
+            listen = loopNode.getAttribute(this.xmlListenTag);
+
+            if (listen) {
+                uIds = listen.split(";");
+
+                for (i = 0; i < uIds.length; i++) {
+                    uId = uIds[i];
+                    if (!uId || done[uId]) continue;
+                    done[uId] = true;
+
+                    //Property support
+                    /*if (uId.charAt(0) == "p") {
+                        uId = uId.split("|");
+
+                        //@todo apf3.0 should this be exactly like in class.js?
+                        //@todo optimize this to check the async flag: parsed[3] & 4
+
+                        amlNode = apf.all[uId[1]]; //It's possible the aml node dissapeared in this loop.
+                        if (amlNode) {
+                            var model = apf.all[uId[3]];
+                            var xpath = model.$propBinds[uId[1]][uId[2]].root;
+
+                            amlNode.$execProperty(uId[2], xpath
+                                ? model.data.selectSingleNode(xpath)
+                                : model.data);
+                        }
+                        continue;
+                    }*/
+
+                    hash = notifyQueue[uId];
+                    if (!hash)
+                        notifyQueue[uId] = hash = [];
+
+                    // Filtering
+                    if (!apf.isO3 && "|update|attribute|text|".indexOf("|" + action + "|") > -1) {
+                        found = false;
+                        for (j = 0; j < hash.length; j++) {
+                            if (hash[j] && xmlNode == hash[j][1]
+                              && "|update|attribute|text|"
+                              .indexOf("|" + hash[j][0] + "|") > -1) {
+                                hash[j] = null;
+                                found = true;
+                                continue;
+                            }
+                        }
+
+                        hash.push([action, xmlNode, loopNode, undoObj, oParent]);
+                        runTimer = true;
+                        continue;
+                    }
+
+                    //!this.delayUpdate && <- that doesnt work because of information that is destroyed
+                    if (apf.isO3 || "|remove|move-away|move|add|".indexOf("|" + action + "|") > -1) {
+                        if (this.$listeners[uId]) {
+                            this.$listeners[uId]([action, xmlNode,
+                                loopNode, undoObj, oParent]);
+                        }
+                        /*amlNode = apf.all[uId];
+                        if (amlNode)
+                            amlNode.$xmlUpdate(action, xmlNode,
+                                loopNode, undoObj, oParent);*/
+                    }
+                    else {
+                        hash.push([action, xmlNode, loopNode, undoObj, oParent]);
+                        runTimer = true;
+                    }
+                }
+            }
+
+            //Go one level up
+            loopNode = loopNode.parentNode || nextloop;
+            if (loopNode == nextloop)
+                nextloop = null;
+        }
+
+        if (undoObj && !this.delayUpdate) {
+            //Ok this was an action let's not delay execution
+            apf.xmldb.notifyQueued();
+        }
+        else if (runTimer) {
+            clearTimeout(notifyTimer);
+            //@todo find a better solution for this (at the end of a event stack unroll)
+            this.$hasQueue = true;
+            notifyTimer = apf.setZeroTimeout(function(){
+                //this.$hasQueue = true;
+                apf.xmldb.notifyQueued();
+            });
+        }
+    };
+
+    /**
+     *  @todo in actiontracker - add stack auto purging
+     *        - when undo item is purged which was a removed, remove cache item
+     *  @todo shouldn't the removeNode method remove all this.$listeners?
+     *  @todo rename to processQueue
+     *  @private
+     */
+    this.notifyQueued = function(){
+        this.$hasQueue = false;
+
+        var myQueue = notifyQueue;
+        notifyQueue = {};
+        
+        clearTimeout(notifyTimer);
+        for (var uId in myQueue) {
+            if (!uId) continue;
+
+            var q       = myQueue[uId];
+            var func    = this.$listeners[uId];
+            //!amlNode ||
+            if (!q || !func)
+                continue;
+
+            //Run queue items
+            for (var i = 0; i < q.length; i++) {
+                if (!q[i])
+                    continue;
+
+                //Update xml data
+                //amlNode.$xmlUpdate.apply(amlNode, q[i]);
+                func(q[i]);
+            }
+        }
+
+        
+    }
+
+    /**
+     * @private
+     */
+    this.notifyListeners = function(xmlNode){
+        //This should be done recursive
+        var listen = xmlNode.getAttribute(apf.xmldb.xmlListenTag);
+        if (listen) {
+            listen = listen.split(";");
+            for (var j = 0; j < listen.length; j++) {
+                apf.all[listen[j]].$xmlUpdate("synchronize", xmlNode, xmlNode);
+                //load(xmlNode);
+            }
+        }
+    };
+
+    
+
+    /**
+     * @private
+     */
+    this.copyConnections = function(fromNode, toNode){
+        //This should copy recursive
+        try {
+            toNode.setAttribute(this.xmlListenTag, fromNode.getAttribute(this.xmlListenTag));
+        }
+        catch (e) {}
+        try {
+            toNode.setAttribute(this.xmlIdTag, fromNode.getAttribute(this.xmlIdTag));
+        }
+        catch (e) {}
+    };
+
+    /**
+     * @private
+     */
+    this.cleanXml = function(xml) {
+        if (typeof xml != "string")
+            return xml;
+        return xml.replace(cleanRE, "").replace(whiteRE, "><");
+    };
+
+    /**
+     * @private
+     */
+    this.cleanNode = function(xmlNode){
+        try {
+            var i, nodes = xmlNode.selectNodes("descendant-or-self::node()[@" + this.xmlListenTag + "]");
+            for (i = nodes.length - 1; i >= 0; i--)
+                nodes[i].removeAttribute(this.xmlListenTag);
+            nodes = xmlNode.selectNodes("descendant-or-self::node()[@" + this.xmlIdTag + "]");
+            for (i = nodes.length - 1; i >= 0; i--)
+                nodes[i].removeAttribute(this.xmlIdTag);
+            nodes = xmlNode.selectNodes("descendant-or-self::node()[@" + this.xmlDocTag + "]");
+            for (i = nodes.length - 1; i >= 0; i--)
+                nodes[i].removeAttribute(this.xmlDocTag);
+            nodes = xmlNode.selectNodes("descendant-or-self::node()[@a_loaded]");
+            for (i = nodes.length - 1; i >= 0; i--)
+                nodes[i].removeAttribute("a_loaded");
+        }
+        catch (e) {}
+
+        return xmlNode;
+    };
+
+    /**
+     * Returns a copy of the passed {@link term.datanode data node}. Bound
+     * data nodes contain special attributes to track them. These attributes
+     * are removed from the copied node when using this method.
+     *
+     * @param {XMLElement} xmlNode the {@link term.datanode data node} to copy.
+     * @return {XMLElement} the copy of the {@link term.datanode data node}.
+     */
+    this.copy         =
+    this.getCleanCopy =
+    apf.getCleanCopy  = function(xmlNode){
+        return apf.xmldb.cleanNode(xmlNode.cloneNode(true));
+    };
+
+    /**
+     * Unbind all APF Elements from a certain Form
+     * @private
+     */
+    this.unbind = function(frm){
+        //Loop through objects of all apf
+        for (var lookup = {}, i = 0; i < frm.apf.all.length; i++)
+            if (frm.apf.all[i] && frm.apf.all[i].unloadBindings)
+                lookup[frm.apf.all[i].unloadBindings()] = true;
+
+        //Remove Listen Nodes
+        for (var k = 0; k < this.$xmlDocLut.length; k++) {
+            
+            if (!this.$xmlDocLut[k]) continue;
+            
+
+            var Nodes = this.$xmlDocLut[k].selectNodes("//self::node()[@"
+                + this.xmlListenTag + "]");
+            if (!Nodes) continue;
+
+            //Loop through Nodes and rebuild listen array
+            for (var i = 0; i < Nodes.length; i++) {
+                var listen = Nodes[i].getAttribute(this.xmlListenTag).split(";");
+                for (var nListen = [], j = 0; j < listen.length; j++)
+                    if (!lookup[listen[j]])
+                        nListen.push(listen[j]);
+
+                //Optimization??
+                if (nListen.length != listen.length)
+                    Nodes[i].setAttribute(this.xmlListenTag, nListen.join(";"));
+            }
+        }
+    };
+
+    /**
+     * @private
+     * @todo xml doc leakage
+     */
+    this.getXmlDocId = function(xmlNode, model){
+        var docEl = xmlNode.ownerDocument.documentElement;
+        if (!apf.isChildOf(docEl, xmlNode))
+            docEl = xmlNode;
+
+        var docId = (docEl || xmlNode).getAttribute(this.xmlDocTag)
+            || this.$xmlDocLut.indexOf(docEl || xmlNode.ownerDocument || xmlNode);
+
+        if (model && apf.nameserver.get("model", docId) != model) {
+            docId = null;
+            docEl = xmlNode;
+        }
+
+        if (!docId || docId == -1) {
+            docId = this.$xmlDocLut.push(docEl || xmlNode.ownerDocument || xmlNode) - 1;
+            if (docEl)
+                docEl.setAttribute(this.xmlDocTag, String(docId));
+        }
+        
+        if (model)
+            apf.nameserver.register("model", docId, model);
+        
+
+        return docId;
+    };
+});
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/draw/canvas.js)SIZE(21818)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+=======
+>>>>>>> origin/master
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+ 
+
+
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/draw/chartdraw.js)SIZE(47182)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+
+/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/xmldb.js)SIZE(40521)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/draw/vml.js)SIZE(20284)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+>>>>>>> origin/master
+
+/**
+ * The xml database object provides local storage for xml data. This object
+ * routes all changes to the xml data to the data bound objects. It further
+ * provides utility functions for xml handling.
+ *
+ * @constructor
+ * @apfclass
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8
+ *
+ * @default_private
+ */
+apf.xmldb = new (function(){
+    this.xmlDocTag    = "a_doc";
+    this.xmlIdTag     = "a_id";
+    this.xmlListenTag = "a_listen";
+    this.htmlIdTag    = "id";
+    this.disableRDB   = false;
+
+    this.$xmlDocLut   = [];
+    this.$nodeCount   = {};
+
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/air.file.js)SIZE(10053)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/air.js)SIZE(9669)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/air.sql.js)SIZE(11835)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/cookie.js)SIZE(10313)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+=======
+    var cleanRE       = /(?:a_doc|a_id|a_listen|a_loaded)=(?:"|')[^'"]+(?:"|')/g,
+        whiteRE       = />[\s\n\r\t]+</g;
+>>>>>>> origin/master
+
+    /**
+     * @private
+     */
+    this.getElementById = function(id, doc){
+        if (!doc)
+            doc = this.$xmlDocLut[id.split("\|")[0]];
+        if (!doc)
+            return false;
+
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/flash.js)SIZE(15458)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+        return doc.selectSingleNode("descendant-or-self::node()[@"
+            + this.xmlIdTag + "='" + id + "']");
+    };
+>>>>>>> origin/master
+
+    /**
+     * @private
+     */
+    this.getNode = function(htmlNode){
+        if (!htmlNode || !htmlNode.getAttribute(this.htmlIdTag))
+            return false;
+
+        return this.getElementById(htmlNode.getAttribute(this.htmlIdTag)
+            .split("\|", 2).join("|"));
+    };
+
+    /**
+     * @private
+     */
+    this.getNodeById = function(id, doc){
+        var q = id.split("\|");
+        q.pop();
+        return this.getElementById(q.join("|"), doc);//id.split("\|", 2).join("|")
+    };
+
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/gears.js)SIZE(12312)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+    /**
+     * @private
+     */
+    this.getDocumentById = function(id){
+        return this.$xmlDocLut[id];
+    };
+>>>>>>> origin/master
+
+    /**
+     * @private
+     */
+    this.getDocument = function(node){
+        return this.$xmlDocLut[node.getAttribute(this.xmlIdTag).split("\|")[0]];
+    };
+
+    /**
+     * @private
+     */
+    this.getID = function(xmlNode, o){
+        return xmlNode.getAttribute(this.xmlIdTag) + "|" + o.$uniqueId;
+    };
+
+    /**
+     * @private
+     */
+    this.getElement = function(parent, nr){
+        var nodes = parent.childNodes;
+        for (var j = 0, i = 0; i < nodes.length; i++) {
+            if (nodes[i].nodeType != 1)
+                continue;
+            if (j++ == nr)
+                return nodes[i];
+        }
+    };
+
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/html5.js)SIZE(8228)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+    /**
+     * Sets the model of an element
+     *
+     * @param {Model} The model to be set
+     *
+     */
+    this.setModel = function(model){
+        
+        apf.nameserver.register("model", model.data.ownerDocument
+            .documentElement.getAttribute(this.xmlDocTag), model);
+        
+    };
+>>>>>>> origin/master
+
+    /**
+     * Find the model of an element
+     *
+     * @param {XMLNode} xmlNode the {@link term.datanode data node} to find its model.
+     *
+     */
+    this.findModel = function(xmlNode){
+        
+        return apf.nameserver.get("model", xmlNode.ownerDocument
+            .documentElement.getAttribute(this.xmlDocTag));
+        
+    };
+
+    /**
+     * @private
+     */
+    this.getXmlId = function(xmlNode){
+        return xmlNode.getAttribute(this.xmlIdTag) ||
+          this.nodeConnect(apf.xmldb.getXmlDocId(xmlNode), xmlNode);
+    }
+
+    /**
+     * Gets the html representation of an xml node for a certain element.
+     *
+     * @param {XMLNode} xmlNode  the {@link term.datanode data node} which is represented by the hml element.
+     * @param {AMLNode} oComp    the element that has created the representation.
+     * @return {HTMLNode} the html node representing the xml node.
+     */
+    this.getHtmlNode = function(xmlNode, oComp){
+        if (xmlNode && xmlNode.nodeType == 1 && xmlNode.getAttribute(this.xmlIdTag)) {
+            return oComp.$findHtmlNode(xmlNode.getAttribute(this.xmlIdTag)
+                + "|" + oComp.$uniqueId);
+        }
+        return null;
+    }
+
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/memory.js)SIZE(10208)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+    /**
+     * Finds the html representation of an xml node for a certain element.
+     *
+     * @param {XMLNode} xmlNode  the {@link term.datanode data node} which is represented by the hml element.
+     * @param {AMLNode} oComp    the element that has created the representation.
+     * @return {HTMLNode} the html node representing the xml node.
+     */
+    this.findHtmlNode = function(xmlNode, oComp){
+        do {
+            if (xmlNode.nodeType == 1 && xmlNode.getAttribute(this.xmlIdTag)) {
+                return oComp.$findHtmlNode(xmlNode.getAttribute(this.xmlIdTag)
+                    + "|" + oComp.$uniqueId);
+            }
+            if (xmlNode == oComp.xmlRoot)
+                return null;
+>>>>>>> origin/master
+
+            xmlNode = xmlNode.parentNode;
+        }
+        while (xmlNode && xmlNode.nodeType != 9)
+
+        return null;
+    };
+
+    /**
+     * Finds the {@link term.datanode data node} that is represented by the html node.
+     *
+     * @param {HTMLNode} htmlNode  the html node representing the an xml node.
+     * @return {XMLNode} the {@link term.datanode data node} for which the html node is it's representation.
+     */
+    this.findXmlNode = function(htmlNode){
+        if (!htmlNode)
+            return false;
+
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/http.js)SIZE(37750)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+        var id;
+        while (htmlNode && htmlNode.nodeType == 1 && (
+          htmlNode.tagName.toLowerCase() != "body" && !(id = htmlNode.getAttribute(this.htmlIdTag))
+          || (id || (id = htmlNode.getAttribute(this.htmlIdTag))) && id.match(/^q/)
+        )) {
+            if (htmlNode.host && htmlNode.host.$ext == htmlNode)
+                return htmlNode.host.xmlRoot;
+>>>>>>> origin/master
 
             htmlNode = htmlNode.parentNode;
         }
@@ -15818,7 +17921,36 @@ apf.xmldb = new (function(){
  */
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/iframe.js)SIZE(5720)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/socket.js)SIZE(19222)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/draw/chartdraw.js)SIZE(47182)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15843,7 +17975,39 @@ apf.xmldb = new (function(){
  
 
 
+<<<<<<< HEAD
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/uirecorder/capture.js)SIZE(62144)TIME(Tue, 01 Nov 2011 14:24:35 GMT)*/
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/uirecorder/playback.js)SIZE(28844)TIME(Tue, 01 Nov 2011 14:24:35 GMT)*/
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/lib/uirecorder/selenium.js)SIZE(8390)TIME(Tue, 01 Nov 2011 14:24:35 GMT)*/
+
+/*
+    - Probably need wait hints for when xmlHttpReq is used or setTimeout / setInterval
+    - When clicking on tab button it only registers the page, it should also add the specific html element
+    - xml properties need to be converted to xpaths
+    - aml properties need to be converted to xpaths
+    
+    * htmlElements in the action object dont have the xpath property (which is needed)
+    * for detailList, the items should have id, not caption
+    - The UI should allow the user to select which assertions he wants to use
+    
+    Bugs during records:
+    - Focus is in last event
+*/
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16782)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/draw/vml.js)SIZE(20284)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15942,7 +18106,11 @@ apf.xmldb = new (function(){
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml.js)SIZE(1478)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/cookie.js)SIZE(10313)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15968,7 +18136,11 @@ apf.xmldb = new (function(){
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/node.js)SIZE(21587)TIME(Tue, 18 Oct 2011 13:03:04 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/flash.js)SIZE(15458)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16268,6 +18440,17 @@ apf.http = function(){
         var _self = this;
         var id    = options.id;
         
+<<<<<<< HEAD
+        if (amlNode == beforeNode)
+            return amlNode;
+        
+        if (this == amlNode) {
+            throw new Error(apf.formatErrorString(0, this,
+                "Insertbefore DOM operation",
+                "Cannot append node as a child of itself."));
+        }
+=======
+>>>>>>> origin/master
 
         var binary = apf.hasXhrBinary && options.binary;
         var async = options.async = (options.async || binary 
@@ -16633,9 +18816,13 @@ apf.http = function(){
         if (http.status > 600)
             return this.$timeout(id);
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/element.js)SIZE(21829)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         extra.data = qItem.options.useJSON 
             ? eval("(" + http.responseText + ")") 
             : http.responseText; //Can this error?
+>>>>>>> origin/master
 
         if (http.status >= 400 && http.status < 600 || http.status < 10 
           && (http.status != 0 || !apf.isIE && !http.responseText)) { //qItem.url.substr(0, 6) == "file:/"
@@ -16886,46 +19073,436 @@ apf.http = function(){
                     return this.get(url, options);
                 }
             }
-        };
+<<<<<<< HEAD
+        }
+        
+        
 
-        /**
-         * @private
-         */
-        this.instantiate = function(x){
-            var url     = x.getAttribute("src"),
-                options = {
-                    async   : x.getAttribute("async") != "false",
-                    nocache : true
-                };
+        //Set all attributes
+        for (i = 0, l = attr.length; i < l; i++) {
+            attr[i].dispatchEvent("DOMNodeInsertedIntoDocument");
+        }
 
-            this.getURL = function(data, userdata){
-                options.data     = data;
-                options.userdata = userdata;
-                options.callback = this.callbacks.getURL;
-                return this.get(url, options);
-            }
+        this.$amlLoaded = true;
+    }, true);
+}).call(apf.AmlElement.prototype = new apf.AmlNode());
 
-            var name = "http" + Math.round(Math.random() * 100000);
-            apf.setReference(name, this);
 
-            return name + ".getURL()";
-        };
 
-        /**
-         * @private
-         */
-        this.call = function(method, args){
-            this[method].call(this, args);
-        };
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/characterdata.js)SIZE(2018)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+//@todo apf3.0 The functions seem to not set nodeValue...
+apf.AmlCharacterData = function(){
+    this.data = "";
+    this.length = 0;
+    
+    this.$init(true);
+    
+    this.appendData = function(sValue){
+        this.dispatchEvent("DOMCharacterDataModified", {
+            value : sValue
+        });
+    };
+    
+    this.deleteData = function(nOffset, nCount){
+        this.dispatchEvent("DOMCharacterDataModified", {
+            offset: nOffset,
+            count : nCount
+        });
+    };
+    
+    this.insertData = function(nOffset, nCount){
+        this.dispatchEvent("DOMCharacterDataModified", {
+            offset: nOffset,
+            count : nCount
+        });
+    };
+    
+    this.replaceData = function(nOffset, nCount, sValue){
+        this.dispatchEvent("DOMCharacterDataModified", {
+            offset: nOffset,
+            count : nCount,
+            value : sValue
+        });
+    };
+    
+    this.substringData = function(nOffset, nCount){};
+}
+apf.AmlCharacterData.prototype = new apf.AmlNode();
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/text.js)SIZE(4136)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+apf.AmlText = function(isPrototype){
+    this.$init(isPrototype);
+};
+
+(function(){
+    this.nodeType = this.NODE_TEXT;
+    this.nodeName = "#text";
+    
+    this.serialize = function(){
+        return apf.xmlentities(this.nodeValue).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    };
+    
+    
+    
+    //@todo think about using this.replaceData();
+    this.$setValue = function(value){
+        //if (!this.$amlLoaded)
+            //return;
+        
+        this.dispatchEvent("DOMCharacterDataModified", {
+            bubbles   : true,
+            prevValue : this.nodeValue,
+            newValue  : this.nodeValue = value
+        });
+        
+        if (this.$amlLoaded && this.$ext)
+            this.$ext.nodeValue = value;
     }
+
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        var pHtmlNode;
+        if (!(pHtmlNode = this.parentNode.$int) || this.parentNode.hasFeature(apf.__CHILDVALUE__)) 
+            return;
+
+        this.$amlLoaded = true;
+        
+        var nodeValue = this.nodeValue;
+
+        //@todo optimize for inside elements?
+        if (apf.config.liveText && !this.parentNode.hasFeature(apf.__CHILDVALUE__) 
+          && (nodeValue.indexOf("{") > -1 || nodeValue.indexOf("[") > -1)) {
+            
+            //Convert to live markup pi
+            this.$supportedProperties = [];
+            this.$propHandlers        = {};
+            this.$booleanProperties   = {};
+            this.$inheritProperties   = {};
+            
+            this.$propHandlers["calcdata"] = apf.LiveMarkupPi.prototype.$propHandlers["calcdata"];
+            
+            this.$setInheritedAttribute = apf.AmlElement.prototype.$setInheritedAttribute;
+            
+            this.implement(apf.StandardBinding);
+            
+            
+            pHtmlNode.appendChild(this.$ext = document.createElement("span"));
+            this.$setDynamicProperty("calcdata", this.nodeValue);
+            
+            return;
+        }
+
+        if (apf.hasTextNodeWhiteSpaceBug) {
+            var nodeValue = nodeValue.replace(/[\t\n\r ]+/g, " ");
+
+            if (nodeValue && nodeValue != " ")
+                this.$ext = pHtmlNode.appendChild(
+                  pHtmlNode.ownerDocument.createTextNode(nodeValue));
+        }
+        else
+            this.$ext = pHtmlNode.appendChild(
+              pHtmlNode.ownerDocument.createTextNode(nodeValue));
+    }, true);
+}).call(apf.AmlText.prototype = new apf.AmlCharacterData());
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/attr.js)SIZE(4716)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+apf.AmlAttr = function(ownerElement, name, value){
+    this.$init();
+    
+    if (ownerElement) {
+        this.ownerElement  = ownerElement;
+        this.ownerDocument = ownerElement.ownerDocument;
+    }
+    
+    this.nodeName  = this.name  = name;
+    this.nodeValue = this.value = value;
+};
+
+(function(){
+    this.nodeType  = this.NODE_ATTRIBUTE;
+    
+    this.MODIFICATION = 1;
+    this.ADDITION     = 2;
+    this.REMOVAL      = 3;
+    
+    this.serialize = 
+    this.toString  = function(){
+        return this.name + "=\"" + apf.xmlentities(String(this.value))
+            .replace(/</g, "&lt;").replace(/>/g, "&gt;") + "\"";
+    };
+    
+    
+    
+    this.$setValue = function(value){
+        this.nodeValue = this.value = value;
+        this.specified = true;
+
+        //@todo apf3.0 domattr
+        this.ownerElement.dispatchEvent("DOMAttrModified", {
+            relatedNode : this,
+            attrChange  : this.MODIFICATION,
+            attrName    : this.name,
+            newValue    : value,
+            prevValue   : this.$lastValue || "",
+            bubbles     : true
+        });
+        
+        this.$lastValue = value;
+    };
+    
+    this.$triggerUpdate = function(e, oldValue){
+        var name  = this.name,
+            value = this.value || this.nodeValue,
+            host  = this.ownerElement;
+
+        if (name == "id" && !this.specified && host.id) {
+            this.specified = true;
+            return;
+        }
+
+        if (name.substr(0, 2) == "on") {
+            if (host.$events[name])
+                host.removeEventListener(name.replace(/^on/, ""), host.$events[name]);
+            if (value)
+                host.addEventListener(name, (host.$events[name] = 
+                  (typeof value == "string"
+                    ? 
+                      apf.lm.compile(value, {event: true, parsecode: true})
+                      
+                    : value)));
+            return;
+        }
+        
+        if (this.specified)
+            host.$clearDynamicProperty(name);
+        
+        if (typeof value == "string" && (host.$attrExcludePropBind[name] || 
+          (value.indexOf("{") > -1 || value.indexOf("[") > -1)))
+            host.$setDynamicProperty(name, value);
+        else
+        
+        {
+            host.setProperty(name, value); //@todo apf3.0 is this a lot slower?
+        }
+        //host.$handlePropSet(name, value);
+
+        if (this.specified) {
+            //@todo apf3.0 domattr - slow?
+            host.dispatchEvent("DOMAttrModified", { //@todo this is not good, node might not be specified at init
+                relatedNode : this,
+                attrChange  : this.MODIFICATION,
+                attrName    : name,
+                newValue    : value,
+                prevValue   : this.$lastValue || "",
+                bubbles     : true
+            });
+        }
+        else this.specified = true;
+            
+        this.$lastValue = value;
+    };
+    
+    //@todo apf3.0 domattr
+    this.addEventListener("DOMNodeInsertedIntoDocument", this.$triggerUpdate);
+}).call(apf.AmlAttr.prototype = new apf.AmlNode());
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/cdatasection.js)SIZE(1300)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+apf.AmlCDATASection = function(isPrototype){
+    this.nodeType = this.NODE_CDATA_SECTION;
+    this.nodeName = "#cdata-section";
+    
+    this.$init(isPrototype);
+};
+
+apf.AmlCDATASection.prototype = new apf.AmlText(true);
+apf.AmlCDATASection.prototype.serialize = function(){
+    return "<![CDATA[" + this.nodeValue + "]]>";
 };
 
 
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/comment.js)SIZE(1509)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
-apf.Init.run("http");
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/iframe.js)SIZE(5720)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+apf.AmlComment = function(isPrototype){
+    this.nodeType = this.NODE_COMMENT;
+    this.nodeName = "#comment";
+    
+    this.$init(isPrototype);
+};
+
+(function(){
+    this.serialize = function(){
+        return "<!--" + this.nodeValue + "-->";
+    };
+    
+    this.$setValue = function(value){
+        this.dispatchEvent("DOMCharacterDataModified", {
+            bubbles   : true,
+            newValue  : value,
+            prevValue : this.nodeValue
+        });
+    }
+}).call(apf.AmlComment.prototype = new apf.AmlCharacterData());
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/configuration.js)SIZE(1384)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+apf.AmlConfiguration = function(isPrototype){
+    this.parameterNames = [];
+
+    this.$init(isPrototype);
+};
+
+(function(){
+    this.setParameter = this.setProperty;
+    
+    this.getParameter = this.getProperty;
+    
+    this.canSetParameter = function(name, value){ //@todo for value
+        return this.parameterNames.indexOf(name) > -1;
+    };
+}).call(apf.AmlConfiguration.prototype = new apf.Class());
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/document.js)SIZE(9454)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16950,7 +19527,2698 @@ apf.Init.run("http");
 
 
 
+/**
+ * The aml document, this is the root of the DOM Tree and has a nodeType with 
+ * value 9 (apf.NODE_DOCUMENT). 
+ *
+ * @constructor
+ * @inherits apf.AmlNode
+ * @inherits apf.Class
+ * @default_private 
+ * @see baseclass.amldom
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8
+ */
+apf.AmlDocument = function(){
+    this.$prefixes      = {};
+    this.$namespaceURIs = {};
+    this.domConfig      = new apf.AmlConfiguration();
+    
+    this.$init();
+};
+
+(function() {
+    /**
+     * The type of node within the document.
+     *   Possible values:
+     */
+    this.nodeType   = this.NODE_DOCUMENT;
+    this.nodeFunc   = apf.NODE_HIDDEN;
+    this.nodeName   = "#document";
+    
+    this.$amlLoaded = true;
+    
+    this.activeElement   = null; //@todo alias of window.foccussed;
+    this.doctype         = null;
+    this.domConfig       = null;
+    this.implementation  = null;
+    this.characterSet    = apf.characterSet;
+    
+    /**
+     * The root element node of the aml application. This is an element with
+     * the tagName 'application'. This is similar to the 'html' element
+     */
+    this.documentElement = null;
+    
+    /**
+     * Gets a aml element based on it's id.
+     * @param {String} id the id of the aml element to return.
+     * @return {AMLElement} the aml element with the id specified.
+     */
+    this.getElementById = function(id){
+        return self[id];
+    };
+    
+    this.getElementsByTagName = function(tagName){
+        var docEl, res = (docEl = this.documentElement)
+            .getElementsByTagName(tagName);
+
+        if (tagName == "*" || docEl.tagName == tagName)
+            res.unshift(docEl);
+        return res;
+    };
+    
+    this.getElementsByTagNameNS = function(nameSpaceURI, tagName){
+        var docEl,
+            res = (docEl = this.documentElement)
+                .getElementsByTagNameNS(nameSpaceURI, tagName);
+
+        if (tagName == "*" || docEl.tagName == tagName && docEl.namespaceURI == nameSpaceURI)
+            res.unshift(docEl);
+        return res;
+    };
+
+    /**
+     * Creates a new aml element.
+     * @param {mixed} tagName information about the new node to create.
+     *   Possible values:
+     *   {String}     the tagName of the new element to create
+     *   {String}     the aml definition for a single or multiple elements.
+     *   {XMLElement} the aml definition for a single or multiple elements.
+     * @return {AMLElement} the created aml element.
+     */
+    this.createElement = function(qualifiedName){
+        return this.$domParser.$createNode(this, this.NODE_ELEMENT, null,
+            this.namespaceURI, qualifiedName);
+    };
+        
+    this.createElementNS = function(namespaceURI, qualifiedName){
+        return this.$domParser.$createNode(this, this.NODE_ELEMENT, null,
+            namespaceURI, qualifiedName);
+    };
+    
+    this.importNode = function(node, deep){
+        if (deep && node.nodeType == 1) {
+            return this.$domParser.parseFromXml(node, {
+                doc   : this,
+                delay : true
+            }).childNodes[0];
+        }
+        else {
+            return this.$domParser.$createNode(this, node.nodeType, node);
+        }
+    };
+    
+    //@todo
+    this.createAttribute = function(nodeName){
+        return this.$domParser.$createNode(this, this.NODE_ATTRIBUTE, null,
+            this.nameSpaceURI, nodeName);
+    };
+    
+    //@todo
+    this.createAttributeNS = function(nameSpaceURI, nodeName){
+        return this.$domParser.$createNode(this, this.NODE_ATTRIBUTE, null,
+            nameSpaceURI, nodeName);
+    };
+    
+    this.createEvent = function(){
+        return new apf.AmlEvent();
+    };
+    
+    this.createComment = function(nodeValue){
+        return this.$domParser.$createNode(this, this.NODE_COMMENT, null, null,
+            null, nodeValue);
+    };
+    
+    this.createProcessingInstruction = function(target, data){
+        return this.$domParser.$createNode(this, this.NODE_PROCESSING_INSTRUCTION,
+            null, null, target, data);
+    };
+    
+    this.createCDATASection = function(nodeValue){
+        return this.$domParser.$createNode(this, this.NODE_CDATA_SECTION, null,
+            null, null, nodeValue);
+    };
+    
+    this.createTextNode = function(nodeValue){
+        return this.$domParser.$createNode(this, this.NODE_TEXT, null, null,
+            null, nodeValue);
+    };
+    
+    this.createDocumentFragment = function(){
+        return this.$domParser.$createNode(this, this.NODE_DOCUMENT_FRAGMENT);
+    };
+
+    this.querySelector = function(){};
+    
+    this.querySelectorAll = function(){};
+
+    
+    /**
+     * See W3C evaluate
+     */
+    this.evaluate = function(sExpr, contextNode, nsResolver, type, x){
+        var result = apf.XPath.selectNodes(sExpr,
+            contextNode || this.documentElement);
+
+        /**
+         * @private
+         */
+        return {
+            snapshotLength : result.length,
+            snapshotItem   : function(i){
+                return result[i];
+            }
+        }
+    };
+
+    /**
+     * See W3C createNSResolver
+     */
+    this.createNSResolver = function(contextNode){
+        return {};
+    };
+    
+
+    this.hasFocus = function(){
+        
+    }
+
+    
+}).call(apf.AmlDocument.prototype = new apf.AmlNode());
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/documentfragment.js)SIZE(1286)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+apf.AmlDocumentFragment = function(isPrototype){
+    this.$init(isPrototype);
+};
+
+apf.AmlDocumentFragment.prototype = new apf.AmlNode();
+apf.AmlDocumentFragment.prototype.nodeName = "#document-fragment";
+apf.AmlDocumentFragment.prototype.nodeType = 
+    apf.AmlDocumentFragment.prototype.NODE_DOCUMENT_FRAGMENT;
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/event.js)SIZE(2086)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+/**
+ * Implementation of W3C event object. An instance of this class is passed as
+ * the first argument of any event handler. Per event it will contain different
+ * properties giving context based information about the event.
+ * @constructor
+ * @default_private
+ */
+apf.AmlEvent = function(name, data){
+    this.name = name;
+    
+    var prop;
+    for (prop in data)
+        this[prop] = data[prop];
+};
+
+apf.AmlEvent.prototype = {
+    
+    bubbles : false,
+    cancelBubble : false,
+    
+
+    /**
+     * Cancels the event if it is cancelable, without stopping further 
+     * propagation of the event. 
+     */
+    preventDefault : function(){
+        this.returnValue = false;
+    },
+
+    
+    /**
+     * Prevents further propagation of the current event. 
+     */
+    stopPropagation : function(){
+        this.cancelBubble = true;
+    },
+    
+
+    stop : function() {
+        this.returnValue = false;
+        
+        this.cancelBubble = true;
+        
+    }
+};
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/namednodemap.js)SIZE(3407)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+//@todo apf3.0
+apf.AmlNamedNodeMap = function(host){
+    this.$host = host;
+};
+
+(function(){
+    this.getNamedItem    = function(name){
+        for (var i = 0; i < this.length; i++) {
+            if (this[i].name == name)
+                return this[i];
+        }
+        return false;
+    };
+    
+    this.setNamedItem    = function(node){
+        var name = node.name;
+        for (var item, i = this.length - 1; i >= 0; i--) {
+            if (this[i].name == name) {
+                this[i].ownerElement = null;
+                this.splice(i, 1);
+                break;
+            }
+        }
+        
+        this.push(node);
+        
+        node.ownerElement = this.$host;
+        node.ownerDocument = this.$host.ownerDocument;
+        node.$triggerUpdate();
+    };
+    
+    //@todo apf3.0 domattr
+    this.removeNamedItem = function(name){
+        //Should deconstruct dynamic properties
+        
+        for (var item, i = this.length - 1; i >= 0; i--) {
+            if (this[i].name == name) {
+                item = this[i];
+                this.splice(i, 1);
+                break;
+            }
+        }
+        if (!item) return false;
+
+        //@todo hack!
+        //this should be done properly
+        var oldValue = item.nodeValue;
+        item.nodeValue = item.value = "";
+        item.$triggerUpdate(null, oldValue);
+        item.ownerElement = null;
+        item.nodeValue    = item.value = oldValue;
+        
+        return item;
+    };
+    
+    this.item            = function(i){
+        return this[i];
+    };
+
+    //if (apf.isIE < 8) { //Only supported by IE8 and above
+        this.length = 0;
+        
+        this.splice = function(pos, length){
+            for (var i = pos, l = this.length - length; i < l; i++) {
+                this[i] = this[i + 1];
+            }
+            delete this[i];
+            this.length -= length;
+        }
+        
+        this.push = function(o) {
+            this[this.length++] = o;
+            return this.length;
+        }
+    //}
+    
+    this.join = function(glue){
+        var x = [];
+        for (var e, a, i = 0, l = this.length; i < l; i++) {
+            if ((e = (a = this[i]).ownerElement) && e.$inheritProperties[a.nodeName] != 2)
+                x.push(this[i]);
+        }
+        return x.join(glue);
+    }
+}).call(apf.AmlNamedNodeMap.prototype = {}); //apf.isIE < 8 ? {} : []
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/processinginstruction.js)SIZE(4311)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+apf.AmlProcessingInstruction = function(isPrototype){
+    this.$init(isPrototype);
+};
+
+(function(){
+    this.nodeType = this.NODE_PROCESSING_INSTRUCTION;
+    
+    /**
+     * @todo docs
+     */
+    this.data   = null;
+    
+    /**
+     * @todo docs
+     */
+    this.target = null;
+    
+    this.serialize = function(){
+        return "<?" + this.target + "\n" + apf.xmlentities(this.nodeValue) + "\n?>";
+    };
+    
+    this.reload = function(){
+        this.$handlePropSet("data", this.data);
+    };
+    
+    //1 = force no bind rule, 2 = force bind rule
+    this.$attrExcludePropBind = apf.extend({
+        calcdata : 0 //Start in code mode
+    }, this.$attrExcludePropBind);
+    
+    this.getAttribute = function(){};
+    this.$setInheritedAttribute = apf.AmlElement.prototype.$setInheritedAttribute;
+    this.$supportedProperties = [];
+    this.$propHandlers        = {};
+    this.$booleanProperties   = {};
+    this.$inheritProperties   = {};
+    
+    
+    
+    this.$setValue = function(value){
+        this.setProperty("data", value);
+    };
+    
+    this.$handlePropSet = function(prop, value, force){
+        this[prop] = value;
+        if (prop == "data") {
+            this.$clearDynamicProperty("calcdata");
+            this.$setDynamicProperty("calcdata", value);
+        }
+        
+        else if (prop == "target") {
+            //not implemented
+        }
+        else if (this.$propHandlers[prop]) {
+            this.$propHandlers[prop].call(this, value, prop);
+        }
+    };
+
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        var pHtmlNode = e.pHtmlNode;
+        if (!pHtmlNode && (this.parentNode.$bindingRule 
+          || !(pHtmlNode = this.parentNode.$int))) 
+            return;
+
+        pHtmlNode.appendChild(this.$ext = document.createElement("span"));
+        this.$ext.host = this;
+
+        
+
+        this.$setDynamicProperty("calcdata", this.data);
+        
+        
+    }, true);
+    
+    /*this.addEventListener("DOMNodeRemovedFromDocument", function(e){
+        this.$clearDynamicProperty("calcdata");
+    });*/
+    
+    this.$destroy = function(){
+        this.$clearDynamicProperty("calcdata");
+        this.$propHandlers["calcdata"].call(this, "");
+    };
+}).call(apf.AmlProcessingInstruction.prototype = new apf.AmlNode());
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/range.js)SIZE(15809)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/selection.js)SIZE(8861)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+apf.AmlSelection = function(doc){
+    this.$init();
+    
+    this.$ownerDocument = doc;
+    
+    var _self = this;
+    var monitor = false;
+    this.$monitorRange = function(){
+        apf.queue.add("selrange" + this.$uniqueId, function(){
+            var range = _self.$ranges[0];
+            _self.anchorNode   = range.startContainer;
+            _self.anchorOffset = range.startOffset;
+            
+            range = _self.$ranges[_self.rangeCount - 1];
+            _self.focusNode    = range.endContainer;
+            _self.focusOffset  = range.endOffset;
+            monitor = false;
+        });
+        monitor = true;
+    }
+    
+    var update = false;
+    this.$update = function(){
+        if (!update) {
+            apf.queue.add("selupdate" + this.$uniqueId, function(){
+                _self.dispatchEvent("update");
+                update = false;
+            });
+            update = true;
+        }
+    }
+};
+(function() {
+    /**
+     * Returns the element that contains the start of the selection.
+     * Returns null if there's no selection.
+     */
+    this.anchorNode   = null;
+    
+    /**
+     * Returns the offset of the start of the selection relative to the element that contains the start of the selection.
+     * Returns 0 if there's no selection.
+     */
+    this.anchorOffset = 0;
+    
+    /**
+     * Returns the element that contains the end of the selection.
+     * Returns null if there's no selection.
+     */
+    this.focusNode    = null;
+    
+    /**
+     * Returns the offset of the end of the selection relative to the element that contains the end of the selection.
+     *Returns 0 if there's no selection.
+     */
+    this.focusOffset  = null;
+    
+    /**
+     * Returns the number of ranges in the selection.
+     */
+    this.rangeCount   = 0;
+    this.$ranges      = [];
+    
+    this.toString = function(){
+        return "[apf.AmlSelection]";// this.$ranges.join("");
+    }
+    
+    /**
+     * Returns true if there's no selection or if the selection is empty. Otherwise, returns false.
+     */
+    this.isCollapsed = function(){
+        return !this.rangeCount || this.rangeCount == 1 && this.$ranges[0].collapsed;
+    }
+    
+    /**
+     * Replaces the selection with an empty one at the given position.
+     */
+    this.collapse = function(parentNode, offset, noEvent){
+        for (var i = 0, l = this.$ranges.length; i < l; i++) {
+            (range = this.$ranges[i]).removeEventListener("update", this.$monitorRange);
+            range.detach();
+        }
+        
+        var range;
+        this.$ranges = [range = new apf.AmlRange(this.ownerDocument)];
+        range.addEventListener("update", this.$monitorRange);
+        range.setStart(parentNode, offset);
+        range.setEnd(parentNode, offset);
+        this.rangeCount = 1;
+        
+        this.focusNode    = 
+        this.anchorNode   = parentNode;
+        this.anchorOffset = 
+        this.focusOffset  = offset;
+        
+        if (!noEvent)
+            this.dispatchEvent("update");
+    }
+    
+    /**
+     * Replaces the selection with an empty one at the position of the start of the current selection.
+     */
+    this.collapseToStart = function(){
+        
+        
+        var range = this.$ranges[0];
+        this.collapse(range.startContainer, range.startOffset);
+    }
+    
+    /**
+     * Replaces the selection with an empty one at the position of the end of the current selection.
+     */
+    this.collapseToEnd = function(){
+        
+        
+        var range = this.$ranges[this.rangeCount - 1];
+        this.collapse(range.endContainer, range.endOffset);
+    }
+    
+    /**
+     * Replaces the selection with one that contains all the contents of the given element.
+     */
+    this.selectAllChildren = function(parentNode){
+        this.collapse(parentNode, 0, true);
+        var range = this.$ranges[0];
+        range.selectNodeContents(parseNode);
+        
+        this.focusNode    = 
+        this.anchorNode   = parentNode;
+        this.anchorOffset = 0;
+        this.focusOffset  = range.endOffset;
+        
+        this.$update();
+    }
+    
+    /**
+     * Deletes the selection.
+     */
+    this.deleteFromDocument = function(){
+        for (var i = 0, l = this.$ranges.length; i < l; i++) {
+            this.$ranges[i].deleteContents();
+        }
+        
+        var range = this.$ranges[0];
+        this.anchorNode   = range.startContainer;
+        this.anchorOffset = range.startOffset;
+        
+        range = this.$ranges[this.rangeCount - 1];
+        this.focusNode    = range.endContainer;
+        this.focusOffset  = range.endOffset;
+        
+        this.$update();
+    }
+    
+    /**
+     * Returns the given range.
+     */
+    this.getRangeAt = function(index){
+        
+        
+        return this.$ranges[index];
+    }
+    
+    /**
+     * Adds the given range to the selection.
+     */
+    this.addRange = function(range){
+        this.rangeCount = this.$ranges.push(range);
+        
+        this.focusNode    = range.endContainer;
+        this.focusOffset  = range.endOffset;
+        range.addEventListener("update", this.$monitorRange);
+        
+        this.$update();
+        
+        return range;
+    }
+    
+    /**
+     * Removes the given range from the selection, if the range was one of the ones in the selection.
+     */
+    this.removeRange = function(range){
+        this.$ranges.remove(range);
+        this.rangeCount = this.$ranges.length;
+        range.removeEventListener("update", this.$monitorRange);
+        
+        var range = this.$ranges[0];
+        this.anchorNode   = range.startContainer;
+        this.anchorOffset = range.startOffset;
+        
+        range = this.$ranges[this.rangeCount - 1];
+        this.focusNode    = range.endContainer;
+        this.focusOffset  = range.endOffset;
+        
+        this.$update();
+    }
+    
+    /**
+     * Removes all the ranges in the selection.
+     */
+    this.removeAllRanges = function(){
+        for (var range, i = 0, l = this.$ranges.length; i < l; i++) {
+            (range = this.$ranges[i]).removeEventListener("update", this.$monitorRange);
+            range.detach();
+        }
+        
+        this.$ranges    = [];
+        this.rangeCount = 0;
+        
+        this.anchorNode   = null;
+        this.anchorOffset = 0;
+        this.focusNode    = null;
+        this.focusOffset  = 0;
+        
+        this.$update();
+    }
+    
+    //currently only ranges with single element selected is supported
+    this.$getNodeList = function(){
+        var nodes = [];
+        for (var r, i = 0; i < this.rangeCount; i++) {
+            nodes.push((r = this.$ranges[i]).startContainer.childNodes[r.startOffset]);
+        }
+        return nodes;
+    }
+    
+    this.$selectList = function(list){
+        this.removeAllRanges();
+        for (var i = 0; i < list.length; i++) {
+            this.addRange(new apf.AmlRange(this)).selectNode(list[i]);
+        }
+    }
+    
+    this.$getFirstNode = function(){
+        var r;
+        return (r = this.$ranges[0]).startContainer.childNodes[r.startOffset];
+    }
+}).call(apf.AmlSelection.prototype = new apf.Class());
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/textrectangle.js)SIZE(1662)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+apf.AmlTextRectangle = function(host){
+    var _self = this;
+    function handler(){
+        var pos = _self.getAbsolutePosition(_self.$ext);
+        _self.setProperty("left", pos[0]);
+        _self.setProperty("top", pos[1]);
+        _self.setProperty("right", document.documentElement.offsetWidth - pos[0]);
+        _self.setProperty("bottom", document.documentElement.offsetWidth - pos[1]);
+    }
+    
+    host.addEventListener("prop.width", handler);
+    host.addEventListener("prop.height", handler);
+    host.addEventListener("prop.left", handler);
+    host.addEventListener("prop.top", handler);
+
+    handler.call(host);
+};
+apf.AmlTextRectangle.prototype = new apf.Class();
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml.js)SIZE(1530)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * Object creating the XHTML namespace for the aml parser.
+ *
+ * @constructor
+ * @parser
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8
+ */
+apf.xhtml = new apf.AmlNamespace();
+apf.setNamespace("http://www.w3.org/1999/xhtml", apf.xhtml);
+
+
+/*
+if (apf.getTextNode(x)) {
+    var data = {
+        amlNode  : x,
+        htmlNode : o
+    }
+
+    
+}
+
+*/
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/element.js)SIZE(5022)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+apf.XhtmlElement = function(struct, tagName){
+    this.$init(tagName || true, apf.NODE_VISIBLE, struct);
+    
+    this.$xoe                = this.addEventListener;
+    this.addEventListener    = this.$xae;
+    this.removeEventListener = this.$xre;
+    
+    var _self = this;
+    this.$de = function(e){
+        _self.dispatchEvent(e.type, null, e);
+    }
+};
+
+(function(){
+    var excludedEvents = {
+        "contextmenu": 1,
+        "keydown": 1,
+        "keypress": 1,
+        "keyup": 1,
+        "DOMNodeInserted": 2,
+        "DOMNodeInsertedIntoDocument": 2,
+        "DOMNodeRemoved": 2,
+        "DOMNodeRemovedFromDocument": 2
+    };
+    
+    this.$xae = function(type, fn){
+        this.$xoe.apply(this, arguments);
+        
+        if (excludedEvents[type] > (this.editable ? 0 : 1)
+          || type.substr(0, 5) == "prop.")
+            return;
+        
+        if (this.$ext) {
+            if (type.substr(0,2) == "on")
+                type = type.substr(2);
+            apf.addListener(this.$ext, type, this.$de);
+        }
+    };
+    
+    this.$xre = function(type, fn) {
+        apf.AmlElement.prototype.removeEventListener.apply(this, arguments);
+        
+        
+        
+        if (this.$ext)
+            apf.removeListener(this.$ext, type, this.$de);
+    }
+    
+    this.$handlePropSet = function(name, value, force, inherit){
+        if (this.$booleanProperties[name])
+            value = apf.isTrue(value);
+
+        this[name] = value;
+        var handler = this.$propHandlers && this.$propHandlers[name]
+          || apf.GuiElement.propHandlers[name];
+
+        if (handler)
+            handler.call(this, value, null, name);
+        else if (this.$int && (force || this.$amlLoaded)) {
+            this.$int.setAttribute(apf.isIE && apf.isIE < 8 && name == "class" 
+                ? "className" : name, value);
+        }
+    };
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        var pHtmlNode;
+        if (!(pHtmlNode = this.$pHtmlNode = this.parentNode.$int)) 
+            return;
+
+        var str, aml = this.$aml;
+        if (aml) {
+            if (aml.serialize)
+                str = aml.serialize();
+            else {
+                aml = aml.cloneNode(false);
+                str = aml.xml || aml.nodeValue;
+            }
+
+            str = str.replace(/ on\w+="[^"]*"| on\w+='[^']*'/g, "");
+            
+            this.$ext = 
+            this.$int = apf.insertHtmlNode(null, pHtmlNode, null, apf.html_entity_decode(str));
+        }
+        else {
+            this.$ext = this.$int = 
+              pHtmlNode.appendChild(document.createElement(this.localName));
+        }
+        
+        if (this.localName != "a")
+            this.$ext.host = this;
+
+        this.style = this.$ext.style;
+    }, true);
+    
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        this.$amlLoaded = true;
+        
+        if (this.$setLayout)
+            this.$setLayout();
+    });
+    
+}).call(apf.XhtmlElement.prototype = new apf.AmlElement());
+
+apf.Init.addConditional(function(){
+    if (apf.isO3) return;
+    var prot = apf.XhtmlElement.prototype;
+
+    //prot.implement(apf.Interactive);
+    prot.implement(
+        
+        apf.Anchoring
+        
+    );
+
+    
+    prot.$drawn = true;
+    prot.$setLayout = apf.GuiElement.prototype.$setLayout;
+    
+    prot.addEventListener("DOMNodeInserted", function(e){
+        if (e.currentTarget == this 
+          && "vbox|hbox|table".indexOf(this.parentNode.localName) == -1) {
+            this.$setLayout();
+        }
+    }); 
+    
+}, null, ["interactive"]);
+
+apf.xhtml.setElement("@default", apf.XhtmlElement);
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/body.js)SIZE(1783)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+apf.XhtmlBodyElement = function(struct, tagName){
+    this.$init(tagName || "body", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        if (!this.ownerDocument.body)
+            this.ownerDocument.body = this;
+        
+        this.$ext = 
+        this.$int = document.body;
+    }, true);
+}).call(apf.XhtmlBodyElement.prototype = new apf.AmlElement());
+
+apf.Init.addConditional(function(){
+    if (apf.isO3) return;
+    var prot = apf.XhtmlBodyElement.prototype;
+
+    
+}, null, ["interactive"]);
+
+apf.xhtml.setElement("body", apf.XhtmlBodyElement);
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/html.js)SIZE(2693)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * @todo description
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.4
+ */
+apf.XhtmlHtmlElement = function(struct, tagName){
+    this.$init(tagName || "html", apf.NODE_VISIBLE, struct);
+    
+    
+    
+    this.$ext        = document.documentElement;
+    this.$ext.host   = this;
+    
+    this.$int        = document.body;
+    this.$tabList    = []; //Prevents documentElement from being focussed
+    this.$focussable = apf.KEYBOARD;
+    this.focussable  = true;
+    this.visible     = true;
+    this.$isWindowContainer = true;
+    //this.focus = function(){ this.dispatchEvent("focus"); };
+    //this.blur  = function(){ this.dispatchEvent("blur"); };
+    
+    this.implement(apf.Focussable);
+    
+    
+    apf.window.$addFocus(this);
+    
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        var i, l, n, a, c,
+            attr = this.attributes, doc = this.ownerDocument;
+        for (i = 0, l = attr.length; i < l; i++) {
+            n = (a = attr[i]).nodeName.split(":");
+            if (n[0] == "xmlns") {
+                if (c = n[1]) {
+                    doc.$prefixes[c] = a.nodeValue;
+                    doc.$namespaceURIs[a.nodeValue] = c;
+                }
+                else {
+                    doc.namespaceURI = a.nodeValue;
+                }
+            }
+        }
+        
+        if (!doc.namespaceURI)
+            doc.namespaceURI = apf.ns.xhtml;
+    });
+};
+apf.XhtmlHtmlElement.prototype = new apf.XhtmlElement();
+
+apf.xhtml.setElement("html", apf.XhtmlHtmlElement);
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/ignore.js)SIZE(1360)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+apf.XhtmlIgnoreElement = function(struct, tagName){
+    this.$init(tagName, apf.NODE_VISIBLE, struct);
+};
+
+apf.XhtmlIgnoreElement.prototype = new apf.AmlElement();
+
+apf.xhtml.setElement("script",   apf.XhtmlIgnoreElement);
+apf.xhtml.setElement("noscript", apf.XhtmlIgnoreElement);
+apf.xhtml.setElement("head",     apf.XhtmlIgnoreElement);
+apf.xhtml.setElement("meta",     apf.XhtmlIgnoreElement);
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/input.js)SIZE(2187)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+apf.XhtmlInputElement = function(struct, tagName){
+    this.$init(tagName || "input", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.$xae = apf.XhtmlElement.prototype.$xae;
+    this.$xre = apf.XhtmlElement.prototype.$xre;
+    this.$handlePropSet = function(name, value, force){
+        if (name == "type")
+            return;
+
+        return apf.XhtmlElement.prototype.$handlePropSet.call(this, name, value, force);
+    };
+
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        var pHtmlNode;
+        if (!(pHtmlNode = this.parentNode.$int))
+            return;
+
+        if (this.$aml) {
+            this.$ext =
+            this.$int = apf.insertHtmlNode(this.$aml.serialize
+                ? this.$aml
+                : this.$aml.cloneNode(false), pHtmlNode);
+        }
+        else {
+            this.$ext = this.$int = document.createElement(this.localName);
+            if (this.getAttribute("type"))
+                this.$int.setAttribute("type", this.getAttribute("type"));
+            pHtmlNode.appendChild(this.$int);
+        }
+    }, true);
+}).call(apf.XhtmlInputElement.prototype = new apf.AmlElement());
+
+apf.xhtml.setElement("input", apf.XhtmlInputElement);
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/option.js)SIZE(1537)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+apf.XhtmlOptionElement = function(struct, tagName){
+    this.$init(tagName || "option", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        this.$ext = 
+        this.$int = this.parentNode.$int.appendChild(
+          this.parentNode.$int.ownerDocument.createElement("option"));
+
+        if (this.value)
+            this.$int.setAttribute("value", this.value);
+    }, true);
+}).call(apf.XhtmlOptionElement.prototype = new apf.AmlElement());
+
+apf.xhtml.setElement("option", apf.XhtmlOptionElement);
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/skipchildren.js)SIZE(2342)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+apf.XhtmlSkipChildrenElement = function(struct, tagName){
+    this.$init(tagName, apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.canHaveChildren = false;
+    
+    this.$redraw = function(){
+        var _self = this;
+        apf.queue.add("redraw" + this.$uniqueId, function(){
+            var pHtmlNode  = _self.$ext.parentNode;
+            var beforeNode = _self.$ext.nextSibling;
+            pHtmlNode.removeChild(_self.$ext);
+            
+            _self.$ext = apf.insertHtmlNode(null, pHtmlNode, beforeNode, _self.$aml 
+                ? (_self.$aml.serialize ? _self.$aml.serialize() : _self.$aml.xml)
+                : _self.serialize());
+        });
+    }
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        var pHtmlNode;
+        if (!(pHtmlNode = this.parentNode.$int)) 
+            return;
+
+        this.$ext = apf.insertHtmlNode(null, pHtmlNode, null, this.$aml 
+            ? (this.$aml.serialize ? this.$aml.serialize() : this.$aml.xml)
+            : this.serialize());
+    }, true);
+}).call(apf.XhtmlSkipChildrenElement.prototype = new apf.AmlElement());
+
+apf.xhtml.setElement("object", apf.XhtmlSkipChildrenElement);
+apf.xhtml.setElement("embed", apf.XhtmlSkipChildrenElement);
+apf.xhtml.setElement("table", apf.XhtmlSkipChildrenElement);
+
+apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd.js)SIZE(12998)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * Object creating the XML Schema namespace for the aml parser.
+ *
+ * @constructor
+ * @parser
+ *
+ * @allownode simpleType, complexType
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8
+ */
+apf.xsd = new apf.AmlNamespace();
+apf.setNamespace("http://www.w3.org/2001/XMLSchema", apf.xsd);
+
+apf.xsd.typeHandlers = {
+    "http://www.w3.org/2001/XMLSchema" : {
+        //XSD datetypes [L10n potential]
+        "dateTime": function(value){
+            value = value.replace(/-/g, "/");
+    
+            value.match(/^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})$/);
+            if (!RegExp.$3 || RegExp.$3.length < 4)
+                return false;
+    
+            var dt = new Date(value);
+            if (dt.getFullYear() != parseFloat(RegExp.$3))
+                return false;
+            if (dt.getMonth() != parseFloat(RegExp.$2) - 1)
+                return false;
+            if (dt.getDate() != parseFloat(RegExp.$1))
+                return false;
+            if (dt.getHours() != parseFloat(RegExp.$4))
+                return false;
+            if (dt.getMinutes() != parseFloat(RegExp.$5))
+                return false;
+            if (dt.getSeconds() != parseFloat(RegExp.$5))
+                return false;
+    
+            return true;
+        },
+        "time": function(value){
+            value.match(/^(\d{2}):(\d{2}):(\d{2})$/);
+    
+            var dt = new Date("21/06/1980 " + value);
+            if (dt.getHours() != parseFloat(RegExp.$1))
+                return false;
+            if (dt.getMinutes() != parseFloat(RegExp.$2))
+                return false;
+            if (dt.getSeconds() != parseFloat(RegExp.$3))
+                return false;
+    
+            return true;
+        },
+        "date": function(value){
+            value = value.replace(/-/g, "/");
+            value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+            if (!RegExp.$3 || RegExp.$3.length < 4)
+                return false;
+    
+            //@todo this is a dutch date, localization...
+            var dt = new Date(RegExp.$2 + "/" + RegExp.$1 + "/" + RegExp.$3);
+            if (dt.getFullYear() != parseFloat(RegExp.$3))
+                return false;
+            if (dt.getMonth() != parseFloat(RegExp.$2) - 1)
+                return false;
+            if (dt.getDate() != parseFloat(RegExp.$1))
+                return false;
+    
+            return true;
+        },
+        "gYearMonth": function(value){
+            value = value.replace(/-/g, "/");
+            value.match(/^\/?(\d{4})(?:\d\d)?\/(\d{2})(?:\w|[\+\-]\d{2}:\d{2})?$/);
+            if (!RegExp.$1 || RegExp.$1.length < 4)
+                return false;
+    
+            var dt = new Date(value);
+            if (dt.getFullYear() != parseFloat(RegExp.$))
+                return false;
+            if (dt.getMonth() != parseFloat(RegExp.$2) - 1)
+                return false;
+    
+            return true;
+        },
+        "gYear": function(value){
+            value.match(/^\/?(\d{4})(?:\d\d)?(?:\w|[\+\-]\d{2}:\d{2})?$/);
+            if (!RegExp.$1 || RegExp.$1.length < 4)
+                return false;
+    
+            var dt = new Date(value);
+            if (dt.getFullYear() != parseFloat(RegExp.$1))
+                return false;
+    
+            return true;
+        },
+        "gMonthDay": function(value){
+            value = value.replace(/-/g, "/");
+            value.match(/^\/\/(\d{2})\/(\d{2})(?:\w|[\+\-]\d{2}:\d{2})?$/);
+    
+            var dt = new Date(value);
+            if (dt.getMonth() != parseFloat(RegExp.$1) - 1)
+                return false;
+            if (dt.getDate() != parseFloat(RegExp.$2))
+                return false;
+    
+            return true;
+        },
+        "gDay": function(value){
+            value = value.replace(/-/g, "/");
+            value.match(/^\/{3}(\d{2})(?:\w|[\+\-]\d{2}:\d{2})?$/);
+    
+            var dt = new Date(value);
+            if (dt.getDate() != parseFloat(RegExp.$1))
+                return false;
+    
+            return true;
+        },
+        "gMonth": function(value){
+            value = value.replace(/-/g, "/");
+            value.match(/^\/{2}(\d{2})(?:\w|[\+\-]\d{2}:\d{2})?$/);
+    
+            var dt = new Date(value);
+            if (dt.getMonth() != parseFloat(RegExp.$1) - 1)
+                return false;
+    
+            return true;
+        },
+    
+        //XSD datetypes
+        "string": function(value){
+            return typeof value == "string";
+        },
+        "boolean": function(value){
+            return /^(true|false)$/i.test(value);
+        },
+        "base64Binary": function(value){
+            return true;
+        },
+        "hexBinary": function(value){
+            return /^(?:0x|x|#)?[A-F0-9]{0,8}$/i.test(value);
+        },
+        "float": function(value){
+            return parseFloat(value) == value;
+        },
+        "decimal": function(value){
+            return /^[0-9\.\-,]+$/.test(value);
+        },
+        "double": function(value){
+            return parseFloat(value) == value;
+        },
+        "anyURI": function(value){
+            return /^(?:\w+:\/\/)?(?:(?:[\w\-]+\.)+(?:[a-z]+)|(?:(?:1?\d?\d?|2[0-4]9|25[0-5])\.){3}(?:1?\d\d|2[0-4]9|25[0-5]))(?:\:\d+)?(?:\/([^\s\\\%]+|%[\da-f]{2})*)?$/i
+                .test(value);
+        },
+        "QName": function(value){
+            return true;
+        },
+        "normalizedString": function(value){
+            return true;
+        },
+        "token": function(value){
+            return true;
+        },
+        "language": function(value){
+            return true;
+        },
+        "Name": function(value){
+            return true;
+        },
+        "NCName": function(value){
+            return true;
+        },
+        "ID": function(value){
+            return true;
+        },
+        "IDREF": function(value){
+            return true;
+        },
+        "IDREFS": function(value){
+            return true;
+        },
+        "NMTOKEN": function(value){
+            return true;
+        },
+        "NMTOKENS": function(value){
+            return true;
+        },
+        "integer": function(value){
+            return parseInt(value) == value;
+        },
+        "nonPositiveInteger": function(value){
+            return parseInt(value) == value && value <= 0;
+        },
+        "negativeInteger": function(value){
+            return parseInt(value) == value && value < 0;
+        },
+        "long": function(value){
+            return parseInt(value) == value && value >= -2147483648
+                && value <= 2147483647;
+        },
+        "int": function(value){
+            return parseInt(value) == value;
+        },
+        "short": function(value){
+            return parseInt(value) == value && value >= -32768 && value <= 32767;
+        },
+        "byte": function(value){
+            return parseInt(value) == value && value >= -128 && value <= 127;
+        },
+        "nonNegativeInteger": function(value){
+            return parseInt(value) == value && value >= 0;
+        },
+        "unsignedLong": function(value){
+            return parseInt(value) == value && value >= 0 && value <= 4294967295;
+        },
+        "unsignedInt": function(value){
+            return parseInt(value) == value && value >= 0;
+        },
+        "unsignedShort": function(value){
+            return parseInt(value) == value && value >= 0 && value <= 65535;
+        },
+        "unsignedByte": function(value){
+            return parseInt(value) == value && value >= 0 && value <= 255;
+        },
+        "positiveInteger": function(value){
+            return parseInt(value) == value && value > 0;
+        }
+    },
+    
+    
+    
+    "http://ajax.org/2005/aml" : {
+        //Ajax.org Platform datatypes
+        "url": function(value){
+            //@todo please make this better
+            return /\b(https?|ftp):\/\/([\-A-Z0-9.]+)(\/[\-A-Z0-9+&@#\/%=~_|!:,.;]*)?(\?[\-A-Z0-9+&@#\/%=~_|!:,.;]*)?/i.test(value.trim());
+        },
+        "website": function(value){
+            //@todo please make this better
+            return /^(?:http:\/\/)?([\w-]+\.)+\w{2,4}$/.test(value.trim());
+        },
+        "email": function(value){
+            // @see http://fightingforalostcause.net/misc/2006/compare-email-regex.php
+            return /^([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*[\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)$/i
+                .test(value.trim());
+        },
+        "creditcard": function(value){
+            value = value.replace(/ /g, "");
+            value = value.pad(21, "0", apf.PAD_LEFT);
+            for (var total = 0, r, i = value.length; i >= 0; i--) {
+                r = value.substr(i, 1) * (i % 2 + 1);
+                total += r > 9 ? r - 9 : r;
+            }
+            return total % 10 === 0;
+        },
+        "expdate": function(value){
+            value = value.replace(/-/g, "/");
+            value = value.split("/");//.match(/(\d{2})\/(\d{2})/);
+            var dt = new Date(value[0] + "/01/" + value[1]);
+            //if(fulldate && dt.getFullYear() != parseFloat(value[1])) return false;
+            if (dt.getYear() != parseFloat(value[1]))
+                return false;//!fulldate &&
+            if (dt.getMonth() != parseFloat(value[0]) - 1)
+                return false;
+    
+            return true;
+        },
+        "wechars": function(value){
+            return /^[0-9A-Za-z\xC0-\xCF\xD1-\xD6\xD8-\xDD\xDF-\xF6\xF8-\xFF -\.',]+$/
+              .test(value)
+        },
+        "phonenumber": function(value){
+            return /^[\d\+\- \(\)]+$/.test(value)
+        },
+        "faxnumber": function(value){
+            return /^[\d\+\- \(\)]+$/.test(value)
+        },
+        "mobile": function(value){
+            return /^[\d\+\- \(\)]+$/.test(value)
+        }
+    }
+};
+
+apf.xsd.custumTypeHandlers = {};
+
+apf.xsd.matchType = function(value, type){
+    var split  = type.split(":"),
+        prefix = split[0],
+        doc    = apf.document,
+        ns     = doc.$prefixes[prefix];
+    type = split[1];
+    if (prefix == "xsd")
+        ns = "http://www.w3.org/2001/XMLSchema";
+    if (!ns) 
+        ns = doc.namespaceURI || apf.ns.xhtml;
+    
+    var c = this.typeHandlers[ns];
+    
+    //check if type is type
+    if (c && c[type])
+        return c[type](value);
+    
+    throw new Error(apf.formatErrorString(0, null, 
+        "Validating XSD Type", "Could not find type: " + type));
+       
+    return true;
+};
+
+apf.xsd.checkType = function(type, xmlNode){
+    var value = typeof xmlNode == "object"
+        ? apf.queryValue(xmlNode)
+        : xmlNode;
+    
+    if (type.indexOf(":") > -1) {
+        var split  = type.split(":"),
+            prefix = split[0],
+            name   = split[1],
+            doc    = apf.document,
+            ns     = doc.$prefixes[prefix];
+        if (prefix == "xsd")
+            ns = "http://www.w3.org/2001/XMLSchema";
+        if (!ns) 
+            ns = doc.namespaceURI || apf.ns.xhtml;
+        
+        var c = this.typeHandlers[ns];
+        if (c && c[name])
+            return c[name](value);
+    }
+
+    if (this.custumTypeHandlers[type]) {
+        return this.custumTypeHandlers[type](value);
+    }
+    else {
+        //@todo MIKE: to be implemented?
+    }
+};
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/element.js)SIZE(1869)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/enumeration.js)SIZE(1844)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/fractiondigits.js)SIZE(1620)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/length.js)SIZE(1527)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/list.js)SIZE(1215)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxexclusive.js)SIZE(1553)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxinclusive.js)SIZE(1568)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxlength.js)SIZE(1597)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxscale.js)SIZE(1436)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/minexclusive.js)SIZE(1556)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/mininclusive.js)SIZE(1567)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/minlength.js)SIZE(1610)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/minscale.js)SIZE(1436)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/pattern.js)SIZE(1537)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/restriction.js)SIZE(1644)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/schema.js)SIZE(1124)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/simpletype.js)SIZE(2201)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/totaldigits.js)SIZE(1564)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/union.js)SIZE(2331)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/html5.js)SIZE(3232)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * Object creating the HTML5 namespace for the aml parser.
+ *
+ * @constructor
+ * @parser
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8
+ */
+apf.html5 = new apf.AmlNamespace();
+apf.setNamespace("", apf.html5);
+
+
+
+/**
+ * @define input
+ * Remarks:
+ * Ajax.org Platform supports the input types specified by the WHATWG html5 spec.
+ * @attribute {String} type the type of input element.
+ *   Possible values:
+ *   email      provides a way to enter an email address.
+ *   url        provides a way to enter a url.
+ *   password   provides a way to enter a password.
+ *   datetime   provides a way to pick a date and time.
+ *   date       provides a way to pick a date.
+ *   month      provides a way to pick a month.
+ *   week       provides a way to pick a week.
+ *   time       provides a way to pick a time.
+ *   number     provides a way to pick a number.
+ *   range      provides a way to select a point in a range.
+ *   checkbox   provides a way to set a boolean value.
+ *   radio      used in a set, it provides a way to select a single value from multiple options.
+ *   file       provides a way to upload a file.
+ *   submit     provides a way to submit data.
+ *   image      provides a way to submit data displaying an image instead of a button.
+ *   reset      provides a way to reset entered data.
+ * @addnode elements
+ */
+/**
+ * @private
+ */
+apf.HTML5INPUT = {
+    "email"    : "textbox",
+    "url"      : "textbox",
+    "password" : "textbox",
+    "datetime" : "spinner", //@todo
+    "date"     : "calendar",
+    "month"    : "spinner", //@todo
+    "week"     : "spinner", //@todo
+    "time"     : "spinner", //@todo
+    "number"   : "spinner",
+    "range"    : "slider",
+    "checkbox" : "checkbox",
+    "radio"    : "radiobutton",
+    "file"     : "upload",
+    "submit"   : "submit",
+    "image"    : "submit",
+    "reset"    : "button"
+};
+
+/* way to implement this:
+var o = (new function(){
+})
+o.constructor.prototype = new apf.list();
+
+*/
+
+
+
+/* #-ifdef __WITH_HTML5
+if (tagName == "input") {
+    objName = apf.HTML5INPUT[objName = x.getAttribute("type")]
+        || objName || "textbox";
+}
+//#-endif*/
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xforms.js)SIZE(4191)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+//XForms
+
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xinclude.js)SIZE(1325)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * Object creating the XML Include namespace for the aml parser.
+ *
+ * @constructor
+ * @parser
+ *
+ * @allownode simpleType, complexType
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8
+ */
+apf.xinclude = new apf.AmlNamespace();
+apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xinclude/fallback.js)SIZE(1322)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xinclude/include.js)SIZE(7025)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+/**
+ * Defines a list of acceptable values
+ */
+apf.XiInclude = function(struct, tagName){
+    this.$init(tagName || "include", apf.NODE_HIDDEN, struct);
+};
+
+apf.xinclude.setElement("include", apf.XiInclude);
+apf.aml.setElement("include", apf.XiInclude);
+
+//@todo test defer="true" situation
+(function(){
+    this.$parsePrio = "002";
+
+    //1 = force no bind rule, 2 = force bind rule 
+    /*this.$attrExcludePropBind = apf.extend({
+        href : 1,
+        src  : 1
+    }, this.$attrExcludePropBind);*/
+
+    this.$propHandlers["href"] = 
+    this.$propHandlers["src"]  = function(value){
+        if (typeof value != "string")
+            return finish.call(this, value);
+        
+        if (value.trim().charAt(0) == "<") {
+            loadIncludeFile.call(this, value.trim());
+            return;
+        }
+
+        this.$path = value.charAt(0) == "{" //@todo this shouldn't happen anymore
+          ? value
+          : apf.getAbsolutePath(apf.hostPath, value);
+        
+        var domParser = this.ownerDocument.$domParser;
+        if (!this.defer) {
+            domParser.$shouldWait++;
+            this.$parseContext = domParser.$parseContext || [this.parentNode];
+        }
+
+        //var basePath = apf.hostPath;//only for recursion: apf.getDirname(xmlNode.getAttribute("filename")) || 
+        loadIncludeFile.call(this, this.$path);
+    };
+    
+    function done(xmlNode) {
+        if (this.callback) {
+            this.callback({
+                xmlNode : xmlNode,
+                amlNode : this.parentNode,
+                addedNode: this.previousSibling || this.nextSibling
+            })
+        }
+        
+        //@todo hack!! this should never happen. Find out why it happens
+        if (this.parentNode)
+            this.parentNode.removeChild(this);
+    }
+    
+    function finish(xmlNode){
+        var domParser = this.ownerDocument.$domParser;
+
+        if (this.clear)
+            this.parentNode.$int.innerHTML = "";
+
+        if (xmlNode) {
+            domParser.parseFromXml(xmlNode, {
+                doc        : this.ownerDocument,
+                amlNode    : this.parentNode,
+                beforeNode : this,
+                include    : true
+            });
+
+            if (!this.defer && this.$parseContext) {
+                var o     = (this.$parseContext[1] || (this.$parseContext[1] = {})),
+                    cb    = o.callback,
+                    _self = this;
+
+                o.callback = function(){
+                    done.call(_self, xmlNode);
+                    if (cb)
+                        cb.call(_self.ownerDocument);
+                };
+
+                //@todo this is wrong... probably based on load order of last include element. Please rearchitect parse continuation.
+                if (domParser.$continueParsing.apply(domParser, this.$parseContext) === false) {
+                    var o2  = (domParser.$parseContext[1] || (domParser.$parseContext[1] = {})),
+                        cb2 = o.callback;
+                    o2.callback = function(){
+                        if (cb)
+                            cb.call(_self.ownerDocument);
+                        domParser.$continueParsing.apply(domParser, _self.$parseContext);
+                    };
+                }
+            }
+            else
+                done.call(this, xmlNode);
+        }
+        else {
+            if (!this.defer)
+                domParser.$continueParsing.apply(domParser, this.$parseContext);
+            
+            done.call(this, xmlNode);
+        }
+    }
+    
+    function loadIncludeFile(path){
+        
+
+        var _self = this;
+        apf.getData(path, apf.extend(this.options || {}, {
+            
+            callback : function(xmlString, state, extra){
+                if (state != apf.SUCCESS) {
+                    var oError = new Error(apf.formatErrorString(1007,
+                        _self, "Loading Includes", "Could not load Include file '"
+                        + (path || _self.src)
+                        + "'\nReason: " + extra.message));
+
+                    if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
+                        return true;
+
+                    apf.console.error(oError.message);
+
+                    finish.call(_self, null);
+
+                    //throw oError;
+                    return;
+                }
+
+                //@todo apf3.0 please make one way of doing this
+                xmlString = xmlString.replace(/\<\!DOCTYPE[^>]*>/, "")
+                    .replace(/^[\r\n\s]*/, ""); //.replace(/&nbsp;/g, " ")
+                if (!apf.supportNamespaces)
+                    xmlString = xmlString.replace(/xmlns\=\"[^"]*\"/g, "");
+                
+                if (xmlString.indexOf("<a:application") == -1)
+                    xmlString = "<a:application xmlns:a='" + apf.ns.aml +"'>"
+                      + xmlString + "</a:application>";
+
+                var xmlNode = apf.getXml(xmlString, null, true);//apf.getAmlDocFromString(xmlString);
+            
+                if (!xmlNode) {
+                    throw new Error(apf.formatErrorString(0, null,
+                        "Loading include",
+                        "Could not parse include file. Maybe the file does not exist?", xmlNode));
+                }
+                xmlNode.setAttribute("filename", extra.url);
+
+                
+
+                finish.call(_self, xmlNode); //@todo add recursive includes support here
+            },
+            async         : true,
+            ignoreOffline : true
+        }));
+    }
+}).call(apf.XiInclude.prototype = new apf.AmlElement());
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/markup/xslt/xslt.js)SIZE(13722)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+        };
+
+        /**
+         * @private
+         */
+        this.instantiate = function(x){
+            var url     = x.getAttribute("src"),
+                options = {
+                    async   : x.getAttribute("async") != "false",
+                    nocache : true
+                };
+>>>>>>> origin/master
+
+            this.getURL = function(data, userdata){
+                options.data     = data;
+                options.userdata = userdata;
+                options.callback = this.callbacks.getURL;
+                return this.get(url, options);
+            }
+
+            var name = "http" + Math.round(Math.random() * 100000);
+            apf.setReference(name, this);
+
+            return name + ".getURL()";
+        };
+
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit.js)SIZE(34637)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+        /**
+         * @private
+         */
+        this.call = function(method, args){
+            this[method].call(this, args);
+        };
+    }
+};
+>>>>>>> origin/master
+
+
+
+apf.Init.run("http");
+
+
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/richtext.js)SIZE(53610)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/iframe.js)SIZE(5720)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+<<<<<<< HEAD
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/socket.js)SIZE(19222)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16976,7 +22244,11 @@ apf.Init.run("http");
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/blockquote.js)SIZE(1594)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16782)TIME(Fri, 16 Sep 2011 12:57:18 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17000,12 +22272,37 @@ apf.Init.run("http");
  */
 
 
+<<<<<<< HEAD
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/charmap.js)SIZE(6951)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+=======
 /**
  * The parser of the Ajax.org Markup Language. Besides aml this parser takes care
  * of distributing parsing tasks to other parsers like the native html parser and
  * the xsd parser.
  * @parser
  * @private
+>>>>>>> origin/master
  *
  * @define include element that loads another aml files.
  * Example:
@@ -17068,6 +22365,30 @@ apf.DOMParser.prototype = new (function(){
             xmlNode = apf.getXmlDom(xmlStr, null, this.preserveWhiteSpace || apf.debug).documentElement;
         }
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/clipboard.js)SIZE(13429)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+=======
         return this.parseFromXml(xmlNode, options);
     };
     
@@ -17109,6 +22430,7 @@ apf.DOMParser.prototype = new (function(){
                 var rest = p ? n.splice(p, n.length - p) : [];
             }
         }
+>>>>>>> origin/master
 
         //Set parse context
         this.$parseContext = [amlNode, options];
@@ -17133,6 +22455,9 @@ apf.DOMParser.prototype = new (function(){
                 if (cL > 0)
                     (newNode.previousSibling = cNodes[cL - 1]).nextSibling = newNode;
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/code.js)SIZE(11899)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
                 //Create children
                 if (!newNode.render && newNode.canHaveChildren && (nNodes = node.childNodes).length)
                     recur(newNode, nNodes);
@@ -17150,6 +22475,7 @@ apf.DOMParser.prototype = new (function(){
                       && (nodelist[newNode.$parsePrio] = []))).push(newNode); //for second pass
                 }
             }
+>>>>>>> origin/master
 
             amlNode.firstChild = cNodes[0];
             amlNode.lastChild  = cNodes[cL];
@@ -17194,6 +22520,9 @@ apf.DOMParser.prototype = new (function(){
             this.$continueParsing(amlNode, options);
         }
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/color.js)SIZE(7167)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         return (docFrag || doc);
     };
     
@@ -17201,6 +22530,7 @@ apf.DOMParser.prototype = new (function(){
     this.$continueParsing = function(amlNode, options){
         if (this.$shouldWait && --this.$shouldWait != 0)
             return false;
+>>>>>>> origin/master
 
         if (!options)
             options = {};
@@ -17249,6 +22579,9 @@ apf.DOMParser.prototype = new (function(){
         if (options.callback)
             options.callback.call(amlNode.ownerDocument);
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/datetime.js)SIZE(3585)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         delete this.$parseContext;
     };
     
@@ -17274,6 +22607,7 @@ apf.DOMParser.prototype = new (function(){
                 else {
                     prefix = doc.$prefixes[namespaceURI] || "";
                 }
+>>>>>>> origin/master
 
                 
                 
@@ -17325,6 +22659,9 @@ apf.DOMParser.prototype = new (function(){
                 if (!this.preserveWhiteSpace && !(nodeValue || "").trim())
                     return;
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/directions.js)SIZE(1579)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
                 o = new apf.AmlText();
                 o.nodeValue = nodeValue || xmlNode && xmlNode.nodeValue;
                 break;
@@ -17332,6 +22669,7 @@ apf.DOMParser.prototype = new (function(){
                 var target = nodeName || xmlNode && xmlNode.nodeName;
                 
                 o = new apf.aml.processingInstructions[target]();
+>>>>>>> origin/master
 
                 o.target = o.nodeName  = target;
                 o.data   = o.nodeValue = nodeValue || xmlNode && xmlNode.nodeValue;
@@ -17396,7 +22734,11 @@ apf.AmlNamespace.prototype = {
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/emotions.js)SIZE(4322)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/markup/aml.js)SIZE(1478)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17439,7 +22781,11 @@ apf.aml = new apf.AmlNamespace();
 apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/fontbase.js)SIZE(8575)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/node.js)SIZE(21515)TIME(Fri, 15 Jul 2011 15:38:55 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17466,6 +22812,13 @@ apf.__AMLNODE__ = 1 << 14;
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/fontstyle.js)SIZE(25741)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+=======
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have Document Object Model (DOM) support. The DOM
  * is the primary method for accessing and manipulating an xml document. This
@@ -17495,6 +22848,7 @@ apf.__AMLNODE__ = 1 << 14;
  *  winExample.setAttribute("title", "Example");
  *  winExample.setAttribute("icon", "icoFolder.gif");
  *  winExample.setAttribute("left", "100");
+>>>>>>> origin/master
  *
  *  var lblNew = apf.document.createElement("label");
  *  winExample.appendChild(lblNew);
@@ -17662,6 +23016,35 @@ apf.AmlNode = function(){
      */
     this.appendChild =
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/help.js)SIZE(1485)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/hr.js)SIZE(1593)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     /**
      * Inserts an element before another element in the list of children of this
      * element. * If the element was already a child of another element it is
@@ -17688,6 +23071,7 @@ apf.AmlNode = function(){
                 "Insertbefore DOM operation",
                 "Cannot append node as a child of itself."));
         }
+>>>>>>> origin/master
 
         if (amlNode.nodeType == this.NODE_DOCUMENT_FRAGMENT) {
             var nodes = amlNode.childNodes.slice(0);
@@ -17719,8 +23103,12 @@ apf.AmlNode = function(){
             amlNode.removeNode(isMoveWithinParent, noHtmlDomEdit);
         amlNode.parentNode = this;
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/image.js)SIZE(5033)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         if (beforeNode)
             index = this.childNodes.indexOf(beforeNode);
+>>>>>>> origin/master
 
         if (beforeNode) {
             amlNode.nextSibling = beforeNode;
@@ -17750,6 +23138,9 @@ apf.AmlNode = function(){
         this.firstChild = this.childNodes[0];
         this.lastChild  = this.childNodes[this.childNodes.length - 1];
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/links.js)SIZE(7721)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         //@todo fix event struture, fix tree events
         var initialAppend = !amlNode.$amlLoaded;
         function triggerUpdate(){
@@ -17995,6 +23386,7 @@ apf.AmlNode = function(){
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/element.js)SIZE(21829)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18093,6 +23485,108 @@ apf.AmlElement = function(struct, tagName){
             if (nodes) {
                 this.childNodes = nodes;
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/list.js)SIZE(4641)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/media.js)SIZE(1489)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/printing.js)SIZE(2098)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/search.js)SIZE(10436)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+=======
                 for (i = 0, l = nodes.length; i < l; i++) {
                     nodes[i].nextSibling = nodes[i + 1] || null;
                     nodes[i].previousSibling = nodes[i - 1] || null;
@@ -18101,6 +23595,7 @@ apf.AmlElement = function(struct, tagName){
                 this.firstChild = nodes[0] || null;
                 this.lastChild  = nodes[nodes.length - 1] || null;
             }
+>>>>>>> origin/master
 
             //Temp hack
             this.$aml = apf.$emptyNode || (apf.$emptyNode = apf.getXml("<empty />"));
@@ -18202,8 +23697,12 @@ apf.AmlElement = function(struct, tagName){
             if ((node = nodes[i]).nodeType != 1)
                 continue;
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/spell.js)SIZE(11849)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
             if (node.namespaceURI == namespaceURI && (node.localName == localName || localName == "*"))
                 result.push(node);
+>>>>>>> origin/master
 
             if (!norecur && node.nodeType == 1)
                 result = result.concat(node.getElementsByTagNameNS(namespaceURI, localName));
@@ -18294,6 +23793,9 @@ apf.AmlElement = function(struct, tagName){
         this.attributes.removeNamedItem(attrNode.name); //@todo this should probably be slightly different.
     };
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/subsup.js)SIZE(1935)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     /**
      * Retrieves the value of an attribute of this element
      * @param  {String}  name       the name of the attribute for which to return the value.
@@ -18316,6 +23818,7 @@ apf.AmlElement = function(struct, tagName){
     this.getAttributeNode = function(name){
         return this.attributes.getNamedItem(name);
     };
+>>>>>>> origin/master
 
     this.getBoundingClientRect = function(){
         return new apf.AmlTextRectangle(this);
@@ -18364,8 +23867,12 @@ apf.AmlElement = function(struct, tagName){
             if (oItem.$aml && oItem.$aml.parentNode)
                 oItem.$aml.parentNode.removeChild(oItem.$aml);*/
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/tables.js)SIZE(27128)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
             if (oItem.destroy)
                 oItem.destroy(true);
+>>>>>>> origin/master
 
             if (oItem.$ext != this.$int)
                 apf.destroyHtmlNode(oItem.$ext);
@@ -18390,7 +23897,11 @@ apf.AmlElement = function(struct, tagName){
     this.insertMarkup = function(amlDefNode, options){
         
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/visualaid.js)SIZE(1736)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         
+>>>>>>> origin/master
 
         var _self   = this;
         var include = new apf.XiInclude();
@@ -18649,7 +24160,11 @@ apf.AmlCharacterData = function(){
 apf.AmlCharacterData.prototype = new apf.AmlNode();
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/anchoring.js)SIZE(19356)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/text.js)SIZE(4136)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18677,6 +24192,9 @@ apf.AmlText = function(isPrototype){
     this.$init(isPrototype);
 };
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable.js)SIZE(20162)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 (function(){
     this.nodeType = this.NODE_TEXT;
     this.nodeName = "#text";
@@ -18750,6 +24268,7 @@ apf.AmlText = function(isPrototype){
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/attr.js)SIZE(4716)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18785,6 +24304,9 @@ apf.AmlAttr = function(ownerElement, name, value){
     this.nodeValue = this.value = value;
 };
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/guielement.js)SIZE(33087)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 (function(){
     this.nodeType  = this.NODE_ATTRIBUTE;
     
@@ -18875,6 +24397,7 @@ apf.AmlAttr = function(ownerElement, name, value){
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/cdatasection.js)SIZE(1300)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19823,6 +25346,9 @@ apf.AmlSelection = function(doc){
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/textrectangle.js)SIZE(1662)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/presentation.js)SIZE(20749)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
@@ -19866,6 +25392,7 @@ apf.AmlTextRectangle.prototype = new apf.Class();
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml.js)SIZE(1530)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20798,7 +26325,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/validation.js)SIZE(27683)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/enumeration.js)SIZE(1844)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21148,7 +26679,11 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding.js)SIZE(58775)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/schema.js)SIZE(1124)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21713,7 +27248,11 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(47033)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22624,9 +28163,13 @@ apf.Anchoring = function(){
         }
     }
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding/standard.js)SIZE(6499)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     this.$updateLayout = function(){
         if (!this.$anchoringEnabled)
             return;
+>>>>>>> origin/master
 
         if (!apf.window.vManager.check(this, "anchoring", visCheck))
             return;
@@ -22635,9 +28178,13 @@ apf.Anchoring = function(){
             if (!this.$ext.getAttribute("id"))
                 apf.setUniqueHtmlId(this.$ext);
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/multiselect.js)SIZE(73638)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
             this.$rule_header = getRuleHeader.call(this);
             this.$parsed      = true;
         }
+>>>>>>> origin/master
 
         if (!this.$updateQueue) {
             if (this.visible && this.$ext.style.display == "none")
@@ -22679,6 +28226,9 @@ apf.Anchoring = function(){
             if (right && typeof right == "string")
                 right = setPercentage(right, "pWidth");
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/childvalue.js)SIZE(3934)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
             if (hasLeft) {
                 if (parseInt(left) != left) {
                     left = setPercentage(left,  "pWidth");
@@ -22695,6 +28245,7 @@ apf.Anchoring = function(){
                 else
                     this.$ext.style.right = right + "px";
             }
+>>>>>>> origin/master
 
             if (hasLeft && hasRight) { //right != null && left != null) {
                 if (!apf.hasStyleAnchors)
@@ -22730,6 +28281,9 @@ apf.Anchoring = function(){
 
             this.$verdiff = apf.getHeightDiff(this.$ext);
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dataaction.js)SIZE(27055)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
             var top    = this.$anchors[0] || this.top,
                 bottom = this.$anchors[2] || this.bottom,
                 height = this.height, hasTop = top || top === 0,
@@ -22811,6 +28365,7 @@ apf.Anchoring = function(){
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable.js)SIZE(20162)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23291,6 +28846,9 @@ apf.GuiElement = function(){
                 ? this.selected
                 : this.xmlRoot;
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/cache.js)SIZE(12760)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
             var i, l, m, isRef, sel, menuId, cm, result;
             for (i = 0, l = this.contextmenus.length; i < l; i++) {
                 isRef  = (typeof (cm = this.contextmenus[i]) == "string");
@@ -23301,6 +28859,7 @@ apf.GuiElement = function(){
                         injectself : true
                     })))(xmlNode)
                 }
+>>>>>>> origin/master
 
                 if (isRef || xmlNode && result || !cm.match) { //!xmlNode && 
                     menuId = isRef
@@ -23315,11 +28874,15 @@ apf.GuiElement = function(){
 
                     self[menuId].display(e.x, e.y, null, this, xmlNode);
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/rename.js)SIZE(15022)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
                     e.returnValue  = false;//htmlEvent.
                     e.cancelBubble = true;
                     break;
                 }
             }
+>>>>>>> origin/master
 
             //IE6 compatiblity
             /*
@@ -23612,6 +29175,39 @@ apf.GuiElement.propHandlers = {
     "aml": function(value){
         this.replaceMarkup(value);
     }
+<<<<<<< HEAD
+    
+    this.$txt.refCount++;
+}
+
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/a11y.js)SIZE(5144)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+=======
+>>>>>>> origin/master
 
     /**
      * @attribute {String} sets this aml element to be editable
@@ -23624,7 +29220,11 @@ apf.GuiElement.propHandlers = {
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basebutton.js)SIZE(10335)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/presentation.js)SIZE(20749)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24120,8 +29720,12 @@ apf.Presentation = function(){
             return false;
         }
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/baselist.js)SIZE(38108)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         if (!section)
             return htmlNode || apf.getFirstElement(node);
+>>>>>>> origin/master
 
         var textNode = node.getAttribute(section);
         if (!textNode)
@@ -24964,7 +30568,796 @@ apf.config.$inheritProperties["validgroup"] = 1;
 
 
 
+<<<<<<< HEAD
+    this.$selectDefault = function(XMLRoot){
+        this.select(this.getTraverseNodes()[0], null, null, null, true);
+    };
+
+    /**
+     * Generates a list of items based on a string.
+     * @param {String} str the description of the items. Items are seperated by a comma (,). Ranges are specified by a start and end value seperated by a dash (-).
+     * Example:
+     * This example loads a list with items starting at 1980 and ending at 2050.
+     * <code>
+     *  lst.loadFillData("1980-2050");
+     *  lst.loadFillData("red,green,blue,white");
+     *  lst.loadFillData("None,100-110,1000-1100");
+     *  lst.loadFillData("1-10"); // 1 2 3 4 etc
+     *  lst.loadFillData("01-10"); //01, 02, 03, 04, etc
+     * </code>
+     */
+    this.loadFillData = function(str){
+        var len, start, end, parts = str.splitSafe(","), data = [];
+        
+        for (var p, part, i = 0; i < parts.length; i++) {
+            if ((part = parts[i]).match(/^\d+-\d+$/)) {
+                p     = part.split("-");
+                start = parseInt(p[0]);
+                end   = parseInt(p[1]);
+                
+                if (p[0].length == p[1].length) {
+                    len = Math.max(p[0].length, p[1].length);
+                    for (var j = start; j < end + 1; j++) {
+                        data.push("<item>" + (j + "").pad(len, "0") + "</item>");
+                    }
+                }
+                else {
+                    for (var j = start; j < end + 1; j++) {
+                        data.push("<item>" + j + "</item>");
+                    }
+                }
+            }
+            else {
+                data.push("<item>" + part + "</item>");
+            }
+        }
+        
+        //@todo this is all an ugly hack (copied from item.js line 486)
+        //this.$preventDataLoad = true;//@todo apf3.0 add remove for this
+        
+        this.$initingModel = true;
+        
+        this.each = "item";
+        this.$setDynamicProperty("caption", "[label/text()|@caption|text()]");
+        this.$setDynamicProperty("eachvalue", "[value/text()|@value|text()]");
+        this.$canLoadDataAttr = false;
+
+        this.load("<data>" + data.join("") + "</data>");
+    };
+
+}).call(apf.BaseList.prototype = new apf.MultiSelect());
+
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basesimple.js)SIZE(1729)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+/**
+ * Baseclass of a simple element. This are usually displaying elements 
+ * (i.e. {@link element.label}, {@link element.picture})
+ *
+ * @constructor
+ * @baseclass
+ *
+ * @inherits apf.StandardBinding
+ * @inherits apf.DataAction
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8
+ */
+apf.BaseSimple = function(){
+    this.$init(true);
+};
+
+(function() {
+    
+    this.implement(apf.DataAction);
+    
+    
+    this.getValue = function(){
+        return this.value;
+    };
+
+}).call(apf.BaseSimple.prototype = new apf.StandardBinding());
+
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basestatebuttons.js)SIZE(27242)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+/**
+ * @constructor
+ * @baseclass
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8
+ */
+apf.BaseStateButtons = function(){
+    this.state   = "normal";
+    this.edit    = false;
+    
+    var actions  = {
+        "min"   : ["minimized", "minimize", "restore"],
+        "max"   : ["maximized", "maximize", "restore"],
+        "edit"  : ["edit", "edit", "closeedit"],
+        "close" : ["closed", "close", "show"]
+    };
+    this.$lastheight  = null;
+    this.$lastpos     = null;
+
+    this.$lastState = {"normal":true};    
+    this.$booleanProperties["animate"] = true;
+    this.$supportedProperties.push("buttons", "animate", "state");
+    
+    /**
+     * Close the window. It can be reopened by using {@link baseclass.guielement.method.show}
+     * Call-chaining is supported.
+     * @todo show should unset closed
+     */
+    this.close = function(){
+        this.setProperty("state", this.state.split("|")
+            .pushUnique("closed").join("|"), false, true);
+        return this;
+    };
+
+    /**
+     * Minimize the window. The window will become the height of the title of
+     * the window.
+     * Call-chaining is supported.
+     */
+    this.minimize = function(){
+        this.setProperty("state", this.state.split("|")
+            .remove("maximized")
+            .remove("normal")
+            .pushUnique("minimized").join("|"), false, true);
+        return this;
+    };
+
+    /**
+     * Maximize the window. The window will become the width and height of the
+     * browser window.
+     * Call-chaining is supported.
+     */
+    this.maximize = function(){
+        this.setProperty("state", this.state.split("|")
+            .remove("minimized")
+            .remove("normal")
+            .pushUnique("maximized").join("|"), false, true);
+        return this;
+    };
+
+    /**
+     * Restore the size of the window. The window will become the width and
+     * height it had before it was minimized or maximized.
+     * Call-chaining is supported.
+     */
+    this.restore = function(){
+        this.setProperty("state", this.state.split("|")
+            .remove("minimized")
+            .remove("maximized")
+            .pushUnique("normal").join("|"), false, true);
+        return this;
+    };
+    
+     /**
+     * Set the window into edit state. The configuration panel is shown.
+     * Call-chaining is supported.
+     */
+    this.edit = function(value){
+        this.setProperty("state", this.state.split("|")
+            .pushUnique("edit").join("|"), false, true);
+        return this;
+    };
+
+    /**
+     * Removes the edit state of this window. The configuration panel is hidden.
+     * Call-chaining is supported.
+     */
+    this.closeedit = function(value){
+        this.setProperty("state", this.state.split("|")
+            .remove("edit").join("|"), false, true);
+        return this;
+    };
+    
+    this.$toggle = function(type){
+        var c = actions[type][0];
+        this[actions[type][this.state.indexOf(c) > -1 ? 2 : 1]]();
+    };
+    
+    this.$propHandlers["refparent"] = function(value){
+        if (typeof value == "string")
+            this.$refParent = self[value] && self[value].$ext || document.getElementById(value);
+        else this.$refParent = value;
+    }
+    
+    this.$propHandlers["maxconf"] = function(value){
+        this.$maxconf = value.splitSafe(",");
+    }
+    
+    /**
+     * @attribute {String} state the state of the window. The state can be a
+     * combination of multiple states seperated by a pipe '|' character.
+     *   Possible values:
+     *   normal     The window has it's normal size and position. Default value.
+     *   minimized  The window is minimized.
+     *   maximized  The window is maximized.
+     *   edit       The window is in the edit state.
+     *   closed     The window is closed.
+     */
+    this.$propHandlers["state"] = function(value, prop, force, reenter, noanim){
+        var _self = this;
+        if (!this.$amlLoaded) { //@todo I still think this is weird and should not be needed
+            apf.queue.add("state" + this.$uniqueId, function(){
+                _self.$propHandlers["state"].call(_self, value, prop, force, reenter, noanim);
+            });
+            return;
+        }
+
+        if (value == 0)
+            value = "normal";
+
+        var i, pNode, position, l, t,
+            o          = {},
+            s          = value.split("|"),
+            lastState  = this.$lastState,
+            styleClass = [];
+
+        for (i = 0; i < s.length; i++)
+            o[s[i]] = true;
+        o.value = value;
+
+        if (!o.maximized && !o.minimized)
+            o.normal = true;
+
+        if (!reenter && this.dispatchEvent("beforestatechange", {
+          from : lastState, 
+          to   : o}) === false) {
+            this.state = lastState.value;
+            return false;
+        }
+
+        //Closed state
+        if (o.closed == this.visible) {//change detected
+            this.setProperty("visible", !o["closed"], false, true);
+            //@todo difference is, we're not clearing the other states, check the docking example
+        }
+
+        //Restore state
+        if (o.normal != lastState.normal
+          || !o.normal && (o.minimized != lastState.minimized
+            || o.maximized != lastState.maximized)) {
+
+            if (this.$lastheight) // this.aData && this.aData.hidden == 3 ??
+                this.$ext.style.height = this.$lastheight;//(this.$lastheight - apf.getHeightDiff(this.$ext)) + "px";
+
+            if (this.$lastpos) {
+                apf.plane.hide(this.$uniqueId);
+                
+                if (this.animate && !noanim) {
+                    //Pre remove paused event because of not having onresize
+                    //if (apf.hasSingleRszEvent)
+                        //delete apf.layout.onresize[apf.layout.getHtmlId(this.$pHtmlNode)];
+
+                    var htmlNode = this.$ext;
+                    position = apf.getStyle(htmlNode, "position");
+                    if (position != "absolute") {
+                        l = parseInt(apf.getStyle(htmlNode, "left")) || 0;
+                        t = parseInt(apf.getStyle(htmlNode, "top")) || 0;
+                    }
+                    else {
+                        l = htmlNode.offsetLeft;
+                        t = htmlNode.offsetTop;
+                    }
+
+                    this.animstate = 1;
+                    apf.tween.multi(htmlNode, {
+                        steps    : 15,
+                        anim     : apf.tween.easeInOutCubic,
+                        interval : 10,
+                        tweens   : [
+                            {type: "left",   from: l,    to: this.$lastpos.px[0]},
+                            {type: "top",    from: t,    to: this.$lastpos.px[1]},
+                            {type: "width",  from: this.$ext.offsetWidth,
+                                to: this.$lastpos.px[2]},
+                            {type: "height", from: this.$ext.offsetHeight,
+                                to: this.$lastpos.px[3]}
+                        ],
+                        oneach   : function(){
+                            
+                            if (apf.hasSingleRszEvent)
+                                apf.layout.forceResize(_self.$int);
+                            
+                        },
+                        onfinish : function(){
+                            _self.$lastpos.parentNode.insertBefore(_self.$ext, _self.$lastpos.beforeNode);
+                            
+                            if (_self.$placeHolder)
+                                _self.$placeHolder.parentNode.removeChild(_self.$placeHolder);
+                            
+                            _self.$propHandlers["state"].call(_self, value, null,
+                                null, true, true);
+                        }
+                    });
+
+                    return;
+                }
+                else if (!this.animate) {
+                    apf.plane.hide(this.$uniqueId, true);
+                    
+                    _self.$lastpos.parentNode.insertBefore(_self.$ext, _self.$lastpos.beforeNode);
+                            
+                    if (_self.$placeHolder)
+                        _self.$placeHolder.parentNode.removeChild(_self.$placeHolder);
+                }
+
+                this.$ext.style.position = this.$lastpos.pos;
+                this.$ext.style.left     = this.$lastpos.css[0];
+                this.$ext.style.top      = this.$lastpos.css[1];
+                this.$ext.style.width    = this.$lastpos.css[2];
+                this.$ext.style.height   = this.$lastpos.css[3];
+                
+                pNode = this.$lastpos.parentNode;
+                pNode.style.width    = this.$lastpos.parent[0];
+                pNode.style.height   = this.$lastpos.parent[1];
+                pNode.style.overflow = this.$lastpos.parent[2];
+            }
+
+            
+            if (this.aData && this.aData.restore)
+                this.aData.restore();
+            
+
+            
+            if (apf.layout)
+                apf.layout.play(this.$pHtmlNode);
+            
+
+            this.$lastheight = this.$lastpos = null;
+
+            if (o.normal)
+                styleClass.push("",
+                    this.$baseCSSname + "Max",
+                    this.$baseCSSname + "Min");
+        }
+
+        if (o.minimized != lastState.minimized) {
+            if (o.minimized) {
+                styleClass.unshift(
+                    this.$baseCSSname + "Min",
+                    this.$baseCSSname + "Max",
+                    this.$baseCSSname + "Edit");
+
+                
+                if (this.aData && this.aData.minimize)
+                    this.aData.minimize(this.collapsedHeight);
+                
+
+                if (!this.aData || !this.aData.minimize) {
+                    this.$lastheight = apf.getStyle(this.$ext, "height");//this.$ext.offsetHeight;
+
+                    this.$ext.style.height = Math.max(0, this.collapsedHeight
+                        - apf.getHeightDiff(this.$ext)) + "px";
+                }
+
+                if (this.hasFocus())
+                    apf.window.moveNext(null, this, true);
+                //else if(apf.document.activeElement)
+                    //apf.document.activeElement.$focus({mouse: true});
+            }
+            else {
+                styleClass.push(this.$baseCSSname + "Min");
+
+                $setTimeout(function(){
+                    apf.window.$focusLast(_self);
+                });
+            }
+        }
+
+        if (o.maximized != lastState.maximized) {
+            if (o.maximized) {
+                styleClass.unshift(
+                    this.$baseCSSname + "Max",
+                    this.$baseCSSname + "Min",
+                    this.$baseCSSname + "Edit");
+
+                pNode = this.$refParent;
+                if (!pNode)
+                    pNode = (this.$ext.offsetParent == document.body
+                      ? document.documentElement
+                      : this.$ext.parentNode);
+
+                this.animstate = 0;
+                var hasAnimated = false, htmlNode = this.$ext;
+                
+                var position = apf.getStyle(htmlNode, "position");
+                if (position == "absolute") {
+                    pNode.style.overflow = "hidden";
+                    l = htmlNode.offsetLeft;
+                    t = htmlNode.offsetTop;
+                }
+                else {
+                    var pos = apf.getAbsolutePosition(htmlNode); //pNode
+                    l = pos[0];//parseInt(apf.getStyle(htmlNode, "left")) || 0;
+                    t = pos[1];//parseInt(apf.getStyle(htmlNode, "top")) || 0;
+                }
+                
+                this.$lastpos = {
+                    css    : [this.$ext.style.left, this.$ext.style.top,
+                              this.$ext.style.width, this.$ext.style.height,
+                              this.$ext.style.margin, this.$ext.style.zIndex],
+                    px     : [l, t, this.$ext.offsetWidth, 
+                              this.$ext.offsetHeight],
+                    parent : [pNode.style.width, pNode.style.height, 
+                              pNode.style.overflow],
+                    pos        : htmlNode.style.position,
+                    parentNode : pNode,
+                    beforeNode : this.$ext.nextSibling
+                };
+                
+                if (this.parentNode.$layout) {
+                    if (!this.$placeHolder)
+                        this.$placeHolder = document.createElement("div");
+                    this.$placeHolder.style.position = this.$lastpos.pos;
+                    this.$placeHolder.style.left   = this.$lastpos.css[0];
+                    this.$placeHolder.style.top    = this.$lastpos.css[1];
+                    this.$placeHolder.style.width  = this.$lastpos.px[2] + "px";
+                    this.$placeHolder.style.height = this.$lastpos.px[3] + "px";
+                    this.$placeHolder.style.margin = this.$lastpos.css[4];
+                    this.$placeHolder.style.zIndex = this.$lastpos.css[5];
+                    this.$pHtmlNode.insertBefore(this.$placeHolder, this.$ext);
+                    
+                    htmlNode.style.position = "absolute";
+                }
+                
+                document.body.appendChild(htmlNode);
+                htmlNode.style.left = l + "px";
+                htmlNode.style.top  = t + "px";
+                
+                function setMax(){
+                    //While animating dont execute this function
+                    if (_self.animstate)
+                        return;
+                    
+                    var w, h, pos, box, pDiff;
+                    if (_self.maxconf) {
+                        w = _self.$maxconf[0];
+                        h = _self.$maxconf[1];
+                        
+                        pos = [_self.$maxconf[2] == "center" 
+                            ? (apf.getWindowWidth() - w)/2
+                            : _self.$maxconf[2], 
+                               _self.$maxconf[3] == "center" 
+                            ? (apf.getWindowHeight() - h)/3
+                            : _self.$maxconf[3]];
+                    }
+                    else {
+                        w = !apf.isIE && pNode == document.documentElement
+                            ? window.innerWidth
+                            : pNode.offsetWidth,
+                        h = !apf.isIE && pNode == document.documentElement
+                            ? window.innerHeight
+                            : pNode.offsetHeight;
+                    }
+                    
+                    if (!pos) {
+                        pos = pNode != htmlNode.offsetParent
+                            ? apf.getAbsolutePosition(pNode, htmlNode.offsetParent)
+                            : [0, 0];
+                    }
+
+                    if (position != "absolute") {
+                        var diff = apf.getDiff(pNode);
+                        w -= diff[0] + (!_self.$refParent && apf.isIE8 ? 4 : 0);//@todo dirty hack!
+                        h -= diff[0] + (!_self.$refParent && apf.isIE8 ? 4 : 0);//@todo dirty hack!
+                    }
+                    //@todo dirty hack!
+                    else if (!_self.$refParent && apf.isIE8) {
+                        w -= 4;
+                        h -= 4;
+                    }
+                    
+                    box = _self.$refParent ? [0,0,0,0] : marginBox;
+                    pDiff = apf.getDiff(pNode);
+
+                    pNode.style.width  = (pNode.offsetWidth - pDiff[0]) + "px";
+                    pNode.style.height = (pNode.offsetHeight - pDiff[1]) + "px";
+                    
+                    if (!hasAnimated && _self.$maxconf && _self.$maxconf[4])
+                        apf.plane.show(htmlNode, false, null, null, {
+                            color   : _self.$maxconf[4], 
+                            opacity : _self.$maxconf[5],
+                            animate : _self.animate,
+                            protect : _self.$uniqueId
+                        });
+                    
+                    if (_self.animate && !hasAnimated) {
+                        _self.animstate = 1;
+                        hasAnimated     = true;
+                        apf.tween.multi(htmlNode, {
+                            steps    : 15,
+                            anim     : apf.tween.easeInOutCubic,
+                            interval : 10,
+                            tweens   : [
+                                {type: "left",   from: l, to: pos[0] - box[3]},
+                                {type: "top",    from: t, to: pos[1] - box[0]},
+                                {type: "width",  from: _self.$lastpos.px[2],
+                                    to: (w + box[1] + box[3] - apf.getWidthDiff(_self.$ext))},
+                                {type: "height", from: _self.$lastpos.px[3],
+                                    to: (h + box[0] + box[2] - apf.getHeightDiff(_self.$ext))}
+                            ],
+                            oneach   : function(){
+                                
+                                if (apf.hasSingleRszEvent)
+                                    apf.layout.forceResize(_self.$int);
+                                
+                            },
+                            onfinish : function(){
+                                _self.animstate = 0;
+                                
+                                _self.dispatchEvent("afterstatechange", {
+                                  from : lastState, 
+                                  to   : o
+                                });
+                                
+                                
+                                if (apf.hasSingleRszEvent)
+                                    apf.layout.forceResize(_self.$int);
+                                
+                            }
+                        });
+                    }
+                    else if (!_self.animstate) {
+                        htmlNode.style.left = (pos[0] - box[3]) + "px";
+                        htmlNode.style.top  = (pos[1] - box[0]) + "px";
+
+                        var diff = apf.getDiff(_self.$ext);
+                        htmlNode.style.width  = (w
+                            - diff[0] + box[1] + box[3]) + "px";
+                        htmlNode.style.height = (h
+                            - diff[1] + box[0] + box[2]) + "px";
+                    }
+                }
+
+                
+                if (apf.layout)
+                    apf.layout.pause(this.$pHtmlNode, setMax);
+                
+            }
+            else {
+                styleClass.push(this.$baseCSSname + "Max");
+            }
+        }
+
+        if (o.edit != lastState.edit) {
+            if (o.edit) {
+                styleClass.unshift(
+                    this.$baseCSSname + "Edit",
+                    this.$baseCSSname + "Max",
+                    this.$baseCSSname + "Min");
+
+                if (this.btnedit)
+                    oButtons.edit.innerHTML = "close"; //hack
+
+                this.dispatchEvent('editstart');
+            }
+            else {
+                if (this.dispatchEvent('editstop') === false)
+                    return false;
+
+                styleClass.push(this.$baseCSSname + "Edit");
+                if (styleClass.length == 1)
+                    styleClass.unshift("");
+
+                if (this.btnedit)
+                    oButtons.edit.innerHTML = "edit"; //hack
+            }
+        }
+
+        if (styleClass.length || o.closed != lastState.closed) {
+            if (styleClass.length)
+                this.$setStyleClass(this.$ext, styleClass.shift(), styleClass);
+                
+            if (o.edit) { //@todo apf3.0
+                this.dispatchEvent("prop.visible", {value:true});
+                
+                if (_self.oSettings)
+                    apf.layout.forceResize(_self.oSettings);
+                
+            }
+
+            //@todo research why this is not symmetrical
+            if (!o.maximized || !this.animate || lastState.maximized && _self.animate) {
+                _self.dispatchEvent("afterstatechange", {
+                  from : lastState, 
+                  to   : o});
+            }
+            
+            this.$lastState = o;
+
+            
+            if (this.aData && !o.maximized) { //@todo is this the most optimal position?
+                this.$purgeAlignment();
+            }
+            
+
+            
+            if (!this.animate && apf.hasSingleRszEvent && apf.layout)
+                apf.layout.forceResize(_self.$int);
+            
+        }
+    };
+
+    var marginBox, hordiff, verdiff, oButtons = {}
+    /**
+     * @attribute {String} buttons the buttons that the window displays. This
+     * can be multiple values seperated by a pipe '|' character.
+     *   Possible values:
+     *   min    The button that minimizes the window.
+     *   max    The button that maximizes the window.
+     *   close  The button that closes the window.
+     *   edit   The button that puts the window into the edit state.
+     */
+    this.$propHandlers["buttons"] = function(value){
+        
+        if (!this.$hasLayoutNode("button"))
+            return;
+
+        var buttons   = value && (value = value.replace(/(\|)\||\|$/, "$1")).split("|") || [],
+            nodes     = this.$buttons.childNodes,
+            re        = value && new RegExp("(" + value + ")"),
+            found     = {},
+            idleNodes = [];
+
+        //Check if we can 'remove' buttons
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].nodeType != 1 || nodes[i].tagName != "DIV") //@todo temp hack
+                continue;
+
+            if (nodes[i].getAttribute("button") && (!value 
+              || !nodes[i].className || !nodes[i].className.match(re))) {
+                nodes[i].style.display = "none";
+                this.$setStyleClass(nodes[i], "", ["min", "max", "close", "edit"]);
+                idleNodes.push(nodes[i]);
+            }
+            else {
+                found[RegExp.$1] = nodes[i];
+            }
+        }
+
+        //Create new buttons if needed
+        for (i = 0; i < buttons.length; i++) {
+            if (!buttons[i])
+                continue;
+            
+            if (found[buttons[i]]) {
+                this.$buttons.insertBefore(found[buttons[i]], this.$buttons.firstChild);
+                continue;
+            }
+
+            var btn = idleNodes.pop();
+            if (!btn) {
+                this.$getNewContext("button");
+                btn = this.$getLayoutNode("button");
+                btn.setAttribute("button", "button");
+                setButtonEvents.call(this, btn);
+                btn = apf.insertHtmlNode(btn, this.$buttons);
+            }
+
+            this.$setStyleClass(btn, buttons[i], ["min", "max", "close", "edit"]);
+            btn.onclick = new Function("apf.lookup(" + this.$uniqueId + ").$toggle('"
+                                       + buttons[i] + "')");
+            btn.style.display = "block";
+            oButtons[buttons[i]] = btn;
+            this.$buttons.insertBefore(btn, this.$buttons.firstChild);
+        }
+        
+        marginBox = apf.getBox(apf.getStyle(this.$ext, "borderWidth"));
+    };
+    
+    function setButtonEvents(btn){
+        //@todo can this cancelBubble just go?
+        //event.cancelBubble = true; \
+        btn.setAttribute("onmousedown",
+            "var o = apf.all[" + this.$uniqueId + "];\
+             o.$setStyleClass(this, 'down', null, true);\
+             apf.cancelBubble(event, o); \
+             var o = apf.findHost(this).$ext;\
+             if (o.onmousedown) o.onmousedown(event);\
+             apf.cancelBubble(event, o);\
+             apf.window.$mousedown(event);");
+        btn.setAttribute("onmouseup",
+            "var o = apf.all[" + this.$uniqueId + "];\
+             o.$setStyleClass(this, '', ['down'], true);");
+        btn.setAttribute("onmouseover",
+            "var o = apf.all[" + this.$uniqueId + "];\
+             o.$setStyleClass(this, 'hover', null, true);");
+        btn.setAttribute("onmouseout",
+            "var o = apf.all[" + this.$uniqueId + "];\
+             o.$setStyleClass(this, '', ['hover', 'down'], true);");
+        btn.setAttribute("ondblclick", "apf.stopPropagation(event);");
+    }
+    
+    this.$initButtons = function(oExt){
+        this.animate = apf.enableAnim;
+        
+        this.collapsedHeight = this.$getOption("Main", "collapsed-height");
+
+        var oButtons = this.$getLayoutNode("main", "buttons", oExt);
+        if (!oButtons || apf.isIphone || !this.getAttribute("buttons") 
+          || !this.$hasLayoutNode("button"))
+            return;
+
+        var len = (this.getAttribute("buttons") || "").split("|").length;
+        for (var btn, i = 0; i < len; i++) {
+            this.$getNewContext("button");
+            btn = oButtons.appendChild(this.$getLayoutNode("button"));
+            btn.setAttribute("button", "button");
+            setButtonEvents.call(this, btn);
+        }
+    };
+    
+    this.addEventListener("DOMNodeRemovedFromDocument", function(e){
+        for (var name in oButtons) {
+            oButtons[name].onclick = null;
+        }
+    });
+};
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(57560)TIME(Tue, 18 Oct 2011 13:03:04 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding.js)SIZE(58775)TIME(Mon, 12 Sep 2011 12:54:46 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25148,6 +31541,14 @@ apf.DataBinding = function(){
      * indicator    the data node that is highlighted for keyboard navigation.
      * @return  {variant}  XMLNode or NodeList with the result of the selection
      */
+<<<<<<< HEAD
+    this.$propHandlers["activepage"]   = function(next, prop, force, callback, noEvent){
+        if (!this.inited || apf.isNot(next) || next == -1) return;
+
+        if (!callback) {
+            callback = this.$lastCallback;
+            delete this.$lastCallback;
+=======
     this.queryNodes = function(xpath, type){
         var n = this[type||'xmlRoot'];
 		return n ? n.selectNodes(xpath) : [];
@@ -25161,6 +31562,7 @@ apf.DataBinding = function(){
             var q = this.load(this.$loadqueue[0], {cacheId: this.$loadqueue[1]});
             if (!q || q.dataType != apf.ARRAY || q != this.$loadqueue)
                 this.$loadqueue = null;
+>>>>>>> origin/master
         }
         else return false;
     };
@@ -25202,6 +31604,27 @@ apf.DataBinding = function(){
             return;
         }
         
+<<<<<<< HEAD
+        if (typeof callback == "function") 
+            callback(page);
+
+        return true;
+    };
+    
+    /**
+     * @attribute {String} buttons the modifier for tab page buttons, seperated by a | character
+     *   Possible values:
+     *   close   the button has a close button inside it.
+     *   scale   the buttons are scaled to make room for more buttons.
+     *   scroll  when the buttons take too much space scroll buttons are displayed.
+     */
+    this.$propHandlers["buttons"] = function(value){
+        //this.buttons = value;
+        this.$scale = value.indexOf("scale") > -1;
+        this.$scroll = !this.$scale;
+        this.$order = value.indexOf("order") > -1;
+=======
+>>>>>>> origin/master
         
         this.setProperty(prop, undoObj && undoObj.extra.range || value, true); //@todo apf3.0 range
         
@@ -25222,11 +31645,117 @@ apf.DataBinding = function(){
         if (!this.$amlBindQueue || !(queue = this.$amlBindQueue.caption))
             return;
 
+<<<<<<< HEAD
+                if (type == "add")
+                    node.dispatchEvent("afteropen");
+                else if (type == "remove")
+                    node.dispatchEvent("afterclose");
+            }
+            //oneach   : function(){alert(1);}
+        };
+        this.$control.type = type;
+        
+        if (type == "add") {
+            var htmlNode = node.$button;
+            htmlNode.style.width = this.$minBtnWidth + "px";
+            if (pg.length) {
+                scalersz.call(this, null, node);
+                this.$buildScaleAnim(anim, pg, null, true);
+            }
+        }
+        else if (type == "sync") {
+            this.$buildScaleAnim(anim, pg);
+        }
+        else if (type == "remove") {
+            anim.onfinish = function(){
+            	if (node.dispatchEvent("afterclose") !== false)
+                	callback();
+                    
+                html.style.marginLeft = 0;
+                apf.setOpacity(html, 1);
+                
+                if (_self.$waitForMouseOut == 2) {
+                    apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
+                    delete _self.$waitForMouseOut;
+                    _self.$scaleinit(null, "sync");
+                }
+                else if (isLast)
+                    delete _self.$waitForMouseOut;
+            }
+            anim.onstop = function(){
+                apf.setOpacity(html, 1);
+            }
+            
+            var html = node.$button;
+            anim.tweens.push({
+                oHtml : html,
+                type  : "width", 
+                from  : html.offsetWidth - apf.getWidthDiff(html),
+                to    : 0
+            });
+            var over = apf.getWidthDiff(html) + (this.$btnMargin || 0);
+            if (over)
+                anim.tweens.push({
+                    oHtml : html,
+                    type  : "marginLeft", 
+                    from  : 0,
+                    to    : -1 * over
+                });
+            anim.tweens.push({
+                oHtml : html,
+                type  : "fade", 
+                from  : 1,
+                to    : 0
+            });
+            
+            var isLast = pg[pg.length - 1] == node;
+            if (isLast)
+                this.$buildScaleAnim(anim, pg, node);
+            
+            //Set activetab if the current one is lost
+            if (this.nextTabInLine) {
+                this.set(this.nextTabInLine);
+                delete this.nextTabInLine;
+            }
+            else if (this.$activepage == node) {
+                var ln = node.nextSibling;
+                while (ln && (!ln.$first || !ln.visible))
+                    ln = ln.nextSibling;
+                var rn = node.previousSibling;
+                while (rn && (!rn.$last || !rn.visible))
+                    rn = rn.previousSibling;
+                if (ln || rn)
+                    this.set(ln || rn);
+            }
+            
+            this.$waitForMouseOut = true;
+            if (!isLast) {
+                if (!btnMoHandler) {
+                    var _self = this;
+                    function btnMoHandler(e){
+                        var pos = apf.getAbsolutePosition(this);
+                        if (e.clientX <= pos[0] || e.clientY <= pos[1] 
+                          || e.clientX >= pos[0] + this.offsetWidth 
+                          || e.clientY >= pos[1] + this.offsetHeight) {
+                            apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
+                            if (_self.$control.state == apf.tween.STOPPED) {
+                                delete _self.$waitForMouseOut;
+                                _self.$scaleinit(null, "sync");
+                            }
+                            else if (_self.$waitForMouseOut)
+                                _self.$waitForMouseOut = 2;
+                        }
+                    }
+                }
+                
+                apf.addListener(_self.$buttons, "mouseout", btnMoHandler);
+=======
         for (var id in queue) {
             var lm = queue[id];
             if (lm.destroy) {
                 lm.parentNode = lm.$focusParent = lm.$model = lm.xmlRoot = null;
                 lm.destroy();
+>>>>>>> origin/master
             }
             delete queue[id];
         }
@@ -25735,9 +32264,119 @@ apf.DataBinding = function(){
     /**
      * @private
      */
+<<<<<<< HEAD
+    this.scrollIntoView = function(oPage) {
+        bAnimating = false;
+        if (!this.ready || !this.$hasButtons || !this.oScroller || !oPage.$drawn)
+            return;
+        bAnimating = true;
+        if (this.$buttons.offsetWidth < this.$ext.offsetWidth)
+            return this.setScrollerState(false);
+
+        var iTabLeft     = oPage.$button.offsetLeft,
+            iTabWidth    = oPage.$button.offsetWidth,
+            iCurrentLeft = this.$buttons.offsetLeft;
+
+        if (SCROLLANIM.size <= 0) {
+            SCROLLANIM.left = this.$buttons.offsetLeft;
+            var p = this.firstChild;
+            while (!p.$button)
+                p = p.nextSibling;
+            SCROLLANIM.size = Math.round(p.$button.offsetWidth);
+        }
+        this.$buttons.style.left = iCurrentLeft;
+
+        var iRealWidth  = this.$ext.offsetWidth,
+            iScrollCorr = this.oScroller.offsetWidth + 4,
+            iTargetLeft = null,
+            dir;
+
+        if ((iTabLeft + iTabWidth) > ((iRealWidth - iScrollCorr) - iCurrentLeft)) { //scroll to the right
+            iTargetLeft = (-(iTabLeft - SCROLLANIM.left)
+                + (iRealWidth - iTabWidth - iScrollCorr));
+            dir         = SCROLL_RIGHT;
+        }
+        else if ((iCurrentLeft + iTabLeft) < SCROLLANIM.left) { //sroll to the left
+            iTargetLeft = SCROLLANIM.left - iTabLeft;
+            dir         = SCROLL_LEFT;
+        }
+
+        if (iTargetLeft !== null) {
+            this.setScrollerState(true);
+            setButtonState(SCROLL_RIGHT, dir & SCROLL_RIGHT ? SCROLL_DOWN : SCROLL_OFF);
+            setButtonState(SCROLL_LEFT,  dir & SCROLL_LEFT  ? SCROLL_DOWN : SCROLL_OFF);
+            apf.tween.clearQueue(this.$buttons, true);
+
+            apf.tween.single(this.$buttons, {
+                steps   : SCROLLANIM.steps,
+                interval: SCROLLANIM.interval,
+                from    : iCurrentLeft,
+                to      : iTargetLeft,
+                type    : "left",
+                anim    : apf.tween.NORMAL,
+                onstop  : SCROLLANIM.stopHandle,
+                onfinish: function() {
+                    bAnimating = false;
+                    setButtonState(SCROLL_RIGHT, SCROLL_OFF);
+                    setButtonState(SCROLL_LEFT,  SCROLL_OFF);
+                }
+            });
+        }
+        else
+            bAnimating = false;
+    };
+
+    
+
+    /**** DOM Hooks ****/
+
+    this.addEventListener("DOMNodeRemoved", function(e){
+        var amlNode = e.currentTarget;
+        if (e.$doOnlyAdmin || e.relatedNode != this 
+          || amlNode.localName != "page")
+            return;
+        
+        if ((this.activepage || this.activepage == 0) && this.activepage != -1) {
+            if (this.nextTabInLine)
+                this.set(this.nextTabInLine);
+            
+            if (!this.nextTabInLine && this.$activepage == amlNode) {
+                var ln = amlNode.nextSibling;
+                while (ln && (!ln.$first || !ln.visible))
+                    ln = ln.nextSibling;
+                var rn = amlNode.previousSibling;
+                while (rn && (!rn.$last || !rn.visible))
+                    rn = rn.previousSibling;
+        
+                if (this.firstChild == amlNode && ln)
+                    ln && ln.$first();
+                if (this.lastChild == amlNode && rn)
+                    rn && rn.$last();
+                
+                if (ln || rn)
+                    this.set(ln || rn);
+                else {
+                    amlNode.$deactivate();
+                    
+                    
+                    //this.setScrollerState();
+                    
+                    this.$activepage  =
+                    this.activepage   =
+                    this.activepagenr = null;
+                    this.setProperty("activepage", null);
+                }
+            }
+            else {
+                
+                //if (this.$scroll) 
+                    //this.setScrollerState();
+                
+=======
     this.insert = function(xmlNode, options){
         if (typeof xmlNode == "string") {
             if (xmlNode.charAt(0) == "<") {
+>>>>>>> origin/master
                 
                 if (options.whitespace === false)
                     xmlNode = xmlNode.replace(/>[\s\n\r]*</g, "><");
@@ -25749,6 +32388,8 @@ apf.DataBinding = function(){
                     options.insertPoint = this.xmlRoot;
                 return apf.model.prototype.$insertFrom.call(this, xmlNode, options);
             }
+            
+            delete this.nextTabInLine;
         }
         
         var insertPoint = options.insertPoint || this.xmlRoot;
@@ -25772,6 +32413,16 @@ apf.DataBinding = function(){
             if (this.xmlNode == newNode)
                 this.$selectDefault(this.xmlNode);
         }
+<<<<<<< HEAD
+        else if (!this.activepage && !this.$activepage)
+            this.set(amlNode);
+        
+        
+        if (this.$scale && amlNode.visible && !e.$isMoveWithinParent) 
+            this.$scaleinit(amlNode, "add");
+        else 
+=======
+>>>>>>> origin/master
         
         else if (this.xmlNode == newNode) {
             this.setProperty("root", this.xmlNode);
@@ -26192,6 +32843,62 @@ apf.DataBinding = function(){
         else if (this.$model)
             this.$model.$unbindXmlProperty(this, prop);
     };
+<<<<<<< HEAD
+}).call(apf.BaseTab.prototype = new apf.Presentation());
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(50595)TIME(Tue, 01 Nov 2011 14:24:35 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * Baseclass of elements that allows the user to select one or more items
+ * from a tree based element.
+ *
+ * @constructor
+ * @baseclass
+ *
+ * @inherits apf.XForms
+ * @inherits apf.Cache
+ * @inherits apf.DataAction
+ * @inherits apf.Rename
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8
+ * @default_private
+ *
+ */
+apf.BaseTree = function(){
+    this.$init(true);
+    
+    
+    this.$dynCssClasses = [];
+=======
+>>>>>>> origin/master
     
     this.$initingModel;
     function initModel(){
@@ -26211,6 +32918,38 @@ apf.DataBinding = function(){
     
 
     /**
+<<<<<<< HEAD
+     * @attribute {Boolean} openadd         whether the tree expands the parent to which a node is added. Defaults to true.
+     * @attribute {Boolean} startcollapsed  whether the tree collapses all nodes that contain children on load. Defaults to true.
+     * @attribute {Boolean} nocollapse      whether the user cannot collapse a node. Defaults to false.
+     * @attribute {Boolean} singleopen      whether the tree will expand a node by a single click. Defaults to false.
+     * @attribute {Boolean} prerender       whether the tree will render all the nodes at load. Defaults to true.
+     * @attribute {Boolean} disableremove   whether the tree disallows removing nodes with the keyboard, by pressing DEL. Defaults to false.
+     */
+    this.$booleanProperties["openadd"]         = true;
+    this.$booleanProperties["startcollapsed"]  = true;
+    this.$booleanProperties["nocollapse"]      = true;
+    this.$booleanProperties["singleopen"]      = true;
+    this.$booleanProperties["animation"]       = true;
+    this.$booleanProperties["prerender"]       = true;
+    this.$booleanProperties["removecontainer"] = true;
+    this.$booleanProperties["dragroot"]        = true;
+    this.$booleanProperties["disableremove"]   = true;
+    
+    this.$supportedProperties.push("openadd", "startcollapsed", "nocollapse",
+        "singleopen", "prerender", "removecontainer", "animation", "dragroot",
+        "disableremove");
+    
+    this.openadd        = true;
+    this.startcollapsed = 1;
+    this.prerender      = true;
+    this.disableremove  = false;
+    
+    /**** Public Methods ****/
+    
+    /**
+     * Expands all items in the tree
+=======
      * @attribute {String} model the name of the model to load data from or a
      * datainstruction to load data.
      * Example:
@@ -26309,6 +33048,7 @@ apf.DataBinding = function(){
      *  </a:model>
      * </code>
      * @see baseclass.databinding.attribute.model
+>>>>>>> origin/master
      */
     this.$propHandlers["model"] = function(value){
         //Unset model
@@ -26450,10 +33190,23 @@ apf.DataBinding = function(){
         if (value != "virtual")
             return;
 
+<<<<<<< HEAD
+        var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
+        if (!container)
+            container = this.$findContainer(htmlNode);
+        
+        //We don't slide open elements without children.
+        if ((!container.childNodes.length || container.firstChild.nodeType == 3 
+          && container.firstChild.nodeValue.trim() == "")
+          && !this.$getBindRule("insert", xmlNode)
+          && !this.getTraverseNodes(xmlNode).length)
+            return callback && callback(); 
+=======
         this.implement(apf.VirtualViewport);
     };
     
 };
+>>>>>>> origin/master
 
     apf.DataBinding.prototype = new apf[apf.Presentation ? "Presentation" : "AmlElement"]();
 
@@ -27088,6 +33841,232 @@ apf.MultiselectBinding = function(){
                 if (actionFeature[action] & 128) //The change is not for us.
                     return;
                 
+<<<<<<< HEAD
+                if (ctrlKey || !this.isSelected(this.caret))
+                    this.select(this.caret, true);
+                return false;
+            case 46:
+                if (this.disableremove)
+                    return;
+
+                if (this.$tempsel)
+                    this.$selectTemp();
+
+                //DELETE
+                //this.remove();
+                this.remove(this.caret); //this.mode != "check"
+                break;
+            case 36:
+                //HOME
+                this.$setTempSelected(this.getFirstTraverseNode(), false, shiftKey);
+                oExt.scrollTop = 0;
+                return false;
+            case 35:
+                //END
+                var lastNode = this.getLastTraverseNode();
+                while (!this.isCollapsed(lastNode))
+                    lastNode = this.getLastTraverseNode(lastNode);
+                
+                this.$setTempSelected(lastNode, false, shiftKey, true);
+                oExt.scrollTop = oExt.scrollHeight;
+                return false;
+            case 37:
+                //LEFT
+                if (this.$tempsel)
+                    this.$selectTemp();
+                if (this.caret.selectSingleNode(this.each) 
+                  && !this.isCollapsed(this.caret))
+                    this.slideToggle(this.$caret || this.$selected, 2)
+                else if ((pNode = this.getTraverseParent(this.caret))
+                  && pNode != this.xmlRoot)
+                    this.select(pNode)
+                return false;
+            case 107: //+
+            case 187: //+
+            case 39:
+                //RIGHT
+                if (this.$tempsel)
+                    this.$selectTemp();
+            
+                if (this.$hasLoadStatus(this.caret, "potential") 
+                  || this.getFirstTraverseNode(this.caret))
+                    this.slideToggle(this.$caret || this.$selected, 1)
+                break;
+            case 109:
+            case 189:
+                //-
+                if (this.getFirstTraverseNode(this.caret))
+                    this.slideToggle(this.$caret || this.$selected, 2)
+                break;
+            case 38:
+                //UP
+                if (!selXml && !this.$tempsel) 
+                    return;
+                
+                node = this.$tempsel 
+                    ? apf.xmldb.getNode(this.$tempsel) 
+                    : selXml;
+                
+                sNode = this.getNextTraverse(node, true);
+                if (sNode) {
+                    nodes = this.getTraverseNodes(sNode);
+                    
+                    do {
+                        container = this.$getLayoutNode("item", "container",
+                            this.$findHtmlNode(apf.xmldb.getID(sNode, this)));
+                        if (container && apf.getStyle(container, "display") == "block" 
+                          && nodes.length) {
+                                sNode = nodes[nodes.length-1];
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                    while (sNode && (nodes = this.getTraverseNodes(sNode)).length);
+                }
+                else if (this.getTraverseParent(node) == this.xmlRoot) {
+                    this.dispatchEvent("selecttop");
+                    return;
+                }
+                else
+                    sNode = this.getTraverseParent(node);
+
+                if (sNode && sNode.nodeType == 1)
+                   this.$setTempSelected(sNode, ctrlKey, shiftKey, true);
+                else
+                    return false;
+                
+                selHtml = apf.xmldb.getHtmlNode(sNode, this);
+                top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
+                     - (selHtml.offsetHeight);
+                if (top <= oExt.scrollTop)
+                    oExt.scrollTop = top;
+                
+                return false;
+            case 40:
+                //DOWN
+                if (!selXml && !this.$tempsel) 
+                    return;
+
+                node = this.$tempsel 
+                    ? apf.xmldb.getNode(this.$tempsel)
+                    : selXml;
+                
+                sNode = this.getFirstTraverseNode(node);
+                if (sNode) {
+                    container = this.$getLayoutNode("item", "container",
+                        this.$findHtmlNode(apf.xmldb.getID(node, this)));
+                    if (container && apf.getStyle(container, "display") != "block")
+                        sNode = null;
+                }
+                
+                while (!sNode) {
+                    pNode = this.getTraverseParent(node);
+                    if (!pNode) break;
+                    
+                    var i = 0;
+                    nodes = this.getTraverseNodes(pNode);
+                    while (nodes[i] && nodes[i] != node)
+                        i++;
+                    sNode = nodes[i+1];
+                    node  = pNode;
+                }
+
+                if (sNode && sNode.nodeType == 1)
+                   this.$setTempSelected(sNode, ctrlKey, shiftKey);
+                else
+                    return false;
+
+                selHtml = apf.xmldb.getHtmlNode(sNode, this);
+                top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
+                    + (selHtml.offsetHeight);
+                if (top > oExt.scrollTop + oExt.offsetHeight)
+                    oExt.scrollTop = top - oExt.offsetHeight;
+                return false;
+            case 33: //@todo
+                //PGUP
+                pos   = apf.getAbsolutePosition(this.$container);
+                el    = document.elementFromPoint(pos[0] + this.$container.offsetWidth
+                      - 2, pos[1] + 2);
+                sNode = apf.xmldb.findXmlNode(el);
+                if (sNode == this.selected) {
+                    oExt.scrollTop -= oExt.offsetHeight - apf.getHeightDiff(oExt);
+                    el    = document.elementFromPoint(pos[0] + this.$container.offsetWidth
+                          - 2, pos[1] + 2);
+                    sNode = apf.xmldb.findXmlNode(el);
+                }
+                this.select(sNode);
+                
+                selHtml = apf.xmldb.getHtmlNode(sNode, this);
+                top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
+                     - (selHtml.offsetHeight);
+                if (top <= oExt.scrollTop)
+                    oExt.scrollTop = top;
+                break;
+            case 34: //@todo
+                //PGDN
+                pos   = apf.getAbsolutePosition(this.$container);
+                el    = document.elementFromPoint(pos[0] + this.$container.offsetWidth
+                      - 2, pos[1] + this.$ext.offsetHeight - 4);
+                sNode = apf.xmldb.findXmlNode(el);
+                if (sNode == this.selected) {
+                    oExt.scrollTop += oExt.offsetHeight - apf.getHeightDiff(oExt);
+                    el    = document.elementFromPoint(pos[0] + this.$container.offsetWidth
+                          - 2, pos[1] + this.$ext.offsetHeight - 4);
+                    sNode = apf.xmldb.findXmlNode(el);
+                }
+                this.select(sNode);
+                
+                selHtml = apf.xmldb.getHtmlNode(sNode, this);
+                top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
+                    + (selHtml.offsetHeight);
+                if (top > oExt.scrollTop + oExt.offsetHeight)
+                    oExt.scrollTop = top - oExt.offsetHeight;
+                break;
+            default:
+                if (this.celledit) {
+                    if (!ctrlKey && !e.altKey && (key > 46 && key < 112 || key > 123))
+                        this.startRename(null, true);
+                    return;
+                }
+                else if (key == 65 && ctrlKey) {
+                    this.selectAll();
+                    return false;
+                } 
+                //@todo make this work with the sorted column
+                else if (this.caption || (this.bindingRules || {})["caption"]) {
+                    if (!this.xmlRoot) return;
+                    
+                    //this should move to a onkeypress based function
+                    if (!this.lookup || new Date().getTime()
+                      - this.lookup.date.getTime() > 300)
+                        this.lookup = {
+                            str  : "",
+                            date : new Date()
+                        };
+                    
+                    this.lookup.str += String.fromCharCode(key);
+    
+                    var nodes = this.getTraverseNodes(); //@todo start at current indicator
+                    for (var v, i = 0; i < nodes.length; i++) {
+                        v = this.$applyBindRule("caption", nodes[i]);
+                        if (v && v.substr(0, this.lookup.str.length)
+                          .toUpperCase() == this.lookup.str) {
+                            
+                            if (!this.isSelected(nodes[i]))
+                                this.select(nodes[i]);
+                            
+                            if (selHtml)
+                                this.$container.scrollTop = selHtml.offsetTop
+                                    - (this.$container.offsetHeight
+                                    - selHtml.offsetHeight) / 2;
+                            return;
+                        }
+                    }
+                    return;
+                }
+=======
+>>>>>>> origin/master
                 break;
             }
             xmlNode = xmlNode.parentNode;
@@ -27172,12 +34151,16 @@ apf.MultiselectBinding = function(){
                 //Appearantly the content was cleared
                 this.$container.innerHTML = "";
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/delayedrender.js)SIZE(5243)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
                 if (!this.renderRoot) {
                     length = this.getTraverseNodes().length;
                     if (!length)
                         this.clear();
                 }
             }
+>>>>>>> origin/master
 
             result = this.$addNodes(xmlNode, null, true, false, null, null, "insert");//this.$isTreeArch??
             
@@ -27189,12 +34172,16 @@ apf.MultiselectBinding = function(){
 
             
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dragdrop.js)SIZE(55817)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
             if (this.selectable && (length === 0 || !this.xmlRoot.selectSingleNode(this.each)))
                 return;
         }
         else if (action == "add") {// || !htmlNode (Check Add)
             var parentHTMLNode;
             pNode = this.getTraverseParent(xmlNode);
+>>>>>>> origin/master
 
             if (pNode == this.xmlRoot)
                 parentHTMLNode = this.$container;
@@ -28739,10 +35726,14 @@ apf.MultiSelect = function(){
                 continue;
             }
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/focussable.js)SIZE(3405)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
             //Select Node
             if (htmlNode) {
                 if (!sel && selected == htmlNode)
                     sel = htmlNode;
+>>>>>>> origin/master
 
                 this.$select(htmlNode, xmlNode);
                 this.$selectedList.push(htmlNode);
@@ -28761,6 +35752,9 @@ apf.MultiSelect = function(){
         });
     };
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/interactive.js)SIZE(30206)TIME(Tue, 18 Oct 2011 13:03:04 GMT)*/
+=======
     /**
      * Sets the {@link term.caret caret} on an item to indicate to the user that the keyboard
      * actions are done relevant to that item. Using the keyboard
@@ -28785,6 +35779,7 @@ apf.MultiSelect = function(){
             this.$caret = null;
             return;
         }
+>>>>>>> origin/master
 
         /**** Type Detection ****/
         var htmlNode;
@@ -28942,6 +35937,18 @@ apf.MultiSelect = function(){
             this.clearSelection(true);
     };
 
+<<<<<<< HEAD
+    this.$propHandlers["resizable"] = function(value){
+        if (apf.isFalse(value))
+            this.resizable = false;
+        else if (apf.isTrue(value))
+            this.resizable = "true";
+        
+        this.$ext.style.cursor = "";
+        
+        var o = this.oResize || this.$ext;
+        if (o.interactive & 2) 
+=======
     /**
      * Selects the next {@link term.datanode data node} when available.
      */
@@ -29106,6 +36113,7 @@ apf.MultiSelect = function(){
     this.$propHandlers["value"] = function(value){
         if (this.$lastValue == value) {
             delete this.$lastValue;
+>>>>>>> origin/master
             return;
         }
 
@@ -29605,8 +36613,34 @@ apf.MultiSelectServer = {
         };
     },
 
+<<<<<<< HEAD
+        if (_self.resizable == true || _self.resizable == "vertical" || _self.resizable.indexOf('top') > -1 || _self.resizable.indexOf('bottom') > -1) {
+            if (y < rszborder + marginBox[0] && _self.resizable.indexOf('top') > -1)
+                cursor = posAbs ? "n" : "";
+            else if (y > this.offsetHeight - rszborder && _self.resizable.indexOf('bottom') > -1) //marginBox[0] - marginBox[2] - 
+                cursor = "s";
+        }
+        
+        if (_self.resizable == true || _self.resizable == "horizontal" || _self.resizable.indexOf('left') > -1 || _self.resizable.indexOf('right') > -1) {
+            if (x < (cursor ? rszcorner : rszborder) + marginBox[0] && _self.resizable.indexOf('left') > -1)
+                cursor += tcursor + (posAbs ? "w" : "");
+            else if (x > this.offsetWidth - (cursor || tcursor ? rszcorner : rszborder) && _self.resizable.indexOf('right') > -1) //marginBox[1] - marginBox[3] - 
+                cursor += tcursor + "e";
+        }
+        
+        return cursor;
+    }
+    
+    var originalCursor;
+    function resizeIndicate(e){
+        if(!e) e = event;
+        
+        if (!_self.resizable || _self.editable || document.onmousemove)
+            return;
+=======
     $xmlUpdate : function(action, xmlNode, listenNode, UndoObj){
         if (action != "attribute") return;
+>>>>>>> origin/master
 
         var data = this.objects[xmlNode.getAttribute(apf.xmldb.xmlIdTag)];
         if (!data) return;
@@ -29627,7 +36661,11 @@ apf.MultiSelectServer = {
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/media.js)SIZE(18898)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/childvalue.js)SIZE(3934)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29677,6 +36715,9 @@ apf.ChildValue = function(){
 
         this.$norecur = true;
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/multicheck.js)SIZE(16594)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         
         if (v.indexOf("{") > -1 || v.indexOf("[") > -1)
             this.$setDynamicProperty(this.$childProperty, v);
@@ -29730,10 +36771,15 @@ apf.ChildValue = function(){
             this.$propHandlers[this.$childProperty].call(this, "");
     });
 };
+>>>>>>> origin/master
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/teleport.js)SIZE(8790)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dataaction.js)SIZE(27055)TIME(Sat, 13 Aug 2011 16:27:02 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29897,8 +36943,619 @@ apf.DataAction = function(){
             return false;
         }
 
+<<<<<<< HEAD
+        if (this.id)
+            apf.$asyncObjects[this.id] = 1;
+    });
+}).call(apf.Teleport.prototype = new apf.AmlElement());
+
+
+
+
+
+apf.Init.run("teleport");
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/transaction.js)SIZE(23494)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+apf.__TRANSACTION__ = 1 << 3;
+
+
+
+/**
+ * All elements inheriting from this {@link term.baseclass baseclass} have transaction support. A transaction is a 
+ * set of changes to data which are treated as one change. When one of the 
+ * changes in the set fails, all the changes will be cancelled. In the case of
+ * a gui this is mostly relevant when a user decides to cancel after 
+ * making several changes. A good example are the well known property windows 
+ * with an ok, cancel and apply button. 
+ *
+ * When a user edits data, for instance user information, all the changes are
+ * seen as one edit and put on the undo stack as a single action. Thus clicking
+ * undo will undo the entire transaction, not just the last change done by that
+ * user in the edit window. Transaction support both optimistic and pessimistic 
+ * locking. For more information on the latter see the first example below.
+ * Example:
+ * This example shows a list with one item. When double clicked on the item
+ * a window shows that allows the user to edit the properties of this item.
+ * When the window is closed the changes are committed to the xml data. If the
+ * user presses cancel the changes are discarded. By pressing the 'add new item'
+ * button the same window appears which allows the user to add a new item. All
+ * changes made by the user are also sent to the original data source via 
+ * rpc calls. When the user starts editing an existing item a lock is requested.
+ * This is not necesary for transaction support, but this example shows that it
+ * is possible. When the lock fails the window will close. By hooking the
+ * 'lockfail' event the user can be notified of the reason. For more information 
+ * see {@link term.locking}.
+ * <code>
+ *  <a:list 
+ *    id            = "lstItems" 
+ *    onafterchoose = "winEdit.show()" 
+ *    width         = "200">
+ *      <a:each match="[item]">
+ *          <a:caption match="[@name]" />
+ *          <a:icon value="icoItem.png" />
+ *      </a:each>
+ *      <a:actions>
+ *          <a:add set="http://localhost/save.php?xml=%[.]">
+ *              <item name="New Item" />
+ *          </a:add>
+ *          <a:update 
+ *            set  = "http://localhost/save.php?xml=%[.]" 
+ *            lock = "http://localhost/lock.php?id=[@id]" />
+ *      </a:actions>
+ *      <a:model>
+ *          <items>
+ *              <item name="test" subject="subject" id="1">message</item>
+ *          </items>
+ *      </a:model>
+ *  </a:list>
+ *      
+ *  <a:button onclick="winEdit.begin('add');">Add new item</a:button>
+ *       
+ *  <a:window 
+ *    width       = "300"
+ *    id          = "winEdit" 
+ *    transaction = "true"
+ *    model       = "{lstItems.selected}"
+ *    title       = "Edit this message">
+ *      <a:label>Name</a:label>
+ *      <a:textbox 
+ *        value      = "[@name]" 
+ *        required   = "true" 
+ *        invalidmsg = "Please enter your name" />
+ *      <a:label>Subject</a:label>
+ *      <a:textbox value="[@subject]" />
+ *    
+ *      <a:label>Message</a:label>
+ *      <a:textarea value="[text()]" min-length="100" />
+ *      
+ *      <a:button action="ok" default="true">OK</a:button>
+ *      <a:button action="cancel">Cancel</a:button>
+ *      <a:button action="apply" disabled="{!winEdit.undolength}">Apply</a:button>
+ *   </a:window>
+ * </code>
+ *
+ * @constructor
+ * @baseclass
+ *
+ * @inherits apf.StandardBinding
+ * @inherits apf.DataAction
+ * 
+ * @event transactionconflict Fires when data in a transaction is being updated by an external process.
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8.9
+ */
+apf.Transaction = function(){
+    this.$regbase = this.$regbase | apf.__TRANSACTION__;
+
+    this.$addParent          =
+    this.$transactionNode    =
+    this.$transactionSubject =
+    this.$originalNode       =
+    this.$inTransaction      =
+    this.$lastAction         = null;
+
+    this.$supportedProperties.push("autoshow");
+    
+    /**
+     * @attribute {Boolean} autoshow whether this element is shown when a transaction begins.
+     */
+    this.$booleanProperties["autoshow"] = true;
+
+    /**
+     * Commits a started transaction. This will trigger an update or add action.
+     * forked copy of template data.
+     *
+     * @todo  check what's up with actiontracker usage... 
+     * @bug  when a commit is cancelled using the onbeforecommit event, the 
+     * state of the element becomes undefined.
+     */
+    this.commit = function(repeat){
+        if (!this.$inTransaction)
+            return false;
+
+        if (!this.$validgroup && this.validgroup)
+            this.$validgroup = self[this.validgroup];
+
+        if (this.$validgroup && !this.$validgroup.isValid())
+            return false;
+
+        var returnValue = true;
+        if (!this.$at.undolength) {
+            if (repeat)
+                return false;
+            
+            this.$at.purge();
+            this.$inTransaction = false;
+            
+            this.load(this.$originalNode);
+            this.$helperModel.reset();
+            
+            returnValue = false;
+        }
+        else {
+            
+            
+            this.$at.reset();//purge();
+            this.$inTransaction = false;
+            
+            //@todo recursive
+            this.$transactionNode.removeAttribute(apf.xmldb.xmlListenTag)
+            
+            if (this.$lastAction == "add") {
+                //Use ActionTracker :: this.xmlData.selectSingleNode("DataBinding/@select") ? o.xmlRoot : o.selected
+                if (this.$transactionSubject.$executeAction("appendChild",
+                  [this.$addParent, this.$transactionNode], "add", this.$transactionNode)
+                  && this.$transactionSubject.hasFeature(apf.__MULTISELECT__)) {
+                    this.$transactionSubject.select(this.$transactionNode);
+                }
+                
+                this.$transactionSubject = null;
+            }
+            else {
+                //Use ActionTracker
+                //getTraverseParent(o.selected) || o.xmlRoot
+                var at = this.$at;
+                this.$at = this.dataParent 
+                    ? this.dataParent.parent.getActionTracker()
+                    : null;//self[this.getAttribute("actiontracker")];//this.dataParent.parent.getActionTracker();
+                
+                this.$transactionSubject.$executeAction("replaceNode", [this.$originalNode, this.$transactionNode],
+                    "update", this.$transactionNode);
+    
+                this.$at = at;
+        
+                //this.load(this.$transactionNode);
+            }
+        }
+        
+        this.$transactionNode = null;
+        this.$addParent       = null;
+        this.$originalNode    = null;
+        
+        if (this.autoshow) {
+            if (this.autoshow == -1)
+                this.autoshow = true;
+            else
+                this.hide();
+        }
+        
+        return returnValue;
+    };
+    
+    /**
+     * Rolls back the started transaction.
+     */
+    this.rollback = function(noLoad){
+        if (!this.$inTransaction)
+            return;
+        
+        
+        
+        if (this.$at) {
+            if (this.rpcMode == "realtime")
+                this.$at.undo(-1);
+
+            this.$at.reset();
+        }
+        //this.xmldb.reset();
+        
+        this.$transactionNode = null; //prevent from restarting the transaction in load
+        this.$addParent       = null;
+
+        //Cleanup
+        if (!noLoad)
+            this.load(this.$originalNode);
+        
+        this.$helperModel.reset();
+        
+        this.$stopAction(this.$lastAction, true);
+        
+        this.$originalNode    = null;
+        this.$inTransaction   = false;
+        
+        if (this.autoshow) {
+            if (this.autoshow == -1)
+                this.autoshow = true;
+            else
+                this.hide();
+        }
+    };
+
+    /**
+     * Starts a transaction for this element. This is either an add or update.
+     * @param {String}     strAction the type of transaction to start
+     *   Possible values:
+     *   add    the transaction is started to add a new {@link term.datanode data node}.
+     *   update the transaction is started to update an existing {@link term.datanode data node}.
+     * @param {XMLElement} xmlNode 
+     * @param {XMLElement} parentXmlNode 
+     * @param {AMLElement} dataParent 
+     */
+    this.begin = function(strAction, xmlNode, parentXmlNode, dataParent){
+        if (this.$inTransaction) {
+            /*throw new Error(apf.formatErrorString(0, this, 
+                "Starting Transaction", 
+                "Cannot start a transaction without committing or rolling \
+                 back previously started transaction.", this.oldRoot));*/
+            
+            
+            
+            if (this.autoshow)
+                this.autoshow = -1;
+            this.rollback();
+        }
+
+        
+
+        //Add should look at dataParent and take selection or xmlRoot
+        //winMail.dataParent.parent.xmlRoot
+
+        var _self = this;
+        this.$lastAction = strAction;
+
+        if (!this.$lastAction) {
+            this.$lastAction = this.xmlRoot && "update" || "add";
+                /*this.actionRules && (this.actionRules.add 
+                ? "add"
+                : (this.actionRules.update
+                    ? "update" 
+                    : null)) || this.xmlRoot && "update";*/
+        }
+        
+        
+        
+        //Determines the actiontracker to integrate the grouped action into
+        if (dataParent)
+            this.$setDynamicProperty("model", "[" + dataParent.id + ".selected]"); //@todo what if it doesn't have an id
+
+        if (xmlNode && this.$lastAction == "update") {
+            this.xmlRoot = xmlNode;
+            //this.$inTransaction = -1; //Prevent load from triggering a new transaction
+            //this.load(xmlNode);
+        }
+        
+        /*
+         * @todo:
+         *   create actiontracker based on data id, destroy actiontracker on cancel/commit - thus being able to implement editor feature natively
+         *   Multiple transactions can exist at the same time in the same container, but on different data
+         *   .cancel(xmlNode) .apply(xmlNode)
+         *   .list(); // returns a list of all started transactions
+         *   Add undo/redo methods to winMultiEdit
+         *   Route undolength/redolength properties
+         *   Setting replaceat="start" or replaceat="end"
+         */
+        if (!this.$at) {
+            this.$at  = new apf.actiontracker();
+            var propListen = function(e){
+                _self.setProperty(e.prop, e.value);
+            };
+            this.$at.addEventListener("prop.undolength", propListen);
+            this.setProperty("undolength", 0);
+            this.$at.addEventListener("prop.redolength", propListen);
+            this.setProperty("redolength", 0);
+        }
+        if (!this.$helperModel) {
+            this.$helperModel = new apf.model();
+            this.$helperModel["save-original"] = true;
+            this.$helperModel.load("<data />");
+        }
+
+        this.$transactionNode = null;
+        this.$addParent       = null;
+        this.$originalNode    = this.xmlRoot;
+
+        
+
+        this.$inTransaction = true;
+        function begin(){
+            
+
+            this.$inTransaction = -1;
+            this.$helperModel.data.appendChild(this.$transactionNode);//apf.xmldb.cleanNode());
+            this.load(this.$helperModel.data.firstChild);
+            this.$inTransaction = true;
+            
+            if (this.disabled)
+                this.enable();
+            
+            if (this.autoshow) {
+                if (this.autoshow == -1)
+                    this.autoshow = true;
+                else
+                    this.show();
+            }
+        }
+        
+        //Determine data parent
+        dataParent = this.dataParent && this.dataParent.parent;
+        
+        if (!dataParent || !dataParent.$actions 
+          || !dataParent.$actions[this.$lastAction]) {
+            dataParent = this;
+        }
+        
+        //Add
+        if (this.$lastAction == "add") {
+            //Check for add rule on data parent
+            var rule, actionRules = dataParent.$actions;
+            if (actionRules) {
+                if (xmlNode && xmlNode.nodeType)
+                    rule = actionRules.getRule("add", xmlNode);
+                else if (typeof xmlNode == "string") {
+                    if (xmlNode.trim().charAt(0) == "<") {
+                        xmlNode = apf.getXml(xmlNode);
+                        rule = actionRules.getRule("add", xmlNode)
+                    }
+                    else {
+                        var rules = actionRules.$rules["add"];
+                        for (var i = 0, l = rules.length; i < l; i++) {
+                            if (rules[i].getAttribute("type") == xmlNode) {
+                                xmlNode = null;
+                                rule = rules[i];
+                                break;
+                            }
+                        }
+                    }
+                }
+    
+                if (!rule) 
+                    rule = (dataParent.$actions["add"] || {})[0];
+            }
+            else
+                rule = null;
+            
+            
+            
+            //Run the add code (copy from multiselect) but don't add until commit
+            var refNode  = this.$isTreeArch ? this.selected || this.xmlRoot : this.xmlRoot;
+            var callback = function(addXmlNode, state, extra){
+                if (state != apf.SUCCESS) {
+                    var oError;
+    
+                    oError = new Error(apf.formatErrorString(1032, dataParent,
+                        "Loading xml data",
+                        "Could not add data for control " + dataParent.name
+                        + "[" + dataParent.tagName + "] \nUrl: " + extra.url
+                        + "\nInfo: " + extra.message + "\n\n" + xmlNode));
+    
+                    if (extra.tpModule.retryTimeout(extra, state, dataParent, oError) === true)
+                        return true;
+    
+                    throw oError;
+                }
+                
+                /*if (apf.supportNamespaces && node.namespaceURI == apf.ns.xhtml) {
+                    node = apf.getXml(node.xml.replace(/xmlns\=\"[^"]*\"/g, ""));
+                    //@todo import here for webkit?
+                }*/
+
+                if (typeof addXmlNode != "object")
+                    addXmlNode = apf.getXmlDom(addXmlNode).documentElement;
+                if (addXmlNode.getAttribute(apf.xmldb.xmlIdTag))
+                    addXmlNode.setAttribute(apf.xmldb.xmlIdTag, "");
+    
+                if (!dataParent.$startAction("add", addXmlNode, _self.rollback))
+                    return false;
+    
+                var actionNode = (dataParent.$actions && 
+                  dataParent.$actions.getRule("add", dataParent.$isTreeArch
+                    ? dataParent.selected
+                    : dataParent.xmlRoot) || {})[2];
+                
+                if (parentXmlNode) {
+                    _self.$addParent = parentXmlNode;
+                }
+                else if (actionNode && actionNode.getAttribute("parent")) {
+                    _self.$addParent = dataParent.xmlRoot
+                        .selectSingleNode(actionNode.getAttribute("parent"));
+                }
+                else {
+                    _self.$addParent = dataParent.$isTreeArch
+                        ? dataParent.selected || dataParent.xmlRoot
+                        : dataParent.xmlRoot
+                }
+    
+                if (!_self.$addParent)
+                    _self.$addParent = dataParent.xmlRoot || dataParent.getModel(true).data;
+    
+                if (apf.isWebkit && _self.$addParent.ownerDocument != addXmlNode.ownerDocument)
+                    addXmlNode = _self.$addParent.ownerDocument.importNode(addXmlNode, true); //Safari issue not auto importing nodes
+    
+                _self.$transactionNode    = addXmlNode;
+                _self.$transactionSubject = dataParent;
+                begin.call(_self);
+            }
+
+            if (xmlNode)
+                return callback(xmlNode, apf.SUCCESS);
+            else {
+                if (rule && rule.get)
+                    return apf.getData(rule.get, {xmlNode: refNode, callback: callback})
+                else {
+                    
+                }
+            }
+        }
+        
+        //Update
+        else {
+            if (!dataParent.$startAction(this.$lastAction, this.xmlRoot, this.rollback))
+                return false;
+
+            this.$transactionSubject = dataParent;
+            this.$transactionNode    = this.$originalNode.cloneNode(true);//xmldb.cleanNode(this.xmlRoot.cloneNode(true));
+            //xmlNode.removeAttribute(xmldb.xmlIdTag);
+            
+            //@todo rename listening attributes
+            begin.call(this);
+        }
+    };
+    
+    //Transaction nodes can always load data
+    this.$canLoadData = function(){
+        return true;
+    }
+
+    //Prevent model inheritance to the children
+    this.addEventListener("prop.model", function(e){
+        return false;
+    });
+    
+    //Prevent clear dynamic
+    this.clear = function(){
+        this.documentId = this.xmlRoot = this.cacheId = null;
+    }
+
+    //No need to restart the transaction when the same node is loaded
+    this.addEventListener("beforeload", function(e){
+        var xmlNode = e.xmlNode;
+        
+        //@todo apf3.0 test if this can be enabled again
+        //if (this.$originalNode == xmlNode)
+            //return false;
+        
+        if (this.$inTransaction == -1)
+            return;
+
+        if (this.$inTransaction) {
+            if (this.$transactionNode && xmlNode != this.$transactionNode) {
+                if (this.autoshow)
+                    this.autoshow = -1;
+                
+                this.rollback(true);
+            }
+            else return;
+        }
+
+        if (this.autoshow)
+            this.autoshow = -1;
+            
+        if (this.begin("update", xmlNode) !== false)
+            return false;
+    });
+     
+    //hmm really?
+    //@todo what to do here? check original cloned node???
+    /*this.addEventListener("xmlupdate", function(e){
+        if (this.$inTransaction) {
+            this.dispatchEvent("transactionconflict", {
+                action : e.action,
+                xmlNode: e.xmlNode,
+                UndoObj: e.UndoObj,
+                bubbles : true
+            });
+        }
+    });*/
+    
+    //@todo add when not update???
+    /*this.watch("visible", function(id, oldval, newval){
+        if (!this.xmlRoot || oldval == newval)
+            return;
+        
+        if (newval) {
+            if (!this.$inTransaction)
+                this.begin();
+        }
+        else {
+            if (this.$inTransaction) 
+                this.rollback();
+        }
+    });*/
+}
+
+/**
+ * @attribute {Boolean} transaction Whether this element provides transaction
+ * support for all it's children.
+ * @see baseclass.transaction
+ */
+apf.GuiElement.propHandlers["transaction"] = function(value){
+    if (!(this.transaction = apf.isTrue(value)))
+        return;
+
+    if (!this.hasFeature(apf.__DATABINDING__))
+        this.implement(apf.StandardBinding);
+
+    if (!this.hasFeature(apf.__DATAACTION__)) {
+        this.implement(apf.DataAction);
+
+        if (this.actions)
+            this.$propHandlers["actions"].call(this, this.actions, "actions");
+    }
+     
+    if (!this.hasFeature(apf.__TRANSACTION__)) {
+        this.implement(apf.Transaction);
+        
+        if (!this.validgroup) {
+            this.$validgroup = new apf.ValidationGroup();
+            this.$validgroup.register(this);
+        }
+        
+        if (!this.id)
+            this.setProperty("id", this.localName + "_" + this.$uniqueId);
+        
+        var attr = this.attributes.getNamedItem("model");
+        if (!attr)  //@todo find a way to not have to add a model
+            this.attributes.push(attr = new apf.AmlAttr(this, "model", null));
+        attr.inheritedValue = "{" + this.id + ".root}";
+                
+        if (typeof this.autoshow == "undefined" 
+          && (this.localName == "modalwindow" || this.localName == "window"))
+            this.autoshow = true;
+    }
+}
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/virtualviewport.js)SIZE(28823)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         var bHasOffline = typeof apf.offline != "undefined";
         
+>>>>>>> origin/master
 
         if (this.dispatchEvent(name + "start", {
             xmlContext: xmlContext
@@ -29909,8 +37566,12 @@ apf.DataAction = function(){
 
         this.$actionsLog[name] = xmlContext;
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/xforms.js)SIZE(9367)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         return true;
     };
+>>>>>>> origin/master
 
     
 
@@ -29920,6 +37581,9 @@ apf.DataAction = function(){
         
     };
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/clipboard.js)SIZE(2951)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     /**
      * Executes an action using action rules set in the {@link element.actions actions element}.
      *
@@ -29954,6 +37618,7 @@ apf.DataAction = function(){
      */
     this.$executeAction = function(atAction, args, action, xmlNode, noevent, contextNode, multiple){
         
+>>>>>>> origin/master
 
         
 
@@ -29993,6 +37658,9 @@ apf.DataAction = function(){
             
         });
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/commands.js)SIZE(30488)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         //Call Event and cancel if it returns false
         if (!noevent) {
             //Allow the action and arguments to be changed by the event
@@ -30001,6 +37669,7 @@ apf.DataAction = function(){
             
             delete ev.currentTarget;
         }
+>>>>>>> origin/master
 
         //Call ActionTracker and return ID of Action in Tracker
         var at      = this.getActionTracker(); 
@@ -30023,6 +37692,9 @@ apf.DataAction = function(){
         return UndoObj;
     };
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/interactive.js)SIZE(57362)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     /**
      * Executes an action based on the set name and the new value
      * @param {String}      atName   the name of the action rule defined in actions for this element.
@@ -30038,6 +37710,7 @@ apf.DataAction = function(){
             
                 return false;
         }
+>>>>>>> origin/master
 
         var compiled;
         ["valuematch", "match", "value"].each(function(type){
@@ -30074,6 +37747,9 @@ apf.DataAction = function(){
                 xmlNode = m.model;
             }
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/selectrect.js)SIZE(5678)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
             sel[1] = m.xpath;
         }
         else {
@@ -30086,6 +37762,7 @@ apf.DataAction = function(){
                 xmlNode = model.data; //@experimental, after changing this, please run test/test_rename_edge.html
             
         }
+>>>>>>> origin/master
 
         if (node) {
             if (apf.queryValue(node) == value) return; // Do nothing if value is unchanged
@@ -30102,8 +37779,12 @@ apf.DataAction = function(){
             if (!this.$createModel)
                 return false;
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/visualconnect.js)SIZE(36914)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
             atAction = "setValueByXpath";
             xpath    = sel[1];
+>>>>>>> origin/master
 
             if (!xmlNode) {
                 //Assuming this component is connnected to a model
@@ -30141,6 +37822,9 @@ apf.DataAction = function(){
             };
         }
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/visualselect.js)SIZE(18159)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         //Use Action Tracker
         var result = this.$executeAction(atAction, args, atName, xmlNode);
         
@@ -30173,6 +37857,7 @@ apf.DataAction = function(){
             if (!force && value === this.value 
               || this.dispatchEvent("beforechange", {value : value}) === false)
                 return false;
+>>>>>>> origin/master
 
             //@todo in theory one could support actions
             //@todo disabled below, because it gives unexpected behaviour when 
@@ -30197,6 +37882,9 @@ apf.DataAction = function(){
           || this.value))
             return false;
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/window-o3.js)SIZE(5461)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         this.$executeSingleValue("change", this.$mainBind, this.xmlRoot, value);
         
     };
@@ -30243,12 +37931,17 @@ apf.DataAction = function(){
         }
     });
 };
+>>>>>>> origin/master
 
 apf.config.$inheritProperties["create-model"] = 1;
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/window.js)SIZE(50527)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/cache.js)SIZE(12760)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31410,10 +39103,18 @@ apf.BaseButton = function(){
 
 }).call(apf.BaseButton.prototype = new apf.StandardBinding());
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/gears.js)SIZE(1391)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/gecko.js)SIZE(6753)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/baselist.js)SIZE(38108)TIME(Wed, 31 Aug 2011 13:37:02 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31612,10 +39313,14 @@ apf.BaseList = function(){
         if (e.returnValue == -1 || !selHtml || this.renaming) //@todo how about allowdeselect?
             return;
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/ie.js)SIZE(14081)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         var selXml = this.caret || this.selected,
             oExt   = this.$ext,
             // variables used in the switch statement below:
             node, margin, items, lines, hasScroll, hasScrollX, hasScrollY;
+>>>>>>> origin/master
 
         switch (key) {
             case 13:
@@ -31968,11 +39673,15 @@ apf.BaseList = function(){
     this.$moveNode = function(xmlNode, htmlNode){
         if (!htmlNode) return;
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/iphone.js)SIZE(11827)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         var oPHtmlNode = htmlNode.parentNode;
         var nNode      = this.getNextTraverse(xmlNode); //@todo could optimize because getTraverseNodes returns array indexOf
         var beforeNode = nNode
             ? apf.xmldb.findHtmlNode(nNode, this)
             : null;
+>>>>>>> origin/master
 
         oPHtmlNode.insertBefore(htmlNode, beforeNode);
         //if(this.emptyMessage && !oPHtmlNode.childNodes.length) this.setEmpty(oPHtmlNode);
@@ -31990,11 +39699,15 @@ apf.BaseList = function(){
 
         oItem.setAttribute("id", Lid);
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/non_ie.js)SIZE(24968)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         elSelect.setAttribute("onmouseover",   "var o = apf.lookup(" + this.$uniqueId 
         	+ "); o.$setStyleClass(this, 'hover', null, true);");
         elSelect.setAttribute("onselectstart", "return false;");
         elSelect.setAttribute("style",         (elSelect.getAttribute("style") || "") 
         	+ ";user-select:none;-moz-user-select:none;-webkit-user-select:none;");
+>>>>>>> origin/master
 
         if (this.hasFeature(apf.__RENAME__) || this.hasFeature(apf.__DRAGDROP__)) {
             elSelect.setAttribute("ondblclick", "var o = apf.lookup(" + this.$uniqueId + "); " +
@@ -32098,11 +39811,15 @@ apf.BaseList = function(){
             }
         }
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/o3.js)SIZE(9017)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         if (elCaption) {
             
             if (elCaption.nodeType == 1 
               && this.$cbindings.caption && this.$cbindings.caption.hasAml){
                 var q = (this.$amlBindQueue || (this.$amlBindQueue = {}));
+>>>>>>> origin/master
 
                 if (elCaption == oItem) {
                     apf.setNodeValue(elCaption, "");
@@ -32140,6 +39857,9 @@ apf.BaseList = function(){
           this.$addModifier(xmlNode, oItem, htmlParentNode, beforeNode) === false)
             return;
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/opera.js)SIZE(6583)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         if (htmlParentNode)
             apf.insertHtmlNode(oItem, htmlParentNode, beforeNode);
         else
@@ -32150,6 +39870,7 @@ apf.BaseList = function(){
         if (this.more)
             delete this.moreItem;
     });
+>>>>>>> origin/master
 
     this.$fill = function(){
         if (this.more && !this.moreItem) {
@@ -32355,8 +40076,12 @@ apf.BaseList = function(){
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/webkit.js)SIZE(8405)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basesimple.js)SIZE(1729)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -32394,11 +40119,84 @@ apf.BaseList = function(){
  * @version     %I%, %G%
  * @since       0.8
  */
+<<<<<<< HEAD
+apf.runWebkit = function(){
+    
+    
+    
+    if (XMLHttpRequest.prototype.sendAsBinary === undefined) {
+        /**
+         * Binary support for Chrome 7+ which implements [ECMA-262] typed arrays
+         * @see http://www.khronos.org/registry/typedarray/specs/latest/
+         */
+        if (window.ArrayBuffer) {
+            XMLHttpRequest.prototype.sendAsBinary = function(string) {
+                var bytes = Array.prototype.map.call(string, function(c) {
+                    return c.charCodeAt(0) & 0xff;
+                });
+                this.send(new Uint8Array(bytes).buffer);
+            };
+        }
+    }
+    
+    
+    
+    
+    
+    
+    HTMLDocument.prototype.selectNodes = XMLDocument.prototype.selectNodes = function(sExpr, contextNode){
+        if (sExpr.substr(0,2) == "//")
+            sExpr = "." + sExpr;
+        
+        try {
+            var oResult = this.evaluate(sExpr, (contextNode || this),
+                this.createNSResolver(this.documentElement),
+                7, null);//XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+        }
+        catch(ex) {
+            try {
+                var oResult = this.evaluate("child::" + sExpr, (contextNode || this),
+                    this.createNSResolver(this.documentElement),
+                    7, null);//XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+            }
+            catch(ex) {
+                throw new Error("XPath error: " + ex.message + "\nLine: " + ex.lineNumber  + "\nExpression: '" + sExpr + "'");
+            }
+        }
+        
+        var nodeList = new Array(oResult.snapshotLength);
+        nodeList.expr = sExpr;
+        for (var i = nodeList.length - 1; i >= 0; i--) 
+            nodeList[i] = oResult.snapshotItem(i);
+        return nodeList;
+    };
+    
+    //Element.selectNodes
+    Text.prototype.selectNodes =
+    Attr.prototype.selectNodes =
+    Element.prototype.selectNodes = function(sExpr){
+       return this.ownerDocument.selectNodes(sExpr, this);
+    };
+    
+    //XMLDocument.selectSingleNode
+    HTMLDocument.prototype.selectSingleNode = XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
+        var nodeList = this.selectNodes("(" + sExpr + ")[1]", contextNode ? contextNode : null);
+        return nodeList.length > 0 ? nodeList[0] : null;
+    };
+    
+    //Element.selectSingleNode
+    Text.prototype.selectSingleNode =
+    Attr.prototype.selectSingleNode =
+    Element.prototype.selectSingleNode = function(sExpr){
+        return this.ownerDocument.selectSingleNode(sExpr, this);
+    };
+=======
 apf.BaseSimple = function(){
     this.$init(true);
 };
 
 (function() {
+>>>>>>> origin/master
     
     this.implement(apf.DataAction);
     
@@ -32406,14 +40204,51 @@ apf.BaseSimple = function(){
     this.getValue = function(){
         return this.value;
     };
+<<<<<<< HEAD
+    
+    if (apf.runNonIe)
+        apf.runNonIe();
+};
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/browsers/node/XMLHttpRequest.js)SIZE(6419)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+>>>>>>> origin/master
 
 }).call(apf.BaseSimple.prototype = new apf.StandardBinding());
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/barrett.js)SIZE(2650)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/**
+ * Crypt.Barrett, a class for performing Barrett modular reduction computations in
+ * JavaScript.
+ *
+ * Requires BigInt.js.
+ *
+ * Copyright 2004-2005 David Shapiro.
+ *
+ * You may use, re-use, abuse, copy, and modify this code to your liking, but
+ * please keep this header.
+ *
+ * Thanks!
+ * 
+ * @author Dave Shapiro <dave AT ohdave DOT com>
+ */
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/base64.js)SIZE(6758)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basestatebuttons.js)SIZE(27242)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -32739,6 +40574,60 @@ apf.BaseStateButtons = function(){
                       ? document.documentElement
                       : this.$ext.parentNode);
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/bigint.js)SIZE(20439)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/**
+ * BigInt, a suite of routines for performing multiple-precision arithmetic in
+ * JavaScript.
+ *
+ * Copyright 1998-2005 David Shapiro.
+ *
+ * You may use, re-use, abuse,
+ * copy, and modify this code to your liking, but please keep this header.
+ * Thanks!
+ *
+ * @author Dave Shapiro <dave AT ohdave DOT com>
+ * @author Ian Bunning
+ *
+ * IMPORTANT THING: Be sure to set maxDigits according to your precision
+ * needs. Use the setMaxDigits() function to do this. See comments below.
+ *
+ * Tweaked by Ian Bunning
+ * Alterations:
+ * Fix bug in function biFromHex(s) to allow
+ * parsing of strings of length != 0 (mod 4)
+ *
+ * Changes made by Dave Shapiro as of 12/30/2004:
+ *
+ * The BigInt() constructor doesn't take a string anymore. If you want to
+ * create a BigInt from a string, use biFromDecimal() for base-10
+ * representations, biFromHex() for base-16 representations, or
+ * biFromString() for base-2-to-36 representations.
+ *
+ * biFromArray() has been removed. Use biCopy() instead, passing a BigInt
+ * instead of an array.
+ *
+ * The BigInt() constructor now only constructs a zeroed-out array.
+ * Alternatively, if you pass <true>, it won't construct any array. See the
+ * biCopy() method for an example of this.
+ *
+ * Be sure to set maxDigits depending on your precision needs. The default
+ * zeroed-out array ZERO_ARRAY is constructed inside the setMaxDigits()
+ * function. So use this function to set the variable. DON'T JUST SET THE
+ * VALUE. USE THE FUNCTION.
+ *
+ * ZERO_ARRAY exists to hopefully speed up construction of BigInts(). By
+ * precalculating the zero array, we can just use slice(0) to make copies of
+ * it. Presumably this calls faster native code, as opposed to setting the
+ * elements one at a time. I have not done any timing tests to verify this
+ * claim.
+ * Max number = 10^16 - 2 = 9999999999999998;
+ *               2^53     = 9007199254740992;
+ */
+
+
+=======
                 this.animstate = 0;
                 var hasAnimated = false, htmlNode = this.$ext;
                 
@@ -32817,6 +40706,7 @@ apf.BaseStateButtons = function(){
                             ? apf.getAbsolutePosition(pNode, htmlNode.offsetParent)
                             : [0, 0];
                     }
+>>>>>>> origin/master
 
                     if (position != "absolute") {
                         var diff = apf.getDiff(pNode);
@@ -32832,6 +40722,9 @@ apf.BaseStateButtons = function(){
                     box = _self.$refParent ? [0,0,0,0] : marginBox;
                     pDiff = apf.getDiff(pNode);
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/blowfish.js)SIZE(26046)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
                     pNode.style.width  = (pNode.offsetWidth - pDiff[0]) + "px";
                     pNode.style.height = (pNode.offsetHeight - pDiff[1]) + "px";
                     
@@ -32890,6 +40783,7 @@ apf.BaseStateButtons = function(){
                             - diff[1] + box[0] + box[2]) + "px";
                     }
                 }
+>>>>>>> origin/master
 
                 
                 if (apf.layout)
@@ -32917,9 +40811,13 @@ apf.BaseStateButtons = function(){
                 if (this.dispatchEvent('editstop') === false)
                     return false;
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/md4.js)SIZE(9799)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
                 styleClass.push(this.$baseCSSname + "Edit");
                 if (styleClass.length == 1)
                     styleClass.unshift("");
+>>>>>>> origin/master
 
                 if (this.btnedit)
                     oButtons.edit.innerHTML = "edit"; //hack
@@ -32947,11 +40845,15 @@ apf.BaseStateButtons = function(){
             
             this.$lastState = o;
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/md5.js)SIZE(10997)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
             
             if (this.aData && !o.maximized) { //@todo is this the most optimal position?
                 this.$purgeAlignment();
             }
             
+>>>>>>> origin/master
 
             
             if (!this.animate && apf.hasSingleRszEvent && apf.layout)
@@ -32981,10 +40883,14 @@ apf.BaseStateButtons = function(){
             found     = {},
             idleNodes = [];
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/rsa.js)SIZE(5048)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         //Check if we can 'remove' buttons
         for (var i = 0; i < nodes.length; i++) {
             if (nodes[i].nodeType != 1 || nodes[i].tagName != "DIV") //@todo temp hack
                 continue;
+>>>>>>> origin/master
 
             if (nodes[i].getAttribute("button") && (!value 
               || !nodes[i].className || !nodes[i].className.match(re))) {
@@ -33060,6 +40966,9 @@ apf.BaseStateButtons = function(){
           || !this.$hasLayoutNode("button"))
             return;
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/crypto/sha1.js)SIZE(5258)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         var len = (this.getAttribute("buttons") || "").split("|").length;
         for (var btn, i = 0; i < len; i++) {
             this.$getNewContext("button");
@@ -33075,11 +40984,16 @@ apf.BaseStateButtons = function(){
         }
     });
 };
+>>>>>>> origin/master
 
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/debug/debug.js)SIZE(9811)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(57119)TIME(Tue, 19 Jul 2011 12:01:49 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33104,8 +41018,32 @@ apf.BaseStateButtons = function(){
 
 
 
+<<<<<<< HEAD
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/debug/debugwin.js)SIZE(42735)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+=======
 /**
  * Baseclass of a paged element. 
+>>>>>>> origin/master
  *
  * @constructor
  * @baseclass
@@ -33163,11 +41101,20 @@ apf.BaseTab = function(){
         this.setProperty("activepage", page);
     };
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/debug/profiler.js)SIZE(24827)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+
+=======
     /**** Properties and Attributes ****/
+>>>>>>> origin/master
 
     this.$supportedProperties.push("activepage", "activepagenr", "length",
         "src", "loading", "trans-in", "trans-out");
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/parsers/js.js)SIZE(9016)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     /**
      * @attribute {Number} activepagenr the child number of the active page.
      * Example:
@@ -33194,6 +41141,7 @@ apf.BaseTab = function(){
      * </code>
      */
     this.$propHandlers["activepagenr"] =
+>>>>>>> origin/master
 
     /**
      * @attribute {String} activepage the name of the active page.
@@ -33234,9 +41182,13 @@ apf.BaseTab = function(){
                 this.setProperty("loading", true);
                 this.isLoading[next] = true;
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/parsers/livemarkup.js)SIZE(113263)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
                 page = this.ownerDocument.createElementNS(apf.ns.apf, "page");
                 page.setAttribute("id", next);
                 this.appendChild(page);
+>>>>>>> origin/master
 
                 var _self = this;
                 page.insertMarkup(this.src, {
@@ -52396,9 +60348,13 @@ apf.button  = function(struct, tagName){
         }
     }
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/parsers/url.js)SIZE(4570)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     function menuDown(e){
         var menu = self[this.submenu],
             $button1;
+>>>>>>> origin/master
 
         this.value = !this.value;
 
@@ -52407,6 +60363,9 @@ apf.button  = function(struct, tagName){
 
         
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/core/parsers/xpath.js)SIZE(21971)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         var menuPressed = this.parentNode.menuIsPressed;
         if (menuPressed && menuPressed != this) {
             menuPressed.setValue(false);
@@ -52418,6 +60377,7 @@ apf.button  = function(struct, tagName){
         if (!this.value) {
             menu.hide();
             this.$setState("Over", {}, "toolbarover");
+>>>>>>> origin/master
 
             if($button1 = this.parentNode.$button1)
                 $button1.$setState("Over", {}, "toolbarover");
@@ -52952,6 +60912,10 @@ apf.button.actions  = {
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingrule.js)SIZE(8931)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+>>>>>>> origin/master
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/caldropdown.js)SIZE(36424)TIME(Thu, 01 Sep 2011 14:03:44 GMT)*/
 
@@ -52976,10 +60940,14 @@ apf.button.actions  = {
  *
  */
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/accordion.js)SIZE(22288)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/calendar.js)SIZE(29646)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53004,6 +60972,9 @@ apf.button.actions  = {
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actionrule.js)SIZE(4035)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/calendarlist.js)SIZE(15123)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
 
 /*
@@ -53026,9 +60997,14 @@ apf.button.actions  = {
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
+>>>>>>> origin/master
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actions.js)SIZE(3251)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+>>>>>>> origin/master
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/chart.js)SIZE(9687)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
 
@@ -53055,7 +61031,11 @@ apf.button.actions  = {
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker.js)SIZE(36296)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/checkbox.js)SIZE(8077)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53366,7 +61346,7 @@ if (!apf.hasRequireJS)
     apf.aml.setElement("codeeditor", apf.textbox);
 else
     define("apf/elements/codeeditor",
-        ["module", "ace/editor", "ace/edit_session", "ace/virtual_renderer", "ace/undomanager", "ace/range", "pilot/fixoldbrowsers"],
+        ["module", "ace/editor", "ace/edit_session", "ace/virtual_renderer", "ace/undomanager", "ace/range", "ace/lib/fixoldbrowsers"],
         function(module, Editor, EditSession, VirtualRenderer, UndoManager, Range) {
 
 Editor = Editor.Editor;
@@ -53580,6 +61560,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
             var breakpoints = this.$breakpoints.queryNodes("//breakpoint[@script='" + scriptName + "']"); 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/application.js)SIZE(1834)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
             var rows = [];
             for (var i=0; i<breakpoints.length; i++) {
                 rows.push(parseInt(breakpoints[i].getAttribute("line"), 10) - parseInt(breakpoints[i].getAttribute("lineoffset"), 10));
@@ -53588,6 +61571,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
                 doc.setBreakpoints(rows);
         }
     };
+>>>>>>> origin/master
 
     this.$toggleBreakpoint = function(row) {
         this.$debugger.toggleBreakpoint(this.xmlRoot, row);
@@ -53604,7 +61588,11 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         });
     };
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/appsettings.js)SIZE(9304)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     this.$modes = {};
+>>>>>>> origin/master
 
     this.$getMode = function(syntax, callback) {
         syntax = (syntax || "text").toLowerCase();
@@ -53621,9 +61609,13 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         });
     };
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/audio.js)SIZE(12958)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     this.$propHandlers["activeline"] = function(value) {
         this.$editor.setHighlightActiveLine(value);
     };
+>>>>>>> origin/master
 
     this.$propHandlers["selectstyle"] = function(value) {
         this.$editor.setSelectionStyle(value);
@@ -53641,9 +61633,13 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         this.$editor.setShowInvisibles(value);
     };
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/auth.js)SIZE(23999)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     this.$propHandlers["overwrite"] = function(value, prop, initial) {
         this.$editor.setOverwrite(value);
     };
+>>>>>>> origin/master
 
     this.$propHandlers["readonly"] = function(value, prop, initial) {
         this.$editor.setReadOnly(value);
@@ -53653,9 +61649,13 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         this.$editor.getSession().setTabSize(parseInt(value, 10));
     };
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/axis.js)SIZE(14009)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     this.$propHandlers["softtabs"] = function(value, prop, initial) {
         this.$editor.getSession().setUseSoftTabs(value);
     };
+>>>>>>> origin/master
 
     this.$propHandlers["scrollspeed"] = function(value, prop, initial) {
         this.$editor.setScrollSpeed(value || 2);
@@ -53702,6 +61702,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             return;
         }
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bar.js)SIZE(4205)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         var _self = this;
         _self.$updateBreakpoints();
         this.$onBreakpoint = function() {
@@ -53725,6 +61728,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         } else {
             this.$debugger = value;
         }
+>>>>>>> origin/master
 
         if (!this.$breakpoints || this.$debuggerBreakpoints) {
             this.setProperty("model-breakpoints", this.$debugger ? this.$debugger.$mdlBreakpoints : null);
@@ -53753,9 +61757,13 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$propHandlers["model"] = function(value) {
         propModelHandler.call(this, value);
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingcolorrule.js)SIZE(2906)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         this.$updateMarker();
         this.$updateBreakpoints();
     };
+>>>>>>> origin/master
 
     this.addEventListener("xmlupdate", function(e){
         var id = e.xmlNode.getAttribute(apf.xmldb.xmlIdTag);
@@ -53766,7 +61774,11 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     /**** Public Methods ****/
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingcolumnrule.js)SIZE(20506)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     
+>>>>>>> origin/master
 
     /**
      * Sets the value of this element. This should be one of the values
@@ -53781,8 +61793,12 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.clear = function(){
         this.$propHandlers["value"].call(this, "", null, true);
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingdndrule.js)SIZE(3737)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         this.dispatchEvent("clear");//@todo this should work via value change
     };
+>>>>>>> origin/master
 
     /**
      * Returns the current value of this element.
@@ -53797,6 +61813,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         return this.$editor.getSession();        
     };
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingeachrule.js)SIZE(11503)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     this.getSelection = function() {
         return this.$editor.getSession().getSelection();        
     };
@@ -53806,6 +61825,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
     
     
+>>>>>>> origin/master
 
     /**
      * Selects the text in this element.
@@ -53955,11 +61975,19 @@ apf.config.$inheritProperties["initial-message"] = 1;
 
 apf.aml.setElement("codeeditor", apf.codeeditor);
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingloadrule.js)SIZE(1529)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 });
+>>>>>>> origin/master
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingquicksandrule.js)SIZE(12333)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/collection.js)SIZE(2383)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54154,8 +62182,608 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindings.js)SIZE(8618)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * @define bindings element containing all the binding rules for the data 
+ * bound elements referencing this element.
+ * Example:
+ * <code>
+ *  <a:model id="mdlList">
+ *      <data>
+ *          <item date="2009-11-12" deleted="0"></item>
+ *          <item date="2009-11-11" deleted="0"></item>
+ *      </data>
+ *  </a:model>
+ *  <a:bindings id="bndFolders" >
+ *      <a:caption match="[@date]" />
+ *      <a:icon match="[@icon]" />
+ *      <a:each match="[item]" sort="[@date]" />
+ *  </a:bindings>
+ *  <a:list 
+ *    id       = "list" 
+ *    width    = "200" 
+ *    height   = "200" 
+ *    model    = "mdlList" 
+ *    bindings = "bndFolders" />
+ * </code>
+ * @see element.smartbinding
+ *
+ * @constructor
+ * @apfclass
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8
+ *
+ * @default_private
+ */
+apf.bindings = function(struct, tagName){
+    this.$init(tagName || "bindings", apf.NODE_HIDDEN, struct);
+    
+    this.$bindings = new apf.ruleList();
+    this.$amlNodes = {};
+};
+
+(function(){
+    this.$smartbinding = null;
+
+    this.register = function(amlNode){
+        if (amlNode.localName == "smartbinding") {
+            this.$smartbinding = amlNode;
+            this.$smartbinding.add(this); //Assuming only at init
+            return;
+        }
+        
+        if (!amlNode.hasFeature(apf.__DATABINDING__))
+            return;
+
+        this.$amlNodes[amlNode.$uniqueId] = amlNode;
+        
+        if (!this.$amlLoaded)
+            return;
+
+        if (!this.$bindings.$isCompiled)
+            this.$cbindings = this.$bindings.compile();
+        
+        amlNode.$bindings  = this.$bindings;
+        amlNode.$cbindings = this.$cbindings;
+        amlNode.$bindingsElement = this;
+        
+        //@todo apf3.0 should be deprecated
+        amlNode.dispatchEvent("bindingsload", {
+            bindings: this.$bindings, 
+            compiled: this.$cbindings
+        });
+        this.dispatchEvent("noderegister", {
+            amlNode: amlNode
+        });
+        amlNode.$checkLoadQueue();
+    };
+
+    this.unregister = function(amlNode){
+        //unregister element
+        this.$amlNodes[amlNode.$uniqueId] = null;
+        delete this.$amlNodes[amlNode.$uniqueId];
+
+        amlNode.$bindingsElement = 
+        amlNode.$bindings  = 
+        amlNode.$cbindings = false;
+        
+        amlNode.dispatchEvent("bindingsunload", {
+            bindings: this.$bindings, 
+            compiled: this.$cbindings
+        });
+    };
+    
+    this.reload = function(){
+        for (var id in this.$amlNodes){
+            this.$amlNodes[id].reload();
+        }
+    }
+    
+    /**** DOM Handlers ****/
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        var nodes = this.childNodes;
+        for (var node, i = 0, l = nodes.length; i < l; i++) {
+            if (!(node = nodes[i]).$amlLoaded && node.nodeType == 1)
+                node.dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}
+        }
+        
+        this.register(this.parentNode);
+        
+        for (var id in this.$amlNodes)
+            this.register(this.$amlNodes[id]);
+    });
+}).call(apf.bindings.prototype = new apf.AmlElement());
+
+apf.ruleList = function(){
+    this.$compiled = {};
+}
+apf.ruleList.prototype = {
+    $isCompiled : false,
+    
+    getRule : function(name, xmlNode){
+        var rules = this[name];
+        if (!rules) return false;
+        
+        //@todo Shouldn't allow async calls..., should always give a function
+        for (var func, rule, i = 0, l = rules.length; i < l; i++) {
+            rule = rules[i];
+            if (!rule.match) 
+                return rule;
+
+            func = rule.cmatch || rule.compile("match", {injectself: true, xpathmode: 2});
+            if (func && func(xmlNode))
+                return rule;
+        }
+    },
+    
+    compile : function(name){
+        var rules, s, c = this.$compiled, hasAml = false;
+
+        if (name) {
+            s     = [];
+            rules = this[name];
+            for (var rule, i = 0, l = rules.length; i < l; i++) {
+                if (!(rule = rules[i]).match && !rule.value)
+                    continue;
+
+                s.push(rule.match, rule.value);
+                
+                if (!hasAml && rule.value)
+                    hasAml = rule.hasaml || rule.value.indexOf("<a:") > -1;
+                
+            }
+            
+            //always give a function, no async calls (could also just error on execution)
+            c[name] = apf.lm.compileMatch(s); 
+            
+            
+            c[name].hasAml = hasAml;
+            
+            
+            return c;
+        }
+        
+        for (name in this) {
+            if (name == "each")
+                continue;
+            
+            rules  = this[name];
+            if (rules.dataType != apf.ARRAY)
+                continue;
+            
+            s = [], hasAml = false;
+            for (var rule, i = 0, l = rules.length; i < l; i++) {
+                if (!(rule = rules[i]).match && !rule.value)
+                    continue;
+
+                s.push(rule.match, rule.value);
+                
+                if (!hasAml && rule.value)
+                    hasAml = rule.hasaml || rule.value.indexOf("<a:") > -1;
+                
+            }
+            
+            //always give a function, no async calls (could also just error on execution)
+            c[name] = apf.lm.compileMatch(s); 
+            
+            
+            c[name].hasAml = hasAml;
+            
+        }
+
+        this.$isCompiled = true;
+        
+        return c;
+    },
+    
+    getRuleIndex : function(name, index) {
+        var rule = this[name][index];
+        if (rule.value) {
+            if (!rule.cvalue)
+                rule.compile("value");
+        }
+        else if (rule.match) {
+            if (!rule.cmatch)
+                rule.compile("match");
+        }
+        return rule;
+    },
+    
+    getDataNode : function(name, xmlNode, createNode, ruleList, multiple){
+        var i, l, func, node, rule, rules = this[name];
+        if (!rules)
+            return;
+        
+        //@todo Shouldn't allow async calls..., should always give a function
+        for (rule, i = 0, l = rules.length; i < l; i++) {
+            rule = rules[i];
+            
+            func = rule.cvaluematch;
+            if (!func) { //@todo apf3.0 cleanup
+                if (rule.match && rule.value && rule.value.match(/^\[.*\]$/))
+                    rule.valuematch = "{_n = " + rule.match + "; %[child::" 
+                        + rule.value.substr(1, rule.value.length - 2)
+                            .split("|").join("|child::") + "]}";
+                else
+                    rule.valuematch = rule.match || rule.value;
+                
+                func = rule.$compile("valuematch", {
+                    xpathmode  : multiple ? 4 : 3, 
+                    injectself : rule.match ? true : false
+                });
+            }
+            
+            if (func && (node = func(xmlNode, createNode))) {
+                if (ruleList)
+                    ruleList.push(rule);
+
+                return node;
+            }
+        }
+        
+        return false;
+    }
+}
+
+apf.aml.setElement("bindings", apf.bindings);
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/bindingseriesrule.js)SIZE(1944)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * @attribute {String} formula 
+ * @attribute {Number} length
+ * @attribute {String} delimiter
+ * @attribute {String} split
+ * @attribute {String} css
+ */
+apf.BindingSeriesRule = function(struct, tagName){
+    this.$init(tagName || "series", apf.NODE_HIDDEN, struct);
+};
+
+(function(){
+    //1 = force no bind rule, 2 = force bind rule
+    this.$attrExcludePropBind = apf.extend({
+        formula : 1
+    }, this.$attrExcludePropBind);
+
+    this.$propHandlers["formula"] = function(value, prop){
+        delete this["c" + prop];
+    }
+    
+    /*this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        //Find parent that this rule works on
+        var pNode = this;
+        while (pNode && pNode.$bindingRule) 
+            pNode = pNode.parentNode;
+       
+        if (!pNode)
+            return;
+    });*/
+}).call(apf.BindingSeriesRule.prototype = new apf.BindingRule());
+
+apf.aml.setElement("series", apf.BindingSeriesRule);
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/body.js)SIZE(1861)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * @todo description
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.4
+ */
+
+
+
+apf.AmlConfig = function(){
+    this.$init("config", apf.NODE_VISIBLE);
+};
+
+(function(){
+    this.focussable = false;
+    this.$canLeechSkin = true;
+    
+    this.$draw = function(){
+        //Build Main Skin
+        this.$ext = this.$int = this.$getExternal(this.$isLeechingSkin
+            ? this.localName 
+            : "main");
+    };
+
+}).call(apf.AmlConfig.prototype = new apf.Presentation());
+
+apf.aml.setElement("config", apf.AmlConfig);
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/browser.js)SIZE(6175)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * Element displaying the rendered contents of an URL.
+ *
+ * @constructor
+ * @addnode elements:browser
+ * @define browser
+ *
+ * @inherits apf.XForms
+ * @inherits apf.StandardBinding
+ * @inherits apf.DataAction
+ * 
+ * @event load
+ * @event error
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.4
+ *
+ * @binding value  Determines the way the value for the element is retrieved 
+ * from the bound data.
+ * Example (BROKEN):
+ * Sets the url based on data loaded into this component.
+ * <code>
+ *  <a:model id="mdlBrowser">
+ *      <data url="http://www.w3c.org"></data>
+ *  </a:model>
+ *  <a:browser 
+ *    model  = "mdlBrowser" 
+ *    width  = "800" 
+ *    height = "600" 
+ *    value  = "[@url]" />
+ * </code>
+ * Example:
+ * A shorter way to write this is:
+ * <code>
+ *  <a:model id="mdlBrowser">
+ *      <data url="http://www.w3c.org"></data>
+ *  </a:model>
+ *  <a:browser 
+ *    width  = "800" 
+ *    height = "600" 
+ *    value  = "[mdlBrowser::@url]" />
+ * </code>
+ */
+apf.browser = function(struct, tagName){
+    this.$init(tagName || "browser", apf.NODE_VISIBLE, struct);
+};
+(function(){
+    this.implement(
+        
+        
+        apf.DataAction
+        
+        
+        ,apf.StandardBinding
+        
+    );
+
+    /**
+     * @attribute {String} src   the url to be displayed in this element
+     * @attribute {String} value alias for the 'url' attribute
+     */
+    this.$supportedProperties.push("value", "src");
+    this.$propHandlers["src"]   =
+    this.$propHandlers["value"] = function(value, force){
+        try {
+            this.$browser.src = value || "about:blank";
+        }
+        catch(e) {
+            this.$browser.src = "about:blank";
+        }
+    };
+    this.$propHandlers["border"] = apf.Presentation.prototype.$propHandlers["border"];
+
+    this.getValue = function() {
+        return this.value || this.src;
+    };
+
+    /**
+     * Retrieves the current url that is displayed.
+     */
+    this.getURL = function(){
+        return this.$browser.src;
+    };
+
+    /**
+     * Browses to the previous page
+     */
+    this.back = function(){
+        this.$browser.contentWindow.history.back();
+    };
+
+    /**
+     * Browses to the next page
+     */
+    this.forward = function(){
+        this.$browser.contentWindow.history.forward();
+    };
+
+    /**
+     * Reload the current page
+     */
+    this.reload = function(){
+        this.$browser.src = this.$browser.src;
+    };
+
+    /**
+     * Print the currently displayed page
+     */
+    this.print = function(){
+        this.$browser.contentWindow.print();
+    };
+
+    /**
+     * Execute a string of javascript on the page. This is subject to browser
+     * security and will most likely only work when the browsed page is loaded
+     * from the same domain.
+     * @param {String}  str     javascript string to be executed.
+     * @param {Boolean} noError whether the execution can throw an exception. Defaults to false.
+     */
+    this.runCode = function(str, noError){
+        if (noError) {
+            try {
+                this.$browser.contentWindow.eval(str);
+            } catch(e) {}
+        }
+        else {
+            this.$browser.contentWindow.eval(str);
+        }
+    };
+
+    this.$draw = function(parentNode){
+        if (!parentNode)
+            parentNode = this.$pHtmlNode;
+
+        //Build Main Skin
+        if (apf.cannotSizeIframe) {
+            //parentNode.appendChild(document.createElement("iframe"));//
+            var _iframe = document.createElement("iframe");
+                _iframe.setAttribute("frameborder","0");
+            this.$ext = parentNode.appendChild(document.createElement("DIV"))
+                .appendChild(_iframe).parentNode;
+            this.$ext.style.width  = "100px";
+            this.$ext.style.height = "100px";
+            this.$browser = this.$ext.firstChild;
+            //this.$browser = this.$ext;
+            this.$browser.style.width  = "100%";
+            this.$browser.style.height = "100%";
+            this.$browser.frameBorder = 0;
+        }
+        else {
+            this.$ext = parentNode.appendChild(document.createElement("iframe"));
+            this.$ext.style.width  = "100px";
+            this.$ext.style.height = "100px";
+            this.$browser              = this.$ext;
+            //this.$ext.style.border = "2px inset white";
+        }
+        this.$ext.className = "apfbrowser"
+        
+        var _self = this;
+        apf.addListener(this.$browser, "load", function(){
+            _self.dispatchEvent("load");
+        });
+
+        apf.addListener(this.$browser, "error", function(){
+            _self.dispatchEvent("error");
+        });
+
+        //this.$browser = this.$ext.contentWindow.document.body;
+        this.$ext.host = this;
+        //this.$browser.host = this;
+    };
+}).call(apf.browser.prototype = new apf.GuiElement());
+
+apf.aml.setElement("browser", apf.browser);
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/button.js)SIZE(31034)TIME(Tue, 18 Oct 2011 13:03:04 GMT)*/
+=======
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/datagrid.js)SIZE(53258)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54645,6 +63273,33 @@ apf.datagrid = function(struct, tagName){
         hideEditor.call(this);
     };
     
+<<<<<<< HEAD
+    /**
+     * @attribute {String} hotkey the key combination a user can press
+     * to active the function of this element. Use any combination of
+     * Ctrl, Shift, Alt, F1-F12 and alphanumerical characters. Use a
+     * space, a minus or plus sign as a seperator.
+     * Example:
+     * <code>
+     *  <a:button hotkey="Ctrl-Z">Undo</a:button>
+     * </code>
+     */
+    this.$propHandlers["hotkey"] = function(value){
+        if (this.$hotkey)
+            apf.setNodeValue(this.$hotkey, value);
+
+        if (this.$lastHotkey) {
+            apf.hotkeys.remove(this.$lastHotkey[0], this.$lastHotkey[1]);
+            delete this.$lastHotkey[0];
+        }
+
+        if (value) {
+            this.$lastHotkey = [value];
+            var _self = this;
+            apf.hotkeys.register(value, this.$lastHotkey[1] = function(){
+                //hmm not very scalable...
+                _self.$setState("Over", {});
+=======
     /**** Databinding ****/
     
     this.addEventListener("bindingsload", this.$loaddatabinding = function(e){
@@ -54693,6 +63348,7 @@ apf.datagrid = function(struct, tagName){
         
         this.$fixed = fixed;
         this.$first = 0;
+>>>>>>> origin/master
 
         this.$withContainer = e.bindings.description ? true : false;
 
@@ -55256,8 +63912,19 @@ apf.datagrid = function(struct, tagName){
     
     /**** Init ****/
 
+<<<<<<< HEAD
+    this.addEventListener("$skinchange", function(e){
+        if (this.tooltip)
+            apf.GuiElement.propHandlers.tooltip.call(this, this.tooltip);
+    });
+
+    this.$draw  = function(){
+        var pNode, isToolbarButton = (pNode = this.parentNode) 
+            && pNode.parentNode && pNode.parentNode.localName == "toolbar";
+=======
     this.$draw = function(){
         this.$drawBase();
+>>>>>>> origin/master
         
         var _self = this;
         this.$ext.onmousedown = function(e){
@@ -55703,12 +64370,16 @@ window.adbg = {
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/debughost.js)SIZE(4784)TIME(Thu, 01 Sep 2011 14:03:44 GMT)*/
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/caldropdown.js)SIZE(36424)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 if (apf.hasRequireJS) define("apf/elements/debughost",
     ["module",
      "apf/elements/dbg/chromedebughost",
      "apf/elements/dbg/v8debughost", 
      "apf/elements/dbg/v8websocketdebughost"],
     function(module, ChromeDebugHost, V8DebugHost, V8WebSocketDebugHost) {
+>>>>>>> origin/master
 
 apf.debughost = module.exports = function(struct, tagName){
     this.$init(tagName || "debughost", apf.NODE_HIDDEN, struct);
@@ -55730,6 +64401,9 @@ apf.debughost = module.exports = function(struct, tagName){
     this.$supportedProperties.push("port", "server", "type", "autoinit",
         "model-tabs", "state-connected", "strip");
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/calendar.js)SIZE(29646)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     this.$propHandlers["model-tabs"] = function(value) {
         if (!value) return;
         
@@ -55741,6 +64415,7 @@ apf.debughost = module.exports = function(struct, tagName){
         this.$modelTabs.load("<tabs/>");
         
     };
+>>>>>>> origin/master
 
     this.$propHandlers["state-connected"] = function(value) {
         if (!value) return;
@@ -55827,6 +64502,9 @@ apf.debughost = module.exports = function(struct, tagName){
         });
     };
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/calendarlist.js)SIZE(15123)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     this.$detach = function(dbgImpl, callback) {
         if (!this.$host) 
             return;
@@ -55845,12 +64523,17 @@ apf.debughost = module.exports = function(struct, tagName){
 }).call(apf.debughost.prototype = new apf.AmlElement());
 
 apf.aml.setElement("debughost", apf.debughost);
+>>>>>>> origin/master
 
 });
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/chart.js)SIZE(9687)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/defaults.js)SIZE(1838)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55875,6 +64558,9 @@ apf.aml.setElement("debughost", apf.debughost);
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/checkbox.js)SIZE(8077)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /**
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -55909,6 +64595,7 @@ apf.aml.setElement("defaults", apf.defaults);
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/divider.js)SIZE(2918)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55997,7 +64684,11 @@ apf.aml.setElement("divider", apf.divider);
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/codeeditor.js)SIZE(21119)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/dropdown.js)SIZE(15385)TIME(Fri, 15 Jul 2011 15:38:55 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56471,6 +65162,44 @@ apf.aml.setElement("dropdown", apf.dropdown);
  */
 
 
+<<<<<<< HEAD
+    this.$propHandlers["scrollspeed"] = function(value, prop, initial) {
+        this.$editor.setScrollSpeed(value || 2);
+    };
+    
+    this.$propHandlers["gutter"] = function(value, prop, initial) {
+        this.$editor.renderer.setShowGutter(value);
+    };
+    
+    this.$propHandlers["fontsize"] = function(value, prop, initial) {
+        this.$ext.style.fontSize = value + "px";
+    };
+    this.$propHandlers["wrapmode"] = function(value, prop, initial) {
+        this.$editor.getSession().setUseWrapMode(value);
+    };
+    this.$propHandlers["wraplimitmin"] = function(value, prop, initial) {
+        this.$editor.getSession().setWrapLimitRange(value, this.wraplimitmax);
+    };
+    this.$propHandlers["wraplimitmax"] = function(value, prop, initial) {
+        this.$editor.getSession().setWrapLimitRange(this.wraplimitmin, value);
+    };
+    this.$propHandlers["highlightselectedword"] = function(value, prop, initial) {
+        this.$editor.setHighlightSelectedWord(value);
+    };
+    this.$propHandlers["autohidehorscrollbar"] = function(value, prop, initial) {
+        this.$editor.renderer.setHScrollBarAlwaysVisible(!value);
+    };
+    this.$propHandlers["behaviors"] = function(value, prop, initial) {
+        this.$editor.setBehavioursEnabled(value);
+    };
+    
+    this.$propHandlers["model-breakpoints"] = function(value, prop, inital) {
+        this.$debuggerBreakpoints = false;
+        
+        if (this.$breakpoints)
+            this.$breakpoints.removeEventListener("update", this.$onBreakpoint);
+=======
+>>>>>>> origin/master
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/errorbox.js)SIZE(6106)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
@@ -56788,10 +65517,17 @@ apf.aml.setElement("filler", apf.filler);
  *
  */
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/collection.js)SIZE(2383)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+>>>>>>> origin/master
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/flowchart.js)SIZE(50799)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/colorpicker.js)SIZE(12736)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
@@ -56812,11 +65548,16 @@ apf.aml.setElement("filler", apf.filler);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
+>>>>>>> origin/master
 
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/colorpicker2.js)SIZE(11113)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/flowchart2.js)SIZE(45889)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56842,7 +65583,130 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/comment.js)SIZE(1324)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * all elements within the comment tag are ignored by the parser.
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.4
+ */
+apf.comment = function(){
+    this.$init("comment", apf.NODE_HIDDEN);
+};
+
+apf.comment.prototype = new apf.AmlComment();
+apf.aml.setElement("comment", apf.comment);
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/contextmenu.js)SIZE(2557)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * element specifying which menu is shown when a
+ * contextmenu is requested by a user for a aml node.
+ * Example:
+ * This example shows a list that shows the mnuRoot menu when the user
+ * right clicks on the root {@link term.datanode data node}. Otherwise the mnuItem menu is
+ * shown.
+ * <code>
+ *  <a:list>
+ *      <a:contextmenu menu="mnuRoot" match="[root]" />
+ *      <a:contextmenu menu="mnuItem" />
+ *  </a:list>
+ * </code>
+ * @attribute {String} menu   the id of the menu element.
+ * @attribute {String} select the xpath executed on the selected element of the databound element which determines whether this contextmenu is shown.
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.4
+ */
+apf.contextmenu = function(){
+    this.$init("contextmenu", apf.NODE_HIDDEN);
+};
+
+(function(){
+    this.$amlNodes = [];
+    
+    //1 = force no bind rule, 2 = force bind rule
+    this.$attrExcludePropBind = apf.extend({
+        "match" : 1
+    }, this.$attrExcludePropBind);
+    
+    this.register = function(amlParent){
+        if (!amlParent.contextmenus)
+            amlParent.contextmenus = [];
+        amlParent.contextmenus.push(this);
+    };
+    
+    this.unregister = function(amlParent){
+        amlParent.contextmenus.remove(this);
+    };
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        this.register(this.parentNode);
+    });
+}).call(apf.contextmenu.prototype = new apf.AmlElement());
+
+apf.aml.setElement("contextmenu", apf.contextmenu);
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/datagrid.js)SIZE(53258)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/frame.js)SIZE(4989)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58278,7 +67142,11 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/debugger.js)SIZE(10854)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/item.js)SIZE(23234)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58737,6 +67605,9 @@ apf.item  = function(struct, tagName){
                 _self.$submenu();
         }
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/debughost.js)SIZE(4784)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         if (force)
             submenu();
         else {
@@ -58746,6 +67617,7 @@ apf.item  = function(struct, tagName){
             }, 210);
         }
     };
+>>>>>>> origin/master
 
     this.$submenu = function(hide, force){
         if (!this.submenu)
@@ -58914,10 +67786,14 @@ apf.item  = function(struct, tagName){
         
         //@todo if not elItem try using own skin
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/defaults.js)SIZE(1838)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         //this.$ext   = apf.insertHtmlNode(elItem, this.parentNode.$container);
         this.$caption = this.$getLayoutNode("item", "caption", this.$ext)
         this.$icon    = this.$getLayoutNode("item", "icon", this.$ext);
         this.$hotkey  = this.$getLayoutNode("item", "hotkey", this.$ext);
+>>>>>>> origin/master
 
         if (!isSkinSwitch && this.nextSibling && this.nextSibling.$ext)
             this.$ext.parentNode.insertBefore(this.$ext, this.nextSibling.$ext);
@@ -58940,18 +67816,26 @@ apf.item  = function(struct, tagName){
             if (this.disabled)
                 this.$handlePropSet("disabled", this.disabled);
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/divider.js)SIZE(2918)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
             if (this.caption)
                 this.$handlePropSet("caption", this.caption);
         }
     });
 }).call(apf.item.prototype = new apf.Presentation());
+>>>>>>> origin/master
 
 //apf.aml.setElement("radio", apf.radio);
 //apf.aml.setElement("check", apf.check);
 apf.aml.setElement("item",  apf.item);
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dropdown.js)SIZE(15385)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/junction.js)SIZE(2555)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59196,7 +68080,11 @@ apf.aml.setElement("label", apf.label);
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/editor.js)SIZE(18601)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/lineselect.js)SIZE(4747)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59222,7 +68110,200 @@ apf.aml.setElement("label", apf.label);
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/errorbox.js)SIZE(6106)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * Element showing an error message when the attached element 
+ * is in erroneous state and has the invalidmsg="" attribute specified.
+ * In most cases the errorbox element is implicit and will be created 
+ * automatically. 
+ * Example:
+ * <code>
+ *  <a:errorbox>
+ *      Invalid e-mail address entered.
+ *  </a:errorbox>
+ * </code>
+ * Remarks:
+ * In most cases the errorbox element is not created directly but implicitly
+ * by a validationgroup. An element that goes into an error state will
+ * show the errorbox.
+ * <code>
+ *  <a:bar validgroup="vgForm">
+ *      <a:label>Phone number</a:label>
+ *      <a:textbox id="txtPhone"
+ *          required   = "true" 
+ *          pattern    = "(\d{3}) \d{4} \d{4}" 
+ *          invalidmsg = "Incorrect phone number entered" />
+ *
+ *      <a:label>Password</a:label>
+ *      <a:textbox 
+ *          required   = "true" 
+ *          mask       = "password"
+ *          minlength  = "4"
+ *          invalidmsg = "Please enter a password of at least four characters" />
+ *      <a:button onclick="vgForm.validate()">Validate</a:button>
+ *  </a:bar>
+ * </code>
+ *
+ * To check if the element has valid information entered, leaving the textbox
+ * (focussing another element) will trigger a check. Programmatically a check
+ * can be done using the following code:
+ * <code>
+ *  txtPhone.validate();
+ * 
+ *  //Or use the html5 syntax
+ *  txtPhone.checkValidity();
+ * </code>
+ *
+ * To check for the entire group of elements use the validation group. For only 
+ * the first non-valid element the errorbox is shown. That element also receives
+ * focus.
+ * <code>
+ *  vgForm.validate();
+ * </code>
+ *
+ * @constructor
+ * @define errorbox
+ * 
+ * @allowchild {anyxhtml}
+ * @addnode elements
+ *
+ * @inherits apf.Presentation
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.4
+ */
+apf.errorbox = function(struct, tagName){
+    this.$init(tagName || "errorbox", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.$positioning = "basic";
+    this.display = function(host){
+        this.host = host;
+
+        var refHtml = 
+            
+            host.validityState && host.validityState.$errorHtml ||
+            
+            host.$ext;
+
+        document.body.appendChild(this.$ext);
+        /*var pos = apf.getAbsolutePosition(refHtml, document.body);
+
+        if (document != refHtml.ownerDocument) {
+            var pos2 = apf.getAbsolutePosition(refHtml.ownerDocument.parentWindow.frameElement, document.body);
+            pos[0] += pos2[0];
+            pos[1] += pos2[1];
+        }*/
+
+        var x = (parseFloat(host.$getOption && host.$getOption("main", "erroffsetx") || 0)),
+            y = (parseFloat(host.$getOption && host.$getOption("main", "erroffsety") || 0));
+        //this.$ext.style.left = x + "px"
+        //this.$ext.style.top  = y + "px"
+
+        this.show();
+        apf.popup.show(this.$uniqueId, {
+            x       : x,
+            y       : y,
+            animate : false,
+            ref     : refHtml,
+            allowTogether: true
+        });
+
+        this.$setStyleClass(this.$ext,
+            x + this.$ext.offsetWidth > this.$ext.offsetParent.offsetWidth
+                ? "rightbox"
+                : "leftbox", ["leftbox", "rightbox"]);
+    };
+    
+    /**
+     * Sets the message of the errorbox.
+     * @param {String} value 
+     */
+    this.setMessage = function(value){
+        if (value && value.indexOf(";") > -1) {
+            value = value.split(";");
+            value = "<strong>" + value.shift() + "</strong>" + value.join(";");
+        }
+        this.$int.innerHTML = value || "";
+    };
+    
+    this.$draw = function(){
+        //Build Main Skin
+        this.$ext   = this.$getExternal(); 
+        this.$int   = this.$getLayoutNode("main", "container", this.$ext);
+        this.oClose = this.$getLayoutNode("main", "close", this.$ext);
+        
+        if (this.oClose) {
+            var _self = this;
+            this.oClose.onclick = function(){
+                _self.hide();
+
+                if (apf.document.activeElement)
+                    apf.document.activeElement.focus(true, {mouse:true});
+            };
+        }
+        
+        this.$ext.onmousedown = function(e){
+            (e || event).cancelBubble = true;
+            
+            
+            if (apf.hasFocusBug)
+                apf.window.$focusfix();
+            
+        }
+
+        apf.popup.setContent(this.$uniqueId, this.$ext, "", null, null);
+    };
+    
+    this.$loadAml = function(x){
+        if (!apf.isTrue(this.getAttribute("visible")))
+            this.hide();
+    };
+    
+    this.$destroy = function(){
+        if (this.oClose)
+            this.oClose.onclick = null;
+        
+        this.$ext.onmousedown = null;
+        
+        apf.popup.removeContent(this.$uniqueId);
+    };
+}).call(apf.errorbox.prototype = new apf.Presentation());
+
+apf.aml.setElement("errorbox", apf.errorbox);
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/event.js)SIZE(2115)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/list.js)SIZE(14336)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59497,6 +68578,53 @@ apf.select1   = function(struct, tagName){
         var caption = this.$applyBindRule("caption", this.caret)
         var xmlNode = this.findXmlNodeByValue(caption);
 
+<<<<<<< HEAD
+    this.$loadAml = function(x) {};
+}).call(apf.event.prototype = new apf.AmlElement());
+
+apf.aml.setElement("event", apf.event);
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/filler.js)SIZE(1385)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+apf.filler = function(struct, tagName){
+    this.$init(tagName || "filler", apf.NODE_VISIBLE, struct);
+};
+
+(function() {
+    this.$focussable = false;
+    this.flex = 1;
+
+    this.$draw = function() {
+        this.$ext = this.$pHtmlNode.appendChild(this.$pHtmlNode.ownerDocument.createElement("div"));
+    };
+}).call(apf.filler.prototype = new apf.GuiElement());
+
+apf.aml.setElement("filler", apf.filler);
+
+=======
         var curNode = this.caret;
         if (xmlNode != curNode || !caption) {
             if (xmlNode && !this.isSelected(xmlNode)) 
@@ -59532,6 +68660,7 @@ apf.select1   = function(struct, tagName){
     
     this.$draw = function(){
         this.appearance = this.getAttribute("appearance") || "compact";
+>>>>>>> origin/master
 
         //Build Main Skin
         this.$ext = this.$getExternal();
@@ -59570,9 +68699,13 @@ apf.select1   = function(struct, tagName){
     };
 }).call(apf.list.prototype = new apf.BaseList());
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/flashplayer.js)SIZE(4071)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 apf.thumbnail.prototype =
 apf.select.prototype    =
 apf.select1.prototype   = apf.list.prototype;
+>>>>>>> origin/master
 
 apf.aml.setElement("thumbnail", apf.thumbnail);
 apf.aml.setElement("select",    apf.select);
@@ -59581,7 +68714,11 @@ apf.aml.setElement("list",      apf.list);
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/flowchart.js)SIZE(50799)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/loader.js)SIZE(2153)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59651,8 +68788,12 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/flowchart2.js)SIZE(45889)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/loadindicator.js)SIZE(5234)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59678,7 +68819,160 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/frame.js)SIZE(4989)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * Element displaying a frame with a caption, containing other elements. This
+ * element is called a fieldset in html.
+ * Example:
+ * <code>
+ *  <a:frame caption="Options">
+ *      <a:radiobutton value="1">Option 1</a:radiobutton>
+ *      <a:radiobutton value="2">Option 2</a:radiobutton>
+ *      <a:radiobutton value="3">Option 3</a:radiobutton>
+ *      <a:radiobutton value="4">Option 4</a:radiobutton>
+ *  </a:frame>
+ * </code>
+ *
+ * @constructor
+ * @define fieldset, frame
+ * @allowchild {elements}, {anyaml}
+ * @addnode elements:frame
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.9
+ *
+ * @inherits apf.Presentation
+ */
+apf.panel    = function(struct, tagName){
+    this.$init(tagName || "panel", apf.NODE_VISIBLE, struct);
+};
+
+apf.fieldset = function(struct, tagName){
+    this.$init(tagName || "fieldset", apf.NODE_VISIBLE, struct);
+};
+
+apf.frame    = function(struct, tagName){
+    this.$init(tagName || "submit", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.implement(apf.BaseStateButtons);
+
+    this.$focussable     = false;
+    
+    
+    
+    /**** Properties and Attributes ****/
+    
+    /**
+     * @attribute {String} caption the text of the caption. 
+     */
+    this.$supportedProperties.push("caption", "url");
+    this.$propHandlers["caption"] = function(value){
+        if (!this.oCaption) return;
+        
+        if (this.oCaption.nodeType == 1)
+            this.oCaption.innerHTML = value;
+        else
+            this.oCaption.nodeValue = value;
+    };
+    
+    /**
+     * @attribute {String} icon the location of the image.
+     */
+    this.$propHandlers["icon"] = function(value){
+        var oIcon = this.$getLayoutNode("main", "icon", this.$ext);
+        if (!oIcon) return;
+
+        if (oIcon.nodeType == 1)
+            oIcon.style.display = value ? "block" : "none";
+        apf.skins.setIcon(oIcon, value, this.iconPath);
+    };
+    
+    this.$propHandlers["url"] = function(value){
+        var node = this.oCaption;
+        if (node.tagName == "A" || node.nodeType != 1) 
+            node = node.parentNode;
+
+        node.innerHTML = "<a href='" + value + "' " 
+            + (value.match(/^http:\/\//) ? "target='_blank'" : "") + ">" 
+            + this.caption + "</a>";
+        this.oCaption = this.oCaption.firstChild;
+    };
+    
+    /** 
+     * Sets the text of the title of this element
+     * @param {String} value the text of the title.
+     */
+    this.setTitle = function(value){
+        this.setProperty("title", value);
+    };
+    
+    /**** Init ****/
+    
+    this.$draw = function(){
+        //Build Main Skin
+        this.$ext     = this.$getExternal(null, null, function(oExt){
+            this.$initButtons(oExt);
+        });
+        this.oCaption = this.$getLayoutNode("main", "caption", this.$ext);
+        this.$int     = this.$getLayoutNode("main", "container", this.$ext);
+        this.$buttons = this.$getLayoutNode("main", "buttons",  this.$ext);
+
+        /*if (this.oCaption) {
+            this.oCaption = this.oCaption.nodeType == 1 
+                ? this.oCaption 
+                : this.oCaption.parentNode;
+        }*/
+    };
+    
+    this.$loadAml = function(x){
+        // not implement now.
+    };
+    
+        
+}).call(apf.frame.prototype = new apf.Presentation());
+
+apf.panel.prototype    =
+apf.fieldset.prototype = apf.frame.prototype;
+
+apf.aml.setElement("panel", apf.panel);
+apf.aml.setElement("fieldset", apf.fieldset);
+apf.aml.setElement("frame", apf.frame);
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/gallery.js)SIZE(27418)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/map.js)SIZE(21831)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59703,8 +68997,12 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/graph.js)SIZE(21525)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/markupedit.js)SIZE(55951)TIME(Sat, 13 Aug 2011 16:27:03 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59729,8 +69027,12 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/hbox.js)SIZE(40594)TIME(Tue, 01 Nov 2011 14:24:51 GMT)*/
+=======
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/menu.js)SIZE(18773)TIME(Thu, 01 Sep 2011 14:03:44 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59991,6 +69293,39 @@ apf.menu = function(struct, tagName){
                 }
             }
         }
+<<<<<<< HEAD
+        
+        
+        //@todo this can be more optimized by calcing if it WAS the last vis child.
+        if (this.parentNode.$propHandlers["padding"]) {// && isLastVisibleChild(this)) {
+            this.parentNode.$propHandlers["padding"]
+                .call(this.parentNode, this.parentNode.padding);
+        }
+        
+        apf.layout.forceResize(this.parentNode.$int);
+        
+        if (apf.hasFlexibleBox) {
+            if (this.$altExt)
+                this.$altExt.style.display = e.value 
+                    ? (apf.isGecko ? MOZSTACK : apf.CSSPREFIX2 + "-box") 
+                    : "none";
+            return;
+        }
+        
+        if (e.value) {
+            this.$ext.style.display    = this.parentNode.$vbox 
+                && this.parentNode.align == "stretch" ? "block" : apf.INLINE;
+            if (apf.needZoomForLayout)
+                this.$ext.style.zoom = 1;
+            if (this.$br)
+                this.$br.style.display = this.parentNode.align == "stretch" ? "none" : "";
+        }
+        else {
+            if (this.$br)
+                this.$br.style.display = "none";
+        }
+=======
+>>>>>>> origin/master
 
         if (this.oOverlay) {
             if (btnWidth) {
@@ -60873,7 +70208,11 @@ apf.AmlWindow = function(struct, tagName){
         this.$ext.style.zIndex = value + 1;
     };
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/iconmap.js)SIZE(3244)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     /**** Keyboard ****/
+>>>>>>> origin/master
 
     
     
@@ -60949,7 +70288,11 @@ apf.AmlWindow = function(struct, tagName){
     });
     
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/img.js)SIZE(7692)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     
+>>>>>>> origin/master
 
     /**** Init ****/
 
@@ -61130,7 +70473,11 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/item.js)SIZE(23334)TIME(Tue, 18 Oct 2011 13:03:04 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/model.js)SIZE(42549)TIME(Sat, 13 Aug 2011 16:27:03 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61256,8 +70603,43 @@ apf.model = function(struct, tagName){
     this.$parsePrio = "020";
     this.$isModel   = true;
     
+<<<<<<< HEAD
+    /**
+     * @attribute {String} hotkey the key combination a user can press
+     * to active the function of this element. Use any combination of
+     * Ctrl, Shift, Alt, F1-F12 and alphanumerical characters. Use a
+     * space, a minus or plus sign as a seperator.
+     * Example:
+     * <code>
+     *  <a:item hotkey="Ctrl+Q">Quit</a:item>
+     * </code>
+     */
+    this.$propHandlers["hotkey"] = function(value){
+        if (this.$hotkey)
+            apf.setNodeValue(this.$hotkey, apf.isMac ? apf.hotkeys.toMacNotation(value) : value);
+
+        if (this.$lastHotkey) {
+            apf.hotkeys.remove(this.$lastHotkey[0], this.$lastHotkey[1]);
+            delete this.$lastHotkey[0];
+        }
+
+        if (value) {
+            this.$lastHotkey = [value];
+            var _self = this;
+            apf.hotkeys.register(value, this.$lastHotkey[1] = function(){
+                if (_self.disabled || !_self.visible)
+                    return;
+                
+                //hmm not very scalable...
+                var buttons = apf.document.getElementsByTagNameNS(apf.ns.aml, "button");
+                for (var i = 0; i < buttons.length; i++) {
+                    if (buttons[i].submenu == _self.parentNode.name) {
+                        var btn = buttons[i];
+                        btn.$setState("Over", {});
+=======
     this.canHaveChildren  = false;
     this.enablereset       = false;
+>>>>>>> origin/master
 
     this.$state = 0;//1 = loading
 
@@ -61655,6 +71037,758 @@ apf.model = function(struct, tagName){
     /**
      * Removes xmlNode from this model 
      */
+<<<<<<< HEAD
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        //var x = this.$aml;
+
+        //this.skinName    = this.parentNode.skinName;
+        var isSkinSwitch = this.$ext ? true : false;
+        if (isSkinSwitch) {
+            if (typeof this.checked !== "undefined")
+                this.$handlePropSet("checked", this.checked);
+            else if (typeof this.selected !== "undefined")
+                this.$handlePropSet("selected", this.selected);
+
+            if (this.disabled)
+                this.$handlePropSet("disabled", this.disabled);
+
+            if (this.caption)
+                this.$handlePropSet("caption", this.caption);
+        }
+    });
+}).call(apf.item.prototype = new apf.Presentation());
+
+//apf.aml.setElement("radio", apf.radio);
+//apf.aml.setElement("check", apf.check);
+apf.aml.setElement("item",  apf.item);
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/junction.js)SIZE(2555)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * A symbolic link to an AML element. The visibility of this element determines
+ * the true parent of the references AML element. Multiple junctions will compete
+ * to determine the parent. Make sure only one junction reference is visible
+ * at the same time.
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.4
+ */
+apf.junction = function(){
+    this.$init("junction", apf.NODE_HIDDEN);
+};
+
+(function(){
+    this.$focussable = false;
+    
+    this.autoshow = true;
+    
+    /**
+     * @attribute {String} for
+     * @attribute {String} autoshow
+     */
+    this.$booleanProperties["autoshow"] = true;
+    
+    this.$propHandlers["for"] = function(value){
+        if (this.$amlLoaded) //@todo remove vManager
+            init.call(this);
+    }
+    
+    function init(e){
+        var _self = this;
+        if (apf.window.vManager.permanent(this.parentNode, function(){
+            //Show
+            _self.$reparent();
+        }, function(){
+            //Hide
+            
+        })) {
+            this.$reparent();
+        }
+    }
+    
+    this.$reparent = function(){
+        var amlNode = self[this["for"]];
+        if (!amlNode)
+            return; //@todo warn?
+        
+        if (this.autoshow)
+            amlNode.show();
+        
+        this.parentNode.insertBefore(amlNode, this);
+    }
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", init);
+}).call(apf.junction.prototype = new apf.AmlElement());
+
+apf.aml.setElement("junction", apf.junction);
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/label.js)SIZE(4978)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+/**
+ * Element displaying a text in the user interface, usually specifying
+ * a description of another element. When the user clicks on the label it 
+ * can set the focus to the connected aml element.
+ * Example:
+ * This example uses the for attribute to connect the label to the form element.
+ * <code>
+ *  <a:label for="txtAddress">Address</a:label>
+ *  <a:textbox id="txtAddress" value="Some text" />
+ * </code>
+ *
+ * @constructor
+ * @allowchild {smartbinding}
+ * @addnode elements
+ *
+ * @inherits apf.BaseSimple
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.4
+ *
+ * @binding value  Determines the way the value for the element is retrieved 
+ * from the bound data.
+ * Example:
+ * Sets the label text based on data loaded into this component.
+ * <code>
+ *  <a:model id="mdlLabel">
+ *      <data text="Some text"></data>
+ *  </a:model>
+ *  <a:label model="mdlLabel" value="[@text]" />
+ * </code>
+ * Example:
+ * A shorter way to write this is:
+ * <code>
+ *  <a:model id="mdlLabel">
+ *      <data text="Some text"></data>
+ *  </a:model>
+ *  <a:label value="[mdlLabel::@text]" />
+ * </code>
+ */
+apf.label = function(struct, tagName){
+    this.$init(tagName || "label", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.implement(
+        
+        apf.DataAction,
+        
+        apf.ChildValue
+    );
+
+    var _self = this;
+    
+    this.$focussable = false;
+    var forElement;
+    
+    
+    
+    /**
+     * Sets the value of this element. This should be one of the values
+     * specified in the values attribute.
+     * @param {String} value the new value of this element
+     */
+    this.setValue = function(value){
+        this.setProperty("value", value, false, true);
+    };
+    
+    /**
+     * Returns the current value of this element.
+     * @return {String}
+     */
+    this.getValue = function(){
+        return this.value;
+    }
+    
+    
+    
+    /** 
+     * @attribute {String} caption the text displayed in the area defined by this 
+     * element. Using the value attribute provides an alternative to using
+     * the text using a text node.
+     *
+     * @attribute {String} for the id of the element that receives the focus 
+     * when the label is clicked on.
+     */
+    this.$supportedProperties.push("caption", "for", "textalign");
+    this.$propHandlers["caption"] = function(value){
+        this.$caption.innerHTML = value;
+    };
+    this.$propHandlers["for"] = function(value){
+        forElement = typeof value == "string" ? self[value] : value;
+    };
+    this.$propHandlers["textalign"] = function(value){
+        this.$caption.style.textAlign = value || "";
+    };
+
+    this.$draw = function(){
+        //Build Main Skin
+        this.$ext = this.$getExternal();
+        this.$caption = this.$getLayoutNode("main", "caption", this.$ext);
+        if (this.$caption.nodeType != 1) 
+            this.$caption = this.$caption.parentNode;
+        
+        this.$ext.onmousedown = function(){
+            if (forElement && forElement.$focussable && forElement.focussable)
+                forElement.focus();
+        }
+        
+        var _self = this;
+        apf.addListener(this.$ext, "click", function(e) {
+            if (!_self.disabled)
+                _self.dispatchEvent("click", {htmlEvent: e});
+        });
+        
+        apf.addListener(this.$ext, "mouseover", function(e) {
+            if (!_self.disabled)
+                _self.dispatchEvent("mouseover", {htmlEvent: e});
+        });
+        
+        apf.addListener(this.$ext, "mouseout", function(e) {
+            if (!_self.disabled)
+                _self.dispatchEvent("mouseout", {htmlEvent: e});
+        });
+    };
+    
+    this.$childProperty = "caption";
+    
+}).call(apf.label.prototype = new apf.BaseSimple());
+
+apf.aml.setElement("label", apf.label);
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/lineselect.js)SIZE(4747)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/list.js)SIZE(14336)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+/**
+ * Element displaying a skinnable list of options which can be selected.
+ * Selection of multiple items can be allowed. Items can be renamed
+ * and removed. The list can be used as a collection of checkboxes or 
+ * radiobuttons. This is especially useful for use in forms.
+ * This element is one of the most often used elements. It can display lists
+ * of items in a cms style interface or display a list of search results in 
+ * a more website like interface.
+ * Example:
+ * A simple list with inline items.
+ * <code>
+ *  <a:list multimatch="[false]">
+ *      <a:item>The Netherlands</a:item>
+ *      <a:item>United States of America</a:item>
+ *      <a:item>United Kingdom</a:item>
+ *      ...
+ *  </a:list>
+ * </code>
+ * Example:
+ * A databound list with items loaded from an xml file.
+ * <code>
+ *  <a:list model="friends.xml" each="[friend]" caption="[@name]" />
+ * </code>
+ * Example:
+ * A databound list using the bindings element
+ * <code>
+ *  <a:model id="mdlList">
+ *      <data>
+ *          <item date="2009-11-12" deleted="0"></item>
+ *          <item date="2009-11-11" deleted="0"></item>
+ *          <item date="2009-11-10" deleted="0"></item>
+ *          <item date="2009-11-09" deleted="1"></item>
+ *          <item date="2009-11-08" deleted="1"></item>
+ *      </data>
+ *  </a:model>
+ *  <a:list id="list" width="200" height="200" model="mdlList">
+ *      <a:bindings>
+ *          <a:caption match="[@date]" />
+ *          <a:each match="[item[not(@deleted='1')]]" />
+ *      </a:bindings>
+ *  </a:list>
+ * </code>
+ *
+ * @event click Fires when a user presses a mouse button while over this element.
+ *
+ * @constructor
+ * @define list, select, select1, thumbnail
+ * @allowchild {smartbinding}
+ * @addnode elements
+ *
+ * @inherits apf.BaseList
+ * @inherits apf.Rename
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.4
+ */
+apf.list      = function(struct, tagName){
+    this.$init(tagName || "list", apf.NODE_VISIBLE, struct);
+};
+
+/**
+ * Example:
+ * A small product search application using a list to display results.
+ * <code>
+ *  <a:bar>
+ *      <h1>Search for a product</h1>
+ *      <a:textbox id="txtSearch" selectfocus="true" />
+ *      <a:button onclick="search()" default="true">Search</a:button>
+ *  </a:bar>
+ * 
+ *  <a:model id="mdlSearch">
+ *      <data>
+ *          <item title="Title 1" src="siteimg/slideshow_img/img1_small.jpg" descr="Descr 1"></item>
+ *          <item title="Title 2" src="siteimg/slideshow_img/img2_small.jpg" descr="Descr 2"></item>
+ *      </data>
+ *  </a:model>
+ * 
+ *  <a:thumbnail 
+ *    model         = "mdlSearch"
+ *    autoselect    = "false" 
+ *    width         = "400"
+ *    height        = "400"
+ *    caching       = "false" 
+ *    empty-message = "No products found">
+ *      <a:bindings>
+ *          <a:caption match="[@title]" />
+ *          <a:image match="[@src]" />
+ *          <a:each match="[item]" />
+ *      </a:bindings>
+ *  </a:thumbnail>
+ * 
+ *  <a:script>
+ *      function search(){
+ *          mdlSearch.$loadFrom("http://localhost/search.php?keyword=" + txtSearch.getValue());
+ *      }
+ *  </a:script>
+ * </code>
+ */
+apf.thumbnail = function(struct, tagName){
+    this.$init(tagName || "thumbnail", apf.NODE_VISIBLE, struct);
+};
+
+apf.select    = function(struct, tagName){
+    this.$init(tagName || "select", apf.NODE_VISIBLE, struct);
+};
+
+apf.select1   = function(struct, tagName){
+    this.$init(tagName || "selectl", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.morePos = "end";
+    
+    
+    if (!apf.isIphone)
+        this.implement(apf.Rename);
+    
+    
+    
+    this.$getCaptionElement = function(){
+        if (!(this.$caret || this.$selected))
+            return;
+        
+        var x = this.$getLayoutNode("item", "caption", this.$caret || this.$selected);
+        if (!x) 
+            return;
+        return x.nodeType == 1 ? x : x.parentNode;
+    };
+    
+    
+    
+    
+    
+    
+    
+    /**** Properties and Attributes ****/
+    
+    this.$supportedProperties.push("appearance", "mode", "more", "thumbsize", "morepos");
+    
+    this.$propHandlers["morepos"] = function(value) {
+        this.morePos = value; 
+    };
+    
+    this.$propHandlers["thumbsize"] = function(value){
+        var className = this.thumbclass;
+        
+        if (apf.isIE) { //@todo detection??
+            className = className.splitSafe(",");
+            for (var i = 0; i < className.length; i++) {
+                apf.setStyleRule(className[i], "width", value + "px");
+                apf.setStyleRule(className[i], "height",  value + "px");
+            }
+            return;
+        }
+        
+        apf.setStyleRule(className, "width", value + "px");
+        apf.setStyleRule(className, "height",  value + "px");
+    };
+    
+    
+    /**
+     * @attribute {String} appearance the type of select this element is. 
+     * This is an xforms property and only available if apf is compiled 
+     * with __WITH_XFORMS set to 1.
+     *   Possible values:
+     *   full     depending on the tagName this element is either a list of radio options or of checked options.
+     *   compact  this elements functions like a list with multiselect off.
+     *   minimal  this element functions as a dropdown element.
+     */
+    this.$propHandlers["appearance"] = function(value){
+        
+    };
+    
+    
+    /**
+     * @attribute {String} more Adds a new item to the list and lets the users 
+     * type in the new name. This is especially useful in the interface when 
+     * {@link element.list.attribute.mode} is set to check or radio. For instance in a form.
+     * Example:
+     * This example shows a list in form offering the user several options. The
+     * user can add a new option. A server script could remember the addition
+     * and present it to all new users of the form.
+     * <code>
+     *  <a:model id="mdlSuggestions">
+     *      <suggestions>
+     *          <question key="krant">
+     *              <answer>Suggestion 1</answer>
+     *              <answer>Suggestion 2</answer>
+     *          </question>
+     *      </suggestions>
+     * </a:model>
+     * <a:label>Which newspapers do you read?</a:label>
+     * <a:list value="[krant]" 
+     *   more  = "caption:Add new suggestion" 
+     *   model = "[mdlSuggestions::question[@key='krant']]">
+     *     <a:bindings>
+     *         <a:caption match="[text()]" />
+     *         <a:value match="[text()]" />
+     *         <a:each match="[answer]" />
+     *     </a:bindings>
+     *     <a:actions>
+     *         <a:rename match="[node()[@custom='1']]" />
+     *         <a:remove match="[node()[@custom='1']]" />
+     *         <a:add>
+     *             <answer custom="1">New Answer</answer>
+     *         </a:add>
+     *     </a:actions>
+     *  </a:list>
+     * </code>
+     */
+    this.$propHandlers["more"] = function(value){
+        if (value) {
+            this.delayedselect = false;
+            this.addEventListener("xmlupdate", $xmlUpdate);
+            this.addEventListener("afterload", $xmlUpdate);
+            //this.addEventListener("afterrename", $afterRenameMore);
+            //this.addEventListener("beforeselect", $beforeSelect);
+            
+            this.$addMoreItem    = function(msg){
+                if (!this.moreItem)
+                    this.$fill();
+                if (this.morePos == "begin")
+                    this.$container.insertBefore(this.moreItem, this.$container.firstChild);
+                else
+                    this.$container.appendChild(this.moreItem);
+            };
+            this.$updateClearMessage = function(){}
+            this.$removeClearMessage = function(){};
+        }
+        else {
+            this.removeEventListener("xmlupdate", $xmlUpdate);
+            this.removeEventListener("afterload", $xmlUpdate);
+            //this.removeEventListener("afterrename", $afterRenameMore);
+            //this.removeEventListener("beforeselect", $beforeSelect);
+        }
+    };
+    
+    function $xmlUpdate(e){
+        if ((!e.action || "insert|add|synchronize|move".indexOf(e.action) > -1) && this.moreItem) {
+            if (this.morePos == "begin")
+                this.$container.insertBefore(this.moreItem, this.$container.firstChild);
+            else
+                this.$container.appendChild(this.moreItem);
+        }
+    }
+    
+    /*function $afterRenameMore(){
+        var caption = this.$applyBindRule("caption", this.caret)
+        var xmlNode = this.findXmlNodeByValue(caption);
+
+        var curNode = this.caret;
+        if (xmlNode != curNode || !caption) {
+            if (xmlNode && !this.isSelected(xmlNode)) 
+                this.select(xmlNode);
+            this.remove(curNode);
+        }
+        else 
+            if (!this.isSelected(curNode)) 
+                this.select(curNode);
+    }
+    
+    function $beforeSelect(e){
+        //This is a hack
+        if (e.xmlNode && this.isSelected(e.xmlNode) 
+          && e.xmlNode.getAttribute('custom') == '1') {
+            this.setCaret(e.xmlNode);
+            this.selected = e.xmlNode;
+            $setTimeout(function(){
+                _self.startRename()
+            });
+            return false;
+        }
+    }*/
+    
+    
+    /**** Keyboard support ****/
+    
+    
+    this.addEventListener("keydown", this.$keyHandler, true);
+    
+    
+    /**** Init ****/
+    
+    this.$draw = function(){
+        this.appearance = this.getAttribute("appearance") || "compact";
+
+        //Build Main Skin
+        this.$ext = this.$getExternal();
+        this.$container = this.$getLayoutNode("main", "container", this.$ext);
+        
+        if (apf.hasCssUpdateScrollbarBug && !this.mode)
+            this.$fixScrollBug();
+        
+        var _self = this;
+        this.$ext.onclick = function(e){
+            _self.dispatchEvent("click", {
+                htmlEvent: e || event
+            });
+        }
+        
+        
+        
+        //Get Options form skin
+        //Types: 1=One dimensional List, 2=Two dimensional List
+        this.listtype  = parseInt(this.$getOption("main", "type")) || 1;
+        //Types: 1=Check on click, 2=Check independent
+        this.behaviour = parseInt(this.$getOption("main", "behaviour")) || 1; 
+        
+        this.thumbsize  = this.$getOption("main", "thumbsize");
+        this.thumbclass = this.$getOption("main", "thumbclass");
+    };
+    
+    this.$loadAml = function(x){
+    };
+    
+    this.$destroy = function(){
+        if (this.$ext)
+            this.$ext.onclick = null;
+        apf.destroyHtmlNode(this.oDrag);
+        this.oDrag = null;
+    };
+}).call(apf.list.prototype = new apf.BaseList());
+
+apf.thumbnail.prototype =
+apf.select.prototype    =
+apf.select1.prototype   = apf.list.prototype;
+
+apf.aml.setElement("thumbnail", apf.thumbnail);
+apf.aml.setElement("select",    apf.select);
+apf.aml.setElement("select1",   apf.select1);
+apf.aml.setElement("list",      apf.list);
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/loader.js)SIZE(2153)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * @todo description
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.4
+ */
+apf.loader = function(){
+    this.$init("loader", apf.NODE_HIDDEN);
+    
+    this.show = function(){
+        this.$ext.style.display = "block";
+    }
+    
+    this.hide = function(){
+        this.$ext.style.display = "none";
+    }
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        var pHtmlNode;
+        if (!(pHtmlNode = this.parentNode.$int)) 
+            return;
+
+        this.$ext = apf.insertHtmlNode(null, pHtmlNode, null, (this.$aml 
+            ? (this.$aml.serialize ? this.$aml.serialize() : this.$aml.xml)
+            : this.serialize()).replace(/^<[^>]*>\s*|\s*<[^>]*>$/g, ""));
+        
+        if (!apf.loaded) {
+            var _self = this;
+            apf.addEventListener("load", function(){
+                if (apf.config.autoHideLoading) {
+                    apf.queue.empty();
+                    _self.hide();
+                }
+            });
+        }
+    });
+};
+
+apf.loader.prototype = new apf.AmlElement();
+
+apf.aml.setElement("loader", apf.loader);
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/loadindicator.js)SIZE(5234)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+=======
     this.removeXml = function(xmlNode){
         if (typeof xmlNode == "string")
             var xmlNodes = this.data.selectNodes(xmlNode);
@@ -61664,6 +71798,7 @@ apf.model = function(struct, tagName){
         if (xmlNodes.length)
             apf.xmldb.removeNodeList(xmlNodes);
     };
+>>>>>>> origin/master
 
     /**
      * Clears the loaded data from this model.
@@ -61673,6 +71808,9 @@ apf.model = function(struct, tagName){
         doc = null; //Fix for safari refcount issue;
     };
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/map.js)SIZE(21831)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     /**
      * Resets data in this model to the last saved point.
      *
@@ -61684,6 +71822,7 @@ apf.model = function(struct, tagName){
         this.data.parentNode.replaceChild(this.$copy, this.data);
         this.load(this.$copy);
     };
+>>>>>>> origin/master
 
     /**
      * Sets a new saved point based on the current state of the data in this
@@ -61721,6 +71860,9 @@ apf.model = function(struct, tagName){
             this.register(this.parentNode);
         }
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/markupedit.js)SIZE(55951)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         //Load literal model
         if (!this.src) {
             var strXml, xmlNode = x;
@@ -61747,6 +71889,7 @@ apf.model = function(struct, tagName){
             if (this.submission)
                 this.load("<data />");
         }
+>>>>>>> origin/master
 
         //Load data into model if allowed
         if (!apf.isFalse(this.autoinit))
@@ -61769,10 +71912,14 @@ apf.model = function(struct, tagName){
         else {
             
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/menu.js)SIZE(18773)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
             if (this.src)
                 this.$loadFrom(this.src, {callback: callback});
         }
     };
+>>>>>>> origin/master
 
     /* *********** LOADING ****************/
 
@@ -62243,9 +72390,13 @@ apf.model = function(struct, tagName){
 apf.aml.setElement("model", apf.model);
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/method.js)SIZE(3973)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/notifier.js)SIZE(15296)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62271,7 +72422,11 @@ apf.aml.setElement("model", apf.model);
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/modalwindow.js)SIZE(25070)TIME(Tue, 01 Nov 2011 14:24:35 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/page.js)SIZE(18211)TIME(Tue, 19 Jul 2011 12:01:49 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62496,6 +72651,21 @@ apf.page = function(struct, tagName){
                 this.parentNode.$setStyleClass(this.$button, "", ["lastbtn"]);
         }
 
+<<<<<<< HEAD
+    /**
+     * @attribute {Boolean} modal whether the window prevents access to the
+     * layout below it.
+     */
+    this.$propHandlers["modal"] = function(value){
+        if (value) {
+            if (this.visible)
+                apf.plane.show(this.$ext, false, null, null, {
+                    color       : "black", 
+                    opacity     : this.cover && this.cover.getAttribute("opacity") || 0.5,
+                    protect     : this.$uniqueId,
+                    customCover : this.cover || ""
+                });
+=======
         if (!e.$doOnlyAdmin) {
             if (this.$button)
                 this.$button.parentNode.removeChild(this.$button);
@@ -62505,6 +72675,7 @@ apf.page = function(struct, tagName){
                     this.parentNode.$setStyleClass(this.$button, "", ["curbtn"]);
                 this.parentNode.$setStyleClass(this.$ext, "", ["curpage"]);
             }
+>>>>>>> origin/master
         }
     });
 
@@ -62581,9 +72752,26 @@ apf.page = function(struct, tagName){
         }
     };
 
+<<<<<<< HEAD
+    var hEls = [], wasVisible;
+    this.$propHandlers["visible"] = function(value){
+        if (apf.isTrue(value)){
+            if (this.dispatchEvent("beforeshow") === false)
+                return (this.visible = false);
+            
+            if (this.modal){
+                apf.plane.show(this.$ext, false, null, null, {
+                    color       : "black", 
+                    opacity     : this.cover && this.cover.getAttribute("opacity") || 0.5,
+                    protect     : this.$uniqueId,
+                    customCover : this.cover || ""
+                });
+            }
+=======
     this.$activate = function(){
         //if (this.disabled)
             //return false;
+>>>>>>> origin/master
 
         this.$active = true;
 
@@ -62817,6 +73005,16 @@ apf.aml.setElement("page", apf.page);
 
 
 
+<<<<<<< HEAD
+        this.$ext = this.$getExternal(null, null, function(oExt){
+            this.$initButtons(oExt);
+        });
+        this.oTitle   = this.$getLayoutNode("main", "title", this.$ext);
+        this.oIcon    = this.$getLayoutNode("main", "icon",  this.$ext);
+        this.oDrag    = this.$getLayoutNode("main", "drag",  this.$ext);
+        this.$buttons = this.$getLayoutNode("main", "buttons",  this.$ext);
+        this.cover    = this.$getLayoutNode("cover");
+=======
 /**
  * This elements displays buttons which can be used to navigate between some
  * parts of data, for example between parts of article
@@ -62843,6 +73041,7 @@ apf.aml.setElement("page", apf.page);
 apf.pager = function(struct, tagName){
     this.$init(tagName || "pager", apf.NODE_VISIBLE, struct);
 };
+>>>>>>> origin/master
 
 (function() {
     this.previous   = "Previous";
@@ -63133,8 +73332,12 @@ apf.aml.setElement("param", apf.param);
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/model.js)SIZE(42549)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/portal.js)SIZE(25076)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64309,16 +74512,412 @@ apf.propedit    = function(struct, tagName){
 }).call(apf.propedit.prototype = new apf.DataBinding());
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/notifier.js)SIZE(15297)TIME(Tue, 18 Oct 2011 13:03:04 GMT)*/
+=======
 apf.aml.setElement("propedit",    apf.propedit);
 apf.aml.setElement("column",      apf.BindingColumnRule);
 apf.aml.setElement("description", apf.BindingRule);
 apf.aml.setElement("color",       apf.BindingRule);
+>>>>>>> origin/master
 
 
 
+/**
+ * Notification element, which shows popups when events occur. Similar
+ * to growl on the OSX platform.
+ * Example:
+ * <code>
+ *  <a:notifier position="bottom-right" margin="10 10">
+ *      <a:event 
+ *        when    = "{offline.onLine}"
+ *        message = "You are currently working offline"
+ *        icon    = "icoOffline.gif" />
+ *      <a:event 
+ *        when    = "{!offline.onLine}"
+ *        message = "You are online"
+ *        icon    = "icoOnline.gif" />
+ *      <a:event 
+ *        when    = "{offline.syncing}" 
+ *        message = "Your changes are being synced" 
+ *        icon    = "icoSyncing.gif" />
+ *      <a:event 
+ *        when    = "{!offline.syncing}"
+ *        message = "Syncing done"
+ *        icon    = "icoDone.gif" />
+ *  </a:notifier>
+ * </code>
+ * Example:
+ * Notifier with 4 notifications which appears and stays over the 3 seconds
+ * begins to the top right corner and goes to the left. First notification will
+ * be displayed when value in textbox will be bigger than 4. In next two cases 
+ * notification will be shown when notifier's position or arrange attribute will 
+ * be changed. In the last case notification will be shown when date 2008-12-24 
+ * will be selected on calendar.
+ * <code>
+ *  <a:notifier id="notiTest" position="top-right" margin="20" timeout="3" arrange="horizontal" columnsize="200">
+ *      <a:event when="{txtNumber.value > 4}" message="Incorrect value, please enter a number not bigger than 4." icon="evil.png"></a:event>
+ *      <a:event when="{notiTest.position}" message="Notifier display position has been changed"></a:event>
+ *      <a:event when="{notiTest.arrange}" message="Notifier display arrange has been changed"></a:event>
+ *      <a:event when="{txtDrop.value == '2008-12-24'}" message="Marry christmas !" icon="Reindeer.png" ></a:event>
+ *  </a:notifier>
+ * </code>
+ * 
+ * @define notifier
+ * @attribute   {String}   position     Vertical and horizontal element's start
+ *                                      position, it can be changed in any time,
+ *                                      default is 'top-right'
+ *     Possible values:
+ *     top-right       element is placed in top-right corner of browser window
+ *     top-left        element is placed in top-left corner of browser window
+ *     bottom-right    element is placed in bottom-right corner of browser window
+ *     bottom-left     element is placed in bottom-left corner of browser window
+ *     center-center   element is placed in the middle of browser window
+ *     right-top       element is placed in top-right corner of browser window
+ *     left-top        element is placed in top-left corner of browser window
+ *     right-bottom    element is placed in bottom-right corner of browser window
+ *     left-bottom     element is placed in bottom-left corner of browser window
+ *     center-center   element is placed in the middle of browser window
+ * @attribute   {String}   margin       It's a free space around popup element,
+ *                                      default is '10 10 10 10' pixels
+ * @attribute   {String}   columnsize   Specify element width and col width where
+ *                                      element will be displayed, default is 300 pixels
+ * @attribute   {String}   arrange      popup elements can be displayed in rows
+ *                                      or columns, default is 'vertical'
+ *     Possible values:
+ *     vertical     element will be displayed in rows
+ *     horizontal   element will be displayed in columns
+ * @attribute   {String}   timeout      After the timeout has passed the popup
+ *                                      will dissapear automatically. When the
+ *                                      mouse hovers over the popup it doesn't
+ *                                      dissapear, default is 2 seconds
+ * $attribute   {String}   onclick      It's an action executed after user click
+ *                                      on notifier cloud
+ * 
+ * @constructor
+ *
+ * @inherits apf.Presentation
+ * 
+ * @author      
+ * @version     %I%, %G% 
+ * 
+ * @allowchild event
+ */
+apf.notifier = function(struct, tagName){
+    this.$init(tagName || "notifier", apf.NODE_VISIBLE, struct);
+};
+
+(function() {
+    this.timeout    = 2000;
+    this.position   = "top-right";
+    this.columnsize = 300;
+    this.arrange    = "vertical";
+    this.margin     = "10 10 10 10";
+
+    this.lastPos    = null;
+    this.showing    = 0;
+    this.sign       = 1;
+
+<<<<<<< HEAD
+    this.$supportedProperties.push("margin", "position", "timeout",
+        "columnsize", "arrange");
+
+    this.$propHandlers["position"] = function(value) {
+        this.lastPos = null;
+    };
+    
+    this.$propHandlers["margin"] = function(value) {
+        this.margin = value;
+    };
+    
+    this.$propHandlers["timeout"] = function(value) {
+        this.timeout = parseInt(value) * 1000;
+    };
+    
+    function getPageScroll() {
+        return [
+            document.documentElement.scrollTop || document.body.scrollTop,
+            document.documentElement.scrollLeft || document.body.scrollLeft
+        ];
+    }
+
+    function getStartPosition(x, wh, ww, nh, nw, margin) {
+        var scrolled = getPageScroll();
+
+        return [
+             (x[0] == "top"
+                 ? margin[0]
+                 : (x[0] == "bottom"
+                     ? wh - nh - margin[2]
+                     : wh / 2 - nh / 2)) + scrolled[0],
+             (x[1] == "left"
+                 ? margin[3]
+                 : (x[1] == "right"
+                     ? ww - nw - margin[1]
+                     : ww / 2 - nw / 2)) + scrolled[1]
+        ];
+    }
+
+    /**
+     * Function creates new notifie popup element
+     * 
+     * @param {String}  message  Message content displaing in popup element,
+     *                           default is [No message]
+     * @param {String}  icon     Path to icon file relative to "icon-path" which
+     *                           is set in skin declaration
+     * @param {Object}  ev       object representation of event
+     * 
+     */
+    this.popup = function(message, icon, ev) {
+        if (!this.$ext)
+            return;
+
+        this.$ext.style.width = this.columnsize + "px";
+
+        var _self = this,
+            oNoti = this.$pHtmlNode.appendChild(this.$ext.cloneNode(true)),
+            ww    = apf.isIE
+                ? document.documentElement.offsetWidth
+                : window.innerWidth,
+            wh    = apf.isIE
+                ? document.documentElement.offsetHeight
+                : window.innerHeight,
+        
+            removed = false,
+
+            oIcon = this.$getLayoutNode("notification", "icon", oNoti),
+            oBody = this.$getLayoutNode("notification", "body", oNoti);
+
+        this.showing++;
+
+        if (oIcon && icon) {
+            if (oIcon.nodeType == 1) {
+                oIcon.style.backgroundImage = "url("
+                + this.iconPath + icon + ")";
+            }
+            else {
+                oIcon.nodeValue = this.iconPath + icon;
+            }
+
+            this.$setStyleClass(oNoti, this.$baseCSSname + "ShowIcon");
+        }
+
+        oBody.insertAdjacentHTML("beforeend", message || "[No message]");
+        oNoti.style.display = "block";
+
+        var margin = apf.getBox(this.margin || "0"),
+            nh     = oNoti.offsetHeight,
+            nw     = oNoti.offsetWidth,
+            /* It's possible to set for example: position: top-right or right-top */
+            x      = this.position.split("-"),
+            _reset = false;
+
+        if (x[1] == "top" || x[1] == "bottom" || x[0] == "left" || x[0] == "right")
+            x = [x[1], x[0]];
+        /* center-X and X-center are disabled */
+        if ((x[0] == "center" && x[1] !== "center") || (x[0] !== "center" && x[1] == "center"))
+            x = ["top", "right"];
+
+        /* start positions */
+        if (!this.lastPos) {
+            this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
+            this.sign = 1;
+            _reset = true;
+        }
+
+        if ((!_reset && x[0] == "bottom" && this.sign == 1) ||
+           (x[0] == "top" && this.sign == -1)) {
+            if (this.arrange == "vertical") {
+                this.lastPos[0] += x[1] == "center"
+                    ? 0
+                    : this.sign * (x[0] == "top"
+                        ? margin[0] + nh
+                        : (x[0] == "bottom"
+                            ? - margin[2] - nh
+                            : 0));
+            }
+            else {
+                this.lastPos[1] += x[0] == "center"
+                    ? 0
+                    : this.sign * (x[1] == "left"
+                        ? margin[3] + nw
+                        : (x[1] == "right"
+                            ? - margin[1] - nw
+                            : 0));
+            }
+        }
+
+        /* reset to next line, first for vertical, second horizontal */
+        var scrolled = getPageScroll();
+        
+        if (this.lastPos[0] > wh + scrolled[0] - nh || this.lastPos[0] < scrolled[0]) {
+            this.lastPos[1] += (x[1] == "left"
+                ? nw + margin[3]
+                : (x[1] == "right"
+                    ? - nw - margin[3]
+                    : 0));
+            this.sign *= -1;
+            this.lastPos[0] += this.sign*(x[0] == "top"
+                ? margin[0] + nh
+                : (x[0] == "bottom"
+                    ? - margin[2] - nh
+                    : 0));
+        }
+        else if (this.lastPos[1] > ww + scrolled[1] - nw || this.lastPos[1] < scrolled[1]) {
+            this.lastPos[0] += (x[0] == "top"
+                ? nh + margin[0]
+                : (x[0] == "bottom"
+                    ? - nh - margin[0]
+                    : 0));
+            this.sign *= -1;
+            this.lastPos[1] += x[0] == "center"
+                ? 0
+                : this.sign * (x[1] == "left"
+                    ? margin[3] + nw
+                    : (x[1] == "right"
+                        ? - margin[1] - nw
+                        : 0));
+        }
+
+        /* Start from begining if entire screen is filled */
+        if (this.lastPos) {
+            if ((this.lastPos[0] > wh + scrolled[0] - nh || this.lastPos[0] < scrolled[1])
+              && this.arrange == "horizontal") {
+                this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
+                this.sign = 1;
+            }
+            if ((this.lastPos[1] > ww + scrolled[1] - nw || this.lastPos[1] < scrolled[1])
+              && this.arrange == "vertical") {
+                this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
+                this.sign = 1;
+            }
+        }  
+
+        oNoti.style.left = this.lastPos[1] + "px";
+        oNoti.style.top  = this.lastPos[0] + "px";
+
+        if ((x[0] == "top" && this.sign == 1) || (x[0] == "bottom" && this.sign == -1)) {
+            if (this.arrange == "vertical") {
+                this.lastPos[0] += x[1] == "center"
+                    ? 0
+                    : this.sign * (x[0] == "top"
+                        ? margin[0] + nh
+                        : (x[0] == "bottom"
+                            ? - margin[2] - nh
+                            : 0));
+            }
+            else {
+                this.lastPos[1] += x[0] == "center"
+                    ? 0
+                    : this.sign * (x[1] == "left"
+                        ? margin[3] + nw
+                        : (x[1] == "right"
+                            ? - margin[1] - nw
+                            : 0));
+            }
+        };
+
+        var isMouseOver = false;
+
+        apf.tween.css(oNoti, "fade", {
+            anim     : apf.tween.NORMAL,
+            steps    : 10,
+            interval : 10,
+            onfinish : function(container) {
+                oNoti.style.filter = "";
+                $setTimeout(hideWindow, _self.timeout)
+            }
+        });
+
+        function hideWindow() {
+            if (isMouseOver)
+                return;
+
+            apf.tween.css(oNoti, "notifier_hidden", {
+                anim    : apf.tween.NORMAL,
+                steps   : 10,
+                interval: 20,
+                onfinish: function(container) {
+                    apf.setStyleClass(oNoti, "", ["notifier_hover"]);
+                    if (isMouseOver)
+                        return;
+
+                    if (oNoti.parentNode) {
+                        if (oNoti.parentNode.removeChild(oNoti) && !removed) {
+                            _self.showing--;
+                            removed = true;
+                        }
+                    }
+
+                    if (_self.showing == 0)
+                        _self.lastPos = null;
+                }
+            });
+        }
+
+        /* Events */
+        oNoti.onmouseover = function(e) {
+            e = (e || event);
+            var tEl = e.explicitOriginalTarget || e.toElement;
+            if (isMouseOver)
+                return;
+            if (tEl == oNoti || apf.isChildOf(oNoti, tEl)) {
+                apf.tween.css(oNoti, "notifier_hover", {
+                    anim    : apf.tween.NORMAL,
+                    steps   : 10,
+                    interval: 20,
+                    onfinish: function(container) {
+                        apf.setStyleClass(oNoti, "", ["notifier_shown"]);
+                    }
+                });
+                
+                isMouseOver = true;
+            }
+        };
+
+        oNoti.onmouseout = function(e) {
+            e = (e || event);
+            var tEl = e.explicitOriginalTarget || e.toElement;
+
+            if (!isMouseOver)
+                return;
+
+            if (apf.isChildOf(tEl, oNoti) ||
+               (!apf.isChildOf(oNoti, tEl) && oNoti !== tEl )) {
+                isMouseOver = false;
+                hideWindow();
+            }
+        };
+
+        if (ev) {
+            oNoti.onclick = function() {
+                ev.dispatchEvent("click");
+            };
+        }
+    };
+
+    /**** Init ****/
+
+    this.$draw = function() {
+        //Build Main Skin
+        this.$pHtmlNode = document.body;
+        
+        this.$ext = this.$getExternal("notification");
+        this.$ext.style.display  = "none";
+        this.$ext.style.position = "absolute";
+        apf.window.zManager.set("notifier", this.$ext);
+    };
+}).call(apf.notifier.prototype = new apf.Presentation());
+
+apf.aml.setElement("notifier", apf.notifier);
+apf.aml.setElement("event", apf.event);
 
 
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/page.js)SIZE(26182)TIME(Tue, 01 Nov 2011 14:24:51 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/radiobutton.js)SIZE(16930)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64686,6 +75285,14 @@ apf.radiobutton = function(struct, tagName){
                 .style.backgroundPosition = strBG;
         }
     };
+    
+    this.$deactivateButton = function() {
+        if (this.parentNode.$hasButtons) {
+            if (this.$position > 0)
+                this.parentNode.$setStyleClass(this.$button, "", ["firstcurbtn"]);
+            this.parentNode.$setStyleClass(this.$button, "", ["curbtn"]);
+        }
+    };
 
     this.$focus = function(){
         if (!this.$ext)
@@ -64740,8 +75347,37 @@ apf.radiobutton = function(struct, tagName){
                 }
             }
         }
+<<<<<<< HEAD
+    };
+    
+    this.$activateButton = function() {
+        if (this.$active)
+            return;
+
+        if (!this.$drawn) {
+            var f;
+            this.addEventListener("DOMNodeInsertedIntoDocument", f = function(e){
+                this.removeEventListener("DOMNodeInsertedIntoDocument", f);
+                this.$activateButton();
+            });
+            return;
+        }
+        
+        if (this.parentNode.$hasButtons) {
+            if (this.$isFirst)
+                this.parentNode.$setStyleClass(this.$button, "firstcurbtn");
+            this.parentNode.$setStyleClass(this.$button, "curbtn");
+        }
+        
+        
+        if (this.$render)
+            this.$render();
+        
+    };
+=======
     }, true);
     
+>>>>>>> origin/master
 
     /**** Init ****/
 
@@ -64758,7 +75394,212 @@ apf.radiobutton = function(struct, tagName){
         //Set events
         this.$enable();
     };
+    
+    function $btnSet(oHtml){
+        this.parentNode.set(this);
+        this.canHaveChildren = 2;
+        this.$setStyleClass(oHtml, "down", null, true);
+    }
+    
+    this.$btnControl = {};
+    this.$btnDown = function(oHtml, htmlEvent){
+        if (this.disabled) 
+            return;
+            
+        if (htmlEvent.button == 2 && this.parentNode.contextmenu) {
+            this.parentNode.contextPage = this;
+            return;
+        }
+        
+        if (this.parentNode.dispatchEvent("tabselectclick", {
+            page: this,
+            htmlEvent: htmlEvent
+        }) === false)
+            return;
+        
+        this.$btnPressed = true;
+        
+        if (!this.parentNode.$order)
+            $btnSet.call(this, oHtml);
+        
+        //@todo vertically stacked buttons
+        else if (this.parentNode.getPages().length > 1) {
+            if (this.$btnControl[this.$uniqueId])
+                return;
+            
+            this.$dragging = true;
+            
+            var pos = apf.getAbsolutePosition(this.$button, this.parentNode.$ext);
+            var start = htmlEvent.clientX;
+            var x = start - pos[0];
+            var t = apf.getAbsolutePosition(this.$button)[1];
+            oHtml.style.left = (oHtml.offsetLeft) + "px";
+            oHtml.style.top = (oHtml.offsetTop) + "px";
+            oHtml.style.position = "absolute";
+            
+            var div = document.createElement("div");
+            div.style.width = oHtml.offsetWidth + "px";
+            div.style.marginLeft = apf.getStyle(this.$button, "marginLeft");
+            div.style.marginRight = apf.getStyle(this.$button, "marginRight");
+            
+            this.$button.parentNode.insertBefore(div, this.$button);
+            
+            var marginWidth = Math.abs(apf.getMargin(div)[0]);
+            
+            var mUp, mMove, _self = this, started;
+            apf.addListener(document, "mousemove", mMove = function(e){
+                if (!e) e = event;
+                
+                if (!started) {
+                    if (Math.abs(start - e.clientX) < 3)
+                        return;
+                    started = true;
+                    
+                    oHtml.style.zIndex = 1;
+                }
+                
+                oHtml.style.left = "-2000px";
+                
+                var el = document.elementFromPoint(e.clientX, t + 1);
+                var aml = el && apf.findHost(el);
+                
+                oHtml.style.left = (e.clientX - x) + "px";
+                
+                if (aml && aml.localName == "page") {
+                    aml.$button.style.position = "relative";
 
+                    var obj, onRight = div.offsetLeft > aml.$button.offsetLeft;
+                    
+                    var pos = apf.getAbsolutePosition(aml.$button);
+                    if (onRight && aml.$button.offsetWidth - e.clientX + pos[0] < marginWidth)
+                        return;
+                        
+                    if (obj = _self.$btnControl[aml.$uniqueId]) {
+                        if (obj.onRight != onRight)
+                            obj.stop();
+                        else 
+                            return;
+                    }
+                    
+                    _self.$btnControl[aml.$uniqueId] = {onRight: onRight};
+                    
+                    var newPosition = _self.$lastPosition = onRight
+                        ? aml.$button
+                        : aml.$button.nextSibling;
+                    _self.$lastLeft = aml.$button.offsetLeft;
+                    
+                    apf.tween.single(aml.$button, {
+                        steps   : 20,
+                        interval: 10,
+                        from    : 0,
+                        to      : onRight
+                            ? aml.$button.offsetWidth - marginWidth
+                            : -1 * (aml.$button.offsetWidth - marginWidth),
+                        type    : "left",
+                        anim    : apf.tween.easeInOutCubic,
+                        control : _self.$btnControl[aml.$uniqueId],
+                        onstop  : function(){
+                            
+                        },
+                        onfinish : function(){
+                            aml.$button.style.left     = 
+                            aml.$button.style.position = "";
+                            
+                            delete _self.$btnControl[aml.$uniqueId];
+                            
+                            if (div && div.parentNode)
+                                div.parentNode.insertBefore(div, newPosition);
+                            
+                            _self.$lastPosition =
+                            _self.$lastLeft     = undefined;
+                        }
+                    });
+                }
+            });
+
+            apf.addListener(document, "mouseup", mUp = function(e){
+                if (!e) e = event;
+                
+                var aml = _self.$lastPosition !== null
+                    ? apf.findHost(_self.$lastPosition || div.nextSibling)
+                    : null;
+                if (started && aml != _self.nextSibling) {
+                    apf.tween.single(_self.$button, {
+                        steps   : 20,
+                        interval: 10,
+                        from    : _self.$button.offsetLeft,
+                        to      : _self.$lastLeft || div.offsetLeft,
+                        type    : "left",
+                        control : _self.$btnControl[_self.$uniqueId] = {},
+                        anim    : apf.tween.easeInOutCubic,
+                        onstop  : function(){
+                            
+                        },
+                        onfinish : function(){
+                            oHtml.style.position = 
+                            oHtml.style.zIndex   = 
+                            oHtml.style.top      = 
+                            oHtml.style.left     = "";
+                            
+                            _self.parentNode.insertBefore(_self, aml);
+                            div.parentNode.removeChild(div);
+                            
+                            delete _self.$btnControl[_self.$uniqueId];
+                        }
+                    });
+                }
+                else {
+                    oHtml.style.position = 
+                    oHtml.style.zIndex   = 
+                    oHtml.style.top      = 
+                    oHtml.style.left     = "";
+                    
+                    div.parentNode.removeChild(div);
+                }
+                
+                apf.removeListener(document, "mouseup", mUp);
+                apf.removeListener(document, "mousemove", mMove);
+            });
+        }
+        
+    }
+    
+    this.$btnUp = function(oHtml){
+        this.parentNode.$setStyleClass(oHtml, "", ["down"], true);
+        
+        if (this.disabled) 
+            return;
+        
+        if (this.parentNode.$order && this.$btnPressed) {
+            this.$dragging = false;
+            
+            $btnSet.call(this, oHtml);
+        }
+        
+        this.$btnPressed = false;
+    }
+    
+    this.$btnOut = function(oHtml){
+        this.parentNode.$setStyleClass(oHtml, "", ["over"], true);
+        
+        this.canHaveChildren = true;
+        this.$dragging       = false;
+        this.$btnPressed     = false;
+    }
+
+<<<<<<< HEAD
+    /**** Init ****/
+
+    this.$canLeechSkin = true;
+    
+    this.addEventListener("prop.class", function(e){
+        apf.setStyleClass(this.$button, e.value, this.$lastClassValueBtn ? [this.$lastClassValueBtn] : null);
+        this.$lastClassValueBtn = e.value;
+    });
+    
+    this.$draw = function(isSkinSwitch){
+        this.skinName = this.parentNode.skinName;
+=======
     this.$childProperty = "label";
     this.$loadAml = function(x){
         if (this.group)
@@ -64766,6 +75607,7 @@ apf.radiobutton = function(struct, tagName){
         
         else if (this.parentNode.localName == "group")
             this.$propHandlers["group"].call(this, this.parentNode);
+>>>>>>> origin/master
 
         if (!this.$group) {
             this.$propHandlers["group"].call(this,
@@ -64781,7 +75623,35 @@ apf.radiobutton = function(struct, tagName){
     
 }).call(apf.radiobutton.prototype = new apf.Presentation());
 
+<<<<<<< HEAD
+        if (this.parentNode.$hasButtons) {
+            //this.parentNode.$removeEditable(); //@todo multilingual support is broken when using dom
+
+            this.parentNode.$getNewContext("button");
+            var elBtn = this.parentNode.$getLayoutNode("button");
+            elBtn.setAttribute(this.parentNode.$getOption("main", "select") || "onmousedown",
+                'apf.lookup(' + this.$uniqueId + ').$btnDown(this, event);');
+            elBtn.setAttribute("onmouseup", 
+                'apf.lookup(' + this.$uniqueId + ').$btnUp(this)');
+            elBtn.setAttribute("onmouseover", 'var o = apf.lookup('
+                + this.$uniqueId + ').parentNode;if(apf.lookup(' + this.$uniqueId
+                + ') != o.$activepage'  + (this.parentNode.overactivetab ? " || true" : "")  + ') o.$setStyleClass(this, "over", null, true);');
+            elBtn.setAttribute("onmouseout", 'var o = apf.lookup('
+                + this.$uniqueId + ').$btnOut(this, event);');
+
+            //var cssClass = this.getAttribute("class");
+            //if (cssClass) {
+            //    apf.setStyleClass(elBtn, cssClass);
+            //    this.$lastClassValueBtn = cssClass;
+            //}
+
+            
+            var closebtn = this.getAttribute("closebtn");
+            if ((apf.isTrue(closebtn) || ((this.parentNode.buttons || "").indexOf("close") > -1 && !apf.isFalse(closebtn)))) {
+                var btncontainer = this.parentNode.$getLayoutNode("button", "container");
+=======
 apf.aml.setElement("radiobutton", apf.radiobutton);
+>>>>>>> origin/master
 
 apf.$group = function(struct, tagName){
     this.$init(tagName || "group", apf.NODE_VISIBLE, struct);
@@ -64863,12 +75733,20 @@ apf.$group = function(struct, tagName){
 };
 apf.$group.prototype = new apf.GuiElement();
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/pager.js)SIZE(9037)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 apf.aml.setElement("group", apf.$group);
+>>>>>>> origin/master
 
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/palette.js)SIZE(5945)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/remote.js)SIZE(20984)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64893,8 +75771,12 @@ apf.aml.setElement("group", apf.$group);
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/param.js)SIZE(1681)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/rpc.js)SIZE(21108)TIME(Tue, 13 Sep 2011 14:00:10 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64919,8 +75801,357 @@ apf.aml.setElement("group", apf.$group);
 
 
 /**
+<<<<<<< HEAD
+ * element specifying an argument of a method in an rpc element.
+ * @attribute {String}  name             the argument name.
+ * @attribute {String}  [value]          the value of the argument.
+ * @attribute {String}  [default]        the default value of the argument. If
+ *                                       no value is specified when this function
+ *                                       is called, the default value is used.
+ */
+apf.param = function(struct, tagName){
+    this.$init(tagName || "param", apf.NODE_HIDDEN, struct);
+};
+
+apf.param.prototype = new apf.AmlElement();
+apf.param.prototype.$parsePrio = "002";
+apf.aml.setElement("variable", apf.param); //backwards compatibility
+apf.aml.setElement("param", apf.param);
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/persist.js)SIZE(17598)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/portal.js)SIZE(25076)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/progressbar.js)SIZE(8709)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/**
+ * Element graphically representing a percentage value which increases
+ * automatically with time. This element is most often used to show the progress
+ * of a process. The progress can be either indicative or exact.
+ * Example:
+ * This example shows a progress bar that is only visible when an application is
+ * synchronizing it's offline changes. When in this process it shows the exact
+ * progress of the sync process.
+ * <code>
+ *  <a:progressbar
+ *    value   = "{apf.offline.progress}"
+ *    visible = "{apf.offline.syncing}" />
+ *  </code>
+ *
+ * @constructor
+ * @allowchild {smartbinding}
+ * @addnode elements:progressbar
+ *
+ * @inherits apf.StandardBinding
+ * @inherits apf.DataAction
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.9
+ *
+ * @binding value  Determines the way the value for the element is retrieved 
+ * from the bound data.
+ * Example:
+ * Sets the progress position based on data loaded into this component.
+ * <code>
+ *  <a:model>
+ *      <data progress="50"></data>
+ *  </a:model>
+ *  <a:progressbar min="0" max="100" value="[@progress]" />
+ * </code>
+ * Example:
+ * A shorter way to write this is:
+ * <code>
+ *  <a:model id="mdlProgress">
+ *      <data progress="50"></data>
+ *  </a:model>
+ *  <a:progressbar value="[mdlProgress::@progress]" />
+ * </code>
+ */
+apf.progress    = function(struct, tagName){
+    this.$init(tagName || "progress", apf.NODE_VISIBLE, struct);
+};
+apf.progressbar = function(struct, tagName){
+    this.$init(tagName || "progressbar", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    
+    this.implement(apf.DataAction);
+    
+
+    this.$focussable = false; // This object can get the focus
+
+    /**** Properties and Attributes ****/
+
+    this.value = 0;
+    this.min   = 0;
+    this.max   = 100;
+    
+    this.$running = false;
+    this.$timer;
+
+    /**
+     * @attribute {Boolean} autostart whether the progressbar starts automatically.
+     * @attribute {Boolean} autohide  whether the progressbar hides when the progress is at 100%. Setting this to true will hide the progressbar at start when autostart is not set to true.
+     */
+    this.$booleanProperties["autostart"] = true;
+    this.$booleanProperties["autohide"] = true;
+
+    this.$supportedProperties.push("value", "min", "max", "autostart", "autohide");
+    
+    /**
+     * @attribute {String} value the position of the progressbar stated between 
+     * the min and max value.
+     */
+    this.$propHandlers["value"] = function(value){
+        this.value = parseInt(value) || this.min;
+
+        if (this.value >= this.max)
+            apf.setStyleClass(this.$ext, this.$baseCSSname + "Complete", [this.$baseCSSname + "Running", this.$baseCSSname + "Half"]);
+        else
+            apf.setStyleClass(this.$ext, this.$baseCSSname + "Running", [this.$baseCSSname + "Complete"]);
+            
+        if (this.value >= this.max / 2)
+            apf.setStyleClass(this.$ext, this.$baseCSSname + "Half", []);
+
+        this.oSlider.style.width = (this.value * 100 / (this.max - this.min)) + "%"
+        
+        /*Math.max(0,
+            Math.round((this.$ext.offsetWidth - 5)
+            * (this.value / (this.max - this.min)))) + "px";*/
+
+        this.oCaption.nodeValue =
+            Math.round((this.value / (this.max - this.min)) * 100) + "%";
+    };
+
+    /**
+     * @attribute {Number} min the minimum value the progressbar may have. This is
+     * the value that the progressbar has when it's at its start position.
+     */
+    this.$propHandlers["min"] = function(value){
+        this.min = parseFloat(value);
+    }
+
+    /**
+     * @attribute {Number} max the maximum value the progressbar may have. This is
+     * the value that the progressbar has when it's at its end position.
+     */
+    this.$propHandlers["max"] = function(value){
+        this.max = parseFloat(value);
+    }
+
+    /**** Public Methods ****/
+
+    
+
+    /**
+     * Sets the value of this element. This should be one of the values
+     * specified in the values attribute.
+     * @param {String} value the new value of this element
+     */
+    this.setValue = function(value){
+        this.setProperty("value", value, false, true);
+    };
+
+    /**
+     * Returns the current value of this element.
+     * @return {String}
+     */
+    this.getValue = function(){
+        return this.value;
+    };
+    
+    
+
+    /**
+     * Resets the progress indicator.
+     * @param {Boolean} restart whether a this.$timer should start with a new indicative progress indicator.
+     */
+    this.clear = function(){
+        this.$clear();
+    }
+
+    this.$clear = function(restart, restart_time){
+        clearInterval(this.$timer);
+        this.setValue(this.min);
+        //this.oSlider.style.display = "none";
+        apf.setStyleClass(this.$ext, "", [this.$baseCSSname + "Running", this.$baseCSSname + "Complete"]);
+
+        if (restart) {
+            var _self = this;
+            this.$timer = setInterval(function(){
+                _self.start(restart_time);
+            });
+        }
+        
+        if (this.autohide)
+            this.hide();
+        
+        this.$running = false;
+    };
+
+    /**
+     * Starts the progress indicator.
+     * @param {Number} start the time between each step in milliseconds.
+     */
+    this.start = function(time){
+        if (this.autohide)
+            this.show();
+
+        clearInterval(this.$timer);
+        
+        //if (this.value == this.max)
+            //this.setValue(this.min + (this.max - this.min) * 0.5);
+        
+        //this.oSlider.style.display = "block";
+        var _self = this;
+        this.$timer = setInterval(function(){
+            if (_self.$amlDestroyed)
+                clearInterval(_self.$timer);
+            else
+                _self.$step();
+        }, time || 1000);
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Running");
+    };
+
+    /**
+     * Pauses the progress indicator.
+     */
+    this.pause = function(){
+        clearInterval(this.$timer);
+    };
+
+    /**
+     * Stops the progress indicator from moving.
+     * @param {Boolean} restart whether a this.$timer should start with a new indicative progress indicator.
+     */
+    this.stop = function(restart, time, restart_time){
+        clearInterval(this.$timer);
+        this.setValue(this.max);
+        
+        var _self = this;
+        this.$timer = setInterval(function(){
+            _self.$clear(restart, (restart_time || 0));
+        }, time || 500);
+    };
+
+    /**** Private methods ****/
+
+    this.$step = function(){
+        if (this.value == this.max) 
+            return;
+        
+        this.setValue(this.value + 1);
+    };
+
+    /**** Init ****/
+
+    this.$draw = function(clear, parentNode, Node, transform){
+        //Build Main Skin
+        this.$ext     = this.$getExternal();
+        this.oSlider  = this.$getLayoutNode("main", "progress", this.$ext);
+        this.oCaption = this.$getLayoutNode("main", "caption", this.$ext);
+    };
+
+    this.$loadAml = function(x){
+        if (this.autostart)
+           this.start();
+
+        if (this.autohide)
+            this.hide();
+    };
+
+}).call(apf.progressbar.prototype = new apf.StandardBinding());
+
+
+apf.progress.prototype = apf.progressbar.prototype;
+
+apf.aml.setElement("progress",    apf.progress);
+apf.aml.setElement("progressbar", apf.progressbar);
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/propedit.js)SIZE(46649)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+=======
  * Baseclass for rpc in teleport. Modules are available for
  * SOAP, XML-RPC, CGI, JSON-RPC and several proprietary protocols.
+>>>>>>> origin/master
  *
  * Example:
  * Ajax.org Markup Language
@@ -66372,7 +77603,11 @@ apf.aml.setElement("services", apf.services);
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/radiobutton.js)SIZE(16930)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/skin.js)SIZE(9963)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66674,7 +77909,11 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/remote.js)SIZE(20984)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/smartbinding.js)SIZE(33619)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66765,6 +78004,9 @@ apf.aml.setElement("skin", apf.skin);
  * {@link baseclass.databinding.attribute.smartbinding}
  */
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc.js)SIZE(21108)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /**
  * @term binding Binding rules determine how an element displays the data that 
  * its bound to (ex.: {@link element.tree.binding.caption the caption rule}), 
@@ -67332,6 +78574,7 @@ apf.aml.setElement("skin", apf.skin);
  */
 apf.smartbinding = function(struct, tagName){
     this.$init(tagName || "smartbinding", apf.NODE_HIDDEN, struct);
+>>>>>>> origin/master
 
     this.$bindNodes = {};
 };
@@ -67514,15 +78757,23 @@ apf.smartbinding = function(struct, tagName){
         if (this.parentNode.hasFeature(apf.__DATABINDING__))
             this.register(this.parentNode);
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/script.js)SIZE(3679)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         
     });
 }).call(apf.smartbinding.prototype = new apf.AmlElement());
+>>>>>>> origin/master
 
 apf.aml.setElement("smartbinding", apf.smartbinding);
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/scrollbar.js)SIZE(25346)TIME(Tue, 18 Oct 2011 13:03:04 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/source.js)SIZE(1566)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67623,6 +78874,110 @@ apf.aml.setElement("source", apf.source);
  *  <a:spinner value="[@value]" model="mdlSpinner" />
  * </code>
 
+<<<<<<< HEAD
+            var div = (_self.$getScrollHeight(oHtml) - _self.$getViewPort(oHtml));
+            if (div) {
+                if (oHtml[_self.$scrollPos] == 0 && e.delta > 0) {
+                    if (_self.$lastScrollState === 0)
+                        return;
+                    setTimeout(function(){_self.$lastScrollState = 0;}, 300);
+                }
+                else if (oHtml[_self.$scrollPos] == _self.$getScrollHeight(oHtml) - oHtml[_self.$offsetSize] && e.delta < 0) {
+                    if (_self.$lastScrollState === 1)
+                        return;
+                    setTimeout(function(){_self.$lastScrollState = 1;}, 300);
+                }
+                delete _self.$lastScrollState;
+                _self.$curValue = (oHtml[_self.$scrollPos] + -1 * e.delta * Math.min(45, apf[_self.$getInner](oHtml)/10)) / div;
+                _self.setScroll();
+                e.preventDefault();
+            }
+        };
+        
+        var _self = this, scrolling;
+        if (!this.$host.empty) {
+            amlNode.addEventListener("resize", function(){ //@todo cleanup?
+                _self.$update();
+            });
+            if (amlNode.hasFeature(apf.__DATABINDING__)) {
+                amlNode.addEventListener("afterload", function(){
+                    _self.$update();
+                });
+                amlNode.addEventListener("xmlupdate", function(){
+                    _self.$update();
+                });
+            }
+            
+            amlNode.addEventListener("prop.value", function(){
+                _self.$update();
+            });
+            
+            if (amlNode.$isTreeArch) {
+                amlNode.addEventListener("collapse", function(){
+                    _self.$update();
+                });
+                amlNode.addEventListener("expand", function(){
+                    _self.$update();
+                });
+            }
+            
+            if (!this.horizontal)
+                amlNode.addEventListener("mousescroll", scrollFunc);
+        }
+        else {
+            if (!this.horizontal) {
+                apf.addEventListener("mousescroll", function(e){
+                    if (amlNode == e.target || (amlNode == document.documentElement && e.target == document.body))
+                        scrollFunc(e);
+                })
+            }
+        }
+        
+        var oHtml = _self.$getHtmlHost();
+        apf.addListener(oHtml, "scroll", function(){
+            if (_self.animating || !_self.$visible) 
+                return;
+            
+            if (!scrolling) {
+                var oHtml = _self.$getHtmlHost();
+                var m = _self.$getScrollHeight(oHtml) - _self.$getViewPort(oHtml);
+                var p = oHtml[_self.$scrollPos] / m;
+                if (Math.abs(_self.$curValue - p) > 1/m) {
+                    _self.$curValue = p;
+                    _self.setScroll();
+                }
+                return false;
+            }
+            scrolling = false;
+        });
+        
+        if ("HTML|BODY".indexOf(oHtml.tagName) > -1) {
+            var lastHeight = oHtml.scrollHeight;
+            setInterval(function(){
+                if (lastHeight != oHtml.scrollHeight) {
+                    lastHeight = oHtml.scrollHeight;
+                    _self.$recalc();
+                    _self.$update();
+                    //_self.setScroll(null, true);*/
+                }
+            }, 100);
+        }
+        
+        this.$update();
+        
+        return this;
+    };
+    
+    this.$resize = function(){
+        var oHtml = this.$getHtmlHost();
+        if (!oHtml || !oHtml.offsetHeight) 
+            return;
+        
+        this.$recalc();
+        this.$update();
+        this.setScroll(null, true, true);
+    }
+=======
  * Example:
  * Is showing usage of model in spinner connected with textbox
  * <code>
@@ -67659,6 +79014,7 @@ apf.aml.setElement("source", apf.source);
  */
 apf.spinner = function(struct, tagName){
     this.$init(tagName || "spinner", apf.NODE_VISIBLE, struct);
+>>>>>>> origin/master
     
     this.max     = 64000;
     this.min     = -64000;
@@ -67978,7 +79334,11 @@ apf.spinner = function(struct, tagName){
                        _self.change(value >= _self.min ? value : _self.min);
                 };
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/services.js)SIZE(1488)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
             apf.setStyleClass(this, "minusDown", ["minusHover"]);
+>>>>>>> origin/master
 
             func();
         };
@@ -67992,8 +79352,12 @@ apf.spinner = function(struct, tagName){
 
             var value = parseInt(_self.oInput.value);
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/skin.js)SIZE(9963)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
             if (value != _self.value)
                 _self.change(value);
+>>>>>>> origin/master
 
             apf.setStyleClass(this, "", ["minusHover"]);
 
@@ -68001,12 +79365,16 @@ apf.spinner = function(struct, tagName){
                _self.$blur(e);
         };
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/slider.js)SIZE(32334)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         this.$buttonPlus.onmouseout  = function(e) {
             if (_self.disabled)
                 return;
             
             clearTimeout(timer);
             z = 0;
+>>>>>>> origin/master
 
             var value = parseInt(_self.oInput.value);
 
@@ -68015,9 +79383,13 @@ apf.spinner = function(struct, tagName){
 
             apf.setStyleClass(this, "", ["plusHover"]);
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/slideshow.js)SIZE(47089)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
             if (!_self.focused)
                _self.$blur(e);
         };
+>>>>>>> origin/master
 
         this.$buttonMinus.onmouseover = function(e) {
             if (_self.disabled)
@@ -68041,7 +79413,11 @@ apf.spinner = function(struct, tagName){
             //e.cancelBubble = true;
             apf.cancelBubble(e, this);
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/smartbinding.js)SIZE(33619)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
             apf.setStyleClass(this, "plusHover", ["plusDown"]);
+>>>>>>> origin/master
 
             clearTimeout(timer);
             z = 0;
@@ -68056,9 +79432,13 @@ apf.spinner = function(struct, tagName){
                 buttonDown = false;
             }
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/source.js)SIZE(1566)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
             if (value != _self.value)
                 _self.change(value);
         };
+>>>>>>> origin/master
 
         this.$buttonMinus.onmouseup = function(e) {
             if (_self.disabled)
@@ -68117,12 +79497,16 @@ apf.spinner = function(struct, tagName){
 
 }).call(apf.spinner.prototype = new apf.StandardBinding());
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/spinner.js)SIZE(17516)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+>>>>>>> origin/master
 
 apf.aml.setElement("spinner", apf.spinner);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/splitbutton.js)SIZE(4573)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/splitbutton.js)SIZE(4573)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68260,7 +79644,7 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/splitter.js)SIZE(14901)TIME(Fri, 15 Jul 2011 15:38:56 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/splitter.js)SIZE(15121)TIME(Tue, 18 Oct 2011 13:03:04 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68403,7 +79787,7 @@ apf.splitter = function(struct, tagName){
                     this.$previous[method](osize, newPos);
             }
         }
-        
+
         if (apf.hasSingleResizeEvent)
             apf.layout.forceResize(this.$ext.parentNode);
     };
@@ -68464,7 +79848,9 @@ apf.splitter = function(struct, tagName){
         this.$ext.onmousedown = function(e){
             if (!e)
                 e = event;
-                
+            
+            apf.dragMode = true; //prevent selection
+            
             _self.$setSiblings();
 
             var changedPosition, pHtml = _self.parentNode.$int;
@@ -68542,8 +79928,9 @@ apf.splitter = function(struct, tagName){
                 }
             }
             
-            e.returnValue  = false;
-            e.cancelBubble = true;
+            //e.returnValue  = false;
+            //e.cancelBubble = true;
+            //apf.stopEvent(e);
             
             
             apf.plane.show(this);
@@ -68595,6 +79982,8 @@ apf.splitter = function(struct, tagName){
                 
                 document.onmouseup   = 
                 document.onmousemove = null;
+                
+                apf.dragMode = false; //return to default selection policy
             };
             
             //@todo convert to proper way
@@ -68616,8 +80005,9 @@ apf.splitter = function(struct, tagName){
                     }
                 }
                 
-                e.returnValue  = false;
-                e.cancelBubble = true;
+                apf.stopEvent(e);
+                //e.returnValue  = false;
+                //e.cancelBubble = true;
             };
         }
         
@@ -68636,7 +80026,7 @@ apf.aml.setElement("splitter", apf.splitter);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/state-group.js)SIZE(3131)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/state-group.js)SIZE(3131)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68729,7 +80119,7 @@ apf.aml.setElement("state-group", apf.stateGroup);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/state.js)SIZE(11225)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/state.js)SIZE(11225)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69054,7 +80444,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/statusbar.js)SIZE(3824)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/statusbar.js)SIZE(3824)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69174,7 +80564,7 @@ apf.aml.setElement("statusbar", apf.statusbar);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/style.js)SIZE(1888)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/style.js)SIZE(1888)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69234,7 +80624,7 @@ apf.xhtml.setElement("style",  apf.style);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/submitform.js)SIZE(30092)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/submitform.js)SIZE(30092)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69260,7 +80650,7 @@ apf.xhtml.setElement("style",  apf.style);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/tab.js)SIZE(2990)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/tab.js)SIZE(2990)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69359,7 +80749,7 @@ apf.aml.setElement("tab",    apf.tab);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/table.js)SIZE(17679)TIME(Fri, 15 Jul 2011 15:38:56 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/table.js)SIZE(17679)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69836,7 +81226,7 @@ apf.aml.setElement("table", apf.table);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/teleport.js)SIZE(1019)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/teleport.js)SIZE(1019)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69865,7 +81255,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/template.js)SIZE(2498)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/template.js)SIZE(2498)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69891,7 +81281,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/text.js)SIZE(12317)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/text.js)SIZE(12619)TIME(Tue, 18 Oct 2011 13:03:04 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69982,17 +81372,21 @@ apf.text = function(struct, tagName){
         if (value) {
             //this.addEventListener("resize", this.$resize);
             this.$scrolldown = true;
-            this.$scrollArea.onscroll = function(){
+            apf.addListener(this.$scrollArea, "scroll", this.$scrollFunc = function(){
                 _self.$scrolldown = this.scrollTop >= this.scrollHeight
                     - this.offsetHeight + apf.getVerBorders(this);
-            }
+            });
             this.addEventListener("scroll", this.$scroll);
             this.addEventListener("afterload", this.$scroll);
+            this.addEventListener("resize", function(){
+                if (_self.$scrollArea && _self.$scrolldown && _self.scrolldown)
+                    _self.$scrollArea.scrollTop = _self.$scrollArea.scrollHeight;
+            });
             clearInterval(this.$textTimer);
             this.$textTimer = setInterval(function(){
                 if (_self.$scrollArea && _self.$scrolldown && _self.scrolldown)
                     _self.$scrollArea.scrollTop = _self.$scrollArea.scrollHeight;
-            }, 1000);
+            }, 200);
         }
         else {
             //this.removeEventListener("resize", this.$resize);
@@ -70001,7 +81395,7 @@ apf.text = function(struct, tagName){
             this.removeEventListener("afterload", this.$scroll);
             clearInterval(this.$textTimer);
             if (this.$scrollArea)
-                this.$scrollArea.onscoll = null;
+                apf.removeListener(this.$scrollArea, "scoll", this.$scrollFunc);
         }
     }
     
@@ -70243,7 +81637,7 @@ apf.aml.setElement("text", apf.text);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/textbox.js)SIZE(27544)TIME(Fri, 15 Jul 2011 15:38:56 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/textbox.js)SIZE(27544)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71054,7 +82448,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/toc.js)SIZE(8342)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/toc.js)SIZE(8342)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71080,7 +82474,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/toolbar.js)SIZE(2787)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/toolbar.js)SIZE(2787)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71174,7 +82568,7 @@ apf.aml.setElement("toolbar", apf.toolbar);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/tree.js)SIZE(17397)TIME(Wed, 31 Aug 2011 13:37:02 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/tree.js)SIZE(17397)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71587,7 +82981,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/upload.js)SIZE(28994)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/upload.js)SIZE(28994)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71612,33 +83006,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/vectorflow.js)SIZE(65716)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/video.js)SIZE(20319)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/vectorflow.js)SIZE(65716)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71664,7 +83032,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/viewport.js)SIZE(1796)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video.js)SIZE(20319)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71690,7 +83058,33 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/webdav.js)SIZE(50041)TIME(Fri, 16 Sep 2011 14:48:39 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/viewport.js)SIZE(1796)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/webdav.js)SIZE(50041)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72974,7 +84368,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/xmpp.js)SIZE(101265)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/xmpp.js)SIZE(101265)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73000,7 +84394,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker/undodata.js)SIZE(11852)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker/undodata.js)SIZE(11852)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73141,7 +84535,7 @@ apf.UndoData = function(settings, at){
 };
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73397,7 +84791,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/audio/type_flash.js)SIZE(12951)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/audio/type_flash.js)SIZE(12951)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73422,7 +84816,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/audio/type_native.js)SIZE(11013)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/audio/type_native.js)SIZE(11013)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73447,7 +84841,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/dbg/chromedebughost.js)SIZE(4111)TIME(Thu, 01 Sep 2011 14:03:44 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/chromedebughost.js)SIZE(4111)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 
 if (apf.hasRequireJS) define("apf/elements/dbg/chromedebughost",
@@ -73583,7 +84977,7 @@ var ChromeDebugHost = module.exports = function(hostname, port, o3obj, ws) {
 });
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8debugger.js)SIZE(18541)TIME(Thu, 01 Sep 2011 14:03:44 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8debugger.js)SIZE(18541)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 
 if (apf.hasRequireJS) define("apf/elements/dbg/v8debugger",
@@ -74116,7 +85510,7 @@ var V8Debugger = module.exports = function(dbg, host) {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8debughost.js)SIZE(2499)TIME(Thu, 01 Sep 2011 14:03:44 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8debughost.js)SIZE(2499)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 
 if (apf.hasRequireJS) define("apf/elements/dbg/v8debughost",
@@ -74208,7 +85602,7 @@ var V8DebugHost = module.exports = function(hostname, port, o3obj) {
 });
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8websocketdebughost.js)SIZE(1859)TIME(Thu, 01 Sep 2011 14:03:44 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/dbg/v8websocketdebughost.js)SIZE(1859)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 
 if (apf.hasRequireJS) define("apf/elements/dbg/v8websocketdebughost",
@@ -74280,7 +85674,7 @@ var V8WebSocketDebugHost = module.exports = function(socket) {
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/modalwindow/widget.js)SIZE(7077)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/modalwindow/widget.js)SIZE(7077)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74306,6 +85700,9 @@ var V8WebSocketDebugHost = module.exports = function(socket) {
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/cgi.js)SIZE(7168)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/rpc/cgi.js)SIZE(7168)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
 
 /*
@@ -74572,6 +85969,7 @@ apf.cgi = function(){
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/rpc/jsonrpc.js)SIZE(3125)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+>>>>>>> origin/master
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74596,6 +85994,10 @@ apf.cgi = function(){
 
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/header.js)SIZE(3062)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+>>>>>>> origin/master
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/rpc/rdb.js)SIZE(8293)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
 
@@ -74621,6 +86023,10 @@ apf.cgi = function(){
  */
 
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/jphp.js)SIZE(5874)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
+>>>>>>> origin/master
 
 
 /*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/rpc/rest.js)SIZE(3962)TIME(Tue, 13 Sep 2011 14:00:10 GMT)*/
@@ -74705,9 +86111,13 @@ apf.rest = function(){
     this.namedArguments   = false;
     this.nocache          = false;
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/jsonrpc.js)SIZE(3125)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
     this.unserialize = function(str){
         return str;
     };
+>>>>>>> origin/master
 
     this.getSingleCall = function(name, args, obj){
         obj.push(args);
@@ -74720,10 +86130,14 @@ apf.rest = function(){
 
         var options = this.$methods[functionName];
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/rdb.js)SIZE(8293)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         
         
         var body = "NOTIFY|SEND|POST|PUT".indexOf(options["http-method"].toUpperCase()) > -1 ? args.pop() : "",
             url;
+>>>>>>> origin/master
 
         this.method = options["http-method"];
         if (options["content-type"])
@@ -74742,41 +86156,19 @@ apf.rest = function(){
                     : "/") + args.join("/")
                 : "");
 
+<<<<<<< HEAD
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/rest.js)SIZE(3962)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+=======
         this.contentType = body ? "application/x-www-form-urlencoded" : null;
         return body;
     };
 };
+>>>>>>> origin/master
 
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/rpc/soap.js)SIZE(10943)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/rpc/xmlrpc.js)SIZE(11154)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/soap.js)SIZE(10943)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74802,7 +86194,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/rpc/yql.js)SIZE(3962)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/xmlrpc.js)SIZE(11154)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74828,7 +86220,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/textbox/autocomplete.js)SIZE(7030)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/rpc/yql.js)SIZE(3962)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74854,12 +86246,38 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/textbox/autocomplete2.js)SIZE(14483)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/textbox/autocomplete.js)SIZE(7030)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
 
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/textbox/masking.js)SIZE(13243)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/textbox/autocomplete2.js)SIZE(14483)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/textbox/masking.js)SIZE(13243)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75305,7 +86723,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/upload/flash.js)SIZE(9564)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/upload/flash.js)SIZE(9564)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75330,7 +86748,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/upload/html4.js)SIZE(9512)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/upload/html4.js)SIZE(9512)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75355,7 +86773,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/upload/html5.js)SIZE(8910)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/upload/html5.js)SIZE(8910)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75380,7 +86798,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/video/type_flv.js)SIZE(17057)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_flv.js)SIZE(17057)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75405,7 +86823,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/video/type_native.js)SIZE(10825)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_native.js)SIZE(10825)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75430,33 +86848,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/video/type_qt.js)SIZE(23357)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/video/type_silverlight.js)SIZE(15347)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_qt.js)SIZE(23357)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75482,7 +86874,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/video/type_vlc.js)SIZE(12493)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_silverlight.js)SIZE(15347)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75508,7 +86900,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/video/type_wmp.js)SIZE(12632)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_vlc.js)SIZE(12493)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75534,7 +86926,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/xmpp/muc.js)SIZE(18991)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/video/type_wmp.js)SIZE(12632)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75560,7 +86952,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/xmpp/rdb.js)SIZE(21319)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/xmpp/muc.js)SIZE(18991)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75586,7 +86978,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/elements/xmpp/roster.js)SIZE(13725)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/xmpp/rdb.js)SIZE(21319)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75612,7 +87004,33 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/processinginstructions/livemarkup.js)SIZE(4492)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/elements/xmpp/roster.js)SIZE(13725)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/processinginstructions/livemarkup.js)SIZE(4492)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75744,7 +87162,7 @@ apf.aml.setProcessingInstruction("livemarkup", apf.LiveMarkupPi);
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/jpack_end.js)SIZE(1276)TIME(Wed, 31 Aug 2011 13:37:02 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/jpack_end.js)SIZE(1276)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 
 
@@ -75797,7 +87215,7 @@ else
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/apf-node.js)SIZE(1241)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/apf-node.js)SIZE(1241)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75822,33 +87240,7 @@ else
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/apf-o3.js)SIZE(14014)TIME(Thu, 09 Jun 2011 10:23:48 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/loader-o3.js)SIZE(7470)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/apf-o3.js)SIZE(14014)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75874,7 +87266,33 @@ else
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/loader.js)SIZE(15623)TIME(Wed, 31 Aug 2011 13:37:02 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/loader-o3.js)SIZE(7470)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/loader.js)SIZE(15760)TIME(Tue, 01 Nov 2011 14:24:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75907,7 +87325,7 @@ else
 
 
 
-/*FILEHEAD(/Users/luismerino/Sites/ajaxorg/cloud9infra/support/packager/lib/../support/apf/loader2.js)SIZE(18652)TIME(Thu, 09 Jun 2011 10:23:49 GMT)*/
+/*FILEHEAD(/Volumes/bone/Development/ajax.org/javeline/cloud9infra/support/packager/lib/../support/apf/loader2.js)SIZE(18652)TIME(Tue, 18 Oct 2011 12:53:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
