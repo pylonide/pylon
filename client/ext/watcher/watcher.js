@@ -214,7 +214,7 @@ module.exports = ext.register("ext/watcher/watcher", {
             if (_self.disabled) return;
             
             var node = e.xmlNode;
-            if (node && node.getAttribute("type") == "folder") {
+            if (node && (node.getAttribute("type") == "folder" || node.tagName == "folder")) {
                 var path = node.getAttribute("path");
                 
                 expandedPaths[path] = path;
@@ -226,7 +226,7 @@ module.exports = ext.register("ext/watcher/watcher", {
             if (_self.disabled) return;
 
             var node = e.xmlNode;
-            if (node && node.getAttribute("type") == "folder") {
+            if (node && (node.getAttribute("type") == "folder" || node.tagName == "folder")) {
                 var path = node.getAttribute("path");
                 
                 delete expandedPaths[path];
