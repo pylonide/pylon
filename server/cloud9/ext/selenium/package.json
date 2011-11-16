@@ -1,0 +1,6 @@
+{
+    "name": "shell-selenium",
+    "description": "Provides a hook to Selenium Test Runner from a client-side CLI.",
+    "version": "0.1",
+    "author": "Ajax.org B.V. <info@ajax.org>"
+}
