@@ -240,7 +240,6 @@ var motions = {
             if (!count && count !== 0) { // Stupid JS
                 count = ed.session.getLength();
             }
-
             ed.gotoLine(count);
         },
         sel: function(env, range, count, param) {
@@ -249,7 +248,6 @@ var motions = {
             if (!count && count !== 0) {// Stupid JS
                 count = ed.session.getLength();
             }
-
             ed.selectTo(count, 0);
         }
     },

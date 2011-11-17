@@ -66,8 +66,10 @@ module.exports = ext.register("ext/vim/vim", {
             var cmd = e.data.command;
             if (cmd && typeof cmd === "string" && cmd[0] === ":") {
                 cmd = cmd.substr(1);
-                if (cliCmds[cmd])
-                    cliCmds[cmd](e.data);
+                if (cliCmds[cmd]) {
+                    var editor = editors.currentEditor.ceEditor.$editor;
+                    cliCmds[cmd](editor, e.data);
+                }
                 else
                     console.log("Vim command '" + cmd + "' not implemented.");
 
