@@ -548,37 +548,40 @@ module.exports = ext.register("ext/editors/editors", {
                     window.location.hash = loadFileFromHash; // update hash
                     return;
                 }
-                
+
                 // otherwise, restore state from the .config file
                 var active = model.queryValue("auto/files/@active");
                 var nodes  = model.queryNodes("auto/files/file");
-                
-                for (var doc, i = 0, l = nodes.length; i < l; i++) {
-                    doc = ide.createDocument(nodes[i]);
-                    
-                    var state = nodes[i].getAttribute("state");
+
+                var doc;
+                for (var i = 0, l = nodes.length; i < l; i++) {
+                    doc = ide.createDocument(nodes);
+                    var node = nodes[i];
+                    var state = node.getAttribute("state");
+
                     try {
                         if (state)
                             doc.state = JSON.parse(state);
                     }
                     catch (ex) {}
-                    
-                    if (nodes[i].getAttribute("changed") == 1) {
-                        doc.cachedValue = nodes[i].firstChild.nodeValue
+
+                    // node.firstChild is not always present (why?)
+                    if ((node.getAttribute("changed") === 1) && node.firstChild) {
+                        doc.cachedValue = node.firstChild.nodeValue
                             .replace(/\n]\n]/g, "]]")
                             .replace(/\\r/g, "\r")
                             .replace(/\\n/g, "\n");
                     }
-                    
+
                     ide.dispatchEvent("openfile", {
                         doc    : doc,
                         init   : true,
-                        active : active 
-                            ? active == nodes[i].getAttribute("path")
+                        active : active
+                            ? active == node.getAttribute("path")
                             : i == l - 1
                     });
-                    
-                    checkExpand(nodes[i].getAttribute("path"), doc);
+
+                    checkExpand(node.getAttribute("path"), doc);
                 }
             });
         });
