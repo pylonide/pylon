@@ -7,7 +7,19 @@
 var Plugin = require("cloud9/plugin");
 var sys = require("sys");
 var util = require("cloud9/util");
-//var c9wd = require("./c9wd");
+var apollo = require("apollo/oni-apollo-node.js");
+var webdriver = require("wd/lib/main");
+
+//require.extensions['.sjs'] = function(module, filename) {
+//    var content = require('fs').readFileSync(filename, 'utf8');
+//    var js = __oni_rt.c1.compile(content, {filename: filename});
+//    module._compile(js, filename);
+//};
+//var c9wd = require("./c9wd.sjs");
+
+var content = require('fs').readFileSync("/Users/rubendaniels/Development/cloud9/server/cloud9/ext/selenium/c9wd.sjs", 'utf8');
+var js = __oni_rt.c1.compile(content);
+var wdInit  = (new Function('webdriver', js + ";return wdInit;"))(webdriver);
 
 var ShellSeleniumPlugin = module.exports = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
@@ -18,6 +30,8 @@ var ShellSeleniumPlugin = module.exports = function(ide, workspace) {
 sys.inherits(ShellSeleniumPlugin, Plugin);
 
 (function() {
+    var username = "cloudnine_partner";
+    
     this.$commandHints = function(commands, message, callback) {
         util.extend(commands, {"git": {
             "hint": "the stupid content tracker",
@@ -32,7 +46,7 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
 
         var _self = this;
         var argv = message.argv || [];
-        var args = argv.slice(0);
+        var args = argv.slice(1);
         
         if (!args.length) {
             //Display help message
@@ -47,7 +61,91 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
             return;
         }
         else {
-            c9wd.init();
+            wdInit({
+                /*host: "ondemand.saucelabs.com",
+                port: 80,
+                username: username,
+                accesskey: "cl0udn1ne",*/
+                desired: { 
+                    name: 'cloud9',
+                    browserName: "chrome", //firefox
+                    version: '',
+                    platform: 'VISTA'
+                },
+                url: "http://127.0.0.1:5000/workspace/support/apf/tabs.html",
+                waitTimeout: 2000
+            }, {
+                pass : function(msg, data){
+                    _self.sendResult(0, message.command, {
+                        code: 1,
+                        argv: message.argv,
+                        err: null,
+                        out: msg,
+                        data: data
+                    });
+                },
+                error : function(msg, data){
+                    _self.sendResult(0, message.command, {
+                        code: 0,
+                        argv: message.argv,
+                        err: null,
+                        out: msg,
+                        data: data
+                    });
+                },
+                log : function(data){
+                    _self.sendResult(0, message.command, {
+                        code: 2,
+                        argv: message.argv,
+                        err: null,
+                        out: data
+                    });
+                }
+            }, function(err, browser, jobId){
+                if (err) {
+                    _self.sendResult(0, message.command, {
+                        code: 0,
+                        argv: message.argv,
+                        err: err,
+                        out: null
+                    });
+                }
+                else {
+var args = ["var elId0 = browser.findApfElement({'id':'list1','xml':'item[1]','htmlXpath':'SPAN[1]/U[1]'});browser.moveTo(elId0, 27, 8);browser.buttonDown();var elId1 = browser.findApfElement({'id':'list2'});browser.moveTo(elId1, 117, 0);browser.buttonUp();browser.assert('list1.length', '3');browser.assert('list2.length', '2');hold(63);browser.assert('list1.selection', '[model24.queryNode(\"item[1]\")]');browser.assert('list1.value', '\"Item 2\"');hold(6);browser.assert('list2.selection', '[model26.queryNode(\"item[1]\")]');"];
+
+                    var code = args.join(" ") 
+                        + ";browser.close();browser.quit();";
+                        
+                    try {
+                        var js = __oni_rt.c1.compile(code);//, {filename: filename});
+                    }
+                    catch(e){
+                        console.log(args.join(" "), "\n\n", e.message, e.stack);
+                        
+                        _self.sendResult(0, message.command, {
+                            code: 0,
+                            argv: message.argv,
+                            err: e,
+                            out: '\n \033[31m%s \x1b[31m%t\x1b[37m'
+                                .replace('%s', e.message)
+                                .replace('%t', e.stack)
+                        });
+                        
+                        var js = __oni_rt.c1.compile("browser.close();browser.quit()");//, {filename: filename});
+                    }
+                    
+                    //@todo How can I pass a callback???
+                    (new Function('browser', 'callback', js))(browser, function(){
+                        _self.sendResult(0, message.command, {
+                            code: 200,
+                            argv: message.argv,
+                            err: null,
+                            out: "https://saucelabs.com/rest/" + username 
+                                + "/jobs/" + jobId + "/results/video.flv"
+                        });
+                    });
+                }
+            });
         }
 
         return true;

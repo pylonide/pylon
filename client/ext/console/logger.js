@@ -29,7 +29,7 @@ exports.logNodeStream = function(data, stream, useOutput) {
     var style = "color:#eee;";
     var log = [];
     // absolute workspace files
-    var wsRe = new RegExp(Lang.escapeRegExp(workspaceDir) + "\\/([^:]*)(:\\d+)(:\\d+)*", "g");
+    var wsRe = new RegExp(Lang.escapeRegExp(workspaceDir || "!NEVERMATCHME!") + "\\/([^:]*)(:\\d+)(:\\d+)*", "g");
     // relative workspace files
     var wsrRe = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+(?:\.[\w\_\$]+))?(\:\d+)(\:\d+)*/g;
     // url

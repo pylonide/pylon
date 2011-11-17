@@ -31,3 +31,9 @@
 [submodule "support/uglify-js"]
 	path = support/uglify-js
 	url = https://github.com/ajaxorg/UglifyJS.git
+[submodule "support/wd"]
+	path = support/wd
+	url = git@github.com:ajaxorg/wd.git
+[submodule "support/apollo"]
+	path = support/apollo
+	url = git://github.com/ajaxorg/apollo.git
