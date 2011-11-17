@@ -118,7 +118,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     toggleDialog: function(isReplace, forceShow) {
         ext.initExtension(this);
 
-        if (apf.isWin && (location.host.indexOf('localhost') > -1 || location.host.indexOf('127.0.0.1') > -1)) {
+        if (apf.isWin && (location.host.indexOf("localhost") > -1 || location.host.indexOf("127.0.0.1") > -1)) {
             return util.alert("Search in Files", "Not Supported",
                 "I'm sorry, searching through files is not yet supported on the Windows platform.");
         }
@@ -140,7 +140,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     },
 
     onHide : function() {
-        var editor = require('ext/editors/editors').currentEditor;
+        var editor = editors.currentEditor;
         if (editor && editor.ceEditor)
             editor.ceEditor.focus();
     },
@@ -160,12 +160,12 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     },
 
     getOptions: function() {
-        var matchCase = '0';
+        var matchCase = "0";
         if (chkSFMatchCase.checked)
-            matchCase = '1';
-        var regex = '0';
+            matchCase = "1";
+        var regex = "0";
         if (chkSFRegEx.checked)
-            regex = '1';
+            regex = "1";
         return {
             query: txtSFFind.value,
             pattern: ddSFPatterns.value,
@@ -196,13 +196,13 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             ? trFiles.xmlRoot.selectSingleNode("folder[1]")
             : this.getSelectedTreeNode();
 
-        var findValueSanitized = txtSFFind.value.trim().replace(/([\[\]\{\}])/g, '\\$1');
+        var findValueSanitized = txtSFFind.value.trim().replace(/([\[\]\{\}])/g, "\\$1");
         _self.$model.clear();
         trSFResult.setAttribute("empty-message", "Searching for '" + findValueSanitized + "'...");
         davProject.report(node.getAttribute("path"), "codesearch", this.getOptions(), function(data, state, extra){
             if (state !== apf.SUCCESS)
                 return;
-            if (data.getAttribute("count") == "0")
+            if (!parseInt(data.getAttribute("count"), 10))
                 trSFResult.setAttribute("empty-message", "No results found for '" + findValueSanitized + "'");
             else
                 _self.$model.load(data);
