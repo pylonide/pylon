@@ -204,7 +204,6 @@ module.exports = {
                 }
                 e.stopPropagation();
                 e.preventDefault();
-                
                 break;
             default:
                 setTimeout(function() {
@@ -221,7 +220,11 @@ module.exports = {
     invoke: function(forceBox) {
         var editor = editors.currentEditor.ceEditor.$editor;
         this.forceBox = forceBox;
-        this.worker.emit("complete", {data: editor.getCursorPosition()});
+        // This is required to ensure the updated document text has been sent to the worker before the 'complete' message
+        var worker = this.worker;
+        setTimeout(function() {
+            worker.emit("complete", {data: editor.getCursorPosition()});
+        });
     },
     
     onComplete: function(event) {

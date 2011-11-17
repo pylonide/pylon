@@ -16,17 +16,18 @@ var WorkerClient = require("ace/worker/worker_client").WorkerClient;
 var outline = require('ext/language/outline');
 var complete = require('ext/language/complete');
 var marker = require('ext/language/marker');
+var refactor = require('ext/language/refactor');
 
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
+var css = require("text!ext/language/language.css");
 var lang = require("ace/lib/lang");
-var codetools = require("ext/codetools/codetools");
 
 module.exports = ext.register("ext/language/language", {
     name    : "Javascript Outline",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
-    deps    : [editors, codetools],
+    deps    : [editors],
     nodes   : [],
     alone   : true,
     markup  : markup,
@@ -35,8 +36,11 @@ module.exports = ext.register("ext/language/language", {
     
     commands : {
         "outline": {hint: "show outline"},
-        "complete": {hint: "code complete"}
+        "complete": {hint: "code complete"},
+        "renameVar": {hint: "Rename variable"}
     },
+
+    hotitems: {},
 
     hook : function() {
 		var _self = this;
@@ -44,7 +48,7 @@ module.exports = ext.register("ext/language/language", {
         var deferred = lang.deferredCall(function() {
             _self.setPath();
         });
-
+        
         var worker = this.worker = new WorkerClient(["treehugger", "ext", "ace", "c9"], null, "ext/language/worker", "LanguageWorker");
         complete.setWorker(worker);
 		ide.addEventListener("afteropenfile", function(event){
@@ -60,11 +64,6 @@ module.exports = ext.register("ext/language/language", {
             // This is necessary to know which file was opened last, for some reason the afteropenfile event happens out of sequence
             deferred.cancel().schedule(100);
 	    });
-        /*
-        ide.addEventListener("codetools.hoverchange", function(event) {
-            marker.checkForAnno(event.pos, true);
-        });
-        */
         // Language features
         worker.on("outline", function(event) {
             outline.renderOutline(event);
@@ -82,25 +81,25 @@ module.exports = ext.register("ext/language/language", {
                 marker.hideHint();
             }
         });
+
+        refactor.hook(this, worker);
 	},
 
     init : function() {
         var _self = this;
         var worker = this.worker;
+        apf.importCssString(css);
         this.editor = editors.currentEditor.ceEditor.$editor;
         this.$onCursorChange = this.onCursorChangeDefer.bind(this);
         this.editor.selection.on("changeCursor", this.$onCursorChange);
         var oldSelection = this.editor.selection;
         this.setPath();
         
+        //require('ext/editors/editors').nodes[0].appendChild(barLanguageHint);
+        
         this.editor.on("changeSession", function(event) {
             // Time out a litle, to let the page path be updated
-            if(event.oldSession) {
-                marker.removeMarkers(event.oldSession);
-                event.oldSession.clearAnnotations();
-            }
             setTimeout(function() {
-                var currentPath = tabEditors.getPage().getAttribute("id");
                 _self.setPath();
                 oldSelection.removeEventListener("changeCursor", _self.$onCursorChange);
                 _self.editor.selection.on("changeCursor", _self.$onCursorChange);
@@ -109,12 +108,12 @@ module.exports = ext.register("ext/language/language", {
         });
 
         this.editor.addEventListener("change", function(e) {
-            //marker.removeMarkers(_self.editor.session);
             e.range = {
                 start: e.data.range.start,
                 end: e.data.range.end
             };
             worker.emit("change", e);
+            marker.onChange(_self.editor.session, e);
         });
     },
     

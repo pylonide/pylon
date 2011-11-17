@@ -1,0 +1,55 @@
+.language_highlight_default {
+    position: absolute;
+    border-bottom: solid 1px green;
+}
+
+.language_highlight_error {
+    position: absolute;
+    border-bottom: solid 1px rgb(224, 4, 4);
+}
+
+.language_highlight_warning {
+    position: absolute;
+    border-bottom: solid 1px rgb(242, 223, 17);
+}
+
+.language_highlight_occurrence_main {
+    position: absolute;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    border: solid 1px #bfc0c1;
+}
+
+.language_highlight_unused {
+    position: absolute;
+    border-bottom: solid 1px black;
+    margin-top: -.5em;
+}
+
+.language_highlight_occurrence_other {
+    position: absolute;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    border: solid 1px #BFC0C1;
+}
+
+.language_rename_main {
+    background-color: rgb(255, 248, 176);
+    position: absolute;
+    border: solid 1px #bfc0c1;
+    padding: 1px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+.language_rename_other {
+    background-color: rgb(255, 248, 176);
+    position: absolute;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+

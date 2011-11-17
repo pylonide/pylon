@@ -20,11 +20,6 @@
                 border-bottom-left-radius: 5px;
             }
             
-            .language_highlight {
-                position: absolute;
-                z-index: 2000;
-            }
-            
         ]]></a:style>
         <a:presentation>
             <a:main container=".">
@@ -143,13 +138,14 @@
                 overflow: hidden;
                 position : relative;
                 background-color: #222;
-                -webkit-box-shadow: 5px 0 5px 5px rgba(0,0,0,.4);
+                -webkit-box-shadow: 5px 0 5px 5px rgba(0, 0, 0,.4);
                 box-shadow: 0 3px 7px rgba(0,0,0,.4);
                 -moz-border-radius-topleft:      5px;
                 -webkit-border-top-left-radius:  5px;
                 -moz-border-radius-topright:     5px;
                 -webkit-border-top-right-radius: 5px;
             }
+            
         ]]></a:style>
         <a:presentation>
             <a:main container=".">

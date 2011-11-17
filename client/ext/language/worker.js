@@ -37,6 +37,10 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
         sender.on("change", function(e) {
             _self.scheduledUpdate = true;
         });
+        
+        sender.on("fetchVariablePositions", function(event) {
+            _self.sendVariablePositions(event);
+        });
     }
 };
 
@@ -85,16 +89,11 @@ oop.inherits(LanguageWorker, Mirror);
     };
     
     this.scheduleEmit = function(messageType, data) {
-        /*var cached = this.emitCache[messageType];
-        if(!cached || JSON.stringify(data) !== JSON.stringify(cached)) {
-            this.emitCache[messageType] = data;*/
         this.sender.emit(messageType, data);
-        //}
     };
     
     this.analyze = function() {
         var ast = this.parse();
-        //if(!ast) return;
         console.log("Analyzing");
         var markers = [];
         for(var i = 0; i < this.handlers.length; i++) {
@@ -117,7 +116,6 @@ oop.inherits(LanguageWorker, Mirror);
 
     this.checkForMarker = function(pos) {
         var astPos = {line: pos.row, col: pos.column};
-        var foundOne = false;
         for (var i = 0; i < this.currentMarkers.length; i++) {
             var currentMarker = this.currentMarkers[i];
             if(currentMarker.message && tree.inRange(currentMarker.pos, astPos)) {
@@ -126,6 +124,7 @@ oop.inherits(LanguageWorker, Mirror);
         }
     };
 
+    // TODO: Combine these messages into a single one for efficiency
     this.onCursorMove = function(event) {
         if(this.scheduledUpdate) {
             // Postpone the cursor move until the update propagates
@@ -139,15 +138,19 @@ oop.inherits(LanguageWorker, Mirror);
             var ast = this.cachedAst;
             var currentNode = ast.findNode({line: pos.row, col: pos.column});
             if(currentNode !== this.lastCurrentNode) {
-                var aggregateActions = {markers: [], hint: null};
+                var aggregateActions = {markers: [], hint: null, enableRefactorings: []};
                 for(var i = 0; i < this.handlers.length; i++) {
                     var handler = this.handlers[i];
                     if(handler.handlesLanguage(this.$language)) {
                         var response = handler.onCursorMovedNode(this.doc, ast, pos, currentNode);
-                        if(response && response.markers && response.markers.length > 0) {
+                        if(!response) continue;
+                        if(response.markers && response.markers.length > 0) {
                             aggregateActions.markers = aggregateActions.markers.concat(response.markers);
                         }
-                        if(response && response.hint) {
+                        if(response.enableRefactorings && response.enableRefactorings.length > 0) {
+                            aggregateActions.enableRefactorings = aggregateActions.enableRefactorings.concat(response.enableRefactorings);
+                        }
+                        if(response.hint) {
                             // Last one wins, support multiple?
                             aggregateActions.hint = response.hint;
                         }
@@ -157,11 +160,29 @@ oop.inherits(LanguageWorker, Mirror);
                     hintMessage = aggregateActions.hint;
                 }
                 this.scheduleEmit("markers", this.currentMarkers.concat(aggregateActions.markers));
+                this.scheduleEmit("enableRefactorings", aggregateActions.enableRefactorings);
                 this.lastCurrentNode = currentNode;
                 this.lastAggregateActions = aggregateActions;
             }
         }
         this.scheduleEmit("hint", hintMessage);
+    };
+    
+    this.sendVariablePositions = function(event) {
+        var pos = event.data;
+        // Not going to parse for this, only if already parsed successfully
+        if(this.cachedAst) {
+            var ast = this.cachedAst;
+            var currentNode = ast.findNode({line: pos.row, col: pos.column});
+            for(var i = 0; i < this.handlers.length; i++) {
+                var handler = this.handlers[i];
+                if(handler.handlesLanguage(this.$language)) {
+                    var response = handler.getVariablePositions(this.doc, ast, pos, currentNode);
+                    if(response)
+                        this.sender.emit("variableLocations", response);
+                }
+            }
+        }
     };
 
     this.onUpdate = function() {

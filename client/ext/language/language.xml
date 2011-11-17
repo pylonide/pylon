@@ -77,7 +77,7 @@
           </a:hbox>
     </a:bar>
 
-    <a:bar id="barLanguageHint" skinset="language_skin" skin="languagehint" width="300" visible="false">
+    <a:bar id="barLanguageHint" skinset="language_skin" skin="languagehint" height="50">
         <a:hbox anchors="0 0 0 0">
             <a:text id="txtLanguageHint" skin="languagehint_text" flex="1" />
             <a:scrollbar
