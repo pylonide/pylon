@@ -283,6 +283,12 @@ module.exports = ext.register("ext/console/console", {
                         break;
                     }
                     else {
+                        if (cmd.trim().charAt(0) == "!") {
+                            cmd = "bash";
+                            parser.argv[0] = parser.argv[0].replace(/^\s*!/, "");
+                            line = line.replace(/^\s*!/, "");
+                        }
+
                         var data = {
                             command: cmd,
                             argv: parser.argv,
@@ -305,7 +311,7 @@ module.exports = ext.register("ext/console/console", {
                                 if (!ide.onLine)
                                     this.write("Cannot execute command. You are currently offline.");
                                 else
-                                    ide.socket.send(JSON.stringify(data));
+                                    ide.send(JSON.stringify(data));
                             }
                         }
                         return;
@@ -320,7 +326,6 @@ module.exports = ext.register("ext/console/console", {
 
         if (message.type == "node-data")
             return Logger.logNodeStream(message.data, message.stream, true);
-
         if (message.type != "result")
             return;
 
@@ -396,7 +401,10 @@ module.exports = ext.register("ext/console/console", {
     },
 
     getPrompt: function() {
-        return "[guest@cloud9]:" + this.$cwd + "$";
+        if(!this.username)
+            this.username = (ide.workspaceId.match(/user\/(\w+)\//) || [,"guest"])[1];
+
+        return "[" + this.username + "@cloud9]:" + this.$cwd + "$";
     },
 
     subCommands: function(cmds, prefix) {
@@ -459,7 +467,7 @@ module.exports = ext.register("ext/console/console", {
             // the 'commandhints' command retreives a list of available commands
             // from all the server plugins, to support git auto-completion, for
             // example.
-            ide.socket.send(JSON.stringify({
+            ide.send(JSON.stringify({
                 command: "commandhints",
                 argv: parser.argv,
                 cwd: this.getCwd()
@@ -558,7 +566,7 @@ module.exports = ext.register("ext/console/console", {
             if (ins.indexOf("PATH]") != -1 && lastSearch && lastSearch.line == val && lastSearch.matches.length == 1)
                 ins = lastSearch.matches[0].replace(lastSearch.base, "");
             if (ins.indexOf("PATH]") != -1) {
-                ide.socket.send(JSON.stringify({
+                ide.send(JSON.stringify({
                     command: "internal-autocomplete",
                     line   : val,
                     textbox: textbox.id,
@@ -574,18 +582,6 @@ module.exports = ext.register("ext/console/console", {
                 if (val != newval)
                     textbox.setValue(newval);
                 lastSearch = null;
-            }
-            Hints.hide();
-        }
-    },
-
-    /**** Init ****/
-
-    hook : function(){
-        panels.register(this);
-        panels.initPanel(this);
-    },
-
     init : function(amlNode){
         var _self = this
         this.panel = tabConsole;

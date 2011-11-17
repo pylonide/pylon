@@ -100,7 +100,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                         onclick : function() {
                             _self.closeallbutme(tabEditors.contextPage);
                         }
-                    }),
+                    })
                 ]
             }))
         );
@@ -286,6 +286,18 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             idx = pages.length - 1;
         if (idx > pages.length -1)
             idx = 0;
+
+        // other plugins may modify this behavior
+        var res = ide.dispatchEvent("beforecycletab", {
+            index: idx,
+            dir: dir,
+            pages: pages
+        });
+        if (res === false)
+            return;
+        if (typeof res == "number")
+            idx = res;
+
         tabs.set(pages[idx].id);
         return false;
     },

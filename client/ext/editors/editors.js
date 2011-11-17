@@ -296,21 +296,21 @@ module.exports = ext.register("ext/editors/editors", {
         if (init)
             tabEditors.setAttribute("buttons", "close");
         
-        var model = new apf.model(), 
-            fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
-                page.contentType = contentType;
-                page.$at     = new apf.actiontracker();
-                page.$doc    = doc;
-                doc.$page    = page;
-                page.$editor = editor;
-                page.setAttribute("tooltip", "[@path]");
-                page.setAttribute("class",
-                    "{parseInt([@saving], 10) || parseInt([@lookup], 10) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
-                    ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"
-                );
-                page.setAttribute("model", page.$model = model);
-                page.$model.load(xmlNode);
-            });
+        var model = new apf.model();
+        var fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
+            page.contentType = contentType;
+            page.$at     = new apf.actiontracker();
+            page.$doc    = doc;
+            doc.$page    = page;
+            page.$editor = editor;
+            page.setAttribute("tooltip", "[@path]");
+            page.setAttribute("class",
+                "{parseInt([@saving], 10) || parseInt([@lookup], 10) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
+                ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"
+            );
+            page.setAttribute("model", page.$model = model);
+            page.$model.load(xmlNode);
+        });
 
         if (init)
             tabEditors.setAttribute("buttons", "close,scale,order");
@@ -321,28 +321,9 @@ module.exports = ext.register("ext/editors/editors", {
             fake.$model.load(e.node);
             ide.dispatchEvent("afteropenfile", {doc: doc, node: e.node, editor: editor});
         });
-
-        fake.$at.addEventListener("afterchange", function(e) {
-            if (e.action == "reset") {
-                delete this.undo_ptr;
-                return;
-            }            
-            
-            var val;
-            if (fake.$at.ignoreChange) {
-                val = undefined;
-                fake.$at.ignoreChange = false;
-            } else if(this.undolength === 0 && !this.undo_ptr)
-                val = undefined;
-            else
-                val = (this.$undostack[this.$undostack.length-1] !== this.undo_ptr) ? 1 : undefined;
-                
-            if (fake.changed !== val) {
-                fake.changed = val;
-                model.setQueryValue("@changed", (val ? "1" : "0"));
-            }
-        });
         
+        this.initEditorEvents(fake, model);
+
         if (init && !active)
             return;
         
@@ -363,7 +344,41 @@ module.exports = ext.register("ext/editors/editors", {
 
         this.currentEditor = editor;
         
+        // okay don't know if you would want this, but this is the way the 'open file' dialog
+        // handles it so let's do that
+        setTimeout(function () {
+            ceEditor.focus();
+        }, 100);
+        
         settings.save();
+    },
+    
+    initEditorEvents: function(fake, model) {
+        fake.$at.addEventListener("afterchange", function(e) {
+            if (e.action == "reset") {
+                delete this.undo_ptr;
+                return;
+            }
+            
+            var val;
+            if (fake.$at.ignoreChange) {
+                val = undefined;
+                fake.$at.ignoreChange = false;
+            }
+            else if(this.undolength === 0 && !this.undo_ptr) {
+                val = undefined;
+            }
+            else {
+                val = (this.$undostack[this.$undostack.length - 1] !== this.undo_ptr) 
+                    ? 1 
+                    : undefined;
+            }
+
+            if (fake.changed !== val) {
+                fake.changed = val;
+                model.setQueryValue("@changed", (val ? "1" : "0"));
+            }
+        });
     },
 
     close : function(page) {
@@ -423,6 +438,11 @@ module.exports = ext.register("ext/editors/editors", {
             editorPage.setAttribute("actiontracker", page.$at);
         
         page.$editor.setDocument && page.$editor.setDocument(page.$doc, page.$at);
+        
+        ide.dispatchEvent("editorswitch", {
+            previousPage: e.previousPage,
+            nextPage: e.nextPage
+        });
     },
 
     afterswitch : function(e) {
@@ -528,37 +548,40 @@ module.exports = ext.register("ext/editors/editors", {
                     window.location.hash = loadFileFromHash; // update hash
                     return;
                 }
-                
+
                 // otherwise, restore state from the .config file
                 var active = model.queryValue("auto/files/@active");
                 var nodes  = model.queryNodes("auto/files/file");
-                
-                for (var doc, i = 0, l = nodes.length; i < l; i++) {
-                    doc = ide.createDocument(nodes[i]);
-                    
-                    var state = nodes[i].getAttribute("state");
+
+                var doc;
+                for (var i = 0, l = nodes.length; i < l; i++) {
+                    doc = ide.createDocument(nodes);
+                    var node = nodes[i];
+                    var state = node.getAttribute("state");
+
                     try {
                         if (state)
                             doc.state = JSON.parse(state);
                     }
                     catch (ex) {}
-                    
-                    if (nodes[i].getAttribute("changed") == 1) {
-                        doc.cachedValue = nodes[i].firstChild.nodeValue
+
+                    // node.firstChild is not always present (why?)
+                    if ((node.getAttribute("changed") === 1) && node.firstChild) {
+                        doc.cachedValue = node.firstChild.nodeValue
                             .replace(/\n]\n]/g, "]]")
                             .replace(/\\r/g, "\r")
                             .replace(/\\n/g, "\n");
                     }
-                    
+
                     ide.dispatchEvent("openfile", {
                         doc    : doc,
                         init   : true,
-                        active : active 
-                            ? active == nodes[i].getAttribute("path")
+                        active : active
+                            ? active == node.getAttribute("path")
                             : i == l - 1
                     });
-                    
-                    checkExpand(nodes[i].getAttribute("path"), doc);
+
+                    checkExpand(node.getAttribute("path"), doc);
                 }
             });
         });
@@ -701,7 +724,7 @@ module.exports = ext.register("ext/editors/editors", {
 
     jump : function(fileEl, row, column, text, doc, page) {
         var path    = fileEl.getAttribute("path");
-        var hasData = page && tabEditors.getPage(path).$doc ? true : false;
+        var hasData = page && (tabEditors.getPage(path) || { }).$doc ? true : false;
 
         if (row !== undefined) {
             var jumpTo = function(){

@@ -41,10 +41,7 @@ module.exports = ext.register("ext/settings/settings", {
     },
 
     saveToFile : function() {
-        if (!ide.socket)
-            return;
-            
-        ide.socket.send(JSON.stringify({
+        ide.send(JSON.stringify({
             command: "settings",
             action: "set",
             settings: this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || ""
@@ -95,7 +92,7 @@ module.exports = ext.register("ext/settings/settings", {
             });
             
             if (ide.onLine === true)
-                ide.socket.send(JSON.stringify({command: "settings", action: "get"}));
+                ide.send(JSON.stringify({command: "settings", action: "get"}));
             return;
         }
 

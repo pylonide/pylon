@@ -137,6 +137,19 @@ sys.inherits(ShellPlugin, Plugin);
             });
         }
     };
+    
+    this.bash = function(message) {
+        var _self = this;
+        message.argv.unshift("-c");
+        this.spawnCommand("sh", message.argv, message.cwd, null, null, function(code, err, out) {
+            _self.sendResult(0, message.command, {
+                code: code,
+                argv: message.argv,
+                err: err,
+                out: out
+            });
+        });
+    };
 
     this.getListing = function(tail, path, dirmode, callback) {
         var matches = [];

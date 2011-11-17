@@ -9,7 +9,7 @@ var jsDAV = require("jsdav"),
     fs = require("fs"),
     sys = require("sys"),
     Path = require("path"),
-    lang = require("pilot/lang"),
+    lang = require("ace/lib/lang"),
     Url = require("url"),
     template = require("./template"),
     Workspace = require("cloud9/workspace"),
@@ -28,7 +28,6 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
     var requirejsConfig = options.requirejsConfig || {
         baseUrl: "/static/",
         paths: {
-            "pilot": staticUrl + "/support/ace/support/pilot/lib/pilot",
             "ace": staticUrl + "/support/ace/lib/ace",
             "debug": staticUrl + "/support/lib-v8debug/lib/v8debug",
             "apf": staticUrl + "/support/apf"
@@ -128,6 +127,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",
     "ext/vim/vim"
+    //"ext/acebugs/acebugs"
 ];
 
 (function () {
@@ -162,7 +162,7 @@ Ide.DEFAULT_PLUGINS = [
     };
 
     this.$serveIndex = function(req, res, next) {
-        var _self = this;
+        var plugin, _self = this;
         fs.readFile(__dirname + "/view/ide.tmpl.html", "utf8", function(err, index) {
             if (err)
                 return next(err);

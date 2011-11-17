@@ -62,7 +62,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         var node = tree.selected;
         if (!node)
             node = tree.xmlRoot.selectSingleNode("folder");
-        if (node.getAttribute("type") != "folder")
+        if (node.getAttribute("type") != "folder" && node.tagName != "folder")
             node = node.parentNode;
 
         if (this.webdav) {
@@ -117,7 +117,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             node = trFiles.selected;
             if (!node)
                 node = trFiles.xmlRoot.selectSingleNode("folder");
-            if (node.getAttribute("type") != "folder")
+            if (node.getAttribute("type") != "folder" && node.tagName != "folder")
                 node = node.parentNode;
         }
         else {
@@ -217,6 +217,9 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
         for (var i = 0; i < length; ++i) {
             var childNode = childNodes[i];
+            if(!childNode || childNode.nodeType != 1)
+                continue;
+            
             // The 'name' variable is redeclared here for some fucked up reason.
             // The problem is that we are reusing that variable below. If the author
             // of this would be so kind to fix this code as soon as he sees this 
@@ -332,7 +335,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         });*/
 
         function openHandler(e) {
-            ide.socket.send(JSON.stringify({
+            ide.send(JSON.stringify({
                 command: "internal-isfile",
                 argv: e.data.argv,
                 cwd: e.data.cwd,

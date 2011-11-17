@@ -60,7 +60,7 @@ module.exports = ext = {
         if (!mdlExt.queryNode("plugin[@path='" + path + "']"))
             mdlExt.appendXml('<plugin type="' + this.typeLut[oExtension.type]
                 + '" name="' + (oExtension.name || "") + '" path="' + path
-                + '" dev="' + (oExtension.dev || "") + '" enabled="1" />');
+                + '" dev="' + (oExtension.dev || "") + '" enabled="1" userext="0" />');
         else
             mdlExt.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
 
@@ -109,7 +109,7 @@ module.exports = ext = {
                         "This extension cannot be disabled, because it is still in use by the following extensions:<br /><br />"
                         + " - " + inUseBy.join("<br /> - ")
                         + "<br /><br /> Please disable those extensions first.");
-                return;
+                return false;
             }
         }
 
@@ -144,6 +144,8 @@ module.exports = ext = {
             oExtension.destroy();
             delete oExtension.inited;
         }
+        
+        return true;
     },
 
     initExtension : function(oExtension, amlParent) {
