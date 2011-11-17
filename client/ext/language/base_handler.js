@@ -53,7 +53,7 @@ module.exports = {
     },
     
     /**
-     * @return a JSON object with two optional keys: {markers: [...], hint: {message: ...}}
+     * @return a JSON object with two optional keys: {markers: [...], hint: {message: ...}, enableRefactoring: [...]}
      */
     onCursorMovedNode: function(doc, fullAst, cursorPos, currentNode) {
     },
@@ -89,6 +89,11 @@ module.exports = {
     },
     
     analyze: function(doc, fullAst) {
+        return null;
+    },
+    
+    // Refactoring
+    getVariablePositions: function(doc, fullAst, pos, currentNode) {
         return null;
     }
 };

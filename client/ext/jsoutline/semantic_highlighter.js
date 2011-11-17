@@ -9,7 +9,7 @@ handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
 
-var KNOWN_GLOBALS = lang.arrayToMap(["console", "true", "false", "null", "Error", "Array", "Math", "Number", "parseInt", "parseDouble", "JSON", "Object", "isNaN", "setTimeout", "setInterval"]);
+var KNOWN_GLOBALS = lang.arrayToMap(["console", "window", "true", "false", "null", "undefined", "Worker", "Infinity", "Error", "Array", "Math", "Number", "parseInt", "parseDouble", "JSON", "Object", "isNaN", "setTimeout", "setInterval"]);
 
 function Variable(declaration) {
     this.declaration = declaration;
@@ -93,7 +93,7 @@ handler.analyze = function(doc, ast) {
                 var v = localVariables[i];
                 markers.push({
                     pos: v.declaration.getPos(),
-                    type: 'warning',
+                    type: 'unused',
                     message: 'Unused variable'
                 });
             }
@@ -106,18 +106,19 @@ handler.analyze = function(doc, ast) {
 handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
     if(!currentNode) return;
     var markers = [];
+    var enableRefactorings = [];
     
     function highlightVariable(v) {
         if(!v) return;
         if(v.declaration && v.declaration.getPos())
             markers.push({
                 pos: v.declaration.getPos(),
-                style: 'border: solid 1px #BFC0C1;'
+                type: 'occurrence_main'
             });
         v.uses.forEach(function(node) {
             markers.push({
                 pos: node.getPos(),
-                style: 'border: dotted 1px #BFC0C1;'
+                type: 'occurrence_other'
             });
         });
     }
@@ -127,15 +128,42 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
         },
         'VarDeclInit(x, _)', function(b) {
             highlightVariable(this.getAnnotation("scope")[b.x.value]);
+            enableRefactorings.push("renameVariable");
         },
         'VarDecl(x)', function(b) {
             highlightVariable(this.getAnnotation("scope")[b.x.value]);
+            enableRefactorings.push("renameVariable");
         },
         'FArg(x)', function(b) {
             highlightVariable(this.getAnnotation("scope")[b.x.value]);
+            enableRefactorings.push("renameVariable");
         }
     );
-    return {markers: markers}; //, hint: ""+currentNode};
+    return {markers: markers, enableRefactorings: enableRefactorings}; //, hint: ""+currentNode};
 };
+
+handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
+    var v;
+    currentNode.rewrite(
+        'VarDeclInit(x, _)', function(b) {
+            v = this.getAnnotation("scope")[b.x.value];
+        },
+        'VarDecl(x)', function(b) {
+            v = this.getAnnotation("scope")[b.x.value];
+        },
+        'FArg(x)', function(b) {
+            v = this.getAnnotation("scope")[b.x.value];
+        }
+    );
+    var pos = v.declaration.getPos();
+    var length = pos.ec - pos.sc;
     
+    var others = [];
+    v.uses.forEach(function(node) {
+        var pos = node.getPos();
+        others.push({column: pos.sc, row: pos.sl});
+    });
+    return {length: length, pos: {row: pos.sl, column: pos.sc}, others: others};
+};
+
 });
