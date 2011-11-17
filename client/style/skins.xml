@@ -4641,7 +4641,7 @@
             position: absolute;
             right: -39px;
             top: 1px;
-            width: 212px;
+            width: 184px;
         }
         
         .dockwin_runbtns .dockwin_runbtns-bg .dockwin_runbtns-icon {
@@ -7816,13 +7816,21 @@
             background-position : 0 0;
             top: 4px;
         }
-
+        
         .docktab .btncontainer .curbtn.btnclose strong:hover {
             background-position : -14px 0;
         }
 
         .docktab .btncontainer .curbtn.btnclose strong:active {
             background-position : -28px 0;
+        }
+        
+        .expandedpanel .docktab .btncontainer .btnclose strong {
+            top: 4px;
+        }
+        
+        .expandedpanel .docktab .btncontainer .curbtn.btnclose strong {
+            top: 3px;
         }
         
         .dockcol .docktab .noise_bg {

@@ -18,11 +18,11 @@
 
     <a:hbox id="tbDebugNav" padding="3" edge="4 3 5" visible="false">
         <div class="expand-panel-bg"></div>
-        <a:button tooltip="Stop"
+<!--        <a:button tooltip="Stop"
           icon     = "stop.png"
           skin     = "c9-sidepanelsbutton"
           onclick  = "require('ext/run/run').stop()"
-          disabled = "{!stProcessRunning.active and 1}" />
+          disabled = "{!stProcessRunning.active and 1}" />-->
         <a:button id="btnResume" tooltip="Resume"
           icon     = "play.png"
           onclick  = "dbg.continueScript();"

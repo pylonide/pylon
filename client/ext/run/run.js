@@ -39,7 +39,7 @@ module.exports = ext.register("ext/run/run", {
         dock.addDockable({
             hidden  : false,
             height  : 30,
-            width   : 179,
+            width   : 150,
             draggable: false,
             barNum  : 0,
             options : {
@@ -157,7 +157,6 @@ module.exports = ext.register("ext/run/run", {
         if(debug) {
 //            var pos  = apf.getAbsolutePosition(btnRunCommands.$ext);
 //            self[btnRunCommands.submenu].display(pos[0]-1, pos[1]-11, false, btnRunCommands)
-            dock.showSection(["ext/debugger/debugger", "ext/run/run"], true);
         }
     },
 
@@ -200,8 +199,12 @@ module.exports = ext.register("ext/run/run", {
         var saveallbeforerun = model.queryValue("general/@saveallbeforerun");
         if(saveallbeforerun) save.saveall();
         
-        if (debug === undefined)
+        if (debug === undefined) {
             debug = config.parentNode.getAttribute("debug") == "1";
+        }
+        
+        if(debug)
+            dock.showSection(["ext/debugger/debugger", "ext/run/run"], true);
 
         config.parentNode.setAttribute("debug", "0");
         noderunner.run(config.getAttribute("path"), config.getAttribute("args").split(" "), debug);
