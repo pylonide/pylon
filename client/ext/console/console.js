@@ -4,7 +4,7 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
@@ -18,7 +18,7 @@ var Hints = require("ext/console/hints");
 var css = require("text!ext/console/console.css");
 var markup = require("text!ext/console/console.xml");
 
-var trieCommands, 
+var trieCommands,
     commands     = {},
     cmdTries     = {},
     cmdFetched   = false,
@@ -34,7 +34,7 @@ module.exports = ext.register("ext/console/console", {
     alone  : true,
     markup : markup,
     css    : css,
-    
+
     commandHistoryIndex : 0,
     excludeParent : true,
     commands : {
@@ -54,11 +54,11 @@ module.exports = ext.register("ext/console/console", {
         }
         Logger.logNodeStream(text.join("\n"));
     },
-    
+
     clear : function() {
         this.inited && txtOutput.clear();
     },
-    
+
     switchconsole : function() {
         if (apf.activeElement == txtConsoleInput) {
             if (window.ceEditor) {
@@ -75,7 +75,7 @@ module.exports = ext.register("ext/console/console", {
         return true;
     },
 
-    
+
     showOutput : function(){
         tabConsole.set(1);
     },
@@ -144,7 +144,7 @@ module.exports = ext.register("ext/console/console", {
             else {
                 if (!hisLength)
                     return;
-                newVal = cmdHistory[++this.commandHistoryIndex] || "";//(++idx > hisLength - 1 || idx === 0) ? (cmdBuffer || "") : 
+                newVal = cmdHistory[++this.commandHistoryIndex] || "";//(++idx > hisLength - 1 || idx === 0) ? (cmdBuffer || "") :
                 if (this.commandHistoryIndex >= cmdHistory.length)
                     this.commandHistoryIndex = cmdHistory.length;
                 e.currentTarget.setValue(newVal);
@@ -158,7 +158,7 @@ module.exports = ext.register("ext/console/console", {
             this.autoComplete(e, parser, 2);
             return;
         }
-        
+
         if (Hints.visible() && Hints.selected())
             return Hints.click(Hints.selected());
 
@@ -289,11 +289,19 @@ module.exports = ext.register("ext/console/console", {
                             line: line,
                             cwd: this.getCwd()
                         };
-                        ide.dispatchEvent("track_action", {type: "console", cmd: cmd});
+
+                        ide.dispatchEvent("track_action", {
+                            type: "console",
+                            cmd: cmd
+                        });
+
                         if (ext.execCommand(cmd, data) !== false) {
-                            if (ide.dispatchEvent("consolecommand." + cmd, {
-                              data: data
-                            }) !== false) {
+                            var cmdEvt = "consolecommand." + cmd;
+                            var consoleEvt = "consolecommand";
+
+                            if (ide.dispatchEvent(cmdEvt, { data: data }) !== false &&
+                                ide.dispatchEvent(consoleEvt, { data: data }) !== false) {
+
                                 if (!ide.onLine)
                                     this.write("Cannot execute command. You are currently offline.");
                                 else
@@ -309,10 +317,10 @@ module.exports = ext.register("ext/console/console", {
     onMessage: function(e) {
         var res,
             message = e.message;
-            
+
         if (message.type == "node-data")
             return Logger.logNodeStream(message.data, message.stream, true);
-        
+
         if (message.type != "result")
             return;
 
@@ -352,7 +360,7 @@ module.exports = ext.register("ext/console/console", {
                 res = message.body;
                 ide.dispatchEvent("treecreate", {
                     type : "folder",
-                    path : this.$cwd + "/" + res.argv[res.argv.length - 1] 
+                    path : this.$cwd + "/" + res.argv[res.argv.length - 1]
                 });
                 break;
             case "error":
@@ -448,7 +456,7 @@ module.exports = ext.register("ext/console/console", {
         --cursorPos;
 
         if (!cmdFetched) {
-            // the 'commandhints' command retreives a list of available commands 
+            // the 'commandhints' command retreives a list of available commands
             // from all the server plugins, to support git auto-completion, for
             // example.
             ide.socket.send(JSON.stringify({
@@ -570,7 +578,7 @@ module.exports = ext.register("ext/console/console", {
             Hints.hide();
         }
     },
-    
+
     /**** Init ****/
 
     hook : function(){
@@ -587,13 +595,13 @@ module.exports = ext.register("ext/console/console", {
         mainRow.appendChild(winDbgConsole); //selectSingleNode("a:hbox[1]/a:vbox[2]").
 
         apf.importCssString((this.css || "") + " .console_date{display:inline}");
-        
+
         stProcessRunning.addEventListener("activate", function() {
             _self.clear();
             _self.showOutput();
             _self.enable();
         });
-        
+
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
         ide.addEventListener("consoleresult.internal-isfile", function(e) {
             var data = e.data;
@@ -603,15 +611,15 @@ module.exports = ext.register("ext/console/console", {
             else
                 Logger.log("'" + path + "' is not a file.");
         });
-        
+
         winDbgConsole.previousSibling.hide(); //que?
-        
+
         function kdHandler(e){
-            if (!e.ctrlKey && !e.metaKey && !e.altKey 
-              && !e.shiftKey && apf.isCharacter(e.keyCode)) 
+            if (!e.ctrlKey && !e.metaKey && !e.altKey
+              && !e.shiftKey && apf.isCharacter(e.keyCode))
                 txtConsoleInput.focus()
         }
-        
+
         txtOutput.addEventListener("keydown", kdHandler);
         txtConsole.addEventListener("keydown", kdHandler);
     },
@@ -632,7 +640,7 @@ module.exports = ext.register("ext/console/console", {
         if (winDbgConsole.height == 41)
             winDbgConsole.setAttribute("height", this.height || 200);
         winDbgConsole.previousSibling.show();
-        
+
         apf.layout.forceResize();
         apf.setStyleClass(btnCollapseConsole.$ext, "btn_console_openOpen");
 
@@ -652,7 +660,7 @@ module.exports = ext.register("ext/console/console", {
             this.height = winDbgConsole.height;
         winDbgConsole.setAttribute("height", 41);
         winDbgConsole.previousSibling.hide();
-        
+
         apf.layout.forceResize();
         apf.setStyleClass(btnCollapseConsole.$ext, '' , ['btn_console_openOpen']);
     },

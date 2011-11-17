@@ -451,6 +451,7 @@ var commands = exports.commands = {
         exec: function exec(env, params, request) {
             env.editor.blur();
             txtConsoleInput.focus();
+            txtConsoleInput.setValue(":");
             // Yeap it's an ugly hack to put focus back to the editor.
             //return exec.inited || (exec.inited = FocusEditor(env, txtConsoleInput));
         }

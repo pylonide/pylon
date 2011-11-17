@@ -1,6 +1,7 @@
 /**
  * Vim mode for the Cloud9 IDE
  *
+ * @author Sergi Mansilla <sergi AT c9 DOT io>
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
@@ -16,6 +17,7 @@ var StateHandler = require("ace/keyboard/state_handler").StateHandler;
 var utils = require("ext/vim/commands").util;
 var commands = require("ext/vim/commands").commands;
 var handler = require("ext/vim/keyboard").handler;
+var cliCmds = require("ext/vim/cli");
 
 module.exports = ext.register("ext/vim/vim", {
     name    : "Vim mode",
@@ -59,6 +61,19 @@ module.exports = ext.register("ext/vim/vim", {
                 }
             }))
         );
+
+        ide.addEventListener("consolecommand", function(e) {
+            var cmd = e.data.command;
+            if (cmd && typeof cmd === "string" && cmd[0] === ":") {
+                cmd = cmd.substr(1);
+                if (cliCmds[cmd])
+                    cliCmds[cmd](e.data);
+                else
+                    console.log("Vim command '" + cmd + "' not implemented.");
+
+                e.returnValue = false;
+            }
+        });
     },
 
     init : function() {},
