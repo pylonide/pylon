@@ -25,7 +25,8 @@
                 name: <%name%>,
                 readonly: <%readonly%>,
                 projectName: <%projectName%>,
-                version: <%version%>
+                version: <%version%>,
+                staticUrl: <%staticUrl%>
             };
             
             // prevent console messages crash our app!
@@ -158,7 +159,7 @@
                     </a:hbox>
                     <a:filler />
                     <a:hbox id="barExtras" edge="8 0 0 0" padding="3" align="center"> 
-                        <a:divider skin="c9-divider" />
+                        <a:divider skin="c9-divider" visible="false" />
                     </a:hbox>
                 </a:hbox>
             </a:bar>

@@ -71,8 +71,8 @@ return keys.onLoad({
             "showsettings": "Command-,"
         },
         "tabbehaviors" : {
-            "closetab": "Command-W|Option-W",
-            "closealltabs": "Command-Shift-W|Option-Shift-W",
+            "closetab": "Option-W",
+            "closealltabs": "Option-Shift-W",
             "closeallbutme": "Command-Option-W",
             "gototabright": "Command-]",
             "gototableft": "Command-[",
@@ -89,6 +89,10 @@ return keys.onLoad({
             "revealtab": "Command-Shift-L",
             "nexttab": "Command-Tab|Option-Tab",
             "previoustab": "Command-Shift-Tab|Option-Shift-Tab"
+        },
+        "splitview" : {
+            "mergetableft": "Command-Option-[",
+            "mergetabright": "Command-Option-]"
         },
         "code" : {
             "selectall": "Command-A",

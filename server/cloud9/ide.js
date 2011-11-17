@@ -9,14 +9,14 @@ var jsDAV = require("jsdav"),
     fs = require("fs"),
     sys = require("sys"),
     Path = require("path"),
-    lang = require("pilot/lang"),
+    lang = require("ace/lib/lang"),
     Url = require("url"),
     template = require("./template"),
     Workspace = require("cloud9/workspace"),
     EventEmitter = require("events").EventEmitter,
     util = require("./util");
 
-module.exports = Ide = function(options, httpServer, exts, socket) {
+var Ide = module.exports = function(options, httpServer, exts, socket) {
     EventEmitter.call(this);
 
     this.httpServer = httpServer;
@@ -28,7 +28,6 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
     var requirejsConfig = options.requirejsConfig || {
         baseUrl: "/static/",
         paths: {
-            "pilot": staticUrl + "/support/ace/support/pilot/lib/pilot",
             "ace": staticUrl + "/support/ace/lib/ace",
             "debug": staticUrl + "/support/lib-v8debug/lib/v8debug",
             "apf": staticUrl + "/support/apf"
@@ -126,7 +125,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/offline/offline",
     "ext/stripws/stripws",
     "ext/zen/zen",
-    "ext/codecomplete/codecomplete"
+    "ext/codecomplete/codecomplete",
+    "ext/splitview/splitview"
     //"ext/acebugs/acebugs"
 ];
 
@@ -162,7 +162,7 @@ Ide.DEFAULT_PLUGINS = [
     };
 
     this.$serveIndex = function(req, res, next) {
-        var _self = this;
+        var plugin, _self = this;
         fs.readFile(__dirname + "/view/ide.tmpl.html", "utf8", function(err, index) {
             if (err)
                 return next(err);
@@ -211,7 +211,7 @@ Ide.DEFAULT_PLUGINS = [
             }
             else {
                 settingsPlugin.loadSettings(user, function(err, settings) {
-                    replacements.settingsXml = err || !settings ? "defaults" : settings.replace("]]>", "]]&gt;");
+                    replacements.settingsXml = err || !settings ? "defaults" : settings.replace(/]]>/g, '&#093;&#093;&gt;');
                     index = template.fill(index, replacements);
                     res.end(index);
                 });

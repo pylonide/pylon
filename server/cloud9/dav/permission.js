@@ -2,7 +2,7 @@ var jsDAV_ServerPlugin = require("DAV/plugin").jsDAV_ServerPlugin;
 var sys = require("sys");
 var Exec = require("child_process").exec;
 
-module.exports = Permission = function(handler) {
+var Permission = module.exports = function(handler) {
     jsDAV_ServerPlugin.call(this, handler);
     
     this.handler = handler;

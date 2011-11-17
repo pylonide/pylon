@@ -247,7 +247,6 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             
             bar.splitter = bar.parentNode.insertBefore(new apf.splitter({
                 scale   : "right",
-                "class" : "splitter-editor-right",
                 width   : "0"
             }), bar.vbox);
             
@@ -1378,6 +1377,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         
         if (options && (tmp = options.primary)) {
             var span = button.$ext.getElementsByTagName("span");
+            
+            button.setAttribute("tooltip", options.menu.split("/").pop());
+            
             span[2].style.background = 'url("' 
                 + tmp.backgroundImage + '") '
                 + tmp.defaultState.x + 'px '

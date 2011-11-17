@@ -36,7 +36,7 @@ module.exports = ext.register("ext/gittools/gittools", {
         dock.register(this.name, "Git Tools", {
             menu : "Tools/Git Tools",
             primary : {
-                backgroundImage: "/static/style/images/debugicons.png",
+                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
                 defaultState: { x: -6, y: -217 },
                 activeState: { x: -6, y: -217 }
             }
@@ -125,7 +125,7 @@ module.exports = ext.register("ext/gittools/gittools", {
                             revisions : {}
                         };
                     }
-                    ide.socket.send(JSON.stringify(data));
+                    ide.send(JSON.stringify(data));
                 }
             }
         }
@@ -157,7 +157,7 @@ module.exports = ext.register("ext/gittools/gittools", {
                     );
                 }
                 else {
-                    ide.socket.send(JSON.stringify(data));
+                    ide.send(JSON.stringify(data));
                     if (!this.originalGutterWidth)
                         this.originalGutterWidth = editors.currentEditor.ceEditor.$editor.renderer.getGutterWidth();
 
@@ -188,7 +188,7 @@ module.exports = ext.register("ext/gittools/gittools", {
                         "This operation could not be completed because you are offline."
                     );
                 } else {
-                    ide.socket.send(JSON.stringify(data));
+                    ide.send(JSON.stringify(data));
                 }
             }
         }

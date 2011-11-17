@@ -296,21 +296,21 @@ module.exports = ext.register("ext/editors/editors", {
         if (init)
             tabEditors.setAttribute("buttons", "close");
         
-        var model = new apf.model(), 
-            fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
-                page.contentType = contentType;
-                page.$at     = new apf.actiontracker();
-                page.$doc    = doc;
-                doc.$page    = page;
-                page.$editor = editor;
-                page.setAttribute("tooltip", "[@path]");
-                page.setAttribute("class",
-                    "{parseInt([@saving], 10) || parseInt([@lookup], 10) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
-                    ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"
-                );
-                page.setAttribute("model", page.$model = model);
-                page.$model.load(xmlNode);
-            });
+        var model = new apf.model();
+        var fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
+            page.contentType = contentType;
+            page.$at     = new apf.actiontracker();
+            page.$doc    = doc;
+            doc.$page    = page;
+            page.$editor = editor;
+            page.setAttribute("tooltip", "[@path]");
+            page.setAttribute("class",
+                "{parseInt([@saving], 10) || parseInt([@lookup], 10) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
+                ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"
+            );
+            page.setAttribute("model", page.$model = model);
+            page.$model.load(xmlNode);
+        });
 
         if (init)
             tabEditors.setAttribute("buttons", "close,scale,order");
@@ -321,28 +321,9 @@ module.exports = ext.register("ext/editors/editors", {
             fake.$model.load(e.node);
             ide.dispatchEvent("afteropenfile", {doc: doc, node: e.node, editor: editor});
         });
-
-        fake.$at.addEventListener("afterchange", function(e) {
-            if (e.action == "reset") {
-                delete this.undo_ptr;
-                return;
-            }            
-            
-            var val;
-            if (fake.$at.ignoreChange) {
-                val = undefined;
-                fake.$at.ignoreChange = false;
-            } else if(this.undolength === 0 && !this.undo_ptr)
-                val = undefined;
-            else
-                val = (this.$undostack[this.$undostack.length-1] !== this.undo_ptr) ? 1 : undefined;
-                
-            if (fake.changed !== val) {
-                fake.changed = val;
-                model.setQueryValue("@changed", (val ? "1" : "0"));
-            }
-        });
         
+        this.initEditorEvents(fake, model);
+
         if (init && !active)
             return;
         
@@ -363,7 +344,41 @@ module.exports = ext.register("ext/editors/editors", {
 
         this.currentEditor = editor;
         
+        // okay don't know if you would want this, but this is the way the 'open file' dialog
+        // handles it so let's do that
+        setTimeout(function () {
+            ceEditor.focus();
+        }, 100);
+        
         settings.save();
+    },
+    
+    initEditorEvents: function(fake, model) {
+        fake.$at.addEventListener("afterchange", function(e) {
+            if (e.action == "reset") {
+                delete this.undo_ptr;
+                return;
+            }
+            
+            var val;
+            if (fake.$at.ignoreChange) {
+                val = undefined;
+                fake.$at.ignoreChange = false;
+            }
+            else if(this.undolength === 0 && !this.undo_ptr) {
+                val = undefined;
+            }
+            else {
+                val = (this.$undostack[this.$undostack.length - 1] !== this.undo_ptr) 
+                    ? 1 
+                    : undefined;
+            }
+
+            if (fake.changed !== val) {
+                fake.changed = val;
+                model.setQueryValue("@changed", (val ? "1" : "0"));
+            }
+        });
     },
 
     close : function(page) {
@@ -423,6 +438,11 @@ module.exports = ext.register("ext/editors/editors", {
             editorPage.setAttribute("actiontracker", page.$at);
         
         page.$editor.setDocument && page.$editor.setDocument(page.$doc, page.$at);
+        
+        ide.dispatchEvent("editorswitch", {
+            previousPage: e.previousPage,
+            nextPage: e.nextPage
+        });
     },
 
     afterswitch : function(e) {
@@ -508,18 +528,31 @@ module.exports = ext.register("ext/editors/editors", {
         ide.addEventListener("loadsettings", function(e){
             function checkExpand(path, doc) {
                 var parent_path = apf.getDirname(path).replace(/\/$/, "");
-                trFiles.addEventListener("expand", function(e){
+                var expandEventListener = function(e) {
                     if (e.xmlNode && e.xmlNode.getAttribute("path") == parent_path) {
                         if (doc.getNode().getAttribute("newfile") != 1)
                             doc.setNode(e.xmlNode.selectSingleNode("node()[@path='" + path + "']"));
+                        trFiles.removeEventListener("expand", expandEventListener);
                     }
-                });
+                };
+                
+                trFiles.addEventListener("expand", expandEventListener);
             }
             
             var model = e.model;
-            ide.addEventListener("extload", function(){
+            ide.addEventListener("extload", function(){            
+                
+                // you can load a file from the hash tag, if that succeeded then return
+                var loadFileFromHash =  (_self.loadFileFromHash(window.location.hash, checkExpand));
+                if (loadFileFromHash) {
+                    window.location.hash = loadFileFromHash; // update hash
+                    return;
+                }
+                
+                // otherwise, restore state from the .config file
                 var active = model.queryValue("auto/files/@active");
                 var nodes  = model.queryNodes("auto/files/file");
+                
                 for (var doc, i = 0, l = nodes.length; i < l; i++) {
                     doc = ide.createDocument(nodes[i]);
                     
@@ -623,21 +656,72 @@ module.exports = ext.register("ext/editors/editors", {
             }
         });
     },
+    
+    /** Load any file from the hash, with optional some lines selected 
+     * 
+     * @param {string} hash Hash as obtained from the window element
+     * @param {function} checkExpand Function that expands the tree for the given file
+     * @return {string} The new hash
+     */
+    loadFileFromHash : function (hash, checkExpand) {
+        // an initial state can be sent in the hash
+        // match 'openfile-', 
+        // match any character except :& or end of file
+        // optional: match : digit - digit
+        // [1] is filename, [2] is starting line number, [3] is ending line number
+        var editorInitialStatePattern = /openfile-(.[^:&$]*)(?:\:(\d+)-(\d+))?/;
+        var rawState = hash.match(editorInitialStatePattern);
+        
+        if (rawState) {
+            // build the real path, as the one in the hash is relative
+            var path = ide.davPrefix.replace(/\/$/, "") + "/" + rawState[1];
+            var doc = ide.createDocument(this.createFileNodeFromPath(path));
 
-    showFile : function(path, row, column, text) {
+            // if selection information was added, add that to the state
+            if (rawState[2] && rawState[3]) {
+                doc.state = {
+                    scrollleft: 0, scrolltop: 0,
+                    selection: {
+                        start: { row: parseInt(rawState[2] || 0, 10) - 1, column: 0 },
+                        end: { row: parseInt(rawState[3] || 0, 10), column: 0 } // plus 1 to capture whole previous line
+                    }
+                };
+            }
+            
+            // send it to the dispatcher
+            ide.dispatchEvent("openfile", {
+                doc: doc,
+                active: true
+            });
+            // and expand the tree
+            checkExpand(path, doc);
+            
+            // return the new hash
+            return hash.replace(editorInitialStatePattern, "");
+        }
+        
+        return null;
+    },
+    
+    createFileNodeFromPath : function (path) {
         var name = path.split("/").pop();
         var node = apf.n("<file />")
             .attr("name", name)
             .attr("contenttype", util.getContentType(name))
             .attr("path", path)
             .node();
+        return node;
+    },
+
+    showFile : function(path, row, column, text, state) {
+        var node = this.createFileNodeFromPath(path);
 
         this.jump(node, row, column, text);
     },
 
     jump : function(fileEl, row, column, text, doc, page) {
         var path    = fileEl.getAttribute("path");
-        var hasData = page && tabEditors.getPage(path).$doc ? true : false;
+        var hasData = page && (tabEditors.getPage(path) || { }).$doc ? true : false;
 
         if (row !== undefined) {
             var jumpTo = function(){
