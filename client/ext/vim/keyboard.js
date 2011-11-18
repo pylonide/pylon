@@ -9,7 +9,7 @@ var matchChar = function(buffer, hashId, key, symbolicName) {
     // If only the shift key is pressed and a character key, then
     // catch that input as well.
     // Otherwise, we let the input got through.
-    var matched = ((hashId == 0) || ((hashId == 4) && key.length == 1));
+    var matched = ((hashId == 0) || (((hashId == 1) || (hashId == 4)) && key.length == 1));
     console.log("INFO", buffer, hashId, key, symbolicName, matched)
 
     if (matched) {

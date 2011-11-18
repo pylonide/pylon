@@ -212,6 +212,24 @@ var motions = {
             editor.selectTo(count, 0);
         }
     },
+    "ctrl-d": {
+        nav: function(editor, range, count, param) {
+            editor.selection.clearSelection(); // Why does it select in the first place?
+            editor.gotoPageDown();
+        },
+        sel: function(editor, range, count, param) {
+            editor.selectPageDown();
+        }
+    },
+    "ctrl-u": {
+        nav: function(editor, range, count, param) {
+            editor.selection.clearSelection(); // Why does it select in the first place?
+            editor.gotoPageUp();
+        },
+        sel: function(editor, range, count, param) {
+            editor.selectPageUp();
+        }
+    },
     "g": {
         param: true,
         nav: function(editor, range, count, param) {
@@ -292,7 +310,7 @@ var actions = {
     "z": function(editor, range, count, param) {
         switch (param) {
             case "z":
-                // editor.scrollToRow()
+                editor.centerSelection();
                 break;
         }
     }
