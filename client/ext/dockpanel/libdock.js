@@ -39,7 +39,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
      * 
      */
     this.getState = function(){
-        var state = {bars: [], type: "new"};
+        var state = {bars: [], type: "new_type"};
         
         var bar = this.$parentHBox.lastChild;
         while (bar) {

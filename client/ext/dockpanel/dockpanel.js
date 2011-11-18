@@ -102,7 +102,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 catch (ex) {}
             }
             
-            if(!state.type || state.type != 'new')
+            if(!state.type || state.type != 'new_type')
                 state = _self.defaultState;
             
             _self.layout.loadState(state);
