@@ -24,10 +24,48 @@ var trieCommands;
 var commands   = {};
 var cmdTries   = {};
 var cmdFetched = false;
-var cmdHistory = [];
+//var cmdHistory = [];
 var cmdBuffer  = "";
 var lastSearch = null;
-var parser     = new Parser();
+var parser = new Parser();
+
+var KEY_TAB = 9;
+var KEY_CR = 13;
+var KEY_UP = 38;
+var KEY_ESC = 27;
+var KEY_DOWN = 40;
+var actionCodes = [KEY_TAB, KEY_CR, KEY_UP, KEY_ESC, KEY_DOWN];
+
+var cmdHistory = {
+    _history: [],
+    _index: 0,
+
+    push: function(cmd) {
+        this.history.push(cmd);
+    },
+    length: function() {
+        return this.history.length;
+    },
+    getNext: function() {
+        var cmd = this.history[this.index];
+
+        var maxLen = this.history.length - 1;
+        this.index += 1;
+        if (this.index > maxLen)
+            this.index = maxLen;
+
+        return cmd;
+    },
+    getPrev: function() {
+        var cmd = this.history[this.index];
+
+        this.index -= 1;
+        if (this.index < 0)
+            this.index = 0;
+
+        return cmd;
+    }
+};
 
 module.exports = ext.register("ext/console/console", {
     name   : "Console",
@@ -37,24 +75,32 @@ module.exports = ext.register("ext/console/console", {
     markup : markup,
     css    : css,
 
-    commandHistoryIndex : 0,
     excludeParent : true,
     commands : {
-        "help": {hint: "show general help information and a list of available commands"},
-        "clear": {hint: "clear all the messages from the console"},
-        "switchconsole" : {hint: "toggle focus between the editor and the console"},
-        "send": {hint: "send a message to the server"}
+        "help": {
+            hint: "show general help information and a list of available commands"
+        },
+        "clear": {
+            hint: "clear all the messages from the console"
+        },
+        "switchconsole": {
+            hint: "toggle focus between the editor and the console"
+        },
+        "send": {
+            hint: "send a message to the server"
+        }
     },
 
     help : function() {
-        var words = trieCommands.getWords(),
-            text  = [];
+        var words = trieCommands.getWords();
+        var tabs = "\t\t\t\t";
 
-        for (var i = 0, l = words.length; i < l; ++i) {
-            if (!commands[words[i]]) continue;
-            text.push(words[i] + "\t\t\t\t" + commands[words[i]].hint);
-        }
-        Logger.logNodeStream(text.join("\n"));
+        Logger.logNodeStream(
+            words
+                .filter(function() { return commands[w]; })
+                .map(function(w) { return w + tabs + commands[w].hint; })
+                .join("\n")
+        );
     },
 
     clear : function() {
@@ -68,15 +114,15 @@ module.exports = ext.register("ext/console/console", {
                 this.disable();
             }
         }
-        else
+        else {
             txtConsoleInput.focus()
+        }
     },
 
     send : function(data) {
         ide.send(data.line.replace(data.command,"").trim());
         return true;
     },
-
 
     showOutput : function(){
         tabConsole.set(1);
@@ -95,29 +141,27 @@ module.exports = ext.register("ext/console/console", {
     write: function(aLines) {
         if (typeof aLines == "string")
             aLines = aLines.split("\n");
-        for (var i = 0, l = aLines.length; i < l; ++i)
-            Logger.log(aLines[i], "log");
+
+        aLines.forEach(function(line) { Logger.log(line, "log"); });
+
         Logger.log("", "divider");
     },
 
     keyupHandler: function(e) {
-        var code = e.keyCode;
-        if (code != 9 && code != 13 && code != 38 && code != 40 && code != 27) {
+        if (actionCodes.indexOf(e.keyCode === -1)) {
             return this.commandTextHandler(e);
         }
     },
 
     keydownHandler: function(e) {
-        var code = e.keyCode;
-        if (code == 9 || code == 13 || code == 38 || code == 40 || code == 27) {
+        if (actionCodes.indexOf(e.keyCode) !== -1) {
             return this.commandTextHandler(e);
         }
     },
 
     commandTextHandler: function(e) {
         var line = e.currentTarget.getValue();
-        if (cmdBuffer === null ||
-            (this.commandHistoryIndex == 0 && cmdBuffer !== line)) {
+        if (cmdBuffer === null || (cmdHistory._index === 0 && cmdBuffer !== line)) {
             cmdBuffer = line;
         }
 
@@ -125,40 +169,33 @@ module.exports = ext.register("ext/console/console", {
 
         var newVal = "";
         var code = e.keyCode;
-        var hisLength = cmdHistory.length;
-        if (code == 38) { //UP
+        var hisLength = cmdHistory.length();
+
+        if (code === KEY_UP) { //UP
             if (Hints.visible()) {
                 Hints.selectUp();
             }
             else if (hisLength) {
-                newVal = cmdHistory[--this.commandHistoryIndex];
-
-                if (this.commandHistoryIndex < 0)
-                    this.commandHistoryIndex = 0;
+                newVal = cmdHistory.getPrev();
 
                 if (newVal)
                     e.currentTarget.setValue(newVal);
             }
             return false;
         }
-        else if (code == 40) { //DOWN
+        else if (code == KEY_DOWN) { //DOWN
             if (Hints.visible()) {
                 Hints.selectDown();
             }
             else if (hisLength) {
-                newVal = cmdHistory[++this.commandHistoryIndex] || "";
-
-                if (this.commandHistoryIndex >= cmdHistory.length)
-                    this.commandHistoryIndex = cmdHistory.length;
-
-                e.currentTarget.setValue(newVal);
+                e.currentTarget.setValue(cmdHistory.getNext() || "");
             }
             return false;
         }
-        else if (code == 27 && Hints.visible()) {
+        else if (code == KEY_ESC && Hints.visible()) {
             return Hints.hide();
         }
-        else if (code != 13 && code != 9) {
+        else if (code != KEY_CR && code != KEY_TAB) {
             this.autoComplete(e, parser, 2);
             return;
         }
@@ -171,12 +208,12 @@ module.exports = ext.register("ext/console/console", {
             this.write("Syntax error: first argument quoted.");
         }
         else {
-            if (code == 9) {
+            if (code === KEY_TAB) {
                 this.autoComplete(e, parser, 1);
                 return false;
             }
 
-            this.commandHistoryIndex = cmdHistory.push(line);
+            cmdHistory.push(line);
             cmdBuffer = null;
             e.currentTarget.setValue(newVal);
             Hints.hide();
@@ -185,7 +222,10 @@ module.exports = ext.register("ext/console/console", {
             this.enable();
             tabConsole.set("console");
 
-            var cmd = parser.argv[parser.argc++];
+            var cmd = parser.argv[0];
+
+            // If there is a predefined (i.e. hardcoded) output for the current
+            // command being executed in the CLI, show that.
             if (Output[cmd]) {
                 var rest = parser.argv.join(" ").replace(new RegExp("^" + cmd), "").trim();
                 var msg = Output[cmd][rest];
@@ -196,21 +236,24 @@ module.exports = ext.register("ext/console/console", {
                     this.write(Output[cmd].__default__.replace("%s", cmd));
             }
             else {
-                if (cmd === "help")
+                if (cmd === "help") {
                     this.help();
-                else if (cmd === "clear")
+                }
+                else if (cmd === "clear") {
                     txtConsole.clear();
+                }
                 else {
                     var rest = parser.argv.join(" ").trim();
 
-                    if (Output[rest]) {
-                        this.write(Output[rest]);
+                    if (Output.general[rest]) {
+                        this.write(Output.general[rest]);
                     }
                     else {
                         if (cmd.trim().charAt(0) == "!") {
+                            var bandRE = /^\s*!/;
                             cmd = "bash";
-                            parser.argv[0] = parser.argv[0].replace(/^\s*!/, "");
-                            line = line.replace(/^\s*!/, "");
+                            parser.argv[0] = parser.argv[0].replace(bandRE, "");
+                            line = line.replace(bandRE, "");
                         }
 
                         var data = {
