@@ -555,9 +555,9 @@ module.exports = ext.register("ext/editors/editors", {
 
                 var doc;
                 for (var i = 0, l = nodes.length; i < l; i++) {
-                    doc = ide.createDocument(nodes);
                     var node = nodes[i];
                     var state = node.getAttribute("state");
+                    doc = ide.createDocument(node);
 
                     try {
                         if (state)
