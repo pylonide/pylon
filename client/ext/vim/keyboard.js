@@ -33,7 +33,7 @@ var states = exports.states = {
         },
         {
             // That's fucked up
-            regex: "^shift-º$",
+            regex: "^:$",
             exec: "commandLine"
         },
         {

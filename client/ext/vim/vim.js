@@ -54,7 +54,7 @@ module.exports = ext.register("ext/vim/vim", {
                     var editor = editors.currentEditor.ceEditor.$editor;
                     addCommands(editor, commands);
                     editor.setKeyboardHandler(handler);
-                    utils.normalMode({ editor: editor });
+                    utils.normalMode(editor);
                 }
             }))
         );

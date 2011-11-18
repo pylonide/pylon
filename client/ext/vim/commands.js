@@ -18,68 +18,46 @@ var types = require('ext/vim/params');
 
 
 var util = exports.util = {
-    insertMode: function(env) {
+    insertMode: function(editor) {
         // Switch editor to insert mode
         var cursor = document.getElementsByClassName("ace_cursor")[0];
 
-        env.editor.unsetStyle('normal-mode');
+        editor.unsetStyle('normal-mode');
         cursor.style.backgroundColor = null;
         cursor.style.opacity = null;
         cursor.style.border = null;
         cursor.style.borderLeft = "2px solid black";
 
-        env.editor.setOverwrite(false);
+        editor.setOverwrite(false);
     },
-    normalMode: function(env) {
+    normalMode: function(editor) {
         // Switch editor to normal mode
         var cursor = document.getElementsByClassName("ace_cursor")[0];
 
-        env.editor.setStyle('normal-mode');
-        env.editor.clearSelection();
+        editor.setStyle('normal-mode');
+        editor.clearSelection();
         cursor.style.backgroundColor = "red";
         cursor.style.opacity = ".5";
         cursor.style.border = "0";
 
-        if (!env.editor.getOverwrite()) {
-            env.editor.navigateLeft();
+        if (!editor.getOverwrite()) {
+            editor.navigateLeft();
         }
-
-        env.editor.setOverwrite(true);
+        editor.setOverwrite(true);
     },
-    removeLines: function(env, count) {
-        env.editor.removeLines();
-    },
-    rmPrevChars: function(env, count) {
-        env.editor.removeLeft();
-    },
-    rmNextChars: function(env, count) {
-        env.editor.removeRight();
-    },
-    removeWordRight: function(env, count) {
-        env.editor.removeWordRight();
-    },
-    removeWordLeft: function(env, count) {
-        env.editor.removeWordLeft();
-    },
-    getRightNthChar: function(env, cursor, char, n) {
-        var ed = env.editor;
-        var line = ed.getSession().getLine(cursor.row);
+    getRightNthChar: function(editor, cursor, char, n) {
+        var line = editor.getSession().getLine(cursor.row);
         var matches = line.substr(cursor.column + 1).split(char);
 
         return n < matches.length ? matches.slice(0, n).join(char).length : 0;
     },
     getLeftNthChar: function(env, cursor, char, n) {
-        var ed = env.editor;
-        var line = ed.getSession().getLine(cursor.row);
+        var line = editor.getSession().getLine(cursor.row);
         var matches = line.substr(0, cursor.column + 1).split(char);
 
         return n < matches.length ? matches.slice(-1 * n).join(char).length + 1: 0;
     }
 };
-
-function isBang(params) {
-    return "!" === params["!"];
-}
 
 var NUMBER    = 1;
 var OPERATOR  = 2;
@@ -89,71 +67,71 @@ var SELECTION = 5;
 
 var motions = {
     "w": {
-        nav: function(env) {
-            env.editor.navigateWordRight();
+        nav: function(editor) {
+            editor.navigateWordRight();
         },
-        sel: function(env) {
-            env.editor.selection.selectWordRight();
+        sel: function(editor) {
+            editor.selection.selectWordRight();
         }
     },
     "b": {
-        nav: function(env) {
-            env.editor.navigateWordLeft();
+        nav: function(editor) {
+            editor.navigateWordLeft();
         },
-        sel: function(env) {
-            env.editor.selection.selectWordLeft();
+        sel: function(editor) {
+            editor.selection.selectWordLeft();
         }
     },
     "l": {
-        nav: function(env) {
-            env.editor.navigateRight();
+        nav: function(editor) {
+            editor.navigateRight();
         },
-        sel: function(env) {
-            env.editor.selection.selectRight();
+        sel: function(editor) {
+            editor.selection.selectRight();
         }
     },
     "h": {
-        nav: function(env) {
-            env.editor.navigateLeft();
+        nav: function(editor) {
+            editor.navigateLeft();
         },
-        sel: function(env) {
-            env.editor.selection.selectLeft();
+        sel: function(editor) {
+            editor.selection.selectLeft();
         }
     },
     "k": {
-        nav: function(env) {
-            env.editor.navigateUp();
+        nav: function(editor) {
+            editor.navigateUp();
         },
-        sel: function(env) {
-            env.editor.selection.selectUp();
+        sel: function(editor) {
+            editor.selection.selectUp();
         }
     },
     "j": {
-        nav: function(env) {
-            env.editor.navigateDown();
+        nav: function(editor) {
+            editor.navigateDown();
         },
-        sel: function(env) {
-            env.editor.selection.selectDown();
+        sel: function(editor) {
+            editor.selection.selectDown();
         }
     },
     "f": {
         param: true,
-        nav: function(env, range, count, param) {
+        nav: function(editor, range, count, param) {
             count = parseInt(count, 10) || 1;
-            var ed = env.editor;
+            var ed = editor;
             var cursor = ed.getCursorPosition();
-            var column = util.getRightNthChar(env, cursor, param, count);
+            var column = util.getRightNthChar(editor, cursor, param, count);
 
             if (typeof column === "number") {
                 ed.selection.clearSelection(); // Why does it select in the first place?
                 ed.moveCursorTo(cursor.row, column + cursor.column + 1);
             }
         },
-        sel: function(env, range, count, param) {
+        sel: function(editor, range, count, param) {
             count = parseInt(count, 10) || 1;
-            var ed = env.editor;
+            var ed = editor;
             var cursor = ed.getCursorPosition();
-            var column = util.getRightNthChar(env, cursor, param, count);
+            var column = util.getRightNthChar(editor, cursor, param, count);
 
             if (typeof column === "number") {
                 ed.moveCursorTo(cursor.row, column + cursor.column + 1);
@@ -162,22 +140,22 @@ var motions = {
     },
     "t": {
         param: true,
-        nav: function(env, range, count, param) {
+        nav: function(editor, range, count, param) {
             count = parseInt(count, 10) || 1;
-            var ed = env.editor;
+            var ed = editor;
             var cursor = ed.getCursorPosition();
-            var column = util.getRightNthChar(env, cursor, param, count);
+            var column = util.getRightNthChar(editor, cursor, param, count);
 
             if (typeof column === "number") {
                 ed.selection.clearSelection(); // Why does it select in the first place?
                 ed.moveCursorTo(cursor.row, column + cursor.column);
             }
         },
-        sel: function(env, range, count, param) {
+        sel: function(editor, range, count, param) {
             count = parseInt(count, 10) || 1;
-            var ed = env.editor;
+            var ed = editor;
             var cursor = ed.getCursorPosition();
-            var column = util.getRightNthChar(env, cursor, param, count);
+            var column = util.getRightNthChar(editor, cursor, param, count);
 
             if (typeof column === "number") {
                 ed.moveCursorTo(cursor.row, column + cursor.column);
@@ -185,8 +163,8 @@ var motions = {
         }
     },
     "x": {
-        nav: function(env, range, count, param) {
-            var ed = env.editor;
+        nav: function(editor, range, count, param) {
+            var ed = editor;
             if (ed.selection.isEmpty()) {
                 ed.selection.selectRight();
             }
@@ -196,8 +174,8 @@ var motions = {
         }
     },
     "shift-x": {
-        nav: function(env, range, count, param) {
-            var ed = env.editor;
+        nav: function(editor, range, count, param) {
+            var ed = editor;
             if (ed.selection.isEmpty()) {
                 ed.selection.selectLeft();
             }
@@ -207,52 +185,50 @@ var motions = {
         }
     },
     "shift-6": {
-        nav: function(env) {
-            env.editor.navigateLineStart();
+        nav: function(editor) {
+            editor.navigateLineStart();
         },
-        sel: function(env) {
-            env.editor.selection.selectLineStart();
+        sel: function(editor) {
+            editor.selection.selectLineStart();
         }
     },
     "shift-4": {
-        nav: function(env) {
-            env.editor.navigateLineEnd();
+        nav: function(editor) {
+            editor.navigateLineEnd();
         },
-        sel: function(env) {
-            env.editor.selection.selectLineEnd();
+        sel: function(editor) {
+            editor.selection.selectLineEnd();
         }
     },
     "0": {
-        nav: function(env) {
-            var ed = env.editor;
+        nav: function(editor) {
+            var ed = editor;
             ed.navigateTo(ed.selection.selectionLead.row, 0);
         },
-        sel: function(env) {
-            var ed = env.editor;
+        sel: function(editor) {
+            var ed = editor;
             ed.selectTo(ed.selection.selectionLead.row, 0);
         }
     },
     "shift-g": {
-        nav: function(env, range, count, param) {
-            var ed = env.editor;
+        nav: function(editor, range, count, param) {
             count = parseInt(count, 10);
             if (!count && count !== 0) { // Stupid JS
-                count = ed.session.getLength();
+                count = editor.session.getLength();
             }
-            ed.gotoLine(count);
+            editor.gotoLine(count);
         },
-        sel: function(env, range, count, param) {
-            var ed = env.editor;
+        sel: function(editor, range, count, param) {
             count = parseInt(count, 10);
             if (!count && count !== 0) {// Stupid JS
-                count = ed.session.getLength();
+                count = editor.session.getLength();
             }
-            ed.selectTo(count, 0);
+            editor.selectTo(count, 0);
         }
     },
     "g": {
         param: true,
-        nav: function(env, range, count, param) {
+        nav: function(editor, range, count, param) {
             switch(param) {
                 case "m":
                     console.log("Middle line");
@@ -261,10 +237,10 @@ var motions = {
                     console.log("End of prev word");
                     break;
                 case "g":
-                    env.editor.gotoLine(count || 0);
+                    editor.gotoLine(count || 0);
             }
         },
-        sel: function(env, range, count, param) {
+        sel: function(editor, range, count, param) {
             switch(param) {
                 case "m":
                     console.log("Middle line");
@@ -273,37 +249,64 @@ var motions = {
                     console.log("End of prev word");
                     break;
                 case "g":
-                    env.editor.selection.selectTo(count || 0, 0);
+                    editor.selection.selectTo(count || 0, 0);
+            }
+        }
+    },
+    "o": {
+        nav: function(editor, range, count, param) {
+            count = count || 1;
+            var content = "";
+            while (0 < count--)
+                content += "\n";
+
+            if (content.length) {
+                editor.navigateLineEnd()
+                editor.insert(content);
+            }
+        }
+    },
+    "shift-o": {
+        nav: function(editor, range, count, param) {
+            count = count || 1;
+            var content = "";
+            while (0 < count--)
+                content += "\n";
+
+            if (content.length) {
+                editor.navigateUp();
+                editor.navigateLineEnd()
+                editor.insert(content);
             }
         }
     }
 };
 
 var operators = {
-    "d": function(env, range, count, param) {
+    "d": function(editor, range, count, param) {
         count = parseInt(count || 1, 10);
         switch (param) {
             case "d":
                 for (var i=0; i<count; i++) {
-                    env.editor.removeLines();
+                    editor.removeLines();
                 }
 
                 break;
             default:
-                env.editor.session.remove(range);
+                editor.session.remove(range);
         }
     },
 
-    "r": function(env, range, count, param) {
+    "r": function(editor, range, count, param) {
         count = parseInt(count || 1);
     }
 };
 
 var actions = {
-    "z": function(env, range, count, param) {
+    "z": function(editor, range, count, param) {
         switch (param) {
             case "z":
-                // env.editor.scrollToRow()
+                // editor.scrollToRow()
                 break;
         }
     }
@@ -326,12 +329,11 @@ var inputBuffer = exports.inputBuffer = {
     selection: null,
 
     push: function(editor, char) {
-        var env = { editor: editor };
         var isFirst = this.buffer.length === 0;
 
         var wObj = this.waitingForParam;
         if (wObj) {
-            this.exec(env, wObj, char);
+            this.exec(editor, wObj, char);
             this.waitingForParam = null;
         }
         // If it is a number (that doesn't start with 0)
@@ -365,7 +367,7 @@ var inputBuffer = exports.inputBuffer = {
             if (motions[char].param)
                 this.waitingForParam = ctx;
             else
-                this.exec(env, ctx);
+                this.exec(editor, ctx);
         }
         else if (actions[char] && this.isAccepting(ACTION)) {
             this.waitingForParam = {
@@ -377,7 +379,7 @@ var inputBuffer = exports.inputBuffer = {
         }
         else if (this.operator) {
             console.log("this operator")
-            this.exec(env, { operator: this.operator }, char);
+            this.exec(editor, { operator: this.operator }, char);
         }
         else {
             this.reset();
@@ -390,7 +392,7 @@ var inputBuffer = exports.inputBuffer = {
         return count;
     },
 
-    exec: function(env, action, param) {
+    exec: function(editor, action, param) {
         var m = action.motion;
         var o = action.operator;
         var a = action.action;
@@ -399,15 +401,15 @@ var inputBuffer = exports.inputBuffer = {
         // current char to the operator to see if it responds to it (an example
         // of this is the 'dd' operator).
         if (!m && !a && o) {
-            operators[o.char](env, env.editor.getSelectionRange(), o.count, param);
+            operators[o.char](editor, editor.getSelectionRange(), o.count, param);
         }
         else if (m) {
             var run = function(fn) {
                 if (fn && typeof fn === "function") { // There should always be a motion
                     if (m.count)
-                        repeat(fn, m.count, [env, null, m.count, param]);
+                        repeat(fn, m.count, [editor, null, m.count, param]);
                     else
-                        fn(env, null, m.count, param);
+                        fn(editor, null, m.count, param);
                 }
             };
 
@@ -418,12 +420,12 @@ var inputBuffer = exports.inputBuffer = {
             else if (motionObj.sel) {
                 repeat(function() {
                     run(motionObj.sel);
-                    operators[o.char](env, env.editor.getSelectionRange(), o.count, param);
+                    operators[o.char](editor, editor.getSelectionRange(), o.count, param);
                 }, o.count || 1);
             }
         }
         else if (a) {
-            a.fn(env, env.editor.getSelectionRange(), a.count, param);
+            a.fn(editor, editor.getSelectionRange(), a.count, param);
         }
         this.reset();
     },
@@ -446,12 +448,10 @@ var inputBuffer = exports.inputBuffer = {
 
 var commands = exports.commands = {
     commandLine: {
-        exec: function exec(env, params, request) {
-            env.editor.blur();
+        exec: function exec(editor) {
+            editor.blur();
             txtConsoleInput.focus();
             txtConsoleInput.setValue(":");
-            // Yeap it's an ugly hack to put focus back to the editor.
-            //return exec.inited || (exec.inited = FocusEditor(env, txtConsoleInput));
         }
     },
     // Start **insert** mode just after executing this command
@@ -464,161 +464,26 @@ var commands = exports.commands = {
     // This command does not work from |:normal
     start: {
         description: 'Start **insert** mode',
-        exec: function start(env, params, request) {
-            util.insertMode(env);
+        exec: function start(editor, params, request) {
+            util.insertMode(editor);
         }
     },
     // Stop Insert mode as soon as possible. Works like typing <Esc> in
     // **insert** mode.
     stop: {
         description: 'Start **normal** mode',
-        exec: function stop(env, params, request) {
-            util.normalMode(env);
+        exec: function stop(editor, params, request) {
+            util.normalMode(editor);
         }
     },
     // Append text after the cursor / word (if !) word.
     append: {
         description: 'Append text and start **normal** mode',
-        exec: function append(env, params, request) {
-            env.editor.navigateRight(params.count);
-            util.insertMode(env);
+        exec: function append(editor, params, request) {
+            editor.navigateRight(params.count);
+            util.insertMode(editor);
         }
-    },
-    // Begin a new line below / above (if !) the cursor and insert text,
-    // repeat `count` times.
-    /*openNewLines: {*/
-        //description: 'Begin new line and start **insert**',
-        //params: [ types.count, types['!'] ],
-        //exec: function openNewLines(env, params, request) {
-            //if (isBang(params))
-                //env.editor.navigateUp(count);
-
-            //env.editor.navigateLineEnd();
-            //open(env, params.count);
-            //util.insertMode(env);
-        //}
-    //},
-    //// Delete `count` characters / lines (if !) and start **insert**'
-    //// '(s stands for Substitute).
-    //substitute: {
-        //description: 'Substitute and start **insert**',
-        //params: [ types.count, types['!'] ],
-        //exec: function substitute(env, params, request) {
-            //if (isBang(params)) {
-                //var ed = env.editor;
-                //ed.navigateUp();
-                //ed.navigateLineStart();
-                //ed.insert("\n");
-                //util.removeLines(env, params.count);
-                //ed.navigateUp();
-            //} else {
-                //util.rmNextChars(env, params.count);
-            //}
-            //util.insertMode(env);
-        //}
-    //},
-    //deleteLines: {
-        //description: 'Delete [count] lines [into register x] |linewise|',
-        //params: [ types.count ],
-        //exec: function deleteLines(env, params, request) {
-            //util.removeLines(env, params.count);
-        //}
-    //},
-    //gotoLine: function(env, params, request) {
-        //env.editor.gotoLine(params.line);
-    //},
-
-
-
-    //// Word-based movement
-    //goToEndWord: function(env, params, request) {
-        //util.gotoEndWordRight(env, params.count);
-    //},
-    //goToBackWord: function(env, params, request) {
-        //util.gotoEndWordLeft(env, params.count);
-    //},
-    //deleteChar: function(env, params, request) {
-        //util.rmNextChars(env, params.count);
-    //},
-    //deleteCharBack: function(env, params, request) {
-        //util.rmPrevChars(env, params.count);
-    //},
-    //moveForwardTo: {
-        //params: [ types.count, types.char ],
-        //exec: function(env, params, request) {
-            //util.gotoRightNthChar(env, types.char.valueOf(params.char), params.count);
-        //}
-    //},
-    //moveForwardAt: {
-        //params: [ types.count, types.char ],
-        //exec: function(env, params, request) {
-            ////utils.moveForwardAt(env, types.char.valueOf(params.char), params.count);
-        //}
-    //},
-    //moveBackwardTo: {
-        //params: [ types.count, types.char ],
-        //exec: function(env, params, request) {
-            //util.gotoRightNthChar(env, types.char.valueOf(params.char), params.count);
-        //}
-    //},
-    //moveBackwardAt: {
-        //params: [ types.count, types.char ],
-        //exec: function(env, params, request) {
-            ////utils.moveBackwardAt(env, types.char.valueOf(params.char), params.count);
-        //}
-    //},
-    //moveToFirstChar: function(env, params, request) {
-        //env.editor.moveCursorToPosition({
-            //row: env.editor.getCursorPosition().row,
-            //column: 0
-        //});
-    //},
-    //searchForward: {
-        //exec: function(env, params, request) {
-        //}
-    //},
-    //searchBackword: {
-        //exec: function(env, params, request) {
-        //}
-    //},
-    //moveToMiddleWindow: function(env) {
-        //var ace = env.editor;
-        //var visibleLines = ace.$getVisibleRowCount();
-        //var topLine = ace.renderer.getFirstVisibleRow();
-        //var middleLine = (topLine + (visibleLines / 2)) -1;
-
-        //ace.moveCursorToPosition({
-            //row: middleLine,
-            //column: 0
-        //});
-    //},
-    //lineFromStart: function(env, params) {
-        //var ace = env.editor;
-        //var topLine = ace.renderer.getFirstVisibleRow();
-
-        //ace.moveCursorToPosition({
-            //row: topLine + parseInt(params.count) - 1,
-            //column: 0
-        //});
-
-    //},
-    //lineFromEnd: function(env, params) {
-        //var ace = env.editor;
-        //var topLine = ace.renderer.getFirstVisibleRow();
-        //var visibleLines = ace.$getVisibleRowCount();
-
-        //ace.moveCursorToPosition({
-            //row: topLine + visibleLines - parseInt(params.count) - 2,
-            //column: 0
-        //});
-    //},
-    //moveToColumn: function(env, params) {
-        //var ace = env.editor;
-        //ace.moveCursorToPosition({
-            //row: ace.getCursorPosition().row,
-            //column: parseInt(params.count)
-        //});
-    /*}*/
+    }
 };
 });
 
