@@ -70,6 +70,7 @@ module.exports = ext.register("ext/vim/vim", {
                 else
                     console.log("Vim command '" + cmd + "' not implemented.");
 
+                editors.currentEditor.ceEditor.focus();
                 e.returnValue = false;
             }
         });
