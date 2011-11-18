@@ -2,19 +2,18 @@
  * @copyright 2010, Ajax.org Services B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var jsDAV = require("jsdav"),
-    DavPermission = require("./dav/permission"),
-    Async = require("asyncjs"),
-    User = require("./user"),
-    fs = require("fs"),
-    sys = require("sys"),
-    Path = require("path"),
-    lang = require("ace/lib/lang"),
-    Url = require("url"),
-    template = require("./template"),
-    Workspace = require("cloud9/workspace"),
-    EventEmitter = require("events").EventEmitter,
-    util = require("./util");
+var jsDAV = require("jsdav");
+var DavPermission = require("./dav/permission");
+var Async = require("asyncjs");
+var User = require("./user");
+var fs = require("fs");
+var sys = require("sys");
+var Path = require("path");
+var Url = require("url");
+var template = require("./template");
+var Workspace = require("cloud9/workspace");
+var EventEmitter = require("events").EventEmitter;
+var util = require("./util");
 
 var Ide = module.exports = function(options, httpServer, exts, socket) {
     EventEmitter.call(this);
@@ -135,8 +134,8 @@ Ide.DEFAULT_PLUGINS = [
     this.handle = function(req, res, next) {
         var path = Url.parse(req.url).pathname;
 
-        this.indexRe = this.indexRe || new RegExp("^" + lang.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
-        this.workspaceRe = this.workspaceRe || new RegExp("^" + lang.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
+        this.indexRe = this.indexRe || new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
+        this.workspaceRe = this.workspaceRe || new RegExp("^" + util.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
 
         if (path.match(this.indexRe)) {
             if (req.method !== "GET")
@@ -170,13 +169,13 @@ Ide.DEFAULT_PLUGINS = [
             res.writeHead(200, {"Content-Type": "text/html"});
 
             var permissions = _self.getPermissions(req);
-            var plugins = lang.arrayToMap(_self.options.plugins);
+            var plugins = util.arrayToMap(_self.options.plugins);
 
-            var client_exclude = lang.arrayToMap(permissions.client_exclude.split("|"));
+            var client_exclude = util.arrayToMap(permissions.client_exclude.split("|"));
             for (plugin in client_exclude)
                 delete plugins[plugin];
 
-            var client_include = lang.arrayToMap((permissions.client_include || "").split("|"));
+            var client_include = util.arrayToMap((permissions.client_include || "").split("|"));
             for (plugin in client_include)
                 if (plugin)
                     plugins[plugin] = 1;
