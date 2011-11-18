@@ -1,9 +1,8 @@
 define(function(require, exports, module) {
 
-var types = require("ext/vim/params");
 var StateHandler = require("ace/keyboard/state_handler").StateHandler;
 var cmds = require("ext/vim/commands");
-var canon = require("pilot/canon");
+var editors = require("ext/editors/editors");
 
 var matchChar = function(buffer, hashId, key, symbolicName) {
     // If no command keys are pressed, then catch the input.
@@ -14,10 +13,11 @@ var matchChar = function(buffer, hashId, key, symbolicName) {
     console.log("INFO", buffer, hashId, key, symbolicName, matched)
 
     if (matched) {
-        canon.addCommand({
+        var editor = editors.currentEditor.ceEditor.$editor;
+        editor.commands.addCommand({
             name: "builder",
-            exec: function(env, params, request) {
-                cmds.inputBuffer.push.call(cmds.inputBuffer, env, symbolicName);
+            exec: function(editor) {
+                cmds.inputBuffer.push.call(cmds.inputBuffer, editor, symbolicName);
             }
         });
     }
@@ -46,32 +46,27 @@ var states = exports.states = {
         },
         {
             regex:  "^i$",
-            params: [ types.count ],
             exec: "start",
             then: "insertMode"
         },
         {
             regex: "^shift-i$",
-            params: [ types.bang ],
             exec: "start",
             then: "insertMode"
         },
         {
             regex: "^a$",
-            params: [ types.count ],
             exec: "append",
             then: "insertMode"
         },
         {
             regex: "^shift-a$",
-            params: [ types.count, types.bang ],
             exec: "append",
             then: "insertMode"
         },
         {
-            regex:  [ types.count.regex, "backspace" ],
+            regex:  [ "backspace" ],
             exec:   "moveBack",
-            params: [ types.count ]
         },
         {
             comment: "Catch some keyboard input to stop it here",

@@ -11,12 +11,9 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
-var canon = require("pilot/canon");
-var dom = require("pilot/dom");
-var StateHandler = require("ace/keyboard/state_handler").StateHandler;
 var utils = require("ext/vim/commands").util;
-var commands = require("ext/vim/commands").commands;
 var handler = require("ext/vim/keyboard").handler;
+var commands = require("ext/vim/commands").commands;
 var cliCmds = require("ext/vim/cli");
 
 module.exports = ext.register("ext/vim/vim", {
@@ -28,7 +25,7 @@ module.exports = ext.register("ext/vim/vim", {
     alone   : true,
 
     hook : function() {
-        canon.addCommands = function addCommands(commands) {
+        var addCommands = function addCommands(editor, commands) {
             Object.keys(commands).forEach(function(name) {
                 var command = commands[name];
                 if ("function" === typeof command)
@@ -37,13 +34,13 @@ module.exports = ext.register("ext/vim/vim", {
                 if (!command.name)
                     command.name = name;
 
-                canon.addCommand(command);
+                editor.commands.addCommand(command);
             });
         };
 
-        canon.removeCommands = function removeCommands(commands) {
+        var removeCommands = function removeCommands(editor, commands) {
             Object.keys(commands).forEach(function(name) {
-                canon.removeCommand(commands[name]);
+                editor.commands.removeCommand(commands[name]);
             });
         };
 
@@ -53,9 +50,9 @@ module.exports = ext.register("ext/vim/vim", {
                 caption: "Enable Vim mode",
                 onclick: function () {
                     ext.initExtension(self);
-                    canon.addCommands(commands);
 
                     var editor = editors.currentEditor.ceEditor.$editor;
+                    addCommands(editor, commands);
                     editor.setKeyboardHandler(handler);
                     utils.normalMode({ editor: editor });
                 }

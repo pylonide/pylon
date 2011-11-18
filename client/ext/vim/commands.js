@@ -2,20 +2,19 @@ define(function(require, exports, module) {
 
 "use strict";
 
-var canon = require('pilot/canon');
 var types = require('ext/vim/params');
 
 // Absolute type mess inherited from crappy pilot abstraction. JFC.
-var SelectionType = require('pilot/types/basic').SelectionType;
-require('pilot/types').registerTypes({
-    '!': new SelectionType({
-        name: '!',
-        description: 'Whether or not value must be inverted',
-        data: [ '!', '' ]
-    })
-});
+/*var SelectionType = require('pilot/types/basic').SelectionType;*/
+//require('pilot/types').registerTypes({
+    //'!': new SelectionType({
+        //name: '!',
+        //description: 'Whether or not value must be inverted',
+        //data: [ '!', '' ]
+    //})
+//});
 
-require('pilot/types/basic').startup();
+//require('pilot/types/basic').startup();
 
 
 var util = exports.util = {
@@ -326,7 +325,8 @@ var inputBuffer = exports.inputBuffer = {
     motion: null,
     selection: null,
 
-    push: function(env, char) {
+    push: function(editor, char) {
+        var env = { editor: editor };
         var isFirst = this.buffer.length === 0;
 
         var wObj = this.waitingForParam;
@@ -464,11 +464,7 @@ var commands = exports.commands = {
     // This command does not work from |:normal
     start: {
         description: 'Start **insert** mode',
-        params: [ types['!'] ],
         exec: function start(env, params, request) {
-            if (isBang(params))
-                env.editor.navigateLineStart();
-
             util.insertMode(env);
         }
     },
@@ -483,151 +479,146 @@ var commands = exports.commands = {
     // Append text after the cursor / word (if !) word.
     append: {
         description: 'Append text and start **normal** mode',
-        params: [ types.count, types['!'] ],
         exec: function append(env, params, request) {
-            if (isBang(params))
-                env.editor.navigateLineEnd();
-            else
-                env.editor.navigateRight(params.count);
-
+            env.editor.navigateRight(params.count);
             util.insertMode(env);
         }
     },
     // Begin a new line below / above (if !) the cursor and insert text,
     // repeat `count` times.
-    openNewLines: {
-        description: 'Begin new line and start **insert**',
-        params: [ types.count, types['!'] ],
-        exec: function openNewLines(env, params, request) {
-            if (isBang(params))
-                env.editor.navigateUp(count);
+    /*openNewLines: {*/
+        //description: 'Begin new line and start **insert**',
+        //params: [ types.count, types['!'] ],
+        //exec: function openNewLines(env, params, request) {
+            //if (isBang(params))
+                //env.editor.navigateUp(count);
 
-            env.editor.navigateLineEnd();
-            open(env, params.count);
-            util.insertMode(env);
-        }
-    },
-    // Delete `count` characters / lines (if !) and start **insert**'
-    // '(s stands for Substitute).
-    substitute: {
-        description: 'Substitute and start **insert**',
-        params: [ types.count, types['!'] ],
-        exec: function substitute(env, params, request) {
-            if (isBang(params)) {
-                var ed = env.editor;
-                ed.navigateUp();
-                ed.navigateLineStart();
-                ed.insert("\n");
-                util.removeLines(env, params.count);
-                ed.navigateUp();
-            } else {
-                util.rmNextChars(env, params.count);
-            }
-            util.insertMode(env);
-        }
-    },
-    deleteLines: {
-        description: 'Delete [count] lines [into register x] |linewise|',
-        params: [ types.count ],
-        exec: function deleteLines(env, params, request) {
-            util.removeLines(env, params.count);
-        }
-    },
-    gotoLine: function(env, params, request) {
-        env.editor.gotoLine(params.line);
-    },
+            //env.editor.navigateLineEnd();
+            //open(env, params.count);
+            //util.insertMode(env);
+        //}
+    //},
+    //// Delete `count` characters / lines (if !) and start **insert**'
+    //// '(s stands for Substitute).
+    //substitute: {
+        //description: 'Substitute and start **insert**',
+        //params: [ types.count, types['!'] ],
+        //exec: function substitute(env, params, request) {
+            //if (isBang(params)) {
+                //var ed = env.editor;
+                //ed.navigateUp();
+                //ed.navigateLineStart();
+                //ed.insert("\n");
+                //util.removeLines(env, params.count);
+                //ed.navigateUp();
+            //} else {
+                //util.rmNextChars(env, params.count);
+            //}
+            //util.insertMode(env);
+        //}
+    //},
+    //deleteLines: {
+        //description: 'Delete [count] lines [into register x] |linewise|',
+        //params: [ types.count ],
+        //exec: function deleteLines(env, params, request) {
+            //util.removeLines(env, params.count);
+        //}
+    //},
+    //gotoLine: function(env, params, request) {
+        //env.editor.gotoLine(params.line);
+    //},
 
 
 
-    // Word-based movement
-    goToEndWord: function(env, params, request) {
-        util.gotoEndWordRight(env, params.count);
-    },
-    goToBackWord: function(env, params, request) {
-        util.gotoEndWordLeft(env, params.count);
-    },
-    deleteChar: function(env, params, request) {
-        util.rmNextChars(env, params.count);
-    },
-    deleteCharBack: function(env, params, request) {
-        util.rmPrevChars(env, params.count);
-    },
-    moveForwardTo: {
-        params: [ types.count, types.char ],
-        exec: function(env, params, request) {
-            util.gotoRightNthChar(env, types.char.valueOf(params.char), params.count);
-        }
-    },
-    moveForwardAt: {
-        params: [ types.count, types.char ],
-        exec: function(env, params, request) {
-            //utils.moveForwardAt(env, types.char.valueOf(params.char), params.count);
-        }
-    },
-    moveBackwardTo: {
-        params: [ types.count, types.char ],
-        exec: function(env, params, request) {
-            util.gotoRightNthChar(env, types.char.valueOf(params.char), params.count);
-        }
-    },
-    moveBackwardAt: {
-        params: [ types.count, types.char ],
-        exec: function(env, params, request) {
-            //utils.moveBackwardAt(env, types.char.valueOf(params.char), params.count);
-        }
-    },
-    moveToFirstChar: function(env, params, request) {
-        env.editor.moveCursorToPosition({
-            row: env.editor.getCursorPosition().row,
-            column: 0
-        });
-    },
-    searchForward: {
-        exec: function(env, params, request) {
-        }
-    },
-    searchBackword: {
-        exec: function(env, params, request) {
-        }
-    },
-    moveToMiddleWindow: function(env) {
-        var ace = env.editor;
-        var visibleLines = ace.$getVisibleRowCount();
-        var topLine = ace.renderer.getFirstVisibleRow();
-        var middleLine = (topLine + (visibleLines / 2)) -1;
+    //// Word-based movement
+    //goToEndWord: function(env, params, request) {
+        //util.gotoEndWordRight(env, params.count);
+    //},
+    //goToBackWord: function(env, params, request) {
+        //util.gotoEndWordLeft(env, params.count);
+    //},
+    //deleteChar: function(env, params, request) {
+        //util.rmNextChars(env, params.count);
+    //},
+    //deleteCharBack: function(env, params, request) {
+        //util.rmPrevChars(env, params.count);
+    //},
+    //moveForwardTo: {
+        //params: [ types.count, types.char ],
+        //exec: function(env, params, request) {
+            //util.gotoRightNthChar(env, types.char.valueOf(params.char), params.count);
+        //}
+    //},
+    //moveForwardAt: {
+        //params: [ types.count, types.char ],
+        //exec: function(env, params, request) {
+            ////utils.moveForwardAt(env, types.char.valueOf(params.char), params.count);
+        //}
+    //},
+    //moveBackwardTo: {
+        //params: [ types.count, types.char ],
+        //exec: function(env, params, request) {
+            //util.gotoRightNthChar(env, types.char.valueOf(params.char), params.count);
+        //}
+    //},
+    //moveBackwardAt: {
+        //params: [ types.count, types.char ],
+        //exec: function(env, params, request) {
+            ////utils.moveBackwardAt(env, types.char.valueOf(params.char), params.count);
+        //}
+    //},
+    //moveToFirstChar: function(env, params, request) {
+        //env.editor.moveCursorToPosition({
+            //row: env.editor.getCursorPosition().row,
+            //column: 0
+        //});
+    //},
+    //searchForward: {
+        //exec: function(env, params, request) {
+        //}
+    //},
+    //searchBackword: {
+        //exec: function(env, params, request) {
+        //}
+    //},
+    //moveToMiddleWindow: function(env) {
+        //var ace = env.editor;
+        //var visibleLines = ace.$getVisibleRowCount();
+        //var topLine = ace.renderer.getFirstVisibleRow();
+        //var middleLine = (topLine + (visibleLines / 2)) -1;
 
-        ace.moveCursorToPosition({
-            row: middleLine,
-            column: 0
-        });
-    },
-    lineFromStart: function(env, params) {
-        var ace = env.editor;
-        var topLine = ace.renderer.getFirstVisibleRow();
+        //ace.moveCursorToPosition({
+            //row: middleLine,
+            //column: 0
+        //});
+    //},
+    //lineFromStart: function(env, params) {
+        //var ace = env.editor;
+        //var topLine = ace.renderer.getFirstVisibleRow();
 
-        ace.moveCursorToPosition({
-            row: topLine + parseInt(params.count) - 1,
-            column: 0
-        });
+        //ace.moveCursorToPosition({
+            //row: topLine + parseInt(params.count) - 1,
+            //column: 0
+        //});
 
-    },
-    lineFromEnd: function(env, params) {
-        var ace = env.editor;
-        var topLine = ace.renderer.getFirstVisibleRow();
-        var visibleLines = ace.$getVisibleRowCount();
+    //},
+    //lineFromEnd: function(env, params) {
+        //var ace = env.editor;
+        //var topLine = ace.renderer.getFirstVisibleRow();
+        //var visibleLines = ace.$getVisibleRowCount();
 
-        ace.moveCursorToPosition({
-            row: topLine + visibleLines - parseInt(params.count) - 2,
-            column: 0
-        });
-    },
-    moveToColumn: function(env, params) {
-        var ace = env.editor;
-        ace.moveCursorToPosition({
-            row: ace.getCursorPosition().row,
-            column: parseInt(params.count)
-        });
-    }
+        //ace.moveCursorToPosition({
+            //row: topLine + visibleLines - parseInt(params.count) - 2,
+            //column: 0
+        //});
+    //},
+    //moveToColumn: function(env, params) {
+        //var ace = env.editor;
+        //ace.moveCursorToPosition({
+            //row: ace.getCursorPosition().row,
+            //column: parseInt(params.count)
+        //});
+    /*}*/
 };
 });
 
