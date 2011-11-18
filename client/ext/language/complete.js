@@ -1,11 +1,6 @@
 define(function(require, exports, module) {
 
 var editors = require("ext/editors/editors");
-var Range = require("ace/range").Range;
-
-var ide = require("core/ide");
-var ext = require("core/ext");
-var editors = require("ext/editors/editors");
 var dom = require("ace/lib/dom");
 
 var oldCommandKey;

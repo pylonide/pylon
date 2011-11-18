@@ -4,8 +4,6 @@ var completeUtil = require("ext/codecomplete/complete_util");
 
 var baseLanguageHandler = require('ext/language/base_handler');
 
-var ID_REGEX = /[a-zA-Z_0-9\$]/;
-
 var analysisCache = {}; // path => {identifier: 3, ...}
 var globalWordIndex = {}; // word => frequency
 var globalWordFiles = {}; // word => [path]

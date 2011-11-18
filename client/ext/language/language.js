@@ -95,8 +95,6 @@ module.exports = ext.register("ext/language/language", {
         var oldSelection = this.editor.selection;
         this.setPath();
         
-        //require('ext/editors/editors').nodes[0].appendChild(barLanguageHint);
-        
         this.editor.on("changeSession", function(event) {
             // Time out a litle, to let the page path be updated
             setTimeout(function() {

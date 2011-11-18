@@ -1,6 +1,5 @@
 define(function(require, exports, module) {
 
-var parser = require("treehugger/js/parse");
 require("treehugger/traverse");
 var baseLanguageHandler = require('ext/language/base_handler');
 
@@ -10,10 +9,6 @@ outlineHandler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
     
-outlineHandler.parse = function(code) {
-    return parser.parse(code);
-};
-
 outlineHandler.outline = function(ast) {
     return extractOutline(ast);
 };
@@ -117,6 +112,6 @@ function extractOutline(node) {
         }
     );
     return outline;
-};
+}
 
 });

@@ -85,11 +85,11 @@ module.exports = {
     
     showHint: function(hint) {
         // Switched off for now
-        txtLanguageHint.$ext.innerHTML = hint;
         return;
         var style = dom.computedStyle(editors.currentEditor.ceEditor.$ext);
         var containerHeight = parseInt(style.height, 10);
         var containerWidth = parseInt(style.width, 10);
+        txtLanguageHint.$ext.innerHTML = hint;
         
         var barHeight = 35;
 

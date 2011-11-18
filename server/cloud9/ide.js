@@ -127,7 +127,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",
     "ext/splitview/splitview",
-    "ext/jsoutline/jsoutline",
+    "ext/jslanguage/jslanguage",
     "ext/codetools/codetools",
     "ext/colorpicker/colorpicker"
     //"ext/acebugs/acebugs"

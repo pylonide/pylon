@@ -1,7 +1,21 @@
+/**
+ * JavaScript scope analysis module and warning reporter.
+ * 
+ * This handler does a couple of things:
+ * 1. It does scope analysis and attaches a scope object to every variable, variable declartion and function declaration
+ * 2. It creates markers for undeclared variables
+ * 3. It creates markers for unused variables
+ * 4. It implements the local variable refactoring
+ * 
+ * @depend ext/jslanguage/parse
+ *
+ * @copyright 2011, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
 define(function(require, exports, module) {
 
 var baseLanguageHandler = require('ext/language/base_handler');
-
+require('treehugger/traverse');
 var handler = module.exports = Object.create(baseLanguageHandler);
 var lang = require("ace/lib/lang");
 
@@ -9,8 +23,9 @@ handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
 
-var KNOWN_GLOBALS = lang.arrayToMap(["console", "window", "true", "false", "null", "undefined", "Worker", "Infinity", "Error", "Array", "Math", "Number", "parseInt", "parseDouble", "JSON", "Object", "isNaN", "setTimeout", "setInterval"]);
-
+var KNOWN_GLOBALS = lang.arrayToMap(["console", "window", "true", "false", "null", "undefined", "Worker", 
+                                     "Infinity", "Error", "Array", "Math", "Number", "parseInt",
+                                     "parseDouble", "JSON", "Object", "isNaN", "setTimeout", "setInterval"]);
 function Variable(declaration) {
     this.declaration = declaration;
     this.uses = [];
@@ -57,15 +72,16 @@ handler.analyze = function(doc, ast) {
             'VarDeclInit(x, _)', function(b) {
                 localVariables.push(scope[b.x.value]);
             },
+            'Assign(Var(x), _)', function(b) {
+                if(!scope[b.x.value])
+                    markers.push({
+                        pos: this[0].getPos(),
+                        type: 'warning',
+                        message: 'Assigning to undeclared variable.'
+                    });
+            },
             'Var(x)', function(b) {
                 this.setAnnotation("scope", scope);
-                if(!KNOWN_GLOBALS[b.x.value] && !scope[b.x.value]) {
-                    markers.push({
-                        pos: this.getPos(),
-                        type: 'warning',
-                        message: 'Undeclared variable'
-                    });
-                }
                 if(scope[b.x.value]) {
                     scope[b.x.value].addUse(this);
                 }
@@ -94,7 +110,7 @@ handler.analyze = function(doc, ast) {
                 markers.push({
                     pos: v.declaration.getPos(),
                     type: 'unused',
-                    message: 'Unused variable'
+                    message: 'Unused variable.'
                 });
             }
         }
