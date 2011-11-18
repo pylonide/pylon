@@ -10,16 +10,16 @@ var util = require("cloud9/util");
 var apollo = require("apollo/oni-apollo-node.js");
 var webdriver = require("wd/lib/main");
 
-//require.extensions['.sjs'] = function(module, filename) {
-//    var content = require('fs').readFileSync(filename, 'utf8');
-//    var js = __oni_rt.c1.compile(content, {filename: filename});
-//    module._compile(js, filename);
-//};
-//var c9wd = require("./c9wd.sjs");
+require.extensions['.sjs'] = function(module, filename) {
+    var content = require('fs').readFileSync(filename, 'utf8');
+    var js = __oni_rt.c1.compile(content, {filename: filename});
+    module._compile(js, filename);
+};
+var wdInit = require("./c9wd.sjs").init(webdriver);
 
-var content = require('fs').readFileSync("/Users/rubendaniels/Development/cloud9/server/cloud9/ext/selenium/c9wd.sjs", 'utf8');
-var js = __oni_rt.c1.compile(content);
-var wdInit  = (new Function('webdriver', js + ";return wdInit;"))(webdriver);
+//var content = require('fs').readFileSync("/Users/rubendaniels/Development/cloud9/server/cloud9/ext/selenium/c9wd.sjs", 'utf8');
+//var js = __oni_rt.c1.compile(content);
+//var wdInit  = (new Function('webdriver', js + ";return wdInit;"))(webdriver);
 
 var ShellSeleniumPlugin = module.exports = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
@@ -62,10 +62,10 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
         }
         else {
             wdInit({
-                /*host: "ondemand.saucelabs.com",
+                host: "ondemand.saucelabs.com",
                 port: 80,
                 username: username,
-                accesskey: "cl0udn1ne",*/
+                accessKey: "4681d68d-46eb-4d17-b09b-1cb4575796ad",
                 desired: { 
                     name: 'cloud9',
                     browserName: "chrome", //firefox
@@ -114,7 +114,7 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
 var args = ["var elId0 = browser.findApfElement({'id':'list1','xml':'item[1]','htmlXpath':'SPAN[1]/U[1]'});browser.moveTo(elId0, 27, 8);browser.buttonDown();var elId1 = browser.findApfElement({'id':'list2'});browser.moveTo(elId1, 117, 0);browser.buttonUp();browser.assert('list1.length', '3');browser.assert('list2.length', '2');hold(63);browser.assert('list1.selection', '[model24.queryNode(\"item[1]\")]');browser.assert('list1.value', '\"Item 2\"');hold(6);browser.assert('list2.selection', '[model26.queryNode(\"item[1]\")]');"];
 
                     var code = args.join(" ") 
-                        + ";browser.close();browser.quit();";
+                        + ";browser.close();browser.quit();callback();";
                         
                     try {
                         var js = __oni_rt.c1.compile(code);//, {filename: filename});
@@ -147,6 +147,16 @@ var args = ["var elId0 = browser.findApfElement({'id':'list1','xml':'item[1]','h
                 }
             });
         }
+        /*
+        <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" width="640" height="375" id="FlvPlayer" align="middle">
+<param name="allowScriptAccess" value="sameDomain" />
+<param name="allowFullScreen" value="true" />
+<param name="movie" value="http://flvplayer.com/free-flv-player/FlvPlayer.swf" />
+<param name="quality" value="high" />
+<param name="bgcolor" value="FFFFFF" />
+<param name="FlashVars" value="flvpFolderLocation=http://flvplayer.com/free-flv-player/flvplayer/&flvpVideoSource=https://saucelabs.com/rest/cloudnine_partner/jobs/b2f0a6ba20e9c5bc0c6adbbbbb81a103/results/video.flv&flvpWidth=640&flvpHeight=375&flvpInitVolume=50&flvpTurnOnCorners=true&flvpBgColor=FFFFFF"
+<embed src="http://flvplayer.com/free-flv-player/FlvPlayer.swf" flashvars="flvpFolderLocation=http://flvplayer.com/free-flv-player/flvplayer/&flvpVideoSource=https://saucelabs.com/rest/cloudnine_partner/jobs/b2f0a6ba20e9c5bc0c6adbbbbb81a103/results/video.flv&flvpWidth=640&flvpHeight=375&flvpInitVolume=50&flvpTurnOnCorners=true&flvpBgColor=FFFFFF" quality="high" bgcolor="FFFFFF" width="640" height="375" name="FlvPlayer" align="middle" allowScriptAccess="sameDomain" allowFullScreen="true" type="application/x-shockwave-flash" pluginspage="http://www.adobe.com/go/getflashplayer" />
+</object>*/
 
         return true;
     };

@@ -87,9 +87,9 @@ define(function(require, exports, module) {
                 });
             }
             else {
-                window.onerror = function(m, u, l) {
-                    self.console && console.error("An error occurred", m, u, l);
-                }
+//                window.onerror = function(m, u, l) {
+//                    self.console && console.error("An error occurred", m, u, l);
+//                }
                 apf.addEventListener("error", function(e){
                     self.console && console.error("An APF error occurred", e);
                 });

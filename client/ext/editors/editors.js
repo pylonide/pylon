@@ -553,11 +553,10 @@ module.exports = ext.register("ext/editors/editors", {
                 var active = model.queryValue("auto/files/@active");
                 var nodes  = model.queryNodes("auto/files/file");
 
-                var doc;
                 for (var i = 0, l = nodes.length; i < l; i++) {
-                    var node = nodes[i];
+                    var node  = nodes[i];
                     var state = node.getAttribute("state");
-                    doc = ide.createDocument(node);
+                    var doc   = ide.createDocument(node);
 
                     try {
                         if (state)

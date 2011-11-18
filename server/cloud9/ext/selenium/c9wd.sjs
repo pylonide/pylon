@@ -1,3 +1,5 @@
+exports.init = function(webdriver){
+
 function wdInit(options, assert, callback) {
     var browser = webdriver.remote(
         options.host, 
@@ -37,7 +39,7 @@ function wdInit(options, assert, callback) {
     
     browser.constructor.prototype.decorated = true;
 
-    browser.init(options.desired);
+    var jobId = browser.init(options.desired);
     browser.get(options.url);
     browser.setWaitTimeout(options.waitTimeout);
     
@@ -199,5 +201,9 @@ function wdInit(options, assert, callback) {
             return isEqual;
     }
     
-    callback(null, browser);//, jobId);
+    callback(null, browser, jobId);
+}
+
+return wdInit;
+
 }

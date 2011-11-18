@@ -22,7 +22,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     offline : false,
     type    : ext.GENERAL,
     markup  : markup,
-    offline : 0,
+    offline : false,
     commands : {
         "gotofile": {hint: "search for a filename and jump to it"}
     },
