@@ -2,21 +2,6 @@ define(function(require, exports, module) {
 
 "use strict";
 
-var types = require('ext/vim/params');
-
-// Absolute type mess inherited from crappy pilot abstraction. JFC.
-/*var SelectionType = require('pilot/types/basic').SelectionType;*/
-//require('pilot/types').registerTypes({
-    //'!': new SelectionType({
-        //name: '!',
-        //description: 'Whether or not value must be inverted',
-        //data: [ '!', '' ]
-    //})
-//});
-
-//require('pilot/types/basic').startup();
-
-
 var util = exports.util = {
     insertMode: function(editor) {
         // Switch editor to insert mode
@@ -44,6 +29,7 @@ var util = exports.util = {
             editor.navigateLeft();
         }
         editor.setOverwrite(true);
+        inputBuffer.reset();
     },
     getRightNthChar: function(editor, cursor, char, n) {
         var line = editor.getSession().getLine(cursor.row);
@@ -318,7 +304,6 @@ var repeat = function repeat(fn, count, args) {
 };
 
 var inputBuffer = exports.inputBuffer = {
-    buffer: [],
     accepting: [NUMBER, OPERATOR, MOTION, ACTION],
     currentCmd: null,
     currentCount: "",
@@ -329,15 +314,13 @@ var inputBuffer = exports.inputBuffer = {
     selection: null,
 
     push: function(editor, char) {
-        var isFirst = this.buffer.length === 0;
-
         var wObj = this.waitingForParam;
         if (wObj) {
             this.exec(editor, wObj, char);
             this.waitingForParam = null;
         }
         // If it is a number (that doesn't start with 0)
-        else if (!(char === "0" && isFirst) &&
+        else if (!(char === "0" && !this.currentCount.length) &&
             (char.match(/^\d+$/) && this.isAccepting(NUMBER))) {
             // Assuming that char is always of type String, and not Number
             this.currentCount += char;
@@ -435,13 +418,11 @@ var inputBuffer = exports.inputBuffer = {
     },
 
     reset: function() {
-        this.opCount = null;
         this.operator = null;
         this.selection = null;
         this.motion = null;
-        this.motionCount = null;
+        this.currentCount = "";
 
-        this.current = null;
         this.accepting = [NUMBER, OPERATOR, MOTION, ACTION];
     }
 }
