@@ -11,7 +11,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
-var utils = require("ext/vim/commands").util;
+var util = require("ext/vim/maps/util");
 var handler = require("ext/vim/keyboard").handler;
 var commands = require("ext/vim/commands").commands;
 var cliCmds = require("ext/vim/cli");
@@ -54,7 +54,7 @@ module.exports = ext.register("ext/vim/vim", {
                     var editor = editors.currentEditor.ceEditor.$editor;
                     addCommands(editor, commands);
                     editor.setKeyboardHandler(handler);
-                    utils.normalMode(editor);
+                    commands.stop.exec(editor);
                 }
             }))
         );

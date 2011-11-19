@@ -21,17 +21,14 @@ module.exports = {
             case "c":
                 for (var i=0; i<count; i++) {
                     editor.removeLines();
-                    //insert mode
+                    util.insertMode(editor)
                 }
 
                 break;
             default:
                 editor.session.remove(range);
-            // insert mode
+                util.insertMode(editor)
         }
-    },
-    "r": function(editor, range, count, param) {
-        count = parseInt(count || 1);
     }
 };
 })
