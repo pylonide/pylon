@@ -1,41 +1,22 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:skin id="guidedtour"
-      src        = "{require('ext/guidedtour/guidedtour').skin}" 
+      src        = "{require('ext/guidedtour/guidedtour').skin}"
       media-path = "/static/ext/guidedtour/images/" />
     <a:window
       id        = "winTourGuide"
-      title     = "Tour Guide"
-      center    = "false"
-      modal     = "false"
+      title     = "Guided Tour"
+      center    = "true"
+      modal     = "true"
       buttons   = "close"
       kbclose   = "true"
       width     = "300">
         <a:vbox>
-            <a:hbox padding="5" edge="10">
-                <!-- Play pause etc -->
-                <a:button
-                    id = "btnTourStepBack"
-                    disabled = "true"
-                    caption = "&lt;&lt;"
-                    onclick = "
-                        require('ext/guidedtour/guidedtour').stepBack();
-                    "
-                />
-                <a:button
-                    id = "btnTourPlay"
-                    caption = "O"
-                    onclick = "
-                        require('ext/guidedtour/guidedtour').togglePlay();
-                    "
-                />
-                <a:button
-                    id = "btnTourStepForward"
-                    caption = "&gt;&gt;"
-                    onclick = "
-                        require('ext/guidedtour/guidedtour').stepForward();
-                    "
-                />
-            </a:hbox>
+        <a:text id="winTourDesc" />
+        <a:hbox padding="5" pack="end" edge="10 10 5 10">
+            <a:button id="startTour" default="2" class="ui-btn-green" onclick = "
+                        require('ext/guidedtour/guidedtour').startTour();
+                    ">Let's start!</a:button>
+        </a:hbox>
         </a:vbox>
     </a:window>
     <a:window
@@ -43,12 +24,47 @@
       title     = ""
       center    = "false"
       modal     = "false"
-      buttons   = ""
-      kbclose   = "true"
+      buttons   = "close"
+      kbclose   = "false"
       width     = "160"
       skinset   = "guidedtour"
       skin      = "guidetool"
       >
+        <a:hbox padding="5" pack="end" edge="10 10 5 10">
+        <a:button
+                    id = "winTourClose"
+                    caption = "x"
+                    onclick = "require('ext/guidedtour/guidedtour').stepClose();"
+                    skinset   = "guidedtour"
+                    skin      = "tourclose"
+                    icon="../quicksearch/icons/rounded_close.png"
+                />
+        </a:hbox>
         <a:text id="textTourDesc" flex="1" />
+        <a:hbox padding="5" pack="end" edge="10 10 5 10">
+                <!-- Play pause etc -->
+                <a:button
+                    id = "btnTourStepBack"
+                    disabled = "true"
+                    caption = "←"
+                    onclick = "
+                        require('ext/guidedtour/guidedtour').stepBack();
+                    "
+                />
+                <a:button
+                    id = "btnTourPlay"
+                    caption = "►"
+                    onclick = "
+                        require('ext/guidedtour/guidedtour').togglePlay();
+                    "
+                />
+                <a:button
+                    id = "btnTourStepForward"
+                    caption = "→"
+                    onclick = "
+                        require('ext/guidedtour/guidedtour').stepForward();
+                    "
+                />
+            </a:hbox>        
     </a:window>
 </a:application>

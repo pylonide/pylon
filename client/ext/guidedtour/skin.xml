@@ -56,6 +56,10 @@
                 margin-left: -16px;
                 border-right: none;
             }
+            
+            .guidetool .btn {
+                color: red;
+            }
         ]]></a:style>
     
         <a:presentation>
