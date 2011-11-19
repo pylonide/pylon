@@ -75,7 +75,7 @@
       id     = "winEditorSettings"
       class  = "win_editor_settings"
       width  = "245"
-      left   = "200"
+      right  = "45"
       bottom = "80"
       modal  = "false"
       model  = "{require('ext/settings/settings').model}">

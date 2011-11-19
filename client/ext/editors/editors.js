@@ -112,67 +112,49 @@ module.exports = ext.register("ext/editors/editors", {
                             
                         _self.close(e.page);
                     }
-                }),
+                })
+            ]
+        });
+
+        apf.document.body.appendChild(new apf.bar({
+            id : "editorBar",
+            flex : "1",
+            "class" : "editorBar",
+            zindex : "1010",
+            style : "position:absolute;bottom:46px;right:46px",
+            childNodes: [
                 new apf.hbox({
-                    edge    : "0 0 0 0",
-                    zindex  : "1000",
-                    bottom  : "0",
-                    left    : "0",
-                    right   : "0",
+                    id : "editorBarHbox",
                     childNodes: [
-                        new apf.bar({
-                            id : "editorBar",
-                            flex : "1",
+                        new apf.label({
+                            id : "lblRowsColumns",
+                            "class" : "editor_label",
+                            height : 20,
+                            caption : "",
+                            margin : "2 5 0 5"
+                        }),
+                        new apf.button({
+                            skin : "editor-bar-btn",
+                            width : "28",
                             height : "22",
-                            "class" : "editorBar",
-                            style : "border-top: 1px solid #7b7b7b",
-                            childNodes: [
-                                new apf.hbox({
-                                    height : "22",
-                                    id : "editorBarHbox",
-                                    childNodes: [
-                                        new apf.filler({
-                                            id : "editorBarFiller"
-                                        }),
-                                        new apf.label({
-                                            id : "lblRowsColumns",
-                                            "class" : "editor_label",
-                                            caption : "",
-                                            margin : "2 5 0 0"
-                                        })
-                                    ]
-                                })
-                            ]
+                            style : "background: url('/static/style/images/editor_bar_tools.png') 0 1px no-repeat;"
                         })
                     ]
                 })
             ]
-        });
-        
+        }));
+
         setTimeout(function() {
             for (var i = 0; i < _self.editorButtons.length; i++) {
-                var aml = _self.editorButtons[i].aml;
                 var position = _self.editorButtons[i].pos;
-                if (_self.editorButtons[i].side == "left") {
-                    if (typeof position !== "undefined") {
-                        if (position > apf.getChildNumber(editorBarFiller))
-                            editorBarHbox.insertBefore(aml, editorBarFiller);
-                        else
-                            editorBarHbox.insertBefore(aml, editorBarHbox.childNodes[position]);
-                    }
-                    else {
-                        editorBarHbox.insertBefore(aml, editorBarFiller);
-                    }
-                }
-                else {
-                    editorBarHbox.insertBefore(_self.editorButtons[i].aml, editorBarHbox.childNodes[9999]);
-                }
+                editorBarHbox.insertBefore(_self.editorButtons[i].aml,
+                    editorBarHbox.childNodes[position]);
             }
         });
         
         tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
             _self.setTabResizeValues(tab.$ext);
-            tabEditors.setHeight(tab.getHeight() - 18);
+            tabEditors.setHeight(tab.getHeight());
         });
         
         this.tabSectionAdded = true;
@@ -180,26 +162,11 @@ module.exports = ext.register("ext/editors/editors", {
         return vbox;
     },
     
-    addBarButton : function(aml, side, position) {
-        if (this.tabSectionAdded) {
-            if (side == "left") {
-                if (typeof position !== "undefined") {
-                    if (position > apf.getChildNumber(editorBarFiller))
-                        editorBarHbox.insertBefore(aml, editorBarFiller);
-                    else
-                        editorBarHbox.insertBefore(aml, editorBarHbox.childNodes[position]);
-                }
-                else {
-                    editorBarHbox.insertBefore(aml, editorBarFiller);
-                }
-            }
-            else {
-                editorBarHbox.insertBefore(aml, editorBarHbox.childNodes[9999]);
-            }
-        }
-        else {
-            this.editorButtons.push( { aml : aml, side : side, pos : position } );
-        }
+    addBarButton : function(aml, position) {
+        if (this.tabSectionAdded)
+            editorBarHbox.insertBefore(aml, editorBarHbox.childNodes[position]);
+        else
+            this.editorButtons.push( { aml : aml, pos : position } );
     },
     
     /**

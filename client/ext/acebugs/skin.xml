@@ -2,9 +2,12 @@
 <a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
     <a:button name="btn-bug-nav">
         <a:style><![CDATA[
+            .acebugsContainer > div {
+                float: right;
+            }
+            
             .btn-bug-nav {
                 display : block;
-                float : left;
                 border : 1px solid #666;
                 width : 18px;
                 height : 10px;
@@ -26,6 +29,10 @@
                 -moz-border-radius-bottomright: 8px;
                 border-top-right-radius: 8px;
                 border-bottom-right-radius: 8px;
+            }
+
+            .acebugsLeftHidden {
+                overflow: hidden;
             }
         ]]></a:style>
 

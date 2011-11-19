@@ -107,7 +107,7 @@ module.exports = ext.register("ext/beautify/beautify", {
             }
         });
         
-        editors.addBarButton(
+        /*editors.addBarButton(
             new apf.button({
                 caption : "Beautify",
                 id : "btnSelectionBeautify",
@@ -117,14 +117,14 @@ module.exports = ext.register("ext/beautify/beautify", {
                     require("ext/beautify/beautify").beautify();
                 }
             }), "left", 1
-        );
+        );*/
 
         ide.addEventListener("selectionNew", function(range) {
-            btnSelectionBeautify.enable();
+            //btnSelectionBeautify.enable();
         });
 
         ide.addEventListener("selectionClear", function() {
-            btnSelectionBeautify.disable();
+            //btnSelectionBeautify.disable();
         });
 
         ide.addEventListener("init.ext/settings/settings", function (e) {

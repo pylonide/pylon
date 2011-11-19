@@ -4,7 +4,7 @@
       media-path = "/static/ext/settings/images/" />
     <a:style><![CDATA[
         .editor_label {
-            color: #666;
+            color: #fff;
             letter-spacing: 1px;
         }
     ]]></a:style>

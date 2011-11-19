@@ -26,6 +26,7 @@ module.exports = ext.register("ext/acebugs/acebugs", {
 
     init: function(amlNode) {
         var currEditor = editors.currentEditor;
+        var _self = this;
         if (currEditor) {
             this.editorSession = currEditor.ceEditor.getSession();
 
@@ -113,72 +114,95 @@ module.exports = ext.register("ext/acebugs/acebugs", {
         this.ceEditor.$editor.gotoLine(lineNum);
     },
 
+    // Put btnAceBugs outside the hbox and animate the hbox from 0 to full width
     setupUI : function() {
         var _self = this;
         editors.addBarButton(
             new apf.hbox({
                 id : "acebugsContainer",
+                height : "22",
                 width : "29",
                 childNodes : [
+                    new apf.hbox({
+                        width : "0",
+                        id : "acebugsLeftHidden",
+                        "class" : "acebugsLeftHidden",
+                        childNodes : [
+                            new apf.button({
+                                id : "acebugsNavBack",
+                                skin : "btn-bug-nav",
+                                "class" : "left",
+                                margin : "4 0 0 5",
+                                width : "18",
+                                height : "14",
+                                onclick : function(e) {
+                                    _self.goToPrevious();
+                                }
+                            }),
+                            new apf.button({
+                                id : "acebugsNavFwd",
+                                skin : "btn-bug-nav",
+                                "class" : "right",
+                                margin : "4 0 0 0",
+                                width : "18",
+                                height : "14",
+                                onclick : function(e) {
+                                    _self.goToNext();
+                                }
+                            }),
+                            new apf.label({
+                                id : "acebugsNumber",
+                                "class" : "editor_label",
+                                caption : "0",
+                                width : "16",
+                                style : "text-align: center",
+                                margin : "2 5 0 5"
+                            })
+                        ]
+                    }),
                     new apf.button({
                         id : "btnAceBugs",
                         skin : "editor-bar-btn",
                         "class" : "editor_warning",
-                        style : "border-right: none; border-left: 1px solid #7b7b7b;",
                         width : "29",
                         onclick : function() {
-                            if (acebugsContainer.getWidth() > 50) {
+                            if (acebugsLeftHidden.getWidth() > 50) {
+                                apf.tween.single(acebugsLeftHidden.$ext, {
+                                    type: "width",
+                                    from: 66,
+                                    to  : 0,
+                                    anim : apf.tween.linear,
+                                    steps : 5
+                                });
+
                                 apf.tween.single(acebugsContainer.$ext, {
                                     type: "width",
-                                    from: 90,
+                                    from: 95,
                                     to  : 29,
                                     anim : apf.tween.linear,
                                     steps : 5
                                 });
                             }
                             else {
+                                apf.tween.single(acebugsLeftHidden.$ext, {
+                                    type: "width",
+                                    from: 0,
+                                    to  : 66,
+                                    anim : apf.tween.linear,
+                                    steps : 5
+                                });
                                 apf.tween.single(acebugsContainer.$ext, {
                                     type: "width",
                                     from: 29,
-                                    to  : 90,
+                                    to  : 95,
                                     anim : apf.tween.linear,
                                     steps : 5
                                 });
                             }
                         }
-                    }),
-                    new apf.label({
-                        id : "acebugsNumber",
-                        "class" : "editor_label",
-                        caption : "0",
-                        width : "16",
-                        style : "text-align: center",
-                        margin : "2 5 0 0"
-                    }),
-                    new apf.button({
-                        id : "acebugsNavBack",
-                        skin : "btn-bug-nav",
-                        "class" : "left",
-                        margin : "4 0 0 0",
-                        width : "18",
-                        height : "14",
-                        onclick : function(e) {
-                            _self.goToPrevious();
-                        }
-                    }),
-                    new apf.button({
-                        id : "acebugsNavFwd",
-                        skin : "btn-bug-nav",
-                        "class" : "right",
-                        margin : "4 0 0 0",
-                        width : "18",
-                        height : "14",
-                        onclick : function(e) {
-                            _self.goToNext();
-                        }
                     })
                 ]
-            }), "right"
+            }), 20
         );
 
         ext.initExtension(this);

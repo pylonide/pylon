@@ -43,14 +43,14 @@ module.exports = ext.register("ext/gotoline/gotoline", {
 
         this.hotitems["gotoline"] = [this.nodes[1]];
         
-        editors.addBarButton(new apf.button({
+        /*editors.addBarButton(new apf.button({
             caption : "Go to Line",
             skin : "editor-bar-btn",
             //style : "padding-left: 25px; background-image: url(static/style/images/editor_gotoline.png); background-position: 9px 5px",
             onclick : function() {
                 _self.gotoline(0);
             }
-        }), "left", 1);
+        }), "left", 1);*/
 
         canon.addCommand({
             name: "gotoline",

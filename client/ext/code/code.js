@@ -258,6 +258,7 @@ module.exports = ext.register("ext/code/code", {
                 background : "editor_cog.png|vertical|3|21",
                 id : "btnEditorSettings",
                 width : "29",
+                height : "22",
                 onclick : function() {
                     if (this.getAttribute("class") == "focused") {
                         this.setAttribute("class", "");
@@ -267,12 +268,12 @@ module.exports = ext.register("ext/code/code", {
                         this.setAttribute("class", "focused");
                         var pos = apf.getAbsolutePosition(btnEditorSettings.$ext);
                         var bottom = window.innerHeight - pos[1];
-                        winEditorSettings.setAttribute("bottom", bottom);
-                        winEditorSettings.setAttribute("left", pos[0] + 1);
+                        winEditorSettings.setAttribute("bottom", bottom + 5);
+                        winEditorSettings.setAttribute("right", 45);
                         winEditorSettings.show();
                     }
                 }
-            }), "left", 0
+            }), 1
         );
     },
 
