@@ -51,7 +51,7 @@ var states = exports.states = {
         },
         {
             regex: "^shift-i$",
-            exec: "start",
+            exec: "startBeginning",
             then: "insertMode"
         },
         {
@@ -61,8 +61,12 @@ var states = exports.states = {
         },
         {
             regex: "^shift-a$",
-            exec: "append",
+            exec: "appendEnd",
             then: "insertMode"
+        },
+        {
+            regex:  "^v$",
+            exec: "visual",
         },
         {
             regex:  [ "backspace" ],

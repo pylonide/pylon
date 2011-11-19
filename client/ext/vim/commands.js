@@ -1,6 +1,14 @@
+"use strict";
+
+
+
 define(function(require, exports, module) {
 
-"use strict";
+var motions = require("ext/vim/maps/motions");
+var operators = require("ext/vim/maps/operators");
+var alias = require("ext/vim/maps/aliases");
+
+var onVisuaMode = false;
 
 var util = exports.util = {
     insertMode: function(editor) {
@@ -51,260 +59,6 @@ var MOTION    = 3;
 var ACTION    = 4;
 var SELECTION = 5;
 
-var motions = {
-    "w": {
-        nav: function(editor) {
-            editor.navigateWordRight();
-        },
-        sel: function(editor) {
-            editor.selection.selectWordRight();
-        }
-    },
-    "b": {
-        nav: function(editor) {
-            editor.navigateWordLeft();
-        },
-        sel: function(editor) {
-            editor.selection.selectWordLeft();
-        }
-    },
-    "l": {
-        nav: function(editor) {
-            editor.navigateRight();
-        },
-        sel: function(editor) {
-            editor.selection.selectRight();
-        }
-    },
-    "h": {
-        nav: function(editor) {
-            editor.navigateLeft();
-        },
-        sel: function(editor) {
-            editor.selection.selectLeft();
-        }
-    },
-    "k": {
-        nav: function(editor) {
-            editor.navigateUp();
-        },
-        sel: function(editor) {
-            editor.selection.selectUp();
-        }
-    },
-    "j": {
-        nav: function(editor) {
-            editor.navigateDown();
-        },
-        sel: function(editor) {
-            editor.selection.selectDown();
-        }
-    },
-    "f": {
-        param: true,
-        nav: function(editor, range, count, param) {
-            count = parseInt(count, 10) || 1;
-            var ed = editor;
-            var cursor = ed.getCursorPosition();
-            var column = util.getRightNthChar(editor, cursor, param, count);
-
-            if (typeof column === "number") {
-                ed.selection.clearSelection(); // Why does it select in the first place?
-                ed.moveCursorTo(cursor.row, column + cursor.column + 1);
-            }
-        },
-        sel: function(editor, range, count, param) {
-            count = parseInt(count, 10) || 1;
-            var ed = editor;
-            var cursor = ed.getCursorPosition();
-            var column = util.getRightNthChar(editor, cursor, param, count);
-
-            if (typeof column === "number") {
-                ed.moveCursorTo(cursor.row, column + cursor.column + 1);
-            }
-        }
-    },
-    "t": {
-        param: true,
-        nav: function(editor, range, count, param) {
-            count = parseInt(count, 10) || 1;
-            var ed = editor;
-            var cursor = ed.getCursorPosition();
-            var column = util.getRightNthChar(editor, cursor, param, count);
-
-            if (typeof column === "number") {
-                ed.selection.clearSelection(); // Why does it select in the first place?
-                ed.moveCursorTo(cursor.row, column + cursor.column);
-            }
-        },
-        sel: function(editor, range, count, param) {
-            count = parseInt(count, 10) || 1;
-            var ed = editor;
-            var cursor = ed.getCursorPosition();
-            var column = util.getRightNthChar(editor, cursor, param, count);
-
-            if (typeof column === "number") {
-                ed.moveCursorTo(cursor.row, column + cursor.column);
-            }
-        }
-    },
-    "x": {
-        nav: function(editor, range, count, param) {
-            var ed = editor;
-            if (ed.selection.isEmpty()) {
-                ed.selection.selectRight();
-            }
-
-            ed.session.remove(ed.getSelectionRange());
-            ed.clearSelection();
-        }
-    },
-    "shift-x": {
-        nav: function(editor, range, count, param) {
-            var ed = editor;
-            if (ed.selection.isEmpty()) {
-                ed.selection.selectLeft();
-            }
-
-            ed.session.remove(ed.getSelectionRange());
-            ed.clearSelection();
-        }
-    },
-    "shift-6": {
-        nav: function(editor) {
-            editor.navigateLineStart();
-        },
-        sel: function(editor) {
-            editor.selection.selectLineStart();
-        }
-    },
-    "shift-4": {
-        nav: function(editor) {
-            editor.navigateLineEnd();
-        },
-        sel: function(editor) {
-            editor.selection.selectLineEnd();
-        }
-    },
-    "0": {
-        nav: function(editor) {
-            var ed = editor;
-            ed.navigateTo(ed.selection.selectionLead.row, 0);
-        },
-        sel: function(editor) {
-            var ed = editor;
-            ed.selectTo(ed.selection.selectionLead.row, 0);
-        }
-    },
-    "shift-g": {
-        nav: function(editor, range, count, param) {
-            count = parseInt(count, 10);
-            if (!count && count !== 0) { // Stupid JS
-                count = editor.session.getLength();
-            }
-            editor.gotoLine(count);
-        },
-        sel: function(editor, range, count, param) {
-            count = parseInt(count, 10);
-            if (!count && count !== 0) {// Stupid JS
-                count = editor.session.getLength();
-            }
-            editor.selectTo(count, 0);
-        }
-    },
-    "ctrl-d": {
-        nav: function(editor, range, count, param) {
-            editor.selection.clearSelection(); // Why does it select in the first place?
-            editor.gotoPageDown();
-        },
-        sel: function(editor, range, count, param) {
-            editor.selectPageDown();
-        }
-    },
-    "ctrl-u": {
-        nav: function(editor, range, count, param) {
-            editor.selection.clearSelection(); // Why does it select in the first place?
-            editor.gotoPageUp();
-        },
-        sel: function(editor, range, count, param) {
-            editor.selectPageUp();
-        }
-    },
-    "g": {
-        param: true,
-        nav: function(editor, range, count, param) {
-            switch(param) {
-                case "m":
-                    console.log("Middle line");
-                    break;
-                case "e":
-                    console.log("End of prev word");
-                    break;
-                case "g":
-                    editor.gotoLine(count || 0);
-            }
-        },
-        sel: function(editor, range, count, param) {
-            switch(param) {
-                case "m":
-                    console.log("Middle line");
-                    break;
-                case "e":
-                    console.log("End of prev word");
-                    break;
-                case "g":
-                    editor.selection.selectTo(count || 0, 0);
-            }
-        }
-    },
-    "o": {
-        nav: function(editor, range, count, param) {
-            count = count || 1;
-            var content = "";
-            while (0 < count--)
-                content += "\n";
-
-            if (content.length) {
-                editor.navigateLineEnd()
-                editor.insert(content);
-            }
-        }
-    },
-    "shift-o": {
-        nav: function(editor, range, count, param) {
-            count = count || 1;
-            var content = "";
-            while (0 < count--)
-                content += "\n";
-
-            if (content.length) {
-                editor.navigateUp();
-                editor.navigateLineEnd()
-                editor.insert(content);
-            }
-        }
-    }
-};
-
-var operators = {
-    "d": function(editor, range, count, param) {
-        count = parseInt(count || 1, 10);
-        switch (param) {
-            case "d":
-                for (var i=0; i<count; i++) {
-                    editor.removeLines();
-                }
-
-                break;
-            default:
-                editor.session.remove(range);
-        }
-    },
-
-    "r": function(editor, range, count, param) {
-        count = parseInt(count || 1);
-    }
-};
 
 var actions = {
     "z": function(editor, range, count, param) {
@@ -332,6 +86,7 @@ var inputBuffer = exports.inputBuffer = {
     selection: null,
 
     push: function(editor, char) {
+            console.log("CHAR", char);
         var wObj = this.waitingForParam;
         if (wObj) {
             this.exec(editor, wObj, char);
@@ -369,6 +124,10 @@ var inputBuffer = exports.inputBuffer = {
                 this.waitingForParam = ctx;
             else
                 this.exec(editor, ctx);
+        }
+        else if (alias[char] && this.isAccepting(MOTION)) {
+            alias[char].operator.count = this.getCount();
+            this.exec(editor, alias[char]);
         }
         else if (actions[char] && this.isAccepting(ACTION)) {
             this.waitingForParam = {
@@ -415,10 +174,16 @@ var inputBuffer = exports.inputBuffer = {
             };
 
             var motionObj = motions[m.char];
+            var selectable = motionObj.sel;
             if (!o) {
-                run(motionObj.nav);
+                if (onVisuaMode && selectable) {
+                    run(motionObj.sel);
+                }
+                else {
+                    run(motionObj.nav);
+                }
             }
-            else if (motionObj.sel) {
+            else if (selectable) {
                 repeat(function() {
                     run(motionObj.sel);
                     operators[o.char](editor, editor.getSelectionRange(), o.count, param);
@@ -453,34 +218,40 @@ var commands = exports.commands = {
             txtConsoleInput.setValue(":");
         }
     },
-    // Start **insert** mode just after executing this command
-    // Works like typing "i" in Normal mode.  When the ! is
-    // included it works like "A", append to the line.
-    // Otherwise insertion starts at the cursor position.
-    // Note that when using this command in a function or
-    // script, the insertion only starts after the function
-    // or script is finished.
-    // This command does not work from |:normal
     start: {
-        description: 'Start **insert** mode',
-        exec: function start(editor, params, request) {
+        exec: function start(editor) {
+            util.insertMode(editor);
+        }
+    },
+    startBeginning: {
+        exec: function start(editor) {
+            editor.navigateLineStart();
             util.insertMode(editor);
         }
     },
     // Stop Insert mode as soon as possible. Works like typing <Esc> in
     // **insert** mode.
     stop: {
-        description: 'Start **normal** mode',
-        exec: function stop(editor, params, request) {
+        exec: function stop(editor) {
+            onVisuaMode = false;
             util.normalMode(editor);
         }
     },
-    // Append text after the cursor / word (if !) word.
     append: {
-        description: 'Append text and start **normal** mode',
-        exec: function append(editor, params, request) {
+        exec: function append(editor) {
             editor.navigateRight(params.count);
             util.insertMode(editor);
+        }
+    },
+    appendEnd: {
+        exec: function appendEnd(editor) {
+            editor.navigateLineEnd();
+            util.insertMode(editor);
+        }
+    },
+    visual: {
+        exec: function visual(editor) {
+            onVisuaMode = true;
         }
     }
 };
