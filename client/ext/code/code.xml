@@ -43,32 +43,32 @@
     </a:menu>
     
     <a:menu id="mnuSyntax">
-        <a:item type="radio" value="auto">Auto Select</a:item>
-        <a:divider />
+        <a:item type="radio" value="auto">Auto-Select</a:item>
         <a:item type="radio" value="text/plain">Plain Text</a:item>
-        <a:item type="radio" value="application/javascript">JavaScript</a:item>
-        <a:item type="radio" value="text/x-script.coffeescript">CoffeeScript</a:item>
-        <a:item type="radio" value="text/css">CSS</a:item>
-        <a:item type="radio" value="text/x-scss">SCSS</a:item>
-        <a:item type="radio" value="text/html">(X)HTML</a:item>
-        <a:item type="radio" value="application/xml">XML</a:item>
-        <a:item type="radio" value="text/x-script.python">Python</a:item>
-        <a:item type="radio" value="application/x-httpd-php">PHP</a:item>
-        <a:item type="radio" value="text/x-script.ruby">Ruby</a:item>
-        <a:item type="radio" value="text/x-script.perl">Perl</a:item>
-        <a:item type="radio" value="text/x-script.powershell">Powershell</a:item>
-        <a:item type="radio" value="text/x-c">C/C++</a:item>
-        <a:item type="radio" value="text/x-java-source">Java</a:item>
-        <a:item type="radio" value="text/x-groovy">Groovy</a:item>
-        <a:item type="radio" value="text/x-script.clojure">Clojure</a:item>
-        <a:item type="radio" value="text/x-scala">Scala</a:item>
+        <a:divider />
         <a:item type="radio" value="text/x-csharp">C#</a:item>
-        <a:item type="radio" value="text/x-script.ocaml">OCaml</a:item>
+        <a:item type="radio" value="text/x-c">C/C++</a:item>
+        <a:item type="radio" value="text/x-script.clojure">Clojure</a:item>
+        <a:item type="radio" value="text/x-script.coffeescript">CoffeeScript</a:item>
+        <a:item type="radio" value="text/x-coldfusion">Coldfusion</a:item>
+        <a:item type="radio" value="text/css">CSS</a:item>
+        <a:item type="radio" value="text/x-groovy">Groovy</a:item>
+        <a:item type="radio" value="text/x-java-source">Java</a:item>
+        <a:item type="radio" value="application/javascript">JavaScript</a:item>
+        <a:item type="radio" value="application/x-latex">Latex</a:item>
         <a:item type="radio" value="text/x-lua">Lua</a:item>
         <a:item type="radio" value="text/x-markdown">Markdown</a:item>
-        <a:item type="radio" value="text/x-web-textile">Textile</a:item>
-        <a:item type="radio" value="application/x-latex">Latex</a:item>
-        <a:item type="radio" value="text/x-coldfusion">Coldfusion</a:item>
+        <a:item type="radio" value="text/x-script.ocaml">OCaml</a:item>
+        <a:item type="radio" value="application/x-httpd-php">PHP</a:item>
+        <a:item type="radio" value="text/x-script.perl">Perl</a:item>
+        <a:item type="radio" value="text/x-script.powershell">Powershell</a:item>
+        <a:item type="radio" value="text/x-script.python">Python</a:item>
+        <a:item type="radio" value="text/x-script.ruby">Ruby</a:item>
+        <a:item type="radio" value="text/x-scala">Scala</a:item>
+        <a:item type="radio" value="text/x-scss">SCSS</a:item>
         <a:item type="radio" value="text/x-sql">SQL</a:item>
+        <a:item type="radio" value="text/x-web-textile">Textile</a:item>
+        <a:item type="radio" value="text/html">(X)HTML</a:item>
+        <a:item type="radio" value="application/xml">XML</a:item>
     </a:menu>
 </a:application>
