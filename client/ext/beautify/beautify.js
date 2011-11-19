@@ -14,7 +14,7 @@ define(function (require, exports, module) {
 var ext = require("core/ext");
 var ide = require("core/ide");
 var util = require("core/util");
-var canon = require("pilot/canon");
+var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
 var jsbeautify = require("ext/beautify/res/jsbeautify/jsbeautify-min");
@@ -29,7 +29,8 @@ module.exports = ext.register("ext/beautify/beautify", {
 
     commands: {
         "beautify": {
-            hint: "reformat selected JavaScript code in the editor"
+            hint: "reformat selected JavaScript code in the editor",
+            msg: "Beautifying selection."
         }
     },
 
@@ -100,9 +101,9 @@ module.exports = ext.register("ext/beautify/beautify", {
         })));
 
         this.hotitems.beautify = [this.nodes[1]];
-        canon.addCommand({
+        code.commandManager.addCommand({
             name: "beautify",
-            exec: function (env, args, request) {
+            exec: function () {
                 _self.beautify();
             }
         });
@@ -129,7 +130,7 @@ module.exports = ext.register("ext/beautify/beautify", {
 
         ide.addEventListener("init.ext/settings/settings", function (e) {
             e.ext.addSection("jsbeautify", _self.name, "beautify", function () {});
-//            barSettings.insertMarkup(settings);
+            barSettings.insertMarkup(settings);
         });
     },
 

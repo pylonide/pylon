@@ -8,8 +8,9 @@
       visible = "false"
       width   = "350"
       kbclose = "true"
-      top     = "-30"
-      right   = "30">
+      top     = "-27"
+      right   = "30"
+      focussable = "true">
         <a:hbox edge="0 5 5 5">
             <a:textbox id="txtQuickSearch" flex="1" focusselect="true" skin="searchbox_textbox" skinset="default" onkeyup="require('ext/quicksearch/quicksearch').handleQuicksearchEscape(event)" />
             <a:button onclick="require('ext/quicksearch/quicksearch').findprevious()" skin="btnquicksearchnav" class="btnquicksearchnavLeft withDivider" icon="arrow_left_search.png" />

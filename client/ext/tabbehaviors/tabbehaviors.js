@@ -20,26 +20,30 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     type       : ext.GENERAL,
     deps       : [panels],
     menus      : [],
+    accessed   : [],
+    $tabAccessCycle : 2,
     sep        : null,
     more       : null,
     menuOffset : 5,
     commands   : {
-        "closetab": {hint: "close the tab that is currently active"},
-        "closealltabs": {hint: "close all opened tabs"},
-        "closeallbutme": {hint: "close all opened tabs, but the tab that is currently active"},
-        "gototabright": {hint: "navigate to the next tab, right to the tab that is currently active"},
-        "gototableft": {hint: "navigate to the next tab, left to the tab that is currently active"},
-        "tab1": {hint: "navigate to the first tab"},
-        "tab2": {hint: "navigate to the second tab"},
-        "tab3": {hint: "navigate to the third tab"},
-        "tab4": {hint: "navigate to the fourth tab"},
-        "tab5": {hint: "navigate to the fifth tab"},
-        "tab6": {hint: "navigate to the sixth tab"},
-        "tab7": {hint: "navigate to the seventh tab"},
-        "tab8": {hint: "navigate to the eighth tab"},
-        "tab9": {hint: "navigate to the ninth tab"},
-        "tab0": {hint: "navigate to the tenth tab"},
-        "revealtab": {hint: "reveal current tab in the file tree"}
+        "closetab": {hint: "close the tab that is currently active", msg: "Closing active tab."},
+        "closealltabs": {hint: "close all opened tabs", msg: "Closing all tabs."},
+        "closeallbutme": {hint: "close all opened tabs, but the tab that is currently active", msg: "Closing tabs."},
+        "gototabright": {hint: "navigate to the next tab, right to the tab that is currently active", msg: "Switching to right tab."},
+        "gototableft": {hint: "navigate to the next tab, left to the tab that is currently active", msg: "Switching to left tab."},
+        "tab1": {hint: "navigate to the first tab", msg: "Switching to tab 1."},
+        "tab2": {hint: "navigate to the second tab", msg: "Switching to tab 2."},
+        "tab3": {hint: "navigate to the third tab", msg: "Switching to tab 3."},
+        "tab4": {hint: "navigate to the fourth tab", msg: "Switching to tab 4."},
+        "tab5": {hint: "navigate to the fifth tab", msg: "Switching to tab 5."},
+        "tab6": {hint: "navigate to the sixth tab", msg: "Switching to tab 6."},
+        "tab7": {hint: "navigate to the seventh tab", msg: "Switching to tab 7."},
+        "tab8": {hint: "navigate to the eighth tab", msg: "Switching to tab 8."},
+        "tab9": {hint: "navigate to the ninth tab", msg: "Switching to tab 9."},
+        "tab0": {hint: "navigate to the tenth tab", msg: "Switching to tab 10."},
+        "revealtab": {hint: "reveal current tab in the file tree"},
+        "nexttab": {hint: "navigate to the next tab in the stack of accessed tabs"},
+        "previoustab": {hint: "navigate to the previous tab in the stack of accessed tabs"}
     },
     hotitems   : {},
 
@@ -96,7 +100,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                         onclick : function() {
                             _self.closeallbutme(tabEditors.contextPage);
                         }
-                    }),
+                    })
                 ]
             }))
         );
@@ -122,20 +126,62 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
 
         tabEditors.addEventListener("DOMNodeInserted", function(e) {
-            var page;
-            if ((page = e.currentTarget) && page.parentNode == this && page.localName == "page" && page.fake) {
-                _self.addItem(page);
-                
-//                var count = 0;
-//                
-//                apf.addListener(page.$button, "mousedown", function(e) {
-//                    if (++count < 2)
-//                        return setTimeout(function () { count = 0; }, 500);
-//                    require("ext/panels/panels").toggleAll();
-//                    count = 0;
-//                });
+            var page = e.currentTarget;
+            if (page.localName != "page" || e.relatedNode != this || page.nodeType != 1)
+                return;
+            
+            if (e.$isMoveWithinParent) {
+                if (page.$tabMenu) {
+                    page.$tabMenu.parentNode.insertBefore(page.$tabMenu,
+                        page.nextSibling ? page.nextSibling.$tabMenu : null);
+                    
+                    _self.updateState();
+                }
             }
-        })
+            else if (page.fake)
+                _self.addItem(page);
+        });
+        
+        tabEditors.addEventListener("DOMNodeRemoved", function(e) {
+            var page = e.currentTarget;
+            if (page.localName != "page" || e.relatedNode != this || page.nodeType != 1)
+                return;
+            
+            if (!e.$doOnlyAdmin)
+                _self.accessed.remove(page);
+        });
+        
+        var cycleKeyPressed, cycleKey = apf.isMac ? 18 : 17;
+        tabEditors.addEventListener("afterswitch", function(e) {
+            var page = e.nextPage;
+
+            if (!cycleKeyPressed) {
+                _self.accessed.remove(page);
+                _self.accessed.push(page);
+            }
+        });
+        
+        tabEditors.addEventListener("close", function(e) {
+            if (tabEditors.getPage() == e.page)
+                this.nextTabInLine = _self.accessed[_self.accessed.length - _self.$tabAccessCycle];
+        });
+        
+        apf.addEventListener("keydown", function(eInfo) {
+            if (eInfo.keyCode == cycleKey)
+                cycleKeyPressed = true;
+        });
+        
+        apf.addEventListener("keyup", function(eInfo) {
+            if (eInfo.keyCode == cycleKey && cycleKeyPressed) {
+                var page = tabEditors.getPage();
+                if (page) {
+                    _self.accessed.remove(page);
+                    _self.accessed.push(page);
+                }
+                _self.$tabAccessCycle = 2;
+                cycleKeyPressed = false;
+            }
+        });
     },
 
     closetab: function(page) {
@@ -190,6 +236,34 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         
         return false;
     },
+    
+    nexttab : function(){
+        var n = this.accessed.length - this.$tabAccessCycle++;
+        if (n < 0) {
+            n = this.accessed.length - 1;
+            this.$tabAccessCycle = 2;
+        }
+
+        var next = this.accessed[n];
+        if (next == tabEditors.getPage())
+            return this.nexttab();
+        
+        tabEditors.set(next);
+    },
+    
+    previoustab : function(){
+        var n = this.accessed.length - --this.$tabAccessCycle;
+        if (n ==  this.accessed.length) {
+            n = 0;
+            this.$tabAccessCycle = this.accessed.length;
+        }
+
+        var next = this.accessed[n];
+        if (next == tabEditors.getPage())
+            return this.previoustab();
+        
+        tabEditors.set(next);
+    },
 
     gototabright: function() {
         return this.cycleTab("right");
@@ -212,6 +286,18 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             idx = pages.length - 1;
         if (idx > pages.length -1)
             idx = 0;
+
+        // other plugins may modify this behavior
+        var res = ide.dispatchEvent("beforecycletab", {
+            index: idx,
+            dir: dir,
+            pages: pages
+        });
+        if (res === false)
+            return;
+        if (typeof res == "number")
+            idx = res;
+
         tabs.set(pages[idx].id);
         return false;
     },
@@ -254,7 +340,25 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             trFiles.expandAndSelect(node);
             trFiles.focus();
             scrollToFile();
-            return;
+        }
+        else {
+            var parts = page.name.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
+            var file = parts.pop();
+            var pathList = ["folder[1]"];
+            var str = "";
+            
+            parts.forEach(function(part) {
+                str += '/folder[@name="' + part + '"]';
+                pathList.push("folder[1]" + str);
+            });
+            
+            var xpath = pathList[pathList.length - 1];
+            
+            trFiles.expandList(pathList, function() {
+                trFiles.select(trFiles.queryNode(xpath + '/file[@name="' + file + '"]'));
+                trFiles.focus();
+                scrollToFile();
+            });
         }
 
         var parts = page.name.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
@@ -294,7 +398,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             var center = trFiles.getHeight() / 2;
             var offset = (itemPos[1] / totalHeight) > 0.5 ? ~center : center;
             var y = itemPos[1] / (totalHeight + offset);
-            
+
             sbTrFiles.setPosition(y);
         }
     },
@@ -302,16 +406,20 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     addItem: function(page) {
         if (this.more)
             return; // no more items allowed...
-        var no = this.nodes.push(
-            mnuTabs.appendChild(new apf.item({
-                caption : page.getAttribute("caption"),
-                model   : page.$model,
-                relPage : page.id,
-                onclick : function() {
-                    tabEditors.set(this.relPage);
-                }
-            }))
-        ) - 1;
+        
+        var mnu = mnuTabs.appendChild(new apf.item({
+            caption : page.getAttribute("caption"),
+            model   : page.$model,
+            relPage : page.id,
+            onclick : function() {
+                tabEditors.set(this.relPage);
+            }
+        }));
+        var no = this.nodes.push(mnu) - 1;
+        
+        page.$tabMenu = mnu;
+        this.accessed.push(page);
+        
         this.updateState();
     },
 
@@ -325,7 +433,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 this.nodes.splice(i, 1);
                 idx   = i - this.menuOffset + 1;
                 keyId = "tab" + (idx == 10 ? 0 : idx);
-                if (typeof this.commands[keyId]["hotkey"] != "undefined")
+                if (this.commands[keyId] && typeof this.commands[keyId].hotkey != "undefined")
                     apf.hotkeys.remove(this.commands[keyId].hotkey);
                 return this.updateState();
             }
@@ -340,12 +448,12 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         }
         else if (!this.sep && (len || force)) {
             if (len)
-                this.sep = mnuTabs.insertBefore(new apf.divider(), this.nodes[2].nextSibling);
+                this.sep = mnuTabs.insertBefore(new apf.divider(), this.nodes[3].nextSibling);
             else
                 this.sep = mnuTabs.appendChild(new apf.divider());
         }
 
-        if (len < (force ? 9 : 10)) { // we already have 4 other menu items
+        if (len < (force ? 19 : 20)) { // we already have 9 other menu items
             if (this.more) {
                 this.more.destroy(true, true);
                 this.more = null;
@@ -355,21 +463,18 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.more = mnuTabs.appendChild(new apf.item({
                 caption : "More...",
                 onclick : function() {
-                    alert("To be implemented!")
+                    require("ext/openfiles/openfiles").show();
                 }
             }));
         }
 
         // update hotkeys and hotitems:
-        var keyId,
-            aItems = this.nodes.slice(this.menuOffset),
-            i      = 0,
-            l      = aItems.length;
-        for (; i < l; ++i) {
+        var keyId, pages = tabEditors.getPages();
+        for (var i = 0, l = pages.length; i < l; ++i) {
             keyId = "tab" + (i + 1 == 10 ? 0 : i + 1);
-            this.hotitems[keyId] = [aItems[i]];
-            if (typeof this.commands[keyId]["hotkey"] != "undefined")
-                aItems[i].setProperty("hotkey", this.commands[keyId].hotkey);
+            this.hotitems[keyId] = [pages[i].$tabMenu];
+            if (pages[i].$tabMenu && this.commands[keyId] && typeof this.commands[keyId].hotkey != "undefined")
+                pages[i].$tabMenu.setAttribute("hotkey", this.commands[keyId].hotkey);
         }
     },
 

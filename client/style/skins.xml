@@ -960,6 +960,10 @@
             height             : 21px;
             width              : 22px;
         }
+        
+        .btn_icon_onlyDown.tabmenubtn {
+            z-index : 10000000;
+        }
 
         .dim22-22.btn_icon_only {
             width: 22px;
@@ -1408,10 +1412,15 @@
            text-shadow : none;
         }
 
+        .c9-menu-btnDown {
+            z-index : 100000000;
+        }
+
+        /* Why are we using an extra div here??? */
         .c9-menu-btnDown .c9-fix {
             height           : 3px;
             position         : absolute;
-            display          : block;
+            display          : none;
             bottom           : -1px;
             left             : 1px;
             right            : 1px;
@@ -4022,7 +4031,7 @@
     <a:style><![CDATA[
         .menu {
             margin: -1px 0 0 0;
-            padding: 0;
+            padding: 3px 0 3px 0;
             z-index: 10000;
             position: absolute;
             overflow:visible;
@@ -4072,7 +4081,7 @@
             padding: 0;
             font-size: 1px;
 
-            margin:0 3px;
+            margin:2px 3px;
             border-top:1px solid #000000;
             border-bottom:1px solid #313131;
         }
@@ -5689,23 +5698,12 @@
         }
 
         .dockcol .splitter.horizontal{
-            height : 1px;
-            background-color: #38393A;
-            border-top: 1px solid #000000;
-            /*background : #333;*/
-        }
-        
-        .dockcol > div:nth-child(2) {
-            display: none !important;
+            height : 3px;
+            background : #333;
         }
         .dockcol .splitter.horizontal div{
             height : 3px;
             margin-top : 0;
-        }
-        
-        .splitter-editor-right {
-            background: url(images/editor_header.png) repeat-x 0 0;
-            border-right: 1px solid #1E1E1E;
         }
     ]]></a:style>
 
@@ -5713,6 +5711,88 @@
         <a:main handle=".">
             <div class="splitter">
                 <div> </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:splitter>
+
+<a:splitter name="darksplitter">
+    <a:style><![CDATA[
+        .darksplitter {
+            position : relative;
+            z-index  : 90000;
+            background-color: #8c8c8c;
+        }
+
+        .darksplitterFocus {
+        }
+
+        .w-resize {
+            cursor : ew-resize;
+        }
+
+        .n-resize {
+            cursor : ns-resize;
+        }
+
+        .darksplitterMoving {
+            background-color : #8c8c8c;
+        }
+
+        .darksplitterRealtime {
+            background-image : url(images/spacer.gif);
+        }
+        
+        .darksplitter span {
+            position: absolute;
+            width: 11px;
+            height: 3px;
+            margin-left: 49%;
+            margin-top: 2px;
+            background: url(images/splitter_dark_grab.png) no-repeat 0 0;
+        }
+
+        .darksplitter.vertical {
+            display  : -moz-box;
+            display  : -webkit-box;
+            display  : -ms-box;
+            
+            border-top: 0px;
+            border-right: 1px solid #fff;
+            border-bottom: 0px;
+            border-left: 1px solid #eaeaea;
+            
+            vertical-align: middle;
+            width: 3px;
+        }
+
+        .darksplitter.vertical span {
+            display: none;
+        }
+
+        .darksplitter.horizontal {
+            position: relative;
+            margin : -2px 0 0 0;
+            
+            border: 0;
+            /*border-top: 1px solid #3d3d3d;
+            border-right: 0px;
+            border-bottom: 1px solid #3d3d3d;
+            border-left: 0px;*/
+            
+            height: 6px;
+            background: url(images/splitter_dark_bg.png) repeat-x 0 0;
+        }
+
+        .darksplitter.horizontal span {
+            display: inline;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main handle=".">
+            <div class="darksplitter">
+                <span>&#160;</span>
             </div>
         </a:main>
     </a:presentation>
@@ -5728,34 +5808,33 @@
             background: -moz-linear-gradient(center bottom,rgb(222,224,227) 0%,rgb(239,241,244) 100%);
             height: 21px;
             width: 100%;
-            overflow: hidden;
             padding: 0 0 0 0;
         }
 
-        .statusbar .sbsection{
-            padding: 1px 5px 0 5px;
+        .statusbar .sbsection {
+            //padding: 1px 5px 0 5px;
 
             font-size: 11px;
             font-family: Tahoma, Arial;
             background: no-repeat 3px 1px;
-            height: 15px;
-            float: left;
-            margin : 2px 2px 0 0;
+            //height: 15px;
+            //float: left;
+            display: inline-block;
+            //margin : 2px 2px 0 0;
 
             border-right: 1px solid #c3c3c3;
             border-left: 1px solid #FFFFFF;
 
             position : relative;
-            overflow : hidden;
         }
 
-        .statusbar .sbsectionLast{
+        .statusbar .sbsectionLast {
             float: none;
             margin: 2px 0 0 -2px;
             border-right: 0;
         }
 
-        .statusbar .sbsectionIcon{
+        .statusbar .sbsectionIcon {
             padding-left: 23px
         }
 
@@ -5763,7 +5842,7 @@
             display: none;
         }
 
-        .statusbar .corner{
+        .statusbar .corner {
             width: 13px;
             height: 13px;
             position: absolute;
@@ -5782,6 +5861,7 @@
         </a:section>
     </a:presentation>
 </a:statusbar>
+
 <a:statusbar name="status">
     <a:style><![CDATA[
         .statuscontainer{
@@ -5836,6 +5916,120 @@
         </a:main>
     </a:presentation>
 </a:statusbar>
+
+<a:progressbar name="progressbar">
+    <a:style><![CDATA[
+        .progressbar {
+            position: relative;
+            width: 147px;
+            height : 8px;
+            cursor : default;
+        }
+
+        .progressbar .lbl {
+            position: relative;
+            background: url("images/bar_right.png") no-repeat top left;
+            font-family: Tahoma, Arial;
+            font-size: 9px;
+            float: right;
+            height: 8px;
+            width: 30px;
+            padding: 0;
+        }
+
+        .progressbar .lbl span {
+            display: block;
+            position: absolute;
+            top: -2px;
+            left: 6px;
+        }
+
+        .progressbar .left {
+            background: url("images/bar_left.png") no-repeat top left;
+            height: 8px;
+            margin: 0 30px 0 0;
+            _margin: 0;
+        }
+
+        .lowlabel {
+        }
+
+        .lowlabel .lbl {
+            position: static;
+            width: 4px;
+        }
+
+        .lowlabel .lbl span {
+            display: block;
+            positiom: absolute;
+            top: 10px;
+            left: 0;
+        }
+
+        .lowlabel .left {
+            margin: 0 4px 0 0;
+        }
+
+        .progressbarDisabled {
+            color: #bebebe;
+        }
+
+        .progressbarDisabled .left {
+            background-position: left -8px;
+        }
+
+        .progressbarDisabled .lbl{
+            background-position: left -8px;
+        }
+
+        .progressbar .filledbar {
+            background: url("images/progressbar.png") no-repeat top left;
+            height: 8px;
+            overflow: hidden;
+            padding : 0 0 0 3px;
+            border-right : 1px solid #327fbd;
+            display : none;
+            width : 0%;
+            margin-right: -1px;
+            _margin-right: -4px;
+            z-index: 1000;
+        }
+
+        .progressbarDisabled .filledbar {
+            background-position: 0 -8px;
+            border-right : 1px solid #cfd0d0;
+        }
+
+        .progressbarDisabled .left {
+            background-position: left -8px;
+        }
+
+        .progressbarRunning .filledbar {
+            display: block;
+        }
+
+        .progressbarComplete .left {
+            background: url("images/progressbar.png") no-repeat top left;
+
+        }
+
+        .progressbarComplete .lbl {
+            background: url("images/progressbar.png") no-repeat -496px 0;
+        }
+
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main progress="div[2]/div" caption="div[1]/span/text()">
+            <div class="progressbar">
+                <div class="lbl"><span>0%</span></div>
+                <div class="left">
+                    <div class="filledbar"> </div>
+                </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:progressbar>
 
 <a:tab name="tab_console">
 <a:style><![CDATA[
@@ -6044,7 +6238,7 @@
     }
 
     .editor_tab .btnsesssioncontainer {
-        padding : 5px 20px 0 1px;
+        padding : 5px 45px 0 21px;
         z-index : 100;
         height: 25px;
         overflow: visible;
@@ -6108,15 +6302,17 @@
         position: absolute;
         right: 0;
         top: 7px;
-        z-index: 1;
+        z-index: 10;
     }
     
+    .editor_tab .btnsesssioncontainer .loading_active .sessiontab_saving,
     .editor_tab .btnsesssioncontainer .saving_active .sessiontab_saving {
         height: 15px;
         width: 15px;
         background-image: url(images/tab-save-spinner-active.gif);
     }
     
+    .editor_tab .btnsesssioncontainer .loading .sessiontab_saving,
     .editor_tab .btnsesssioncontainer .saving .sessiontab_saving {
         height: 13px;
         width: 13px;
@@ -6134,13 +6330,13 @@
         background-image: url(images/save-indicator-inactive-tab.gif);
     }*/
     
-    .editor_tab .btnsesssioncontainer .loading_active .sessiontab_icon {
+    /*.editor_tab .btnsesssioncontainer .loading_active .sessiontab_icon {
         background-image: url(images/load-indicator-active-tab.gif);
     }
 
     .editor_tab .btnsesssioncontainer .loading .sessiontab_icon {
         background-image: url(images/load-indicator-inactive-tab.gif);
-    }
+    }*/
 
     .editor_tab .btnsesssioncontainer .session_btn .tab_middle .sessiontab_title {
         overflow : hidden;
@@ -6154,7 +6350,7 @@
 
     .editor_tab .btnsesssioncontainer .session_btn.btnclose .tab_middle .sessiontab_title {
         margin-right : 15px;
-        margin-left : 8px;
+        margin-left : 4px;
     }
 
     .editor_tab .scale .session_btn .sessiontab_title{
@@ -6202,7 +6398,7 @@
         color       : #333333;
         cursor      : default;
         text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
-        z-index     : 1;
+        z-index     : 10;
         height:25px;
         border-bottom:1px solid #e8e8e8;
     }
@@ -6599,6 +6795,137 @@
         </a:page>
     </a:presentation>
 </a:tab>
+<a:tab name="extensions_tab">
+    <a:style><![CDATA[
+        .extensions_tab {
+            padding : 0 0 0 0;
+            border: 0px solid #c3c3c3;
+            margin : 0 auto;
+            overflow: hidden;
+            position:relative;
+        }
+
+        .extensions_tab .btncontainer{
+            float: left;
+            z-index : 100;
+            white-space: nowrap;
+            color: #404040;
+            text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
+            font-family : Tahoma, Arial;
+            font-size : 11px;
+
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
+            background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
+            width : auto;
+        }
+
+        .extensions_tab .btncontainer>div {
+            display: block;
+            margin: 0 0 0 0;
+            padding: 0;
+            position : relative;
+        }
+
+        .extensions_tab .btncontainer .btntab {
+            padding      : 10px;
+            position     : relative;
+            border-bottom : 1px solid #8c8c8c;
+            cursor : default;
+            width : 110px;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(234,234,234)),color-stop(1, rgb(255,255,255)));
+            background: -moz-linear-gradient(center bottom,rgb(234,234,234) 50%,rgb(255,255,255) 100%);
+        }
+
+        .extensions_tab .btncontainer .btntab .tab_icon {
+            height:16px;
+            left:1px;
+            position:absolute;
+            top:1px;
+            width:16px;
+        }
+
+        .extensions_tab .btncontainer .btntab .tab_title {
+            overflow : hidden;
+            padding  : 0 0 0 0;
+            font-size: 12px;
+        }
+
+        .extensions_tab .btncontainer .btntab.btnclose .tab_title {
+            margin-right : 15px;
+        }
+
+        .extensions_tab .scale .btntab .tab_title{
+            display : block;
+            overflow : hidden;
+            text-overflow : ellipsis;
+            white-space : nowrap;
+        }
+
+        .extensions_tab .btncontainer div.over {
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
+            background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
+        }
+
+        .extensions_tab .btncontainer div.curbtn {
+            color       : #202020;
+            z-index     : 1;
+            /*background: -webkit-gradient(linear,left bottom,left top,color-stop(0.6 rgb(246,246,246)),color-stop(1, rgb(237,237,237)));
+            background: -moz-linear-gradient(center bottom,rgb(246,246,246) 60%,rgb(237,237,237) 100%);*/
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
+            background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
+            -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2) inset;
+            -moz-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2) inset;
+        }
+
+        .extensions_tab .scale .btntab .tab_middle {
+            display : block;
+            overflow : hidden;
+            text-overflow : ellipsis;
+            white-space : nowrap;
+        }
+
+        .extensions_tab .page {
+            display : none;
+            position : absolute;
+            padding: 10px 14px;
+            top : 0;
+            bottom : 0;
+            left : 130px;
+            right : 0;
+            z-index : 10;
+            background-color: #f6f6f6;
+            overflow: hidden;
+            clear: both;
+            font-family : Arial;
+            font-family: 12px;
+        }
+
+        .extensions_tab .page.curpage{
+            display : block;
+            border-left : 1px solid #8c8c8c;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main pages="." buttons="div[1]">
+            <div class="extensions_tab">
+                <div class="btncontainer"> </div>
+            </div>
+        </a:main>
+        <a:button caption="div[1]/text()" container="div" maxwidth="90" minwidth="10">
+            <div class="btntab">
+                <!--div class="tab_icon"> </div-->
+                <div class="tab_title">-</div>
+            </div>
+        </a:button>
+        <a:btnclose>
+            <strong> </strong>
+        </a:btnclose>
+        <a:page container=".">
+            <div class="page"> </div>
+        </a:page>
+    </a:presentation>
+</a:tab>
 <a:tab name="docktab">
     <a:style><![CDATA[
         .docktab {
@@ -6621,12 +6948,6 @@
             background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
             width : auto;
         }
-        .dockcol .docktab .btncontainer{
-            padding-top: 6px;
-            padding-left: 3px;
-            padding-right: 5px;
-        }
-
         .docktab .btncontainer>div {
             display: block;
             display : inline-block;
@@ -6758,13 +7079,6 @@
             border-bottom: 1px solid #8c8c8c;*/
             overflow: hidden;
         }
-        
-        .dockcol .docktab .page {
-            top: 26px;
-            right: 5px;
-            left: 3px;
-            bottom: 5px;
-        }
 
         .docktab .page.curpage{
             display : block;
@@ -6777,10 +7091,8 @@
     </a:style>
 
     <a:presentation>
-        <a:main pages="." buttons="div[3]">
+        <a:main pages="." buttons="div[1]">
             <div class="docktab">
-                <div class="expand-panel-bg"></div>
-                <div class="noise_bg"></div>
                 <div class="btncontainer"> </div>
             </div>
         </a:main>

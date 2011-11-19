@@ -9,7 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var canon = require("pilot/canon");
+var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
 var skin = require("text!ext/gotoline/skin.xml");
 var markup = require("text!ext/gotoline/gotoline.xml");
@@ -21,7 +21,6 @@ module.exports = ext.register("ext/gotoline/gotoline", {
     alone   : true,
     skin    : skin,
     markup  : markup,
-    
     commands : {
         "gotoline": {hint: "enter a linenumber and jump to it in the active document"}
     },
@@ -41,31 +40,22 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             }))
         );
 
-        this.hotitems["gotoline"] = [this.nodes[1]];
-        
-        /*editors.addBarButton(new apf.button({
-            caption : "Go to Line",
-            skin : "editor-bar-btn",
-            //style : "padding-left: 25px; background-image: url(static/style/images/editor_gotoline.png); background-position: 9px 5px",
-            onclick : function() {
-                _self.gotoline(0);
-            }
-        }), "left", 1);*/
-
-        canon.addCommand({
+        code.commandManager.addCommand({
             name: "gotoline",
-            exec: function(env, args, request) { 
+            exec: function(editor) {
                 _self.gotoline(1);
             }
         });
+        
+        this.hotitems["gotoline"] = [this.nodes[1]];
     },
 
-    init : function(amlNode){
+    init : function(amlNode) {
         var _self = this;
         
         lstLineNumber.addEventListener("afterchoose", function() {
             if (lstLineNumber.selected) {
-                _self.execGotoLine(parseInt(lstLineNumber.selected.getAttribute("nr")));
+                _self.execGotoLine(parseInt(lstLineNumber.selected.getAttribute("nr"), 10));
             }
             else
                 _self.execGotoLine();
@@ -75,7 +65,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                 txtLineNr.setValue(this.selected.getAttribute("nr"));
         });
 
-        var restricted = [38, 40, 36, 35]
+        var restricted = [38, 40, 36, 35];
         lstLineNumber.addEventListener("keydown", function(e) {
             if (e.keyCode == 13 && this.selected){
                 return false;
@@ -195,7 +185,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         winGotoLine.hide();
 
         if (typeof line != "number")
-            line = parseInt(txtLineNr.getValue()) || 0;
+            line = parseInt(txtLineNr.getValue(), 10) || 0;
 
         var history = lstLineNumber.$model;
         var gotoline, lineEl = history.queryNode("gotoline/line[@nr='" + line + "']");

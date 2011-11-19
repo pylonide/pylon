@@ -42,7 +42,11 @@ module.exports = ext.register("ext/tree/tree", {
         if (this.ignoreSBMouseOut)
             this.pendingSBFadeOut = true;
 
-        this.hideScrollbar();
+        clearTimeout(this.sbTimer);
+        var _self = this;
+        this.sbTimer = setTimeout(function(){
+            _self.hideScrollbar();
+        }, 300);
     },
 
     onSBMouseDown : function() {
@@ -66,13 +70,18 @@ module.exports = ext.register("ext/tree/tree", {
     onTreeOut : function() {
         if (this.ignoreSBMouseOut)
             this.pendingSBFadeOut = true;
-        this.hideScrollbar();
+            
+        clearTimeout(this.sbTimer);
+        var _self = this;
+        this.sbTimer = setTimeout(function(){
+            _self.hideScrollbar();
+        }, 300);
     },
 
     showScrollbar : function() {
         if (this.sbTimer)
             clearTimeout(this.sbTimer);
-
+            
         if (this.sbIsFaded) {
             if (this.animControl.state != apf.tween.STOPPED && this.animControl.stop)
                 this.animControl.stop();
@@ -83,7 +92,7 @@ module.exports = ext.register("ext/tree/tree", {
                 from     : 0,
                 to       : 1,
                 steps    : 20,
-                control  : this.animControl
+                control  : this.animControl = {}
             });
 
             this.sbIsFaded = false;
@@ -94,6 +103,7 @@ module.exports = ext.register("ext/tree/tree", {
         if (this.ignoreSBMouseOut)
             return;
 
+        clearTimeout(this.sbTimer);
         if (this.sbIsFaded === false) {
             var _self = this;
             this.sbTimer = setTimeout(function() {
@@ -105,7 +115,7 @@ module.exports = ext.register("ext/tree/tree", {
                     from     : 1,
                     to       : 0,
                     steps    : 20,
-                    control  : _self.animControl
+                    control  : _self.animControl = {}
                 });
                 _self.sbIsFaded = true;
             }, _self.animControl.state != apf.tween.RUNNING ? 20 : 200);
@@ -147,6 +157,9 @@ module.exports = ext.register("ext/tree/tree", {
         var _self = this;
 
         this.panel = winFilesViewer;
+        
+        apf.setOpacity(sbTrFiles.$ext, 0);
+        this.sbIsFaded = true;
 
         colLeft.addEventListener("hide", function(){
             splitterPanelLeft.hide();
@@ -211,7 +224,7 @@ module.exports = ext.register("ext/tree/tree", {
                 filename = args[1].getAttribute("name");
 
             var count = 0;
-            filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1));
+            filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1, 10));
             while (args[0].selectSingleNode("node()[@name='" + filename.replace(/'/g, "\\'") + "']")) {
                 filename = filename.replace(/\.(\d+)$/, "") + "." + ++count;
             }

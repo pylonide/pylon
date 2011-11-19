@@ -15,6 +15,7 @@ var fs = require("ext/filesystem/filesystem");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/debugger/debugger.xml");
 var inspector = require("ext/debugger/inspector");
+var settings = require("ext/settings/settings");
 
 module.exports = ext.register("ext/debugger/debugger", {
     name    : "Debug",
@@ -42,13 +43,21 @@ module.exports = ext.register("ext/debugger/debugger", {
         var _self = this;
         
         ide.addEventListener("consolecommand.debug", function(e) {
-            ide.socket.send(JSON.stringify({
+            ide.send(JSON.stringify({
                 command: "internal-isfile",
                 argv: e.data.argv,
                 cwd: e.data.cwd,
                 sender: "debugger"
             }));
             return false;
+        });
+        
+        ide.addEventListener("loadsettings", function (e) {
+            // restore the breakpoints from the IDE settings
+            var bpFromIde = e.model.data.selectSingleNode("//breakpoints");
+            if (bpFromIde) {
+                mdlDbgBreakpoints.load(bpFromIde);
+            }
         });
         
         stDebugProcessRunning.addEventListener("activate", function() {
@@ -66,21 +75,6 @@ module.exports = ext.register("ext/debugger/debugger", {
             var path = node.getAttribute("path");
             
             node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
-        });
-        
-        mdlDbgStack.addEventListener("update", function() {
-            // select the first stack entry, if none is selected yet
-            var frames = mdlDbgStack.data.selectNodes("frame");
-            if (frames.length) {
-                // check if none of the debug panels is visible yet...
-                var vis = [dbgCallStack, dbInteractive, dbgVariable, dbgBreakpoints].filter(function(el) {
-                    return el.$ext && apf.getStyle(el.$ext, "display") != "none";
-                });
-                if (vis.length)
-                    return;
-                // no elements visible yet...
-                dock.layout.show(dbgCallStack);
-            }
         });
         
         var name = "ext/debugger/debugger"; //this.name
@@ -103,19 +97,19 @@ module.exports = ext.register("ext/debugger/debugger", {
         dock.register(name, "dbgCallStack", {
             menu : "Debugger/Call Stack",
             primary : {
-                backgroundImage: "/static/style/images/debugicons.png",
+                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
                 defaultState: { x: -6, y: -217 },
                 activeState: { x: -6, y: -217 }
             }
         }, function(type) {
-            ext.initExtension(_self);
+            ext.initExtension(_self);            
             return dbgCallStack;
         });
         
         dock.register(name, "dbInteractive", {
             menu : "Debugger/Interactive",
             primary : {
-                backgroundImage: "/static/style/images/debugicons.png",
+                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
                 defaultState: { x: -7, y: -310 },
                 activeState: { x: -7, y: -310 }
             }
@@ -127,19 +121,27 @@ module.exports = ext.register("ext/debugger/debugger", {
         dock.register(name, "dbgVariable", {
             menu : "Debugger/Variables",
             primary : {
-                backgroundImage: "/static/style/images/debugicons.png",
+                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
                 defaultState: { x: -6, y: -261 },
                 activeState: { x: -6, y: -261 }
             }
         }, function(type) {
             ext.initExtension(_self);
+            
+            // when visible -> make sure to refresh the grid
+            dbgVariable.addEventListener("prop.visible", function(e) {
+                if (e.value) {
+                    dgVars.reload();
+                }
+            });
+            
             return dbgVariable;
         });
         
         dock.register(name, "dbgBreakpoints", {
             menu : "Debugger/Breakpoints",
             primary : {
-                backgroundImage: "/static/style/images/debugicons.png",
+                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
                 defaultState: { x: -6, y: -360 },
                 activeState: { x: -6, y: -360 }
             }
@@ -198,7 +200,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             lstBreakpoints.addEventListener("afterselect", function(e) {
                 if (e.selected && e.selected.getAttribute("scriptid"))
                     _self.showDebugFile(e.selected.getAttribute("scriptid"), 
-                        parseInt(e.selected.getAttribute("line")) + 1);
+                        parseInt(e.selected.getAttribute("line"), 10) + 1);
                 // TODO sometimes we don't have a scriptID
             });
         });
@@ -208,6 +210,31 @@ module.exports = ext.register("ext/debugger/debugger", {
                 e.selected && require("ext/debugger/debugger")
                     .showDebugFile(e.selected.getAttribute("scriptid"));
             });
+        });
+        
+        mdlDbgBreakpoints.addEventListener("update", function(e) {
+            // when the breakpoint model is updated
+            // get the current IDE settings
+            var settingsMdl = settings.model.data;
+            // create a new element
+            var node = settingsMdl.ownerDocument.createElement("breakpoints");
+            
+            // find out all the breakpoints in the breakpoint model and iterate over them
+            var breakpoints = e.currentTarget.data.selectNodes("//breakpoint");
+            for (var ix = 0; ix < breakpoints.length; ix++) {
+                // clone and add to our new element
+                var cln = breakpoints[ix].cloneNode();
+                node.appendChild(cln);
+            }
+            
+            // if there is already a breakpoints section in the IDE settings remove it
+            var bpInSettingsFile = settingsMdl.selectSingleNode("//breakpoints");
+            if (bpInSettingsFile) {
+                bpInSettingsFile.parentNode.removeChild(bpInSettingsFile);
+            }
+            
+            // then append the current breakpoints to the IDE settings, tah dah
+            settingsMdl.appendChild(node);
         });
 
         ide.addEventListener("afterfilesave", function(e) {
