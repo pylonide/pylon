@@ -295,7 +295,7 @@ module.exports = ext.register("ext/console/console", {
                             line: line,
                             cwd: this.getCwd()
                         };
-                        debugger;
+
                         ide.dispatchEvent("track_action", {type: "console", cmd: cmd});
                         if (ext.execCommand(cmd, data) !== false) {
                             if (ide.dispatchEvent("consolecommand." + cmd, {

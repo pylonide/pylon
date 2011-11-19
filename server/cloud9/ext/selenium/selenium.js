@@ -62,10 +62,10 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
         }
         else {
             wdInit({
-                host: "ondemand.saucelabs.com",
+                /*host: "ondemand.saucelabs.com",
                 port: 80,
                 username: username,
-                accessKey: "4681d68d-46eb-4d17-b09b-1cb4575796ad",
+                accessKey: "4681d68d-46eb-4d17-b09b-1cb4575796ad",*/
                 desired: { 
                     name: 'cloud9',
                     browserName: "chrome", //firefox
@@ -86,7 +86,7 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                 },
                 error : function(msg, data){
                     _self.sendResult(0, message.command, {
-                        code: 0,
+                        code: 2,
                         argv: message.argv,
                         err: null,
                         out: msg,
@@ -95,7 +95,7 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                 },
                 log : function(data){
                     _self.sendResult(0, message.command, {
-                        code: 2,
+                        code: 3,
                         argv: message.argv,
                         err: null,
                         out: data
@@ -111,7 +111,7 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                     });
                 }
                 else {
-var args = ["var elId0 = browser.findApfElement({'id':'list1','xml':'item[1]','htmlXpath':'SPAN[1]/U[1]'});browser.moveTo(elId0, 27, 8);browser.buttonDown();var elId1 = browser.findApfElement({'id':'list2'});browser.moveTo(elId1, 117, 0);browser.buttonUp();browser.assert('list1.length', '3');browser.assert('list2.length', '2');hold(63);browser.assert('list1.selection', '[model24.queryNode(\"item[1]\")]');browser.assert('list1.value', '\"Item 2\"');hold(6);browser.assert('list2.selection', '[model26.queryNode(\"item[1]\")]');"];
+//var args = ["var elId0 = browser.findApfElement({'id':'list1','xml':'item[1]','htmlXpath':'SPAN[1]/U[1]'});browser.moveTo(elId0, 27, 8);browser.buttonDown();var elId1 = browser.findApfElement({'id':'list2'});browser.moveTo(elId1, 117, 0);browser.buttonUp();browser.assert('list1.length', '3');browser.assert('list2.length', '2');hold(63);browser.assert('list1.selection', '[model24.queryNode(\"item[1]\")]');browser.assert('list1.value', '\"Item 2\"');hold(6);browser.assert('list2.selection', '[model26.queryNode(\"item[1]\")]');"];
 
                     var code = args.join(" ") 
                         + ";browser.close();browser.quit();callback();";
@@ -137,7 +137,7 @@ var args = ["var elId0 = browser.findApfElement({'id':'list1','xml':'item[1]','h
                     //@todo How can I pass a callback???
                     (new Function('browser', 'callback', js))(browser, function(){
                         _self.sendResult(0, message.command, {
-                            code: 200,
+                            code: 4,
                             argv: message.argv,
                             err: null,
                             out: "https://saucelabs.com/rest/" + username 

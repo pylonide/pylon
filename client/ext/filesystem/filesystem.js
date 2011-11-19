@@ -113,7 +113,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     createFile: function(filename, newFile) {
         var node;
 
-        if(!newFile) {
+        if (!newFile) {
             node = trFiles.selected;
             if (!node)
                 node = trFiles.xmlRoot.selectSingleNode("folder");
@@ -230,7 +230,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         }
         ide.dispatchEvent("updatefile", {
             path: path,
-            name: name.input,
+            name: name && name.input,
             xmlNode: node
         });
     },

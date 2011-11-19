@@ -123,6 +123,9 @@ Ide.DEFAULT_PLUGINS = [
     "ext/beautify/beautify",
     "ext/offline/offline",
     "ext/stripws/stripws",
+    "ext/testpanel/testpanel",
+    "ext/selenium/selenium",
+    "ext/nodeunit/nodeunit", 
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",
     "ext/splitview/splitview"

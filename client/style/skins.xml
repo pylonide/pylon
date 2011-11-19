@@ -1769,6 +1769,10 @@
         .mnubtn.open_files .icon {
             background-image:url(images/open_files.png);
         }
+        
+        .mnubtn.testing .icon {
+            background-image:url(images/testing.png);
+        }
 
         .mnubtn.visual_editor .icon {
             background-image:url(images/visual_editor.png);
