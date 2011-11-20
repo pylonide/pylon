@@ -6,15 +6,76 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
+"use strict"
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
+var settings = require("ext/settings/settings");
 var util = require("ext/vim/maps/util");
 var handler = require("ext/vim/keyboard").handler;
 var commands = require("ext/vim/commands").commands;
 var cliCmds = require("ext/vim/cli");
+
+var onConsoleCommand = function onConsoleCommand(e) {
+    var cmd = e.data.command;
+    if (cmd && typeof cmd === "string" && cmd[0] === ":") {
+        cmd = cmd.substr(1);
+        var domEditor = editors.currentEditor.ceEditor;
+
+        if (cliCmds[cmd])
+            cliCmds[cmd](domEditor.$editor, e.data);
+        else
+            console.log("Vim command '" + cmd + "' not implemented.");
+
+        domEditor.focus();
+        e.returnValue = false;
+    }
+};
+
+var addCommands = function addCommands(editor, commands) {
+    Object.keys(commands).forEach(function(name) {
+        var command = commands[name];
+        if ("function" === typeof command)
+            command = { exec: command };
+
+        if (!command.name)
+            command.name = name;
+
+        editor.commands.addCommand(command);
+    });
+};
+
+var removeCommands = function removeCommands(editor, commands) {
+    Object.keys(commands).forEach(function(name) {
+        editor.commands.removeCommand(commands[name]);
+    });
+};
+
+var defaultKBHandler;
+var enableVim = function enableVim() {
+    if (editors.currentEditor) {
+        var editor = editors.currentEditor.ceEditor.$editor;
+        // Save default KB handler to use it in case we disable vim
+        defaultKBHandler = editor.getKeyboardHandler();
+
+        addCommands(editor, commands);
+        editor.setKeyboardHandler(handler);
+        commands.stop.exec(editor);
+    }
+};
+
+var disableVim = function() {
+    if (editors.currentEditor) {
+        var editor = editors.currentEditor.ceEditor.$editor;
+
+        removeCommands(editor, commands);
+        defaultKBHandler && editor.setKeyboardHandler(defaultKBHandler);
+        commands.start.exec(editor);
+    }
+};
 
 module.exports = ext.register("ext/vim/vim", {
     name    : "Vim mode",
@@ -25,65 +86,56 @@ module.exports = ext.register("ext/vim/vim", {
     alone   : true,
 
     hook : function() {
-        var addCommands = function addCommands(editor, commands) {
-            Object.keys(commands).forEach(function(name) {
-                var command = commands[name];
-                if ("function" === typeof command)
-                    command = { exec: command };
-
-                if (!command.name)
-                    command.name = name;
-
-                editor.commands.addCommand(command);
-            });
-        };
-
-        var removeCommands = function removeCommands(editor, commands) {
-            Object.keys(commands).forEach(function(name) {
-                editor.commands.removeCommand(commands[name]);
-            });
-        };
-
         var self = this;
-        this.nodes.push(
-            ide.mnuEdit.appendChild(new apf.divider()), ide.mnuEdit.appendChild(new apf.item({
-                caption: "Enable Vim mode",
-                onclick: function () {
-                    ext.initExtension(self);
-
-                    var editor = editors.currentEditor.ceEditor.$editor;
-                    addCommands(editor, commands);
-                    editor.setKeyboardHandler(handler);
-                    commands.stop.exec(editor);
-                }
-            }))
-        );
-
-        ide.addEventListener("consolecommand", function(e) {
-            var cmd = e.data.command;
-            if (cmd && typeof cmd === "string" && cmd[0] === ":") {
-                cmd = cmd.substr(1);
-                var domEditor = editors.currentEditor.ceEditor;
-                console.log(editors.currentEditor)
-                if (cliCmds[cmd]) {
-                    cliCmds[cmd](domEditor.$editor, e.data);
-                }
-                else {
-                    console.log("Vim command '" + cmd + "' not implemented.");
-                }
-                domEditor.focus();
-                e.returnValue = false;
+        var menuItem = ide.mnuEdit.appendChild(new apf.item({
+            caption: "Vim mode",
+            type: "check",
+            checked : "[{require('ext/settings/settings').model}::editors/code/@vimmode]",
+            onclick: function () {
+                settings.save();
             }
+        }));
+        this.nodes.push(ide.mnuEdit.appendChild(new apf.divider()), menuItem);
+
+        menuItem.addEventListener("prop.checked", function(e) {
+            self.toggle(e.value);
         });
     },
 
-    init : function() {},
+    toggle: function(show) {
+        if (this.inited === true) {
+            if (show)
+                this.enable();
+            else
+                this.disable();
+        }
+        else {
+            ext.initExtension(this);
+        }
+    },
 
-    enable : function() {},
+    init : function() {
+        ide.addEventListener("consolecommand", onConsoleCommand);
+        this.inited = true;
+    },
 
-    disable : function() {},
+    enable : function() {
+        ide.addEventListener('afteropenfile',  enableVim);
+        enableVim();
+    },
 
-    destroy : function() {}
+    disable : function() {
+        ide.removeEventListener("consolecommand", onConsoleCommand);
+        ide.removeEventListener('afteropenfile',  enableVim);
+        disableVim();
+    },
+
+    destroy : function() {
+        this.nodes.forEach(function(item) {
+            item.destroy();
+        });
+        this.nodes = [];
+    }
 });
 
 });
