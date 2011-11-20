@@ -1,3 +1,5 @@
+"use strict";
+
 define(function(require, exports, module) {
 
 var StateHandler = require("ace/keyboard/state_handler").StateHandler;
@@ -9,7 +11,7 @@ var matchChar = function(buffer, hashId, key, symbolicName) {
     // If only the shift key is pressed and a character key, then
     // catch that input as well.
     // Otherwise, we let the input got through.
-    var matched = ((hashId == 0) || (((hashId == 1) || (hashId == 4)) && key.length == 1));
+    var matched = ((hashId === 0) || (((hashId === 1) || (hashId === 4)) && key.length === 1));
     console.log("INFO", buffer, hashId, key, symbolicName, matched)
 
     if (matched) {
@@ -24,6 +26,14 @@ var matchChar = function(buffer, hashId, key, symbolicName) {
     return matched;
 };
 
+var inIdleState = function() {
+    if (cmds.inputBuffer.idle) {
+    return true;
+    }
+
+    return false;
+};
+
 var states = exports.states = {
     start: [ // normal mode
         {
@@ -32,7 +42,6 @@ var states = exports.states = {
             then: "start"
         },
         {
-            // That's fucked up
             regex: "^:$",
             exec: "commandLine"
         },
@@ -46,26 +55,31 @@ var states = exports.states = {
         },
         {
             regex:  "^i$",
+            match: inIdleState,
             exec: "start",
             then: "insertMode"
         },
         {
             regex: "^shift-i$",
+            match: inIdleState,
             exec: "startBeginning",
             then: "insertMode"
         },
         {
             regex: "^a$",
+            match: inIdleState,
             exec: "append",
             then: "insertMode"
         },
         {
             regex: "^shift-a$",
+            match: inIdleState,
             exec: "appendEnd",
             then: "insertMode"
         },
         {
             regex:  "^v$",
+            match: inIdleState,
             exec: "visual",
         },
         {

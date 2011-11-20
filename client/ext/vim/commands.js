@@ -1,7 +1,5 @@
 "use strict";
 
-
-
 define(function(require, exports, module) {
 
 var util = require("ext/vim/maps/util");
@@ -9,12 +7,32 @@ var motions = require("ext/vim/maps/motions");
 var operators = require("ext/vim/maps/operators");
 var alias = require("ext/vim/maps/aliases");
 
-var onVisuaMode = false;
 var NUMBER    = 1;
 var OPERATOR  = 2;
 var MOTION    = 3;
 var ACTION    = 4;
 var SELECTION = 5;
+
+//var NORMAL_MODE = 0;
+//var INSERT_MODE = 1;
+//var VISUAL_MODE = 2;
+var onVisualMode = false;
+
+var repeat = function repeat(fn, count, args) {
+    count = parseInt(count);
+    while (0 < count--)
+        fn.apply(this, args);
+};
+
+var toRealChar = function(char) {
+    if (char.length === 1)
+        return char;
+
+    if (/^shift-./.test(char))
+        return char[char.length - 1].toUpperCase();
+    else
+        return "";
+};
 
 var actions = {
     "z": function(editor, range, count, param) {
@@ -25,20 +43,18 @@ var actions = {
         }
     },
     "r": function(editor, range, count, param) {
-        repeat(function() { editor.insert(param); }, count || 1);
-        editor.navigateLeft();
+        param = toRealChar(param);
+        if (param && param.length) {
+            repeat(function() { editor.insert(param); }, count || 1);
+            editor.navigateLeft();
+        }
     }
-};
-
-var repeat = function repeat(fn, count, args) {
-    count = parseInt(count);
-    while (0 < count--)
-        fn.apply(this, args);
 };
 
 var inputBuffer = exports.inputBuffer = {
     accepting: [NUMBER, OPERATOR, MOTION, ACTION],
     currentCmd: null,
+    //currentMode: 0,
     currentCount: "",
 
     // Types
@@ -47,10 +63,10 @@ var inputBuffer = exports.inputBuffer = {
     selection: null,
 
     push: function(editor, char) {
+        this.idle = false;
         var wObj = this.waitingForParam;
         if (wObj) {
             this.exec(editor, wObj, char);
-            this.waitingForParam = null;
         }
         // If it is a number (that doesn't start with 0)
         else if (!(char === "0" && !this.currentCount.length) &&
@@ -81,7 +97,7 @@ var inputBuffer = exports.inputBuffer = {
             };
 
             if (motions[char].param)
-                this.waitingForParam = ctx;
+                this.waitForParam(ctx);
             else
                 this.exec(editor, ctx);
         }
@@ -90,20 +106,23 @@ var inputBuffer = exports.inputBuffer = {
             this.exec(editor, alias[char]);
         }
         else if (actions[char] && this.isAccepting(ACTION)) {
-            this.waitingForParam = {
+            this.waitForParam({
                 action: {
                     fn: actions[char],
                     count: this.getCount(),
                 }
-            };
+            });
         }
         else if (this.operator) {
-            console.log("this operator")
             this.exec(editor, { operator: this.operator }, char);
         }
         else {
             this.reset();
         }
+    },
+
+    waitForParam: function(cmd) {
+        this.waitingForParam = cmd;
     },
 
     getCount: function() {
@@ -136,7 +155,7 @@ var inputBuffer = exports.inputBuffer = {
             var motionObj = motions[m.char];
             var selectable = motionObj.sel;
             if (!o) {
-                if (onVisuaMode && selectable) {
+                if (onVisualMode && selectable) {
                     run(motionObj.sel);
                 }
                 else {
@@ -167,6 +186,8 @@ var inputBuffer = exports.inputBuffer = {
         this.currentCount = "";
 
         this.accepting = [NUMBER, OPERATOR, MOTION, ACTION];
+        this.idle = true;
+        this.waitingForParam = null;
     }
 }
 
@@ -194,7 +215,7 @@ var commands = exports.commands = {
     stop: {
         exec: function stop(editor) {
             inputBuffer.reset();
-            onVisuaMode = false;
+            onVisualMode = false;
             util.normalMode(editor);
         }
     },
@@ -212,7 +233,7 @@ var commands = exports.commands = {
     },
     visual: {
         exec: function visual(editor) {
-            onVisuaMode = true;
+            onVisualMode = true;
         }
     }
 };
