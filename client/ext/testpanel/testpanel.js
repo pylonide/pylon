@@ -151,7 +151,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
             return;
         
         var finish = function(){
-            //done
+            stTestRun.deactivate();
         }
         
         //Clean nodes
@@ -184,8 +184,9 @@ module.exports = ext.register("ext/testpanel/testpanel", {
                 total.push(node.parentNode);
         });
         
-        var i = 0;
+        stTestRun.activate();
         
+        var i = 0;
         var next = function(){
             if (total[i]) {
                 _self.setLog(total[i], "connecting");
@@ -203,6 +204,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     
     stop : function(){
         ide.dispatchEvent("test.stop");
+        stTestRun.deactivate();
     },
     
     setPass : function(xmlNode, msg){

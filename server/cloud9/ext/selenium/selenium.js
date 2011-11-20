@@ -44,8 +44,36 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
     this.command = function(user, message, client) {
         if (message.command != "selenium")
             return false;
-
+            
         var _self = this;
+
+        if (message.destroy) {
+            var browser = this.jobs[message.job];
+            if (!browser)
+                return;
+            
+            var js = __oni_rt.c1.compile("browser.close();browser.quit();callback();");
+            (new Function('browser', 'callback', js))(browser, function(){
+                for (var prop in browser) {
+                    if (typeof browser[prop] == "function")
+                        browser[prop] = function(){};
+                }
+                
+                _self.sendResult(0, message.command, {
+                    code: 0,
+                    argv: message.argv,
+                    err: "Test Cancelled",
+                    out: '\n \033[31m%s \x1b[31m%t\x1b[37m'
+                        .replace('%s', "Test Cancelled")
+                        .replace('%t', "by user")
+                });
+                
+                _self.jobs[message.job] = null;
+            });
+            
+            return;
+        }
+
         var argv = message.argv || [];
         var args = argv.slice(1);
         
@@ -73,18 +101,6 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                 }
                 else {
 //var args = ["var elId0 = browser.findApfElement({'id':'list1','xml':'item[1]','htmlXpath':'SPAN[1]/U[1]'});browser.moveTo(elId0, 27, 8);browser.buttonDown();var elId1 = browser.findApfElement({'id':'list2'});browser.moveTo(elId1, 117, 0);browser.buttonUp();browser.assert('list1.length', '3');browser.assert('list2.length', '2');hold(63);browser.assert('list1.selection', '[model24.queryNode(\"item[1]\")]');browser.assert('list1.value', '\"Item 2\"');hold(6);browser.assert('list2.selection', '[model26.queryNode(\"item[1]\")]');"];
-
-                    if (!_self.jobs[jobId]) {
-                        _self.sendResult(0, message.command, {
-                            code: 5,
-                            argv: message.argv,
-                            err: null,
-                            out: "",
-                            job: jobId
-                        });
-                        
-                        _self.jobs[jobId] = browser;
-                    }
 
                     var code = args.join(" ") 
                         + (message.close 
@@ -177,6 +193,17 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                             err: null,
                             out: data
                         });
+                    },
+                    setJobId : function(jobId, browser){
+                        _self.sendResult(0, message.command, {
+                            code: 5,
+                            argv: message.argv,
+                            err: null,
+                            out: "",
+                            job: jobId
+                        });
+                        
+                        _self.jobs[jobId] = browser;
                     }
                 }, runTest);
             }

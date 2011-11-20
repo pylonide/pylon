@@ -7,6 +7,8 @@
       visible  = "true" 
       buttons  = "close" 
       optimize = "true">
+        <a:state id="stTestRun" />
+      
         <a:button
           top="-22"
           skin="header-btn"
@@ -41,8 +43,8 @@
                       icon     = "run.png"
                       caption  = "Run"
                       onclick  = "require('ext/testpanel/testpanel').run(dgTestProject.getSelection());"
-                      disabled = "{!!!dgTestProject.selected}" 
-                      submenu  = "mnuRunSettings" />
+                      submenu  = "mnuRunSettings" 
+                      disabled = "{stTestRun.active or !dgTestProject.selected}" />
                     <a:menu id="mnuRunSettings" pinned="true">
                         
                     </a:menu>
@@ -52,7 +54,7 @@
                       caption  = "stop"
                       skin     = "c9-toolbarbutton"
                       onclick  = "require('ext/testpanel/testpanel').stop()"
-                      disabled = "" />
+                      disabled = "{!stTestRun.active}" />
                 
                     <a:filler />
                 </a:hbox>

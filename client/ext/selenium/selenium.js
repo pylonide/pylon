@@ -115,6 +115,15 @@ module.exports = ext.register("ext/selenium/selenium", {
         var stop = false;
         ide.addEventListener("test.stop", function(e){
             stop = true;
+            
+            var data = {
+                command : "selenium",
+                argv    : ["selenium"],
+                line    : "",
+                destroy : true,
+                job     : _self.jobId
+            };
+            ide.send(JSON.stringify(data));
         });
         
         ide.addEventListener("test.icon.selenium", function(e){
@@ -131,6 +140,7 @@ module.exports = ext.register("ext/selenium/selenium", {
             
             if (stop)
                 stop = false; //@todo this shouldn't happen
+            _self.jobId = null;
             
             testpanel.setLog(fileNode, "reading");
             
@@ -160,10 +170,11 @@ module.exports = ext.register("ext/selenium/selenium", {
                         nodes = fileNode.selectNodes("test");
                     }
                     
-                    var jobId;
                     apf.asyncForEach(tests, function(name, nextTest, i){
-                        if (stop)
+                        if (stop) {
+                            testpanel.setError(fileNode, "Test Cancelled");
                             return;
+                        }
                         
                         var actions  = testObject[name];
                         var script   = sp.compile(actions);
@@ -179,7 +190,7 @@ module.exports = ext.register("ext/selenium/selenium", {
                             //cwd     : this.getCwd(),
                             path    : testObject.url,
                             close   : i == tests.length - 1,
-                            job     : jobId,
+                            job     : _self.jobId,
                             url     : testObject.url,
                             
                             where   : ddWhere.value,
@@ -189,20 +200,17 @@ module.exports = ext.register("ext/selenium/selenium", {
                         };
   
                         ide.addEventListener("socketMessage", function(e){
-                            if (stop)
-                                return;
-                            
                             if (e.message.subtype == "selenium") {
                                 var msg = e.message.body;
 
                                 switch (msg.code) {
                                     case 0:
-                                        testpanel.setError(testNode,
-                                            "Error running Selenium Test: "
-                                                + msg.err.message);
+                                        testpanel.setError(testNode, msg.err);
+                                        testpanel.setError(fileNode, msg.err);
                                         
                                         ide.removeEventListener("socketMessage", arguments.callee);
-                                        nextTest();
+                                        if (!stop)
+                                            nextFile();
                                         break;
                                     case 1: //PASS
                                         var assertNode = 
@@ -271,7 +279,7 @@ module.exports = ext.register("ext/selenium/selenium", {
                                         nextTest();
                                         break;
                                     case 5:
-                                        jobId = msg.job;
+                                        _self.jobId = msg.job;
                                         break;
                                 }
                             }
@@ -283,8 +291,7 @@ module.exports = ext.register("ext/selenium/selenium", {
                         var nodes = apf.queryNodes(fileNode, "test[@status=0]|error");
 
                         if (stop) {
-                            testpanel.setError(fileNode, "stopped");
-                            stop = false;
+                            testpanel.setError(fileNode, "Test Cancelled");
                             return;
                         }
                         else if (nodes.length)

@@ -40,6 +40,9 @@ function wdInit(options, assert, callback) {
     browser.constructor.prototype.decorated = true;
 
     var jobId = browser.init(options.desired);
+    
+    assert.setJobId(jobId, browser);
+    
     browser.get(options.url);
     browser.setWaitTimeout(options.waitTimeout);
     
