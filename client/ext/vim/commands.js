@@ -24,16 +24,6 @@ var repeat = function repeat(fn, count, args) {
         fn.apply(this, args);
 };
 
-var toRealChar = function(char) {
-    if (char.length === 1)
-        return char;
-
-    if (/^shift-./.test(char))
-        return char[char.length - 1].toUpperCase();
-    else
-        return "";
-};
-
 var actions = {
     "z": function(editor, range, count, param) {
         switch (param) {
@@ -43,7 +33,7 @@ var actions = {
         }
     },
     "r": function(editor, range, count, param) {
-        param = toRealChar(param);
+        param = util.toRealChar(param);
         if (param && param.length) {
             repeat(function() { editor.insert(param); }, count || 1);
             editor.navigateLeft();
@@ -68,7 +58,7 @@ var inputBuffer = exports.inputBuffer = {
         if (wObj) {
             this.exec(editor, wObj, char);
         }
-        // If it is a number (that doesn't start with 0)
+        // If input is a number (that doesn't start with 0)
         else if (!(char === "0" && !this.currentCount.length) &&
             (char.match(/^\d+$/) && this.isAccepting(NUMBER))) {
             // Assuming that char is always of type String, and not Number
@@ -189,7 +179,7 @@ var inputBuffer = exports.inputBuffer = {
         this.idle = true;
         this.waitingForParam = null;
     }
-}
+};
 
 var commands = exports.commands = {
     commandLine: {
@@ -211,7 +201,7 @@ var commands = exports.commands = {
         }
     },
     // Stop Insert mode as soon as possible. Works like typing <Esc> in
-    // **insert** mode.
+    // insert mode.
     stop: {
         exec: function stop(editor) {
             inputBuffer.reset();
@@ -221,7 +211,7 @@ var commands = exports.commands = {
     },
     append: {
         exec: function append(editor) {
-            editor.navigateRight(params.count);
+            editor.navigateRight();
             util.insertMode(editor);
         }
     },
@@ -237,5 +227,9 @@ var commands = exports.commands = {
         }
     }
 };
+
+operators.v = function(editor, range, count, param) {
+    commands.visual.exec(editor);
+}
 });
 

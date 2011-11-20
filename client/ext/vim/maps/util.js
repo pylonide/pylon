@@ -40,6 +40,15 @@ module.exports = {
         var matches = line.substr(0, cursor.column + 1).split(char);
 
         return n < matches.length ? matches.slice(-1 * n).join(char).length + 1: 0;
+    },
+    toRealChar: function(char) {
+        if (char.length === 1)
+            return char;
+
+        if (/^shift-./.test(char))
+            return char[char.length - 1].toUpperCase();
+        else
+            return "";
     }
 };
 });

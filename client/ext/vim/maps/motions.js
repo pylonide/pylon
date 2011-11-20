@@ -52,6 +52,24 @@ module.exports = {
             editor.selection.selectDown();
         }
     },
+    "i": {
+        param: true,
+        sel: function(editor, range, count, param) {
+            switch (param) {
+                case "w":
+                    editor.selection.selectWord();
+            }
+        }
+    },
+    "a": {
+        param: true,
+        sel: function(editor, range, count, param) {
+            switch (param) {
+                case "w":
+                    editor.selection.selectAWord();
+            }
+        }
+    },
     "f": {
         param: true,
         nav: function(editor, range, count, param) {
@@ -98,28 +116,6 @@ module.exports = {
             if (typeof column === "number") {
                 ed.moveCursorTo(cursor.row, column + cursor.column);
             }
-        }
-    },
-/*    "x": {*/
-        //nav: function(editor, range, count, param) {
-            //var ed = editor;
-            //if (ed.selection.isEmpty()) {
-                //ed.selection.selectRight();
-            //}
-
-            //ed.session.remove(ed.getSelectionRange());
-            //ed.clearSelection();
-        //}
-    /*},*/
-    "shift-x": {
-        nav: function(editor, range, count, param) {
-            var ed = editor;
-            if (ed.selection.isEmpty()) {
-                ed.selection.selectLeft();
-            }
-
-            ed.session.remove(ed.getSelectionRange());
-            ed.clearSelection();
         }
     },
     "shift-6": {

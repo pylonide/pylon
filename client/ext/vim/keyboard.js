@@ -78,11 +78,6 @@ var states = exports.states = {
             then: "insertMode"
         },
         {
-            regex:  "^v$",
-            match: inIdleState,
-            exec: "visual",
-        },
-        {
             regex:  [ "backspace" ],
             exec:   "moveBack",
         },
