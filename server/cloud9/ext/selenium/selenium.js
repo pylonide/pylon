@@ -134,20 +134,24 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
             if (browser)
                 runTest(null, browser, message.job);
             else {
-                wdInit({
-                    /*host: "ondemand.saucelabs.com",
-                    port: 80,
-                    username: username,
-                    accessKey: "4681d68d-46eb-4d17-b09b-1cb4575796ad",*/
+                var options = {
                     desired: { 
                         name: 'cloud9',
-                        browserName: "chrome", //firefox
-                        version: '',
-                        platform: 'VISTA'
+                        browserName: message.browser,
+                        version: message.version,
+                        platform: message.os
                     },
-                    url: "http://127.0.0.1:5000/workspace/support/apf/tabs.html",
-                    waitTimeout: 2000
-                }, {
+                    //waitTimeout: 2000,
+                    url : message.url
+                };
+                if (message.where == "sauce") {
+                    options.host      = "ondemand.saucelabs.com";
+                    options.port      = 80;
+                    options.username  = username;
+                    options.accessKey = "4681d68d-46eb-4d17-b09b-1cb4575796ad";
+                }
+                
+                wdInit(options, {
                     pass : function(msg, data){
                         _self.sendResult(0, message.command, {
                             code: 1,

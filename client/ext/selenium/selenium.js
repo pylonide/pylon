@@ -15,6 +15,7 @@ var fs = require("ext/filesystem/filesystem");
 var newresource = require("ext/newresource/newresource");
 var testpanel = require("ext/testpanel/testpanel");
 var template = require("text!ext/selenium/selenium.template");
+var markup = require("text!ext/selenium/selenium.xml");
 
 function escapeXpathString(name){
     if (name.indexOf('"') > -1) {
@@ -35,6 +36,7 @@ module.exports = ext.register("ext/selenium/selenium", {
     nodes           : [],
     testpath        : "test/selenium",
     template        : template,
+    markup          : markup,
 
     hook : function(){
         var _self = this;
@@ -43,7 +45,7 @@ module.exports = ext.register("ext/selenium/selenium", {
         });
     },
 
-    init : function() {
+    init : function(amlNode) {
         var _self = this;
         
         this.nodes.push(
@@ -59,7 +61,31 @@ module.exports = ext.register("ext/selenium/selenium", {
                     _self.createAndOpenTest();
                 }
             }))
+            
+            /*mnuRunSettings.appendChild(new apf.item({
+                caption : "Selenium",
+                submenu : "mnuRunSelenium"
+            })),
+            
+            apf.document.body.appendChild(new apf.menu({
+                id : "mnuRunSelenium",
+                childNodes : [
+                    new apf.item({
+                        type : "radio",
+                        caption : "Local"
+                    }),
+                    new apf.item({
+                        type : "radio",
+                        caption : "Sauce Labs"
+                    })
+                ]
+            }))*/
         );
+        
+        var nodes = seleniumSettings.childNodes;
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            this.nodes.push(mnuRunSettings.appendChild(nodes[0]));
+        }
 
         fs.list("/workspace/" + this.testpath, function(data, state, extra){
             if (state == apf.ERROR) {
@@ -91,6 +117,10 @@ module.exports = ext.register("ext/selenium/selenium", {
             stop = true;
         });
         
+        ide.addEventListener("test.icon.selenium", function(e){
+            return "page_white_go.png";
+        });
+        
         ide.addEventListener("test.run.selenium", function(e){
             var fileNode = e.xmlNode;
             var nextFile = e.next;
@@ -118,7 +148,11 @@ module.exports = ext.register("ext/selenium/selenium", {
                         return;
                     }
                     
-                    var tests = Object.keys(testObject);
+                    var tests = [];
+                    for (var prop in testObject) {
+                        if (prop.match(/^test /i))
+                            tests.push(prop);
+                    }
                     var nodes = fileNode.selectNodes("test");
                     if (!nodes.length) {
                         dgTestProject.$setLoadStatus(fileNode, "loaded");
@@ -143,11 +177,15 @@ module.exports = ext.register("ext/selenium/selenium", {
                             argv    : ["selenium", script],
                             line    : "",
                             //cwd     : this.getCwd(),
-                            where   : "local",
                             path    : testObject.url,
                             close   : i == tests.length - 1,
-                            job     : jobId
-                            //@todo settings
+                            job     : jobId,
+                            url     : testObject.url,
+                            
+                            where   : ddWhere.value,
+                            os      : ddSeOS.value,
+                            browser : ddSeBrowser.selected.getAttribute("value"),
+                            version : ddSeBrowser.selected.getAttribute("version")
                         };
   
                         ide.addEventListener("socketMessage", function(e){
@@ -224,8 +262,10 @@ module.exports = ext.register("ext/selenium/selenium", {
                                         testpanel.setLog(testNode, "command '" + msg.out + "'");
                                         break;
                                     case 4:
-                                        //@todo take assertions into account
-                                        testpanel.setPass(testNode);
+                                        if (testNode.selectSingleNode("error|assert[@status=0]"))
+                                            testpanel.setError(testNode, "Test Failed");
+                                        else
+                                            testpanel.setPass(testNode);
                                     
                                         ide.removeEventListener("socketMessage", arguments.callee);
                                         nextTest();
@@ -240,7 +280,7 @@ module.exports = ext.register("ext/selenium/selenium", {
                         ide.send(JSON.stringify(data));
                         
                     }, function(){
-                        var nodes = apf.queryNodes(fileNode, "test[@status=0]");
+                        var nodes = apf.queryNodes(fileNode, "test[@status=0]|error");
 
                         if (stop) {
                             testpanel.setError(fileNode, "stopped");
@@ -345,6 +385,9 @@ module.exports = ext.register("ext/selenium/selenium", {
         var json = JSON.parse(data);
         var doc  = xmlNode.ownerDocument;
         for (var prop in json) {
+            if (!prop.match(/^test /i))
+                continue;
+            
             var node = doc.createElement("test");
             node.setAttribute("name", prop);
             

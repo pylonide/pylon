@@ -3291,20 +3291,30 @@
         </a:main>
     </a:presentation>
 </a:divider>
-    <a:divider name="c9-divider-hor">
+<a:divider name="c9-divider-hor">
     <a:style><![CDATA[
         .c9-divider-hor {
             position   : relative;
-            overflow   : hidden;
             height     : 0px;
             border-top:1px solid #000000;
             border-bottom:1px solid #404040;
         }
+        
+        .c9-divider-hor span{
+            color : #606060;
+            text-shadow: rgba(0, 0, 0, 1) 0px 1px 0px;
+            background : #1d1d1d;
+            font-size: 7pt;
+            top: -8px;
+            position: relative;
+            left: 4px;
+            padding : 0 3px 0 3px;
+        }
     ]]></a:style>
 
     <a:presentation>
-        <a:main>
-            <div class="c9-divider-hor"> </div>
+        <a:main caption="span">
+            <div class="c9-divider-hor"><span> </span></div>
         </a:main>
     </a:presentation>
 </a:divider>
@@ -3733,7 +3743,8 @@
             font-family: Tahoma, Arial;
             overflow: hidden;
             cursor: default;
-            color : #333;
+            color : #606060;
+            text-shadow: rgba(0, 0, 0, 1) 0px 1px 0px;
             padding : 2px;
             white-space : nowrap;
         }

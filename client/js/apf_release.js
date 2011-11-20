@@ -17041,7 +17041,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/uirecorder/capture.js)SIZE(21934)TIME(Wed, 16 Nov 2011 23:15:46 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/uirecorder/capture.js)SIZE(21922)TIME(Sun, 20 Nov 2011 01:07:29 GMT)*/
 
 
 
@@ -17049,11 +17049,255 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/uirecorder/selenium.js)SIZE(9047)TIME(Tue, 08 Nov 2011 21:16:28 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/uirecorder/selenium.js)SIZE(9031)TIME(Sun, 20 Nov 2011 01:06:22 GMT)*/
 
 
+function SeleniumPlayer(browser){
+    this.browser = browser;
+};
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/uirecorder/ui.js)SIZE(18410)TIME(Wed, 16 Nov 2011 23:15:46 GMT)*/
+(function(){
+    this.realtime = true;
+    
+    this.play = function(name, actions){
+        var script = this.compile(actions);
+        new Function('browser', script)();
+    }
+    
+    this.writeTestFile = function(actions, filename, name) {
+        
+    }
+    
+    this.writeTestOnly = function(actions, filename){
+        
+    }
+    
+    function findElement(element, contexts, stack, extra) {
+        var elName;
+        var obj = extra ? apf.extend({}, element, extra) : element;
+        var serialized = JSON.stringify(obj);
+        
+        if (!contexts[serialized]) {
+            elName = contexts[serialized] = "elId" + contexts.length++; 
+            stack.push("", 
+                'var ' + elName + ' = browser.findApfElement('
+                + serialized
+                + ');');
+        }
+        else
+            elName = contexts[serialized];
+        
+        return elName;
+    }
+    
+    var keys = [
+        {name: "ctrlKey",  char: "\uE009", state: false}, 
+        {name: "metaKey",  char: "\uE03E", state: false},
+        {name: "shiftKey", char: "\uE008", state: false},
+        {name: "altKey",   char: "\uE00A", state: false}
+    ];
+    
+    this.compile = function(actions){
+        var rules = [], stack;
+        var context, contexts = {length: 0};
+        var needsMove;
+        
+        var minLength, elId, el, item, temp, lastMouseDown, lastCoords;
+        for (var i = 0, l = actions.length; i < l; i++) {
+            item    = actions[i];
+            el      = item.element;
+            stack   = [];
+
+            if (!el) {
+                console.log("Found item without any element");
+                continue;
+            }
+            
+            if (!this.realtime && item.name == "mousemove")
+                continue;
+
+            elId = findElement(item.element, contexts, stack);
+
+            var x  = item.offsetX;
+            var y  = item.offsetY;
+            
+            if (!item.name.indexOf("key")) {
+                keys.each(function(info){
+                    if (item[info.name] != info.state) {
+                        info.state = !info.state;
+                        stack.push("browser.keyToggle('" + info.char + "');")
+                    }
+                });
+            }
+            
+            switch(item.name) {
+                case "mousemove":
+                    // || !actions[i + 1] || !actions[i + 1].name == "mousemove"
+                    stack.push("browser.moveTo(" + elId 
+                        + ", " + x + ", " + y + ");"); //@todo make these absolute
+                        
+                    break;
+                case "mousedown":
+                    lastMouseDown = [elId, item.x, item.y];
+                    
+                    stack.push("browser.moveTo(" + elId 
+                        + ", " + x + ", " + y + ");");
+                    
+                    if (item.button == 2) {
+                        stack.push("browser.click('" + elId + ", 2);");
+                    }
+                    //@todo think about moving this to a cleanup.
+                    else if (
+                        (temp = actions[i + 1]) && contexts[temp.element] == elId 
+                            && temp.name == "mouseup" &&
+                        (temp = actions[i + 2]) && contexts[temp.element] == elId
+                            && temp.name == "mousedown" &&
+                        (temp = actions[i + 3]) && contexts[temp.element] == elId
+                            && temp.name == "mouseup" &&
+                        (temp = actions[i + 4]) && contexts[temp.element] == elid
+                            && temp.name == "dblclick"
+                    ) {
+                        // double click detection
+                        i += 3;
+                        continue;
+                    }
+                    else {
+                        stack.push("browser.buttonDown();");
+                    }
+                    break;
+                case "mouseup":
+                    if (lastMouseDown && lastMouseDown[0] == elId) {
+                        if (lastMouseDown[1] != item.x || lastMouseDown[2] != item.y) {
+                            x += item.x - lastMouseDown[1];
+                            y += item.y - lastMouseDown[2];
+                            lastMouseDown = null;
+                            
+                            stack.push("browser.moveTo(" + elId 
+                                + ", " + x + ", " + y + ");");
+                        }
+                    }
+                    else {
+                        stack.push("browser.moveTo(" + elId 
+                            + ", " + x + ", " + y + ");");
+                    }
+                    
+                    if (item.button == 2) {
+                        //Ignore
+                    }
+                    else {
+                        stack.push("browser.buttonUp();");
+                    }
+                    break;
+                case "mousescroll":
+                    throw new Error("Selenium doesn't support the mouse wheel");
+                    break;
+                case "dblclick":
+                    stack.push("browser.moveTo(" + elId 
+                        + ", " + x + ", " + y + ");");
+                    
+                    //stack.push("browser.doubleclick();");
+                    stack.push("browser.buttonDown();");
+                    stack.push("browser.buttonUp();");
+                    stack.push("browser.buttonDown();");
+                    stack.push("browser.buttonUp();");
+                    break;
+                case "keydown":
+                    break;
+                case "keyup":
+                    break;
+                case "keypress":
+                    //@todo !realtime
+                    //@todo modifier Keys
+                    //@todo This should be keydown and keyup
+                    
+                    var inputId = findElement(item.element, contexts, stack, {
+                        html : ["input", "*[contenteditable]", ""]
+                    });
+
+                    stack.push("browser.type(" + inputId
+                        + "', ['" + item.value + "']);");
+                    break;
+            }
+            
+            /**** Assertions ****/
+            
+            function contextToExpression(def, nosel){
+                var res;
+                if (def.id) 
+                    res = def.id;
+                else
+                    res = "apf.document.selectSingleNode(\"" 
+                      + def.xpath
+                        .replace(/^html\[1\]\//i, "")
+                        .replace(/"/g, "\\\"") + "\")";
+                
+                if (def.xml)
+                    res += ".$xmlRoot.selectSingleNode('"
+                      + def.xml.replace(/"/g, "\\\"") + "')";
+                
+                return res;
+            }
+            
+            //@todo this function can be expanded to cover all cases
+            //      but I haven't seen them occur yet
+            function serializeValue(value) {
+                if (value && (value.id || value.xpath 
+                  || value.htmlXpath || value.xml || value.eval))
+                    return contextToExpression(prop.value);
+                else if (value.dataType == apf.ARRAY) {
+                    var o = [];
+                    for (var i = 0; i < value.length; i++) {
+                        o.push(value[i] && value[i].eval
+                            ? value[i].eval
+                            : JSON.stringify(value[i]));
+                    }
+                    return "[" + o.toString() + "]";
+                }
+//                else if (typeof value == "object") {
+//                    
+//                }
+                else
+                    return JSON.stringify(value);
+            }
+            
+            // Properties
+            var time = 0;
+            for (var prop, j = 0; j < item.properties.length; j++) {
+                prop = item.properties[j];
+                var ident = contextToExpression(prop.element);
+                
+                if (prop.async && prop.time > time) {
+                    stack.push("hold(" + ((prop.time - time) * 3) + ")");
+                    time = prop.time;
+                }
+
+                stack.push("browser.assert('" 
+                    + ident + "." + prop.name + "', '"
+                    + serializeValue(prop.value).replace(/'/g, "\\'")
+                    + "');");
+                
+                if (stack[stack.length - 1].indexOf("Could not serialize") > -1)
+                    stack.pop();
+            }
+            
+            // HTTP
+            //@todo
+            
+            // Data
+            //@todo
+            
+            if (this.realtime && actions[i + 1])
+                stack.push("hold(10);");
+            
+            rules = rules.concat(stack);
+        }
+        
+        return rules.join("\n");
+    }
+}).call(SeleniumPlayer.prototype);
+
+
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/uirecorder/ui.js)SIZE(18464)TIME(Sun, 20 Nov 2011 01:21:14 GMT)*/
 
 
 
@@ -26554,7 +26798,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(47097)TIME(Mon, 07 Nov 2011 00:48:02 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(47100)TIME(Sat, 19 Nov 2011 23:27:50 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27022,7 +27266,7 @@ apf.MultiselectBinding = function(){
             return this.clear(null, null, true); //@todo apf3.0 this should clear and set a listener
 
         //Traverse through XMLTree
-        var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot, null, "load");
+        var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot, null, 0, "load");
 
         //Build HTML
         this.$fill(nodes);
@@ -34742,7 +34986,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(50685)TIME(Wed, 09 Nov 2011 07:35:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(50909)TIME(Sun, 20 Nov 2011 05:31:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35215,6 +35459,14 @@ apf.BaseTree = function(){
     
     /**** Databinding Support ****/
 
+    this.$isStartCollapsed = function(xmlNode){
+        return this.$hasBindRule("collapsed")
+            ? (this.$getDataNode("collapsed", xmlNode) ? true : false)
+            : (this.$hasBindRule("expanded") 
+                ? (this.$getDataNode("expanded", xmlNode) ? false : true)
+                : this.startcollapsed);
+    }
+
     //@todo apf3.x refactor
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode, isLast, depth, nextNode, action){
         if (this.$isTreeArch && this.$needsDepth && typeof depth == "undefined") {
@@ -35229,11 +35481,7 @@ apf.BaseTree = function(){
             traverseNodes    = this.getTraverseNodes(xmlNode),
             hasTraverseNodes = traverseNodes.length ? true : false,
             hasChildren      = loadChildren || hasTraverseNodes,
-            startcollapsed   = this.$hasBindRule("collapsed")
-                ? (this.$getDataNode("collapsed", xmlNode) ? true : false)
-                : (this.$hasBindRule("expanded") 
-                    ? (this.$getDataNode("expanded", xmlNode) ? false : true)
-                    : this.startcollapsed),
+            startcollapsed   = this.$isStartCollapsed(xmlNode),
             state            = (hasChildren ? HAS_CHILD : 0) | (startcollapsed && hasChildren
                 || loadChildren ? IS_CLOSED : 0) | (isLast ? IS_LAST : 0),
 
@@ -35319,8 +35567,10 @@ apf.BaseTree = function(){
             //Fix parent if child is added to drawn parentNode
             if (htmlParentNode.style) {
                 if (this.openadd && htmlParentNode != this.$container 
-                  && htmlParentNode.style.display != "block") 
-                    this.slideOpen(htmlParentNode, xmlParentNode, true);
+                  && htmlParentNode.style.display != "block") { 
+                    if (!this.$isStartCollapsed(xmlParentNode))
+                        this.slideOpen(htmlParentNode, xmlParentNode, true);
+                }
                 
                 if (!this.$fillParent)
                     this.$fillParent = xmlParentNode;
@@ -35394,7 +35644,7 @@ apf.BaseTree = function(){
             else
                 hasChildren = false;
 
-            var isClosed = hasChildren && htmlNode.className.indexOf("plus") > -1;//container.style.display != "block",
+            var isClosed = hasChildren && apf.getStyle(container, "display") == "none"; //htmlNode.className.indexOf("min") == -1;//container.style.display != "block",
                 isLast   = this.getNextTraverse(xmlNode, null, oneLeft ? 2 : 1)
                     ? false
                     : true,
@@ -35724,13 +35974,13 @@ apf.BaseTree = function(){
                 //UP
                 if (!selXml && !this.$tempsel) 
                     return;
-                
+
                 node = this.$tempsel 
                     ? apf.xmldb.getNode(this.$tempsel) 
                     : selXml;
                 
                 sNode = this.getNextTraverse(node, true);
-                if (sNode) {
+                if (sNode && sNode != node) {
                     nodes = this.getTraverseNodes(sNode);
                     
                     do {
@@ -55036,7 +55286,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53239)TIME(Wed, 09 Nov 2011 07:41:55 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53231)TIME(Sat, 19 Nov 2011 23:27:33 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55589,7 +55839,7 @@ apf.datagrid = function(struct, tagName){
         this.$getNewContext("item");
         var oRow = this.$getLayoutNode("item");
         oRow.setAttribute("id", Lid);
-        
+
         //@todo if treearch
         oRow.setAttribute("class", oRow.getAttribute("class") + " "  
             + treeState[state] + " item" + this.$uniqueId);//"width:" + (totalWidth+40) + "px");

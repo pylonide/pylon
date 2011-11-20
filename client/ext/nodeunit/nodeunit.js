@@ -84,6 +84,14 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
             _self.reloadTestFile(xmlNode);
         });
         
+        ide.addEventListener("test.stop", function(e){
+            //@todo
+        });
+        
+        ide.addEventListener("test.icon.nodeunit", function(e){
+            return "page_white_code.png";
+        });
+        
         ide.addEventListener("test.run.nodeunit", function(e){
             var xmlNode = e.xmlNode;
             var next    = e.next;

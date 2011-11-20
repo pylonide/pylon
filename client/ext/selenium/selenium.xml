@@ -1,0 +1,72 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:bar id="seleniumSettings" visible="false">
+        <a:divider skin="c9-divider-hor" caption="Selenium" margin="5 0 0 0" />
+        <a:table columns="60,195" padding="4" edge="10">
+            <a:label caption="Run where" />
+            <a:dropdown id="ddWhere" skin="black_dropdown" default="local">
+                <a:item type="radio" caption="Locally" value="local" />
+                <a:item type="radio" caption="Sauce Labs" value="sauce" />
+            </a:dropdown>
+            <a:label caption="Operating System" visible="{ddWhere.value == 'sauce'}" />
+            <a:dropdown id="ddSeOS"
+              model     = "mdlSelPlatforms"
+              skin      = "black_dropdown" 
+              value     = "VISTA"
+              eachvalue = "[@value]"
+              each      = "[platform]"
+              caption   = "[@caption]" 
+              visible   = "{ddWhere.value == 'sauce'}" />
+            <a:label caption="Browser"/>
+            <a:dropdown id="ddSeBrowser"
+              model     = "{ddSeOS.visible ? ddSeOS.selected : %[mdlSelPlatforms::local]}"
+              skin      = "black_dropdown" 
+              selected  = "%[browser[@value='chrome']]"
+              eachvalue = "[@caption]"
+              caption   = "[@caption]"
+              each      = "[browser]"
+              maxitems  = "20" />
+        </a:table>
+    </a:bar>
+    
+    <a:model id="mdlSelPlatforms">
+        <data>
+            <platform caption="Windows 2003 (XP)" value="XP">
+                <browser caption="Internet Explorer 6" value="ie" version="6" />
+                <browser caption="Internet Explorer 7" value="ie" version="7" />
+                <browser caption="Internet Explorer 8" value="ie" version="8" />
+                <browser caption="Firefox 3.0" value="firefox" version="3.0" />
+                <browser caption="Firefox 3.5" value="firefox" version="3.5" />
+                <browser caption="Firefox 3.6" value="firefox" version="3.6" />
+                <browser caption="Firefox 4" value="firefox" version="4" />
+                <browser caption="Firefox 5" value="firefox" version="5" />
+                <browser caption="Firefox 6" value="firefox" version="6" />
+                <browser caption="Firefox 7" value="firefox" version="7" />
+                <browser caption="Google Chrome" value="chrome" />
+            </platform>
+            <platform caption="Windows 2008 (Vista)" value="VISTA">
+                <browser caption="Internet Explorer 9" value="ie" version="9" />
+                <browser caption="Firefox 4" value="firefox" version="4" />
+                <browser caption="Firefox 5" value="firefox" version="5" />
+                <browser caption="Firefox 6" value="firefox" version="6" />
+                <browser caption="Firefox 7" value="firefox" version="7" />
+                <browser caption="Google Chrome" value="chrome" />
+            </platform>
+            <platform caption="Linux" value="LINUX">
+                <browser caption="Firefox 3.0" value="firefox" version="3.0" />
+                <browser caption="Firefox 3.6" value="firefox" version="3.6" />
+                <browser caption="Firefox 4" value="firefox" version="4" />
+                <browser caption="Firefox 5" value="firefox" version="5" />
+                <browser caption="Firefox 6" value="firefox" version="6" />
+                <browser caption="Firefox 7" value="firefox" version="7" />
+                <browser caption="Google Chrome" value="chrome" />
+                <browser caption="Opera 11" value="opera" version="11" />
+            </platform>
+            <local>
+                <browser caption="Firefox" value="firefox" />
+                <browser caption="Google Chrome" value="chrome" />
+                <browser caption="Opera" value="opera" />
+                <browser caption="Internet Explorer" value="ie" />
+            </local>
+        </data>
+    </a:model>
+</a:application>

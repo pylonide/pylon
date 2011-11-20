@@ -89,7 +89,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
                 if ("file|test|repo".indexOf(node.tagName) == -1 || !ide.onLine)
                     return;
                 
-                _self.run(node);
+                _self.run([node]);
             }
         });
         
@@ -130,51 +130,75 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         return "<file />";
     },
     
-    run : function(node){
+    getIcon : function(xmlNode) {
+        if (xmlNode.tagName == "repo")
+            return "folder.png";
+        if (xmlNode.tagName == "test")
+            return "brkp_obj.gif";
+        if (xmlNode.tagName == "assert")
+            return "brkp_obj.gif";
+        if (xmlNode.tagName == "error")
+            return "exclamation.png";
+        else
+            return ide.dispatchEvent("test.icon." 
+                + xmlNode.getAttribute("type")) || "page_white_text.png";
+    },
+    
+    run : function(nodes){
         var _self = this;
+        
+        if (!nodes)
+            return;
         
         var finish = function(){
             //done
         }
         
-        if (node.tagName == "test")
-            node = node.parentNode;
-        
-        var cleanNodes = node.selectNodes(".//file|.//test|.//assert");
-        for (var k = 0; k < cleanNodes.length; k++) {
-            apf.xmldb.removeAttribute(cleanNodes[k], "status");
-        }
-        var errorNodes = node.selectNodes(".//error");
-        for (var k = 0; k < errorNodes.length; k++) {
-            apf.xmldb.removeNode(errorNodes[k]);
-        }
-        
-        if (node.tagName == "repo") {
-            var nodes = node.selectNodes("file");
-            var i = 0;
+        //Clean nodes
+        nodes.each(function(node) {
+            if (node.tagName == "test")
+                node = node.parentNode;
             
-            var next = function(){
-                if (nodes[i]) {
-                    _self.setLog(nodes[i], "connecting");
-                    ide.dispatchEvent("test.run." + nodes[i].getAttribute("type"), {
-                        xmlNode : nodes[i++],
-                        next    : next
-                    });
-                }
-                else {
-                    finish();
-                }
-            };
-            next();
-        }
-        else if (node.tagName == "file") {
-            _self.setLog(node, "connecting");
-            apf.xmldb.removeAttribute(node, "state");
-            ide.dispatchEvent("test.run." + node.getAttribute("type"), {
-                xmlNode : node,
-                next    : finish
-            });
-        }
+            var cleanNodes = node.selectNodes(".//file|.//test");
+            for (var k = 0; k < cleanNodes.length; k++) {
+                apf.xmldb.removeAttribute(cleanNodes[k], "status");
+            }
+            var errorNodes = node.selectNodes(".//error");
+            for (var k = 0; k < errorNodes.length; k++) {
+                apf.xmldb.removeNode(errorNodes[k]);
+            }
+            var assertNodes = node.selectNodes(".//assert");
+            for (var k = 0; k < assertNodes.length; k++) {
+                apf.xmldb.removeNode(assertNodes[k]);
+            }
+        });
+        
+        //Expand list
+        var total = [];
+        nodes.each(function(node){
+            if (node.tagName == "repo")
+                total = total.concat(apf.getArrayFromNodelist(node.selectNodes("file")));
+            else if (node.tagName == "file")
+                total.push(node);
+            else if (node.tagName == "test")
+                total.push(node.parentNode);
+        });
+        
+        var i = 0;
+        
+        var next = function(){
+            if (total[i]) {
+                _self.setLog(total[i], "connecting");
+                ide.dispatchEvent("test.run." + total[i].getAttribute("type"), {
+                    xmlNode : total[i++],
+                    next    : next
+                });
+            }
+            else {
+                finish();
+            }
+        };
+        next();
     },
     
     stop : function(){

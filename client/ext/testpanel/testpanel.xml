@@ -37,12 +37,15 @@
                     
                     <!--a:divider skin="c9-divider-double" /-->
                     
-                    <a:button
+                    <a:splitbutton
                       icon     = "run.png"
                       caption  = "Run"
-                      onclick  = "require('ext/testpanel/testpanel').run(dgTestProject.selected);"
+                      onclick  = "require('ext/testpanel/testpanel').run(dgTestProject.getSelection());"
                       disabled = "{!!!dgTestProject.selected}" 
-                      skin     = "c9-toolbarbutton" />
+                      submenu  = "mnuRunSettings" />
+                    <a:menu id="mnuRunSettings" pinned="true">
+                        
+                    </a:menu>
                 
                     <a:button
                       icon     = "stop.png"
@@ -93,7 +96,7 @@
               startcollapsed = "true"
               contextmenu    = "mnuTestContext"
               empty-message  = "No tests yet">
-                <a:column caption="Name" width="100%" tree="1" icon="folder.png"><?lm
+                <a:column caption="Name" width="100%" tree="1" icon="{require('ext/testpanel/testpanel').getIcon(%[.])}"><?lm
                     if (localName() == "error")
                         <span style='color:red'>[@name]</span>
                     else
@@ -113,6 +116,7 @@
                 <a:insert match="[file]" get="{return require('ext/testpanel/testpanel').parseFile(xmlNode)}" />
                 
                 <a:expanded match="[test]" />
+                <a:expanded match="[file[test]]" />
                 <a:expanded match="{apf.getChildNumber(%[repo]) == 1}" />
             </a:datagrid>
             
