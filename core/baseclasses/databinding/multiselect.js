@@ -476,7 +476,7 @@ apf.MultiselectBinding = function(){
             return this.clear(null, null, true); //@todo apf3.0 this should clear and set a listener
 
         //Traverse through XMLTree
-        var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot, null, "load");
+        var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot, null, 0, "load");
 
         //Build HTML
         this.$fill(nodes);

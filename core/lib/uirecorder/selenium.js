@@ -217,7 +217,7 @@ function SeleniumPlayer(browser){
                     stack.push("hold(" + ((prop.time - time) * 3) + ")");
                     time = prop.time;
                 }
-                
+
                 stack.push("browser.assert('" 
                     + ident + "." + prop.name + "', '"
                     + serializeValue(prop.value).replace(/'/g, "\\'")

@@ -164,7 +164,7 @@ apf.splitter = function(struct, tagName){
         this.$setSiblings();
         
         this.$thickness = null;
-        if (this.parentNode.$box) {
+        if (this.parentNode && this.parentNode.$box) {
             this.setProperty("type", this.parentNode.localName == "vbox" 
                 ? "horizontal" 
                 : "vertical");

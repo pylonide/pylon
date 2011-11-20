@@ -471,6 +471,14 @@ apf.BaseTree = function(){
     
     /**** Databinding Support ****/
 
+    this.$isStartCollapsed = function(xmlNode){
+        return this.$hasBindRule("collapsed")
+            ? (this.$getDataNode("collapsed", xmlNode) ? true : false)
+            : (this.$hasBindRule("expanded") 
+                ? (this.$getDataNode("expanded", xmlNode) ? false : true)
+                : this.startcollapsed);
+    }
+
     //@todo apf3.x refactor
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode, isLast, depth, nextNode, action){
         if (this.$isTreeArch && this.$needsDepth && typeof depth == "undefined") {
@@ -485,11 +493,7 @@ apf.BaseTree = function(){
             traverseNodes    = this.getTraverseNodes(xmlNode),
             hasTraverseNodes = traverseNodes.length ? true : false,
             hasChildren      = loadChildren || hasTraverseNodes,
-            startcollapsed   = this.$hasBindRule("collapsed")
-                ? (this.$getDataNode("collapsed", xmlNode) ? true : false)
-                : (this.$hasBindRule("expanded") 
-                    ? (this.$getDataNode("expanded", xmlNode) ? false : true)
-                    : this.startcollapsed),
+            startcollapsed   = this.$isStartCollapsed(xmlNode),
             state            = (hasChildren ? HAS_CHILD : 0) | (startcollapsed && hasChildren
                 || loadChildren ? IS_CLOSED : 0) | (isLast ? IS_LAST : 0),
 
@@ -575,8 +579,10 @@ apf.BaseTree = function(){
             //Fix parent if child is added to drawn parentNode
             if (htmlParentNode.style) {
                 if (this.openadd && htmlParentNode != this.$container 
-                  && htmlParentNode.style.display != "block") 
-                    this.slideOpen(htmlParentNode, xmlParentNode, true);
+                  && htmlParentNode.style.display != "block") { 
+                    if (!this.$isStartCollapsed(xmlParentNode))
+                        this.slideOpen(htmlParentNode, xmlParentNode, true);
+                }
                 
                 if (!this.$fillParent)
                     this.$fillParent = xmlParentNode;
@@ -650,7 +656,7 @@ apf.BaseTree = function(){
             else
                 hasChildren = false;
 
-            var isClosed = hasChildren && htmlNode.className.indexOf("plus") > -1;//container.style.display != "block",
+            var isClosed = hasChildren && apf.getStyle(container, "display") == "none"; //htmlNode.className.indexOf("min") == -1;//container.style.display != "block",
                 isLast   = this.getNextTraverse(xmlNode, null, oneLeft ? 2 : 1)
                     ? false
                     : true,
@@ -986,13 +992,13 @@ apf.BaseTree = function(){
                 //UP
                 if (!selXml && !this.$tempsel) 
                     return;
-                
+
                 node = this.$tempsel 
                     ? apf.xmldb.getNode(this.$tempsel) 
                     : selXml;
                 
                 sNode = this.getNextTraverse(node, true);
-                if (sNode) {
+                if (sNode && sNode != node) {
                     nodes = this.getTraverseNodes(sNode);
                     
                     do {

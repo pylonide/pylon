@@ -440,14 +440,14 @@ apf.uirecorder.ui = {
         console.dir(tests);
     },
     
-    getTests : function(){
+    getTests : function(compiled){
         var model = apf.uirecorder.capture.model;
         var nodes = model.queryNodes("test");
         
         var sp = new SeleniumPlayer();
         sp.realtime = false;
         
-        var test, tests = [], actions, action, asserts, assert;
+        var test, tests = {}, actions, action, asserts, assert;
         for (var i = 0; i < nodes.length; i++) {
             actions = apf.queryNodes(nodes[i], "action");
             
@@ -458,11 +458,11 @@ apf.uirecorder.ui = {
                 
                 asserts = apf.queryNodes(actions[j], "assert");
                 for (var k = 0; k < asserts.length; k++) {
-                    assert = JSON.parse(asserts[i].getAttribute("json")) || {};
+                    assert = JSON.parse(asserts[k].getAttribute("json")) || {};
                     
-                    assert.element = JSON.parse(asserts[i].getAttribute("element"))
-                    assert.name    = JSON.parse(asserts[i].getAttribute("value"))
-                    assert.value   = asserts[i].getAttribute("value"); //@todo potential problem with newlines in content
+                    assert.element = JSON.parse(asserts[k].getAttribute("element"))
+                    assert.value   = JSON.parse(asserts[k].getAttribute("value")) //@todo potential problem with newlines in content
+                    assert.name    = asserts[k].getAttribute("name"); 
                     
                     action.properties.push(assert);
                 }
@@ -470,7 +470,7 @@ apf.uirecorder.ui = {
                 test.push(action);
             }
             
-            tests.push(sp.compile(test));
+            tests[nodes[i].getAttribute("name")] = !compiled ? test : sp.compile(test);
         }
         
         return tests;

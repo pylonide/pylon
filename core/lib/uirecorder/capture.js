@@ -398,7 +398,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
         var target = amlNode;
         if (!target || this.shouldIgnoreEvent(null, target)) 
             return;
-            
+
         var prop;
         this.lastStream.properties.push(prop = {
             name        : prop,

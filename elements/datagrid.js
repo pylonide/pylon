@@ -552,7 +552,7 @@ apf.datagrid = function(struct, tagName){
         this.$getNewContext("item");
         var oRow = this.$getLayoutNode("item");
         oRow.setAttribute("id", Lid);
-        
+
         //@todo if treearch
         oRow.setAttribute("class", oRow.getAttribute("class") + " "  
             + treeState[state] + " item" + this.$uniqueId);//"width:" + (totalWidth+40) + "px");
