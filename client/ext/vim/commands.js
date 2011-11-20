@@ -25,18 +25,32 @@ var repeat = function repeat(fn, count, args) {
 };
 
 var actions = {
-    "z": function(editor, range, count, param) {
-        switch (param) {
-            case "z":
-                editor.centerSelection();
-                break;
+    "z": {
+        param: true,
+        fn: function(editor, range, count, param) {
+            switch (param) {
+                case "z":
+                    editor.centerSelection();
+                    break;
+            }
         }
     },
-    "r": function(editor, range, count, param) {
-        param = util.toRealChar(param);
-        if (param && param.length) {
-            repeat(function() { editor.insert(param); }, count || 1);
-            editor.navigateLeft();
+    "r": {
+        param: true,
+        fn: function(editor, range, count, param) {
+            param = util.toRealChar(param);
+            if (param && param.length) {
+                repeat(function() { editor.insert(param); }, count || 1);
+                editor.navigateLeft();
+            }
+        }
+    },
+    // Not truly like Vim's "VISUAL LINE" mode. Needs improvement.
+    "shift-v": {
+        fn: function(editor, range, count, param) {
+            onVisualMode = true;
+            editor.selection.selectLine();
+            editor.selection.selectLeft();
         }
     }
 };
@@ -96,12 +110,19 @@ var inputBuffer = exports.inputBuffer = {
             this.exec(editor, alias[char]);
         }
         else if (actions[char] && this.isAccepting(ACTION)) {
-            this.waitForParam({
+            var actionObj = {
                 action: {
-                    fn: actions[char],
+                    fn: actions[char].fn,
                     count: this.getCount(),
                 }
-            });
+            };
+
+            if (actions[char].param) {
+                this.waitForParam(actionObj);
+            }
+            else {
+                this.exec(editor, actionObj)
+            }
         }
         else if (this.operator) {
             this.exec(editor, { operator: this.operator }, char);
@@ -220,16 +241,11 @@ var commands = exports.commands = {
             editor.navigateLineEnd();
             util.insertMode(editor);
         }
-    },
-    visual: {
-        exec: function visual(editor) {
-            onVisualMode = true;
-        }
     }
 };
 
 operators.v = function(editor, range, count, param) {
-    commands.visual.exec(editor);
-}
+    onVisualMode = true;
+};
 });
 

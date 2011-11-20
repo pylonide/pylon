@@ -55,6 +55,7 @@ var removeCommands = function removeCommands(editor, commands) {
 };
 
 var enableVim = function enableVim() {
+    console.log("Enable")
     if (editors.currentEditor) {
         var editor = editors.currentEditor.ceEditor.$editor;
 
@@ -83,17 +84,25 @@ module.exports = ext.register("ext/vim/vim", {
     alone   : true,
 
     hook : function() {
-        var self = this;
         var menuItem = ide.mnuEdit.appendChild(new apf.item({
             caption: "Vim mode",
             type: "check",
             checked : "[{require('ext/settings/settings').model}::editors/code/@vimmode]",
-            onclick: function () {
+            onclick: function() {
                 settings.save();
             }
         }));
-        this.nodes.push(ide.mnuEdit.appendChild(new apf.divider()), menuItem);
+        this.nodes.push(ide.mnuEdit.appendChild(menuItem));
 
+        var self = this;
+        // var _oldChecked = menuItem.$propHandlers.checked;
+        // menuItem.$propHandlers.checked = function(v) {
+        //     _oldChecked(v);
+        //     self.toggle(v);
+        // };
+
+        // `prop.checked` gets executed many times.
+        // I filed the bug at https://github.com/ajaxorg/apf/issues/28
         menuItem.addEventListener("prop.checked", function(e) {
             self.toggle(e.value);
         });
@@ -134,5 +143,4 @@ module.exports = ext.register("ext/vim/vim", {
         this.nodes = [];
     }
 });
-
 });
