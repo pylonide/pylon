@@ -13,7 +13,7 @@ var settings = require("ext/settings/settings");
 var panels = require("ext/panels/panels");
 var fs = require("ext/filesystem/filesystem");
 var newresource = require("ext/newresource/newresource");
-var newresource = require("ext/noderunner/noderunner");
+var noderunner = require("ext/noderunner/noderunner");
 var testpanel = require("ext/testpanel/testpanel");
 var template = require("text!ext/nodeunit/nodeunit.template");
 
@@ -89,12 +89,15 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
             var next    = e.next;
             
             ide.addEventListener("socketMessage", function(e){
+                //@todo testpanel.setLog(node, "started");
+                
                 if (e.message.type.indexOf("node-exit") > -1) {
                     next();
                     ide.removeEventListener("socketMessage", arguments.callee);
                 }
             });
             
+            testpanel.setLog(node, "started");
             noderunner.run(xmlNode.getAttribute("path"), [], false);
         });
         

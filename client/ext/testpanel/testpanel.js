@@ -123,7 +123,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     },
     
     parseFile : function(xmlNode){
-        ide.dispatchEvent("expand.test." + xmlNode.getAttribute("type"), {
+        ide.dispatchEvent("test.expand." + xmlNode.getAttribute("type"), {
             xmlNode : xmlNode
         });
         
@@ -133,21 +133,29 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     run : function(node){
         var _self = this;
         
-        function finish(){
+        var finish = function(){
             //done
+        }
+        
+        if (node.tagName == "test")
+            node = node.parentNode;
+        
+        var cleanNodes = node.selectNodes(".//file|.//test|.//assert");
+        for (var k = 0; k < cleanNodes.length; k++) {
+            apf.xmldb.removeAttribute(cleanNodes[k], "status");
+        }
+        var errorNodes = node.selectNodes(".//error");
+        for (var k = 0; k < errorNodes.length; k++) {
+            apf.xmldb.removeNode(errorNodes[k]);
         }
         
         if (node.tagName == "repo") {
             var nodes = node.selectNodes("file");
             var i = 0;
             
-            
-            for (var k = 0; k < nodes.length; k++) {
-                apf.xmldb.removeAttribute(nodes[k], "state");
-            }
-            
-            function next(){
+            var next = function(){
                 if (nodes[i]) {
+                    _self.setLog(nodes[i], "connecting");
                     ide.dispatchEvent("test.run." + nodes[i].getAttribute("type"), {
                         xmlNode : nodes[i++],
                         next    : next
@@ -160,19 +168,30 @@ module.exports = ext.register("ext/testpanel/testpanel", {
             next();
         }
         else if (node.tagName == "file") {
+            _self.setLog(node, "connecting");
             apf.xmldb.removeAttribute(node, "state");
             ide.dispatchEvent("test.run." + node.getAttribute("type"), {
                 xmlNode : node,
-                next    : finish()
+                next    : finish
             });
         }
-        else if (node.tagName == "test") {
-            apf.xmldb.removeAttribute(node, "state");
-            ide.dispatchEvent("test.run." + node.parentNode.getAttribute("type"), {
-                xmlNode : node.parentNode,
-                next    : finish()
-            });
-        }
+    },
+    
+    stop : function(){
+        ide.dispatchEvent("test.stop");
+    },
+    
+    setPass : function(xmlNode, msg){
+        apf.xmldb.setAttribute(xmlNode, "status", 1);
+        apf.xmldb.setAttribute(xmlNode, "status-message", msg || "");
+    },
+    setError : function(xmlNode, msg){
+        apf.xmldb.setAttribute(xmlNode, "status", 0);
+        apf.xmldb.setAttribute(xmlNode, "status-message", msg || "");
+    },
+    setLog : function(xmlNode, msg){
+        apf.xmldb.setAttribute(xmlNode, "status", -1);
+        apf.xmldb.setAttribute(xmlNode, "status-message", msg || "");
     },
     
     toggleSubmodules : function(value){

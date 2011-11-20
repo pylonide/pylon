@@ -24,17 +24,35 @@
         </a:menu>
         <a:vbox anchors = "0 0 0 0">
             <a:bar skin="basic" style="background-color:#333;padding:2px;border-bottom:1px solid #222">
-                <a:splitbutton
-                  id       = "btnNewTestType"
-                  icon     = "run.png"
-                  caption  = "New Test"
-                  onclick  = ""
-                  submenu  = "mnuTestNew" />
-                <a:menu id="mnuTestNew">
+                <a:hbox>
+                    <a:splitbutton
+                      id       = "btnNewTestType"
+                      icon     = "application_add.png"
+                      caption  = "New"
+                      onclick  = ""
+                      submenu  = "mnuTestNew" />
+                    <a:menu id="mnuTestNew">
+                        
+                    </a:menu>
                     
-                </a:menu>
+                    <!--a:divider skin="c9-divider-double" /-->
+                    
+                    <a:button
+                      icon     = "run.png"
+                      caption  = "Run"
+                      onclick  = "require('ext/testpanel/testpanel').run(dgTestProject.selected);"
+                      disabled = "{!!!dgTestProject.selected}" 
+                      skin     = "c9-toolbarbutton" />
                 
-                <a:filler />
+                    <a:button
+                      icon     = "stop.png"
+                      caption  = "stop"
+                      skin     = "c9-toolbarbutton"
+                      onclick  = "require('ext/testpanel/testpanel').stop()"
+                      disabled = "" />
+                
+                    <a:filler />
+                </a:hbox>
             </a:bar>
             <!--a:tree 
               id            = "trTests" 
@@ -69,18 +87,33 @@
               flex      = "1"
               options   = "size"
               model     = "mdlTests"
-              each      = "[repo|file|test|assert]"
+              each      = "[repo|file|test|assert|error]"
               style     = "border:4px solid #333"
-              multiselect   = "true"
-              contextmenu   = "mnuTestContext"
-              empty-message = "No tests yet">
-                <a:column caption="Name" width="100%" value="[@name]" tree="1" icon="folder.png" />
-                <a:column caption="Status" width="70" value="[@value]" />
+              multiselect    = "true"
+              startcollapsed = "true"
+              contextmenu    = "mnuTestContext"
+              empty-message  = "No tests yet">
+                <a:column caption="Name" width="100%" tree="1" icon="folder.png"><?lm
+                    if (localName() == "error")
+                        <span style='color:red'>[@name]</span>
+                    else
+                        [@name]
+                ?></a:column>
+                <a:column caption="Status" width="110"><?lm
+                    if ([@status] === '0')
+                        <span style='color:red'>\[[@status-message]\]</span>
+                    else if ([@status] == '1')
+                        <span style='color:green'>\[PASS{[@status-message] and " [@status-message]"}\]</span>
+                    else if ([@status] == '-1')
+                        <span>\[{[@status-message].uCaseFirst()}\]</span>
+                    else
+                        "";
+                ?></a:column>
                 
                 <a:insert match="[file]" get="{return require('ext/testpanel/testpanel').parseFile(xmlNode)}" />
                 
                 <a:expanded match="[test]" />
-                <!--a:expanded match="[repo[1]]" /-->
+                <a:expanded match="{apf.getChildNumber(%[repo]) == 1}" />
             </a:datagrid>
             
             <!--

@@ -25,6 +25,7 @@ var ShellSeleniumPlugin = module.exports = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
     this.name = "selenium";
+    this.jobs = [];
 };
 
 sys.inherits(ShellSeleniumPlugin, Plugin);
@@ -61,47 +62,7 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
             return;
         }
         else {
-            wdInit({
-                /*host: "ondemand.saucelabs.com",
-                port: 80,
-                username: username,
-                accessKey: "4681d68d-46eb-4d17-b09b-1cb4575796ad",*/
-                desired: { 
-                    name: 'cloud9',
-                    browserName: "chrome", //firefox
-                    version: '',
-                    platform: 'VISTA'
-                },
-                url: "http://127.0.0.1:5000/workspace/support/apf/tabs.html",
-                waitTimeout: 2000
-            }, {
-                pass : function(msg, data){
-                    _self.sendResult(0, message.command, {
-                        code: 1,
-                        argv: message.argv,
-                        err: null,
-                        out: msg,
-                        data: data
-                    });
-                },
-                error : function(msg, data){
-                    _self.sendResult(0, message.command, {
-                        code: 2,
-                        argv: message.argv,
-                        err: null,
-                        out: msg,
-                        data: data
-                    });
-                },
-                log : function(data){
-                    _self.sendResult(0, message.command, {
-                        code: 3,
-                        argv: message.argv,
-                        err: null,
-                        out: data
-                    });
-                }
-            }, function(err, browser, jobId){
+            function runTest(err, browser, jobId){
                 if (err) {
                     _self.sendResult(0, message.command, {
                         code: 0,
@@ -113,9 +74,23 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                 else {
 //var args = ["var elId0 = browser.findApfElement({'id':'list1','xml':'item[1]','htmlXpath':'SPAN[1]/U[1]'});browser.moveTo(elId0, 27, 8);browser.buttonDown();var elId1 = browser.findApfElement({'id':'list2'});browser.moveTo(elId1, 117, 0);browser.buttonUp();browser.assert('list1.length', '3');browser.assert('list2.length', '2');hold(63);browser.assert('list1.selection', '[model24.queryNode(\"item[1]\")]');browser.assert('list1.value', '\"Item 2\"');hold(6);browser.assert('list2.selection', '[model26.queryNode(\"item[1]\")]');"];
 
-                    var code = args.join(" ") 
-                        + ";browser.close();browser.quit();callback();";
+                    if (!_self.jobs[jobId]) {
+                        _self.sendResult(0, message.command, {
+                            code: 5,
+                            argv: message.argv,
+                            err: null,
+                            out: "",
+                            job: jobId
+                        });
                         
+                        _self.jobs[jobId] = browser;
+                    }
+
+                    var code = args.join(" ") 
+                        + (message.close 
+                            ? ";browser.close();browser.quit()"
+                            : "") + ";callback();";
+
                     try {
                         var js = __oni_rt.c1.compile(code);//, {filename: filename});
                     }
@@ -131,8 +106,13 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                                 .replace('%t', e.stack)
                         });
                         
-                        var js = __oni_rt.c1.compile("browser.close();browser.quit()");//, {filename: filename});
+                        var js = __oni_rt.c1.compile((message.close 
+                            ? "browser.close();browser.quit()"
+                            : "") + ";callback();");
                     }
+                    
+                    if (message.close)
+                        _self.jobs[jobId] = null;
                     
                     //@todo How can I pass a callback???
                     (new Function('browser', 'callback', js))(browser, function(){
@@ -141,12 +121,63 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                             argv: message.argv,
                             err: null,
                             out: "https://saucelabs.com/rest/" + username 
-                                + "/jobs/" + jobId + "/results/video.flv"
+                                 + "/jobs/" + jobId + "/results/video.flv"
                         });
                     });
                 }
-            });
+            }
+            
+            var browser;
+            if (message.job)
+                browser = _self.jobs[message.job];
+            
+            if (browser)
+                runTest(null, browser, message.job);
+            else {
+                wdInit({
+                    /*host: "ondemand.saucelabs.com",
+                    port: 80,
+                    username: username,
+                    accessKey: "4681d68d-46eb-4d17-b09b-1cb4575796ad",*/
+                    desired: { 
+                        name: 'cloud9',
+                        browserName: "chrome", //firefox
+                        version: '',
+                        platform: 'VISTA'
+                    },
+                    url: "http://127.0.0.1:5000/workspace/support/apf/tabs.html",
+                    waitTimeout: 2000
+                }, {
+                    pass : function(msg, data){
+                        _self.sendResult(0, message.command, {
+                            code: 1,
+                            argv: message.argv,
+                            err: null,
+                            out: msg,
+                            data: data
+                        });
+                    },
+                    error : function(msg, data){
+                        _self.sendResult(0, message.command, {
+                            code: 2,
+                            argv: message.argv,
+                            err: null,
+                            out: msg,
+                            data: data
+                        });
+                    },
+                    log : function(data){
+                        _self.sendResult(0, message.command, {
+                            code: 3,
+                            argv: message.argv,
+                            err: null,
+                            out: data
+                        });
+                    }
+                }, runTest);
+            }
         }
+        
         /*
         <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" width="640" height="375" id="FlvPlayer" align="middle">
 <param name="allowScriptAccess" value="sameDomain" />

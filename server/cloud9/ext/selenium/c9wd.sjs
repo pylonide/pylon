@@ -18,7 +18,7 @@ function wdInit(options, assert, callback) {
         
             browser.constructor.prototype[cmd] = function(){
                 if (cmd != "eval") 
-                    console.log(cmd);
+                    assert.log(cmd);
                 
                 waitfor(err, res) {
                     var args = Array.prototype.slice.call(arguments);
@@ -55,7 +55,7 @@ function wdInit(options, assert, callback) {
     
     browser.execute("_$findApfElement = function (options){
         var result;
-    
+
         if (options.eval) {
             result = eval(options.eval);
         }
