@@ -11,7 +11,6 @@ define(function(require, exports, module) {
 var save;
 var cmds = module.exports = {
     w: function(editor, data) {
-        console.log(arguments)
         if (!save)
             save = require("ext/save/save");
 

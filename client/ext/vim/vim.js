@@ -54,12 +54,9 @@ var removeCommands = function removeCommands(editor, commands) {
     });
 };
 
-var defaultKBHandler;
 var enableVim = function enableVim() {
     if (editors.currentEditor) {
         var editor = editors.currentEditor.ceEditor.$editor;
-        // Save default KB handler to use it in case we disable vim
-        defaultKBHandler = editor.getKeyboardHandler();
 
         addCommands(editor, commands);
         editor.setKeyboardHandler(handler);
@@ -72,7 +69,7 @@ var disableVim = function() {
         var editor = editors.currentEditor.ceEditor.$editor;
 
         removeCommands(editor, commands);
-        defaultKBHandler && editor.setKeyboardHandler(defaultKBHandler);
+        editor.setKeyboardHandler(null);
         commands.start.exec(editor);
     }
 };

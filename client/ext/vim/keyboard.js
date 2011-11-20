@@ -12,7 +12,7 @@ var matchChar = function(buffer, hashId, key, symbolicName) {
     // catch that input as well.
     // Otherwise, we let the input got through.
     var matched = ((hashId === 0) || (((hashId === 1) || (hashId === 4)) && key.length === 1));
-    console.log("INFO", buffer, hashId, key, symbolicName, matched)
+    //console.log("INFO", buffer, hashId, key, symbolicName, matched)
 
     if (matched) {
         var editor = editors.currentEditor.ceEditor.$editor;
@@ -28,7 +28,7 @@ var matchChar = function(buffer, hashId, key, symbolicName) {
 
 var inIdleState = function() {
     if (cmds.inputBuffer.idle) {
-    return true;
+        return true;
     }
 
     return false;
@@ -54,7 +54,7 @@ var states = exports.states = {
             exec: "undo"
         },
         {
-            regex:  "^i$",
+            regex: "^i$",
             match: inIdleState,
             exec: "start",
             then: "insertMode"
@@ -76,10 +76,6 @@ var states = exports.states = {
             match: inIdleState,
             exec: "appendEnd",
             then: "insertMode"
-        },
-        {
-            regex:  [ "backspace" ],
-            exec:   "moveBack",
         },
         {
             comment: "Catch some keyboard input to stop it here",
