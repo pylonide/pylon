@@ -11,7 +11,6 @@ var NUMBER    = 1;
 var OPERATOR  = 2;
 var MOTION    = 3;
 var ACTION    = 4;
-var SELECTION = 5;
 
 //var NORMAL_MODE = 0;
 //var INSERT_MODE = 1;
@@ -64,7 +63,6 @@ var inputBuffer = exports.inputBuffer = {
     // Types
     operator: null,
     motion: null,
-    selection: null,
 
     push: function(editor, char) {
         this.idle = false;
@@ -93,7 +91,6 @@ var inputBuffer = exports.inputBuffer = {
 
             var ctx = {
                 operator: this.operator,
-                selection: this.selection,
                 motion: {
                     char: char,
                     count: this.getCount()
@@ -192,7 +189,6 @@ var inputBuffer = exports.inputBuffer = {
 
     reset: function() {
         this.operator = null;
-        this.selection = null;
         this.motion = null;
         this.currentCount = "";
 
