@@ -233,4 +233,10 @@ module.exports = {
         }
     }
 };
+
+module.exports.backspace = module.exports.left = module.exports.h;
+module.exports.right = module.exports.l;
+module.exports.up = module.exports.k;
+module.exports.down = module.exports.j;
+
 });
