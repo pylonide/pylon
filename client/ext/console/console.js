@@ -24,7 +24,6 @@ var trieCommands;
 var commands   = {};
 var cmdTries   = {};
 var cmdFetched = false;
-//var cmdHistory = [];
 var cmdBuffer  = "";
 var lastSearch = null;
 var parser = new Parser();
@@ -41,29 +40,28 @@ var cmdHistory = {
     _index: 0,
 
     push: function(cmd) {
-        this.history.push(cmd);
+        this._history.push(cmd);
+        this._index += 1;
     },
     length: function() {
-        return this.history.length;
+        return this._history.length;
     },
     getNext: function() {
-        var cmd = this.history[this.index];
+        this._index += 1;
+        var cmd = this._history[this._index] || "";
 
-        var maxLen = this.history.length - 1;
-        this.index += 1;
-        if (this.index > maxLen)
-            this.index = maxLen;
+        var maxLen = this._history.length - 1;
+        if (this._index > maxLen)
+            this._index = maxLen;
 
         return cmd;
     },
     getPrev: function() {
-        var cmd = this.history[this.index];
+        this._index -= 1;
+        if (this._index < 0)
+            this._index = 0;
 
-        this.index -= 1;
-        if (this.index < 0)
-            this.index = 0;
-
-        return cmd;
+        return this._history[this._index];
     }
 };
 
@@ -148,7 +146,7 @@ module.exports = ext.register("ext/console/console", {
     },
 
     keyupHandler: function(e) {
-        if (actionCodes.indexOf(e.keyCode === -1)) {
+        if (actionCodes.indexOf(e.keyCode) === -1) {
             return this.commandTextHandler(e);
         }
     },
@@ -167,24 +165,24 @@ module.exports = ext.register("ext/console/console", {
 
         parser.parseLine(line);
 
-        var newVal = "";
         var code = e.keyCode;
         var hisLength = cmdHistory.length();
+        var hintsVisible = Hints.visible();
 
         if (code === KEY_UP) { //UP
-            if (Hints.visible()) {
+            if (hintsVisible) {
                 Hints.selectUp();
             }
             else if (hisLength) {
-                newVal = cmdHistory.getPrev();
+                var newVal = cmdHistory.getPrev();
 
                 if (newVal)
                     e.currentTarget.setValue(newVal);
             }
             return false;
         }
-        else if (code == KEY_DOWN) { //DOWN
-            if (Hints.visible()) {
+        else if (code === KEY_DOWN) { //DOWN
+            if (hintsVisible) {
                 Hints.selectDown();
             }
             else if (hisLength) {
@@ -192,18 +190,20 @@ module.exports = ext.register("ext/console/console", {
             }
             return false;
         }
-        else if (code == KEY_ESC && Hints.visible()) {
+        else if (code === KEY_ESC && hintsVisible) {
             return Hints.hide();
         }
         else if (code != KEY_CR && code != KEY_TAB) {
-            this.autoComplete(e, parser, 2);
-            return;
+            return this.autoComplete(e, parser, 2);
         }
 
-        if (Hints.visible() && Hints.selected())
+        if (hintsVisible && Hints.selected())
             return Hints.click(Hints.selected());
 
-        if (parser.argQL[0]) {
+        if (parser.argv.length === 0) {
+            // no commmand line input
+        }
+        else if (parser.argQL[0]) {
             // first argument quoted -> error
             this.write("Syntax error: first argument quoted.");
         }
@@ -215,7 +215,7 @@ module.exports = ext.register("ext/console/console", {
 
             cmdHistory.push(line);
             cmdBuffer = null;
-            e.currentTarget.setValue(newVal);
+            e.currentTarget.setValue("");
             Hints.hide();
 
             Logger.log(this.getPrompt() + " " + parser.argv.join(" "), "prompt");
@@ -244,7 +244,6 @@ module.exports = ext.register("ext/console/console", {
                 }
                 else {
                     var rest = parser.argv.join(" ").trim();
-
                     if (Output.general[rest]) {
                         this.write(Output.general[rest]);
                     }
@@ -256,17 +255,17 @@ module.exports = ext.register("ext/console/console", {
                             line = line.replace(bandRE, "");
                         }
 
+                        ide.dispatchEvent("track_action", {
+                            type: "console",
+                            cmd: cmd
+                        });
+
                         var data = {
                             command: cmd,
                             argv: parser.argv,
                             line: line,
                             cwd: this.getCwd()
                         };
-
-                        ide.dispatchEvent("track_action", {
-                            type: "console",
-                            cmd: cmd
-                        });
 
                         if (ext.execCommand(cmd, data) !== false) {
                             var evtName = "consolecommand." + cmd;
@@ -284,8 +283,8 @@ module.exports = ext.register("ext/console/console", {
     },
 
     onMessage: function(e) {
-        var res,
-            message = e.message;
+        var res;
+        var message = e.message;
 
         if (message.type == "node-data")
             return Logger.logNodeStream(message.data, message.stream, true);
@@ -306,11 +305,13 @@ module.exports = ext.register("ext/console/console", {
                 break;
             case "internal-autocomplete":
                 res = message.body;
-                var base = res.base || "",
-                    blen = base.length;
+                var base = res.base || "";
+                var blen = base.length;
                 lastSearch = res;
                 lastSearch.trie = new Trie();
-                for (var m, i = 0, l = res.matches.length; i < l; ++i) {
+
+                var m;
+                for (var i = 0, l = res.matches.length; i < l; ++i) {
                     m = res.matches[i];
                     lastSearch.trie.add(m);
                     if (base && m.indexOf(base) === 0)
@@ -328,30 +329,24 @@ module.exports = ext.register("ext/console/console", {
             case "mkdir":
                 res = message.body;
                 ide.dispatchEvent("treecreate", {
-                    type : "folder",
-                    path : this.$cwd + "/" + res.argv[res.argv.length - 1]
+                    type: "folder",
+                    path: this.$cwd + "/" + res.argv[res.argv.length - 1]
                 });
                 break;
             case "error":
-                //console.log("error: ", message.body);
                 Logger.log(message.body);
                 Logger.log("", "divider");
                 break;
-            /*case "git":
-            case "npm":
-            case "pwd":
-            case "hg":
-            case "ls":*/
             default:
                 res = message.body;
-                if (!res)
-                    break;
-                if (res.out)
-                    Logger.logNodeStream(res.out);
-                if (res.err)
-                    Logger.logNodeStream(res.err);
-                if (res.code) // End of command
-                    Logger.log("", "divider");
+                if (res) {
+                    if (res.out)
+                        Logger.logNodeStream(res.out);
+                    if (res.err)
+                        Logger.logNodeStream(res.err);
+                    if (res.code) // End of command
+                        Logger.log("", "divider");
+                }
                 break;
         }
 
@@ -361,11 +356,12 @@ module.exports = ext.register("ext/console/console", {
     setPrompt: function(cwd) {
         if (cwd)
             this.$cwd = cwd.replace(ide.workspaceDir, ide.davPrefix);
+
         return this.getPrompt();
     },
 
     getPrompt: function() {
-        if(!this.username)
+        if (!this.username)
             this.username = (ide.workspaceId.match(/user\/(\w+)\//) || [,"guest"])[1];
 
         return "[" + this.username + "@cloud9]:" + this.$cwd + "$";
@@ -374,10 +370,11 @@ module.exports = ext.register("ext/console/console", {
     subCommands: function(cmds, prefix) {
         if (!cmdTries[prefix]) {
             cmdTries[prefix] = {
-                trie    : new Trie(),
+                trie: new Trie(),
                 commands: cmds
             };
         }
+
         for (var cmd in cmds) {
             cmdTries[prefix].trie.add(cmd);
             if (cmds[cmd].commands)
@@ -406,26 +403,24 @@ module.exports = ext.register("ext/console/console", {
         if (e.keyCode == 8 || e.keyCode == 46)
             lastSearch = null;
 
-        var root,
-            list      = [],
-            cmds      = commands,
-            textbox   = e.currentTarget,
-            val       = textbox.getValue(),
-            len       = parser.argv.length,
-            base      = parser.argv[0],
-            cursorPos = 0;
+        var cmds = commands;
+        var textbox = e.currentTarget;
+        var val = textbox.getValue();
+        var cursorPos = 0;
+
         if (!apf.hasMsRangeObject) {
             var input = textbox.$ext.getElementsByTagName("input")[0];
             cursorPos = input.selectionStart;
         }
         else {
-            var range = document.selection.createRange(),
-                r2    = range.duplicate();
+            var range = document.selection.createRange();
+            var r2    = range.duplicate();
+
             r2.expand("textedit");
             r2.setEndPoint("EndToStart", range);
             cursorPos = r2.text.length;
         }
-        --cursorPos;
+        cursorPos -= 1;
 
         if (!cmdFetched) {
             // the 'commandhints' command retreives a list of available commands
@@ -438,23 +433,29 @@ module.exports = ext.register("ext/console/console", {
             }));
         }
 
-        if (typeof parser.argv[0] != "string")
+        var base = parser.argv[0];
+        if (typeof base != "string")
             return Hints.hide();
 
         // check for commands in first argument when there is only one argument
         // provided, or when the cursor on the first argument
-        if (len == 1 && cursorPos < parser.argv[0].length) {
-            root = trieCommands.find(parser.argv[0]);
+        var root;
+        var list = [];
+        var len = parser.argv.length;
+        if (len === 1 && cursorPos < base.length) {
+            root = trieCommands.find(base);
             if (root)
                 list = root.getWords();
         }
         else {
-            var idx, needle, cmdTrie,
-                i = len - 1;
+            var idx, needle, cmdTrie;
+            var i = len - 1;
+
             for (; i >= 0; --i) {
                 idx = val.indexOf(parser.argv[i]);
                 if (idx === -1) //shouldn't happen, but yeah...
                     continue;
+
                 if (cursorPos >= idx || cursorPos <= idx + parser.argv[i].length) {
                     needle = i;
                     break;
@@ -468,7 +469,6 @@ module.exports = ext.register("ext/console/console", {
                 --needle
 
             if (cmdTrie) {
-                //console.log("needle we're left with: ", needle, len, parser.argv[needle]);
                 base = parser.argv[needle];
                 root = cmdTrie.trie.find(base);
                 if (root) {
