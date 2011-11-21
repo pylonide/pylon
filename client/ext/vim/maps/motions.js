@@ -154,10 +154,10 @@ module.exports = {
         },
         sel: function(editor, range, count, param) {
             count = parseInt(count, 10);
-            if (!count && count !== 0) {// Stupid JS
+            if (!count && count !== 0) { // Stupid JS
                 count = editor.session.getLength();
             }
-            editor.selectTo(count, 0);
+            editor.selection.selectTo(count, 0);
         }
     },
     "ctrl-d": {
