@@ -23,10 +23,13 @@
             <a:item type="check" checked="true" onclick="
                 require('ext/testpanel/testpanel').toggleSubmodules(this.value);
             ">Show Submodules</a:item>
+            <a:item type="check" checked="true" onclick="
+                require('ext/testpanel/testpanel').toggleExpandTests(this.value);
+            ">Auto Expand Tests</a:item>
         </a:menu>
-        <a:vbox anchors = "0 0 0 0">
+        <a:vbox anchors = "0 0 0 0" id="vboxTestPanel" style="background:#333">
             <a:bar skin="basic" style="background-color:#333;padding:2px;border-bottom:1px solid #222">
-                <a:hbox>
+                <a:hbox id="barTestTools">
                     <a:splitbutton
                       id       = "btnNewTestType"
                       icon     = "application_add.png"
@@ -54,30 +57,11 @@
                       caption  = "stop"
                       skin     = "c9-toolbarbutton"
                       onclick  = "require('ext/testpanel/testpanel').stop()"
-                      disabled = "{!stTestRun.active}" />
+                      disabled = "{!stTestRun.active or stTestRun.stopping}" />
                 
                     <a:filler />
                 </a:hbox>
             </a:bar>
-            <!--a:tree 
-              id            = "trTests" 
-              canrename     = "false" 
-              border        = "0" 
-              simpledata    = "true"
-              reselectable  = "true" 
-              autoselect    = "false"
-              flex          = "1" 
-              empty-message = "No tests"
-              model         = "mdlTests"
-            >
-                <a:each match="[repo|testfile|test|assert]">
-                    <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
-                    <a:caption value="[@name]" />
-                    <a:icon match2="[folder|project]" value="folder.png" />
-                </a:each>
-    
-                <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
-            </a:tree-->
             
             <a:model id="mdlTests">
                 <data>
@@ -93,18 +77,18 @@
               options   = "size"
               model     = "mdlTests"
               each      = "[repo|file|test|assert|error]"
-              style     = "border:4px solid #333"
+              margin    = "4"
               multiselect    = "true"
               startcollapsed = "true"
               contextmenu    = "mnuTestContext"
               empty-message  = "No tests yet">
-                <a:column caption="Name" width="100%" tree="1" icon="{require('ext/testpanel/testpanel').getIcon(%[.])}"><?lm
+                <a:column caption="Name" width="60%" tree="1" icon="{require('ext/testpanel/testpanel').getIcon(%[.])}"><?lm
                     if (localName() == "error")
                         <span style='color:red'>[@name]</span>
                     else
                         [@name]
                 ?></a:column>
-                <a:column caption="Status" width="110"><?lm
+                <a:column caption="Status" width="40%"><?lm
                     if ([@status] === '0')
                         <span style='color:red'>\[[@status-message]\]</span>
                     else if ([@status] == '1')
@@ -117,7 +101,7 @@
                 
                 <a:insert match="[file]" get="{return require('ext/testpanel/testpanel').parseFile(xmlNode)}" />
                 
-                <a:expanded match="[test]" />
+                <a:expanded match="[test]" id="expTestRule" />
                 <a:expanded match="[file[test]]" />
                 <a:expanded match="{apf.getChildNumber(%[repo]) == 1}" />
             </a:datagrid>
@@ -127,7 +111,7 @@
                       Remove could be test and assert
             -->
             <a:menu id="mnuTestContext">
-                <a:item match="[test|file|repo[file]]">Run Test(s)</a:item>
+                <a:item match="[test|file|repo[file]]">Run Tests</a:item>
                 <a:item match="[file]">Edit</a:item>
                 <a:divider />
                 <a:item match="[file]">Remove</a:item>

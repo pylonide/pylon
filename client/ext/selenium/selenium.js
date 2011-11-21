@@ -60,26 +60,13 @@ module.exports = ext.register("ext/selenium/selenium", {
                 onclick : function(){
                     _self.createAndOpenTest();
                 }
-            }))
-            
-            /*mnuRunSettings.appendChild(new apf.item({
-                caption : "Selenium",
-                submenu : "mnuRunSelenium"
             })),
             
-            apf.document.body.appendChild(new apf.menu({
-                id : "mnuRunSelenium",
-                childNodes : [
-                    new apf.item({
-                        type : "radio",
-                        caption : "Local"
-                    }),
-                    new apf.item({
-                        type : "radio",
-                        caption : "Sauce Labs"
-                    })
-                ]
-            }))*/
+            vboxTestPanel.appendChild(new apf.splitter({
+                visible : "{flSeleniumMovie.visible}"
+            })),
+            
+            vboxTestPanel.appendChild(flSeleniumMovie)
         );
         
         var nodes = seleniumSettings.childNodes;
@@ -112,18 +99,14 @@ module.exports = ext.register("ext/selenium/selenium", {
             _self.reloadTestFile(xmlNode);
         });
         
-        var stop = false;
+        ide.addEventListener("test.hardstop", function(e){
+            //@todo clean up all events
+        });
+        
         ide.addEventListener("test.stop", function(e){
-            stop = true;
-            
-            var data = {
-                command : "selenium",
-                argv    : ["selenium"],
-                line    : "",
-                destroy : true,
-                job     : _self.jobId
-            };
-            ide.send(JSON.stringify(data));
+            if (!_self.running)
+                return;
+            _self.stop();
         });
         
         ide.addEventListener("test.icon.selenium", function(e){
@@ -135,11 +118,13 @@ module.exports = ext.register("ext/selenium/selenium", {
             var nextFile = e.next;
             var path     = fileNode.getAttribute("path");
             
+            _self.lastTestNode = fileNode;
+            
             var sp       = new SeleniumPlayer();
             sp.realtime  = false;
             
-            if (stop)
-                stop = false; //@todo this shouldn't happen
+            _self.runnning = true;
+            _self.stopping = false; //@todo this shouldn't happen
             _self.jobId = null;
             
             testpanel.setLog(fileNode, "reading");
@@ -171,14 +156,17 @@ module.exports = ext.register("ext/selenium/selenium", {
                     }
                     
                     apf.asyncForEach(tests, function(name, nextTest, i){
-                        if (stop) {
+                        if (_self.stopping) {
                             testpanel.setError(fileNode, "Test Cancelled");
+                            _self.stopped();
                             return;
                         }
                         
                         var actions  = testObject[name];
                         var script   = sp.compile(actions);
                         var testNode = nodes[i];
+                        
+                        _self.lastTestNode = testNode;
 
                         testpanel.setLog(fileNode, "running test " + (i + 1) + " of " + tests.length);
                         testpanel.setLog(testNode, "connecting");
@@ -209,7 +197,9 @@ module.exports = ext.register("ext/selenium/selenium", {
                                         testpanel.setError(fileNode, msg.err);
                                         
                                         ide.removeEventListener("socketMessage", arguments.callee);
-                                        if (!stop)
+                                        if (_self.stopping)
+                                            _self.stopped();
+                                        else
                                             nextFile();
                                         break;
                                     case 1: //PASS
@@ -235,6 +225,9 @@ module.exports = ext.register("ext/selenium/selenium", {
                                         testpanel.setPass(assertNode);
                                         break;
                                     case 2: //ERROR .data[input | match | measured]
+                                        if (_self.stopping)
+                                            return;
+                                            
                                         if (typeof msg.data == "string") {
                                             errorNode = testNode.ownerDocument
                                                 .createElement("error");
@@ -263,7 +256,7 @@ module.exports = ext.register("ext/selenium/selenium", {
                                             apf.xmldb.appendChild(testNode, assertNode);
                                         }
                                         
-                                        testpanel.setError(assertNode, "Value is"
+                                        testpanel.setError(assertNode, "Got: "
                                             + msg.data.measured);
                                         break;
                                     case 3: //LOG
@@ -275,11 +268,16 @@ module.exports = ext.register("ext/selenium/selenium", {
                                         else
                                             testpanel.setPass(testNode);
                                     
+                                        apf.xmldb.setAttribute(fileNode, "video", msg.video);
+                                        dgTestProject.reselect(); //Due to apf bug
+                                    
                                         ide.removeEventListener("socketMessage", arguments.callee);
                                         nextTest();
                                         break;
                                     case 5:
                                         _self.jobId = msg.job;
+                                        if (_self.cancelOnJobId)
+                                            _self.stop();
                                         break;
                                 }
                             }
@@ -288,9 +286,9 @@ module.exports = ext.register("ext/selenium/selenium", {
                         ide.send(JSON.stringify(data));
                         
                     }, function(){
-                        var nodes = apf.queryNodes(fileNode, "test[@status=0]|error");
+                        var nodes = apf.queryNodes(fileNode, "test[@status=0 or error]");
 
-                        if (stop) {
+                        if (_self.stopping) {
                             testpanel.setError(fileNode, "Test Cancelled");
                             return;
                         }
@@ -306,10 +304,10 @@ module.exports = ext.register("ext/selenium/selenium", {
                     testpanel.setError(fileNode,
                         "Could not load file contents: " + extra.message);
                     
-                    if (!stop)
+                    if (!_self.stopping)
                         nextFile();
                     
-                    stop = false;
+                    _self.stopping = false;
                 }
             });
         });
@@ -342,6 +340,38 @@ module.exports = ext.register("ext/selenium/selenium", {
         });
         
         this.enable();
+    },
+    
+    stop : function(){
+        this.stopping = true;
+            
+        if (!this.jobId) {
+            this.cancelOnJobId = true;
+            return;
+        }
+        this.cancelOnJobId = false;
+        
+        if (this.lastTestNode) {
+            testpanel.setLog(this.lastTestNode.tagName == "file"
+                ? this.lastTestNode
+                : this.lastTestNode.parentNode, "Stopping...");
+        }
+        
+        var data = {
+            command : "selenium",
+            argv    : ["selenium"],
+            line    : "",
+            destroy : true,
+            job     : this.jobId
+        };
+        ide.send(JSON.stringify(data));
+    },
+    
+    stopped : function(msg){
+        this.runnning = false;
+        this.stopping = false;
+        
+        testpanel.stopped();
     },
     
     createAndOpenTest : function(){

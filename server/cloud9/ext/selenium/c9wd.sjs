@@ -26,7 +26,8 @@ function wdInit(options, assert, callback) {
                     oldCmd.apply(this, args);
                 }
         
-                if (err) throw err;
+                if (err) 
+                    callback(err);
         
                 return res;
             };
@@ -135,7 +136,9 @@ function wdInit(options, assert, callback) {
     
     browser.findApfElement = function (options) {
         var elId = browser.eval("_$findApfElement(" + JSON.stringify(options) + ")");
-        
+        if (!elId)
+            return;
+            
         if (elId.message) {
             assert.error('\n \033[31m%s \x1b[31m%t\x1b[37m'
                 .replace('%s', "[ELEMENT NOT FOUND]")

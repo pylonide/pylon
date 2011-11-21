@@ -17,6 +17,17 @@ var noderunner = require("ext/noderunner/noderunner");
 var testpanel = require("ext/testpanel/testpanel");
 var template = require("text!ext/nodeunit/nodeunit.template");
 
+function escapeXpathString(name){
+    if (name.indexOf('"') > -1) {
+        var out = [], parts = name.split('"');
+        parts.each(function(part) {
+            out.push(part == '' ? "'\"'" : '"' + part + '"');
+        })
+        return "concat(" + out.join(", ") + ")";
+    }
+    return '"' + name + '"';
+}
+
 module.exports = ext.register("ext/nodeunit/nodeunit", {
     name            : "Node Unit Test Manager",
     dev             : "Ajax.org",
@@ -85,7 +96,9 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
         });
         
         ide.addEventListener("test.stop", function(e){
-            //@todo
+            if (!_self.running)
+                return;
+            _self.stop();
         });
         
         ide.addEventListener("test.icon.nodeunit", function(e){
@@ -93,20 +106,123 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
         });
         
         ide.addEventListener("test.run.nodeunit", function(e){
-            var xmlNode = e.xmlNode;
+            var fileNode = e.xmlNode;
             var next    = e.next;
+
+            _self.stopping     = false;
+            _self.running      = true;
+            _self.lastTestNode = fileNode;
             
+            testpanel.setLog(fileNode, "running");
+            
+            dgTestProject.slideOpen(null, fileNode);
+            var timer = setInterval(function(){
+                if (fileNode.selectNodes("test").length) {
+                    clearTimeout(timer);
+                    parseMessage({data: ""})
+                }
+            }, 10);
+            
+            var stack = [];
             ide.addEventListener("socketMessage", function(e){
                 //@todo testpanel.setLog(node, "started");
-                
-                if (e.message.type.indexOf("node-exit") > -1) {
-                    next();
+
+                if (e.message.type == "node-data") {
+                    parseMessage(e.message);
+                }
+                else if (e.message.type.indexOf("node-exit") > -1) {
                     ide.removeEventListener("socketMessage", arguments.callee);
+                    if (_self.stopping)
+                        _self.stopped();
+                    else {
+                        if (fileNode.getAttribute("status") == -1)
+                            testpanel.setError(fileNode, "failed");
+                        if (!stProcessRunning.active)
+                            next();
+                        else {
+                            stProcessRunning.addEventListener("deactivate", function(){
+                                next();
+                                stProcessRunning.removeEventListener("deactivate", arguments.callee);
+                            });
+                        }
+                    }
                 }
             });
             
-            testpanel.setLog(node, "started");
-            noderunner.run(xmlNode.getAttribute("path"), [], false);
+            function completed(){
+                var nodes = apf.queryNodes(fileNode, "test[@status=0 or error]");
+
+                if (_self.stopping) {
+                    testpanel.setError(fileNode, "Test Cancelled");
+                    return;
+                }
+                else if (nodes.length)
+                    testpanel.setError(fileNode, "failed " + (nodes.length) 
+                        + " tests of " + fileNode.selectNodes("test").length);
+                else
+                    testpanel.setPass(fileNode, "(" + tests.length + ")");
+            }
+            
+            function parseMessage(message){
+                var nodes = fileNode.selectNodes("test");
+                if (!nodes.length)
+                    stack.push(message.data);
+                else {
+                    var data;
+                    if (stack.length) {
+                        data = stack.join("") + message.data;
+                        stack = [];
+                    }
+                    else
+                        data = message.data;
+
+                    //Parse
+
+                    //Remove summary
+                    data = data.replace(/\s*Summary\:\s+Total number of tests[\s\S]*$/, "");
+                    data = data.substr(1);
+
+                    var match;
+                    while (data.length && data.charAt(0) == "[") {
+                        //FAIL
+                        if (data.substr(0, 3) == "[31") {
+                            match = data.match(/^\[31m\[(\d+)\/(\d+)\]\s+(.*?)\s+FAIL.*([\S\s]*?)(?=\[\d+m|$)/);
+                            data = data.substr(match[0].length).trim();
+                            
+                            var testNode = fileNode.selectSingleNode("test[@name=" + escapeXpathString(match[3]) + "]");
+                            testpanel.setError(testNode, "Test Failed");
+                            testpanel.setLog(fileNode, "completed test " + match[2] + " of " + match[1]);
+                            
+                            var errorNode = testNode.ownerDocument
+                                .createElement("error");
+                            errorNode.setAttribute("name", match[4]);
+                            apf.xmldb.appendChild(testNode, errorNode);
+                            
+                            if (match[2] == match[1])
+                                completed();
+                        }
+                        //PASS
+                        //[32m[4/1] test basic addition OK[0m
+                        else if (data.substr(0, 3) == "[32") {
+                            match = data.match(/^\[32m\[(\d+)\/(\d+)\]\s+(.*?)\sOK[\s\S]{4,6}/);
+                            data = data.substr(match[0].length).trim();
+                            
+                            var testNode = fileNode.selectSingleNode("test[@name=" + escapeXpathString(match[3]) + "]");
+                            testpanel.setPass(testNode);
+                            testpanel.setLog(fileNode, "completed test " + match[2] + " of " + match[1]);
+                            
+                            if (match[2] == match[1])
+                                completed();
+                        }
+                    }
+                }
+            }
+            
+            var path = fileNode.getAttribute("path")
+                .slice(ide.davPrefix.length + 1)
+                .replace("//", "/");
+                
+            noderunner.run(path, [], false);
         });
         
         ide.addEventListener("socketMessage", function(e) {
@@ -137,6 +253,25 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
         });
         
         this.enable();
+    },
+    
+    stop : function(){
+        this.stopping = true;
+            
+        if (this.lastTestNode) {
+            testpanel.setLog(this.lastTestNode.tagName == "file"
+                ? this.lastTestNode
+                : this.lastTestNode.parentNode, "Stopping...");
+        }
+        
+        noderunner.stop();
+    },
+    
+    stopped : function(msg){
+        this.stopping = false;
+        this.running  = false;
+        
+        testpanel.stopped();
     },
     
     createAndOpenTest : function(){

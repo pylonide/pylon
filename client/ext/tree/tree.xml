@@ -83,7 +83,7 @@
           onmouseout="require('ext/tree/tree').onTreeOut()"
         >
             <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
-                <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
+                <a:insert match="[folder]" get="{davProject.readdir([@path])}" />
                 <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
                 <a:icon match="[folder|project]" value="folder.png" />
                 <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />

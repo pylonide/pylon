@@ -95,7 +95,7 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                     _self.sendResult(0, message.command, {
                         code: 0,
                         argv: message.argv,
-                        err: err,
+                        err: err.message,
                         out: null
                     });
                 }
@@ -136,8 +136,11 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                             code: 4,
                             argv: message.argv,
                             err: null,
-                            out: "https://saucelabs.com/rest/" + username 
-                                 + "/jobs/" + jobId + "/results/video.flv"
+                            video: browser.settings.where == "sauce"
+                                ? "https://saucelabs.com/rest/" + username 
+                                    + "/jobs/" + jobId + "/results/video.flv"
+                                : "",
+                            out: ""
                         });
                     });
                 }
@@ -161,6 +164,7 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                     url : message.url
                 };
                 if (message.where == "sauce") {
+                    options.where     = "sauce";
                     options.host      = "ondemand.saucelabs.com";
                     options.port      = 80;
                     options.username  = username;
@@ -204,22 +208,14 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                         });
                         
                         _self.jobs[jobId] = browser;
+                        
+                        if (!browser.settings)
+                            browser.settings = options;
                     }
                 }, runTest);
             }
         }
         
-        /*
-        <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" width="640" height="375" id="FlvPlayer" align="middle">
-<param name="allowScriptAccess" value="sameDomain" />
-<param name="allowFullScreen" value="true" />
-<param name="movie" value="http://flvplayer.com/free-flv-player/FlvPlayer.swf" />
-<param name="quality" value="high" />
-<param name="bgcolor" value="FFFFFF" />
-<param name="FlashVars" value="flvpFolderLocation=http://flvplayer.com/free-flv-player/flvplayer/&flvpVideoSource=https://saucelabs.com/rest/cloudnine_partner/jobs/b2f0a6ba20e9c5bc0c6adbbbbb81a103/results/video.flv&flvpWidth=640&flvpHeight=375&flvpInitVolume=50&flvpTurnOnCorners=true&flvpBgColor=FFFFFF"
-<embed src="http://flvplayer.com/free-flv-player/FlvPlayer.swf" flashvars="flvpFolderLocation=http://flvplayer.com/free-flv-player/flvplayer/&flvpVideoSource=https://saucelabs.com/rest/cloudnine_partner/jobs/b2f0a6ba20e9c5bc0c6adbbbbb81a103/results/video.flv&flvpWidth=640&flvpHeight=375&flvpInitVolume=50&flvpTurnOnCorners=true&flvpBgColor=FFFFFF" quality="high" bgcolor="FFFFFF" width="640" height="375" name="FlvPlayer" align="middle" allowScriptAccess="sameDomain" allowFullScreen="true" type="application/x-shockwave-flash" pluginspage="http://www.adobe.com/go/getflashplayer" />
-</object>*/
-
         return true;
     };
     

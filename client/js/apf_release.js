@@ -1763,7 +1763,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/class.js)SIZE(45286)TIME(Mon, 07 Nov 2011 04:51:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/class.js)SIZE(45315)TIME(Sun, 20 Nov 2011 23:34:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2469,7 +2469,7 @@ apf.Class.prototype = new (function(){
                 
             }
 
-            if (setAttr)
+            if (setAttr && !this.$funcHandlers[prop])
                 this.setAttribute(prop, value, true);
 
             if (this.$handlePropSet(prop, value, forceOnMe) === false)
@@ -23165,7 +23165,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/guielement.js)SIZE(33087)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/guielement.js)SIZE(33087)TIME(Sun, 20 Nov 2011 23:26:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25293,7 +25293,7 @@ apf.config.$inheritProperties["validgroup"] = 1;
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/databinding.js)SIZE(58776)TIME(Mon, 07 Nov 2011 01:02:07 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/databinding.js)SIZE(58811)TIME(Sun, 20 Nov 2011 21:08:52 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25745,7 +25745,6 @@ apf.DataBinding = function(){
                 forceNoCache = options.force,
                 noClearMsg   = options.noClearMsg;
         }
-        
         if (cacheId && cacheId == this.cacheId && !forceNoCache)
             return;
 
@@ -25794,9 +25793,10 @@ apf.DataBinding = function(){
             }
             
             
-
+            
             return this.$loadqueue = [xmlNode, cacheId];
         }
+        this.$loadqueue = null;
 
         // If no xmlNode is given we clear the control, disable it and return
         if (this.dataParent && this.dataParent.xpath)
@@ -26798,7 +26798,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(47100)TIME(Sat, 19 Nov 2011 23:27:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(47184)TIME(Sun, 20 Nov 2011 21:16:22 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27275,7 +27275,9 @@ apf.MultiselectBinding = function(){
         if (this.selectable) {
             
             //@todo apf3.0 optimize to not set selection when .selection or .selected is set on initial load
-            if (this.autoselect) {
+            if (this["default"])
+                this.select(this["default"]);
+            else if (this.autoselect) {
                 if (!this.selected) {
                     if (this.renderRoot)
                         this.select(XMLRoot, null, null, null, true);
@@ -28146,7 +28148,7 @@ apf.StandardBinding.prototype = new apf.DataBinding();
 apf.Init.run("standardbinding");
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/multiselect.js)SIZE(71726)TIME(Wed, 09 Nov 2011 02:10:35 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/multiselect.js)SIZE(71734)TIME(Sun, 20 Nov 2011 20:52:47 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28987,7 +28989,7 @@ apf.MultiSelect = function(){
     this.clearSelection = function(noEvent, userAction){
         if (!this.selectable || userAction && this.disabled || !this.$valueList.length)
             return;
-
+        
         if (!noEvent) {
             if (this.dispatchEvent("beforeselect", {
                 selection : [],
@@ -30579,7 +30581,7 @@ apf.config.$inheritProperties["create-model"] = 1;
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/cache.js)SIZE(12760)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/cache.js)SIZE(12532)TIME(Sun, 20 Nov 2011 21:15:44 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30652,8 +30654,12 @@ apf.Cache = function(){
             var nodes = this.getTraverseNodes();
 
             //Information needs to be passed to the followers... even when cached...
-            if (nodes.length && this.autoselect)
-                this.select(nodes[0], null, null, null, true);
+            if (nodes.length) {
+                if (this["default"])
+                    this.select(this["default"]);
+                else if (this.autoselect)
+                    this.select(nodes[0], null, null, null, true);
+            }
             else if (this.clearSelection)
                 this.clearSelection(); //@todo apf3.0 was setProperty("selected", null
 
@@ -31744,7 +31750,7 @@ apf.BaseButton = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/baselist.js)SIZE(38108)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/baselist.js)SIZE(38108)TIME(Sun, 20 Nov 2011 08:09:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -41250,7 +41256,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/window.js)SIZE(50573)TIME(Wed, 09 Nov 2011 01:32:42 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/window.js)SIZE(50596)TIME(Mon, 21 Nov 2011 02:17:28 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -41964,15 +41970,15 @@ apf.window = function(){
         });
     });
 
-    var ta = {"INPUT":1, "TEXTAREA":1, "SELECT":1};
+    var ta = {"INPUT":1, "TEXTAREA":1, "SELECT":1, "EMBED":1, "OBJECT":1};
     apf.addListener(document, "mousedown", this.$mousedown = function(e){
+
         if (!e) e = event;
         var p,
             amlNode   = apf.findHost(e.srcElement || e.target);
             /*cEditable = amlNode && amlNode.liveedit
               
             ;*/
-
         
         if (apf.popup.last && (!amlNode || apf.popup.last != amlNode.$uniqueId) 
           && apf.popup.cache[apf.popup.last] 
@@ -57039,7 +57045,7 @@ apf.aml.setElement("defaults", apf.defaults);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/divider.js)SIZE(2918)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/divider.js)SIZE(2833)TIME(Sun, 20 Nov 2011 06:54:56 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57128,7 +57134,7 @@ apf.aml.setElement("divider", apf.divider);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/dropdown.js)SIZE(15385)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/dropdown.js)SIZE(15377)TIME(Sun, 20 Nov 2011 20:28:47 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57372,7 +57378,7 @@ apf.dropdown = function(struct, tagName){
 
     this.addEventListener("afterselect", function(e){
         if (!e) e = event;
-        
+
         this.slideUp();
         if (!this.isOpen)
             this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Over"]);
@@ -57896,7 +57902,7 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/flashplayer.js)SIZE(4071)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/flashplayer.js)SIZE(5856)TIME(Mon, 21 Nov 2011 02:17:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57918,6 +57924,135 @@ apf.aml.setElement("filler", apf.filler);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
+
+
+/**
+ * Element displaying the contents of a .swf (adobe flash) file.
+ *
+ * @constructor
+ * @define flashplayer
+ * @allowchild {smartbinding}
+ * @addnode elements
+ *
+ * @inherits apf.BaseSimple
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.9
+ *
+ * @binding value  Determines the way the value for the element is retrieved 
+ * from the bound data.
+ * Example:
+ * Sets the flash source text based on data loaded into this component.
+ * <code>
+ *  <a:flashplayer value="[@src]">
+ *      <a:model>
+ *          <data src="flash.swf" />
+ *      </a:model>
+ *  </a:flashplayer>
+ * </code>
+ */
+apf.flashplayer = function(struct, tagName){
+    this.$init(tagName || "flashplayer", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.implement(
+        
+        apf.DataAction,
+        
+        apf.StandardBinding
+    );
+    
+    /**** Public methods ****/
+    
+    
+    
+    /**
+     * @ref global#setValue
+     */
+    this.setSrc = function(value){
+        this.setProperty("src", value, false, true);
+    };
+    
+    
+    
+    /**** Properties and attributes ****/
+    
+    this.$supportedProperties.push("value", "allowfullscreen", "flashvars");
+    this.$propHandlers["src"] = function(value){
+        //this.$ext.getElementsByTagName("param")[2].setAttribute("value", value);
+        this.$ext.getElementsByTagName("object")[0].setAttribute("data", value);
+//        this.$ext.getElementsByTagName("embed")[0].setAttribute("src", value);
+    };
+    this.$propHandlers["allowfullscreen"] = function(value){
+        this.$ext.getElementsByTagName("param")[1].setAttribute("value", value);
+//        this.$ext.getElementsByTagName("embed")[0].setAttribute("allowFullScreen", value);
+    }
+    this.$propHandlers["flashvars"] = function(value){
+        this.$ext.getElementsByTagName("param")[3].setAttribute("value", value);
+//        this.$ext.getElementsByTagName("embed")[0].setAttribute("flashvars", value);
+    }
+    this.$propHandlers["bgcolor"] = function(value){
+        this.$ext.getElementsByTagName("param")[4].setAttribute("value", value);
+//        this.$ext.getElementsByTagName("embed")[0].setAttribute("bgcolor", value);
+    }
+    this.$propHandlers["wmode"] = function(value){
+        this.$ext.getElementsByTagName("param")[5].setAttribute("value", value);
+//        this.$ext.getElementsByTagName("embed")[0].setAttribute("wmode", value);
+    }
+    
+    /**** Init ****/
+    
+    this.$draw = function(){
+        //Build Main Skin
+        this.$ext = this.$pHtmlNode.appendChild(document.createElement("div"));
+        if (this.getAttribute("style"))
+            this.$ext.setAttribute("style", this.getAttribute("style"));
+        this.$ext.onclick = function(){this.host.dispatchEvent("click");}
+        
+        var src = this.getAttribute("src") || "";
+        this.$ext.insertAdjacentHTML("beforeend",
+            '<object \
+              width="100%" \
+              height="100%" \
+              data="' + src + '" \
+              type="application/x-shockwave-flash">\
+                <param name="allowfullscreen" value="true">\
+                <param name="allowscriptaccess" value="always">\
+                <param name="quality" value="high">\
+                <param name="flashvars" value="">\
+                <param name="bgcolor" value="#000000">\
+                <param name="cachebusting" value="false">\
+            </object>')
+            /*                <param name="allowScriptAccess" value="always" />\
+                <param name="allowFullScreen" value="false" />\
+                <param name="movie" value="' + src + '" />\
+                <param name="FlashVars" value="false" />\
+                <param name="bgcolor" value="#ffffff" />\
+                <param name="wmode" value="high" />\
+                <param name="play" value="true" />\
+                <param name="menu" value="false" />\
+                <param name="quality" value="high" />\
+'<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" \
+              codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" \
+              width="100%" \
+              height="100%" \
+              data="' + src + '" \
+              type="application/x-shockwave-flash" \
+              align="middle">\
+              <embed src="' + src + '" play="true" menu="false" \
+                  quality="high" bgcolor="#ffffff" width="100%" \
+                  height="100%" align="middle" allowScriptAccess="always" \
+                  allowFullScreen="false" type="application/x-shockwave-flash" \
+                  pluginspage="http://www.macromedia.com/go/getflashplayer" />\*/
+    };
+    
+    this.$loadAml = function(x){
+    };
+}).call(apf.flashplayer.prototype = new apf.GuiElement());
+
+apf.aml.setElement("flashplayer", apf.flashplayer);
 
 
 
@@ -58172,7 +58307,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/hbox.js)SIZE(40594)TIME(Wed, 02 Nov 2011 23:11:55 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/hbox.js)SIZE(40707)TIME(Mon, 21 Nov 2011 00:31:11 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58910,6 +59045,8 @@ apf.vbox = function(struct, tagName){
     this.$draw = function(){
         var doc = this.$pHtmlNode.ownerDocument;
         this.$ext = this.$pHtmlNode.appendChild(doc.createElement("div"));
+        if (this.getAttribute("style"))
+            this.$ext.setAttribute("style", this.getAttribute("style"));
         this.$ext.className = this.localName;
 
         this.$vbox    = this.localName == "vbox";
@@ -62268,7 +62405,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/model.js)SIZE(42550)TIME(Mon, 07 Nov 2011 01:03:51 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/model.js)SIZE(42598)TIME(Sun, 20 Nov 2011 21:08:29 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62537,7 +62674,8 @@ apf.model = function(struct, tagName){
         
         if (xmlNode) {
             delete this.$listeners[amlNode.$uniqueId];
-            amlNode.load(xmlNode);
+            if (amlNode.xmlRoot != xmlNode)
+                amlNode.load(xmlNode);
         }
         else 
             this.$waitForXml(amlNode);

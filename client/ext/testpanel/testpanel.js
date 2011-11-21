@@ -147,8 +147,10 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     run : function(nodes){
         var _self = this;
         
-        if (!nodes)
+        if (!nodes || stTestRun.active)
             return;
+        
+        mnuRunSettings.hide();
         
         var finish = function(){
             stTestRun.deactivate();
@@ -204,7 +206,22 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     
     stop : function(){
         ide.dispatchEvent("test.stop");
+        stTestRun.setAttribute("stopping", 1);
+        
+        var _self = this;
+        clearTimeout(this.$stopTimer);
+        this.$stopTimer = setTimeout(function(){
+            ide.dispatchEvent("test.hardstop");
+            
+            _self.stopped();
+        }, 20000);
+    },
+    
+    stopped : function(){
         stTestRun.deactivate();
+        stTestRun.removeAttribute("stopping");
+        
+        clearTimeout(this.$stopTimer);
     },
     
     setPass : function(xmlNode, msg){
@@ -221,13 +238,24 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     },
     
     toggleSubmodules : function(value){
-        if (!value) {
+        if (value) {
             dgTestProject.setAttribute("each", 
-                "[" + dgTestProject.each.replace(/repo/, "repo[1]") + "]");
+                "[" + dgTestProject.each.replace(/repo\[1\]/, "repo") + "]");
         }
         else {
             dgTestProject.setAttribute("each", 
-                "[" + dgTestProject.each.replace(/repo\[1\]/, "repo") + "]");
+                "[" + dgTestProject.each.replace(/repo/, "repo[1]") + "]");
+        }
+    },
+    
+    toggleExpandTests : function(value){
+        if (value) {
+            if (!expTestRule.parentNode)
+                dgTestProject.appendChild(expTestRule);
+        }
+        else {
+            if (expTestRule.parentNode)
+                dgTestProject.removeChild(expTestRule);
         }
     },
     
