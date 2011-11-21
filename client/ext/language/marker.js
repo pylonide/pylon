@@ -1,18 +1,29 @@
 define(function(require, exports, module) {
 
-var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
-var dom = require('ace/lib/dom');
 var Anchor = require('ace/anchor').Anchor;
-
-var JavaScriptMode = require('ace/mode/javascript').Mode;
 
 module.exports = {
     disableMarkerType: {},
     
+    hook: function(language, worker) {
+        var _self = this;
+        worker.on("markers", function(event) {
+            _self.markers(event, language.editor);
+        });
+        /*worker.on("hint", function(event) {
+            if(event.data) {
+                marker.showHint(event.data);
+            } else {
+                marker.hideHint();
+            }
+        });*/
+    },
+    
     removeMarkers: function(session) {
         var markers = session.getMarkers(false);
         for(var id in markers) {
+            // All language analysis' markers are prefixed with language_highlight
             if(markers[id].clazz.indexOf('language_highlight_') === 0) {
                 session.removeMarker(id);
             }
@@ -34,7 +45,10 @@ module.exports = {
         mySession.languageAnnos = [];
 
         annos.forEach(function(anno) { 
-            if(_self.disableMarkerType[anno.type]) return;
+            // Certain annotations can temporarily be disabled
+            if(_self.disableMarkerType[anno.type])
+                return;
+            // Using anchors here, to automaticaly move markers as text around the marker is updated
             var anchor = new Anchor(mySession.getDocument(), anno.pos.sl, anno.pos.sc || 0);
             mySession.markerAnchors.push(anchor);
             var markerId;
@@ -43,9 +57,7 @@ module.exports = {
             var gutterAnno = {
                 guttertext: anno.message,
                 type: anno.type === 'error' ? 'error' : 'warning',
-                text: anno.message,
-                onclick: anno.onclick,
-                ondblclick: anno.ondblclick
+                text: anno.message
                 // row will be filled in updateFloat()
             };
             function updateFloat(single) {
@@ -71,45 +83,22 @@ module.exports = {
         mySession.setAnnotations(mySession.languageAnnos);
     },
     
-    enableMarkerType: function(type) {
-        this.disableMarkerType[type] = false;
-    },
-    
+    /**
+     * Temporarily disable certain types of markers (e.g. when refactoring)
+     */
     disableMarkerType: function(type) {
         this.disableMarkerType[type] = true;
     },
     
-    hideHint: function() {
-        barLanguageHint.setAttribute('visible', false);
+    enableMarkerType: function(type) {
+        this.disableMarkerType[type] = false;
     },
-    
-    showHint: function(hint) {
-        // Switched off for now
-        return;
-        var style = dom.computedStyle(editors.currentEditor.ceEditor.$ext);
-        var containerHeight = parseInt(style.height, 10);
-        var containerWidth = parseInt(style.width, 10);
-        txtLanguageHint.$ext.innerHTML = hint;
-        
-        var barHeight = 35;
 
-        apf.popup.setContent("languageAnnotationTooltip", barLanguageHint.$ext);
-        apf.popup.show("languageAnnotationTooltip", {
-            x: 20,
-            y: containerHeight - barHeight + 1,
-            //y: 0,
-            //ref      : cursorLayer.cursor,
-            ref: editors.currentEditor.ceEditor.$ext,
-            callback : function() {
-                console.log("YEAH");
-                barLanguageHint.setAttribute('visible', true);
-                barLanguageHint.setWidth(containerWidth-40);
-                barLanguageHint.setHeight(barHeight);
-                sbLanguageHint.$resize();
-            }
-        });
-    },
-    
+    /**
+     * Called when text in editor is updated
+     * Implements instantaneously removing markers that belong to removed code
+     * to avoid ugly flicker when removing blocks/lines of code.
+     */
     onChange: function(session, event) {
         var range = event.data.range;
         if(event.data.action.substring(0, 6) === "remove") {
@@ -148,24 +137,46 @@ module.exports = {
         }
     },
     
-    ignoreUndeclaredVariable: function(name) {
-        console.log("Going to ignore this var: ", name);
+    /*
+    Hinting code, currently disabled
+    hideHint: function() {
+        barLanguageHint.setAttribute('visible', false);
+    },
+    
+    showHint: function(hint) {
+        // Switched off for now
         return;
-        var settings = require("ext/settings/settings").model.data;
-        var node = settings.ownerDocument.createElement("breakpoints");
-        var breakpoints = e.currentTarget.data.selectNodes("//breakpoint");
-        for (var ix = 0; ix < breakpoints.length; ix++) {
-            node.appendChild(cln);
-        }
-        var bpInSettingsFile = settings.selectSingleNode("//breakpoints");
-        if (bpInSettingsFile) {
-            bpInSettingsFile.parentNode.removeChild(bpInSettingsFile);
-        }
-        settings.appendChild(node);
-    }
+        var style = dom.computedStyle(editors.currentEditor.ceEditor.$ext);
+        var containerHeight = parseInt(style.height, 10);
+        var containerWidth = parseInt(style.width, 10);
+        txtLanguageHint.$ext.innerHTML = hint;
+        
+        var barHeight = 35;
+
+        apf.popup.setContent("languageAnnotationTooltip", barLanguageHint.$ext);
+        apf.popup.show("languageAnnotationTooltip", {
+            x: 20,
+            y: containerHeight - barHeight + 1,
+            //y: 0,
+            //ref      : cursorLayer.cursor,
+            ref: editors.currentEditor.ceEditor.$ext,
+            callback : function() {
+                console.log("YEAH");
+                barLanguageHint.setAttribute('visible', true);
+                barLanguageHint.setWidth(containerWidth-40);
+                barLanguageHint.setHeight(barHeight);
+                sbLanguageHint.$resize();
+            }
+        });
+    },
+    */
 };
 
 // Monkeypatching ACE's JS mode to disable worker
+// this will be handled by C9's worker
+
+var JavaScriptMode = require('ace/mode/javascript').Mode;
+
 JavaScriptMode.prototype.createWorker = function() {
     return null;
 };

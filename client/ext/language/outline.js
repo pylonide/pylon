@@ -1,9 +1,21 @@
+/**
+ * Module that implements outlines
+ * Currently DISABLED
+ */
 define(function(require, exports, module) {
 
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
 
 module.exports = {
+    hook: function(language, worker) {
+        var _self = this;
+        
+        worker.on("outline", function(event) {
+            _self.renderOutline(event);
+        });
+    },
+    
     outlineJsonToXml: function(array, selected) {
         var xmlS = '';
         for (var i = 0; i < array.length; i++) {

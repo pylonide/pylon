@@ -54,6 +54,13 @@ function replaceText(editor, prefix, newText) {
 }
 
 module.exports = {
+    hook: function(language, worker) {
+        var _self = this;
+        worker.on("complete", function(event) {
+            _self.onComplete(event);
+        });
+    },
+    
     showCompletionBox: function(matches, prefix) {
         var _self = this;
         this.editor = editors.currentEditor;
@@ -143,7 +150,6 @@ module.exports = {
             keyCode = 38; // Down
         
         var keyBinding = editors.currentEditor.ceEditor.$editor.keyBinding;
-        var style = dom.computedStyle(this.matchEls[this.selectedIdx]);
 
         switch(keyCode) {
             case 0: break;

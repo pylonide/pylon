@@ -4,8 +4,6 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-
-
 define(function(require, exports, module) {
 
 var ext = require("core/ext");
@@ -13,7 +11,7 @@ var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
 
-var outline = require('ext/language/outline');
+//var outline = require('ext/language/outline');
 var complete = require('ext/language/complete');
 var marker = require('ext/language/marker');
 var refactor = require('ext/language/refactor');
@@ -61,27 +59,13 @@ module.exports = ext.register("ext/language/language", {
             event.doc.addEventListener("close", function() {
                 worker.emit("documentClose", {data: path});
             });
-            // This is necessary to know which file was opened last, for some reason the afteropenfile event happens out of sequence
+            // This is necessary to know which file was opened last, for some reason the afteropenfile events happen out of sequence
             deferred.cancel().schedule(100);
 	    });
+        
         // Language features
-        worker.on("outline", function(event) {
-            outline.renderOutline(event);
-        });
-        worker.on("complete", function(event) {
-            complete.onComplete(event);
-        });
-        worker.on("markers", function(event) {
-            marker.markers(event, _self.editor);
-        });
-        worker.on("hint", function(event) {
-            if(event.data) {
-                marker.showHint(event.data);
-            } else {
-                marker.hideHint();
-            }
-        });
-
+        outline.hook(this, worker);
+        complete.hook(this, worker);
         refactor.hook(this, worker);
 	},
 
@@ -116,16 +100,16 @@ module.exports = ext.register("ext/language/language", {
     },
     
     setPath: function() {
-        var _self = this;
         var currentPath = tabEditors.getPage().getAttribute("id");
-        _self.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, _self.editor.getSession().getValue()]);
+        this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue()]);
     },
     
     /**
      * Method attached to key combo for outline
      */
     outline : function() {
-        this.worker.emit("outline", {});
+        // Disabled for now
+        //this.worker.emit("outline", {});
     },
     
     /**

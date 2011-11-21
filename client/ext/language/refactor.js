@@ -30,6 +30,7 @@ module.exports = {
             _self.enableVariableRefactor(event.data);
         });
         
+        // TODO: Move this to a refactor sub-menu
         code.commandManager.addCommand({
             name: "renameVar",
             exec: function(editor) {
@@ -37,7 +38,7 @@ module.exports = {
             }
         });
         
-        ext.hotitems["renameVar"] = [nodes[1]];
+        ext.hotitems.renameVar = [nodes[1]];
         ext.nodes.push(nodes[0], nodes[1]);
     },
     
@@ -54,7 +55,7 @@ module.exports = {
     },
     
     enableVariableRefactor: function(data) {
-        console.log("Yeah!");
+        // Temporarily disable these markers, to prevent weird slow-updating events whilst typing
         marker.disableMarkerType('occurrence_main');
         marker.disableMarkerType('occurrence_other');
         var p = new PlaceHolder(ceEditor.$editor.session, data.length, data.pos, data.others, "language_rename_main", "language_rename_other");

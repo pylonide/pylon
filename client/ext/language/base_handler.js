@@ -1,3 +1,7 @@
+/**
+ * This module implements the base handler object that other language handlers
+ * can override.
+ */
 define(function(require, exports, module) {
 
 module.exports = {
@@ -46,14 +50,25 @@ module.exports = {
     onUpdate: function(doc) {
     },
     
+    /**
+     * Invoked when a new document has been opened
+     * @param path the path of the newly opened document
+     * @param doc the document object
+     * @param oldPath the path of the document that was active before
+     */
     onDocumentOpen: function(path, doc, oldPath) {
     },
     
+    /**
+     * Invoked when a document is closed in the IDE
+     * @param path the path of the file
+     */
     onDocumentClose: function(path) {
     },
     
     /**
-     * @return a JSON object with two optional keys: {markers: [...], hint: {message: ...}, enableRefactoring: [...]}
+     * Invoked when the cursor has been moved inside to a different AST node
+     * @return a JSON object with three optional keys: {markers: [...], hint: {message: ...}, enableRefactoring: [...]}
      */
     onCursorMovedNode: function(doc, fullAst, cursorPos, currentNode) {
     },
@@ -84,15 +99,24 @@ module.exports = {
         return null;
     },
 
+    /**
+     * Returns whether the analysis engine requires an AST representation of the code
+     */
     analysisRequiresParsing: function() {
         return true;
     },
     
+    /**
+     * Enables the handler to do analysis of the AST and annotate as desired
+     */
     analyze: function(doc, fullAst) {
         return null;
     },
     
-    // Refactoring
+    /**
+     * Invoked when inline variable renaming is activated
+     * @return an array of positions of the currently selected variable
+     */
     getVariablePositions: function(doc, fullAst, pos, currentNode) {
         return null;
     }

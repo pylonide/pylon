@@ -1,3 +1,9 @@
+/**
+ * Language Worker
+ * This code runs in a WebWorker in the browser. Its main job is to
+ * delegate messages it receives to the various handlers that have registered
+ * themselves with the worker.
+ */
 define(function(require, exports, module) {
 
 var oop = require("ace/lib/oop");
@@ -10,44 +16,47 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     this.currentMarkers = [];
     this.lastAggregateActions = {markers: [], hint: null};
     
-    this.emitCache = {};
+    Mirror.call(this, sender);
+    this.setTimeout(500);
     
-    if(sender) {
-        Mirror.call(this, sender);
-        this.setTimeout(500);
-        
-        sender.on("outline", function() {
-            _self.outline();
-        });
-        sender.on("complete", function(pos) {
-            _self.complete(pos);
-        });
-        sender.on("documentClose", function(event) {
-            _self.documentClose(event);
-        });
-        sender.on("analyze", function(event) {
-            _self.analyze(event);
-        });
-        sender.on("cursormove", function(event) {
-            _self.onCursorMove(event);
-        });
-        
-        sender.on("change", function(e) {
-            _self.scheduledUpdate = true;
-        });
-        
-        sender.on("fetchVariablePositions", function(event) {
-            _self.sendVariablePositions(event);
-        });
-    }
+    sender.on("outline", function() {
+        _self.outline();
+    });
+    sender.on("complete", function(pos) {
+        _self.complete(pos);
+    });
+    sender.on("documentClose", function(event) {
+        _self.documentClose(event);
+    });
+    sender.on("analyze", function(event) {
+        _self.analyze(event);
+    });
+    sender.on("cursormove", function(event) {
+        _self.onCursorMove(event);
+    });
+    
+    sender.on("change", function(e) {
+        _self.scheduledUpdate = true;
+    });
+    
+    sender.on("fetchVariablePositions", function(event) {
+        _self.sendVariablePositions(event);
+    });
 };
 
 oop.inherits(LanguageWorker, Mirror);
 
 (function() {
-    
+
+    /**
+     * Registers a handler by loading its code and adding it the handler array
+     */
+    this.register = function(path) {
+        var handler = require(path);
+        this.handlers.push(handler);
+    };
+
     this.parse = function() {
-        // Parse first
         for (var i = 0; i < this.handlers.length; i++) {
             var handler = this.handlers[i];
             if(handler.handlesLanguage(this.$language)) {
@@ -62,6 +71,7 @@ oop.inherits(LanguageWorker, Mirror);
                 }
             }
         }
+        // No parser available
         this.cachedAst = null;
         return null;
     };
@@ -92,7 +102,6 @@ oop.inherits(LanguageWorker, Mirror);
     
     this.analyze = function() {
         var ast = this.parse();
-        console.log("Analyzing");
         var markers = [];
         for(var i = 0; i < this.handlers.length; i++) {
             var handler = this.handlers[i];
@@ -122,7 +131,6 @@ oop.inherits(LanguageWorker, Mirror);
         }
     };
 
-    // TODO: Combine these messages into a single one for efficiency
     this.onCursorMove = function(event) {
         if(this.scheduledUpdate) {
             // Postpone the cursor move until the update propagates
@@ -194,19 +202,12 @@ oop.inherits(LanguageWorker, Mirror);
         this.analyze();
     };
     
-    this.register = function(path) {
-        console.log("Registering: " + path);
-        var handler = require(path);
-        this.handlers.push(handler);
-    };
-    
     this.switchFile = function(path, language, code) {
         var oldPath = this.$path;
         this.$path = path;
         this.$language = language;
         this.cachedAst = null;
         this.setValue(code);
-        console.log("Current file: " + path);
         for(var i = 0; i < this.handlers.length; i++) {
             var handler = this.handlers[i];
             handler.path = path;
@@ -217,10 +218,10 @@ oop.inherits(LanguageWorker, Mirror);
     
     this.documentClose = function(event) {
         for(var i = 0; i < this.handlers.length; i++) {
-            this.handlers[i].onDocumentClose(event.data);
         }
     };
     
+    // For code completion
     function removeDuplicateMatches(matches) {
         // First sort
         matches.sort(function(a, b) {
