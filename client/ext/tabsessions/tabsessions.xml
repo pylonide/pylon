@@ -8,7 +8,8 @@
       kbclose   = "true"
       resizable = "true"
       title     = "Save Session As"
-      width     = "480">
+      width     = "480"
+      onshow    = "txtSaveSessionAs.clear()">
         <a:vbox
           anchors   = "10 10 0 10"
           padding   = "5">
@@ -30,7 +31,8 @@
                       id            = "trSaveSessionAs"
                       class         = "trDgLike"
                       flex          = "1"
-                      model         = "{require('ext/settings/settings').model}">
+                      model         = "{require('ext/settings/settings').model}"
+                      onclick = "txtSaveSessionAs.setValue(this.selected.getAttribute('name'))">
                         <a:each match="[auto/sessions/session]">
                            <a:caption match="[@name]" />
                            <a:icon
