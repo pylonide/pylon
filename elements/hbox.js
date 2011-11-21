@@ -734,6 +734,8 @@ apf.vbox = function(struct, tagName){
     this.$draw = function(){
         var doc = this.$pHtmlNode.ownerDocument;
         this.$ext = this.$pHtmlNode.appendChild(doc.createElement("div"));
+        if (this.getAttribute("style"))
+            this.$ext.setAttribute("style", this.getAttribute("style"));
         this.$ext.className = this.localName;
 
         this.$vbox    = this.localName == "vbox";

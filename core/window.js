@@ -935,8 +935,9 @@ apf.window = function(){
         });
     });
 
-    var ta = {"INPUT":1, "TEXTAREA":1, "SELECT":1};
+    var ta = {"INPUT":1, "TEXTAREA":1, "SELECT":1, "EMBED":1, "OBJECT":1};
     apf.addListener(document, "mousedown", this.$mousedown = function(e){
+
         if (!e) e = event;
         var p,
             amlNode   = apf.findHost(e.srcElement || e.target);
@@ -945,7 +946,6 @@ apf.window = function(){
               || (amlNode && amlNode.hasFeature(apf.__LIVEEDIT__))
               // #endif
             ;*/
-
         // #ifdef __WITH_POPUP
         if (apf.popup.last && (!amlNode || apf.popup.last != amlNode.$uniqueId) 
           && apf.popup.cache[apf.popup.last] 

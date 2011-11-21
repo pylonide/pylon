@@ -520,7 +520,9 @@ apf.MultiselectBinding = function(){
             else
             //#endif
             //@todo apf3.0 optimize to not set selection when .selection or .selected is set on initial load
-            if (this.autoselect) {
+            if (this["default"])
+                this.select(this["default"]);
+            else if (this.autoselect) {
                 if (!this.selected) {
                     if (this.renderRoot)
                         this.select(XMLRoot, null, null, null, true);

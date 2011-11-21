@@ -878,7 +878,7 @@ apf.MultiSelect = function(){
     this.clearSelection = function(noEvent, userAction){
         if (!this.selectable || userAction && this.disabled || !this.$valueList.length)
             return;
-
+        
         if (!noEvent) {
             if (this.dispatchEvent("beforeselect", {
                 selection : [],

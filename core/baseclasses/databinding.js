@@ -464,7 +464,6 @@ apf.DataBinding = function(){
                 forceNoCache = options.force,
                 noClearMsg   = options.noClearMsg;
         }
-        
         if (cacheId && cacheId == this.cacheId && !forceNoCache)
             return;
 
@@ -520,9 +519,10 @@ apf.DataBinding = function(){
                       + "until smartbinding rules are loaded or set manually.");
             }
             //#endif
-
+            
             return this.$loadqueue = [xmlNode, cacheId];
         }
+        this.$loadqueue = null;
 
         // If no xmlNode is given we clear the control, disable it and return
         if (this.dataParent && this.dataParent.xpath)

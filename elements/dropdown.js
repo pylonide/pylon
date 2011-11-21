@@ -242,7 +242,7 @@ apf.dropdown = function(struct, tagName){
 
     this.addEventListener("afterselect", function(e){
         if (!e) e = event;
-        
+
         this.slideUp();
         if (!this.isOpen)
             this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Over"]);

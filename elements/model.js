@@ -308,7 +308,8 @@ apf.model = function(struct, tagName){
         
         if (xmlNode) {
             delete this.$listeners[amlNode.$uniqueId];
-            amlNode.load(xmlNode);
+            if (amlNode.xmlRoot != xmlNode)
+                amlNode.load(xmlNode);
         }
         else 
             this.$waitForXml(amlNode);

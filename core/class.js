@@ -769,7 +769,7 @@ apf.Class.prototype = new (function(){
                 //#endif
             }
 
-            if (setAttr)
+            if (setAttr && !this.$funcHandlers[prop])
                 this.setAttribute(prop, value, true);
 
             if (this.$handlePropSet(prop, value, forceOnMe) === false)
