@@ -7,7 +7,7 @@ if (typeof process !== "undefined") {
 
 define(function(require, exports, module) {
 
-var handler = require("ext/jsoutline/outline_handler");
+var handler = require("ext/jslanguage/outline");
 var parser = require("treehugger/js/parse");
 var assert = require("ace/test/assertions");
 
@@ -15,7 +15,7 @@ var assert = require("ace/test/assertions");
 
 module.exports = {
     "test basic outline" : function() {
-        var node = parser.parse(""+require('text!ext/jsoutline/test/test1.js'));
+        var node = parser.parse(""+require('text!ext/jslanguage/test/test1.js'));
         var outline = handler.outline(node);
         //console.log(""+node);
         //console.log(JSON.stringify(outline, null, 2));

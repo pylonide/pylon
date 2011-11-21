@@ -16,7 +16,7 @@ outlineHandler.outline = function(ast) {
 function fargsToString(fargs) {
     var str = '(';
     for (var i = 0; i < fargs.length; i++) {
-        str += fargs[i].value + ', ';
+        str += fargs[i][0].value + ', ';
     }
     if(fargs.length > 0)
         str = str.substring(0, str.length - 2);
