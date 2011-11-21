@@ -191,24 +191,34 @@ apf.BaseTree = function(){
      * onFinished {function} Callback to be called when finished
      */
     this.expandList = function (paths, onFinished) {
-        var _self = this,
-            root = this.xmlRoot;
+        var _self = this;
+        var root = this.xmlRoot;
             
         // recursive load function
         function expand(currentSelector, allSelectors) {
             // first expand the item passed in
             _self.slideToggle(apf.xmldb.getHtmlNode(root.selectSingleNode(currentSelector), _self), 1, true, null, function () {
-                // notify
-                hasExpanded(currentSelector);
-                
-                // when finished, find all the other selectors that start with the current selector
-                // plus a slash to make it really really sure
-                var childSelectors = allSelectors.filter(function (s) { return s.indexOf(currentSelector + "/") === 0; });
-                
-                // then expand each of the child items
-                childSelectors.forEach(function (selector) {
-                    expand(selector, allSelectors);
-                });
+                // the callback fires, but we might be waiting for data from the server
+                var callback = function () {
+                    // check whether the node is loaded
+                    if (!_self.$hasLoadStatus(root.selectSingleNode(currentSelector), "loaded")) {
+                        // otherwise wait
+                        return setTimeout(callback, 1000 / 30);
+                    }
+                    
+                    // notify
+                    hasExpanded(currentSelector);
+                    
+                    // when finished, find all the other selectors that start with the current selector
+                    // plus a slash to make it really really sure
+                    var childSelectors = allSelectors.filter(function (s) { return s.indexOf(currentSelector + "/") === 0; });
+                    
+                    // then expand each of the child items
+                    childSelectors.forEach(function (selector) {
+                        expand(selector, allSelectors);
+                    });
+                };
+                callback();
             });
         }
         
@@ -228,8 +238,7 @@ apf.BaseTree = function(){
         rootNodes.forEach(function (node) {
             expand(node, paths);
         });
-    };
-    
+    };    
     
     /**
      * @notimplemented
