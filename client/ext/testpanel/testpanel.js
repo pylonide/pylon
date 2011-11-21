@@ -20,6 +20,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     alone           : true,
     type            : ext.GENERAL,
     markup          : markup,
+    appliedFilter   : "all",
 
     hook : function(){
         panels.register(this);
@@ -56,7 +57,8 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         colLeft.appendChild(winTestPanel);
         
         mnuFilter.onitemclick = function(e){
-            _self.filter(e.value);
+            if (e.value && e.relatedNode.type == "radio")
+                _self.filter(e.value);
         }
     
         var shiftState;
@@ -117,9 +119,11 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     },
     
     filter : function(value){
+        this.appliedFilter = value;
+        
         dgTestProject.setAttribute("each", value == "all"
-            ? "[repo|file|test|assert]"
-            : "[repo|file[@type='" + value + "']|type|assert]");
+            ? "[repo|file|test|assert|error]"
+            : "[repo|file[@type='" + value + "']|test|assert|error]");
     },
     
     parseFile : function(xmlNode){
@@ -179,7 +183,10 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         var total = [];
         nodes.each(function(node){
             if (node.tagName == "repo")
-                total = total.concat(apf.getArrayFromNodelist(node.selectNodes("file")));
+                total = total.concat(apf.getArrayFromNodelist(node.selectNodes("file" + 
+                    (_self.appliedFilter == "all" 
+                        ? "" 
+                        : "[@type='" + _self.appliedFilter + "']"))));
             else if (node.tagName == "file")
                 total.push(node);
             else if (node.tagName == "test")
@@ -237,7 +244,10 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         apf.xmldb.setAttribute(xmlNode, "status-message", msg || "");
     },
     
+    showSubmodules : true,
     toggleSubmodules : function(value){
+        this.showSubmodules = value;
+        
         if (value) {
             dgTestProject.setAttribute("each", 
                 "[" + dgTestProject.each.replace(/repo\[1\]/, "repo") + "]");
@@ -248,7 +258,10 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         }
     },
     
+    expandTests : true,
     toggleExpandTests : function(value){
+        this.expandTests = value;
+        
         if (value) {
             if (!expTestRule.parentNode)
                 dgTestProject.appendChild(expTestRule);
@@ -271,8 +284,10 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     },
 
     enable : function(noButton){
-        if (self.winTestPanel)
+        if (self.winTestPanel) {
             winTestPanel.show();
+            winTestPanel.parentNode.setWidth(this.$lastWidth || 400);
+        }
         colLeft.show();
         if (!noButton) {
             this.button.setValue(true);
@@ -284,8 +299,10 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     },
 
     disable : function(noButton){
-        if (self.winTestPanel)
+        if (self.winTestPanel) {
+            this.$lastWidth = winTestPanel.parentNode.width;
             winTestPanel.hide();
+        }
         if (!noButton)
             this.button.setValue(false);
 

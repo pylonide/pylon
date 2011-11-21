@@ -521,6 +521,8 @@ module.exports = ext.register("ext/tree/tree", {
 
     enable : function(noButton){
         winFilesViewer.show();
+        winFilesViewer.parentNode.setWidth(this.$lastWidth || 200);
+        
         colLeft.show();
         if (!noButton) {
             this.button.setValue(true);
@@ -533,8 +535,10 @@ module.exports = ext.register("ext/tree/tree", {
     },
 
     disable : function(noButton){
-        if (self.winFilesViewer)
+        if (self.winFilesViewer) {
+            this.$lastWidth = winFilesViewer.parentNode.width;
             winFilesViewer.hide();
+        }
         if (!noButton)
             this.button.setValue(false);
 

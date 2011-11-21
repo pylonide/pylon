@@ -81,7 +81,8 @@
               multiselect    = "true"
               startcollapsed = "true"
               contextmenu    = "mnuTestContext"
-              empty-message  = "No tests yet">
+              empty-message  = "No tests yet"
+              onbeforeremove = "return remove(this)">
                 <a:column caption="Name" width="60%" tree="1" icon="{require('ext/testpanel/testpanel').getIcon(%[.])}"><?lm
                     if (localName() == "error")
                         <span style='color:red'>[@name]</span>
@@ -100,9 +101,9 @@
                 ?></a:column>
                 
                 <a:insert match="[file]" get="{return require('ext/testpanel/testpanel').parseFile(xmlNode)}" />
+                <a:remove match="[file]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
                 
-                <a:expanded match="[test]" id="expTestRule" />
-                <a:expanded match="[file[test]]" />
+                <a:expanded match="[test|file[test]]" id="expTestRule" />
                 <a:expanded match="{apf.getChildNumber(%[repo]) == 1}" />
             </a:datagrid>
             

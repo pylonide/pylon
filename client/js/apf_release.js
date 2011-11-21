@@ -48363,7 +48363,7 @@ apf.CodeCompilation = function(code){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingrule.js)SIZE(8931)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingrule.js)SIZE(8836)TIME(Mon, 21 Nov 2011 08:53:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48485,9 +48485,10 @@ apf.BindingRule = function(struct, tagName){
         
         //Reload parent to propagate change
         //@todo trigger should be maintained on node itself to prevent dual reload
-        apf.queue.add("reload" + node.$uniqueId, function(){
-            node.reload();
-        });
+        if ("expanded|collapsed".indexOf(this.localName) == -1)
+            apf.queue.add("reload" + node.$uniqueId, function(){
+                node.reload();
+            });
 
         //If this node is added, add to set
         if (e.currentTarget == this) {
@@ -48542,10 +48543,11 @@ apf.BindingRule = function(struct, tagName){
         else return;
 
         //Reload parent to propagate change
-        apf.queue.add("reload" + node.$uniqueId, function(){
-            if(!node.$amlDestroyed)
-                node.reload();
-        });
+        if ("expanded|collapsed".indexOf(this.localName) == -1)
+            apf.queue.add("reload" + node.$uniqueId, function(){
+                if(!node.$amlDestroyed)
+                    node.reload();
+            });
 
         //Recompile ruleset
         if (node.$bindings.$isCompiled)
@@ -70864,7 +70866,7 @@ apf.aml.setElement("state-group", apf.stateGroup);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/state.js)SIZE(11225)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/state.js)SIZE(10893)TIME(Mon, 21 Nov 2011 05:30:37 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional

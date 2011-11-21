@@ -35,6 +35,7 @@ module.exports = ext.register("ext/console/console", {
     markup : markup,
     css    : css,
     
+    autoOpen : true,
     commandHistoryIndex : 0,
     excludeParent : true,
     commands : {
@@ -600,7 +601,9 @@ module.exports = ext.register("ext/console/console", {
         stProcessRunning.addEventListener("activate", function() {
             _self.clear();
             _self.showOutput();
-            _self.enable();
+            
+            if (_self.autoOpen)
+                _self.enable();
         });
         
         ide.addEventListener("socketMessage", this.onMessage.bind(this));

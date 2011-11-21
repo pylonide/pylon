@@ -15,6 +15,7 @@ var fs = require("ext/filesystem/filesystem");
 var newresource = require("ext/newresource/newresource");
 var noderunner = require("ext/noderunner/noderunner");
 var testpanel = require("ext/testpanel/testpanel");
+var console = require("ext/console/console");
 var template = require("text!ext/nodeunit/nodeunit.template");
 
 function escapeXpathString(name){
@@ -50,7 +51,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
             mnuFilter.insertBefore(new apf.item({
                 type    : "radio",
                 value   : "nodeunit",
-                caption : "Node Unite Tests"
+                caption : "Node Unit Tests"
             }), mnuFilter.getElementsByTagNameNS(apf.ns.aml, "divider")[1]),
             
             mnuTestNew.appendChild(new apf.item({
@@ -89,6 +90,21 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                 }
             }
         });
+        
+        ide.addEventListener("afterfilesave", function(e){
+            var node = e.node;
+            var name = node.getAttribute("name");
+            if (!name.match(/_test.js$/))
+                return;
+            
+            var path = node.getAttribute("path");
+            var fileNode = mdlTests.queryNode("//file[@path=" + escapeXpathString(path) + "]");
+            if (!fileNode) {
+                fileNode = apf.xmldb.getCleanCopy(node);
+                fileNode.setAttribute("type", "nodeunit");
+                apf.xmldb.appendChild(testpanel.findParent(path), fileNode); 
+            }
+        });
 
         ide.addEventListener("test.expand.nodeunit", function(e){
             var xmlNode = e.xmlNode;
@@ -109,13 +125,18 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
             var fileNode = e.xmlNode;
             var next    = e.next;
 
+            console.autoOpen = false;
+
             _self.stopping     = false;
             _self.running      = true;
             _self.lastTestNode = fileNode;
             
             testpanel.setLog(fileNode, "running");
             
-            dgTestProject.slideOpen(null, fileNode);
+            //@todo this should be loaded via file contents
+            if (testpanel.expandTests)
+                dgTestProject.slideOpen(null, fileNode);
+
             var timer = setInterval(function(){
                 if (fileNode.selectNodes("test").length) {
                     clearTimeout(timer);
@@ -181,13 +202,15 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                     //Remove summary
                     data = data.replace(/\s*Summary\:\s+Total number of tests[\s\S]*$/, "");
                     data = data.substr(1);
+                    var parts = data.match(/\[(\d+)m[\s\S]*?(?:$|(?=\[[1-9]\d*m))/g);
+                    if (!parts)
+                        return;
 
-                    var match;
-                    while (data.length && data.charAt(0) == "[") {
+                    for (var i = 0; i < parts.length; i++) {
+                        var part = parts[i];
                         //FAIL
-                        if (data.substr(0, 3) == "[31") {
-                            match = data.match(/^\[31m\[(\d+)\/(\d+)\]\s+(.*?)\s+FAIL.*([\S\s]*?)(?=\[\d+m|$)/);
-                            data = data.substr(match[0].length).trim();
+                        if (part.substr(0, 3) == "[31") {
+                            match = part.match(/^\[31m\[(\d+)\/(\d+)\]\s+(.*?)\s+FAIL.*([\S\s]*?)(?=\[\d+m|$)/);
                             
                             var testNode = fileNode.selectSingleNode("test[@name=" + escapeXpathString(match[3]) + "]");
                             testpanel.setError(testNode, "Test Failed");
@@ -203,9 +226,8 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                         }
                         //PASS
                         //[32m[4/1] test basic addition OK[0m
-                        else if (data.substr(0, 3) == "[32") {
-                            match = data.match(/^\[32m\[(\d+)\/(\d+)\]\s+(.*?)\sOK[\s\S]{4,6}/);
-                            data = data.substr(match[0].length).trim();
+                        else if (part.substr(0, 3) == "[32") {
+                            match = part.match(/^\[32m\[(\d+)\/(\d+)\]\s+(.*?)\sOK[\s\S]{4,6}/);
                             
                             var testNode = fileNode.selectSingleNode("test[@name=" + escapeXpathString(match[3]) + "]");
                             testpanel.setPass(testNode);
@@ -272,6 +294,8 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
         this.running  = false;
         
         testpanel.stopped();
+        
+        console.autoOpen = true;
     },
     
     createAndOpenTest : function(){

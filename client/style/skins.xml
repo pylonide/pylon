@@ -3736,6 +3736,30 @@
     </a:presentation>
 </a:frame>
 
+<a:label name="black_label">
+    <a:style><![CDATA[
+        .black_label{
+            font-size: 8pt;
+            font-family: Tahoma, Arial;
+            overflow: hidden;
+            cursor: default;
+            color : #606060;
+            text-shadow: rgba(0, 0, 0, 1) 0px 1px 0px;
+            padding : 2px;
+            white-space : nowrap;
+        }
+
+        .black_labelDisabled{
+            color: #bebebe;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main caption="." for="@for" minheight="17">
+            <div class="black_label"> </div>
+        </a:main>
+    </a:presentation>
+</a:label>
 <a:label name="label">
     <a:style><![CDATA[
         .label{
@@ -3743,8 +3767,7 @@
             font-family: Tahoma, Arial;
             overflow: hidden;
             cursor: default;
-            color : #606060;
-            text-shadow: rgba(0, 0, 0, 1) 0px 1px 0px;
+            color : #333;
             padding : 2px;
             white-space : nowrap;
         }
@@ -3770,7 +3793,6 @@
         </a:main>
     </a:presentation>
 </a:label>
-
 <a:list name="lineselect">
     <a:style><![CDATA[
         .lineselect{

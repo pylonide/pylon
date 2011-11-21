@@ -122,7 +122,10 @@ module.exports = ext.register("ext/panels/panels", {
             }
             else {
                 if (panel[prop] != set[prop]) {
-                    if (prop == "visible") {
+                    if (prop == "width") {
+                        panelExt.$lastWidth = set[prop];
+                    }
+                    else if (prop == "visible") {
                         //panelExt[set[prop] ? "enable" : "disable"]();
                     }
                     else if (prop == "height" || !panelExt.excludeParent)
@@ -183,6 +186,14 @@ module.exports = ext.register("ext/panels/panels", {
                 pset   = _self.$settings[path].parent;
 
                 for (i = 0; i < l; i++) {
+                    if (props[i] == "width") {
+                        if (set[p = props[i]] !== _self.panels[path].$lastWidth) {
+                            set[p] = _self.panels[path].$lastWidth;
+                            changed = true;
+                        }
+                        continue;
+                    }
+                        
                     if (set[p = props[i]] !== panel[p]) {
                         set[p] = panel[p];
                         changed = true;

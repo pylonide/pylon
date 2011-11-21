@@ -94,6 +94,21 @@ module.exports = ext.register("ext/selenium/selenium", {
             }
         });
         
+        ide.addEventListener("afterfilesave", function(e){
+            var node = e.node;
+            var name = node.getAttribute("name");
+            if (!name.match(/.stest$/))
+                return;
+            
+            var path = node.getAttribute("path");
+            var fileNode = mdlTests.queryNode("//file[@path=" + escapeXpathString(path) + "]");
+            if (!fileNode) {
+                fileNode = apf.xmldb.getCleanCopy(node);
+                fileNode.setAttribute("type", "nodeunit");
+                apf.xmldb.appendChild(testpanel.findParent(path), fileNode);
+            }
+        });
+        
         ide.addEventListener("test.expand.selenium", function(e){
             var xmlNode = e.xmlNode;
             _self.reloadTestFile(xmlNode);

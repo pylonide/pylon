@@ -2,7 +2,7 @@
     <a:bar id="seleniumSettings" visible="false">
         <a:divider skin="c9-divider-hor" caption="Selenium" margin="5 0 0 0" />
         <a:table columns="60,195" padding="4" edge="10">
-            <a:label caption="Run where" />
+            <a:label skin="black_label" caption="Run where" />
             <a:dropdown id="ddWhere" 
               value   = "[{require('ext/settings/settings').model}::test/selenium/@where]"
               skin    = "black_dropdown" 
@@ -10,7 +10,7 @@
                 <a:item type="radio" caption="Locally" value="local" />
                 <a:item type="radio" caption="Sauce Labs" value="sauce" />
             </a:dropdown>
-            <a:label caption="Operating System" visible="{ddWhere.value == 'sauce'}" />
+            <a:label skin="black_label" caption="Operating System" visible="{ddWhere.value == 'sauce'}" />
             <a:dropdown id="ddSeOS"
               model     = "mdlSelPlatforms"
               skin      = "black_dropdown" 
@@ -20,7 +20,7 @@
               each      = "[platform]"
               caption   = "[@caption]" 
               visible   = "{ddWhere.value == 'sauce'}" />
-            <a:label caption="Browser"/>
+            <a:label skin="black_label" caption="Browser"/>
             <a:dropdown id="ddSeBrowser"
               model     = "{ddSeOS.visible ? ddSeOS.selected : %[mdlSelPlatforms::local]}"
               skin      = "black_dropdown" 

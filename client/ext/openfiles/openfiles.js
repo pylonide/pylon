@@ -154,8 +154,9 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     },
 
     enable : function(noButton){
-        if (self.winOpenFiles)
-            winOpenFiles.show();
+        winOpenFiles.show();
+        winOpenFiles.parentNode.setWidth(this.$lastWidth || 200);
+        
         colLeft.show();
         if (!noButton) {
             this.button.setValue(true);
@@ -167,8 +168,10 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     },
 
     disable : function(noButton){
-        if (self.winOpenFiles)
+        if (self.winOpenFiles) {
+            this.$lastWidth = winFilesViewer.parentNode.width;
             winOpenFiles.hide();
+        }
         if (!noButton)
             this.button.setValue(false);
 

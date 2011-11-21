@@ -196,6 +196,8 @@ module.exports = ext.register("ext/settings/settings", {
 
     enable : function(noButton){
         winSettings.show();
+        winSettings.parentNode.setWidth(this.$lastWidth || 250);
+        
         colLeft.show();
         if (!noButton) {
             this.button.setValue(true);
@@ -207,8 +209,10 @@ module.exports = ext.register("ext/settings/settings", {
     },
 
     disable : function(noButton){
-        if (self.winSettings)
+        if (self.winSettings) {
+            this.$lastWidth = winFilesViewer.parentNode.width;
             winSettings.hide();
+        }
         if (!noButton)
             this.button.setValue(false);
 
