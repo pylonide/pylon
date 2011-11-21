@@ -215,6 +215,7 @@ module.exports = {
             if (content.length) {
                 editor.navigateLineEnd()
                 editor.insert(content);
+                util.insertMode(editor);
             }
         }
     },
@@ -229,7 +230,20 @@ module.exports = {
                 editor.navigateUp();
                 editor.navigateLineEnd()
                 editor.insert(content);
+                util.insertMode(editor);
             }
+        }
+    },
+    "shift-5": {
+        nav: function(editor, range, count, param) {
+            var cursor = editor.getCursorPosition();
+            var match = editor.session.findMatchingBracket({
+                row: cursor.row,
+                column: cursor.column + 1
+            });
+
+            if (match)
+                editor.moveCursorTo(match.row, match.column);
         }
     }
 };

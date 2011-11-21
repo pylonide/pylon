@@ -85,6 +85,7 @@ var inputBuffer = exports.inputBuffer = {
             };
             this.currentCmd = OPERATOR;
             this.accepting = [NUMBER, MOTION, ACTION];
+            this.exec(editor, { operator: this.operator });
         }
         else if (motions[char] && this.isAccepting(MOTION)) {
             this.currentCmd = MOTION;
@@ -144,11 +145,20 @@ var inputBuffer = exports.inputBuffer = {
         var o = action.operator;
         var a = action.action;
 
+        if (o && !editor.selection.isEmpty()) {
+            if (operators[o.char].selFn) {
+                operators[o.char].selFn(editor, editor.getSelectionRange(), o.count, param);
+                this.reset();
+            }
+            return;
+        }
+
         // There is an operator, but no motion or action. We try to pass the
         // current char to the operator to see if it responds to it (an example
         // of this is the 'dd' operator).
-        if (!m && !a && o) {
-            operators[o.char](editor, editor.getSelectionRange(), o.count, param);
+        else if (!m && !a && o && param) {
+            operators[o.char].fn(editor, null, o.count, param);
+            this.reset();
         }
         else if (m) {
             var run = function(fn) {
@@ -173,14 +183,15 @@ var inputBuffer = exports.inputBuffer = {
             else if (selectable) {
                 repeat(function() {
                     run(motionObj.sel);
-                    operators[o.char](editor, editor.getSelectionRange(), o.count, param);
+                    operators[o.char].fn(editor, editor.getSelectionRange(), o.count, param);
                 }, o.count || 1);
             }
+            this.reset();
         }
         else if (a) {
             a.fn(editor, editor.getSelectionRange(), a.count, param);
+            this.reset();
         }
-        this.reset();
     },
 
     isAccepting: function(type) {
@@ -240,8 +251,10 @@ var commands = exports.commands = {
     }
 };
 
-operators.v = function(editor, range, count, param) {
-    onVisualMode = true;
+operators.v = {
+    fn: function(editor, range, count, param) {
+        onVisualMode = true;
+    }
 };
 });
 
