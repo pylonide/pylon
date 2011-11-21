@@ -87,10 +87,7 @@ module.exports = ext.register("ext/vim/vim", {
         var menuItem = ide.mnuEdit.appendChild(new apf.item({
             caption: "Vim mode",
             type: "check",
-            checked : "[{require('ext/settings/settings').model}::editors/code/@vimmode]",
-            onclick: function() {
-                settings.save();
-            }
+            checked : "[{require('ext/settings/settings').model}::editors/code/@vimmode]"
         }));
         this.nodes.push(ide.mnuEdit.appendChild(menuItem));
 
