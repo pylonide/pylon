@@ -33,7 +33,7 @@ module.exports = ext.register("ext/language/language", {
     worker  : null,
     
     commands : {
-        "outline": {hint: "show outline"},
+        //"outline": {hint: "show outline"},
         "complete": {hint: "code complete"},
         "renameVar": {hint: "Rename variable"}
     },
@@ -64,7 +64,7 @@ module.exports = ext.register("ext/language/language", {
 	    });
         
         // Language features
-        outline.hook(this, worker);
+        //outline.hook(this, worker);
         complete.hook(this, worker);
         refactor.hook(this, worker);
 	},
