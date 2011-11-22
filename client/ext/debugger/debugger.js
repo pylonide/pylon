@@ -88,15 +88,15 @@ module.exports = ext.register("ext/debugger/debugger", {
                 {
                     hidden  : false,
                     buttons : [
-                        { caption: "Interactive", ext : [name, "dbInteractive"], hidden: true },
-                        { caption: "Variables", ext : [name, "dbgVariable"], hidden: true },
-                        { caption: "Breakpoints", ext : [name, "dbgBreakpoints"], hidden: true }
+                        { caption: "Interactive", ext : [name, "dbInteractive"]},
+                        { caption: "Variables", ext : [name, "dbgVariable"]},
+                        { caption: "Breakpoints", ext : [name, "dbgBreakpoints"]}
                     ]
                 },
                 {
                     hidden  : false,
                     buttons : [
-                        { caption: "Call Stack", ext : [name, "dbgCallStack"], hidden: true }
+                        { caption: "Call Stack", ext : [name, "dbgCallStack"]}
                     ]
                 }
                 
@@ -139,7 +139,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             
             // when visible -> make sure to refresh the grid
             dbgVariable.addEventListener("prop.visible", function(e) {
-                if (e.value) {
+                if (e.value && self["dgVars"]) {
                     dgVars.reload();
                 }
             });

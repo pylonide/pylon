@@ -102,25 +102,63 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 catch (ex) {}
             }
             
-            if(!state.type || state.type != 'new_type')
+            if(!state || !state.type || state.type != 'new_type')
                 state = _self.defaultState;
             
             _self.layout.loadState(state);
             _self.loaded = true;
+            
+            if(!state.changed)
+                settings.save();
         });
 
         ide.addEventListener("savesettings", function(e){
-            if (!_self.changed)
+            if (!_self.changed) {
+                if(!e.model.queryNode("auto/dockpanel_default3")) {
+                    var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/dockpanel_default3/text()");
+                    xmlSettings.nodeValue = apf.serialize({
+                        state  : _self.layout.getState(),
+                        hidden : _self.sections
+                    });
+                }
                 return;
-
-            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/dockpanel/text()");
-            xmlSettings.nodeValue = apf.serialize({
-                state  : _self.layout.getState(),
-                hidden : _self.sections
-            });
+            }
             
+            if(!_self.loadDefault) {
+                var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/dockpanel/text()");
+                xmlSettings.nodeValue = apf.serialize({
+                    state  : _self.layout.getState(true),
+                    hidden : _self.sections
+                });
+            }
             return true;
         });
+        
+                
+        mnuToolbar.appendChild(new apf.item({
+            caption : "Restore Default",
+            onclick : function(){
+                var defaultSettings = settings.model.queryValue("auto/dockpanel_default3/text()"),
+                    state;
+                if (defaultSettings) {
+                    // JSON parse COULD fail
+                    try {
+                        _self.loadDefault = true;
+                        var objSettings = JSON.parse(defaultSettings);
+                        apf.extend(_self.sections, objSettings.hidden);
+                        state = objSettings.state;
+                    }
+                    catch (ex) {}
+                    _self.layout.clearState(true);
+                    _self.layout.loadState(state, true);
+                    _self.loadDefault = false;
+
+//                    settings.save();
+                }
+            }
+        }));
+        
+        mnuToolbar.appendChild(new apf.divider());
     },
 
     enable : function(){
@@ -164,9 +202,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                     layout.show(page);
                 }
             }
-        }));
-        
-        
+        }));        
     },
 
     addDockable : function(def){        
@@ -185,6 +221,8 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             }
         }
         
+        if(!def.barNum)
+            def.barNum = 0;
         
         if (def.sections) {
             if(def.barNum || def.barNum === 0) {

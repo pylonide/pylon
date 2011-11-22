@@ -40,7 +40,8 @@ module.exports = ext.register("ext/run/run", {
             hidden  : false,
             height  : 30,
             width   : 150,
-            draggable: false,
+            flex    : "",
+//            draggable: false,
             barNum  : 0,
             options : {
                 resizable  : false,
@@ -52,13 +53,13 @@ module.exports = ext.register("ext/run/run", {
                 id      : "btnRunCommands",
                 caption : "Run Commands", 
                 "class" : "btn-runcommands",
-                ext     : [name, "tbDebugNav"],
-                draggable: false,
-                hidden  : true
+                ext     : [name, "pgDebugNav"],
+//                draggable: false,
+//                hidden  : true
             }]
         });
         
-        dock.register(name, "tbDebugNav", {
+        dock.register(name, "pgDebugNav", {
             menu : "Run Commands",
             primary : {
                 backgroundImage: "/static/style/images/debugicons.png",
@@ -66,7 +67,7 @@ module.exports = ext.register("ext/run/run", {
                 activeState: { x: -6, y: -265 }
             }
         }, function(type) {
-            return tbDebugNav;
+            return pgDebugNav;
         });
         ext.initExtension(_self);
     },
@@ -243,6 +244,7 @@ module.exports = ext.register("ext/run/run", {
             item.destroy(true, true);
         });
         this.nodes = [];
+        tbDebugNav.destroy(true, true);
     }
 });
 

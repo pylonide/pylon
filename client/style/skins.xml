@@ -46,14 +46,6 @@
         .basic{
             position : relative;
         }
-        .dockwin_runbtns .basic {
-            
-        }
-        
-        .expandedpanel .basic.runbtns {
-            border-bottom: 1px solid #000000;
-            box-shadow: 0 1px 0 #505053;
-        }
     ]]></a:style>
 
     <a:presentation>
@@ -4618,7 +4610,7 @@
             position              : relative;
             padding               : 5px 4px;
             margin-left : -42px;
-            margin-top : 13px;
+            margin-top : 15px;
         }
         
         .dockwin_runbtns .dockwin_runbtns-bg {
@@ -7621,6 +7613,63 @@
             <div class="btntab">
                 <!--div class="tab_icon"> </div-->
                 <div class="tab_title">-</div>
+            </div>
+        </a:button>
+        <a:btnclose>
+            <strong> </strong>
+        </a:btnclose>
+        <a:page container=".">
+            <div class="page"> </div>
+        </a:page>
+    </a:presentation>
+</a:tab>
+<a:tab name="dockbar">
+    <a:style><![CDATA[
+        .dockbar {
+            position:relative;
+            overflow: visible;
+        }
+        
+        .expandedpanel .dockbar {
+            border-bottom: 1px solid #000000;
+            box-shadow: 0 1px 0 #505053;
+        }
+        
+        .dockcol .dockbar {
+            
+        }
+        
+        .dockbar .btncontainer{
+            display: none;
+        }
+
+        .dockbar .page {
+            display : none;
+        }
+
+        .dockcol .dockbar .page {
+            
+        }
+
+        .dockbar .page.curpage{
+            display : block;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isWebkit"><![CDATA[
+        
+    ]]></a:style>
+    <a:presentation>
+        <a:main pages="." buttons="div[1]">
+            <div class="dockbar">
+                <div class="btncontainer"> </div>
+            </div>
+        </a:main>
+        <a:button
+          caption   = "div[1]/text()"
+          container = "."
+          maxwidth  = "100"
+          minwidth  = "10">
+            <div class="btntab">
             </div>
         </a:button>
         <a:btnclose>
