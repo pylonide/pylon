@@ -138,7 +138,7 @@ module.exports = ext.register("ext/selenium/selenium", {
             var sp       = new SeleniumPlayer();
             sp.realtime  = false;
             
-            _self.runnning = true;
+            _self.running = true;
             _self.stopping = false; //@todo this shouldn't happen
             _self.jobId = null;
             
@@ -154,6 +154,7 @@ module.exports = ext.register("ext/selenium/selenium", {
                             "Invalid JSON. Could not parse file format: "
                             + e.message);
                         
+                        _self.running = false;
                         nextFile();
                         return;
                     }
@@ -214,8 +215,10 @@ module.exports = ext.register("ext/selenium/selenium", {
                                         ide.removeEventListener("socketMessage", arguments.callee);
                                         if (_self.stopping)
                                             _self.stopped();
-                                        else
+                                        else {
+                                            _self.running = false;
                                             nextFile();
+                                        }
                                         break;
                                     case 1: //PASS
                                         var assertNode = 
@@ -312,6 +315,8 @@ module.exports = ext.register("ext/selenium/selenium", {
                         else
                             testpanel.setPass(fileNode, "(" + tests.length + ")");
                         
+                        _self.running = false;
+                        
                         nextFile();
                     });
                 }
@@ -319,10 +324,12 @@ module.exports = ext.register("ext/selenium/selenium", {
                     testpanel.setError(fileNode,
                         "Could not load file contents: " + extra.message);
                     
+                    _self.running  = false;
+                    _self.stopping = false;
+                    
                     if (!_self.stopping)
                         nextFile();
                     
-                    _self.stopping = false;
                 }
             });
         });
@@ -360,17 +367,17 @@ module.exports = ext.register("ext/selenium/selenium", {
     stop : function(){
         this.stopping = true;
             
-        if (!this.jobId) {
-            this.cancelOnJobId = true;
-            return;
-        }
-        this.cancelOnJobId = false;
-        
         if (this.lastTestNode) {
             testpanel.setLog(this.lastTestNode.tagName == "file"
                 ? this.lastTestNode
                 : this.lastTestNode.parentNode, "Stopping...");
         }
+        
+        if (!this.jobId) {
+            this.cancelOnJobId = true;
+            return;
+        }
+        this.cancelOnJobId = false;
         
         var data = {
             command : "selenium",
@@ -383,7 +390,7 @@ module.exports = ext.register("ext/selenium/selenium", {
     },
     
     stopped : function(msg){
-        this.runnning = false;
+        this.running = false;
         this.stopping = false;
         
         testpanel.stopped();

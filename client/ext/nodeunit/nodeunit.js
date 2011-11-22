@@ -156,6 +156,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                     if (_self.stopping)
                         _self.stopped();
                     else {
+                        _self.running = false;
                         if (fileNode.getAttribute("status") == -1)
                             testpanel.setError(fileNode, "failed");
                         if (!stProcessRunning.active)
@@ -178,7 +179,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                     return;
                 }
                 else if (nodes.length)
-                    testpanel.setError(fileNode, "failed " + (nodes.length) 
+                    testpanel.setError(fileNode, "Failed " + (nodes.length) 
                         + " tests of " + fileNode.selectNodes("test").length);
                 else
                     testpanel.setPass(fileNode, "(" + tests.length + ")");
@@ -211,6 +212,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                         //FAIL
                         if (part.substr(0, 3) == "[31") {
                             match = part.match(/^\[31m\[(\d+)\/(\d+)\]\s+(.*?)\s+FAIL.*([\S\s]*?)(?=\[\d+m|$)/);
+                            if (!match) debugger;
                             
                             var testNode = fileNode.selectSingleNode("test[@name=" + escapeXpathString(match[3]) + "]");
                             testpanel.setError(testNode, "Test Failed");

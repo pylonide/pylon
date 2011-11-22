@@ -50553,7 +50553,7 @@ apf.aml.setElement("color", apf.BindingColorRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingcolumnrule.js)SIZE(20506)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingcolumnrule.js)SIZE(20001)TIME(Mon, 21 Nov 2011 10:16:45 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51053,7 +51053,7 @@ apf.BindingColumnRule = function(struct, tagName){
               && apf.getChildNumber(_self.$int) < pNode.$headings.length - 1) {
                 var t = d < 4 ? this.previousSibling : this;
                 pNode.$ext.style.cursor = t && _self.$resizable
-                    ? "w-resize"
+                    ? (apf.isWebkit ? "ew-resize" : "w-resize")
                     : "default";
                 
                 apf.setStyleClass(this, "", ["hover", "down"]);

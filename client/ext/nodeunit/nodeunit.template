@@ -1,5 +1,5 @@
 "use strict";
-require("../../support/paths");
+require("./support/paths");
 
 var assert = require("assert");
 //var module = require("./module");
@@ -10,6 +10,8 @@ module.exports = {
         //assert.equal(!true, false);
     }
 
-}
+};
 
-!module.parent && require("c9/test").testcase(module.exports).deps().exec();
+if (typeof module !== "undefined" && module === require.main) {
+    require("asyncjs").test.testcase(module.exports).exec()
+}
