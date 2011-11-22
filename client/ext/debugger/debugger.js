@@ -179,6 +179,8 @@ module.exports = ext.register("ext/debugger/debugger", {
             _self.$syncTree();
         });
         mdlDbgSources.addEventListener("update", function(e) {
+            if (e.action !== "add") return;
+            
             // TODO: optimize this!
             _self.$syncTree();
         });
