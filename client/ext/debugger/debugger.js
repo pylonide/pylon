@@ -179,8 +179,8 @@ module.exports = ext.register("ext/debugger/debugger", {
             _self.$syncTree();
         });
         mdlDbgSources.addEventListener("update", function(e) {
-            if (e.action != "add")
-                return;
+            if (e.action !== "add") return;
+            
             // TODO: optimize this!
             _self.$syncTree();
         });
@@ -251,6 +251,16 @@ module.exports = ext.register("ext/debugger/debugger", {
             dbg.changeLive(scriptId, NODE_PREFIX + value + NODE_POSTFIX, false, function(e) {
                 //console.log("v8 updated", e);
             });
+        });
+        
+        // we're subsribing to the 'running active' prop
+        // this property indicates whether the debugger is actually running (when on a break this value is false)
+        stRunning.addEventListener("prop.active", function (e) {
+            // if we are really running (so not on a break or something)
+            if (e.value) {
+                // we clear out mdlDbgStack
+                mdlDbgStack.load("<frames></frames>");
+            }
         });
     },
 
