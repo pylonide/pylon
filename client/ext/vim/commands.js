@@ -95,7 +95,7 @@ var inputBuffer = exports.inputBuffer = {
                 motion: {
                     char: char,
                     count: this.getCount()
-                },
+                }
             };
 
             if (motions[char].param)
@@ -111,7 +111,7 @@ var inputBuffer = exports.inputBuffer = {
             var actionObj = {
                 action: {
                     fn: actions[char].fn,
-                    count: this.getCount(),
+                    count: this.getCount()
                 }
             };
 
@@ -119,7 +119,7 @@ var inputBuffer = exports.inputBuffer = {
                 this.waitForParam(actionObj);
             }
             else {
-                this.exec(editor, actionObj)
+                this.exec(editor, actionObj);
             }
         }
         else if (this.operator) {
@@ -172,6 +172,7 @@ var inputBuffer = exports.inputBuffer = {
 
             var motionObj = motions[m.char];
             var selectable = motionObj.sel;
+
             if (!o) {
                 if (onVisualMode && selectable) {
                     run(motionObj.sel);

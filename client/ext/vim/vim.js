@@ -6,7 +6,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-"use strict"
+"use strict";
 
 define(function(require, exports, module) {
 
@@ -55,7 +55,6 @@ var removeCommands = function removeCommands(editor, commands) {
 };
 
 var enableVim = function enableVim() {
-    console.log("Enable")
     if (editors.currentEditor) {
         var editor = editors.currentEditor.ceEditor.$editor;
 

@@ -1,6 +1,9 @@
-"use strict"
+var util = require("ext/vim/maps/util");
 
 define(function(require, exports, module) {
+
+"use strict";    
+
 module.exports = {
     "d": {
             selFn: function(editor, range, count, param) {
@@ -28,12 +31,12 @@ module.exports = {
                 util.insertMode(editor);
             },
             fn: function(editor, range, count, param) {
-                count = parseInt(count || 1);
+                count = parseInt(count || 1, 10);
                 switch (param) {
                     case "c":
                         for (var i=0; i < count; i++) {
                             editor.removeLines();
-                            util.insertMode(editor)
+                            util.insertMode(editor);
                         }
 
                         break;
@@ -46,4 +49,4 @@ module.exports = {
             }
     }
 };
-})
+});

@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 define(function(require, exports, module) {
 module.exports = {
@@ -13,6 +13,8 @@ module.exports = {
         cursor.style.borderLeft = "2px solid black";
 
         editor.setOverwrite(false);
+        editor.keyBinding.$data.buffer = "";
+        editor.keyBinding.$data.state = "insertMode";
     },
     normalMode: function(editor) {
         // Switch editor to normal mode
@@ -28,6 +30,8 @@ module.exports = {
             editor.navigateLeft();
         }
         editor.setOverwrite(true);
+        editor.keyBinding.$data.buffer = "";
+        editor.keyBinding.$data.state = "start";
     },
     getRightNthChar: function(editor, cursor, char, n) {
         var line = editor.getSession().getLine(cursor.row);
@@ -35,7 +39,7 @@ module.exports = {
 
         return n < matches.length ? matches.slice(0, n).join(char).length : 0;
     },
-    getLeftNthChar: function(env, cursor, char, n) {
+    getLeftNthChar: function(editor, cursor, char, n) {
         var line = editor.getSession().getLine(cursor.row);
         var matches = line.substr(0, cursor.column + 1).split(char);
 
