@@ -13,7 +13,7 @@
           top="-22"
           skin="header-btn"
           right="5"
-          icon="refresh.png"
+          icon="settings.png"
           submenu = "mnuFilter" />
         <a:menu id="mnuFilter">
             <a:item type="radio" value="all" selected="true">All</a:item>

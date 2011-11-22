@@ -11,7 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var settings = require("ext/settings/settings");
-var panels = require("ext/panels/panels");
+var treepanel = require("ext/tree/tree");
 var markup = require("text!ext/openfiles/openfiles.xml");
 
 module.exports = ext.register("ext/openfiles/openfiles", {
@@ -20,34 +20,31 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     alone           : true,
     type            : ext.GENERAL,
     markup          : markup,
+    nodes           : [],
 
     hook : function(){
-        panels.register(this);
-        
-        // fix to prevent Active Files button is placed above Project Files
-        el = (navbar.firstChild["class"] == "project_files") ? navbar.childNodes[1] : navbar.firstChild;
-        var btn = this.button = navbar.insertBefore(new apf.button({
-            skin    : "mnubtn",
-            state   : "true",
-            "class" : "open_files",
-            caption : "Active Files"
-        }), el);
+        this.nodes.push(
+            mnuFilesSettings.insertBefore(new apf.divider(), 
+                mnuFilesSettings.firstChild),
+            mnuFilesSettings.insertBefore(new apf.item({
+                type : "radio",
+                caption : "Show Open Files",
+                onclick : function(){
+                    _self.showOpenFiles();
+                }
+            }), mnuFilesSettings.firstChild),
+            mnuFilesSettings.insertBefore(new apf.item({
+                type : "radio",
+                selected : true,
+                caption : "Show Project Files",
+                onclick : function(){
+                    _self.showProjectFiles();
+                }
+            }), mnuFilesSettings.firstChild)
+        );
 
         var _self = this;
         var model = this.model = new apf.model().load("<files />");
-
-        btn.addEventListener("mousedown", function(e){
-            var value = this.value;
-            if (navbar.current && (navbar.current != _self || value)) {
-                navbar.current.disable(navbar.current == _self);
-                if (value) {
-                    return;
-                }
-            }
-
-            panels.initPanel(_self);
-            _self.enable(true);
-        });
 
         ide.addEventListener("afteropenfile", function(e){
             var node = e.doc.getNode();
@@ -74,10 +71,10 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     },
 
     init : function() {
-        this.panel = winOpenFiles;
-
         var _self = this;
-        colLeft.appendChild(winOpenFiles);
+        
+        this.nodes.push(winFilesViewer.appendChild(lstOpenFiles));
+        
         lstOpenFiles.setModel(this.model);
 
         lstOpenFiles.addEventListener("afterselect", this.$afterselect = function(e) {
@@ -142,45 +139,43 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         });
     },
     
-    show : function(){
-        if (navbar.current) {
-            if (navbar.current == this)
-                return;
-            navbar.current.disable();
-        }
+    showOpenFiles : function(){
+        ext.initExtension(this);
         
-        panels.initPanel(this);
-        this.enable();
-    },
-
-    enable : function(noButton){
-        winOpenFiles.show();
-        winOpenFiles.parentNode.setWidth(this.$lastWidth || 200);
+        trFiles.hide();
+        lstOpenFiles.show();
         
-        colLeft.show();
-        if (!noButton) {
-            this.button.setValue(true);
-            if(navbar.current && (navbar.current != this))
-                navbar.current.disable(false);
-        }
-        splitterPanelLeft.show();
-        navbar.current = this;
+        winFilesViewer.setTitle("Open Files");
+        sbTrFiles.setAttribute("for", "lstOpenFiles");
     },
-
-    disable : function(noButton){
-        if (self.winOpenFiles) {
-            this.$lastWidth = winFilesViewer.parentNode.width;
-            winOpenFiles.hide();
-        }
-        if (!noButton)
-            this.button.setValue(false);
-
-        splitterPanelLeft.hide();
+    
+    showProjectFiles : function(){
+        trFiles.show();
+        if (self.lstOpenFiles)
+            lstOpenFiles.hide();
+        
+        winFilesViewer.setTitle("Project Files");
+        sbTrFiles.setAttribute("for", "trFiles");
     },
-
+    
+    enable : function(){
+        this.nodes.each(function(item){
+            item.enable();
+        });
+    },
+    
+    disable : function(){
+        this.nodes.each(function(item){
+            item.disable();
+        });
+    },
+    
     destroy : function(){
-        panels.unregister(this);
-    }
+        this.nodes.each(function(item){
+            item.destroy(true, true);
+        });
+        this.nodes = [];
+    },
 });
 
 });

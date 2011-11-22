@@ -171,8 +171,7 @@ module.exports = ext.register("ext/tree/tree", {
 
         colLeft.appendChild(winFilesViewer);
 
-        mnuView.appendChild(new apf.divider());
-        mnuView.appendChild(new apf.item({
+        mnuFilesSettings.appendChild(new apf.item({
             id      : "mnuitemHiddenFiles",
             type    : "check",
             caption : "Show Hidden Files",

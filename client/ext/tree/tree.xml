@@ -72,9 +72,20 @@
           top="-22"
           skin="header-btn"
           right="5"
+          icon="settings.png"
+          submenu="mnuFilesSettings"/>
+        <a:button
+          top="-22"
+          skin="header-btn"
+          right="29"
           icon="refresh.png"
           onclick="require('ext/tree/tree').refresh()" />
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
+        
+        <a:menu id="mnuFilesSettings">
+            
+        </a:menu>
+        
         <a:tree id="trFiles" canrename="true" border="0" simpledata="true"
           contextmenu="mnuCtxTree" multiselect="false" reselectable="true" 
           onbeforeremove="return remove(this)" disabled="{{!stServerConnected.active}}"
