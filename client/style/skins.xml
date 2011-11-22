@@ -55,7 +55,25 @@
         </a:main>
     </a:presentation>
 </a:bar>
-    <a:bar name="c9-menu-bar">
+<a:bar name="c9-header-bar">
+    <a:style><![CDATA[
+        .c9-header-bar{
+            position : relative;
+            background : url(images/headertbleft.png) no-repeat 0 0,
+                url(images/headertbright.png) no-repeat top right,
+                url(images/headertbrepeat.png) repeat-x;
+            padding : 4px 30px 0 30px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="c9-header-bar">
+            </div>
+        </a:main>
+    </a:presentation>
+</a:bar>
+<a:bar name="c9-menu-bar">
     <a:style><![CDATA[
         .c9-menu-bar {
             position      : relative;
@@ -5393,6 +5411,10 @@
             left:4px;
             background-position: 0 0;
             background-repeat:no-repeat;
+            display : none;
+        }
+        .c9-dropdown-btnIcon .c9-icon {
+            display : block;
         }
 
          .c9-dropdown-btn .c9-label {
@@ -5403,9 +5425,12 @@
             color:#d6d6d6;
             line-height:14px;
             height             : 14px;
-            padding:1px 5px 0 26px;
+            padding:1px 5px 0 7px;
             margin:3px 0 0 0;
             border-right:1px solid #1c1c1c;
+         }
+         .c9-dropdown-btnIcon .c9-label {
+            padding:1px 5px 0 26px;
          }
 
          .c9-dropdown-btn .c9-arrow {
@@ -5460,9 +5485,13 @@
         .c9-dropdown-btnDown.main .c9-label,
         .c9-dropdown-btnOver .c9-label {
             height       : 17px;
-            padding      : 4px 5px 0 26px;
+            padding      : 4px 5px 0 7px;
             margin       : 0;
         }
+        .c9-dropdown-btnIcon.c9-dropdown-btnDown .c9-label,
+        .c9-dropdown-btnIcon.c9-dropdown-btnOver .c9-label {
+            padding      : 4px 5px 0 26px;
+         }
 
         .c9-dropdown-btnDown.main .c9-arrow,
         .c9-dropdown-btnOver .c9-arrow {
@@ -5529,6 +5558,9 @@
             color:#18191a;
             text-shadow   : rgba(62, 63, 64, 1) 0px 1px 0px;
             border-right:0;
+            padding:1px 6px 0 7px;
+         }
+         .c9-dropdown-btnIcon.c9-dropdown-btnDisabled .c9-label {
             padding:1px 6px 0 26px;
          }
 
@@ -5542,23 +5574,31 @@
     ]]></a:style>
     <a:style condition="apf.isSafari || apf.isChrome"><![CDATA[
         .c9-dropdown-btn .c9-label {
+            padding : 1px 3px 0 7px;
+        }
+        .c9-dropdown-btnIcon .c9-label {
             padding : 1px 3px 0 26px;
         }
 
         .c9-dropdown-btnOver .c9-label,
         .c9-dropdown-btnDown.main .c9-label {
             height  : 17px;
-            padding : 4px 3px 0 26px;
+            padding : 4px 3px 0 7px;
             margin  : 0;
         }
+        
+        .c9-dropdown-btnIcon.c9-dropdown-btnOver .c9-label,
+        .c9-dropdown-btnIcon.c9-dropdown-btnDown.main .c9-label {
+            padding : 4px 3px 0 26px;
+        }
 
-         .c9-dropdown-btnDisabled .c9-label {
+        .c9-dropdown-btnDisabled .c9-label {
             padding:1px 4px 0 26px;
-         }
+        }
 
-         .c9-dropdown-btnDisabled .c9-arrow {
+        .c9-dropdown-btnDisabled .c9-arrow {
             background-position : 0 6px;
-         }
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -7294,6 +7334,52 @@
                 <div class="sbtb_middle">
                     <input type="text"/>
                 </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:textbox>
+<a:textbox name="black_textbox">
+    <a:style><![CDATA[
+        .btextbox {
+            position : relative;
+        }
+
+        .btextbox {
+            padding          : 1px;
+            background: #6F6F6E;
+            color: #333333;
+            margin: 0;
+            outline: none;
+            font-family: Tahoma, Arial;
+            font-size: 12px;
+            text-overflow: ellipsis;
+            border : 1px solid black;
+            border-color : #333 #999 #999 #333;
+        }
+
+        .btextbox INPUT {
+            border           : 0;
+            font-size        : 11px;
+            color            : #eee;
+            font-family      : Arial;
+            outline          : none;
+            background-color : transparent;
+            width: 100%;
+        }
+
+        .btextboxInitial INPUT {
+            color : #777777;
+        }
+
+        .btextboxDisabled INPUT {
+            color : #EEE;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input="input">
+            <div class="btextbox">
+                <input type="text"/>
             </div>
         </a:main>
     </a:presentation>

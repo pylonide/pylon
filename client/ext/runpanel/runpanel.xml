@@ -1,0 +1,105 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+
+    <a:window id="winRunPanel" 
+      title    = "Run &amp; Debug" 
+      model    = "{lstRunCfg.selected}"
+      buttons  = "close" 
+      skin     = "fm-window"
+      flex     = "1" 
+      visible  = "true"
+      modal    = "false">
+        <a:button
+          top="-22"
+          skin="header-btn"
+          right="5"
+          icon="settings.png"
+          submenu="mnuDebugSettings" />
+
+        <a:bar skin="c9-header-bar" top="-30" right="24" height="30">
+            <a:hbox id="barTestTools" height="23">
+                <a:button
+                  caption  = "add"
+                  onclick  = "require('ext/runpanel/runpanel').addConfig()"
+                  skin     = "c9-toolbarbutton" />
+                <a:button 
+                  caption  = "remove"
+                  skin     = "c9-toolbarbutton"
+                  onclick  = "lstRunCfg.remove()"
+                  disabled = "{!lstRunCfg.selected}"/>
+                  
+                <!--a:divider skin="c9-divider-double" /-->
+                
+                <!--a:button
+                  id       = "btnRun"
+                  icon     = "{itmDebug.checked ? 'bug.png' : 'run.png'}"
+                  caption  = "{itmDebug.checked ? 'debug' : 'run'}"
+                  onclick  = "require('ext/runpanel/runpanel').run(itmDebug.checked)"
+                  visible  = "{!stProcessRunning.active and 1}"
+                  skin     = "c9-toolbarbutton"
+                  submenu  = "mnuRunCfg" />
+                <a:button
+                  icon     = "stop.png"
+                  caption  = "stop"
+                  skin     = "c9-toolbarbutton"
+                  onclick  = "require('ext/runpanel/runpanel').stop()"
+                  visible  = "{stProcessRunning.active and 1}" /-->
+            </a:hbox>
+        </a:bar>
+      
+        <a:vbox anchors="0 0 0 0">
+            <a:list id="lstRunCfg" 
+              model   = "mdlRunConfigurations"
+              border  = "0"
+              each    = "[config]"
+              caption = "[@name]"
+              flex    = "1"
+              skin    = "tree"
+              autoselect    = "true"
+              empty-message = "no run configurations"
+              onafterchoose = "
+                require('ext/runpanel/runpanel').runConfig(lstRunCfg.selected, itmDebug.checked);
+              " />
+              
+            <a:bar skin="basic" style="background:#323332;border-top:1px solid #111">
+                <a:table columns="90,*" padding="5" edge="10">
+                    <a:label width="100" skin="black_label" >Name</a:label>
+                    <a:textbox id="txtRunCfgName" 
+                      skin = "black_textbox"
+                      flex="1"
+                      realtime="true"
+                      value="[@name]"
+                      disabled="{!lstRunCfg.selected or [{lstRunCfg.selected}::@curfile]}"/>
+                      
+                    <a:label width="100" skin="black_label">File path</a:label>
+                    <a:textbox skin = "black_textbox" id="txtRunCfgName" flex="1" value="[@path]" disabled="{!lstRunCfg.selected or [{lstRunCfg.selected}::@curfile]}"/>
+                    <!--a:button icon="folder.png" disabled="true" tooltip="Browse ..."></a:button>
+                    
+                    <a:divider />
+                    <a:hbox align="center" margin="5 10" padding="10">
+                        <a:model id="mdlRunnerSelector">
+                            <data>
+                                <element caption="JavaScript" value="js" />
+                                <element caption="Python" value="py" />
+                            </data>
+                        </a:model>
+                        <a:label width="130" textalign="right">Runner</a:label>
+                        <a:dropdown id="ddRunnerSelector"
+                            model="mdlRunnerSelector"
+                            flex="1"
+                            disabled="{!lstRunCfg.selected}"
+                            selected="{lstRunCfg.selected.attributes['extension'].value}">
+                            <a:each match="[element]">
+                                <a:caption match="[@caption]" />
+                                <a:value match="[@value]" />
+                            </a:each>
+                        </a:dropdown>
+                    </a:hbox-->
+                    
+                    <a:label width="100" skin="black_label">Cmd Line Args</a:label>
+                    <a:textbox skin = "black_textbox" id="txtRunCfgName" flex="1" value="[@args]" disabled="{!!!lstRunCfg.selected}"/>
+                </a:table>
+            </a:bar>
+        </a:vbox>
+    </a:window>
+
+</a:application>

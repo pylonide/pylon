@@ -1,0 +1,41 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+
+    <a:menu id="mnuRunCfg">    
+        <a:item disabled="true" caption="no run history" />
+        <a:divider></a:divider>
+        <a:item onclick="require('ext/runpanel/runpanel').showRunConfigs(false)">Configure...</a:item>
+    </a:menu>
+    
+    <a:model id="mdlRunConfigurations">
+        <configurations />
+    </a:model>
+
+    <a:menu id="mnuDebugSettings">
+        <a:item id="itmDebug"
+          type    = "check"
+          checked = "true"
+          caption = "Run in debug mode" />
+    </a:menu>
+
+    <a:bar id="tbRun">
+        <a:divider skin="c9-divider" />
+        <a:splitbutton
+          id       = "btnRun"
+          icon     = "{itmDebug.checked ? 'bug.png' : 'run.png'}"
+          caption  = "{itmDebug.checked ? 'debug' : 'run'}"
+          onclick  = "require('ext/runpanel/runpanel').run()"
+          visible  = "{!stProcessRunning.active and 1}"
+          disabled = "{!ide.onLine}"
+          submenu  = "mnuRunCfg" />
+        <a:button
+          icon     = "stop.png"
+          caption  = "stop"
+          width    = "52"
+          margin   = "0 30 0 0"
+          skin     = "c9-toolbarbutton"
+          onclick  = "require('ext/runpanel/runpanel').stop()"
+          visible  = "{stProcessRunning.active and 1}" 
+          disabled = "{!ide.onLine}" />
+    </a:bar>
+
+</a:application>

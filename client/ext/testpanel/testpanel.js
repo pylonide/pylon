@@ -310,6 +310,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     },
 
     destroy : function(){
+        this.stop();
         panels.unregister(this);
     }
 });

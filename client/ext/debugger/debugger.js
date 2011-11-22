@@ -370,7 +370,7 @@ module.exports = ext.register("ext/debugger/debugger", {
         if (this.disabled) return;
         
         //stop debugging
-        require('ext/run/run').stop();
+        require('ext/runpanel/runpanel').stop();
         this.deactivate();
         
         //loop from each item of the plugin and disable it

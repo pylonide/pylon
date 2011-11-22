@@ -9,6 +9,38 @@
       optimize = "true">
         <a:state id="stTestRun" />
       
+        <a:bar skin="c9-header-bar" top="-30" right="24" height="30">
+            <a:hbox id="barTestTools">
+                <a:splitbutton
+                  id       = "btnNewTestType"
+                  caption  = "New"
+                  onclick  = ""
+                  submenu  = "mnuTestNew" />
+                <a:menu id="mnuTestNew">
+                    
+                </a:menu>
+                
+                <!--a:divider skin="c9-divider-double" /-->
+                
+                <a:splitbutton
+                  icon     = "run.png"
+                  caption  = "Run"
+                  onclick  = "require('ext/testpanel/testpanel').run(dgTestProject.getSelection());"
+                  submenu  = "mnuRunSettings" 
+                  disabled = "{stTestRun.active or !dgTestProject.selected}" />
+                <a:menu id="mnuRunSettings" pinned="true">
+                    
+                </a:menu>
+            
+                <a:button
+                  icon     = "stop.png"
+                  caption  = "stop"
+                  skin     = "c9-toolbarbutton"
+                  onclick  = "require('ext/testpanel/testpanel').stop()"
+                  disabled = "{!stTestRun.active or stTestRun.stopping}" />
+            </a:hbox>
+        </a:bar>
+      
         <a:button
           top="-22"
           skin="header-btn"
@@ -28,41 +60,6 @@
             ">Auto Expand Tests</a:item>
         </a:menu>
         <a:vbox anchors = "0 0 0 0" id="vboxTestPanel" style="background:#333">
-            <a:bar skin="basic" style="background-color:#333;padding:2px;border-bottom:1px solid #222">
-                <a:hbox id="barTestTools">
-                    <a:splitbutton
-                      id       = "btnNewTestType"
-                      icon     = "application_add.png"
-                      caption  = "New"
-                      onclick  = ""
-                      submenu  = "mnuTestNew" />
-                    <a:menu id="mnuTestNew">
-                        
-                    </a:menu>
-                    
-                    <!--a:divider skin="c9-divider-double" /-->
-                    
-                    <a:splitbutton
-                      icon     = "run.png"
-                      caption  = "Run"
-                      onclick  = "require('ext/testpanel/testpanel').run(dgTestProject.getSelection());"
-                      submenu  = "mnuRunSettings" 
-                      disabled = "{stTestRun.active or !dgTestProject.selected}" />
-                    <a:menu id="mnuRunSettings" pinned="true">
-                        
-                    </a:menu>
-                
-                    <a:button
-                      icon     = "stop.png"
-                      caption  = "stop"
-                      skin     = "c9-toolbarbutton"
-                      onclick  = "require('ext/testpanel/testpanel').stop()"
-                      disabled = "{!stTestRun.active or stTestRun.stopping}" />
-                
-                    <a:filler />
-                </a:hbox>
-            </a:bar>
-            
             <a:model id="mdlTests">
                 <data>
                     <repo name="Cloud9">
