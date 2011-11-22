@@ -7,15 +7,27 @@ var motions = require("ext/vim/maps/motions");
 var operators = require("ext/vim/maps/operators");
 var alias = require("ext/vim/maps/aliases");
 
-var NUMBER    = 1;
-var OPERATOR  = 2;
-var MOTION    = 3;
-var ACTION    = 4;
+var NUMBER   = 1;
+var OPERATOR = 2;
+var MOTION   = 3;
+var ACTION   = 4;
 
 //var NORMAL_MODE = 0;
 //var INSERT_MODE = 1;
 //var VISUAL_MODE = 2;
 var onVisualMode = false;
+
+var searchStore = module.exports.searchStore = {
+    current: "",
+    options: {
+        needle: "",
+        backwards: false,
+        wrap: true,
+        caseSensitive: false,
+        wholeWord: false,
+        regExp: false
+    }
+};
 
 var repeat = function repeat(fn, count, args) {
     count = parseInt(count);
@@ -50,6 +62,16 @@ var actions = {
             onVisualMode = true;
             editor.selection.selectLine();
             editor.selection.selectLeft();
+        }
+    },
+    "n": {
+        fn: function(editor, range, count, param) {
+            editor.findNext(editor.getLastSearchOptions());
+        }
+    },
+    "shift-n": {
+        fn: function(editor, range, count, param) {
+            editor.findPrevious(editor.getLastSearchOptions());
         }
     }
 };
@@ -211,11 +233,18 @@ var inputBuffer = exports.inputBuffer = {
 };
 
 var commands = exports.commands = {
-    commandLine: {
+    commandLineCmd: {
         exec: function exec(editor) {
             editor.blur();
             txtConsoleInput.focus();
             txtConsoleInput.setValue(":");
+        }
+    },
+    commandLineSearch: {
+        exec: function exec(editor) {
+            editor.blur();
+            txtConsoleInput.focus();
+            txtConsoleInput.setValue("/");
         }
     },
     start: {

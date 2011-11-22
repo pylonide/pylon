@@ -16,22 +16,32 @@ var editors = require("ext/editors/editors");
 var settings = require("ext/settings/settings");
 var util = require("ext/vim/maps/util");
 var handler = require("ext/vim/keyboard").handler;
-var commands = require("ext/vim/commands").commands;
+var cmdModule = require("ext/vim/commands");
+var commands = cmdModule.commands;
 var cliCmds = require("ext/vim/cli");
 
 var onConsoleCommand = function onConsoleCommand(e) {
     var cmd = e.data.command;
-    if (cmd && typeof cmd === "string" && cmd[0] === ":") {
-        cmd = cmd.substr(1);
-        var domEditor = editors.currentEditor.ceEditor;
+    var domEditor = editors.currentEditor.ceEditor;
+    if (cmd && typeof cmd === "string") {
+        if (cmd[0] === ":") {
+            cmd = cmd.substr(1);
 
-        if (cliCmds[cmd])
-            cliCmds[cmd](domEditor.$editor, e.data);
-        else
-            console.log("Vim command '" + cmd + "' not implemented.");
+            if (cliCmds[cmd])
+                cliCmds[cmd](domEditor.$editor, e.data);
+            else
+                console.log("Vim command '" + cmd + "' not implemented.");
 
-        domEditor.focus();
-        e.returnValue = false;
+            domEditor.focus();
+            e.returnValue = false;
+        }
+        else if (cmd[0] === "/") {
+            cmd = cmd.substr(1);
+            cmdModule.searchStore.current = cmd;
+            domEditor.$editor.find(cmd, cmdModule.searchStore.options);
+            txtConsoleInput.blur();
+            domEditor.focus();
+        }
     }
 };
 

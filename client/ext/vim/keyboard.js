@@ -43,11 +43,11 @@ var states = exports.states = {
         },
         {
             regex: "^:$",
-            exec: "commandLine"
+            exec: "commandLineCmd"
         },
         {
             regex: "^/$",
-            exec: "commandLine"
+            exec: "commandLineSearch"
         },
         {
             regex: "^u$",
