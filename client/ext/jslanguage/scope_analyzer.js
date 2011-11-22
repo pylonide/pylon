@@ -17,15 +17,11 @@ define(function(require, exports, module) {
 var baseLanguageHandler = require('ext/language/base_handler');
 require('treehugger/traverse');
 var handler = module.exports = Object.create(baseLanguageHandler);
-var lang = require("ace/lib/lang");
 
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
 
-var KNOWN_GLOBALS = lang.arrayToMap(["console", "window", "true", "false", "null", "undefined", "Worker", 
-                                     "Infinity", "Error", "Array", "Math", "Number", "parseInt",
-                                     "parseDouble", "JSON", "Object", "isNaN", "setTimeout", "setInterval"]);
 function Variable(declaration) {
     this.declaration = declaration;
     this.uses = [];
@@ -155,7 +151,10 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
             enableRefactorings.push("renameVariable");
         }
     );
-    return {markers: markers, enableRefactorings: enableRefactorings}; //, hint: ""+currentNode};
+    return {
+        markers: markers,
+        enableRefactorings: enableRefactorings
+    };
 };
 
 handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
@@ -179,7 +178,14 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
         var pos = node.getPos();
         others.push({column: pos.sc, row: pos.sl});
     });
-    return {length: length, pos: {row: pos.sl, column: pos.sc}, others: others};
+    return {
+        length: length,
+        pos: {
+            row: pos.sl,
+            column: pos.sc
+        },
+        others: others
+    };
 };
 
 });
