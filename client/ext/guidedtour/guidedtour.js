@@ -20,9 +20,6 @@ var jsonTourIde = {
     finalText : "Well, that's everything! Still have questions? Head on over to our documentation site, located at blahhh.",
     steps : [
         {
-            before : function() {
-                winTourGuide.hide();
-            },
             el : navbar,
             desc : "This is the project bar. It controls the behavior of the IDE, as well as the presentation of your code.",
             pos : "right",
@@ -110,21 +107,22 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     skin     : skin,
     currentStep : -1,
     currentEl   : null,
-
+    overlay : document.createElement("div"),
+    hlElement : document.createElement("div"),
     nodes : [],
 
     init : function(amlNode){
-        this.overlay = document.createElement("div");
         this.overlay.setAttribute("style",
             "z-index:999998;display:none;position:absolute;width:100%;height:100%;opacity:0.6;background:#000;");
         document.body.appendChild(this.overlay);
 
-        this.hlElement = document.createElement("div");
         this.hlElement.setAttribute("style",
             "z-index:999999;display:none;position:absolute;box-shadow:0px 0px 15px #000;");
         document.body.appendChild(this.hlElement);
         
         winTourDesc.setValue(this.tour.initialText);
+        
+        winTourGuide.addEventListener("hide", this.shutdown(this.hlElement)); 
     },
     
     hook : function(){
@@ -172,6 +170,8 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
 
     startTour : function() {
         this.currentStep = -1;
+        //winTourGuide.hide();
+        tourControlsDialog.show();
         this.stepForward();
     },
     
@@ -277,7 +277,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         //    this.currentEl.removeEventListener("resize", this.$celResize);
 
         this.currentEl = el;
-
+        
         var _self = this;
         //this.currentEl.addEventListener("resize", this.$celResize = function() {
             //_self.resizeHighlightedEl();
@@ -295,7 +295,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         this.hlElement.style.display = "block";
         this.hlElement.style.border = "solid 5px red";
     },
-
+    
     getElementPosition : function(el) {
         var pos = apf.getAbsolutePosition(el.$ext);
         var w = el.getWidth();
@@ -309,6 +309,14 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         });
     },
 
+    shutdown : function(hlElement) {
+        return function() {
+            winTourText.hide();
+            tourControlsDialog.hide();
+            hlElement.style.display = "none";
+        };
+    },
+    
     disable : function(){
         this.nodes.each(function(item){
             item.disable();

@@ -6,7 +6,7 @@
       id        = "winTourGuide"
       title     = "Guided Tour"
       center    = "true"
-      modal     = "true"
+      modal     = "false"
       buttons   = "close"
       kbclose   = "true"
       width     = "300">
@@ -20,28 +20,14 @@
         </a:vbox>
     </a:window>
     <a:window
-      id        = "winTourText"
-      title     = ""
-      center    = "false"
-      modal     = "false"
-      buttons   = "close"
-      kbclose   = "false"
-      width     = "160"
-      skinset   = "guidedtour"
-      skin      = "guidetool"
-      >
-        <a:hbox padding="5" pack="end" edge="10 10 5 10">
-        <a:button
-                    id = "winTourClose"
-                    caption = "x"
-                    onclick = "require('ext/guidedtour/guidedtour').stepClose();"
-                    skinset   = "guidedtour"
-                    skin      = "tourclose"
-                    icon="../quicksearch/icons/rounded_close.png"
-                />
-        </a:hbox>
-        <a:text id="textTourDesc" flex="1" />
-        <a:hbox padding="5" pack="end" edge="10 10 5 10">
+        id        = "tourControlsDialog"
+        title     = "Controls"
+        center    = "false"
+        modal     = "false"
+        buttons   = ""
+        kbclose   = "false"
+        width     = "160">
+                <a:hbox padding="5" pack="end" edge="10 10 5 10">
                 <!-- Play pause etc -->
                 <a:button
                     id = "btnTourStepBack"
@@ -65,6 +51,21 @@
                         require('ext/guidedtour/guidedtour').stepForward();
                     "
                 />
-            </a:hbox>        
+            </a:hbox>   
+    </a:window>
+        
+    <a:window
+      id        = "winTourText"
+      title     = ""
+      center    = "false"
+      modal     = "false"
+      buttons   = ""
+      kbclose   = "false"
+      width     = "160"
+      skinset   = "guidedtour"
+      skin      = "guidetool"
+      draggable = "false"
+      >
+        <a:text id="textTourDesc" flex="1" />     
     </a:window>
 </a:application>
