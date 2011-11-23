@@ -4,7 +4,7 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
@@ -109,7 +109,7 @@ module.exports = ext.register("ext/editors/editors", {
                     onclose : function(e){
                         if (!ide.onLine && !ide.offlineFileSystemSupport) //For now prevent tabs from being closed
                             return false;
-                            
+
                         _self.close(e.page);
                     },
                     childNodes : [
@@ -148,19 +148,19 @@ module.exports = ext.register("ext/editors/editors", {
                 })*/
             ]
         });
-        
+
         tabEditors.$buttons.appendChild(btn.$ext);
         tabEditors.addEventListener("DOMNodeInserted",function(e){
             if (e.$isMoveWithinParent) {
                 //record position in settings
-                
+
                 var amlNode = e.currentTarget;
                 if (amlNode.localName != "page" || e.relatedNode != this || amlNode.nodeType != 1)
                     return;
-                
+
                 settings.save();
             }
-            
+
             if (e.relatedNode == this && e.currentTarget.localName == "page") {
                 tabEditors.$buttons.appendChild(btn.$ext);
                 btn.$ext.style.position = "";
@@ -168,7 +168,7 @@ module.exports = ext.register("ext/editors/editors", {
                 btn.$ext.style.top = "";
             }
         });
-        
+
         tabEditors.addEventListener("DOMNodeRemoved",function(e){
             if (e.relatedNode == this && this.getPages().length == 1) {
                 btn.$ext.style.position = "absolute";
@@ -176,14 +176,14 @@ module.exports = ext.register("ext/editors/editors", {
                 btn.$ext.style.top = "8px";
             }
         });
-        
+
         tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
             _self.setTabResizeValues(tab.$ext);
         });
 
         return vbox;
     },
-    
+
     /**
      * This method has been abstracted so it can be used by
      * the focus extension to get the destination coordinates and
@@ -221,9 +221,9 @@ module.exports = ext.register("ext/editors/editors", {
 
         var contentTypes = editor.contentTypes;
         var isEnabled = contentTypes.indexOf(tabEditors.getPage(page).contentType) > -1;
-        
+
         if (!isEnabled && this.contentTypes["default"] == editor)
-            return true; 
+            return true;
         else
             return isEnabled;
     },
@@ -291,13 +291,13 @@ module.exports = ext.register("ext/editors/editors", {
 
         if (!editor.inited)
             this.initEditor(editor);
-        
+
         //Create Fake Page
         if (init)
             tabEditors.setAttribute("buttons", "close");
-        
+
         var model = new apf.model();
-        var fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
+        var fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page) {
             page.contentType = contentType;
             page.$at     = new apf.actiontracker();
             page.$doc    = doc;
@@ -314,19 +314,19 @@ module.exports = ext.register("ext/editors/editors", {
 
         if (init)
             tabEditors.setAttribute("buttons", "close,scale,order");
-        
+
         var editorPage = tabEditors.getPage(tabEditors.activepage);
-        
+
         doc.addEventListener("setnode", function(e) {
             fake.$model.load(e.node);
             ide.dispatchEvent("afteropenfile", {doc: doc, node: e.node, editor: editor});
         });
-        
+
         this.initEditorEvents(fake, model);
 
         if (init && !active)
             return;
-        
+
         //Set active page
         tabEditors.set(filepath);
 
@@ -337,29 +337,30 @@ module.exports = ext.register("ext/editors/editors", {
         /*fake.addEventListener("afteropen", function(){
 
         });*/
-        
+
         editor.enable();
         //editor.$itmEditor.select();
         //editor.$rbEditor.select();
 
         this.currentEditor = editor;
-        
+
         // okay don't know if you would want this, but this is the way the 'open file' dialog
         // handles it so let's do that
         setTimeout(function () {
-            ceEditor.focus();
+            if (ceEditor)
+                ceEditor.focus();
         }, 100);
-        
+
         settings.save();
     },
-    
+
     initEditorEvents: function(fake, model) {
         fake.$at.addEventListener("afterchange", function(e) {
             if (e.action == "reset") {
                 delete this.undo_ptr;
                 return;
             }
-            
+
             var val;
             if (fake.$at.ignoreChange) {
                 val = undefined;
@@ -369,8 +370,8 @@ module.exports = ext.register("ext/editors/editors", {
                 val = undefined;
             }
             else {
-                val = (this.$undostack[this.$undostack.length - 1] !== this.undo_ptr) 
-                    ? 1 
+                val = (this.$undostack[this.$undostack.length - 1] !== this.undo_ptr)
+                    ? 1
                     : undefined;
             }
 
@@ -389,21 +390,21 @@ module.exports = ext.register("ext/editors/editors", {
         var page = this;
         var at   = page.$at;
         var mdl  = page.$model;
-        
+
         mdl.setQueryValue("@changed", 0);
         page.$doc.dispatchEvent("close");
-        
+
         if (mdl.data) {
             mdl.removeXml("data");
             ide.dispatchEvent("closefile", {xmlNode: mdl.data, page: page});
         }
-        
+
         //mdl.unshare();
         mdl.destroy();
 
         at.reset();
         at.destroy();
-        
+
         //If there are no more pages left, reset location
         if (!tabEditors.getPage()) {
             /*if (window.history.pushState) {
@@ -415,11 +416,11 @@ module.exports = ext.register("ext/editors/editors", {
             }*/
             apf.history.setHash("");
         }
-        
+
         //Destroy the app page if it has no application instance
         //if (!tabEditors.selectNodes("page[@type='" + page.type + "']").length && editorPage)
             //editorPage.destroy(true, true);
-        
+
         settings.save();
     },
 
@@ -436,9 +437,9 @@ module.exports = ext.register("ext/editors/editors", {
             editorPage.setAttribute("model", page.$model);
         if (editorPage.actiontracker != page.$at)
             editorPage.setAttribute("actiontracker", page.$at);
-        
+
         page.$editor.setDocument && page.$editor.setDocument(page.$doc, page.$at);
-        
+
         ide.dispatchEvent("editorswitch", {
             previousPage: e.previousPage,
             nextPage: e.nextPage
@@ -457,7 +458,7 @@ module.exports = ext.register("ext/editors/editors", {
                 fromHandler.disable();
             toHandler.enable();
         }
-        
+
         var path = page.$model.data.getAttribute("path").replace(/^\/workspace/, "");
         /*if (window.history.pushState) {
             var p = location.pathname.split("/");
@@ -467,7 +468,7 @@ module.exports = ext.register("ext/editors/editors", {
             apf.history.setHash("!" + path);
         }*/
         apf.history.setHash("!" + path);
-        
+
         //toHandler.$itmEditor.select();
         //toHandler.$rbEditor.select();
 
@@ -483,7 +484,7 @@ module.exports = ext.register("ext/editors/editors", {
 
     hook : function(){
         panels.register(this);
-        
+
         window.onpopstate = function(e){
             var page = "/workspace" + e.state;
             if (tabEditors.activepage != page && tabEditors.getPage(page))
@@ -535,13 +536,13 @@ module.exports = ext.register("ext/editors/editors", {
                         trFiles.removeEventListener("expand", expandEventListener);
                     }
                 };
-                
+
                 trFiles.addEventListener("expand", expandEventListener);
             }
-            
+
             var model = e.model;
-            ide.addEventListener("extload", function(){            
-                
+            ide.addEventListener("extload", function(){
+
                 // you can load a file from the hash tag, if that succeeded then return
                 var loadFileFromHash =  (_self.loadFileFromHash(window.location.hash, checkExpand));
                 if (loadFileFromHash) {
@@ -600,7 +601,7 @@ module.exports = ext.register("ext/editors/editors", {
             if (pages.length) {
                 var active = tabEditors.activepage;
                 e.model.setQueryValue("auto/files/@active", active);
-                
+
                 pNode = apf.createNodeFromXpath(e.model.data, "auto/files");
                 for (var i = 0, l = pages.length; i < l; i++) {
                     var file = pages[i].$model.data;
@@ -612,15 +613,15 @@ module.exports = ext.register("ext/editors/editors", {
                     copy.removeAttribute("loading");
                     copy.removeAttribute("saving");
                     pNode.appendChild(copy);
-                    
+
                     var state = pages[i].$editor.getState && pages[i].$editor.getState(pages[i].$doc);
                     if (state)
                         copy.setAttribute("state", apf.serialize(state));
-                    
+
                     //@todo the second part of this if can be removed as soon
                     //as the collab team implements stored changed settings
-                    //please note that for this to work on loadsettings we 
-                    //should check whether the file on disk has changed and 
+                    //please note that for this to work on loadsettings we
+                    //should check whether the file on disk has changed and
                     //popup a file watch dialog to ask if the user wants to
                     //load the new file from disk, losing changes.
                     if (copy.getAttribute("changed") == 1 && copy.getAttribute("newfile") == 1) {
@@ -637,44 +638,44 @@ module.exports = ext.register("ext/editors/editors", {
             if (state != (pNode && pNode.xml))
                 return true;
         });
-        
+
         ide.addEventListener("reload", function(e) {
             var doc = e.doc;
             doc.state = doc.$page.$editor.getState && doc.$page.$editor.getState(doc);
         });
-        
+
         ide.addEventListener("afterreload", function(e) {
             var doc         = e.doc,
                 acesession  = doc.acesession,
                 sel         = acesession.getSelection();
-            
+
             sel.selectAll();
             acesession.getUndoManager().ignoreChange = true;
             acesession.replace(sel.getRange(), e.data);
             sel.clearSelection();
-            
+
             if (doc.state) {
                 var editor = doc.$page.$editor;
                 editor.setState && editor.setState(doc, doc.state);
             }
         });
     },
-    
-    /** Load any file from the hash, with optional some lines selected 
-     * 
+
+    /** Load any file from the hash, with optional some lines selected
+     *
      * @param {string} hash Hash as obtained from the window element
      * @param {function} checkExpand Function that expands the tree for the given file
      * @return {string} The new hash
      */
     loadFileFromHash : function (hash, checkExpand) {
         // an initial state can be sent in the hash
-        // match 'openfile-', 
+        // match 'openfile-',
         // match any character except :& or end of file
         // optional: match : digit - digit
         // [1] is filename, [2] is starting line number, [3] is ending line number
         var editorInitialStatePattern = /openfile-(.[^:&$]*)(?:\:(\d+)-(\d+))?/;
         var rawState = hash.match(editorInitialStatePattern);
-        
+
         if (rawState) {
             // build the real path, as the one in the hash is relative
             var path = ide.davPrefix.replace(/\/$/, "") + "/" + rawState[1];
@@ -690,7 +691,7 @@ module.exports = ext.register("ext/editors/editors", {
                     }
                 };
             }
-            
+
             // send it to the dispatcher
             ide.dispatchEvent("openfile", {
                 doc: doc,
@@ -698,14 +699,14 @@ module.exports = ext.register("ext/editors/editors", {
             });
             // and expand the tree
             checkExpand(path, doc);
-            
+
             // return the new hash
             return hash.replace(editorInitialStatePattern, "");
         }
-        
+
         return null;
     },
-    
+
     createFileNodeFromPath : function (path) {
         var name = path.split("/").pop();
         var node = apf.n("<file />")
@@ -744,15 +745,15 @@ module.exports = ext.register("ext/editors/editors", {
             else
                 ide.addEventListener("afteropenfile", function(e) {
                     var node = e.doc.getNode();
-                    
+
                     if (node.getAttribute("path") == path) {
                         ide.removeEventListener("afteropenfile", arguments.callee);
                         jumpTo();
                     }
                 });
         }
-        
-        if (!hasData && !page) 
+
+        if (!hasData && !page)
             ide.dispatchEvent("openfile", {
                 doc: doc || ide.createDocument(fileEl)
             });
