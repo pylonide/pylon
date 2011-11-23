@@ -327,6 +327,7 @@ module.exports = ext.register("ext/console/console", {
         switch (message.subtype) {
             case "commandhints":
                 var cmds = message.body;
+                this.initCommands();
                 for (var cmd in cmds) {
                     trieCommands.add(cmd);
                     commands[cmd] = cmds[cmd];
@@ -412,6 +413,18 @@ module.exports = ext.register("ext/console/console", {
                 this.subCommands(cmds[cmd].commands, prefix + "-" + cmd);
         }
     },
+    
+    initCommands: function() {
+        if (trieCommands)
+            return;
+        trieCommands = new Trie();
+        apf.extend(commands, ext.commandsLut);
+        for (var name in ext.commandsLut) {
+            trieCommands.add(name);
+            if (ext.commandsLut[name].commands)
+                this.subCommands(ext.commandsLut[name].commands, name);
+        }
+    },
 
     autoComplete: function(e, parser, mode) {
         mode = mode || 2;
@@ -420,15 +433,8 @@ module.exports = ext.register("ext/console/console", {
             var _self = this;
             this.$busy = setTimeout(function(){clearTimeout(_self.$busy);_self.$busy = null;}, 100);
         }
-        if (!trieCommands) {
-            trieCommands = new Trie();
-            apf.extend(commands, ext.commandsLut);
-            for (var name in ext.commandsLut) {
-                trieCommands.add(name);
-                if (ext.commandsLut[name].commands)
-                    this.subCommands(ext.commandsLut[name].commands, name);
-            }
-        }
+        
+        this.initCommands();
 
         // keycodes that invalidate the previous autocomplete:
         if (e.keyCode == 8 || e.keyCode == 46)

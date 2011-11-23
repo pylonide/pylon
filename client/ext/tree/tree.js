@@ -195,6 +195,8 @@ module.exports = ext.register("ext/tree/tree", {
             var settings = require("ext/settings/settings");
             if (settings.model && trFiles.selected) {
                 var settings          = settings.model.data;
+                if (!settings)
+                    return;
                 var treeSelectionNode = settings.selectSingleNode("auto/tree_selection");
                 var nodeSelected      = trFiles.selected.getAttribute("path");
                 var nodeType          = trFiles.selected.getAttribute("type");
