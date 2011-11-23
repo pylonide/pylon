@@ -496,7 +496,7 @@ apf.BindingColumnRule = function(struct, tagName){
               && apf.getChildNumber(_self.$int) < pNode.$headings.length - 1) {
                 var t = d < 4 ? this.previousSibling : this;
                 pNode.$ext.style.cursor = t && _self.$resizable
-                    ? "w-resize"
+                    ? (apf.isWebkit ? "ew-resize" : "w-resize")
                     : "default";
                 
                 apf.setStyleClass(this, "", ["hover", "down"]);

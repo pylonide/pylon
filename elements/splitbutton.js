@@ -61,6 +61,14 @@ apf.splitbutton = function(struct, tagName){
     this.$propHandlers["icon"] = function(value) {
         this.$button1.setProperty("icon", value);
     }
+    
+    this.$propHandlers["tooltip"] = function(value) {
+        this.$button1.setProperty("tooltip", value);
+    }
+    
+    this.$propHandlers["hotkey"] = function(value) {
+        this.$button1.setProperty("hotkey", value);
+    }
 
     this.$propHandlers["disabled"] = function(value) {
         this.$button1.setProperty("disabled", value);

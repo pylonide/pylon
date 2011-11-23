@@ -12,10 +12,10 @@
             * parent element instead of divider
             * default the name "Recorded Test 1"
         * hide and show advanced view
-        - load previous tests
-        - Allow to easily play tests locally or on saucelabs
-            - The latter should show a movie
-            - and make assertions green/red - also should scroll dg
+        * load previous tests
+        * Allow to easily play tests locally or on saucelabs
+            * The latter should show a movie
+            * and make assertions green/red - also should scroll dg
         - Locally play test to return to state
         - Context Menu
             - Play until here

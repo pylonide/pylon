@@ -139,7 +139,7 @@ apf.hotkeys = {};
 
         var key = _self.keyNames[code] 
             || (code && code > 46 && code != 91 ? String.fromCharCode(code) : null);
-        if (!hashId || !key) //Hotkeys should always have one of the modifiers
+        if (!hashId && (!key || !key.match(/^F\d{1,2}$/)) || !key) //Hotkeys should always have one of the modifiers
             return;
 
         if (_self.$keys[hashId] && (handler = _self.$keys[hashId][key.toLowerCase()])) {
