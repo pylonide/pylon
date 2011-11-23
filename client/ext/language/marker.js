@@ -4,7 +4,7 @@ var Range = require("ace/range").Range;
 var Anchor = require('ace/anchor').Anchor;
 
 module.exports = {
-    disableMarkerType: {},
+    disabledMarkerTypes: {},
     
     hook: function(language, worker) {
         var _self = this;
@@ -46,7 +46,7 @@ module.exports = {
 
         annos.forEach(function(anno) { 
             // Certain annotations can temporarily be disabled
-            if(_self.disableMarkerType[anno.type])
+            if(_self.disabledMarkerTypes[anno.type])
                 return;
             // Using anchors here, to automaticaly move markers as text around the marker is updated
             var anchor = new Anchor(mySession.getDocument(), anno.pos.sl, anno.pos.sc || 0);
@@ -87,11 +87,18 @@ module.exports = {
      * Temporarily disable certain types of markers (e.g. when refactoring)
      */
     disableMarkerType: function(type) {
-        this.disableMarkerType[type] = true;
+        this.disabledMarkerTypes[type] = true;
+        var session = ceEditor.$editor.session;
+        var markers = session.getMarkers(false);
+        for(var id in markers) {
+            // All language analysis' markers are prefixed with language_highlight
+            if(markers[id].clazz === 'language_highlight_' + type)
+                session.removeMarker(id);
+        }
     },
     
     enableMarkerType: function(type) {
-        this.disableMarkerType[type] = false;
+        this.disabledMarkerTypes[type] = false;
     },
 
     /**
