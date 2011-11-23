@@ -26,7 +26,8 @@ module.exports = ext.register("ext/save/save", {
 
     commands     : {
         "quicksave": {hint: "save the currently active file to disk"},
-        "saveas": {hint: "save the file to disk with a different filename"}
+        "saveas": {hint: "save the file to disk with a different filename"},
+        "reverttosaved": {hint: "downgrade the currently active file to the last saved version"}
     },
     hotitems    : {},
     nodes       : [],
