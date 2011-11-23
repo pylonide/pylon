@@ -11,7 +11,6 @@ var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
 
-//var outline = require('ext/language/outline');
 var complete = require('ext/language/complete');
 var marker = require('ext/language/marker');
 var refactor = require('ext/language/refactor');
@@ -33,7 +32,6 @@ module.exports = ext.register("ext/language/language", {
     worker  : null,
     
     commands : {
-        //"outline": {hint: "show outline"},
         "complete": {hint: "code complete"},
         "renameVar": {hint: "Rename variable"}
     },
@@ -64,7 +62,7 @@ module.exports = ext.register("ext/language/language", {
 	    });
         
         // Language features
-        //outline.hook(this, worker);
+        marker.hook(this, worker);
         complete.hook(this, worker);
         refactor.hook(this, worker);
 	},
@@ -102,14 +100,6 @@ module.exports = ext.register("ext/language/language", {
     setPath: function() {
         var currentPath = tabEditors.getPage().getAttribute("id");
         this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue()]);
-    },
-    
-    /**
-     * Method attached to key combo for outline
-     */
-    outline : function() {
-        // Disabled for now
-        //this.worker.emit("outline", {});
     },
     
     /**

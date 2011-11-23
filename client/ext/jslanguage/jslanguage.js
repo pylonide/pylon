@@ -19,11 +19,8 @@ module.exports = ext.register("ext/jslanguage/jslanguage", {
     deps    : [editors, language],
     nodes   : [],
     alone   : true,
-    outline : [],
 
     init : function() {
-        //language.registerLanguageHandler('ext/jslanguage/outline_handler');
-        //language.registerLanguageHandler('ext/jslanguage/json_outline_handler');
         language.registerLanguageHandler('ext/jslanguage/parse');
         language.registerLanguageHandler('ext/jslanguage/scope_analyzer');
         language.registerLanguageHandler('ext/jslanguage/narcissus_jshint');

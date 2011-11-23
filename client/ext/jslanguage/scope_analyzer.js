@@ -151,6 +151,7 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
             enableRefactorings.push("renameVariable");
         }
     );
+    console.log(JSON.stringify(markers));
     return {
         markers: markers,
         enableRefactorings: enableRefactorings

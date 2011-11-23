@@ -19,9 +19,6 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     Mirror.call(this, sender);
     this.setTimeout(500);
     
-    sender.on("outline", function() {
-        _self.outline();
-    });
     sender.on("complete", function(pos) {
         _self.complete(pos);
     });
@@ -76,26 +73,6 @@ oop.inherits(LanguageWorker, Mirror);
         return null;
     };
 
-    this.outline = function() {
-        var ast = this.parse();
-        if(!ast)
-            return;
-        try {
-            for (var i = 0; i < this.handlers.length; i++) {
-                var handler = this.handlers[i];
-                if(handler.handlesLanguage(this.$language)) {
-                    var outline = handler.outline(ast);
-                    if(outline) {
-                        this.sender.emit("outline", outline);
-                        return;
-                    }
-                }
-            }
-        } catch(e) {
-            console.log("Outline exception: " + e.message);
-        }
-    };
-    
     this.scheduleEmit = function(messageType, data) {
         this.sender.emit(messageType, data);
     };
