@@ -198,12 +198,15 @@ apf.BaseTree = function(){
         function expand(currentSelector, allSelectors) {
             // first expand the item passed in
             _self.slideToggle(apf.xmldb.getHtmlNode(root.selectSingleNode(currentSelector), _self), 1, true, null, function () {
+                // the number of times the callback has fired, prevent it from executing forever
+                var timesRan = 0;
+                
                 // the callback fires, but we might be waiting for data from the server
                 var callback = function () {
                     // check whether the node is loaded
                     if (!_self.$hasLoadStatus(root.selectSingleNode(currentSelector), "loaded")) {
-                        // otherwise wait
-                        return setTimeout(callback, 1000 / 30);
+                        // otherwise wait if timesRan under 30
+                        return ++timesRan < 30 ? setTimeout(callback, 1000 / 30) : null;
                     }
                     
                     // notify
