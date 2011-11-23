@@ -54,7 +54,7 @@ module.exports = ext.register("ext/debugger/debugger", {
         
         ide.addEventListener("loadsettings", function (e) {
             // restore the breakpoints from the IDE settings
-            var bpFromIde = e.model.data.selectSingleNode("//bp");
+            var bpFromIde = e.model.data.selectSingleNode("//breakpoints");
             if (bpFromIde) {
                 mdlDbgBreakpoints.load(apf.xmldb.getCleanCopy(bpFromIde).xml);
             }
@@ -215,7 +215,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             // get the current IDE settings
             var settingsMdl = settings.model.data;
             // create a new element
-            var node = settingsMdl.ownerDocument.createElement("bp");
+            var node = settingsMdl.ownerDocument.createElement("breakpoints");
             
             // find out all the breakpoints in the breakpoint model and iterate over them
             var breakpoints = e.currentTarget.data.selectNodes("//breakpoint");
@@ -226,7 +226,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             }
             
             // if there is already a breakpoints section in the IDE settings remove it
-            var bpInSettingsFile = settingsMdl.selectNodes("//bp");
+            var bpInSettingsFile = settingsMdl.selectNodes("//breakpoints");
             if (bpInSettingsFile.length) {
                 for (ix = 0; ix < bpInSettingsFile.length; ++ix)
                     bpInSettingsFile[ix].parentNode.removeChild(bpInSettingsFile[ix]);
