@@ -6,6 +6,7 @@ var util = require("ext/vim/maps/util");
 var motions = require("ext/vim/maps/motions");
 var operators = require("ext/vim/maps/operators");
 var alias = require("ext/vim/maps/aliases");
+var registers = require("ext/vim/registers");
 
 var NUMBER   = 1;
 var OPERATOR = 2;
@@ -15,7 +16,9 @@ var ACTION   = 4;
 //var NORMAL_MODE = 0;
 //var INSERT_MODE = 1;
 //var VISUAL_MODE = 2;
-var onVisualMode = false;
+//getSelectionLead
+var onVisualMode = module.exports.onVisualMode = false;
+var onVisualLineMode = module.exports.onVisualLineMode = false;
 
 var searchStore = module.exports.searchStore = {
     current: "",
@@ -59,7 +62,7 @@ var actions = {
     // Not truly like Vim's "VISUAL LINE" mode. Needs improvement.
     "shift-v": {
         fn: function(editor, range, count, param) {
-            onVisualMode = true;
+            onVisualLineMode = true;
             editor.selection.selectLine();
             editor.selection.selectLeft();
         }
@@ -78,8 +81,20 @@ var actions = {
         fn: function(editor, range, count, param) {
             editor.selection.selectRight();
             onVisualMode = true;
+            onVisualLineMode = false;
             var cursor = document.getElementsByClassName("ace_cursor")[0];
             cursor.style.display = "none";
+        }
+    },
+    "y": {
+        fn: function(editor, range, count, param) {
+            registers._default = editor.getCopyText();
+            editor.selection.clearSelection();
+        }
+    },
+    "p": {
+        fn: function(editor, range, count, param) {
+            editor.insert(registers._default);
         }
     }
 };
@@ -204,7 +219,7 @@ var inputBuffer = exports.inputBuffer = {
             var selectable = motionObj.sel;
 
             if (!o) {
-                if (onVisualMode && selectable) {
+                if ((onVisualMode || onVisualLineMode) && selectable) {
                     run(motionObj.sel);
                 }
                 else {
@@ -272,6 +287,7 @@ var commands = exports.commands = {
         exec: function stop(editor) {
             inputBuffer.reset();
             onVisualMode = false;
+            onVisualLineMode = false;
             util.normalMode(editor);
         }
     },
