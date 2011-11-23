@@ -4240,7 +4240,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/util/hotkey.js)SIZE(6456)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/util/hotkey.js)SIZE(6494)TIME(Tue, 22 Nov 2011 20:27:42 GMT)*/
 
 
 //@todo maybe generalize this to pub/sub event system??
@@ -4378,7 +4378,7 @@ apf.hotkeys = {};
 
         var key = _self.keyNames[code] 
             || (code && code > 46 && code != 91 ? String.fromCharCode(code) : null);
-        if (!hashId || !key) //Hotkeys should always have one of the modifiers
+        if (!hashId && (!key || !key.match(/^F\d{1,2}$/)) || !key) //Hotkeys should always have one of the modifiers
             return;
 
         if (_self.$keys[hashId] && (handler = _self.$keys[hashId][key.toLowerCase()])) {
@@ -23165,7 +23165,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/guielement.js)SIZE(33087)TIME(Sun, 20 Nov 2011 23:26:39 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/guielement.js)SIZE(33095)TIME(Tue, 22 Nov 2011 21:54:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23863,7 +23863,7 @@ apf.GuiElement.propHandlers = {
      * the mouse over the element.
      */
     "tooltip" : function(value){
-        this.$ext.setAttribute("title", value + (this.hotkey ? " (" + this.hotkey + ")" : ""));
+        this.$ext.setAttribute("title", (value || "") + (this.hotkey ? " (" + this.hotkey + ")" : ""));
     },
     
     
@@ -70253,7 +70253,7 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/splitbutton.js)SIZE(4573)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/splitbutton.js)SIZE(4807)TIME(Tue, 22 Nov 2011 21:52:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70317,6 +70317,14 @@ apf.splitbutton = function(struct, tagName){
     
     this.$propHandlers["icon"] = function(value) {
         this.$button1.setProperty("icon", value);
+    }
+    
+    this.$propHandlers["tooltip"] = function(value) {
+        this.$button1.setProperty("tooltip", value);
+    }
+    
+    this.$propHandlers["hotkey"] = function(value) {
+        this.$button1.setProperty("hotkey", value);
     }
 
     this.$propHandlers["disabled"] = function(value) {

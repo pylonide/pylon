@@ -29,7 +29,11 @@ return keys.onLoad({
         "quickwatch": {
             "quickwatch": "Ctrl-Q"
         },
-        "run": {
+        "runpanel": {
+            "run" : "Ctrl-F5",
+            "stop" : "Shift-F5"
+        },
+        "debugger": {
             "resume": "F8",
             "stepinto": "F9",
             "stepover": "F10",

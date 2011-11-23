@@ -21,13 +21,13 @@
         <a:divider skin="c9-divider" />
         <a:splitbutton
           id       = "btnRun"
-          icon     = "{itmDebug.checked ? 'bug.png' : 'run.png'}"
+          icon     = "{itmDebug.checked ? 'run.png' : 'run.png'}"
           caption  = "{itmDebug.checked ? 'debug' : 'run'}"
           onclick  = "require('ext/runpanel/runpanel').run()"
           visible  = "{!stProcessRunning.active and 1}"
           disabled = "{!ide.onLine}"
           submenu  = "mnuRunCfg" />
-        <a:button
+        <a:button id="btnStop"
           icon     = "stop.png"
           caption  = "stop"
           width    = "52"

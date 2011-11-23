@@ -21,6 +21,7 @@
           class   = "searchresults"
           model   = "mdlGoToFile"
           each    = "[d:response/d:href]"
+          multiselect     = "true"
           loading-message = "Searching Project..."
           empty-message   = "No search results"
           startcollapsed  = "false">

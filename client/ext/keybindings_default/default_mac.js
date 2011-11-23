@@ -28,7 +28,11 @@ return keys.onLoad({
         "quickwatch": {
             "quickwatch": "Option-Q"
         },
-        "run": {
+        "runpanel": {
+            "run" : "F5",
+            "stop" : "Shift-F5"
+        },
+        "debugger": {
             "resume": "F8",
             "stepinto": "F11",
             "stepover": "F10",

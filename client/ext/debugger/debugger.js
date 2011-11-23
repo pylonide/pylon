@@ -27,12 +27,10 @@ module.exports = ext.register("ext/debugger/debugger", {
     buttonClassName : "debug1",
     deps    : [fs, noderunner],
     commands: {
-        "debug": {
-            "hint": "run and debug a node program on the server",
-            "commands": {
-                "[PATH]": {"hint": "path pointing to an executable. Autocomplete with [TAB]"}
-            }
-        }
+        "resume"   : {hint: "resume the current paused process"},
+        "stepinto" : {hint: "step into the function that is next on the execution stack"},
+        "stepover" : {hint: "step over the current expression on the execution stack"},
+        "stepout"  : {hint: "step out of the current function scope"}
     },
     
     nodesAll: [],

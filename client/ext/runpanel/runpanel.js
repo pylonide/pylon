@@ -25,13 +25,24 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     markup  : markup,
     deps    : [noderunner],
     commands : {
-        "resume"   : {hint: "resume the current paused process"},
-        "stepinto" : {hint: "step into the function that is next on the execution stack"},
-        "stepover" : {hint: "step over the current expression on the execution stack"},
-        "stepout"  : {hint: "step out of the current function scope"}
+        "run": {
+            "hint": "run and debug a node program on the server",
+            "commands": {
+                "[PATH]": {"hint": "path pointing to an executable. Autocomplete with [TAB]"}
+            }
+        },
+        "stop": {
+            "hint": "stop a running node program on the server",
+            "commands": {
+                "[PATH]": {"hint": "path pointing to an executable. Autocomplete with [TAB]"}
+            }
+        }
     },
+    
+    hotitems: {},
 
     nodes : [],
+    nodesRest : [],
     
     hook : function(){
         panels.register(this);
@@ -58,7 +69,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
       
         apf.document.body.insertMarkup(buttonsMarkup);
         
-        this.nodes.push(
+        this.nodesRest.push(
             mnuRunCfg,
             mnuDebugSettings
         );
@@ -68,7 +79,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             
             ide.barTools.appendChild(button);
             if (button.nodeType == 1) {
-                this.nodes.push(button);
+                this.nodesRest.push(button);
             }
         }
         
@@ -95,6 +106,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 runConfigs.insertBefore(cfg, runConfigs.firstChild);
             }
         });
+        
+        this.hotitems["run"]  = [btnRun];
+        this.hotitems["stop"] = [btnStop];
     },
 
     init : function(amlNode){
@@ -158,7 +172,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     },
 
     run : function(debug) {
-        this.runConfig(winRunPanel.visible
+        this.runConfig(self.winRunPanel && winRunPanel.visible
             ? lstRunCfg.selected
             : (this.$lastRun 
                 || mdlRunConfigurations.queryNode("config[@curfile]")), 
@@ -223,6 +237,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     },
 
     enable : function(noButton){
+        ext.initExtension(this);
+        
         if (self.winRunPanel) {
             winRunPanel.show();
             winRunPanel.parentNode.setWidth(this.$lastWidth || 400);
@@ -265,7 +281,11 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
+        this.nodesRest.each(function(item){
+            item.destroy(true, true);
+        });
         this.nodes = [];
+        this.nodesRest = [];
     }
 });
 

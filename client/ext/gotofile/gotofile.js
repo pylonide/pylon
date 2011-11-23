@@ -79,21 +79,26 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         
         var restricted = [38, 40, 36, 35];
         dgGoToFile.addEventListener("keydown", function(e) {
-            if (e.keyCode == 38) {
+            console.log(e.keyCode);
+            if (e.keyCode == 38 && !e.shiftKey) {
                 if (this.selected == this.getFirstTraverseNode())
                     txtGoToFile.focus();
             }
-            else if (restricted.indexOf(e.keyCode) == -1) {
+            else if (apf.isCharacter(e.keyCode)) { //restricted.indexOf(e.keyCode) == -1) {
                 txtGoToFile.focus();
             }
         }, true);
 
         dgGoToFile.addEventListener("afterchoose", function(e) {
             winGoToFile.hide();
-            var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
-                + apf.getTextNode(e.xmlNode).nodeValue.replace(/^[\/]+/, "");
-            editors.showFile(path, 0, 0);
-            ide.dispatchEvent("track_action", {type: "fileopen"});
+            
+            var nodes = dgGoToFile.getSelection();
+            for (var i = 0; i < nodes.length; i++) {
+                var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
+                    + apf.getTextNode(nodes[i]).nodeValue.replace(/^[\/]+/, "");
+                editors.showFile(path, 0, 0);
+                ide.dispatchEvent("track_action", {type: "fileopen"});
+            }
         });
         
         this.nodes.push(winGoToFile);
