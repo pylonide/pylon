@@ -71,7 +71,20 @@
             border: none;
         }
     ]]></a:style>
-    <a:window
+    <a:menu id="mnuEditorSettings" model="{require('ext/settings/settings').model}">
+        <a:item id="lblSyntaxHl" caption="Syntax Highlighting" submenu="mnuSyntax" />
+        <a:divider />
+        <a:item type="check" caption="Auto pair characters (quotes, etc.)" checked="[editors/code/@behaviors]" />
+        <a:item type="check" caption="Overwrite Mode" checked="[editors/code/@overwrite]"  />
+        <a:item type="check" caption="Wrap Mode" value="[editors/code/@wrapmode]" checked="[editors/code/@wrapmode]" />
+        <a:item type="check" caption="Full Line Selection" value="[editors/code/@selectstyle]" values="line|text" />
+        <a:item type="check" caption="Highlight Active Line" checked="[editors/code/@activeline]" />
+        <a:item type="check" caption="Show Invisibles" checked="[editors/code/@showinvisibles]" />
+        <a:item type="check" caption="Show Gutter" checked="[editors/code/@gutter]" />
+        <a:item type="check" caption="Highlight Selected Word" checked="[editors/code/@highlightselectedword]" />
+        <a:item type="check" caption="Auto-hide Horizontal Scrollbar" checked="[editors/code/@autohidehorscrollbar]" />
+    </a:menu>
+    <!--a:window
       id     = "winEditorSettings"
       class  = "win_editor_settings"
       width  = "245"
@@ -80,11 +93,6 @@
       modal  = "false"
       model  = "{require('ext/settings/settings').model}">
         <a:vbox>
-            <a:label id = "lblSyntaxHl" class = "lblSyntaxHl" margin = "0 0 4 0"
-              onmouseover = "require('ext/code/code').winSyntaxToggle(this)"
-              onmouseout  = "require('ext/code/code').winSyntaxToggle(this)">
-                Syntax Highlighting
-            </a:label>
             <a:checkbox label="Auto pair characters (quotes, etc.)" value="[editors/code/@behaviors]"  />
             <a:checkbox label="Overwrite Mode" value="[editors/code/@overwrite]"  />
             <a:checkbox label="Wrap Mode" value="[editors/code/@wrapmode]" />
@@ -111,7 +119,7 @@
             <a:label flex="1">Mouse Scroll speed</a:label>
             <a:spinner value="[editors/code/@scrollspeed]" realtime="true" min="1" max="8" width="50" class="fixMargin5" />
         </a:hbox>
-    </a:window>
+    </a:window-->
     <a:model id="mdlSyntax">
         <data>
             <item value="auto" caption="Auto Select"></item>

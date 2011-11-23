@@ -12,7 +12,6 @@ var ext = require("core/ext");
 var util = require("core/util");
 var editors = require("ext/editors/editors");
 var settings = require("ext/settings/settings");
-var markup = require("text!ext/themes/settings.xml");
 
 module.exports = ext.register("ext/themes/themes", {
     name    : "Themes",
@@ -21,40 +20,29 @@ module.exports = ext.register("ext/themes/themes", {
     offline : false,
     type    : ext.GENERAL,
     nodes   : [],
-    //markup  : markup,
+    inited  : false,
 
     register : function(themes){
-        this.themeXml = "<data>";
-        for (var name in themes)
-            this.themeXml += '<item value="' + themes[name] + '" caption="' + name + '"></item>';
-
-        this.themeXml += "</data>";
+        if (this.inited)
+            this.registerly(themes);
+        else
+            this.themes = themes;
     },
-    
+
+    registerly : function(themes) {
+        for (var name in themes) {
+            this.nodes.push(
+                mnuThemes.appendChild(new apf.item({
+                    caption : name,
+                    type    : "radio",
+                    value   : themes[name]
+                }))
+            );
+        }
+    },
+
     selectTheme : function() {
         this.set(lstThemes.selected.getAttribute("value"));
-    },
-    
-    winThemesHide : function() {
-        this.winThemesTimer = setTimeout(function() {
-            winThemesList.hide();
-            lblThemes.setAttribute("class", "lblSyntaxHl");
-        }, 100);
-    },
-
-    winThemesToggle : function(el) {
-        if(winThemesList.visible) {
-            this.winThemesHide();
-        }
-        else {
-            if (this.winThemesTimer)
-                clearTimeout(this.winThemesTimer);
-            var pos = apf.getAbsolutePosition(lblThemes.$ext);
-            winThemesList.setAttribute("top", pos[1] - (winThemesList.getAttribute("height") / 2));
-            winThemesList.setAttribute("left", pos[0] + lblSyntaxHl.getWidth());
-            winThemesList.show();
-            el.setAttribute("class", "lblSyntaxHl hover");
-        }
     },
 
     set : function(path){
@@ -62,40 +50,29 @@ module.exports = ext.register("ext/themes/themes", {
         settings.model.setQueryValue("editors/code/@theme", path);
         settings.save();
     },
-    
-    hook : function() {
+
+    init : function() {},
+    hook : function(){
         var _self = this;
         ide.addEventListener("init.ext/code/code", function() {
-            apf.document.body.insertMarkup(markup);
-            mdlThemes.load(apf.getXml(_self.themeXml.replace(/&/g, "&amp;")));
-            
-            winThemesList.$ext.addEventListener("mouseover", function(e) {
-                if (_self.winThemesTimer)
-                    clearTimeout(_self.winThemesTimer);
-            });
-            
-            winThemesList.$ext.addEventListener("mouseout", function(e) {
-                _self.winThemesHide();
-            });
+            _self.nodes.push(
+                mnuEditorSettings.insertBefore(new apf.item({
+                    caption : "Themes",
+                    submenu : "mnuThemes"
+                }), lblSyntaxHl),
+                apf.document.body.appendChild(new apf.menu({
+                    id : "mnuThemes",
+                    onitemclick : function(e){
+                        _self.set(e.relatedNode.value);
+                    }
+                }))
+            );
 
-            var paren = lblSyntaxHl.parentNode;
-            paren.insertBefore(new apf.label({
-                id : "lblThemes",
-                "class" : "lblSyntaxHl",
-                margin : "0 0 4 0",
-                onmouseover : function() {
-                    _self.winThemesToggle(this);
-                },
-                onmouseout : function() {
-                    _self.winThemesToggle(this);
-                },
-                caption : "Themes"
-            }), paren.childNodes[1]);
+            if (_self.themes)
+                _self.registerly(_self.themes);
+
+            _self.inited = true;
         });
-        ext.initExtension(this);
-    },
-
-    init : function(){
     },
 
     enable : function(){

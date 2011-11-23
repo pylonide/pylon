@@ -171,7 +171,7 @@ module.exports = ext.register("ext/tree/tree", {
 
         colLeft.appendChild(winFilesViewer);
 
-        mnuView.appendChild(new apf.divider());
+        //mnuView.appendChild(new apf.divider());
         mnuView.appendChild(new apf.item({
             id      : "mnuitemHiddenFiles",
             type    : "check",
@@ -182,19 +182,19 @@ module.exports = ext.register("ext/tree/tree", {
                 require(["ext/tree/tree", "ext/settings/settings"], function(tree, settings) {
                     tree.refresh();
                     settings.save();
-                })
+                });
             }
         }));
         davProject.setAttribute("showhidden", "[{require('ext/settings/settings').model}::auto/tree/@showhidden]");
 
-        mnuView.appendChild(new apf.divider());
+        //mnuView.appendChild(new apf.divider());
 
         trFiles.setAttribute("model", fs.model);
 
         trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
             var settings = require("ext/settings/settings");
             if (settings.model && trFiles.selected) {
-                var settings          = settings.model.data;
+                settings              = settings.model.data;
                 var treeSelectionNode = settings.selectSingleNode("auto/tree_selection");
                 var nodeSelected      = trFiles.selected.getAttribute("path");
                 var nodeType          = trFiles.selected.getAttribute("type");
@@ -337,7 +337,7 @@ module.exports = ext.register("ext/tree/tree", {
                 else {
                     trFiles.select(trFiles.$model.queryNode("node()"));
                 }
-            };
+            }
 
             var model = e.model;
             var strSettings = model.queryValue("auto/tree");
@@ -354,7 +354,7 @@ module.exports = ext.register("ext/tree/tree", {
                 //Unstable - temporary fix
                 try {
                     if (!trFiles.xmlRoot) {
-                        var model = trFiles.getModel();
+                        model = trFiles.getModel();
                         model.addEventListener("afterload", function(){
                             trFiles.expandList(_self.currentSettings, function(){
                                 _self.loading = false;

@@ -29,7 +29,7 @@
       readonly          = "{[@loading] or cloud9config.readonly or (location.host and window.stDebugProcessRunning and stDebugProcessRunning.active and [@scriptid])}"
     />
     
-    <a:menu id="mnuCtxEditor" render="runtime">
+    <a:menu id="mnuCtxEditor">
         <a:item onclick="tabEditors.getPage().$at.undo()">Undo</a:item>
         <a:item onclick="tabEditors.getPage().$at.redo()">Redo</a:item>
         <a:divider />

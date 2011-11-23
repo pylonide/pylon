@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <div class="header">
-        <span></span><div>JS Beautify</div>
+        <span></span><div>Beautify</div>
     </div>
     <a:checkbox class="underlined" label="Preserve empty lines"
         checked="{[beautify/jsbeautify/@preserveempty] != '' ? [beautify/jsbeautify/@preserveempty] : 'true'}"

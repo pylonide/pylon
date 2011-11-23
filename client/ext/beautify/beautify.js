@@ -22,7 +22,7 @@ var settings = require("text!ext/beautify/settings.xml");
 var extSettings = require("ext/settings/settings");
 
 module.exports = ext.register("ext/beautify/beautify", {
-    name: "JS Beautify",
+    name: "Beautify",
     dev: "Ajax.org",
     alone: true,
     type: ext.GENERAL,
@@ -38,11 +38,11 @@ module.exports = ext.register("ext/beautify/beautify", {
     hotitems: {},
 
     beautify: function () {
-        var editor = require("ext/editors/editors").currentEditor;
+        var editor = editors.currentEditor;
 
         var sel = editor.getSelection();
-        var doc = editor.getDocument();
         var range = sel.getRange();
+        var doc = editor.getDocument();
         var value = doc.getTextRange(range);
 
         // Load up current settings data
@@ -86,19 +86,10 @@ module.exports = ext.register("ext/beautify/beautify", {
     },
 
     init: function () {
-
     },
 
     hook: function () {
         var _self = this;
-        this.nodes.push(
-        ide.mnuEdit.appendChild(new apf.divider()), ide.mnuEdit.appendChild(new apf.item({
-            caption: "Beautify Selection",
-            onclick: function () {
-                ext.initExtension(_self);
-                _self.beautify();
-            }
-        })));
 
         this.hotitems.beautify = [this.nodes[1]];
         code.commandManager.addCommand({
@@ -107,30 +98,28 @@ module.exports = ext.register("ext/beautify/beautify", {
                 _self.beautify();
             }
         });
-        
-        /*editors.addBarButton(
-            new apf.button({
-                caption : "Beautify",
-                id : "btnSelectionBeautify",
-                skin : "editor-bar-btn",
-                disabled : "true",
-                onclick : function() {
-                    require("ext/beautify/beautify").beautify();
-                }
-            }), "left", 1
-        );*/
 
         ide.addEventListener("selectionNew", function(range) {
-            //btnSelectionBeautify.enable();
+            //ctxBeautifySel.enable();
         });
 
         ide.addEventListener("selectionClear", function() {
-            //btnSelectionBeautify.disable();
+            //ctxBeautifySel.disable();
         });
 
         ide.addEventListener("init.ext/settings/settings", function (e) {
             e.ext.addSection("jsbeautify", _self.name, "beautify", function () {});
             barSettings.insertMarkup(settings);
+        });
+
+        ide.addEventListener("init.ext/code/code", function() {
+            mnuCtxEditor.appendChild(new apf.divider());
+            mnuCtxEditor.appendChild(new apf.item({
+                caption : "Beautify Selection",
+                onclick : function() {
+                    _self.beautify();
+                }
+            }));
         });
     },
 

@@ -8,4 +8,12 @@
             letter-spacing: 1px;
         }
     ]]></a:style>
+    <a:menu id="mnuEditorTools">
+        <a:item>Zen Mode</a:item>
+        <a:item>Vim Mode</a:item>
+        <a:divider />
+        <a:item>Active Preview</a:item>
+        <a:item>Git Revisions</a:item>
+        <a:item>Git Blame</a:item>
+    </a:menu>
 </a:application>

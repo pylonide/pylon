@@ -4,8 +4,7 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
- 
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
@@ -274,20 +273,7 @@ module.exports = ext.register("ext/code/code", {
                 id : "btnEditorSettings",
                 width : "29",
                 height : "22",
-                onclick : function() {
-                    if (this.getAttribute("class") == "focused") {
-                        this.setAttribute("class", "");
-                        winEditorSettings.hide();
-                    }
-                    else {
-                        this.setAttribute("class", "focused");
-                        var pos = apf.getAbsolutePosition(btnEditorSettings.$ext);
-                        var bottom = window.innerHeight - pos[1];
-                        winEditorSettings.setAttribute("bottom", bottom + 5);
-                        winEditorSettings.setAttribute("right", 45);
-                        winEditorSettings.show();
-                    }
-                }
+                submenu : "mnuEditorSettings"
             }), 1
         );
     },
@@ -353,15 +339,6 @@ module.exports = ext.register("ext/code/code", {
             var bindings = e.keybindings.code;
             ceEditor.$editor.setKeyboardHandler(new HashHandler(bindings));
         });
-        
-        winSyntaxList.$ext.addEventListener("mouseover", function(e) {
-            if (_self.winSyntaxTimer)
-                clearTimeout(_self.winSyntaxTimer);
-        });
-        
-        winSyntaxList.$ext.addEventListener("mouseout", function(e) {
-            _self.winSyntaxHide();
-        });
     },
     
     selectSyntaxHl : function() {
@@ -396,29 +373,7 @@ module.exports = ext.register("ext/code/code", {
             }
         }
     },
-    
-    winSyntaxHide : function() {
-        this.winSyntaxTimer = setTimeout(function() {
-            winSyntaxList.hide();
-            lblSyntaxHl.setAttribute("class", "lblSyntaxHl");
-        }, 100);
-    },
-    
-    winSyntaxToggle : function(el) {
-        if(winSyntaxList.visible) {
-            this.winSyntaxHide();
-        }
-        else {
-            if (this.winSyntaxTimer)
-                clearTimeout(this.winSyntaxTimer);
-            var pos = apf.getAbsolutePosition(lblSyntaxHl.$ext);
-            winSyntaxList.setAttribute("top", pos[1] - (winSyntaxList.getAttribute("height") / 2));
-            winSyntaxList.setAttribute("left", pos[0] + lblSyntaxHl.getWidth());
-            winSyntaxList.show();
-            el.setAttribute("class", "lblSyntaxHl hover");
-        }
-    },
-    
+
     /**
      * Saves custom syntax for extension type in settings.xml
      * 
