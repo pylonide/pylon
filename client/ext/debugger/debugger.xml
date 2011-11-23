@@ -35,7 +35,7 @@
                 </a:each>
             </a:datagrid>
         </a:page>
-        <a:page id="dbInteractive" caption="Interactive" render="runtime">
+        <a:page id="dbInteractive" caption="Interactive" render="runtime" visible="false">
             <a:vbox anchors="0 0 0 0">
                 <a:toolbar>
                     <a:bar border="0 0 1 0">
@@ -85,7 +85,7 @@
                   printmargincolumn = "0" />
             </a:vbox>
         </a:page>
-        <a:page id="dbgVariable" caption="Variables" render="runtime">
+        <a:page id="dbgVariable" caption="Variables" render="runtime" visible="false">
             <a:datagrid id="dgVars"
               anchors    = "0 0 0 0" 
               border     = "0"
@@ -105,7 +105,7 @@
                 </a:each>
             </a:datagrid>
         </a:page>
-        <a:page id="dbgBreakpoints" caption="Breakpoints" render="runtime">
+        <a:page id="dbgBreakpoints" caption="Breakpoints" render="runtime" visible="false">
             <a:list id="lstBreakpoints"
               autoselect = "false"
               reselectable = "true"
@@ -119,7 +119,7 @@
             </a:list>
         </a:page>
         <a:model id="mdlAceAnnotations"></a:model>
-        <a:page id="aceAnnotations" caption="Bugs" render="runtime">
+        <a:page id="aceAnnotations" caption="Bugs" render="runtime" visible="false">
             <a:datagrid id="dgAceAnnotations"
               anchors    = "0 0 0 0" 
               border     = "0"

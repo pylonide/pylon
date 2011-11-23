@@ -55,7 +55,7 @@ module.exports = ext.register("ext/run/run", {
                 "class" : "btn-runcommands",
                 ext     : [name, "pgDebugNav"],
 //                draggable: false,
-//                hidden  : true
+                hidden  : true
             }]
         });
         

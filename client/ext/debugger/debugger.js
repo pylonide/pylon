@@ -88,15 +88,15 @@ module.exports = ext.register("ext/debugger/debugger", {
                 {
                     hidden  : false,
                     buttons : [
-                        { caption: "Interactive", ext : [name, "dbInteractive"]},
-                        { caption: "Variables", ext : [name, "dbgVariable"]},
-                        { caption: "Breakpoints", ext : [name, "dbgBreakpoints"]}
+                        { caption: "Interactive", ext : [name, "dbInteractive"], hidden: true},
+                        { caption: "Variables", ext : [name, "dbgVariable"], hidden: true},
+                        { caption: "Breakpoints", ext : [name, "dbgBreakpoints"], hidden: true}
                     ]
                 },
                 {
                     hidden  : false,
                     buttons : [
-                        { caption: "Call Stack", ext : [name, "dbgCallStack"]}
+                        { caption: "Call Stack", ext : [name, "dbgCallStack"], hidden: true}
                     ]
                 }
                 
