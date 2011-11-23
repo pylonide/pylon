@@ -14,7 +14,8 @@ return keys.onLoad({
         },
         "save" : {
             "quicksave": "Command-S",
-            "saveas": "Command-Shift-S"
+            "saveas": "Command-Shift-S",
+	    "reverttosaved": "Command-Shift-Q"
         },
         "undo" : {
             "undo": "Command-Z",

@@ -90,7 +90,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
         function evHandler(e){
             var node = e.node || e.xmlNode;
             
-            if (e.name != "afterfilesave" && node.getAttribute("newfile") == 1)
+            if (!node || (e.name != "afterfilesave" && node.getAttribute("newfile") == 1))
                 return;
             
             var obj = {
