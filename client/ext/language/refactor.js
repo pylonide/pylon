@@ -1,26 +1,17 @@
 define(function(require, exports, module) {
 
-var ide = require("core/ide");
 var PlaceHolder = require("ace/placeholder").PlaceHolder;
-var code = require("ext/code/code");
 var marker = require("ext/language/marker");
+var ide = require("core/ide");
+var code = require("ext/code/code");
 
 module.exports = {
-    refactorItem: null,
+    renameVariableItem: null,
     worker: null,
     
     hook: function(ext, worker) {
         var _self = this;
         this.worker = worker;
-        this.refactorItem = new apf.item({
-            caption: "Rename variable",
-            disabled: true,
-            onclick: function() {
-                _self.renameVariable();
-            }
-        });
-        
-        var nodes = [ide.mnuEdit.appendChild(new apf.divider()), ide.mnuEdit.appendChild(this.refactorItem)];
         
         worker.on("enableRefactorings", function(event) {
             _self.enableRefactorings(event);
@@ -29,8 +20,26 @@ module.exports = {
         worker.on("variableLocations", function(event) {
             _self.enableVariableRefactor(event.data);
         });
+
+        var nodes = [];
+        this.refactorItem = new apf.item({
+            caption: "Rename variable",
+            disabled: true,
+            onclick: function() {
+                _self.renameVariable();
+            }
+        });
         
-        // TODO: Move this to a refactor sub-menu
+        var mnuRefactor = new apf.menu({id: "mnuRefactor"});
+        apf.document.body.appendChild(mnuRefactor);
+        
+        nodes.push(mnuRefactor.appendChild(this.refactorItem));
+        var refactorItem = new apf.item({
+            caption: "Refactor",
+            submenu: "mnuRefactor"
+        });
+        nodes.push(ide.mnuEdit.appendChild(refactorItem));
+        
         code.commandManager.addCommand({
             name: "renameVar",
             exec: function(editor) {
@@ -38,7 +47,7 @@ module.exports = {
             }
         });
         
-        ext.hotitems.renameVar = [nodes[1]];
+        ext.hotitems.renameVar = [nodes[0]];
         ext.nodes.push(nodes[0], nodes[1]);
     },
     
