@@ -69,12 +69,13 @@ handler.analyze = function(doc, ast) {
                 localVariables.push(scope[b.x.value]);
             },
             'Assign(Var(x), _)', function(b) {
-                if(!scope[b.x.value])
+                if(!scope[b.x.value]) {
                     markers.push({
                         pos: this[0].getPos(),
                         type: 'warning',
                         message: 'Assigning to undeclared variable.'
                     });
+                }
             },
             'Var(x)', function(b) {
                 this.setAnnotation("scope", scope);

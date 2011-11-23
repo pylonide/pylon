@@ -9,22 +9,15 @@ module.exports = {
     hook: function(language, worker) {
         var _self = this;
         worker.on("markers", function(event) {
-            _self.markers(event, language.editor);
+            _self.addMarkers(event, language.editor);
         });
-        /*worker.on("hint", function(event) {
-            if(event.data) {
-                marker.showHint(event.data);
-            } else {
-                marker.hideHint();
-            }
-        });*/
     },
     
     removeMarkers: function(session) {
         var markers = session.getMarkers(false);
-        for(var id in markers) {
+        for (var id in markers) {
             // All language analysis' markers are prefixed with language_highlight
-            if(markers[id].clazz.indexOf('language_highlight_') === 0) {
+            if (markers[id].clazz.indexOf('language_highlight_') === 0) {
                 session.removeMarker(id);
             }
         }
@@ -34,20 +27,16 @@ module.exports = {
         session.markerAnchors = [];
     },
     
-    markers: function(event, editor) {
+    addMarkers: function(event, editor) {
         var _self = this;
         var annos = event.data;
         var mySession = editor.session;
-        if(!mySession.markerAnchors)
-            mySession.markerAnchors = [];
-        
+        if (!mySession.markerAnchors) mySession.markerAnchors = [];
         this.removeMarkers(editor.session);
         mySession.languageAnnos = [];
-
-        annos.forEach(function(anno) { 
+        annos.forEach(function(anno) {
             // Certain annotations can temporarily be disabled
-            if(_self.disabledMarkerTypes[anno.type])
-                return;
+            if (_self.disabledMarkerTypes[anno.type]) return;
             // Using anchors here, to automaticaly move markers as text around the marker is updated
             var anchor = new Anchor(mySession.getDocument(), anno.pos.sl, anno.pos.sc || 0);
             mySession.markerAnchors.push(anchor);
@@ -60,25 +49,24 @@ module.exports = {
                 text: anno.message
                 // row will be filled in updateFloat()
             };
+
             function updateFloat(single) {
-                if(markerId)
-                    mySession.removeMarker(markerId);
+                if (markerId) mySession.removeMarker(markerId);
                 gutterAnno.row = anchor.row;
-                if(anno.pos.sc !== undefined && anno.pos.ec !== undefined) {
+                if (anno.pos.sc !== undefined && anno.pos.ec !== undefined) {
                     var range = Range.fromPoints(anchor.getPosition(), {
                         row: anchor.row + rowDiff,
                         column: anchor.column + colDiff
                     });
-    
                     markerId = mySession.addMarker(range, "language_highlight_" + (anno.type ? anno.type : "default"));
                 }
-                if(single)
-                    mySession.setAnnotations(mySession.languageAnnos);
+                if (single) mySession.setAnnotations(mySession.languageAnnos);
             }
             updateFloat();
-            anchor.on("change", function() { updateFloat(true); });
-            if(anno.message)
-                mySession.languageAnnos.push(gutterAnno);
+            anchor.on("change", function() {
+                updateFloat(true);
+            });
+            if (anno.message) mySession.languageAnnos.push(gutterAnno);
         });
         mySession.setAnnotations(mySession.languageAnnos);
     },
@@ -90,98 +78,89 @@ module.exports = {
         this.disabledMarkerTypes[type] = true;
         var session = ceEditor.$editor.session;
         var markers = session.getMarkers(false);
-        for(var id in markers) {
+        for (var id in markers) {
             // All language analysis' markers are prefixed with language_highlight
-            if(markers[id].clazz === 'language_highlight_' + type)
-                session.removeMarker(id);
+            if (markers[id].clazz === 'language_highlight_' + type) session.removeMarker(id);
         }
     },
     
     enableMarkerType: function(type) {
         this.disabledMarkerTypes[type] = false;
     },
-
+    
     /**
      * Called when text in editor is updated
-     * Implements instantaneously removing markers that belong to removed code
-     * to avoid ugly flicker when removing blocks/lines of code.
+     * This attempts to predict how the worker is going to adapt markers based on the given edit
+     * it does so instanteously, rather than with a 500ms delay, thereby avoid ugly box bouncing etc.
      */
     onChange: function(session, event) {
         var range = event.data.range;
-        if(event.data.action.substring(0, 6) === "remove") {
+        var isInserting = event.data.action.substring(0, 6) !== "remove";
+        var text = event.data.text;
+        var adaptingId = text && text.search(/[^a-zA-Z0-9]/) === -1;
+        if (!isInserting) { // Removing some text
             var markers = session.getMarkers(false);
             // Run through markers
             var foundOne = false;
-            for(var id in markers) {
+            for (var id in markers) {
                 var marker = markers[id];
-                if(marker.clazz.indexOf('language_highlight_') === 0) {
-                    if(range.contains(marker.range.start.row, marker.range.start.column)) {
+                if (marker.clazz.indexOf('language_highlight_') === 0) {
+                    if (range.contains(marker.range.start.row, marker.range.start.column)) {
                         session.removeMarker(id);
                         foundOne = true;
                     }
+                    else if (adaptingId && marker.range.contains(range.start.row, range.start.column)) {
+                        foundOne = true;
+                        var deltaLength = text.length;
+                        marker.range.end.column -= deltaLength;
+                    }
                 }
             }
-            if(!foundOne) {
+            if (!foundOne) {
                 // Didn't find any markers, therefore there will not be any anchors or annotations either
                 return;
             }
             // Run through anchors
             for (var i = 0; i < session.markerAnchors.length; i++) {
                 var anchor = session.markerAnchors[i];
-                if(range.contains(anchor.row, anchor.column)) {
+                if (range.contains(anchor.row, anchor.column)) {
                     anchor.detach();
                 }
             }
             // Run through annotations
             for (var i = 0; i < session.languageAnnos.length; i++) {
                 var anno = session.languageAnnos[i];
-                if(range.contains(anno.row, 1)) {
+                if (range.contains(anno.row, 1)) {
                     session.languageAnnos.splice(i, 1);
                     i--;
                 }
             }
             session.setAnnotations(session.languageAnnos);
         }
-    },
-    
-    /*
-    Hinting code, currently disabled
-    hideHint: function() {
-        barLanguageHint.setAttribute('visible', false);
-    },
-    
-    showHint: function(hint) {
-        // Switched off for now
-        return;
-        var style = dom.computedStyle(editors.currentEditor.ceEditor.$ext);
-        var containerHeight = parseInt(style.height, 10);
-        var containerWidth = parseInt(style.width, 10);
-        txtLanguageHint.$ext.innerHTML = hint;
-        
-        var barHeight = 35;
-
-        apf.popup.setContent("languageAnnotationTooltip", barLanguageHint.$ext);
-        apf.popup.show("languageAnnotationTooltip", {
-            x: 20,
-            y: containerHeight - barHeight + 1,
-            //y: 0,
-            //ref      : cursorLayer.cursor,
-            ref: editors.currentEditor.ceEditor.$ext,
-            callback : function() {
-                console.log("YEAH");
-                barLanguageHint.setAttribute('visible', true);
-                barLanguageHint.setWidth(containerWidth-40);
-                barLanguageHint.setHeight(barHeight);
-                sbLanguageHint.$resize();
+        else { // Inserting some text
+            var markers = session.getMarkers(false);
+            // Only if inserting an identifier
+            if (!adaptingId) return;
+            // Run through markers
+            var foundOne = false;
+            for (var id in markers) {
+                var marker = markers[id];
+                if (marker.clazz.indexOf('language_highlight_') === 0) {
+                    if (marker.range.contains(range.start.row, range.start.column)) {
+                        foundOne = true;
+                        var deltaLength = text.length;
+                        marker.range.end.column += deltaLength;
+                    }
+                }
             }
-        });
-    },
-    */
+        }
+        if (foundOne)
+            session._dispatchEvent("changeBackMarker");
+    }
 };
 
 // Monkeypatching ACE's JS mode to disable worker
 // this will be handled by C9's worker
-
 var JavaScriptMode = require('ace/mode/javascript').Mode;
 
 JavaScriptMode.prototype.createWorker = function() {
