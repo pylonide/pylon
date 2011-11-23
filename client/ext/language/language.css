@@ -16,14 +16,6 @@
     z-index: 2000;
 }
 
-.language_highlight_occurrence_main {
-    position: absolute;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    border: solid 1px #bfc0c1;
-    z-index: 2000;
-}
 
 .language_highlight_unused {
     position: absolute;
@@ -33,13 +25,36 @@
     z-index: 2000;
 }
 
+.ace_dark .language_highlight_unused {
+    border-bottom: solid 1px white;
+}
+
+.language_highlight_occurrence_main {
+    position: absolute;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    border: solid 1px #000;
+    opacity: 0.5;
+    z-index: 2000;
+}
+
+.ace_dark.language_highlight_occurrence_main {
+    border: solid 1px #fff;
+}
+
 .language_highlight_occurrence_other {
     position: absolute;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
-    border: solid 1px #BFC0C1;
+    border: solid 1px #000;
+    opacity: 0.5;
     z-index: 2000;
+}
+
+.ace_dark.language_highlight_occurrence_other {
+    border: solid 1px #fff;
 }
 
 .language_rename_main {
