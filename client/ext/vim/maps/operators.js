@@ -1,8 +1,9 @@
-var util = require("ext/vim/maps/util");
-
 define(function(require, exports, module) {
 
-"use strict";    
+"use strict";
+
+var util = require("ext/vim/maps/util");
+var registers = require("ext/vim/registers");
 
 module.exports = {
     "d": {
@@ -13,13 +14,23 @@ module.exports = {
                 count = parseInt(count || 1, 10);
                 switch (param) {
                     case "d":
+                        registers._default.text = "";
+                        registers._default.isLine = true;
                         for (var i=0; i<count; i++) {
-                            editor.removeLines();
+                            editor.selection.selectLine();
+                            registers._default.text += editor.getCopyText();
+                            var selRange = editor.getSelectionRange();
+                            editor.session.remove(selRange);
+                            editor.selection.clearSelection();
                         }
 
                         break;
                     default:
                         if (range) {
+                            editor.selection.setSelectionRange(range);
+                            registers._default.text = editor.getCopyText();
+                            registers._default.isLine = false;
+                            editor.selection.clearSelection();
                             editor.session.remove(range);
                         }
                 }

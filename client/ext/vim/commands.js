@@ -86,15 +86,57 @@ var actions = {
             cursor.style.display = "none";
         }
     },
+    "shift-y": {
+        fn: function(editor, range, count, param) {
+            var pos = editor.getCursorPosition();
+            editor.selection.clearSelection();
+            editor.moveCursorTo(pos.row, pos.column);
+            editor.selection.selectLine();
+            registers._default.isLine = true;
+            registers._default.text = editor.getCopyText();
+            editor.selection.clearSelection();
+            editor.moveCursorTo(pos.row, pos.column);
+        }
+    },
     "y": {
         fn: function(editor, range, count, param) {
-            registers._default = editor.getCopyText();
+            registers._default.text = editor.getCopyText();
+            registers._default.isLine = false;
             editor.selection.clearSelection();
+            util.normalMode(editor);
         }
     },
     "p": {
         fn: function(editor, range, count, param) {
-            editor.insert(registers._default);
+            var defaultReg = registers._default;
+
+            editor.setOverwrite(false);
+            if (defaultReg.isLine) {
+                var pos = editor.getCursorPosition();
+                editor.session.getDocument().insertLines(pos.row + 1, [defaultReg.text]);
+                editor.moveCursorTo(pos.row + 1, 0);
+            }
+            else {
+                editor.navigateRight();
+                editor.insert(defaultReg.text);
+            }
+            editor.setOverwrite(true);
+        }
+    },
+    "shift-p": {
+        fn: function(editor, range, count, param) {
+            var defaultReg = registers._default;
+            editor.setOverwrite(false);
+
+            if (defaultReg.isLine) {
+                var pos = editor.getCursorPosition();
+                editor.session.getDocument().insertLines(pos.row, [defaultReg.text]);
+                editor.moveCursorTo(pos.row, 0);
+            }
+            else {
+                editor.insert(defaultReg.text);
+            }
+            editor.setOverwrite(true);
         }
     }
 };
