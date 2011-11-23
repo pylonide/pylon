@@ -54,9 +54,9 @@ module.exports = ext.register("ext/debugger/debugger", {
         
         ide.addEventListener("loadsettings", function (e) {
             // restore the breakpoints from the IDE settings
-            var bpFromIde = e.model.data.selectSingleNode("//bp");
+            var bpFromIde = e.model.data.selectSingleNode("//breakpoints");
             if (bpFromIde) {
-                mdlDbgBreakpoints.load(apf.xmldb.getCleanCopy(bpFromIde).xml);
+                mdlDbgBreakpoints.load(bpFromIde);
             }
         });
         
@@ -217,21 +217,20 @@ module.exports = ext.register("ext/debugger/debugger", {
             // get the current IDE settings
             var settingsMdl = settings.model.data;
             // create a new element
-            var node = settingsMdl.ownerDocument.createElement("bp");
+            var node = settingsMdl.ownerDocument.createElement("breakpoints");
             
             // find out all the breakpoints in the breakpoint model and iterate over them
             var breakpoints = e.currentTarget.data.selectNodes("//breakpoint");
             for (var ix = 0; ix < breakpoints.length; ix++) {
                 // clone and add to our new element
-                var cln = apf.xmldb.getCleanCopy(breakpoints[ix]);
+                var cln = breakpoints[ix].cloneNode();
                 node.appendChild(cln);
             }
             
             // if there is already a breakpoints section in the IDE settings remove it
-            var bpInSettingsFile = settingsMdl.selectNodes("//bp");
-            if (bpInSettingsFile.length) {
-                for (ix = 0; ix < bpInSettingsFile.length; ++ix)
-                    bpInSettingsFile[ix].parentNode.removeChild(bpInSettingsFile[ix]);
+            var bpInSettingsFile = settingsMdl.selectSingleNode("//breakpoints");
+            if (bpInSettingsFile) {
+                bpInSettingsFile.parentNode.removeChild(bpInSettingsFile);
             }
             
             // then append the current breakpoints to the IDE settings, tah dah
