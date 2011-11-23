@@ -6,7 +6,8 @@ module.exports = {
         // Switch editor to insert mode
         var cursor = document.getElementsByClassName("ace_cursor")[0];
 
-        editor.unsetStyle('normal-mode');
+        editor.unsetStyle('insert-mode');
+        cursor.style.display = null;
         cursor.style.backgroundColor = null;
         cursor.style.opacity = null;
         cursor.style.border = null;
@@ -22,6 +23,7 @@ module.exports = {
 
         editor.setStyle('normal-mode');
         editor.clearSelection();
+        cursor.style.display = null;
         cursor.style.backgroundColor = "red";
         cursor.style.opacity = ".5";
         cursor.style.border = "0";

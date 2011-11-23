@@ -73,6 +73,14 @@ var actions = {
         fn: function(editor, range, count, param) {
             editor.findPrevious(editor.getLastSearchOptions());
         }
+    },
+    "v": {
+        fn: function(editor, range, count, param) {
+            editor.selection.selectRight();
+            onVisualMode = true;
+            var cursor = document.getElementsByClassName("ace_cursor")[0];
+            cursor.style.display = "none";
+        }
     }
 };
 
@@ -280,11 +288,4 @@ var commands = exports.commands = {
         }
     }
 };
-
-operators.v = {
-    fn: function(editor, range, count, param) {
-        onVisualMode = true;
-    }
-};
 });
-
