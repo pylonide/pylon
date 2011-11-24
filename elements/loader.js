@@ -50,14 +50,59 @@ apf.loader = function(){
         
         if (!apf.loaded) {
             var _self = this;
+            if(apf.config.loaderAnimIndicator)
+                _self.animateLoader(10);
             apf.addEventListener("load", function(){
-                if (apf.config.autoHideLoading) {
+                if (apf.isTrue(apf.config.autoHideLoading)) {
                     apf.queue.empty();
                     _self.hide();
+                }
+                else {
+                    if(apf.config.loaderAnimIndicator)
+                        _self.animateLoader(20);
                 }
             });
         }
     });
+    
+    this.lastLoaderStep = 0;
+    
+    /*
+     * Animates a loader indiacator
+     * 
+     * the step is in the % of the total width of the indicator
+     *
+     */
+    this.animateLoader = function(step){      
+        var _self    = this,
+            loaderEl = document.getElementById(apf.config.loaderAnimIndicator);
+        if(!loaderEl)
+            return;
+            
+        step = apf.config.loaderWidth * (step/100);
+
+        var fromStep = this.lastLoaderStep,
+            toStep   = this.lastLoaderStep + step;
+        
+        this.lastLoaderStep = toStep;
+
+        if(toStep > apf.config.loaderWidth)
+            toStep = apf.config.loaderWidth;
+
+        apf.tween.single(document.getElementById('animatedLoader'), {
+            steps    : 5,
+            anim     : apf.tween.EASEOUT,
+            type     : "width",
+            from     : fromStep,
+            to       : toStep,
+            onfinish : function() {
+                if(toStep >= apf.config.loaderWidth) {
+                    apf.queue.empty();
+                    _self.hide();
+                }
+            }
+        });
+    };
 };
 
 apf.loader.prototype = new apf.AmlElement();

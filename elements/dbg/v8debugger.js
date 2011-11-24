@@ -411,7 +411,7 @@ var V8Debugger = module.exports = function(dbg, host) {
         xml.push(
             "<breakpoint",
             " id='", breakpoint.$id,
-            "' text='", this.$strip(apf.escapeXML(breakpoint.source)), ":", breakpoint.line,
+            "' text='", this.$strip(apf.escapeXML(breakpoint.source)), ":", (parseInt(breakpoint.line, 10) + 1),
             "' script='", apf.escapeXML(breakpoint.source),
             scriptId ? "' scriptid='" + scriptId : "",
             "' lineoffset='", lineOffset || 0,

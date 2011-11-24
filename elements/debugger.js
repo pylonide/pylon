@@ -196,18 +196,22 @@ apf.dbg = module.exports = function(struct, tagName){
     
     this.toggleBreakpoint = function(script, row) {
         var model = this.$mdlBreakpoints;
-        if (this.$debugger)
+        if (this.$debugger) {
             this.$debugger.toggleBreakpoint(script, row, model);
+        }
         else {
             var scriptName = script.getAttribute("scriptname");
             var bp = model.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + row + "']");
-            if (bp)
-                model.removeXml(bp)
+            if (bp) {
+                apf.xmldb.removeNode(bp);
+            }
             else {
+                // strip the /workspace/ path if it is in front of the element
+                var displayText = script.getAttribute("path").replace(/^\/workspace\//, "");
                 var bp = apf.n("<breakpoint/>")
                     .attr("script", scriptName)
                     .attr("line", row)
-                    .attr("text", script.getAttribute("path") + ":" + row)
+                    .attr("text", displayText + ":" + (parseInt(row, 10) + 1))
                     .attr("lineoffset", 0)
                     .node();
                 model.appendXml(bp);
