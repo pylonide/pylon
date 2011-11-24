@@ -120,6 +120,7 @@ var actions = {
                 editor.navigateLeft();
             }
             editor.setOverwrite(true);
+            editor.selection.clearSelection();
         }
     },
     "shift-p": {
@@ -136,6 +137,7 @@ var actions = {
                 editor.insert(defaultReg.text);
             }
             editor.setOverwrite(true);
+            editor.selection.clearSelection();
         }
     }
 };
