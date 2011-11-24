@@ -135,12 +135,19 @@ Ide.DEFAULT_PLUGINS = [
         var path = Url.parse(req.url).pathname;
 
         this.indexRe = this.indexRe || new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
+        this.reconnectRe = this.reconnectRe || new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "\\/reconnect$");
         this.workspaceRe = this.workspaceRe || new RegExp("^" + util.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
 
         if (path.match(this.indexRe)) {
             if (req.method !== "GET")
                 return next();
             this.$serveIndex(req, res, next);
+        }
+        else if (path.match(this.reconnectRe)) {
+            if (req.method !== "GET")
+                return next();
+            res.writeHead(200);
+            res.end(req.sessionID);
         }
         else if (path.match(this.workspaceRe)) {
             if (!this.davInited) {
@@ -242,7 +249,7 @@ Ide.DEFAULT_PLUGINS = [
 
                 setTimeout(function() {
                     var now = new Date().getTime();
-                    if((now - user.last_message_time) > 10000) {
+                    if ((now - user.last_message_time) > 10000) {
                         console.log("User fully disconnected", username);
                         _self.removeUser(user);
                     }
