@@ -60,7 +60,7 @@ var actions = {
     // Not truly like Vim's "VISUAL LINE" mode. Needs improvement.
     "shift-v": {
         fn: function(editor, range, count, param) {
-            onVisualLineMode = true;
+            util.onVisualLineMode = true;
             editor.selection.selectLine();
             editor.selection.selectLeft();
         }
