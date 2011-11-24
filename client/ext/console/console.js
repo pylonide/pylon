@@ -158,6 +158,7 @@ module.exports = ext.register("ext/console/console", {
     },
 
     commandTextHandler: function(e) {
+
         var line = e.currentTarget.getValue();
         if (cmdBuffer === null || (cmdHistory._index === 0 && cmdBuffer !== line)) {
             cmdBuffer = line;
@@ -208,6 +209,10 @@ module.exports = ext.register("ext/console/console", {
             this.write("Syntax error: first argument quoted.");
         }
         else {
+            // `showConsole` is true if we want to expand the console after 
+            // executing a command.
+            var showConsole = true;    
+
             if (code === KEY_TAB) {
                 this.autoComplete(e, parser, 1);
                 return false;
@@ -219,7 +224,6 @@ module.exports = ext.register("ext/console/console", {
             Hints.hide();
 
             Logger.log(this.getPrompt() + " " + parser.argv.join(" "), "prompt");
-            this.enable();
             tabConsole.set("console");
 
             var cmd = parser.argv[0];
@@ -279,10 +283,18 @@ module.exports = ext.register("ext/console/console", {
                                 else
                                     ide.send(JSON.stringify(data));
                             }
+                            else {
+                                // If any of the `consolecommand` events returns
+                                // false, it means that we don't want the console
+                                // to show up.
+                                showConsole = false;
+                            }
                         }
                     }
                 }
             }
+            if (showConsole)    
+                this.enable();
         }
     },
 
@@ -607,15 +619,6 @@ module.exports = ext.register("ext/console/console", {
     },
 
     enable : function(fromParent){
-        /*if (!this.panel)
-            panels.initPanel(this);
-
-        if (this.manual && fromParent)
-            return;
-
-        if (!fromParent)
-            this.manual = true;*/
-
         this.mnuItem.check();
         tabConsole.show();
 
@@ -628,13 +631,7 @@ module.exports = ext.register("ext/console/console", {
 
     },
 
-    disable : function(fromParent){
-        /*if (this.manual && fromParent || !this.inited)
-            return;
-
-        if (!fromParent)
-            this.manual = true;*/
-
+    disable : function(fromParent) {
         this.mnuItem.uncheck();
         tabConsole.hide();
 
