@@ -193,7 +193,7 @@ module.exports = ext.register("ext/tree/tree", {
 
         trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
             var settings = require("ext/settings/settings");
-            if (settings.model && trFiles.selected) {
+            if (settings.model && settings.model.data && trFiles.selected) {
                 var settings          = settings.model.data;
                 if (!settings)
                     return;
