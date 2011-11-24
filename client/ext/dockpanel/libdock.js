@@ -61,6 +61,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     sectionInfo.height = menu.height;
                     sectionInfo.options = sections[i].$dockData.options;
                     sectionInfo.draggable = sections[i].$dockData.draggable;
+                    sectionInfo.noflex = sections[i].$dockData.noflex;
                     
                     for (var j = 0; j < buttons.length; j++) {
                         var buttonInfo = {};
@@ -298,10 +299,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             var button = this.buttonEls[i];
             if(!button.$dockData || !button.$dockData.ext || (!idnt.contains(button.$dockData.ext[0]) && !idnt.contains(button.$dockData.ext[1])))
                 continue;
-            
-            self[button.$dockData.ext[1]].show();
 
-            button.show();
             section = button.parentNode;
             if(section) {
                 if(!section.visible)
@@ -316,6 +314,10 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     barToExp.push(bar);
                 }
             }
+            
+            button.show();
+            if(!self[button.$dockData.ext[1]].visible)
+                self[button.$dockData.ext[1]].show();
         }
         
         setTimeout(function(){
