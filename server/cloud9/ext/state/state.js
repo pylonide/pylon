@@ -26,7 +26,7 @@ sys.inherits(cloud9StatePlugin, Plugin);
             
         // we need to be able to re-publish state when we request that
         // use: ide.send({ command: "state", action: "publish" })
-        if (message.action && message.action === "publish") {
+        if (message && message.action && message.action === "publish") {
             this.publishState();
         }
 
