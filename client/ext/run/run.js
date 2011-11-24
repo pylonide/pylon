@@ -40,7 +40,7 @@ module.exports = ext.register("ext/run/run", {
             hidden  : false,
             height  : 30,
             width   : 150,
-            flex    : "",
+            noflex  : true,
 //            draggable: false,
             barNum  : 0,
             options : {

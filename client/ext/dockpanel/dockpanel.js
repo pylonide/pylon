@@ -46,8 +46,8 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                     return item.page;
 
                 var page = item.getPage();
-                page.$arrExtension = arrExtension;
 
+                page.$arrExtension = arrExtension;
                 /*vManager.permanent(page, function(e){
                     item.mnuItem.check();
                 }, function(){
@@ -114,8 +114,8 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
 
         ide.addEventListener("savesettings", function(e){
             if (!_self.changed) {
-                if(!e.model.queryNode("auto/dockpanel_default3")) {
-                    var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/dockpanel_default3/text()");
+                if(!e.model.queryNode("auto/dockpanel_default")) {
+                    var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/dockpanel_default/text()");
                     xmlSettings.nodeValue = apf.serialize({
                         state  : _self.layout.getState(),
                         hidden : _self.sections
@@ -138,7 +138,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         mnuToolbar.appendChild(new apf.item({
             caption : "Restore Default",
             onclick : function(){
-                var defaultSettings = settings.model.queryValue("auto/dockpanel_default3/text()"),
+                var defaultSettings = settings.model.queryValue("auto/dockpanel_default/text()"),
                     state;
                 if (defaultSettings) {
                     // JSON parse COULD fail
@@ -152,8 +152,10 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                     _self.layout.clearState(true);
                     _self.layout.loadState(state, true);
                     _self.loadDefault = false;
-
-//                    settings.save();
+                    
+                    settings.model.setQueryValue("auto/dockpanel/text()", state)
+                    
+                    settings.save();
                 }
             }
         }));
