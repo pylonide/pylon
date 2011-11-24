@@ -95,7 +95,7 @@ module.exports = ext.register("ext/console/console", {
 
         Logger.logNodeStream(
             words
-                .filter(function() { return commands[w]; })
+                .filter(function(w) { return commands[w]; })
                 .map(function(w) { return w + tabs + commands[w].hint; })
                 .join("\n")
         );
@@ -292,7 +292,7 @@ module.exports = ext.register("ext/console/console", {
         if (message.type != "result")
             return;
 
-        switch (message.subtype) {
+        switch (message.subtype) { 
             case "commandhints":
                 var cmds = message.body;
                 this.initCommands();
@@ -329,10 +329,14 @@ module.exports = ext.register("ext/console/console", {
                 break;
             case "mkdir":
                 res = message.body;
-                ide.dispatchEvent("treecreate", {
+                ide.dispatchEvent("filecallback", {
                     type: "folder",
                     path: this.$cwd + "/" + res.argv[res.argv.length - 1]
                 });
+                break;
+            case "rm":
+                res = message.body;
+                ide.dispatchEvent("filecallback");
                 break;
             case "error":
                 Logger.log(message.body);
@@ -382,7 +386,7 @@ module.exports = ext.register("ext/console/console", {
                 this.subCommands(cmds[cmd].commands, prefix + "-" + cmd);
         }
     },
-    
+
     initCommands: function() {
         if (trieCommands)
             return;
@@ -402,7 +406,7 @@ module.exports = ext.register("ext/console/console", {
             var _self = this;
             this.$busy = setTimeout(function(){clearTimeout(_self.$busy);_self.$busy = null;}, 100);
         }
-        
+
         this.initCommands();
 
         // keycodes that invalidate the previous autocomplete:

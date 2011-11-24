@@ -120,7 +120,7 @@ module.exports = ext.register("ext/tree/tree", {
                 _self.sbIsFaded = true;
             }, _self.animControl.state != apf.tween.RUNNING ? 20 : 200);
         }
-    },
+    }, 
 
     //@todo deprecated?
     getSelectedPath: function() {
@@ -150,6 +150,10 @@ module.exports = ext.register("ext/tree/tree", {
 
             panels.initPanel(_self);
             _self.enable(true);
+        });
+        
+        ide.addEventListener("filecallback", function (e) {
+            _self.refresh();
         });
     },
 
