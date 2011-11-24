@@ -17,8 +17,6 @@ var ACTION   = 4;
 //var INSERT_MODE = 1;
 //var VISUAL_MODE = 2;
 //getSelectionLead
-var onVisualMode = module.exports.onVisualMode = false;
-var onVisualLineMode = module.exports.onVisualLineMode = false;
 
 var searchStore = module.exports.searchStore = {
     current: "",
@@ -80,8 +78,8 @@ var actions = {
     "v": {
         fn: function(editor, range, count, param) {
             editor.selection.selectRight();
-            onVisualMode = true;
-            onVisualLineMode = false;
+            util.onVisualMode = true;
+            util.onVisualLineMode = false;
             var cursor = document.getElementsByClassName("ace_cursor")[0];
             cursor.style.display = "none";
         }
@@ -119,6 +117,7 @@ var actions = {
             else {
                 editor.navigateRight();
                 editor.insert(defaultReg.text);
+                editor.navigateLeft();
             }
             editor.setOverwrite(true);
         }
@@ -261,7 +260,7 @@ var inputBuffer = exports.inputBuffer = {
             var selectable = motionObj.sel;
 
             if (!o) {
-                if ((onVisualMode || onVisualLineMode) && selectable) {
+                if ((util.onVisualMode || util.onVisualLineMode) && selectable) {
                     run(motionObj.sel);
                 }
                 else {
@@ -328,8 +327,8 @@ var commands = exports.commands = {
     stop: {
         exec: function stop(editor) {
             inputBuffer.reset();
-            onVisualMode = false;
-            onVisualLineMode = false;
+            util.onVisualMode = false;
+            util.onVisualLineMode = false;
             util.normalMode(editor);
         }
     },
