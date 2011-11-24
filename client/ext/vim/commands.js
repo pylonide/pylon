@@ -265,6 +265,13 @@ var inputBuffer = exports.inputBuffer = {
                 }
                 else {
                     run(motionObj.nav);
+                    var pos = editor.getCursorPosition();
+                    var lineLen = editor.session.getLine(pos.row).length;
+
+                    // Solving the behavior at the end of the line due to the
+                    // different 0 index-based colum positions in ACE.
+                    if (lineLen && pos.column === lineLen)
+                        editor.navigateLeft();
                 }
             }
             else if (selectable) {
@@ -334,7 +341,11 @@ var commands = exports.commands = {
     },
     append: {
         exec: function append(editor) {
-            editor.navigateRight();
+            var pos = editor.getCursorPosition();
+            var lineLen = editor.session.getLine(pos.row).length;
+            if (lineLen)
+                editor.navigateRight();
+
             util.insertMode(editor);
         }
     },
