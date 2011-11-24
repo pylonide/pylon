@@ -84,6 +84,13 @@ var disableVim = function() {
     }
 };
 
+var cliKeyDown = function(e) {
+    if (e.keyCode === 27) { // ESC is pressed in the CLI
+        txtConsoleInput.blur();
+        editors.currentEditor.ceEditor.focus();
+    }
+};
+
 module.exports = ext.register("ext/vim/vim", {
     name    : "Vim mode",
     dev     : "Ajax.org",
@@ -101,17 +108,14 @@ module.exports = ext.register("ext/vim/vim", {
         this.nodes.push(ide.mnuEdit.appendChild(menuItem));
 
         var self = this;
-        // var _oldChecked = menuItem.$propHandlers.checked;
-        // menuItem.$propHandlers.checked = function(v) {
-        //     _oldChecked(v);
-        //     self.toggle(v);
-        // };
 
         // `prop.checked` gets executed many times.
         // I filed the bug at https://github.com/ajaxorg/apf/issues/28
         menuItem.addEventListener("prop.checked", function(e) {
             self.toggle(e.value);
         });
+
+        txtConsoleInput.addEventListener("keydown", cliKeyDown)
     },
 
     toggle: function(show) {
@@ -127,11 +131,11 @@ module.exports = ext.register("ext/vim/vim", {
     },
 
     init : function() {
-        ide.addEventListener("consolecommand", onConsoleCommand);
         this.inited = true;
     },
 
     enable : function() {
+        ide.addEventListener("consolecommand", onConsoleCommand);
         ide.addEventListener('afteropenfile',  enableVim);
         enableVim();
     },
