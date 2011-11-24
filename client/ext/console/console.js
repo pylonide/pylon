@@ -292,7 +292,7 @@ module.exports = ext.register("ext/console/console", {
         if (message.type != "result")
             return;
 
-        switch (message.subtype) {
+        switch (message.subtype) { 
             case "commandhints":
                 var cmds = message.body;
                 this.initCommands();
@@ -329,10 +329,14 @@ module.exports = ext.register("ext/console/console", {
                 break;
             case "mkdir":
                 res = message.body;
-                ide.dispatchEvent("treecreate", {
+                ide.dispatchEvent("filecallback", {
                     type: "folder",
                     path: this.$cwd + "/" + res.argv[res.argv.length - 1]
                 });
+                break;
+            case "rm":
+                res = message.body;
+                ide.dispatchEvent("filecallback");
                 break;
             case "error":
                 Logger.log(message.body);
