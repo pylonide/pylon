@@ -35,22 +35,24 @@ handler.analyze = function(doc) {
         return markers;
     }
     finally {}
-    lint(value, {
-        undef: false,
-        onevar: false,
-        passfail: false
-    });
-    lint.errors.forEach(function(warning) {
-        if(!warning) return;
-        markers.push({
-            pos: {
-                sl: warning.line-1,
-                sc: warning.column-1
-            },
-            type: 'warning',
-            message: warning.reason
+    if(this.isFeatureEnabled("jshint")) {
+        lint(value, {
+            undef: false,
+            onevar: false,
+            passfail: false
         });
-    });
+        lint.errors.forEach(function(warning) {
+            if(!warning) return;
+            markers.push({
+                pos: {
+                    sl: warning.line-1,
+                    sc: warning.column-1
+                },
+                type: 'warning',
+                message: warning.reason
+            });
+        });
+    }
     return markers;
 };
     

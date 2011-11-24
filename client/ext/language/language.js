@@ -20,6 +20,9 @@ var skin = require("text!ext/language/skin.xml");
 var css = require("text!ext/language/language.css");
 var lang = require("ace/lib/lang");
 
+var settings = require("text!ext/language/settings.xml");
+var extSettings = require("ext/settings/settings");
+
 module.exports = ext.register("ext/language/language", {
     name    : "Javascript Outline",
     dev     : "Ajax.org",
@@ -30,6 +33,7 @@ module.exports = ext.register("ext/language/language", {
     markup  : markup,
     skin    : skin,
     worker  : null,
+    enabled : true,
     
     commands : {
         "complete": {hint: "code complete"},
@@ -65,6 +69,12 @@ module.exports = ext.register("ext/language/language", {
         marker.hook(this, worker);
         complete.hook(this, worker);
         refactor.hook(this, worker);
+        
+        ide.addEventListener("init.ext/settings/settings", function (e) {
+            e.ext.addSection("language", _self.name, "language", function () {});
+            barSettings.insertMarkup(settings);
+        });
+
 	},
 
     init : function() {
@@ -76,6 +86,9 @@ module.exports = ext.register("ext/language/language", {
         this.editor.selection.on("changeCursor", this.$onCursorChange);
         var oldSelection = this.editor.selection;
         this.setPath();
+        
+        this.setJSHint();
+        this.setInstanceHighlight();
         
         this.editor.on("changeSession", function(event) {
             // Time out a litle, to let the page path be updated
@@ -100,6 +113,24 @@ module.exports = ext.register("ext/language/language", {
     setPath: function() {
         var currentPath = tabEditors.getPage().getAttribute("id");
         this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue()]);
+    },
+    
+    setJSHint: function(e) {
+        if(extSettings.model.queryValue("language/@jshint") != "false")
+            this.worker.call("enableFeature", ["jshint"]);
+        else
+            this.worker.call("disableFeature", ["jshint"]);
+        this.setPath();
+    },
+    
+    setInstanceHighlight: function(e) {
+        if(extSettings.model.queryValue("language/@instanceHighlight") != "false")
+            this.worker.call("enableFeature", ["instanceHighlight"]);
+        else
+            this.worker.call("disableFeature", ["instanceHighlight"]);
+        var cursorPos = this.editor.getCursorPosition();
+        cursorPos.force = true;
+        this.worker.emit("cursormove", {data: cursorPos});
     },
     
     /**

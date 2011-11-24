@@ -97,7 +97,7 @@ module.exports = {
         var range = event.data.range;
         var isInserting = event.data.action.substring(0, 6) !== "remove";
         var text = event.data.text;
-        var adaptingId = text && text.search(/[^a-zA-Z0-9]/) === -1;
+        var adaptingId = text && text.search(/[^a-zA-Z0-9\$_]/) === -1;
         if (!isInserting) { // Removing some text
             var markers = session.getMarkers(false);
             // Run through markers

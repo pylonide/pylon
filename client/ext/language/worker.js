@@ -10,6 +10,10 @@ var oop = require("ace/lib/oop");
 var Mirror = require("ace/worker/mirror").Mirror;
 var tree = require('treehugger/tree');
 
+
+// Leaking on purpose
+disabledFeatures = {};
+
 var LanguageWorker = exports.LanguageWorker = function(sender) {
     var _self = this;
     this.handlers = [];
@@ -32,7 +36,7 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
         _self.onCursorMove(event);
     });
     
-    sender.on("change", function(e) {
+    sender.on("change", function() {
         _self.scheduledUpdate = true;
     });
     
@@ -44,7 +48,16 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
 oop.inherits(LanguageWorker, Mirror);
 
 (function() {
+    
+    
+    this.enableFeature = function(name) {
+        disabledFeatures[name] = false;
+    };
 
+    this.disableFeature = function(name) {
+        disabledFeatures[name] = true;
+    };
+    
     /**
      * Registers a handler by loading its code and adding it the handler array
      */
@@ -120,7 +133,7 @@ oop.inherits(LanguageWorker, Mirror);
         if(this.cachedAst) {
             var ast = this.cachedAst;
             var currentNode = ast.findNode({line: pos.row, col: pos.column});
-            if(currentNode !== this.lastCurrentNode) {
+            if(currentNode !== this.lastCurrentNode || pos.force) {
                 var aggregateActions = {markers: [], hint: null, enableRefactorings: []};
                 for(var i = 0; i < this.handlers.length; i++) {
                     var handler = this.handlers[i];

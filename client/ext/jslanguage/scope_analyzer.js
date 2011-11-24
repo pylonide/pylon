@@ -152,6 +152,10 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
             enableRefactorings.push("renameVariable");
         }
     );
+    
+    if(!this.isFeatureEnabled("instanceHighlight"))
+        return { enableRefactorings: enableRefactorings };    
+
     return {
         markers: markers,
         enableRefactorings: enableRefactorings

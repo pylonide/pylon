@@ -8,6 +8,10 @@ module.exports = {
     
     path: null,
     
+    isFeatureEnabled: function(name) {
+        return !disabledFeatures[name];
+    },
+
     // OVERRIDABLE METHODS
 
     /**
