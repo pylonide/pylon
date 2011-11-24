@@ -25,15 +25,26 @@ module.exports = {
             editor.navigateRight();
         },
         sel: function(editor) {
-            editor.selection.selectRight();
+            var pos = editor.getCursorPosition();
+            var col = pos.column;
+            var lineLen = editor.session.getLine(pos.row).length;
+
+            // Solving the behavior at the end of the line due to the
+            // different 0 index-based colum positions in ACE.
+            if (lineLen && col !== lineLen) //In selection mode you can select the newline
+                editor.selection.selectRight();
         }
     },
     "h": {
         nav: function(editor) {
-            editor.navigateLeft();
+            var pos = editor.getCursorPosition();
+            if (pos.column > 0)
+                editor.navigateLeft();
         },
         sel: function(editor) {
-            editor.selection.selectLeft();
+            var pos = editor.getCursorPosition();
+            if (pos.column > 0)
+                editor.selection.selectLeft();
         }
     },
     "k": {

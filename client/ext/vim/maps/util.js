@@ -32,8 +32,11 @@ module.exports = {
         cursor.style.opacity = ".5";
         cursor.style.border = "0";
 
+        var pos;
         if (!editor.getOverwrite()) {
-            editor.navigateLeft();
+            pos = editor.getCursorPosition();
+            if (pos.column > 0)
+                editor.navigateLeft();
         }
         editor.setOverwrite(true);
         editor.keyBinding.$data.buffer = "";
