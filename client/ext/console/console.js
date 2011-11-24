@@ -268,8 +268,12 @@ module.exports = ext.register("ext/console/console", {
                         };
 
                         if (ext.execCommand(cmd, data) !== false) {
-                            var evtName = "consolecommand." + cmd;
-                            if (ide.dispatchEvent(evtName, { data: data }) !== false) {
+                            var cmdEvt = "consolecommand." + cmd;
+                            var consoleEvt = "consolecommand";
+
+                            if (ide.dispatchEvent(cmdEvt, { data: data }) !== false &&
+                                ide.dispatchEvent(consoleEvt, { data: data }) !== false) {
+
                                 if (!ide.onLine)
                                     this.write("Cannot execute command. You are currently offline.");
                                 else
