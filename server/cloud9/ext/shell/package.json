@@ -16,6 +16,12 @@
                 "[PATH]": {"hint": "path pointing to a folder. Autocomplete with [TAB]"}
             }
         },
+        "rm" : {
+            "hint": "remove a file",
+            "commands": {
+                "[PATH]": {"hint": "path pointing to a folder. Autocomplete with [TAB]"}
+            }
+        },
         "pwd": {"hint": "return working directory name"}
     }
 }
