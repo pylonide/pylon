@@ -318,6 +318,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             button.show();
             if(!self[button.$dockData.ext[1]].visible)
                 self[button.$dockData.ext[1]].show();
+            
+            if(!self[button.$dockData.ext[1]].parentNode.visible);
+                self[button.$dockData.ext[1]].parentNode.show();
         }
         
         setTimeout(function(){
@@ -365,14 +368,17 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             childNodes, childNode;
             
         for(var i = 0, l = expandedVboxes.length; i < l; i++) {
-            childNodes = expandedVboxes[i].childNodes;
+            var expBox = expandedVboxes[i];
+            if(!expBox.bar.vbox.expanded)
+                continue;
+            childNodes = expBox.childNodes;
             dontHide = false;
             
             for(var u = 0, l2 = childNodes.length; u < l2; u++) {
                 childNode = childNodes[u];
                 if(!childNode || !childNode.extId)
                     continue;
-                
+
                 if(!idnt.contains(childNode.extId))
                     dontHide = true;
                 else
@@ -380,14 +386,25 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             }
             
             if(!dontHide) {
-                expandedVboxes[i].previousSibling.hide();
-                expandedVboxes[i].hide();
+                var vbox = expBox.bar.selectNodes("vbox");
+                var tabs = expBox.bar.vbox.selectNodes("tab");
+                for (var i = 0; i < vbox.length; i++) {
+                    var menu = self[vbox[i].selectSingleNode("button").submenu];
+                    menu.appendChild(tabs[i]);
+                }
+
+                expBox.previousSibling.hide();
+                expBox.hide();
+//                this.collapseBar(expBox.bar);
                 
-                var vboxParent = expandedVboxes[i].parentNode;
-                vboxParent.removeChild(expandedVboxes[i].previousSibling);
-                vboxParent.removeChild(expandedVboxes[i]);
+                expBox.previousSibling.hide();
+                expBox.hide();
                 
-                delete expandedVboxes[i].bar.vbox;
+                var vboxParent = expBox.parentNode;
+                vboxParent.removeChild(expBox.previousSibling);
+                vboxParent.removeChild(expBox);
+                
+                delete expBox.bar.vbox;
             }
         }
     };
