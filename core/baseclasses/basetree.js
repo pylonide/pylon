@@ -185,75 +185,63 @@ apf.BaseTree = function(){
             this.select(xmlNode);
     }
     
-    this.expandList = function(pathList, user_callback){
-        var pathLut = {};
-        function check(path, callback){
-            pathLut[path] = true;
+    /**
+     * Loads a list of folders
+     * paths {Array} Array of strings in the form of 'folder[1]/folder[2]'
+     * onFinished {function} Callback to be called when finished
+     */
+    this.expandList = function (paths, onFinished) {
+        var _self = this;
+        var root = this.xmlRoot;
             
-            var found;
-            for (var i = 0, l = pathList.length; i < l; i++) {
-                var ipath = pathList[i];
-                if (ipath) {
-                    if (ipath == path)
-                        delete pathList[i];
+        // recursive load function
+        function expand(currentSelector, allSelectors) {
+            // first expand the item passed in
+            _self.slideToggle(apf.xmldb.getHtmlNode(root.selectSingleNode(currentSelector), _self), 1, true, null, function () {
+                // the number of times the callback has fired, prevent it from executing forever
+                var timesRan = 0;
+                
+                // the callback fires, but we might be waiting for data from the server
+                var callback = function () {
+                    // check whether the node is loaded
+                    if (!_self.$hasLoadStatus(root.selectSingleNode(currentSelector), "loaded")) {
+                        // otherwise wait if timesRan under 30
+                        return ++timesRan < 30 ? setTimeout(callback, 1000 / 30) : null;
+                    }
                     
-                    var t = ipath.split("/"); t.pop();
-                    var parent = t.join("/");
-                    if (parent == path) {
-                        callback(ipath);
-                        found = true;
-                    }
-                }
-            }
-
-            if (!found)
-                user_callback();
-        };
+                    // notify
+                    hasExpanded(currentSelector);
+                    
+                    // when finished, find all the other selectors that start with the current selector
+                    // plus a slash to make it really really sure
+                    var childSelectors = allSelectors.filter(function (s) { return s.indexOf(currentSelector + "/") === 0; });
+                    
+                    // then expand each of the child items
+                    childSelectors.forEach(function (selector) {
+                        expand(selector, allSelectors);
+                    });
+                };
+                callback();
+            });
+        }
         
-        pathList.sort();
-        var cb, root = this.xmlRoot, _self = this;
-        check("", 
-            cb = function(item){
-                var paths = item.split("/");
-                var lastNode = root;//root.selectSingleNode(paths.shift());
-
-                //var lastPath = paths.pop();
-                apf.asyncForEach(paths, 
-                    function(part, next2, index) {
-                        apf.queue.empty();
-                        //This timeout is here to workaround a bug in chrome7 (and perhaps earlier)
-                        $setTimeout(function(){
-                            var xmlNode = (lastNode || root).selectSingleNode(part);
-                            if (xmlNode) {
-                                //if (index == paths.length - 1)
-                                    //return _self.select(xmlNode);
-                                
-                                lastNode = xmlNode;
-                                _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 1, true, null, function(){
-                                    next2();
-                                });
-                            }
-                            else {
-                                _self.slideToggle(apf.xmldb.getHtmlNode(lastNode, _self), 1, true, null, function(){
-                                    lastNode = lastNode.selectSingleNode(part);
-                                    if (!lastNode)
-                                        next2(true);
-                                    else
-                                        next2();
-                                });
-                            }
-                        },100);  
-                    }, function(err){
-                        //if (!err) {
-                            //next();
-                        //}
-                        check(item, cb);
-                    }
-                );
+        // function to be called when an item has expanded, used to determine whether we finished
+        var expandCount = 0;
+        function hasExpanded(selector) {
+            // if we have expanded all items, invoke the callback
+            if (++expandCount === paths.length) {
+                onFinished();
             }
-        );
-    }
-    
+        }
+        
+        // find all rootNodes (nodes without a slash in them)
+        var rootNodes = paths.filter(function (p) { return p.split("/").length === 1; });
+        
+        // expand all root nodes, expand will recursively expand all child items
+        rootNodes.forEach(function (node) {
+            expand(node, paths);
+        });
+    };    
     
     /**
      * @notimplemented
