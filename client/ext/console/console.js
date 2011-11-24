@@ -4,7 +4,7 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
@@ -17,15 +17,53 @@ var Trie = require("ext/console/trie");
 var Hints = require("ext/console/hints");
 var css = require("text!ext/console/console.css");
 var markup = require("text!ext/console/console.xml");
+// Some hardcoded commands and their responses
+var Output = require("ext/console/output");
 
-var trieCommands, 
-    commands     = {},
-    cmdTries     = {},
-    cmdFetched   = false,
-    cmdHistory   = [],
-    cmdBuffer    = "",
-    lastSearch   = null,
-    parser       = new Parser();
+var trieCommands;
+var commands   = {};
+var cmdTries   = {};
+var cmdFetched = false;
+var cmdBuffer  = "";
+var lastSearch = null;
+var parser = new Parser();
+
+var KEY_TAB = 9;
+var KEY_CR = 13;
+var KEY_UP = 38;
+var KEY_ESC = 27;
+var KEY_DOWN = 40;
+var actionCodes = [KEY_TAB, KEY_CR, KEY_UP, KEY_ESC, KEY_DOWN];
+
+var cmdHistory = {
+    _history: [],
+    _index: 0,
+
+    push: function(cmd) {
+        this._history.push(cmd);
+        this._index += 1;
+    },
+    length: function() {
+        return this._history.length;
+    },
+    getNext: function() {
+        this._index += 1;
+        var cmd = this._history[this._index] || "";
+
+        var maxLen = this._history.length - 1;
+        if (this._index > maxLen)
+            this._index = maxLen;
+
+        return cmd;
+    },
+    getPrev: function() {
+        this._index -= 1;
+        if (this._index < 0)
+            this._index = 0;
+
+        return this._history[this._index];
+    }
+};
 
 module.exports = ext.register("ext/console/console", {
     name   : "Console",
@@ -34,31 +72,39 @@ module.exports = ext.register("ext/console/console", {
     alone  : true,
     markup : markup,
     css    : css,
-    
-    commandHistoryIndex : 0,
+
     excludeParent : true,
     commands : {
-        "help": {hint: "show general help information and a list of available commands"},
-        "clear": {hint: "clear all the messages from the console"},
-        "switchconsole" : {hint: "toggle focus between the editor and the console"},
-        "send": {hint: "send a message to the server"}
+        "help": {
+            hint: "show general help information and a list of available commands"
+        },
+        "clear": {
+            hint: "clear all the messages from the console"
+        },
+        "switchconsole": {
+            hint: "toggle focus between the editor and the console"
+        },
+        "send": {
+            hint: "send a message to the server"
+        }
     },
 
     help : function() {
-        var words = trieCommands.getWords(),
-            text  = [];
+        var words = trieCommands.getWords();
+        var tabs = "\t\t\t\t";
 
-        for (var i = 0, l = words.length; i < l; ++i) {
-            if (!commands[words[i]]) continue;
-            text.push(words[i] + "\t\t\t\t" + commands[words[i]].hint);
-        }
-        Logger.logNodeStream(text.join("\n"));
+        Logger.logNodeStream(
+            words
+                .filter(function() { return commands[w]; })
+                .map(function(w) { return w + tabs + commands[w].hint; })
+                .join("\n")
+        );
     },
-    
+
     clear : function() {
         this.inited && txtOutput.clear();
     },
-    
+
     switchconsole : function() {
         if (apf.activeElement == txtConsoleInput) {
             if (window.ceEditor) {
@@ -66,8 +112,9 @@ module.exports = ext.register("ext/console/console", {
                 this.disable();
             }
         }
-        else
+        else {
             txtConsoleInput.focus()
+        }
     },
 
     send : function(data) {
@@ -75,7 +122,6 @@ module.exports = ext.register("ext/console/console", {
         return true;
     },
 
-    
     showOutput : function(){
         tabConsole.set(1);
     },
@@ -93,231 +139,156 @@ module.exports = ext.register("ext/console/console", {
     write: function(aLines) {
         if (typeof aLines == "string")
             aLines = aLines.split("\n");
-        for (var i = 0, l = aLines.length; i < l; ++i)
-            Logger.log(aLines[i], "log");
+
+        aLines.forEach(function(line) { Logger.log(line, "log"); });
+
         Logger.log("", "divider");
     },
 
     keyupHandler: function(e) {
-        var code = e.keyCode;
-        if (code != 9 && code != 13 && code != 38 && code != 40 && code != 27) {
+        if (actionCodes.indexOf(e.keyCode) === -1) {
             return this.commandTextHandler(e);
         }
     },
 
     keydownHandler: function(e) {
-        var code = e.keyCode;
-        if (code == 9 || code == 13 || code == 38 || code == 40 || code == 27) {
+        if (actionCodes.indexOf(e.keyCode) !== -1) {
             return this.commandTextHandler(e);
         }
     },
 
     commandTextHandler: function(e) {
-        var line      = e.currentTarget.getValue(),
-            //idx       = cmdHistory.indexOf(line),
-            hisLength = cmdHistory.length,
-            newVal    = "",
-            code      = e.keyCode;
-        if (cmdBuffer === null || (this.commandHistoryIndex == 0 && cmdBuffer !== line))
+        var line = e.currentTarget.getValue();
+        if (cmdBuffer === null || (cmdHistory._index === 0 && cmdBuffer !== line)) {
             cmdBuffer = line;
+        }
+
         parser.parseLine(line);
 
-        if (code == 38) { //UP
-            if (Hints.visible()) {
+        var code = e.keyCode;
+        var hisLength = cmdHistory.length();
+        var hintsVisible = Hints.visible();
+
+        if (code === KEY_UP) { //UP
+            if (hintsVisible) {
                 Hints.selectUp();
             }
-            else {
-                if (!hisLength)
-                    return;
-                newVal = cmdHistory[--this.commandHistoryIndex];
-                if (this.commandHistoryIndex < 0)
-                    this.commandHistoryIndex = 0;
+            else if (hisLength) {
+                var newVal = cmdHistory.getPrev();
+
                 if (newVal)
                     e.currentTarget.setValue(newVal);
             }
             return false;
         }
-        else if (code == 40) { //DOWN
-            if (Hints.visible()) {
+        else if (code === KEY_DOWN) { //DOWN
+            if (hintsVisible) {
                 Hints.selectDown();
             }
-            else {
-                if (!hisLength)
-                    return;
-                newVal = cmdHistory[++this.commandHistoryIndex] || "";//(++idx > hisLength - 1 || idx === 0) ? (cmdBuffer || "") : 
-                if (this.commandHistoryIndex >= cmdHistory.length)
-                    this.commandHistoryIndex = cmdHistory.length;
-                e.currentTarget.setValue(newVal);
+            else if (hisLength) {
+                e.currentTarget.setValue(cmdHistory.getNext() || "");
             }
             return false;
         }
-        else if (code == 27 && Hints.visible()) {
+        else if (code === KEY_ESC && hintsVisible) {
             return Hints.hide();
         }
-        else if (code != 13 && code != 9) {
-            this.autoComplete(e, parser, 2);
-            return;
+        else if (code != KEY_CR && code != KEY_TAB) {
+            return this.autoComplete(e, parser, 2);
         }
-        
-        if (Hints.visible() && Hints.selected())
+
+        if (hintsVisible && Hints.selected())
             return Hints.click(Hints.selected());
 
         if (parser.argv.length === 0) {
             // no commmand line input
-
-            if (e.name == "keydown") {
-                //Logger.log(this.getPrompt(), "prompt");
-                //this.enable();
-            }
         }
         else if (parser.argQL[0]) {
             // first argument quoted -> error
             this.write("Syntax error: first argument quoted.");
         }
         else {
-            var s,
-                cmd = parser.argv[parser.argc++];
-
-            if (code == 9) {
+            if (code === KEY_TAB) {
                 this.autoComplete(e, parser, 1);
                 return false;
             }
 
-            this.commandHistoryIndex = cmdHistory.push(line);
+            cmdHistory.push(line);
             cmdBuffer = null;
-            e.currentTarget.setValue(newVal);
+            e.currentTarget.setValue("");
             Hints.hide();
 
             Logger.log(this.getPrompt() + " " + parser.argv.join(" "), "prompt");
             this.enable();
             tabConsole.set("console");
 
-            switch (cmd) {
-                case "help":
+            var cmd = parser.argv[0];
+
+            // If there is a predefined (i.e. hardcoded) output for the current
+            // command being executed in the CLI, show that.
+            if (Output[cmd]) {
+                var rest = parser.argv.join(" ").replace(new RegExp("^" + cmd), "").trim();
+                var msg = Output[cmd][rest];
+
+                if (Output[cmd][rest])
+                    this.write(msg);
+                else
+                    this.write(Output[cmd].__default__.replace("%s", cmd));
+            }
+            else {
+                if (cmd === "help") {
                     this.help();
-                    break;
-                case "clear":
+                }
+                else if (cmd === "clear") {
                     txtConsole.clear();
-                    break;
-                case "sudo":
-                    s = parser.argv.join(" ").trim();
-                    if (s == "sudo make me a sandwich") {
-                        this.write("Okay.");
-                        break;
-                    }
-                    else if (s == "sudo apt-get moo") {
-                        //this.clear();
-                        this.write([" ",
-                            "        (__)",
-                            "        (oo)",
-                            "  /------\\/ ",
-                            " / |    ||  ",
-                            "*  /\\---/\\  ",
-                            "   ~~   ~~  ",
-                            "....\"Have you mooed today?\"...",
-                            " "]);
-                        break;
-                    }
-                    else {
-                        this.write("E: Invalid operation " + parser.argv[parser.argc++]);
-                        break;
-                    }
-                case "man":
-                    var pages = {
-                        "last": "Man, last night was AWESOME.",
-                        "help": "Man, help me out here.",
-                        "next": "Request confirmed; you will be reincarnated as a man next.",
-                        "cat":  "You are now riding a half-man half-cat."
-                    };
-                    this.write((pages[parser.argv[parser.argc++]]
-                        || "Oh, I'm sure you can figure it out."));
-                    break;
-                case "locate":
-                    var keywords = {
-                        "ninja": "Ninja can not be found!",
-                        "keys": "Have you checked your coat pocket?",
-                        "joke": "Joke found on user.",
-                        "problem": "Problem exists between keyboard and chair.",
-                        "raptor": "BEHIND YOU!!!"
-                    };
-                    this.write((keywords[parser.argv[parser.argc++]] || "Locate what?"));
-                    break;
-                default:
-                    var jokes = {
-                        "make me a sandwich": "What? Make it yourself.",
-                        "make love": "I put on my robe and wizard hat.",
-                        "i read the source code": "<3",
-                        //"pwd": "You are in a maze of twisty passages, all alike.",
-                        "lpr": "PC LOAD LETTER",
-                        "hello joshua": "How about a nice game of Global Thermonuclear War?",
-                        "xyzzy": "Nothing happens.",
-                        "date": "March 32nd",
-                        "hello": "Why hello there!",
-                        "who": "Doctor Who?",
-                        "su": "God mode activated. Remember, with great power comes great ... aw, screw it, go have fun.",
-                        "fuck": "I have a headache.",
-                        "whoami": "You are Richard Stallman.",
-                        "nano": "Seriously? Why don't you just use Notepad.exe? Or MS Paint?",
-                        "top": "It's up there --^",
-                        "moo":"moo",
-                        "ping": "There is another submarine three miles ahead, bearing 225, forty fathoms down.",
-                        "find": "What do you want to find? Kitten would be nice.",
-                        "more":"Oh, yes! More! More!",
-                        "your gay": "Keep your hands off it!",
-                        "hi":"Hi.",
-                        "echo": "Echo ... echo ... echo ...",
-                        "bash": "You bash your head against the wall. It's not very effective.",
-                        "ssh": "ssh, this is a library.",
-                        "uname": "Illudium Q-36 Explosive Space Modulator",
-                        "finger": "Mmmmmm...",
-                        "kill": "Terminator deployed to 1984.",
-                        "use the force luke": "I believe you mean source.",
-                        "use the source luke": "I'm not luke, you're luke!",
-                        "serenity": "You can't take the sky from me.",
-                        "enable time travel": "TARDIS error: Time Lord missing.",
-                        "ed": "You are not a diety."
-                    };
-                    s = parser.argv.join(" ").trim();
-                    if (jokes[s]) {
-                        this.write(jokes[s]);
-                        break;
+                }
+                else {
+                    var rest = parser.argv.join(" ").trim();
+                    if (Output.general[rest]) {
+                        this.write(Output.general[rest]);
                     }
                     else {
                         if (cmd.trim().charAt(0) == "!") {
+                            var bandRE = /^\s*!/;
                             cmd = "bash";
-                            parser.argv[0] = parser.argv[0].replace(/^\s*!/, "");
-                            line = line.replace(/^\s*!/, "");
+                            parser.argv[0] = parser.argv[0].replace(bandRE, "");
+                            line = line.replace(bandRE, "");
                         }
-                            
+
+                        ide.dispatchEvent("track_action", {
+                            type: "console",
+                            cmd: cmd
+                        });
+
                         var data = {
                             command: cmd,
                             argv: parser.argv,
                             line: line,
                             cwd: this.getCwd()
                         };
-                        ide.dispatchEvent("track_action", {type: "console", cmd: cmd});
+
                         if (ext.execCommand(cmd, data) !== false) {
-                            if (ide.dispatchEvent("consolecommand." + cmd, {
-                              data: data
-                            }) !== false) {
+                            var evtName = "consolecommand." + cmd;
+                            if (ide.dispatchEvent(evtName, { data: data }) !== false) {
                                 if (!ide.onLine)
                                     this.write("Cannot execute command. You are currently offline.");
                                 else
                                     ide.send(JSON.stringify(data));
                             }
                         }
-                        return;
                     }
+                }
             }
         }
     },
 
     onMessage: function(e) {
-        var res,
-            message = e.message;
-            
+        var res;
+        var message = e.message;
+
         if (message.type == "node-data")
             return Logger.logNodeStream(message.data, message.stream, true);
+
         if (message.type != "result")
             return;
 
@@ -335,11 +306,13 @@ module.exports = ext.register("ext/console/console", {
                 break;
             case "internal-autocomplete":
                 res = message.body;
-                var base = res.base || "",
-                    blen = base.length;
+                var base = res.base || "";
+                var blen = base.length;
                 lastSearch = res;
                 lastSearch.trie = new Trie();
-                for (var m, i = 0, l = res.matches.length; i < l; ++i) {
+
+                var m;
+                for (var i = 0, l = res.matches.length; i < l; ++i) {
                     m = res.matches[i];
                     lastSearch.trie.add(m);
                     if (base && m.indexOf(base) === 0)
@@ -357,30 +330,24 @@ module.exports = ext.register("ext/console/console", {
             case "mkdir":
                 res = message.body;
                 ide.dispatchEvent("treecreate", {
-                    type : "folder",
-                    path : this.$cwd + "/" + res.argv[res.argv.length - 1] 
+                    type: "folder",
+                    path: this.$cwd + "/" + res.argv[res.argv.length - 1]
                 });
                 break;
             case "error":
-                //console.log("error: ", message.body);
                 Logger.log(message.body);
                 Logger.log("", "divider");
                 break;
-            /*case "git":
-            case "npm":
-            case "pwd":
-            case "hg":
-            case "ls":*/
             default:
                 res = message.body;
-                if (!res)
-                    break;
-                if (res.out)
-                    Logger.logNodeStream(res.out);
-                if (res.err)
-                    Logger.logNodeStream(res.err);
-                if (res.code) // End of command
-                    Logger.log("", "divider");
+                if (res) {
+                    if (res.out)
+                        Logger.logNodeStream(res.out);
+                    if (res.err)
+                        Logger.logNodeStream(res.err);
+                    if (res.code) // End of command
+                        Logger.log("", "divider");
+                }
                 break;
         }
 
@@ -390,23 +357,25 @@ module.exports = ext.register("ext/console/console", {
     setPrompt: function(cwd) {
         if (cwd)
             this.$cwd = cwd.replace(ide.workspaceDir, ide.davPrefix);
+
         return this.getPrompt();
     },
 
     getPrompt: function() {
-        if(!this.username)
+        if (!this.username)
             this.username = (ide.workspaceId.match(/user\/(\w+)\//) || [,"guest"])[1];
-        
+
         return "[" + this.username + "@cloud9]:" + this.$cwd + "$";
     },
 
     subCommands: function(cmds, prefix) {
         if (!cmdTries[prefix]) {
             cmdTries[prefix] = {
-                trie    : new Trie(),
+                trie: new Trie(),
                 commands: cmds
             };
         }
+
         for (var cmd in cmds) {
             cmdTries[prefix].trie.add(cmd);
             if (cmds[cmd].commands)
@@ -440,29 +409,27 @@ module.exports = ext.register("ext/console/console", {
         if (e.keyCode == 8 || e.keyCode == 46)
             lastSearch = null;
 
-        var root,
-            list      = [],
-            cmds      = commands,
-            textbox   = e.currentTarget,
-            val       = textbox.getValue(),
-            len       = parser.argv.length,
-            base      = parser.argv[0],
-            cursorPos = 0;
+        var cmds = commands;
+        var textbox = e.currentTarget;
+        var val = textbox.getValue();
+        var cursorPos = 0;
+
         if (!apf.hasMsRangeObject) {
             var input = textbox.$ext.getElementsByTagName("input")[0];
             cursorPos = input.selectionStart;
         }
         else {
-            var range = document.selection.createRange(),
-                r2    = range.duplicate();
+            var range = document.selection.createRange();
+            var r2    = range.duplicate();
+
             r2.expand("textedit");
             r2.setEndPoint("EndToStart", range);
             cursorPos = r2.text.length;
         }
-        --cursorPos;
+        cursorPos -= 1;
 
         if (!cmdFetched) {
-            // the 'commandhints' command retreives a list of available commands 
+            // the 'commandhints' command retreives a list of available commands
             // from all the server plugins, to support git auto-completion, for
             // example.
             ide.send(JSON.stringify({
@@ -472,23 +439,29 @@ module.exports = ext.register("ext/console/console", {
             }));
         }
 
-        if (typeof parser.argv[0] != "string")
+        var base = parser.argv[0];
+        if (typeof base != "string")
             return Hints.hide();
 
         // check for commands in first argument when there is only one argument
         // provided, or when the cursor on the first argument
-        if (len == 1 && cursorPos < parser.argv[0].length) {
-            root = trieCommands.find(parser.argv[0]);
+        var root;
+        var list = [];
+        var len = parser.argv.length;
+        if (len === 1 && cursorPos < base.length) {
+            root = trieCommands.find(base);
             if (root)
                 list = root.getWords();
         }
         else {
-            var idx, needle, cmdTrie,
-                i = len - 1;
+            var idx, needle, cmdTrie;
+            var i = len - 1;
+
             for (; i >= 0; --i) {
                 idx = val.indexOf(parser.argv[i]);
                 if (idx === -1) //shouldn't happen, but yeah...
                     continue;
+
                 if (cursorPos >= idx || cursorPos <= idx + parser.argv[i].length) {
                     needle = i;
                     break;
@@ -502,7 +475,6 @@ module.exports = ext.register("ext/console/console", {
                 --needle
 
             if (cmdTrie) {
-                //console.log("needle we're left with: ", needle, len, parser.argv[needle]);
                 base = parser.argv[needle];
                 root = cmdTrie.trie.find(base);
                 if (root) {
@@ -584,7 +556,7 @@ module.exports = ext.register("ext/console/console", {
             Hints.hide();
         }
     },
-    
+
     /**** Init ****/
 
     hook : function(){
@@ -601,13 +573,13 @@ module.exports = ext.register("ext/console/console", {
         mainRow.appendChild(winDbgConsole); //selectSingleNode("a:hbox[1]/a:vbox[2]").
 
         apf.importCssString((this.css || "") + " .console_date{display:inline}");
-        
+
         stProcessRunning.addEventListener("activate", function() {
             _self.clear();
             _self.showOutput();
             _self.enable();
         });
-        
+
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
         ide.addEventListener("consoleresult.internal-isfile", function(e) {
             var data = e.data;
@@ -617,15 +589,15 @@ module.exports = ext.register("ext/console/console", {
             else
                 Logger.log("'" + path + "' is not a file.");
         });
-        
+
         winDbgConsole.previousSibling.hide(); //que?
-        
+
         function kdHandler(e){
-            if (!e.ctrlKey && !e.metaKey && !e.altKey 
-              && !e.shiftKey && apf.isCharacter(e.keyCode)) 
+            if (!e.ctrlKey && !e.metaKey && !e.altKey
+              && !e.shiftKey && apf.isCharacter(e.keyCode))
                 txtConsoleInput.focus()
         }
-        
+
         txtOutput.addEventListener("keydown", kdHandler);
         txtConsole.addEventListener("keydown", kdHandler);
     },
@@ -646,7 +618,7 @@ module.exports = ext.register("ext/console/console", {
         if (winDbgConsole.height == 41)
             winDbgConsole.setAttribute("height", this.height || 200);
         winDbgConsole.previousSibling.show();
-        
+
         apf.layout.forceResize();
         apf.setStyleClass(btnCollapseConsole.$ext, "btn_console_openOpen");
 
@@ -666,7 +638,7 @@ module.exports = ext.register("ext/console/console", {
             this.height = winDbgConsole.height;
         winDbgConsole.setAttribute("height", 41);
         winDbgConsole.previousSibling.hide();
-        
+
         apf.layout.forceResize();
         apf.setStyleClass(btnCollapseConsole.$ext, '' , ['btn_console_openOpen']);
     },
