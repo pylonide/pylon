@@ -2,6 +2,8 @@
 
 define(function(require, exports, module) {
 module.exports = {
+    onVisualMode: false,
+    onVisualLineMode: false,
     insertMode: function(editor) {
         // Switch editor to insert mode
         var cursor = document.getElementsByClassName("ace_cursor")[0];
@@ -16,6 +18,8 @@ module.exports = {
         editor.setOverwrite(false);
         editor.keyBinding.$data.buffer = "";
         editor.keyBinding.$data.state = "insertMode";
+        this.onVisualMode = false;
+        this.onVisualLineMode = false;
     },
     normalMode: function(editor) {
         // Switch editor to normal mode
@@ -34,6 +38,8 @@ module.exports = {
         editor.setOverwrite(true);
         editor.keyBinding.$data.buffer = "";
         editor.keyBinding.$data.state = "start";
+        this.onVisualMode = false;
+        this.onVisualLineMode = false;
     },
     getRightNthChar: function(editor, cursor, char, n) {
         var line = editor.getSession().getLine(cursor.row);

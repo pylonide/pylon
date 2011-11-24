@@ -8,7 +8,10 @@ var registers = require("ext/vim/registers");
 module.exports = {
     "d": {
             selFn: function(editor, range, count, param) {
+                registers._default.text = editor.getCopyText();
+                registers._default.isLine = false;
                 editor.session.remove(range);
+                util.normalMode(editor);
             },
             fn: function(editor, range, count, param) {
                 count = parseInt(count || 1, 10);
@@ -30,8 +33,8 @@ module.exports = {
                             editor.selection.setSelectionRange(range);
                             registers._default.text = editor.getCopyText();
                             registers._default.isLine = false;
-                            editor.selection.clearSelection();
                             editor.session.remove(range);
+                            editor.selection.clearSelection();
                         }
                 }
             }
