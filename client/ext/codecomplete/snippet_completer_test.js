@@ -7,7 +7,6 @@ define(function(require, exports, module) {
 
 var Document = require("ace/document").Document;
 var assert = require("ace/test/assertions");
-
 var Completer = require("ext/codecomplete/snippet_completer").Completer;
 
 function matchSorter(matches) {
@@ -26,7 +25,6 @@ Completer.prototype.fetchText = function(path) {
 };
 
 module.exports = {
-
     "test javascript found completions" : function() {
         var doc = new Document("while(true) {\n    fn\n}");
         var completer = new Completer();

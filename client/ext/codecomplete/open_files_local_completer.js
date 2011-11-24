@@ -18,7 +18,7 @@ function frequencyAnalyzer(path, text, identDict, fileDict) {
     var identifiers = text.split(/[^a-zA-Z_0-9\$]+/);
     for (var i = 0; i < identifiers.length; i++) {
         var ident = identifiers[i];
-        if(!ident)
+        if (!ident)
             continue;
             
         if (Object.prototype.hasOwnProperty.call(identDict, ident)) {
@@ -36,7 +36,7 @@ function frequencyAnalyzer(path, text, identDict, fileDict) {
 
 function removeDocumentFromCache(path) {
     var analysis = analysisCache[path];
-    if(!analysis) return;
+    if (!analysis) return;
 
     for (var id in analysis) {
         globalWordIndex[id] -= analysis[id];
@@ -50,7 +50,7 @@ function removeDocumentFromCache(path) {
 }
 
 function analyzeDocument(path, allCode) {
-    if(!analysisCache[path]) {
+    if (!analysisCache[path]) {
         // Delay this slightly, because in Firefox document.value is not immediately filled
         analysisCache[path] = frequencyAnalyzer(path, allCode, {}, {});
         // may be a bit redundant to do this twice, but alright...
@@ -59,7 +59,7 @@ function analyzeDocument(path, allCode) {
 }
 
 completer.onDocumentOpen = function(path, doc) {
-    if(!analysisCache[path]) {
+    if (!analysisCache[path]) {
         analyzeDocument(path, doc.getValue());
     }
 };
@@ -79,7 +79,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
     var identDict = globalWordIndex;
     
     var allIdentifiers = [];
-    for(var ident in identDict) {
+    for (var ident in identDict) {
         allIdentifiers.push(ident);
     }
     var matches = completeUtil.findCompletions(identifier, allIdentifiers);

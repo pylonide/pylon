@@ -11,7 +11,7 @@ var Mirror = require("ace/worker/mirror").Mirror;
 var tree = require('treehugger/tree');
 
 
-// Leaking on purpose
+// Leaking into global namespace of worker, to allow handlers to have access
 disabledFeatures = {};
 
 var LanguageWorker = exports.LanguageWorker = function(sender) {
@@ -69,7 +69,7 @@ oop.inherits(LanguageWorker, Mirror);
     this.parse = function() {
         for (var i = 0; i < this.handlers.length; i++) {
             var handler = this.handlers[i];
-            if(handler.handlesLanguage(this.$language)) {
+            if (handler.handlesLanguage(this.$language)) {
                 try {
                     var ast = handler.parse(this.doc.getValue());
                     if(ast) {
@@ -95,18 +95,18 @@ oop.inherits(LanguageWorker, Mirror);
         var markers = [];
         for(var i = 0; i < this.handlers.length; i++) {
             var handler = this.handlers[i];
-            if(handler.handlesLanguage(this.$language) && (ast || !handler.analysisRequiresParsing())) {
+            if (handler.handlesLanguage(this.$language) && (ast || !handler.analysisRequiresParsing())) {
                 var result = handler.analyze(this.doc, ast);
-                if(result)
+                if (result)
                     markers = markers.concat(result);
             }
         }
         var extendedMakers = markers;
-        if(this.lastAggregateActions.markers.length > 0)
+        if (this.lastAggregateActions.markers.length > 0)
             extendedMakers = markers.concat(this.lastAggregateActions.markers);
         this.scheduleEmit("markers", extendedMakers);
         this.currentMarkers = markers;
-        if(this.postponedCursorMove) {
+        if (this.postponedCursorMove) {
             this.onCursorMove(this.postponedCursorMove);
         }
     };
@@ -115,7 +115,7 @@ oop.inherits(LanguageWorker, Mirror);
         var astPos = {line: pos.row, col: pos.column};
         for (var i = 0; i < this.currentMarkers.length; i++) {
             var currentMarker = this.currentMarkers[i];
-            if(currentMarker.message && tree.inRange(currentMarker.pos, astPos)) {
+            if (currentMarker.message && tree.inRange(currentMarker.pos, astPos)) {
                 return currentMarker.message;
             }
         }
@@ -130,29 +130,30 @@ oop.inherits(LanguageWorker, Mirror);
         var pos = event.data;
         var hintMessage = this.checkForMarker(pos) || "";
         // Not going to parse for this, only if already parsed successfully
-        if(this.cachedAst) {
+        if (this.cachedAst) {
             var ast = this.cachedAst;
             var currentNode = ast.findNode({line: pos.row, col: pos.column});
-            if(currentNode !== this.lastCurrentNode || pos.force) {
+            if (currentNode !== this.lastCurrentNode || pos.force) {
                 var aggregateActions = {markers: [], hint: null, enableRefactorings: []};
-                for(var i = 0; i < this.handlers.length; i++) {
+                for (var i = 0; i < this.handlers.length; i++) {
                     var handler = this.handlers[i];
-                    if(handler.handlesLanguage(this.$language)) {
+                    if (handler.handlesLanguage(this.$language)) {
                         var response = handler.onCursorMovedNode(this.doc, ast, pos, currentNode);
-                        if(!response) continue;
-                        if(response.markers && response.markers.length > 0) {
+                        if (!response)
+                            continue;
+                        if (response.markers && response.markers.length > 0) {
                             aggregateActions.markers = aggregateActions.markers.concat(response.markers);
                         }
-                        if(response.enableRefactorings && response.enableRefactorings.length > 0) {
+                        if (response.enableRefactorings && response.enableRefactorings.length > 0) {
                             aggregateActions.enableRefactorings = aggregateActions.enableRefactorings.concat(response.enableRefactorings);
                         }
-                        if(response.hint) {
+                        if (response.hint) {
                             // Last one wins, support multiple?
                             aggregateActions.hint = response.hint;
                         }
                     }
                 }
-                if(aggregateActions.hint && !hintMessage) {
+                if (aggregateActions.hint && !hintMessage) {
                     hintMessage = aggregateActions.hint;
                 }
                 this.scheduleEmit("markers", this.currentMarkers.concat(aggregateActions.markers));
@@ -167,14 +168,14 @@ oop.inherits(LanguageWorker, Mirror);
     this.sendVariablePositions = function(event) {
         var pos = event.data;
         // Not going to parse for this, only if already parsed successfully
-        if(this.cachedAst) {
+        if (this.cachedAst) {
             var ast = this.cachedAst;
             var currentNode = ast.findNode({line: pos.row, col: pos.column});
-            for(var i = 0; i < this.handlers.length; i++) {
+            for (var i = 0; i < this.handlers.length; i++) {
                 var handler = this.handlers[i];
-                if(handler.handlesLanguage(this.$language)) {
+                if (handler.handlesLanguage(this.$language)) {
                     var response = handler.getVariablePositions(this.doc, ast, pos, currentNode);
-                    if(response)
+                    if (response)
                         this.sender.emit("variableLocations", response);
                 }
             }
@@ -183,9 +184,9 @@ oop.inherits(LanguageWorker, Mirror);
 
     this.onUpdate = function() {
         this.scheduledUpdate = false;
-        for(var i = 0; i < this.handlers.length; i++) {
+        for (var i = 0; i < this.handlers.length; i++) {
             var handler = this.handlers[i];
-            if(handler.handlesLanguage(this.$language)) {
+            if (handler.handlesLanguage(this.$language)) {
                 handler.onUpdate(this.doc);
             }
         }
@@ -198,7 +199,7 @@ oop.inherits(LanguageWorker, Mirror);
         this.$language = language;
         this.cachedAst = null;
         this.setValue(code);
-        for(var i = 0; i < this.handlers.length; i++) {
+        for (var i = 0; i < this.handlers.length; i++) {
             var handler = this.handlers[i];
             handler.path = path;
             handler.language = language;
@@ -207,7 +208,10 @@ oop.inherits(LanguageWorker, Mirror);
     };
     
     this.documentClose = function(event) {
-        for(var i = 0; i < this.handlers.length; i++) {
+        var path = event.data;
+        for (var i = 0; i < this.handlers.length; i++) {
+            var handler = this.handlers[i];
+            handler.onDocumentClose(path);
         }
     };
     
@@ -248,7 +252,7 @@ oop.inherits(LanguageWorker, Mirror);
         var ast, currentNode;
         for (var i = 0; i < this.handlers.length; i++) {
             var handler = this.handlers[i];
-            if(handler.handlesLanguage(this.$language) && handler.completionRequiresParsing()) {
+            if (handler.handlesLanguage(this.$language) && handler.completionRequiresParsing()) {
                 ast = this.parse();
                 currentNode = ast.findNode({line: pos.row, col: pos.column});
                 break;
@@ -259,9 +263,9 @@ oop.inherits(LanguageWorker, Mirror);
         
         for (var i = 0; i < this.handlers.length; i++) {
             var handler = this.handlers[i];
-            if(handler.handlesLanguage(this.$language)) {
+            if (handler.handlesLanguage(this.$language)) {
                 var completions = handler.complete(this.doc, ast, pos, currentNode);
-                if(completions)
+                if (completions)
                     matches = matches.concat(completions);
             }
         }

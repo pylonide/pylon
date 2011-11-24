@@ -11,7 +11,6 @@ var LanguageWorker = require('ext/language/worker').LanguageWorker;
 var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
 
 module.exports = {
-
     "test unused variable" : function(next) {
         var emitter = Object.create(EventEmitter);
         emitter.emit = emitter._dispatchEvent;
@@ -71,7 +70,6 @@ module.exports = {
         assert.equal(worker.handlers.length, 2);
         worker.switchFile("test.js", "javascript", "hello = false;");
     }
-    
 };
 
 });

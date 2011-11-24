@@ -12,7 +12,6 @@ var LanguageWorker = require('ext/language/worker').LanguageWorker;
 var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
 
 module.exports = {
-
     "test parsing" : function() {
         var emitter = Object.create(EventEmitter);
         emitter.emit = emitter._dispatchEvent;

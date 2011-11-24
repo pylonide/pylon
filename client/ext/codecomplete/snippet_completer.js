@@ -1,8 +1,8 @@
 var globalRequire = require;
+
 define(function(require, exports, module) {
 
 var completeUtil = require("ext/codecomplete/complete_util");
-
 var baseLanguageHandler = require('ext/language/base_handler');
 
 var completer = module.exports = Object.create(baseLanguageHandler);
@@ -32,7 +32,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
 
     var snippets = snippetCache[this.language];
     
-    if(snippets === undefined) {
+    if (snippets === undefined) {
         var text = this.fetchText('ext/codecomplete/snippets/' + this.language + '.json');
         snippets = text ? JSON.parse(text) : {};
         // Cache

@@ -35,14 +35,15 @@ handler.analyze = function(doc) {
         return markers;
     }
     finally {}
-    if(this.isFeatureEnabled("jshint")) {
+    if (this.isFeatureEnabled("jshint")) {
         lint(value, {
             undef: false,
             onevar: false,
             passfail: false
         });
         lint.errors.forEach(function(warning) {
-            if(!warning) return;
+            if (!warning)
+                return;
             markers.push({
                 pos: {
                     sl: warning.line-1,

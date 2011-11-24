@@ -8,6 +8,8 @@ module.exports = {
     
     path: null,
     
+    // UTILITIES
+    
     isFeatureEnabled: function(name) {
         return !disabledFeatures[name];
     },

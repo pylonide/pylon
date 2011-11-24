@@ -24,8 +24,8 @@ function wordDistanceAnalyzer(doc, pos, prefix) {
     // Split entire document into words
     var identifiers = text.split(SPLIT_REGEX);
     var identDict = {};
-    // Find prefix to find other identifiers close it
     
+    // Find prefix to find other identifiers close it
     for (var i = 0; i < identifiers.length; i++) {
         var ident = identifiers[i];
         var distance = Math.max(prefixPosition, i) - Math.min(prefixPosition, i);
@@ -62,7 +62,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
     
     var allIdentifiers = [];
-    for(var ident in identDict) {
+    for (var ident in identDict) {
         allIdentifiers.push(ident);
     }
     var matches = completeUtil.findCompletions(identifier, allIdentifiers);

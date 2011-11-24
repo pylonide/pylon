@@ -36,7 +36,8 @@ module.exports = {
         mySession.languageAnnos = [];
         annos.forEach(function(anno) {
             // Certain annotations can temporarily be disabled
-            if (_self.disabledMarkerTypes[anno.type]) return;
+            if (_self.disabledMarkerTypes[anno.type])
+                return;
             // Using anchors here, to automaticaly move markers as text around the marker is updated
             var anchor = new Anchor(mySession.getDocument(), anno.pos.sl, anno.pos.sc || 0);
             mySession.markerAnchors.push(anchor);
@@ -51,7 +52,8 @@ module.exports = {
             };
 
             function updateFloat(single) {
-                if (markerId) mySession.removeMarker(markerId);
+                if (markerId)
+                    mySession.removeMarker(markerId);
                 gutterAnno.row = anchor.row;
                 if (anno.pos.sc !== undefined && anno.pos.ec !== undefined) {
                     var range = Range.fromPoints(anchor.getPosition(), {
@@ -80,7 +82,8 @@ module.exports = {
         var markers = session.getMarkers(false);
         for (var id in markers) {
             // All language analysis' markers are prefixed with language_highlight
-            if (markers[id].clazz === 'language_highlight_' + type) session.removeMarker(id);
+            if (markers[id].clazz === 'language_highlight_' + type)
+                session.removeMarker(id);
         }
     },
     

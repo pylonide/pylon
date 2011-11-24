@@ -34,7 +34,7 @@ Variable.prototype.addUse = function(node) {
 handler.analyze = function(doc, ast) {
     var markers = [];
     
-    // Preclare, more like
+    // Preclare variables (pre-declares, yo!)
     function preDeclareHoisted(scope, node) {
         node.traverseTopDown(
             'VarDecl(x)', function(b) {
@@ -102,7 +102,7 @@ handler.analyze = function(doc, ast) {
             }
         );
         for (var i = 0; i < localVariables.length; i++) {
-            if(localVariables[i].uses.length === 0) {
+            if (localVariables[i].uses.length === 0) {
                 var v = localVariables[i];
                 markers.push({
                     pos: v.declaration.getPos(),
@@ -117,13 +117,15 @@ handler.analyze = function(doc, ast) {
 };
 
 handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
-    if(!currentNode) return;
+    if (!currentNode)
+        return;
     var markers = [];
     var enableRefactorings = [];
     
     function highlightVariable(v) {
-        if(!v) return;
-        if(v.declaration && v.declaration.getPos())
+        if (!v)
+            return;
+        if (v.declaration && v.declaration.getPos())
             markers.push({
                 pos: v.declaration.getPos(),
                 type: 'occurrence_main'
@@ -153,7 +155,7 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
         }
     );
     
-    if(!this.isFeatureEnabled("instanceHighlight"))
+    if (!this.isFeatureEnabled("instanceHighlight"))
         return { enableRefactorings: enableRefactorings };    
 
     return {

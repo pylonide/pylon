@@ -4,7 +4,7 @@ var ID_REGEX = /[a-zA-Z_0-9\$]/;
 
 function retrievePreceedingIdentifier(text, pos) {
     var buf = [];
-    for(var i = pos-1; i >= 0; i--) {
+    for (var i = pos-1; i >= 0; i--) {
         if(ID_REGEX.test(text[i]))
             buf.push(text[i]);
         else
@@ -29,7 +29,7 @@ function prefixBinarySearch(items, prefix) {
     }
     
     // Look back to make sure we haven't skipped any
-    while(middle > 0 && items[middle-1].indexOf(prefix) === 0)
+    while (middle > 0 && items[middle-1].indexOf(prefix) === 0)
         middle--;
     return middle >= 0 ? middle : 0; // ensure we're not returning a negative index
 }
@@ -38,7 +38,7 @@ function findCompletions(prefix, allIdentifiers) {
     allIdentifiers.sort();
     var startIdx = prefixBinarySearch(allIdentifiers, prefix);
     var matches = [];
-    for(var i = startIdx; i < allIdentifiers.length &&
+    for (var i = startIdx; i < allIdentifiers.length &&
                           allIdentifiers[i].indexOf(prefix) === 0; i++) {
         matches.push(allIdentifiers[i]);
     }

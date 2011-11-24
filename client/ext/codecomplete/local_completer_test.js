@@ -27,7 +27,6 @@ function determineDistance(score) {
 }
 
 module.exports = {
-
     "test basic completion" : function() {
         var doc = new Document("hel hello2 hello3  hello2 abc");
         var matches = completer.complete(doc, null, {row: 0, column: 3});

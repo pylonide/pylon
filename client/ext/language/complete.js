@@ -4,7 +4,6 @@ var editors = require("ext/editors/editors");
 var dom = require("ace/lib/dom");
 
 var oldCommandKey;
-
 var ID_REGEX = /[a-zA-Z_0-9\$]/;
 
 function retrievePreceedingIdentifier(text, pos) {
@@ -27,11 +26,11 @@ function replaceText(editor, prefix, newText) {
     var line = editor.getSession().getLine(pos.row);
     var doc = editor.getSession().getDocument();
     
-    if(newText.indexOf("^^") === -1)
+    if (newText.indexOf("^^") === -1)
         newText += "^^";
 
     // Find prefix whitespace of current line
-    for(var i = 0; i < line.length && (line[i] === ' ' || line[i] === "\t");)
+    for (var i = 0; i < line.length && (line[i] === ' ' || line[i] === "\t");)
         i++;
     
     var prefixWhitespace = line.substring(0, i);
@@ -40,9 +39,9 @@ function replaceText(editor, prefix, newText) {
     var paddedLines = newText.split("\n").join("\n" + prefixWhitespace);
     var splitPaddedLines = paddedLines.split("\n");
     var colOffset;
-    for(var rowOffset = 0; rowOffset < splitPaddedLines.length; rowOffset++) {
+    for (var rowOffset = 0; rowOffset < splitPaddedLines.length; rowOffset++) {
         colOffset = splitPaddedLines[rowOffset].indexOf("^^");
-        if(colOffset !== -1)
+        if (colOffset !== -1)
             break;
     }
     // Remove cursor marker
@@ -92,7 +91,7 @@ module.exports = {
         var cursorLayer = ace.renderer.$cursorLayer;
         var cursorLocation = cursorLayer.getPixelPosition(true);
         var distanceFromBottom = ace.container.offsetHeight - cursorLocation.top;
-        if(distanceFromBottom < completionBoxHeight) {
+        if (distanceFromBottom < completionBoxHeight) {
             ace.centerSelection();
         }
         setTimeout(function() {
@@ -112,7 +111,7 @@ module.exports = {
 
     closeCompletionBox : function(event, doNotHide) {
         var ace = editors.currentEditor.ceEditor.$editor;
-        if(!doNotHide)
+        if (!doNotHide)
             barCompleterCont.$ext.style.display = "none";
         document.removeEventListener("click", this.closeCompletionBox);
         ace.container.removeEventListener("DOMMouseScroll", this.closeCompletionBox);
@@ -236,11 +235,13 @@ module.exports = {
     
         var matches = event.data;
         
-        if(matches.length === 1 && !this.forceBox) {
+        if (matches.length === 1 && !this.forceBox) {
             replaceText(editor, identifier, matches[0].replaceText);
-        } else if(matches.length > 0) {
+        }
+        else if (matches.length > 0) {
             this.showCompletionBox(matches, identifier);
-        } else {
+        }
+        else {
             if(typeof barCompleterCont !== 'undefined')
                 barCompleterCont.$ext.style.display = "none";
         }

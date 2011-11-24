@@ -102,44 +102,4 @@
             </a:main>
         </a:presentation>
     </a:text>
-    
-    
-    <a:bar name="languagehint">
-        <a:style><![CDATA[
-            .language_hint_bar {
-                overflow: hidden;
-                position : relative;
-                background-color: #222;
-                -webkit-box-shadow: 5px 0 5px 5px rgba(0, 0, 0,.4);
-                box-shadow: 0 3px 7px rgba(0,0,0,.4);
-                -moz-border-radius-topleft:      5px;
-                -webkit-border-top-left-radius:  5px;
-                -moz-border-radius-topright:     5px;
-                -webkit-border-top-right-radius: 5px;
-            }
-            
-        ]]></a:style>
-        <a:presentation>
-            <a:main container=".">
-                <div class="language_hint_bar" />
-            </a:main>
-        </a:presentation>
-    </a:bar>
-    
-    <a:text name="languagehint_text">
-        <a:style><![CDATA[
-            .language_hint_text {
-                padding: 8px;
-                position: relative;
-                overflow: hidden;
-                color: #eee;
-            }
-            
-        ]]></a:style>
-        <a:presentation>
-            <a:main container=".">
-                <div class="language_hint_text"/>
-            </a:main>
-        </a:presentation>
-    </a:text>
 </a:skin>
