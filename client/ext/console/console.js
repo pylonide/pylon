@@ -95,7 +95,7 @@ module.exports = ext.register("ext/console/console", {
 
         Logger.logNodeStream(
             words
-                .filter(function() { return commands[w]; })
+                .filter(function(w) { return commands[w]; })
                 .map(function(w) { return w + tabs + commands[w].hint; })
                 .join("\n")
         );
@@ -382,7 +382,7 @@ module.exports = ext.register("ext/console/console", {
                 this.subCommands(cmds[cmd].commands, prefix + "-" + cmd);
         }
     },
-    
+
     initCommands: function() {
         if (trieCommands)
             return;
@@ -402,7 +402,7 @@ module.exports = ext.register("ext/console/console", {
             var _self = this;
             this.$busy = setTimeout(function(){clearTimeout(_self.$busy);_self.$busy = null;}, 100);
         }
-        
+
         this.initCommands();
 
         // keycodes that invalidate the previous autocomplete:
