@@ -37,14 +37,19 @@ handler.analyze = function(doc, ast) {
     // Preclare variables (pre-declares, yo!)
     function preDeclareHoisted(scope, node) {
         node.traverseTopDown(
+            // var bla;
             'VarDecl(x)', function(b) {
                 this.setAnnotation("scope", scope);
                 scope[b.x.value] = new Variable(b.x);
+                return this;
             },
+            // var bla = 10;
             'VarDeclInit(x, _)', function(b) {
                 this.setAnnotation("scope", scope);
                 scope[b.x.value] = new Variable(b.x);
+                return this;
             },
+            // function bla(farg) { }
             'Function(x, _, _)', function(b) {
                 this.setAnnotation("scope", scope);
                 if(b.x.value) {
@@ -52,6 +57,7 @@ handler.analyze = function(doc, ast) {
                 }
                 return this;
             },
+            // catch(e) { ... }
             'Catch(_, _, _)', function(b) {
                 return this;
             }

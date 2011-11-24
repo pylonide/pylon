@@ -17,7 +17,7 @@ function prefixBinarySearch(items, prefix) {
     var startIndex = 0;
     var stopIndex = items.length - 1;
     var middle = Math.floor((stopIndex + startIndex) / 2);
-
+    
     while (stopIndex > startIndex && middle >= 0 && items[middle].indexOf(prefix) !== 0) {
         if (prefix < items[middle]) {
             stopIndex = middle - 1;
