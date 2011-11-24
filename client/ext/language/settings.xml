@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <div class="header">
-        <span></span><div>Language Analysis</div>
+        <span></span><div>Language Support</div>
     </div>
     <a:checkbox class="underlined" label="Enable JSHint"
         checked="{[language/@jshint] != '' ? [language/@jshint] : 'true'}"
