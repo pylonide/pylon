@@ -142,6 +142,10 @@ return keys.onLoad({
             "backspace": "Backspace",
             "outdent": "Shift-Tab",
             "indent": "Tab"
+        },
+        "language": {
+            "complete": "Ctrl-Space|Alt-Space",
+            "renameVar": "Crl-Alt-R"
         }
     }
 });

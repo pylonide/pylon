@@ -4,14 +4,16 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+
+
 define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var language = require("ext/language/language");
 
-module.exports = ext.register("ext/codecomplete/codecomplete", {
-    name    : "Code Complete",
+module.exports = ext.register("ext/jslanguage/jslanguage", {
+    name    : "Javascript Language Support",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     deps    : [editors, language],
@@ -19,11 +21,11 @@ module.exports = ext.register("ext/codecomplete/codecomplete", {
     alone   : true,
 
     init : function() {
-        language.registerLanguageHandler('ext/codecomplete/local_completer');
-        language.registerLanguageHandler('ext/codecomplete/snippet_completer');
-        language.registerLanguageHandler('ext/codecomplete/open_files_local_completer');
+        language.registerLanguageHandler('ext/jslanguage/parse');
+        language.registerLanguageHandler('ext/jslanguage/scope_analyzer');
+        language.registerLanguageHandler('ext/jslanguage/narcissus_jshint');
     },
-
+    
     enable : function() {
     },
 
