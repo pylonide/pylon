@@ -159,6 +159,10 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
         'FArg(x)', function(b) {
             highlightVariable(this.getAnnotation("scope")[b.x.value]);
             enableRefactorings.push("renameVariable");
+        },
+        'Function(x, _, _)', function(b) {
+            highlightVariable(this.getAnnotation("scope")[b.x.value]);
+            enableRefactorings.push("renameVariable");
         }
     );
     
@@ -184,6 +188,10 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
             isDecl = true;
         },
         'FArg(x)', function(b) {
+            v = this.getAnnotation("scope")[b.x.value];
+            isDecl = true;
+        },
+        'Function(x, _, _)', function(b) {
             v = this.getAnnotation("scope")[b.x.value];
             isDecl = true;
         },
