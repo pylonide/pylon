@@ -2,7 +2,7 @@
  * JavaScript scope analysis module and warning reporter.
  * 
  * This handler does a couple of things:
- * 1. It does scope analysis and attaches a scope object to every variable, variable declartion and function declaration
+ * 1. It does scope analysis and attaches a scope object to every variable, variable declaration and function declaration
  * 2. It creates markers for undeclared variables
  * 3. It creates markers for unused variables
  * 4. It implements the local variable refactoring
