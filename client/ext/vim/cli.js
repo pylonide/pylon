@@ -14,7 +14,7 @@ var cmds = module.exports = {
         if (!save)
             save = require("ext/save/save");
 
-        page = tabEditors.getPage();
+        var page = tabEditors.getPage();
         if (!page)
             return;
 
