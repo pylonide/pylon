@@ -15,10 +15,12 @@ var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var handler = require("ext/vim/keyboard").handler;
 var settings = require("text!ext/vim/settings.xml");
-
+var extSettings = require("ext/settings/settings");
 var cmdModule = require("ext/vim/commands");
 var commands = cmdModule.commands;
 var cliCmds = require("ext/vim/cli");
+
+var enabled;
 
 var onConsoleCommand = function onConsoleCommand(e) {
     var cmd = e.data.command;
@@ -72,6 +74,7 @@ var enableVim = function enableVim() {
         editor.setKeyboardHandler(handler);
         commands.stop.exec(editor);
     }
+    enabled = true;
 };
 
 var disableVim = function() {
@@ -82,6 +85,7 @@ var disableVim = function() {
         editor.setKeyboardHandler(null);
         commands.start.exec(editor);
     }
+    enabled = false;
 };
 
 var cliKeyDown = function(e) {
@@ -114,17 +118,24 @@ module.exports = ext.register("ext/vim/vim", {
         menuItem.addEventListener("prop.checked", function(e) {
             self.toggle(e.value);
         });
-        
-        ide.addEventListener("init.ext/settings/settings", function (e) {
-            barSettings.insertMarkup(settings);
-        });
-        
-        txtConsoleInput.addEventListener("keydown", cliKeyDown);
 
+        ide.addEventListener("init.ext/settings/settings", function (e) {
+            setTimeout(function() { barSettings.insertMarkup(settings); }, 0);
+        });
+
+        extSettings.model.addEventListener("update", function(e) {
+            var vimEnabled = e.currentTarget.queryValue("editors/code/@vimmode");
+            self.toggle(vimEnabled === "true");
+        });
+
+        txtConsoleInput.addEventListener("keydown", cliKeyDown);
     },
 
     toggle: function(show) {
         if (this.inited === true) {
+            if (show && show == enabled)
+                return;
+
             if (show)
                 this.enable();
             else
