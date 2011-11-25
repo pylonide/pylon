@@ -146,6 +146,7 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
     currentNode.rewrite(
         'Var(x)', function(b) {
             highlightVariable(this.getAnnotation("scope")[b.x.value]);
+            enableRefactorings.push("renameVariable");
         },
         'VarDeclInit(x, _)', function(b) {
             highlightVariable(this.getAnnotation("scope")[b.x.value]);
@@ -172,24 +173,40 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
 
 handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
     var v;
+    var isDecl = false;
     currentNode.rewrite(
         'VarDeclInit(x, _)', function(b) {
             v = this.getAnnotation("scope")[b.x.value];
+            isDecl = true;
         },
         'VarDecl(x)', function(b) {
             v = this.getAnnotation("scope")[b.x.value];
+            isDecl = true;
         },
         'FArg(x)', function(b) {
             v = this.getAnnotation("scope")[b.x.value];
+            isDecl = true;
+        },
+        'Var(x)', function(b) {
+            v = this.getAnnotation("scope")[b.x.value];
         }
     );
-    var pos = v.declaration.getPos();
+    var pos;
+    var others = [];
+    if(isDecl)
+        pos = v.declaration.getPos();
+    else {
+        pos = currentNode.getPos();
+        var otherPos = v.declaration.getPos();
+        others.push({column: otherPos.sc, row: otherPos.sl});
+    }
     var length = pos.ec - pos.sc;
     
-    var others = [];
     v.uses.forEach(function(node) {
-        var pos = node.getPos();
-        others.push({column: pos.sc, row: pos.sl});
+        if(node !== currentNode) {
+            var pos = node.getPos();
+            others.push({column: pos.sc, row: pos.sl});
+        }
     });
     return {
         length: length,
