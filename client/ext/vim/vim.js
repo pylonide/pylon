@@ -14,6 +14,8 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var handler = require("ext/vim/keyboard").handler;
+var settings = require("text!ext/vim/settings.xml");
+
 var cmdModule = require("ext/vim/commands");
 var commands = cmdModule.commands;
 var cliCmds = require("ext/vim/cli");
@@ -98,12 +100,12 @@ module.exports = ext.register("ext/vim/vim", {
     alone   : true,
 
     hook : function() {
-        var menuItem = ide.mnuEdit.appendChild(new apf.item({
+        var menuItem = new apf.item({
             caption: "Vim mode",
             type: "check",
             checked : "[{require('ext/settings/settings').model}::editors/code/@vimmode]"
-        }));
-        this.nodes.push(ide.mnuEdit.appendChild(menuItem));
+        });
+        this.nodes.push(mnuView.appendChild(menuItem));
 
         var self = this;
 
@@ -112,8 +114,13 @@ module.exports = ext.register("ext/vim/vim", {
         menuItem.addEventListener("prop.checked", function(e) {
             self.toggle(e.value);
         });
-
+        
+        ide.addEventListener("init.ext/settings/settings", function (e) {
+            barSettings.insertMarkup(settings);
+        });
+        
         txtConsoleInput.addEventListener("keydown", cliKeyDown);
+
     },
 
     toggle: function(show) {
