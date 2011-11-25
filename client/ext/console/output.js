@@ -68,6 +68,6 @@ module.exports = {
             " "],
         "__default__": "E: Invalid operation %s"
     }
-}
+};
 });
 
