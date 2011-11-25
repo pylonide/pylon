@@ -45,19 +45,34 @@ apf.scrollbar = function(struct, tagName){
     this.$timer        = null;
     this.$scrollSizeWait;
     this.$slideMaxSize;
+    
+    this.$booleanProperties = ["showonscroll"];
 
     this.addEventListener("focus", function(){
         if (this.$host.focus && this.$host.$isWindowContainer !== true)
             this.$host.focus();
     });
 
+    this.$propHandlers["showonscroll"] = function(value){
+        if (value) {
+            this.$ext.style.display = "none";
+        }
+        else {
+            this.$ext.style.display = "block";
+        }
+    };
+
     this.$propHandlers["overflow"] = function(value){
+        if (this.showonscroll)
+            return;
+        
         if (value == "auto") {
             this.$ext.style.display = "none";
             this.$resize();
         }
-        else if (value == "scroll")
+        else if (value == "scroll") {
             this.setProperty("visible", true);
+        }
     }
     
     this.$propHandlers["for"] = function(value){
@@ -177,7 +192,7 @@ apf.scrollbar = function(struct, tagName){
                 }
                 delete _self.$lastScrollState;
                 _self.$curValue = (oHtml[_self.$scrollPos] + -1 * e.delta * Math.min(45, apf[_self.$getInner](oHtml)/10)) / div;
-                _self.setScroll();
+                _self.setScroll(null, null, null, true);
                 e.preventDefault();
             }
         };
@@ -232,7 +247,7 @@ apf.scrollbar = function(struct, tagName){
                 var p = oHtml[_self.$scrollPos] / m;
                 if (Math.abs(_self.$curValue - p) > 1/m) {
                     _self.$curValue = p;
-                    _self.setScroll();
+                    _self.setScroll(null, null, null, true);
                 }
                 return false;
             }
@@ -286,6 +301,9 @@ apf.scrollbar = function(struct, tagName){
         // show the scrollbar again
         //if (this.animating || !this.$visible)
         //    return;
+
+        if (this.showonscroll && !this.$ext.offsetHeight)
+            return;
 
         var oHtml = this.$getHtmlHost();
         if (!oHtml || !oHtml.offsetHeight) //@todo generalize this to resize for non-ie
@@ -345,7 +363,7 @@ apf.scrollbar = function(struct, tagName){
         this.$updating = false;
     }
     
-    this.setScroll = function (timed, noEvent, noUpdateParent){
+    this.setScroll = function (timed, noEvent, noUpdateParent, byUser){
         if (this.$curValue > 1) 
             this.$curValue = 1;
         if (this.$curValue < 0) 
@@ -391,6 +409,31 @@ apf.scrollbar = function(struct, tagName){
                 });
         }
         
+        if (this.showonscroll && byUser) {
+            var _self = this;
+            
+            clearTimeout(this.$hideOnScrollTimer);
+            if (_self.$hideOnScrollControl)
+                _self.$hideOnScrollControl.stop();
+            
+            apf.setOpacity(this.$ext, 1);
+            !this.visible ? this.show() : this.$ext.style.display = "block";
+            this.$update();
+            
+            this.$hideOnScrollTimer = setTimeout(function(){
+                apf.tween.single(_self.$ext, {
+                    control : _self.$hideOnScrollControl = {},
+                    type : "fade",
+                    from : 1,
+                    to   : 0,
+                    onfinish : function(){
+                        _self.$ext.style.display = "none";
+                        apf.setOpacity(_self.$ext, 1);
+                    }
+                });
+            }, 500)
+        }
+        
         this.pos = this.$curValue;
     }
     
@@ -398,7 +441,7 @@ apf.scrollbar = function(struct, tagName){
         if (v > this.$caret[this.$offsetPos]) 
             return this.$ext.onmouseup();
         this.$curValue -= this.$bigStepValue;
-        this.setScroll();
+        this.setScroll(null, null, null, true);
         
         if (this.$slideFast) {
             this.$slideFast.style[this.$size] = Math.max(1, this.$caret[this.$offsetPos]
@@ -411,7 +454,7 @@ apf.scrollbar = function(struct, tagName){
         if (v < this.$caret[this.$offsetPos] + this.$caret[this.$offsetSize]) 
             return this.$ext.onmouseup();
         this.$curValue += this.$bigStepValue;
-        this.setScroll();
+        this.setScroll(null, null, null, true);
         
         if (this.$slideFast) {
             this.$slideFast.style[this.$pos]    = (this.$caret[this.$offsetPos] + this.$caret[this.$offsetSize]) + "px";
@@ -489,7 +532,7 @@ apf.scrollbar = function(struct, tagName){
                 
                 _self.$curValue -= _self.$stepValue;
                 
-                _self.setScroll();
+                _self.setScroll(null, null, null, true);
                 apf.stopPropagation(e);
                 
                 //apf.window.$mousedown(e);
@@ -497,7 +540,7 @@ apf.scrollbar = function(struct, tagName){
                 _self.$timer = $setTimeout(function(){
                     _self.$timer = setInterval(function(){
                         _self.$curValue -= _self.$stepValue;
-                        _self.setScroll();
+                        _self.setScroll(null, null, null, true);
                     }, 20);
                 }, 300);
             };
@@ -522,7 +565,7 @@ apf.scrollbar = function(struct, tagName){
                 clearTimeout(_self.$timer);
                 
                 _self.$curValue += _self.$stepValue;
-                _self.setScroll();
+                _self.setScroll(null, null, null, true);
                 apf.stopPropagation(e);
                 
                 //apf.window.$mousedown(e);
@@ -530,7 +573,7 @@ apf.scrollbar = function(struct, tagName){
                 _self.$timer = $setTimeout(function(){
                     _self.$timer = setInterval(function(){
                         _self.$curValue += _self.$stepValue;
-                        _self.setScroll();
+                        _self.setScroll(null, null, null, true);
                     }, 20);
                 }, 300);
             };
@@ -619,7 +662,7 @@ apf.scrollbar = function(struct, tagName){
             var offset;
             if (e[_self.$eventDir] > _self.$caret[_self.$offsetPos] + _self.$caret[_self.$offsetSize]) {
                 _self.$curValue += _self.$bigStepValue;
-                _self.setScroll(true);
+                _self.setScroll(true, null, null, true);
                 
                 if (_self.$slideFast) {
                     _self.$slideFast.style.display = "block";
@@ -632,13 +675,13 @@ apf.scrollbar = function(struct, tagName){
                 offset = e[_self.$eventDir];
                 _self.$timer = $setTimeout(function(){
                     _self.$timer = setInterval(function(){
-                        _self.scrollDown(offset);
+                        _self.scrollDown(offset, null, null, true);
                     }, 20);
                 }, 300);
             }
             else if (e[_self.$eventDir] < _self.$caret[_self.$offsetPos]) {
                 _self.$curValue -= _self.$bigStepValue;
-                _self.setScroll(true);
+                _self.setScroll(true, null, null, true);
                 
                 if (_self.$slideFast) {
                     _self.$slideFast.style.display = "block";
@@ -649,7 +692,7 @@ apf.scrollbar = function(struct, tagName){
                 offset = e[_self.$eventDir];
                 _self.$timer = $setTimeout(function(){
                     _self.$timer = setInterval(function(){
-                        _self.scrollUp(offset);
+                        _self.scrollUp(offset, null, null, true);
                     }, 20);
                 }, 300);
             }
@@ -661,7 +704,7 @@ apf.scrollbar = function(struct, tagName){
                 
             clearInterval(_self.$timer);
             if (!_self.realtime)
-                _self.setScroll();
+                _self.setScroll(null, null, null, true);
             if (_self.$slideFast)
                 _self.$slideFast.style.display = "none";
         };

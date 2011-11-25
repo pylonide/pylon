@@ -175,20 +175,27 @@ apf.browser = function(struct, tagName){
         }
         else {
             this.$ext = parentNode.appendChild(document.createElement("iframe"));
-            this.$ext.style.width  = "100px";
-            this.$ext.style.height = "100px";
+            this.$ext.setAttribute("frameborder","0");
+            //this.$ext.style.width  = "100px";
+            //this.$ext.style.height = "100px";
             this.$browser              = this.$ext;
-            //this.$ext.style.border = "2px inset white";
+            this.$ext.style.border = "1px solid #999";
+            this.$ext.style.background = "white";
         }
         this.$ext.className = "apfbrowser"
         
+        if (this.getAttribute("style"))
+            this.$ext.setAttribute("style", this.getAttribute("style"));
+        
         var _self = this;
         apf.addListener(this.$browser, "load", function(){
-            _self.dispatchEvent("load");
+            _self.dispatchEvent("load", {href: this.contentWindow.location.href});
+            _self.setProperty("src", this.contentWindow.location.href);
         });
 
         apf.addListener(this.$browser, "error", function(){
             _self.dispatchEvent("error");
+            _self.setProperty("src", this.contentWindow.location.href);
         });
 
         //this.$browser = this.$ext.contentWindow.document.body;

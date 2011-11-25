@@ -324,7 +324,7 @@ apf.AmlNode = function(){
             amlNode.ownerDocument = this.ownerDocument || apf.ownerDocument;
 
         if (amlNode.parentNode)
-            amlNode.removeNode(isMoveWithinParent, noHtmlDomEdit);
+            amlNode.removeNode(isMoveWithinParent, true);//noHtmlDomEdit);
         amlNode.parentNode = this;
 
         if (beforeNode)
@@ -364,10 +364,21 @@ apf.AmlNode = function(){
             amlNode.$pHtmlNode = _self.canHaveChildren ? _self.$int : document.body;
 
             //@todo this is a hack, a good solution should be found
-            /*var iframelist;
-            var containsIframe = (amlNode.$ext && amlNode.$ext.nodeType == 1 
-              && (iframelist = amlNode.$ext.getElementsByTagName("iframe")).length > 0
-              && apf.findHost(iframelist[0].parentNode) == amlNode);*/
+            if (document.adoptNode && amlNode.$ext && amlNode.$ext.nodeType == 1) {
+                var reappendlist = [];
+                var iframelist   = apf.getArrayFromNodelist(
+                    amlNode.$ext.getElementsByTagName("iframe"));
+                if (amlNode.$ext.tagName == "IFRAME")
+                    document.adoptNode(amlNode.$ext);
+                    
+                for (var i = 0; i < iframelist.length; i++) {
+                    reappendlist[i] = [
+                        iframelist[i].parentNode,
+                        iframelist[i].nextSibling,
+                        document.adoptNode(iframelist[i]),
+                    ]
+                }
+            }
 
             var nextNode = beforeNode;
             if (!initialAppend && !noHtmlDomEdit && amlNode.$ext && !amlNode.$coreHtml) {
@@ -378,6 +389,13 @@ apf.AmlNode = function(){
                 
                 amlNode.$pHtmlNode.insertBefore(amlNode.$altExt || amlNode.$ext,
                     nextNode && (nextNode.$altExt || nextNode.$ext) || null);
+                    
+                for (var i = reappendlist.length - 1; i >= 0; i--) {
+                    reappendlist[i][0].insertBefore(
+                        reappendlist[i][2],
+                        reappendlist[i][1]);
+                }
+                reappendlist = [];
             }
             
             //Signal node and all it's ancestors
@@ -398,6 +416,12 @@ apf.AmlNode = function(){
                 
                 amlNode.$pHtmlNode.insertBefore(amlNode.$altExt || amlNode.$ext,
                     nextNode && (nextNode.$altExt || nextNode.$ext) || null);
+                
+                for (var i = reappendlist.length - 1; i >= 0; i--) {
+                    reappendlist[i][0].insertBefore(
+                        reappendlist[i][2],
+                        reappendlist[i][1]);
+                }
             }
         }
 

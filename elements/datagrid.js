@@ -532,7 +532,7 @@ apf.datagrid = function(struct, tagName){
         
             //headings and records have same padding-right
             this.$container.style.paddingRight  =
-            this.$head.style.paddingRight = vLeft + "px";
+            this.$head.style.paddingRight = (vLeft - 1) + "px";
         }
         
         this.$fixed = fixed;
@@ -896,7 +896,7 @@ apf.datagrid = function(struct, tagName){
         }
 
         if (ceditor.type == 2) {
-            if (!this.$editors[editor]) {
+            if (!this.$editors[h.$uniqueId + ":" + editor]) {
                 var constr = apf.namespaces[apf.ns.aml].elements[editor];
                 var info   = {
                     htmlNode : editParent,
@@ -906,7 +906,10 @@ apf.datagrid = function(struct, tagName){
                         + "]",
                     focussable : false
                 };
-                if (!h.tree)
+
+                if (h.tree)
+                    info.width = "100% - " + (editParent.offsetLeft + parseInt(this.$getOption("treecell", "editoroffset")));
+                else
                     info.width = "100%-3";
                 
                 //@todo copy all non-known properties of the prop element
@@ -932,8 +935,10 @@ apf.datagrid = function(struct, tagName){
                 
                 if (h.skin)
                     info.skin = h.skin;
+                if (h["class"])
+                    info["class"] = h["class"];
 
-                oEditor = this.$editors[editor] = new constr(info);
+                oEditor = this.$editors[h.$uniqueId + ":" + editor] = new constr(info);
 
                 var box = apf.getBox(apf.getStyle(oEditor.$ext, "margin"));
                 if (box[1] || box[3]) {
@@ -972,7 +977,7 @@ apf.datagrid = function(struct, tagName){
                 }
             }
             else {
-                oEditor = this.$editors[editor];
+                oEditor = this.$editors[h.$uniqueId + ":" + editor];
                 
                 if (oEditor.hasFeature(apf.__MULTISELECT__) && !h.model) {
                     //oEditor.setAttribute("model", "{" + this.id + ".selected}");
@@ -985,15 +990,18 @@ apf.datagrid = function(struct, tagName){
                         + (v = h.value).substr(1, v.length - 2) 
                         + "]");
                 }
-
-                /*oEditor.setAttribute("value", "[{" + this.id + ".selected}::" 
-                    + (v = h.value).substr(1, v.length - 2) 
-                    + "]");*/
+                else {
+                    oEditor.setAttribute("value", "[{" + this.id + ".selected}::" 
+                        + (v = h.value).substr(1, v.length - 2) 
+                        + "]");
+                }
 
                 oEditor.setProperty("visible", true);
                 editParent.appendChild(oEditor.$ext);
                 
-                oEditor.setAttribute("width", h.tree ? "" : "100%-3");
+                oEditor.setAttribute("width", h.tree 
+                    ? "100% - " + (editParent.offsetLeft + parseInt(this.$getOption("treecell", "editoroffset"))) 
+                    : "100%-3");
             }
             
             /*setTimeout(function(){
@@ -1046,7 +1054,7 @@ apf.datagrid = function(struct, tagName){
                 if (!nodes[i].host) {
                     if (nodes[i].nodeType == 1)
                         nodes[i].style.display = "";
-                    else if (!ed[0].value) {
+                    else if (!ed[0].value || ed[0].value == this.$lastTextValue) {
                         nodes[i].nodeValue = this.$lastTextValue; //@todo
                     }
                 }
