@@ -1,8 +1,8 @@
 "use strict"
 
-var util = require("ext/vim/maps/util");
-
 define(function(require, exports, module) {
+
+var util = require("ext/vim/maps/util");
 module.exports = {
     "w": {
         nav: function(editor) {
