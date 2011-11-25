@@ -38,28 +38,28 @@ handler.analyze = function(doc, ast) {
     function preDeclareHoisted(scope, node) {
         node.traverseTopDown(
             // var bla;
-            'VarDecl(x)', function(b) {
-                this.setAnnotation("scope", scope);
+            'VarDecl(x)', function(b, node) {
+                node.setAnnotation("scope", scope);
                 scope[b.x.value] = new Variable(b.x);
-                return this;
+                return node;
             },
             // var bla = 10;
-            'VarDeclInit(x, _)', function(b) {
-                this.setAnnotation("scope", scope);
+            'VarDeclInit(x, _)', function(b, node) {
+                node.setAnnotation("scope", scope);
                 scope[b.x.value] = new Variable(b.x);
-                return this;
+                return node;
             },
             // function bla(farg) { }
-            'Function(x, _, _)', function(b) {
-                this.setAnnotation("scope", scope);
+            'Function(x, _, _)', function(b, node) {
+                node.setAnnotation("scope", scope);
                 if(b.x.value) {
                     scope[b.x.value] = new Variable(b.x);
                 }
-                return this;
+                return node;
             },
             // catch(e) { ... }
-            'Catch(_, _, _)', function(b) {
-                return this;
+            'Catch(_, _, _)', function(b, node) {
+                return node;
             }
         );
     }
@@ -74,23 +74,23 @@ handler.analyze = function(doc, ast) {
             'VarDeclInit(x, _)', function(b) {
                 localVariables.push(scope[b.x.value]);
             },
-            'Assign(Var(x), _)', function(b) {
+            'Assign(Var(x), _)', function(b, node) {
                 if(!scope[b.x.value]) {
                     markers.push({
-                        pos: this[0].getPos(),
+                        pos: node[0].getPos(),
                         type: 'warning',
                         message: 'Assigning to undeclared variable.'
                     });
                 }
             },
-            'Var(x)', function(b) {
-                this.setAnnotation("scope", scope);
+            'Var(x)', function(b, node) {
+                node.setAnnotation("scope", scope);
                 if(scope[b.x.value]) {
-                    scope[b.x.value].addUse(this);
+                    scope[b.x.value].addUse(node);
                 }
-                return this;
+                return node;
             },
-            'Function(x, fargs, body)', function(b) {
+            'Function(x, fargs, body)', function(b, node) {
                 var newScope = Object.create(scope);
                 newScope['this'] = new Variable();
                 b.fargs.forEach(function(farg) {
@@ -98,13 +98,13 @@ handler.analyze = function(doc, ast) {
                     newScope[farg[0].value] = new Variable(farg);
                 });
                 scopeAnalyzer(newScope, b.body);
-                return this;
+                return node;
             },
-            'Catch(x, body)', function(b) {
+            'Catch(x, body)', function(b, node) {
                 var newScope = Object.create(scope);
                 newScope[b.x.value] = new Variable(b.x);
                 scopeAnalyzer(newScope, b.body);
-                return this;
+                return node;
             }
         );
         for (var i = 0; i < localVariables.length; i++) {
@@ -146,6 +146,9 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
     currentNode.rewrite(
         'Var(x)', function(b) {
             highlightVariable(this.getAnnotation("scope")[b.x.value]);
+            // Let's not enable renaming 'this'
+            if(b.x.value !== "this")
+                enableRefactorings.push("renameVariable");
         },
         'VarDeclInit(x, _)', function(b) {
             highlightVariable(this.getAnnotation("scope")[b.x.value]);
@@ -156,6 +159,10 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
             enableRefactorings.push("renameVariable");
         },
         'FArg(x)', function(b) {
+            highlightVariable(this.getAnnotation("scope")[b.x.value]);
+            enableRefactorings.push("renameVariable");
+        },
+        'Function(x, _, _)', function(b) {
             highlightVariable(this.getAnnotation("scope")[b.x.value]);
             enableRefactorings.push("renameVariable");
         }
@@ -172,24 +179,44 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
 
 handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
     var v;
+    var isDecl = false;
     currentNode.rewrite(
-        'VarDeclInit(x, _)', function(b) {
-            v = this.getAnnotation("scope")[b.x.value];
+        'VarDeclInit(x, _)', function(b, node) {
+            v = node.getAnnotation("scope")[b.x.value];
+            isDecl = true;
         },
-        'VarDecl(x)', function(b) {
-            v = this.getAnnotation("scope")[b.x.value];
+        'VarDecl(x)', function(b, node) {
+            v = node.getAnnotation("scope")[b.x.value];
+            isDecl = true;
         },
-        'FArg(x)', function(b) {
-            v = this.getAnnotation("scope")[b.x.value];
+        'FArg(x)', function(b, node) {
+            v = node.getAnnotation("scope")[b.x.value];
+            isDecl = true;
+        },
+        'Function(x, _, _)', function(b, node) {
+            v = node.getAnnotation("scope")[b.x.value];
+            isDecl = true;
+        },
+        'Var(x)', function(b, node) {
+            v = node.getAnnotation("scope")[b.x.value];
         }
     );
-    var pos = v.declaration.getPos();
+    var pos;
+    var others = [];
+    if(isDecl)
+        pos = v.declaration.getPos();
+    else {
+        pos = currentNode.getPos();
+        var otherPos = v.declaration.getPos();
+        others.push({column: otherPos.sc, row: otherPos.sl});
+    }
     var length = pos.ec - pos.sc;
     
-    var others = [];
     v.uses.forEach(function(node) {
-        var pos = node.getPos();
-        others.push({column: pos.sc, row: pos.sl});
+        if(node !== currentNode) {
+            var pos = node.getPos();
+            others.push({column: pos.sc, row: pos.sl});
+        }
     });
     return {
         length: length,
