@@ -22,21 +22,22 @@
                 
                 <!--a:divider skin="c9-divider-double" /-->
                 
-                <a:splitbutton
-                  icon     = "run.png"
-                  caption  = "Run"
+                <a:splitbutton id="btnTestRun"
+                  caption  = "Run tests"
                   onclick  = "require('ext/testpanel/testpanel').run(dgTestProject.getSelection());"
+                  margin   = "0 0 0 4"
                   submenu  = "mnuRunSettings" 
-                  disabled = "{stTestRun.active or !dgTestProject.selected}" />
+                  visible  = "{!(stTestRun.active or !dgTestProject.selected)}" />
                 <a:menu id="mnuRunSettings" pinned="true">
                     
                 </a:menu>
             
                 <a:button
                   icon     = "stop.png"
-                  caption  = "stop"
+                  caption  = "Stop Tests"
                   skin     = "c9-toolbarbutton"
                   onclick  = "require('ext/testpanel/testpanel').stop()"
+                  visible  = "{!btnTestRun.visible}"
                   disabled = "{!stTestRun.active or stTestRun.stopping}" />
             </a:hbox>
         </a:bar>
@@ -68,41 +69,56 @@
                 </data>
             </a:model>
             
-            <a:datagrid 
-              id        = "dgTestProject"
-              flex      = "1"
-              options   = "size"
-              model     = "mdlTests"
-              each      = "[repo|file|test|assert|error]"
-              margin    = "4"
-              multiselect    = "true"
-              startcollapsed = "true"
-              contextmenu    = "mnuTestContext"
-              empty-message  = "No tests yet"
-              onbeforeremove = "return remove(this)">
-                <a:column caption="Name" width="60%" tree="1" icon="{require('ext/testpanel/testpanel').getIcon(%[.])}"><?lm
-                    if (localName() == "error")
-                        <span style='color:red'>[@name]</span>
-                    else
-                        [@name]
-                ?></a:column>
-                <a:column caption="Status" width="40%"><?lm
-                    if ([@status] === '0')
-                        <span style='color:red'>\[[@status-message]\]</span>
-                    else if ([@status] == '1')
-                        <span style='color:green'>\[PASS{[@status-message] and " [@status-message]"}\]</span>
-                    else if ([@status] == '-1')
-                        <span>\[{[@status-message].uCaseFirst()}\]</span>
-                    else
-                        "";
-                ?></a:column>
+            <a:bar skin="basic" flex="1">
+                <a:datagrid 
+                  id        = "dgTestProject"
+                  anchors   = "0 0 0 0"
+                  options   = "size"
+                  model     = "mdlTests"
+                  each      = "[repo|file|test|assert|error]"
+                  margin    = "4"
+                  class     = "noscrollbar"
+                  multiselect    = "true"
+                  startcollapsed = "true"
+                  contextmenu    = "mnuTestContext"
+                  empty-message  = "No tests yet"
+                  onbeforeremove = "return remove(this)">
+                    <a:column caption="Name" width="60%" tree="1" icon="{require('ext/testpanel/testpanel').getIcon(%[.])}"><?lm
+                        if (localName() == "error")
+                            <span style='color:red'>[@name]</span>
+                        else
+                            [@name]
+                    ?></a:column>
+                    <a:column caption="Status" width="40%"><?lm
+                        if ([@status] === '0')
+                            <span style='color:red'>\[[@status-message]\]</span>
+                        else if ([@status] == '1')
+                            <span style='color:green'>\[PASS{[@status-message] and " [@status-message]"}\]</span>
+                        else if ([@status] == '-1')
+                            <span>\[{[@status-message].uCaseFirst()}\]</span>
+                        else
+                            "";
+                    ?></a:column>
+                    
+                    <a:insert match="[file]" get="{return require('ext/testpanel/testpanel').parseFile(xmlNode)}" />
+                    <a:remove match="[file]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
+                    
+                    <a:expanded match="[test|file[test]]" id="expTestRule" />
+                    <a:expanded match="{apf.getChildNumber(%[repo]) == 1}" />
+                </a:datagrid>
                 
-                <a:insert match="[file]" get="{return require('ext/testpanel/testpanel').parseFile(xmlNode)}" />
-                <a:remove match="[file]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
-                
-                <a:expanded match="[test|file[test]]" id="expTestRule" />
-                <a:expanded match="{apf.getChildNumber(%[repo]) == 1}" />
-            </a:datagrid>
+                <a:scrollbar
+                    for      = "dgTestProject"
+                    id       = "sbTestProject"
+                    margin   = "2"
+                    skin     = "sbios"
+                    top      = "24"
+                    right    = "4"
+                    bottom   = "4"
+                    width    = "7"
+                    showonscroll = "true"
+                />
+            </a:bar>
             
             <!--
                 @todo Edit could be test/assert
@@ -113,7 +129,7 @@
                 <a:item match="[file]" 
                   onclick="var ide = require('core/ide');ide.dispatchEvent('openfile', {doc: ide.createDocument(dgTestProject.selected)});">Edit</a:item>
                 <a:divider />
-                <a:item match="[file]">Remove</a:item>
+                <a:item match="[file]" onclick="dgTestProject.remove()">Remove</a:item>
             </a:menu>
         </a:vbox>
     </a:window>

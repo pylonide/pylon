@@ -131,7 +131,7 @@ module.exports = ext.register("ext/settings/settings", {
             state   : true,
             "class" : "preferences",
             caption : "Preferences"
-        }), navbar.firstChild);
+        }), navbar.lastChild.previousSibling);
 
         var _self = this;
 

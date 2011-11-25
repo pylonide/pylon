@@ -288,7 +288,8 @@ module.exports = ext.register("ext/zen/zen", {
                 }, 0.5);
 
                 setTimeout(function() {
-                    ceEditor.focus();
+                    if (self.ceEditor)
+                        ceEditor.focus();
                     apf.layout.forceResize(tabEditors.parentNode.$ext);
                 }, 100);
             });
@@ -387,12 +388,15 @@ module.exports = ext.register("ext/zen/zen", {
                 _self.animateZen.style.display = "none";
                 // Reset values
                 _self.resetTabEditorsParentStyles();
-                document.body.appendChild(tabEditors.parentNode.$ext);
+                
+                apf.document.body.appendChild(tabEditors.parentNode);
+                
                 editors.enableTabResizeEvent();
                 apf.layout.forceResize(tabEditors.parentNode.$ext);
 
                 setTimeout(function() {
-                    ceEditor.focus();
+                    if (self.ceEditor)
+                        ceEditor.focus();
                     apf.layout.forceResize(tabEditors.parentNode.$ext);
                 }, 100);
             });
@@ -405,7 +409,9 @@ module.exports = ext.register("ext/zen/zen", {
         }
         else {
             this.resetTabEditorsParentStyles();
-            document.body.appendChild(tabEditors.parentNode.$ext);
+            
+            apf.document.body.appendChild(tabEditors.parentNode);
+            
             editors.enableTabResizeEvent();
             this.animateZen.style.display = "none";
             vbZen.$ext.style.opacity = "0";
@@ -471,6 +477,9 @@ module.exports = ext.register("ext/zen/zen", {
     setAceThemeBackground : function() {
         // Set the background color so animating doesn't show a dumb gray background
         var ace_editor = document.getElementsByClassName("ace_editor")[0];
+        if (!ace_editor)
+            return;
+        
         var classNames = ace_editor.getAttribute("class").split(" ");
         for (var cn in classNames) {
             if (classNames[cn].indexOf("ace-") === 0) {
@@ -491,7 +500,27 @@ module.exports = ext.register("ext/zen/zen", {
      * animation window
      */
     placeTabIntoAnimationWindow : function() {
+        var reappendlist = [];
+        var iframelist   = apf.getArrayFromNodelist(
+            tabEditors.parentNode.$ext.getElementsByTagName("iframe"));
+            
+        for (var i = 0; i < iframelist.length; i++) {
+            reappendlist[i] = [
+                iframelist[i].parentNode,
+                iframelist[i].nextSibling,
+                document.adoptNode(iframelist[i]),
+            ]
+        }
+        
         this.animateZen.appendChild(tabEditors.parentNode.$ext);
+        
+        for (var i = reappendlist.length - 1; i >= 0; i--) {
+            reappendlist[i][0].insertBefore(
+                reappendlist[i][2],
+                reappendlist[i][1]);
+        }
+        
+        //this.animateZen.appendChild(tabEditors.parentNode.$ext);
         tabEditors.parentNode.$ext.style.width = "100%";
         tabEditors.parentNode.$ext.style.height = "100%";
         tabEditors.parentNode.$ext.style.position = "relative";

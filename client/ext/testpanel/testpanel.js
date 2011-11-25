@@ -286,7 +286,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     enable : function(noButton){
         if (self.winTestPanel) {
             winTestPanel.show();
-            winTestPanel.parentNode.setWidth(this.$lastWidth || 400);
+            winTestPanel.parentNode.setWidth(this.$lastWidth || 300);
         }
         colLeft.show();
         if (!noButton) {
@@ -296,6 +296,13 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         }
         splitterPanelLeft.show();
         navbar.current = this;
+        
+//        if (self.btnRun && !this.$lastPos) {
+//            this.$lastPos = [btnStop.parentNode, btnStop.nextSibling];
+//            btnRun.parentNode.removeChild(btnRun);
+//            btnStop.parentNode.removeChild(btnStop);
+//            divRun.parentNode.removeChild(divRun);
+//        }
     },
 
     disable : function(noButton){
@@ -307,6 +314,13 @@ module.exports = ext.register("ext/testpanel/testpanel", {
             this.button.setValue(false);
 
         splitterPanelLeft.hide();
+        
+//        if (self.btnRun && this.$lastPos) {
+//            this.$lastPos[0].insertBefore(divRun, this.$lastPos[1]);
+//            this.$lastPos[0].insertBefore(btnRun, this.$lastPos[1]);
+//            this.$lastPos[0].insertBefore(btnStop, this.$lastPos[1]);
+//            delete this.$lastPos;
+//        }
     },
 
     destroy : function(){

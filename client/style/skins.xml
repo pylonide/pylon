@@ -1780,6 +1780,10 @@
             display : none;
         }
 
+        .mnubtn.rundebug .icon {
+            background-image:url(images/rundebug.png);
+        }
+
         .mnubtn.project_files .icon {
             background-image:url(images/project_files.png);
         }
@@ -2370,10 +2374,10 @@
             background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
             color : white;
         }
-        .datagrid .records .editing, .datagrid .records .editing span{
+        /*.datagrid .records .editing, .datagrid .records .editing span{
             background-color : white;
             color : #333;
-        }
+        }*/
         .datagridFocus .records .selected span u{
             border-left : 1px solid #8bc0ed;
         }
@@ -2521,6 +2525,7 @@
         .datagrid .records span.treecell u{
             text-decoration : none;
             display : inline-block;
+            width : 100%;
             padding : 1px 2px 3px 2px;
             border : 0;
         }
@@ -2658,6 +2663,10 @@
             display:block;
             margin:0;
         }
+        
+        .noscrollbar .records{
+            overflow-y : hidden;
+        }
 
         .datagrid div.records .treecell strong {
 			top : 0px;
@@ -2700,7 +2709,7 @@
 
         <a:cell caption="u"><span><u>-</u></span></a:cell>
 
-        <a:treecell caption="u" openclose="strong"><span class="treecell"><strong> </strong><u>-</u></span></a:treecell>
+        <a:treecell caption="u" openclose="strong" editoroffset="41"><span class="treecell"><strong> </strong><u>-</u></span></a:treecell>
 
         <a:container container=".">
             <div class="dginfo">-</div>
@@ -4246,6 +4255,7 @@
             margin   : 0 0 0 0;
             min-height: 20px;
             background: #aaadaf;
+            opacity  : 0.8;
             -webkit-border-radius: 3px;
             -moz-border-radius: 3px;
         }
@@ -5642,6 +5652,7 @@
             display  : -moz-box;
             display  : -webkit-box;
             display  : -ms-box;
+            width    : 0;
         }
 
         .splitter.vertical div{
@@ -7269,6 +7280,27 @@
                     <input type="text"/>
                 </div>
             </div>
+        </a:main>
+    </a:presentation>
+</a:textbox>
+<a:textbox name="tbsimple">
+    <a:style><![CDATA[
+        .tbsimple{
+            border : 0;
+            padding : 1px 1px 2px 1px;
+            margin : 1px 0 0 2px;
+            font-family : Tahoma, Arial;
+            outline : none;
+        }
+        
+        .tbsimple.tbtree{
+            margin : -1px 0 0 -2px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input=".">
+            <input type="text" class="tbsimple" />
         </a:main>
     </a:presentation>
 </a:textbox>

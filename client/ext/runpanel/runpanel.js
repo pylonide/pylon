@@ -50,7 +50,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         var btn = this.button = navbar.insertBefore(new apf.button({
             skin    : "mnubtn",
             state   : "true",
-            "class" : "project_files",
+            "class" : "rundebug",
             caption : "Run"
         }), navbar.lastChild.previousSibling);
         
@@ -210,7 +210,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                     var _self = this;
                     item.onclick = function() {
                         _self.runConfig(this.$config, itmDebug.checked);
-                        lstRunCfg.select(this.$config);
+                        if (self.lstRunCfg)
+                            lstRunCfg.select(this.$config);
                     }.bind(item);
                     menu.insertBefore(item, menu.childNodes[menu.childNodes.length - 2]);
                 }
@@ -229,7 +230,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         this.$lastRun = config;
         this.$updateMenu();
 
-        noderunner.run(config.getAttribute("path"), config.getAttribute("args").split(" "), debug);
+        noderunner.run(config.getAttribute("path"), (config.getAttribute("args") || "").split(" "), debug);
     },
 
     stop : function() {

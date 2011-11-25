@@ -23,7 +23,7 @@ module.exports = ext.register("ext/editors/editors", {
     visible : true,
     alwayson : true,
 
-    contentTypes  : {},
+    fileExtensions  : {},
 
     register : function(oExtension){
         var id = "rb" + oExtension.path.replace(/\//g, "_");
@@ -40,40 +40,41 @@ module.exports = ext.register("ext/editors/editors", {
         }));*/
 
         //Add a menu item to the list of editors
-        /*oExtension.$itmEditor = ide.mnuEditors.appendChild(new apf.item({
-            type    : "radio",
-            caption : oExtension.name,
-            value   : oExtension.path,
-            onclick : function(){
+        oExtension.$itmEditor = mnuEditors.appendChild(new apf.item({
+            type     : "radio",
+            caption  : oExtension.name,
+            value    : oExtension.path,
+            disabled : "{!require('ext/editors/editors').isEditorAvailable(tabEditors.activepage, '" + oExtension.path + "')}",
+            onclick  : function(){
                 require('ext/editors/editors').switchEditor(this.value);
             }
-        }));*/
+        }));
 
         var _self = this;
-        oExtension.contentTypes.each(function(mime){
-            (_self.contentTypes[mime] || (_self.contentTypes[mime] = [])).push(oExtension);
+        oExtension.fileExtensions.each(function(mime){
+            (_self.fileExtensions[mime] || (_self.fileExtensions[mime] = [])).push(oExtension);
         });
 
-        if (!this.contentTypes["default"] || (oExtension.name && oExtension.name == "Code Editor"))
-            this.contentTypes["default"] = oExtension;
+        if (!this.fileExtensions["default"] || (oExtension.name && oExtension.name == "Code Editor"))
+            this.fileExtensions["default"] = oExtension;
     },
 
     unregister : function(oExtension){
         //oExtension.$rbEditor.destroy(true, true);
-        //oExtension.$itmEditor.destroy(true, true);
+        oExtension.$itmEditor.destroy(true, true);
 
         var _self = this;
-        oExtension.contentTypes.each(function(fe){
-            _self.contentTypes[fe].remove(oExtension);
-            if (!_self.contentTypes[fe].length)
-                delete _self.contentTypes[fe];
+        oExtension.fileExtensions.each(function(fe){
+            _self.fileExtensions[fe].remove(oExtension);
+            if (!_self.fileExtensions[fe].length)
+                delete _self.fileExtensions[fe];
         });
 
-        if (this.contentTypes["default"] == oExtension) {
-            delete this.contentTypes["default"];
+        if (this.fileExtensions["default"] == oExtension) {
+            delete this.fileExtensions["default"];
 
-            for (var prop in this.contentTypes) {
-                this.contentTypes["default"] = this.contentTypes[prop][0];
+            for (var prop in this.fileExtensions) {
+                this.fileExtensions["default"] = this.fileExtensions[prop][0];
                 break;
             }
         }
@@ -219,10 +220,11 @@ module.exports = ext.register("ext/editors/editors", {
         if (!editor)
             return false;
 
-        var contentTypes = editor.contentTypes;
-        var isEnabled = contentTypes.indexOf(tabEditors.getPage(page).contentType) > -1;
+        var fileExtensions = editor.fileExtensions;
+        var fileExtension = (tabEditors.getPage(page).$model.queryValue("@path") || "").split(".").pop();
+        var isEnabled = fileExtensions.indexOf(fileExtension) > -1;
         
-        if (!isEnabled && this.contentTypes["default"] == editor)
+        if (!isEnabled && this.fileExtensions["default"] == editor)
             return true; 
         else
             return isEnabled;
@@ -232,7 +234,7 @@ module.exports = ext.register("ext/editors/editors", {
         //Create Page Element
         var editorPage = new apf.page({
             id        : editor.path,
-            mimeTypes : editor.contentTypes,
+            mimeTypes : editor.fileExtensions,
             visible   : false,
             realtime  : false
         });
@@ -255,10 +257,12 @@ module.exports = ext.register("ext/editors/editors", {
         if (!editor.inited)
             this.initEditor(editor);
 
-        //editor.$itmEditor.select();
+        editor.$itmEditor.select();
         //editor.$rbEditor.select();
 
         page.setAttribute("type", path);
+        
+        page.$editor = editor;
 
         this.beforeswitch({nextPage: page});
         this.afterswitch({nextPage: page, previousPage: {type: lastType}});
@@ -275,8 +279,10 @@ module.exports = ext.register("ext/editors/editors", {
             return;
         }
 
-        var contentType = (xmlNode.getAttribute("contenttype") || "").split(";")[0];
-        var editor = this.contentTypes[contentType] && this.contentTypes[contentType][0] || this.contentTypes["default"];
+        var fileExtension = (xmlNode.getAttribute("path") || "").split(".").pop();
+        var editor = this.fileExtensions[fileExtension] 
+          && this.fileExtensions[fileExtension][0] 
+          || this.fileExtensions["default"];
 
         if (!init && this.currentEditor)
             this.currentEditor.disable();
@@ -298,7 +304,6 @@ module.exports = ext.register("ext/editors/editors", {
         
         var model = new apf.model();
         var fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
-            page.contentType = contentType;
             page.$at     = new apf.actiontracker();
             page.$doc    = doc;
             doc.$page    = page;
@@ -339,7 +344,7 @@ module.exports = ext.register("ext/editors/editors", {
         });*/
         
         editor.enable();
-        //editor.$itmEditor.select();
+        editor.$itmEditor.select();
         //editor.$rbEditor.select();
 
         this.currentEditor = editor;
@@ -347,7 +352,9 @@ module.exports = ext.register("ext/editors/editors", {
         // okay don't know if you would want this, but this is the way the 'open file' dialog
         // handles it so let's do that
         setTimeout(function () {
-            ceEditor.focus();
+            //This is very bad and breaks the editor abstraction
+            if (self.ceEditor)
+                ceEditor.focus();
         }, 100);
         
         settings.save();
@@ -468,7 +475,7 @@ module.exports = ext.register("ext/editors/editors", {
         }*/
         apf.history.setHash("!" + path);
         
-        //toHandler.$itmEditor.select();
+        toHandler.$itmEditor.select();
         //toHandler.$rbEditor.select();
 
         /*if (self.TESTING) {}
@@ -495,6 +502,15 @@ module.exports = ext.register("ext/editors/editors", {
             if (tabEditors.activepage != page && tabEditors.getPage(page))
                 tabEditors.set(page);
         });
+        
+        apf.document.body.appendChild(new apf.menu({
+            id : "mnuEditors"
+        }));
+        
+        mnuView.insertBefore(new apf.item({
+            caption : "Editor",
+            submenu : "mnuEditors"
+        }), mnuView.firstChild);
     },
 
     init : function(){

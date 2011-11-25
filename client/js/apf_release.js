@@ -3,7 +3,7 @@
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/apf.js)SIZE(95961)TIME(Sun, 06 Nov 2011 22:19:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/apf.js)SIZE(95961)TIME(Wed, 23 Nov 2011 08:30:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -1763,7 +1763,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/class.js)SIZE(45315)TIME(Sun, 20 Nov 2011 23:34:20 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/class.js)SIZE(45315)TIME(Wed, 23 Nov 2011 08:30:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17297,7 +17297,7 @@ function SeleniumPlayer(browser){
 }).call(SeleniumPlayer.prototype);
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/uirecorder/ui.js)SIZE(18464)TIME(Sun, 20 Nov 2011 01:21:14 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/uirecorder/ui.js)SIZE(11445)TIME(Thu, 24 Nov 2011 05:18:22 GMT)*/
 
 
 
@@ -17765,7 +17765,7 @@ apf.aml = new apf.AmlNamespace();
 apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/aml/node.js)SIZE(21587)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/aml/node.js)SIZE(22555)TIME(Thu, 24 Nov 2011 05:18:22 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18045,7 +18045,7 @@ apf.AmlNode = function(){
             amlNode.ownerDocument = this.ownerDocument || apf.ownerDocument;
 
         if (amlNode.parentNode)
-            amlNode.removeNode(isMoveWithinParent, noHtmlDomEdit);
+            amlNode.removeNode(isMoveWithinParent, true);//noHtmlDomEdit);
         amlNode.parentNode = this;
 
         if (beforeNode)
@@ -18085,10 +18085,21 @@ apf.AmlNode = function(){
             amlNode.$pHtmlNode = _self.canHaveChildren ? _self.$int : document.body;
 
             //@todo this is a hack, a good solution should be found
-            /*var iframelist;
-            var containsIframe = (amlNode.$ext && amlNode.$ext.nodeType == 1 
-              && (iframelist = amlNode.$ext.getElementsByTagName("iframe")).length > 0
-              && apf.findHost(iframelist[0].parentNode) == amlNode);*/
+            if (document.adoptNode && amlNode.$ext && amlNode.$ext.nodeType == 1) {
+                var reappendlist = [];
+                var iframelist   = apf.getArrayFromNodelist(
+                    amlNode.$ext.getElementsByTagName("iframe"));
+                if (amlNode.$ext.tagName == "IFRAME")
+                    document.adoptNode(amlNode.$ext);
+                    
+                for (var i = 0; i < iframelist.length; i++) {
+                    reappendlist[i] = [
+                        iframelist[i].parentNode,
+                        iframelist[i].nextSibling,
+                        document.adoptNode(iframelist[i]),
+                    ]
+                }
+            }
 
             var nextNode = beforeNode;
             if (!initialAppend && !noHtmlDomEdit && amlNode.$ext && !amlNode.$coreHtml) {
@@ -18099,6 +18110,13 @@ apf.AmlNode = function(){
                 
                 amlNode.$pHtmlNode.insertBefore(amlNode.$altExt || amlNode.$ext,
                     nextNode && (nextNode.$altExt || nextNode.$ext) || null);
+                    
+                for (var i = reappendlist.length - 1; i >= 0; i--) {
+                    reappendlist[i][0].insertBefore(
+                        reappendlist[i][2],
+                        reappendlist[i][1]);
+                }
+                reappendlist = [];
             }
             
             //Signal node and all it's ancestors
@@ -18119,6 +18137,12 @@ apf.AmlNode = function(){
                 
                 amlNode.$pHtmlNode.insertBefore(amlNode.$altExt || amlNode.$ext,
                     nextNode && (nextNode.$altExt || nextNode.$ext) || null);
+                
+                for (var i = reappendlist.length - 1; i >= 0; i--) {
+                    reappendlist[i][0].insertBefore(
+                        reappendlist[i][2],
+                        reappendlist[i][1]);
+                }
             }
         }
 
@@ -52290,7 +52314,7 @@ apf.aml.setElement("config", apf.AmlConfig);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/browser.js)SIZE(6175)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/browser.js)SIZE(6388)TIME(Thu, 24 Nov 2011 21:28:25 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52467,20 +52491,27 @@ apf.browser = function(struct, tagName){
         }
         else {
             this.$ext = parentNode.appendChild(document.createElement("iframe"));
-            this.$ext.style.width  = "100px";
-            this.$ext.style.height = "100px";
+            this.$ext.setAttribute("frameborder","0");
+            //this.$ext.style.width  = "100px";
+            //this.$ext.style.height = "100px";
             this.$browser              = this.$ext;
-            //this.$ext.style.border = "2px inset white";
+            this.$ext.style.border = "1px solid #999";
+            this.$ext.style.background = "white";
         }
         this.$ext.className = "apfbrowser"
         
+        if (this.getAttribute("style"))
+            this.$ext.setAttribute("style", this.getAttribute("style"));
+        
         var _self = this;
         apf.addListener(this.$browser, "load", function(){
-            _self.dispatchEvent("load");
+            _self.dispatchEvent("load", {href: this.contentWindow.location.href});
+            _self.setProperty("src", this.contentWindow.location.href);
         });
 
         apf.addListener(this.$browser, "error", function(){
             _self.dispatchEvent("error");
+            _self.setProperty("src", this.contentWindow.location.href);
         });
 
         //this.$browser = this.$ext.contentWindow.document.body;
@@ -55294,7 +55325,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53231)TIME(Mon, 21 Nov 2011 18:35:14 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53741)TIME(Thu, 24 Nov 2011 21:12:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55827,7 +55858,7 @@ apf.datagrid = function(struct, tagName){
         
             //headings and records have same padding-right
             this.$container.style.paddingRight  =
-            this.$head.style.paddingRight = vLeft + "px";
+            this.$head.style.paddingRight = (vLeft - 1) + "px";
         }
         
         this.$fixed = fixed;
@@ -56172,7 +56203,7 @@ apf.datagrid = function(struct, tagName){
         }
 
         if (ceditor.type == 2) {
-            if (!this.$editors[editor]) {
+            if (!this.$editors[h.$uniqueId + ":" + editor]) {
                 var constr = apf.namespaces[apf.ns.aml].elements[editor];
                 var info   = {
                     htmlNode : editParent,
@@ -56182,7 +56213,10 @@ apf.datagrid = function(struct, tagName){
                         + "]",
                     focussable : false
                 };
-                if (!h.tree)
+
+                if (h.tree)
+                    info.width = "100% - " + (editParent.offsetLeft + parseInt(this.$getOption("treecell", "editoroffset")));
+                else
                     info.width = "100%-3";
                 
                 //@todo copy all non-known properties of the prop element
@@ -56208,8 +56242,10 @@ apf.datagrid = function(struct, tagName){
                 
                 if (h.skin)
                     info.skin = h.skin;
+                if (h["class"])
+                    info["class"] = h["class"];
 
-                oEditor = this.$editors[editor] = new constr(info);
+                oEditor = this.$editors[h.$uniqueId + ":" + editor] = new constr(info);
 
                 var box = apf.getBox(apf.getStyle(oEditor.$ext, "margin"));
                 if (box[1] || box[3]) {
@@ -56248,7 +56284,7 @@ apf.datagrid = function(struct, tagName){
                 }
             }
             else {
-                oEditor = this.$editors[editor];
+                oEditor = this.$editors[h.$uniqueId + ":" + editor];
                 
                 if (oEditor.hasFeature(apf.__MULTISELECT__) && !h.model) {
                     //oEditor.setAttribute("model", "{" + this.id + ".selected}");
@@ -56261,15 +56297,18 @@ apf.datagrid = function(struct, tagName){
                         + (v = h.value).substr(1, v.length - 2) 
                         + "]");
                 }
-
-                /*oEditor.setAttribute("value", "[{" + this.id + ".selected}::" 
-                    + (v = h.value).substr(1, v.length - 2) 
-                    + "]");*/
+                else {
+                    oEditor.setAttribute("value", "[{" + this.id + ".selected}::" 
+                        + (v = h.value).substr(1, v.length - 2) 
+                        + "]");
+                }
 
                 oEditor.setProperty("visible", true);
                 editParent.appendChild(oEditor.$ext);
                 
-                oEditor.setAttribute("width", h.tree ? "" : "100%-3");
+                oEditor.setAttribute("width", h.tree 
+                    ? "100% - " + (editParent.offsetLeft + parseInt(this.$getOption("treecell", "editoroffset"))) 
+                    : "100%-3");
             }
             
             /*setTimeout(function(){
@@ -56322,7 +56361,7 @@ apf.datagrid = function(struct, tagName){
                 if (!nodes[i].host) {
                     if (nodes[i].nodeType == 1)
                         nodes[i].style.display = "";
-                    else if (!ed[0].value) {
+                    else if (!ed[0].value || ed[0].value == this.$lastTextValue) {
                         nodes[i].nodeValue = this.$lastTextValue; //@todo
                     }
                 }
@@ -56528,7 +56567,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/debugger.js)SIZE(10854)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/debugger.js)SIZE(11064)TIME(Wed, 23 Nov 2011 04:52:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56728,18 +56767,22 @@ apf.dbg = module.exports = function(struct, tagName){
     
     this.toggleBreakpoint = function(script, row) {
         var model = this.$mdlBreakpoints;
-        if (this.$debugger)
+        if (this.$debugger) {
             this.$debugger.toggleBreakpoint(script, row, model);
+        }
         else {
             var scriptName = script.getAttribute("scriptname");
             var bp = model.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + row + "']");
-            if (bp)
-                model.removeXml(bp)
+            if (bp) {
+                apf.xmldb.removeNode(bp);
+            }
             else {
+                // strip the /workspace/ path if it is in front of the element
+                var displayText = script.getAttribute("path").replace(/^\/workspace\//, "");
                 var bp = apf.n("<breakpoint/>")
                     .attr("script", scriptName)
                     .attr("line", row)
-                    .attr("text", script.getAttribute("path") + ":" + row)
+                    .attr("text", displayText + ":" + (parseInt(row, 10) + 1))
                     .attr("lineoffset", 0)
                     .node();
                 model.appendXml(bp);
@@ -62407,7 +62450,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/model.js)SIZE(42598)TIME(Sun, 20 Nov 2011 21:08:29 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/model.js)SIZE(42598)TIME(Thu, 24 Nov 2011 20:39:49 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67763,7 +67806,7 @@ apf.aml.setElement("script", apf.script);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/scrollbar.js)SIZE(25346)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/scrollbar.js)SIZE(26952)TIME(Fri, 25 Nov 2011 01:31:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67812,19 +67855,34 @@ apf.scrollbar = function(struct, tagName){
     this.$timer        = null;
     this.$scrollSizeWait;
     this.$slideMaxSize;
+    
+    this.$booleanProperties = ["showonscroll"];
 
     this.addEventListener("focus", function(){
         if (this.$host.focus && this.$host.$isWindowContainer !== true)
             this.$host.focus();
     });
 
+    this.$propHandlers["showonscroll"] = function(value){
+        if (value) {
+            this.$ext.style.display = "none";
+        }
+        else {
+            this.$ext.style.display = "block";
+        }
+    };
+
     this.$propHandlers["overflow"] = function(value){
+        if (this.showonscroll)
+            return;
+        
         if (value == "auto") {
             this.$ext.style.display = "none";
             this.$resize();
         }
-        else if (value == "scroll")
+        else if (value == "scroll") {
             this.setProperty("visible", true);
+        }
     }
     
     this.$propHandlers["for"] = function(value){
@@ -67944,7 +68002,7 @@ apf.scrollbar = function(struct, tagName){
                 }
                 delete _self.$lastScrollState;
                 _self.$curValue = (oHtml[_self.$scrollPos] + -1 * e.delta * Math.min(45, apf[_self.$getInner](oHtml)/10)) / div;
-                _self.setScroll();
+                _self.setScroll(null, null, null, true);
                 e.preventDefault();
             }
         };
@@ -67999,7 +68057,7 @@ apf.scrollbar = function(struct, tagName){
                 var p = oHtml[_self.$scrollPos] / m;
                 if (Math.abs(_self.$curValue - p) > 1/m) {
                     _self.$curValue = p;
-                    _self.setScroll();
+                    _self.setScroll(null, null, null, true);
                 }
                 return false;
             }
@@ -68053,6 +68111,9 @@ apf.scrollbar = function(struct, tagName){
         // show the scrollbar again
         //if (this.animating || !this.$visible)
         //    return;
+
+        if (this.showonscroll && !this.$ext.offsetHeight)
+            return;
 
         var oHtml = this.$getHtmlHost();
         if (!oHtml || !oHtml.offsetHeight) //@todo generalize this to resize for non-ie
@@ -68112,7 +68173,7 @@ apf.scrollbar = function(struct, tagName){
         this.$updating = false;
     }
     
-    this.setScroll = function (timed, noEvent, noUpdateParent){
+    this.setScroll = function (timed, noEvent, noUpdateParent, byUser){
         if (this.$curValue > 1) 
             this.$curValue = 1;
         if (this.$curValue < 0) 
@@ -68156,6 +68217,31 @@ apf.scrollbar = function(struct, tagName){
                 });
         }
         
+        if (this.showonscroll && byUser) {
+            var _self = this;
+            
+            clearTimeout(this.$hideOnScrollTimer);
+            if (_self.$hideOnScrollControl)
+                _self.$hideOnScrollControl.stop();
+            
+            apf.setOpacity(this.$ext, 1);
+            !this.visible ? this.show() : this.$ext.style.display = "block";
+            this.$update();
+            
+            this.$hideOnScrollTimer = setTimeout(function(){
+                apf.tween.single(_self.$ext, {
+                    control : _self.$hideOnScrollControl = {},
+                    type : "fade",
+                    from : 1,
+                    to   : 0,
+                    onfinish : function(){
+                        _self.$ext.style.display = "none";
+                        apf.setOpacity(_self.$ext, 1);
+                    }
+                });
+            }, 500)
+        }
+        
         this.pos = this.$curValue;
     }
     
@@ -68163,7 +68249,7 @@ apf.scrollbar = function(struct, tagName){
         if (v > this.$caret[this.$offsetPos]) 
             return this.$ext.onmouseup();
         this.$curValue -= this.$bigStepValue;
-        this.setScroll();
+        this.setScroll(null, null, null, true);
         
         if (this.$slideFast) {
             this.$slideFast.style[this.$size] = Math.max(1, this.$caret[this.$offsetPos]
@@ -68176,7 +68262,7 @@ apf.scrollbar = function(struct, tagName){
         if (v < this.$caret[this.$offsetPos] + this.$caret[this.$offsetSize]) 
             return this.$ext.onmouseup();
         this.$curValue += this.$bigStepValue;
-        this.setScroll();
+        this.setScroll(null, null, null, true);
         
         if (this.$slideFast) {
             this.$slideFast.style[this.$pos]    = (this.$caret[this.$offsetPos] + this.$caret[this.$offsetSize]) + "px";
@@ -68254,7 +68340,7 @@ apf.scrollbar = function(struct, tagName){
                 
                 _self.$curValue -= _self.$stepValue;
                 
-                _self.setScroll();
+                _self.setScroll(null, null, null, true);
                 apf.stopPropagation(e);
                 
                 //apf.window.$mousedown(e);
@@ -68262,7 +68348,7 @@ apf.scrollbar = function(struct, tagName){
                 _self.$timer = $setTimeout(function(){
                     _self.$timer = setInterval(function(){
                         _self.$curValue -= _self.$stepValue;
-                        _self.setScroll();
+                        _self.setScroll(null, null, null, true);
                     }, 20);
                 }, 300);
             };
@@ -68287,7 +68373,7 @@ apf.scrollbar = function(struct, tagName){
                 clearTimeout(_self.$timer);
                 
                 _self.$curValue += _self.$stepValue;
-                _self.setScroll();
+                _self.setScroll(null, null, null, true);
                 apf.stopPropagation(e);
                 
                 //apf.window.$mousedown(e);
@@ -68295,7 +68381,7 @@ apf.scrollbar = function(struct, tagName){
                 _self.$timer = $setTimeout(function(){
                     _self.$timer = setInterval(function(){
                         _self.$curValue += _self.$stepValue;
-                        _self.setScroll();
+                        _self.setScroll(null, null, null, true);
                     }, 20);
                 }, 300);
             };
@@ -68384,7 +68470,7 @@ apf.scrollbar = function(struct, tagName){
             var offset;
             if (e[_self.$eventDir] > _self.$caret[_self.$offsetPos] + _self.$caret[_self.$offsetSize]) {
                 _self.$curValue += _self.$bigStepValue;
-                _self.setScroll(true);
+                _self.setScroll(true, null, null, true);
                 
                 if (_self.$slideFast) {
                     _self.$slideFast.style.display = "block";
@@ -68397,13 +68483,13 @@ apf.scrollbar = function(struct, tagName){
                 offset = e[_self.$eventDir];
                 _self.$timer = $setTimeout(function(){
                     _self.$timer = setInterval(function(){
-                        _self.scrollDown(offset);
+                        _self.scrollDown(offset, null, null, true);
                     }, 20);
                 }, 300);
             }
             else if (e[_self.$eventDir] < _self.$caret[_self.$offsetPos]) {
                 _self.$curValue -= _self.$bigStepValue;
-                _self.setScroll(true);
+                _self.setScroll(true, null, null, true);
                 
                 if (_self.$slideFast) {
                     _self.$slideFast.style.display = "block";
@@ -68414,7 +68500,7 @@ apf.scrollbar = function(struct, tagName){
                 offset = e[_self.$eventDir];
                 _self.$timer = $setTimeout(function(){
                     _self.$timer = setInterval(function(){
-                        _self.scrollUp(offset);
+                        _self.scrollUp(offset, null, null, true);
                     }, 20);
                 }, 300);
             }
@@ -68426,7 +68512,7 @@ apf.scrollbar = function(struct, tagName){
                 
             clearInterval(_self.$timer);
             if (!_self.realtime)
-                _self.setScroll();
+                _self.setScroll(null, null, null, true);
             if (_self.$slideFast)
                 _self.$slideFast.style.display = "none";
         };
@@ -75732,7 +75818,7 @@ var ChromeDebugHost = module.exports = function(hostname, port, o3obj, ws) {
 });
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/dbg/v8debugger.js)SIZE(18490)TIME(Wed, 09 Nov 2011 01:32:42 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/dbg/v8debugger.js)SIZE(18510)TIME(Wed, 23 Nov 2011 04:52:53 GMT)*/
 
 
 if (apf.hasRequireJS) define("apf/elements/dbg/v8debugger",
@@ -76147,7 +76233,7 @@ var V8Debugger = module.exports = function(dbg, host) {
         xml.push(
             "<breakpoint",
             " id='", breakpoint.$id,
-            "' text='", this.$strip(apf.escapeXML(breakpoint.source)), ":", breakpoint.line,
+            "' text='", this.$strip(apf.escapeXML(breakpoint.source)), ":", (parseInt(breakpoint.line, 10) + 1),
             "' script='", apf.escapeXML(breakpoint.source),
             scriptId ? "' scriptid='" + scriptId : "",
             "' lineoffset='", lineOffset || 0,

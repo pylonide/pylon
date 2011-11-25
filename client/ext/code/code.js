@@ -140,12 +140,13 @@ module.exports = ext.register("ext/code/code", {
     name    : "Code Editor",
     dev     : "Ajax.org",
     type    : ext.EDITOR,
-    contentTypes : Object.keys(SupportedModes),
     markup  : markup,
     deps    : [editors],
     
     nodes : [],
-    commandManager: new CommandManager(useragent.isMac ? "mac" : "win", defaultCommands),
+    
+    fileExtensions : Object.keys(contentTypes),
+    commandManager : new CommandManager(useragent.isMac ? "mac" : "win", defaultCommands),
     
     getState : function(doc){
         doc = doc ? doc.acesession : this.getDocument();
@@ -209,6 +210,8 @@ module.exports = ext.register("ext/code/code", {
     },
     
     setDocument : function(doc, actiontracker){
+        var _self = this;
+        
         if (!doc.acesession) {
             var _self = this;
 
@@ -220,12 +223,18 @@ module.exports = ext.register("ext/code/code", {
             doc.acesession.setUndoManager(actiontracker);
             
             doc.addEventListener("prop.value", function(e) {
+                if (this.editor != _self)
+                    return;
+                    
                 doc.acesession.setValue(e.value || "");
                 ceEditor.$editor.moveCursorTo(0, 0);
                 doc.isInited = true;
             });
             
             doc.addEventListener("retrievevalue", function(e) {
+                if (this.editor != _self)
+                    return;
+                    
                 if (!doc.isInited) 
                     return e.value;
                 else 
@@ -233,11 +242,25 @@ module.exports = ext.register("ext/code/code", {
             });
             
             doc.addEventListener("close", function(){
+                if (this.editor != _self)
+                    return;
+                
                 //??? destroy doc.acesession
             });
         }
 
         ceEditor.setProperty("value", doc.acesession);
+        
+        if (doc.editor && doc.editor != this) {
+            var value = doc.getValue();
+            if (doc.acesession.getValue() !== value) {
+                doc.editor = this;
+                doc.dispatchEvent("prop.value", {value : value});
+            }
+        }
+        else {
+            doc.editor = this;
+        }
     },
 
     hook: function() {

@@ -111,6 +111,7 @@ Ide.DEFAULT_PLUGINS = [
     //"ext/ftp/ftp",
     "ext/code/code",
     "ext/imgview/imgview",
+    //"ext/preview/preview",
     "ext/extmgr/extmgr",
     //"ext/run/run", //Add location rule
     "ext/runpanel/runpanel", //Add location rule
@@ -126,6 +127,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/stripws/stripws",
     "ext/testpanel/testpanel",
     "ext/selenium/selenium",
+    "ext/selenium/editor",
     "ext/nodeunit/nodeunit", 
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",

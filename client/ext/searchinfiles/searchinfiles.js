@@ -95,6 +95,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         ideConsole.enable();
         if (!this.$panel) {
             this.$panel = tabConsole.add(this.pageTitle, this.pageID);
+            //this.$panel.setAttribute("closebtn", "true");
             this.$panel.appendChild(trSFHbox);
             tabConsole.set(this.pageID);
             trSFResult.setProperty("visible", true);
