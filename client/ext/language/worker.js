@@ -195,6 +195,7 @@ oop.inherits(LanguageWorker, Mirror);
     
     this.switchFile = function(path, language, code) {
         var oldPath = this.$path;
+        code = code || "";
         this.$path = path;
         this.$language = language;
         this.cachedAst = null;
