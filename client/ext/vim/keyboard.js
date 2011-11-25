@@ -30,7 +30,6 @@ var inIdleState = function() {
     if (cmds.inputBuffer.idle) {
         return true;
     }
-
     return false;
 };
 
@@ -42,7 +41,7 @@ var states = exports.states = {
             then: "start"
         },
         {
-            regex: "^:$",
+            regex: "^(:|shift-º)$", // Ace doesn't always reacts to ':'
             exec: "commandLineCmd"
         },
         {
@@ -83,7 +82,6 @@ var states = exports.states = {
             exec: "builder"
         }
     ],
-
     insertMode: [
         {
             key: "esc",
