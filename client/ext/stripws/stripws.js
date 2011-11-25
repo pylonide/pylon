@@ -94,7 +94,8 @@ module.exports = ext.register("ext/stripws/stripws", {
         });
 
         ide.addEventListener("init.ext/settings/settings", function (e) {
-            barSettings.insertMarkup(settings);
+            extSettings.addMarkupToSection(settings, "code editor");
+            //barSettings.insertMarkup(settings);
         });
     },
 

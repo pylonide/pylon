@@ -16,6 +16,8 @@ var template = require("text!ext/settings/template.xml");
 var panels = require("ext/panels/panels");
 var skin = require("text!ext/settings/skin.xml");
 
+var slice = Array.prototype.slice;
+
 module.exports = ext.register("ext/settings/settings", {
     name    : "Preferences",
     dev     : "Ajax.org",
@@ -49,10 +51,11 @@ module.exports = ext.register("ext/settings/settings", {
     },
 
     saveSettingsPanel: function() {
-        var pages   = self.pgSettings ? pgSettings.getPages() : [],
-            i       = 0,
-            l       = pages.length,
-            changed = false;
+        var pages = self.pgSettings ? pgSettings.getPages() : [];
+        var i = 0;
+        var l = pages.length;
+        var changed = false;
+
         for (; i < l; ++i) {
             if (!pages[i].$at) continue;
             if (pages[i].$at.undolength > 0) {
@@ -60,16 +63,56 @@ module.exports = ext.register("ext/settings/settings", {
                 changed = true;
             }
         }
-        if (ide.dispatchEvent("savesettings", {
-            model : this.model
-        }) !== false || changed)
+
+        if (ide.dispatchEvent("savesettings", { model : this.model }) !== false || changed) {
             this.saveToFile();
+        }
     },
 
     addSection : function(tagName, name, xpath, cbCommit){
         var node = this.model.queryNode(xpath + "/" + tagName);
         if (!node)
             this.model.appendXml('<' + tagName + ' name="' + name +'" />', xpath);
+    },
+
+    addMarkupToSection: function(markup, sectionName) {
+        var els;
+        var bar = barSettings;
+
+        if (typeof markup == "string") {
+            bar.insertMarkup(markup);
+            els = bar.childNodes;
+        }
+        else {
+            els = markup;
+            if (!apf.isArray(els)) {
+                els = [els];
+            }
+            els.forEach(bar.appendChild);
+        }
+
+        var headers = slice.call(bar.$ext.getElementsByTagName("div"));
+        headers = headers.filter(function(header) {
+            return header.className && header.className.indexOf("header") > -1;
+        });
+
+        var insertInHeader = function(header, el, insBefore) {
+            if (insBefore)
+                header.parentNode.insertBefore(el.$ext, insBefore);
+            else
+                header.parentNode.appendChild(el.$ext);
+        };
+
+        sectionName = sectionName.toLowerCase();
+        for (var i = 0, l = headers.length; i < l; ++i) {
+            if (headers[i].innerText.toLowerCase().indexOf(sectionName) === -1) {
+                continue;
+            }
+
+            for (var el_i = 0, el_l = els.length; el_i < el_l; el_i++) {
+                insertInHeader(headers[i], els[el_i], headers[i + 1]);
+            }
+        }
     },
 
     load : function(){
@@ -90,7 +133,7 @@ module.exports = ext.register("ext/settings/settings", {
                     ide.removeEventListener("socketMessage", arguments.callee);
                 }
             });
-            
+
             if (ide.onLine === true)
                 ide.send(JSON.stringify({command: "settings", action: "get"}));
             return;
