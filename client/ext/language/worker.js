@@ -36,6 +36,10 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
         _self.onCursorMove(event);
     });
     
+    sender.on("inspect", function(event) {
+        _self.inspect(event);
+    });
+    
     sender.on("change", function() {
         _self.scheduledUpdate = true;
     });
@@ -118,6 +122,18 @@ oop.inherits(LanguageWorker, Mirror);
             if (currentMarker.message && tree.inRange(currentMarker.pos, astPos)) {
                 return currentMarker.message;
             }
+        }
+    };
+    
+    /**
+     * Request the AST node on the current position
+     */
+    this.inspect = function (event) {
+        if (this.cachedAst) {
+            var ast = this.cachedAst;
+            var node = ast.findNode({ line: event.data.row, col: event.data.col });
+            
+            this.scheduleEmit("inspect", node);
         }
     };
 
