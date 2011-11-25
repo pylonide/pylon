@@ -211,7 +211,7 @@ apf.dbg = module.exports = function(struct, tagName){
                 var tofind = "/workspace/";
                 var path = script.getAttribute("path");
                 var displayText = path;
-                if (~path.indexOf(tofind)) {
+                if (path.indexOf(tofind) > -1) {
                     displayText = path.substring(path.indexOf(tofind) + tofind.length);
                 }
 
