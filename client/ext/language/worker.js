@@ -77,7 +77,7 @@ oop.inherits(LanguageWorker, Mirror);
                         return ast;
                     }
                 } catch(e) {
-                    console.log("Parse exception: " + e.message);
+                    // Ignore parse errors
                 }
             }
         }
