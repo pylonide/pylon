@@ -95,7 +95,7 @@ module.exports = ext.register("ext/console/console", {
 
         Logger.logNodeStream(
             words
-                .filter(function() { return commands[w]; })
+                .filter(function(w) { return commands[w]; })
                 .map(function(w) { return w + tabs + commands[w].hint; })
                 .join("\n")
         );
@@ -158,6 +158,7 @@ module.exports = ext.register("ext/console/console", {
     },
 
     commandTextHandler: function(e) {
+
         var line = e.currentTarget.getValue();
         if (cmdBuffer === null || (cmdHistory._index === 0 && cmdBuffer !== line)) {
             cmdBuffer = line;
@@ -208,6 +209,10 @@ module.exports = ext.register("ext/console/console", {
             this.write("Syntax error: first argument quoted.");
         }
         else {
+            // `showConsole` is true if we want to expand the console after 
+            // executing a command.
+            var showConsole = true;    
+
             if (code === KEY_TAB) {
                 this.autoComplete(e, parser, 1);
                 return false;
@@ -219,7 +224,6 @@ module.exports = ext.register("ext/console/console", {
             Hints.hide();
 
             Logger.log(this.getPrompt() + " " + parser.argv.join(" "), "prompt");
-            this.enable();
             tabConsole.set("console");
 
             var cmd = parser.argv[0];
@@ -268,17 +272,29 @@ module.exports = ext.register("ext/console/console", {
                         };
 
                         if (ext.execCommand(cmd, data) !== false) {
-                            var evtName = "consolecommand." + cmd;
-                            if (ide.dispatchEvent(evtName, { data: data }) !== false) {
+                            var cmdEvt = "consolecommand." + cmd;
+                            var consoleEvt = "consolecommand";
+
+                            if (ide.dispatchEvent(cmdEvt, { data: data }) !== false &&
+                                ide.dispatchEvent(consoleEvt, { data: data }) !== false) {
+
                                 if (!ide.onLine)
                                     this.write("Cannot execute command. You are currently offline.");
                                 else
                                     ide.send(JSON.stringify(data));
                             }
+                            else {
+                                // If any of the `consolecommand` events returns
+                                // false, it means that we don't want the console
+                                // to show up.
+                                showConsole = false;
+                            }
                         }
                     }
                 }
             }
+            if (showConsole)    
+                this.enable();
         }
     },
 
@@ -292,7 +308,7 @@ module.exports = ext.register("ext/console/console", {
         if (message.type != "result")
             return;
 
-        switch (message.subtype) {
+        switch (message.subtype) { 
             case "commandhints":
                 var cmds = message.body;
                 this.initCommands();
@@ -329,10 +345,14 @@ module.exports = ext.register("ext/console/console", {
                 break;
             case "mkdir":
                 res = message.body;
-                ide.dispatchEvent("treecreate", {
+                ide.dispatchEvent("filecallback", {
                     type: "folder",
                     path: this.$cwd + "/" + res.argv[res.argv.length - 1]
                 });
+                break;
+            case "rm":
+                res = message.body;
+                ide.dispatchEvent("filecallback");
                 break;
             case "error":
                 Logger.log(message.body);
@@ -382,7 +402,7 @@ module.exports = ext.register("ext/console/console", {
                 this.subCommands(cmds[cmd].commands, prefix + "-" + cmd);
         }
     },
-    
+
     initCommands: function() {
         if (trieCommands)
             return;
@@ -402,7 +422,7 @@ module.exports = ext.register("ext/console/console", {
             var _self = this;
             this.$busy = setTimeout(function(){clearTimeout(_self.$busy);_self.$busy = null;}, 100);
         }
-        
+
         this.initCommands();
 
         // keycodes that invalidate the previous autocomplete:
@@ -603,15 +623,6 @@ module.exports = ext.register("ext/console/console", {
     },
 
     enable : function(fromParent){
-        /*if (!this.panel)
-            panels.initPanel(this);
-
-        if (this.manual && fromParent)
-            return;
-
-        if (!fromParent)
-            this.manual = true;*/
-
         this.mnuItem.check();
         tabConsole.show();
 
@@ -624,13 +635,7 @@ module.exports = ext.register("ext/console/console", {
 
     },
 
-    disable : function(fromParent){
-        /*if (this.manual && fromParent || !this.inited)
-            return;
-
-        if (!fromParent)
-            this.manual = true;*/
-
+    disable : function(fromParent) {
         this.mnuItem.uncheck();
         tabConsole.hide();
 
@@ -650,3 +655,4 @@ module.exports = ext.register("ext/console/console", {
 });
 
 });
+

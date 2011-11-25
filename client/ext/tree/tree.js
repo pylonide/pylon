@@ -9,7 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var fs = require("ext/filesystem/filesystem");
 var settings = require("ext/settings/settings");
 var panels = require("ext/panels/panels");
@@ -120,7 +119,7 @@ module.exports = ext.register("ext/tree/tree", {
                 _self.sbIsFaded = true;
             }, _self.animControl.state != apf.tween.RUNNING ? 20 : 200);
         }
-    },
+    }, 
 
     //@todo deprecated?
     getSelectedPath: function() {
@@ -150,6 +149,10 @@ module.exports = ext.register("ext/tree/tree", {
 
             panels.initPanel(_self);
             _self.enable(true);
+        });
+        
+        ide.addEventListener("filecallback", function (e) {
+            _self.refresh();
         });
     },
 

@@ -8,7 +8,6 @@ var Async = require("asyncjs");
 var User = require("./user");
 var fs = require("fs");
 var sys = require("sys");
-var Path = require("path");
 var Url = require("url");
 var template = require("./template");
 var Workspace = require("cloud9/workspace");
@@ -29,7 +28,8 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
         paths: {
             "ace": staticUrl + "/support/ace/lib/ace",
             "debug": staticUrl + "/support/lib-v8debug/lib/v8debug",
-            "apf": staticUrl + "/support/apf"
+            "apf": staticUrl + "/support/apf",
+            "treehugger": staticUrl + "/support/treehugger/lib/treehugger"
         },
         waitSeconds: 30
     };
@@ -125,7 +125,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/stripws/stripws",
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",
-    "ext/splitview/splitview"
+    "ext/vim/vim",
+    "ext/jslanguage/jslanguage"
     //"ext/acebugs/acebugs"
 ];
 

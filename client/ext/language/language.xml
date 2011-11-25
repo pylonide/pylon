@@ -1,8 +1,8 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:skin id="codecomplete_skin"
-      src       = "{require('ext/codecomplete/codecomplete').skin}"/>
+    <a:skin id="language_skin"
+      src       = "{require('ext/language/language').skin}"/>
 
-    <a:bar id="barCompleterCont" skinset="codecomplete_skin" skin="codecomplete" width="300">
+    <a:bar id="barCompleterCont" skinset="language_skin" skin="codecomplete" width="300" visible="false">
         <a:hbox anchors="0 0 0 0">
             <a:text id="txtCompleter" skin="codecomplete_text" flex="1" />
             <a:scrollbar
@@ -14,4 +14,5 @@
               overflow2 = "auto"/>
           </a:hbox>
     </a:bar>
+    
 </a:application>
