@@ -5,7 +5,7 @@
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 "use strict";
 
 define(function(require, exports, module) {
@@ -73,14 +73,50 @@ var actions = {
             editor.selection.selectLeft();
         }
     },
+    "shift-8": {
+        fn: function(editor, range, count, param) {
+            editor.selection.selectWord();
+            var wordToSearch = editor.getCopyText();
+            editor.find(wordToSearch, {
+                needle: wordToSearch,
+                backwards: false,
+                wrap: true,
+                caseSensitive: false,
+                wholeWord: true,
+                regExp: false
+            });
+            editor.selection.clearSelection();
+            editor.navigateWordLeft();
+        }
+    },
+    "shift-3": {
+        fn: function(editor, range, count, param) {
+            editor.selection.selectWord();
+            var wordToSearch = editor.getCopyText();
+            editor.find(wordToSearch, {
+                needle: wordToSearch,
+                backwards: true,
+                wrap: true,
+                caseSensitive: false,
+                wholeWord: true,
+                regExp: false
+            });
+            editor.selection.clearSelection();
+            editor.navigateWordLeft();
+        }
+    },
     "n": {
         fn: function(editor, range, count, param) {
             editor.findNext(editor.getLastSearchOptions());
+            editor.selection.clearSelection();
+            //editor.navigateWordLeft();
         }
     },
     "shift-n": {
         fn: function(editor, range, count, param) {
             editor.findPrevious(editor.getLastSearchOptions());
+            editor.selection.clearSelection();
+            //editor.navigateWordLeft();
         }
     },
     "v": {
