@@ -206,8 +206,15 @@ apf.dbg = module.exports = function(struct, tagName){
                 apf.xmldb.removeNode(bp);
             }
             else {
-                // strip the /workspace/ path if it is in front of the element
-                var displayText = script.getAttribute("path").replace(/^\/workspace\//, "");
+                // filename is something like blah/blah/workspace/realdir/file
+                // we are only interested in the part after workspace for display purposes
+                var tofind = "/workspace/";
+                var path = script.getAttribute("path");
+                var displayText = path;
+                if (path.indexOf(tofind) > -1) {
+                    displayText = path.substring(path.indexOf(tofind) + tofind.length);
+                }
+
                 var bp = apf.n("<breakpoint/>")
                     .attr("script", scriptName)
                     .attr("line", row)
