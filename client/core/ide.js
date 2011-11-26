@@ -132,6 +132,19 @@ define(function(require, exports, module) {
                     workspaceId: ide.workspaceId
                 }));
             };
+            
+            ide.socketReconnect = function() {
+                // on a reconnect of the socket.io connection, the server may have
+                // lost our session. Now we do an HTTP request to fetch the current
+                // session ID and update the Cloud9 config with it. Also, re-attach
+                // with the backend.
+                apf.ajax("/reconnect", {
+                    callback: function(data, state, extra) {
+                        ide.sessionId = data;
+                        ide.socketConnect();
+                    }
+                });
+            };
 
             ide.socketDisconnect = function() {
                 clearTimeout(ide.$retryTimer);
@@ -210,7 +223,7 @@ define(function(require, exports, module) {
             
             ide.socket.on("message",    ide.socketMessage);
             ide.socket.on("connect",    ide.socketConnect);
-            //ide.socket.on("reconnect",  ide.socketReconnect);
+            ide.socket.on("reconnect",  ide.socketReconnect);
             //ide.socket.on("reconnecting",  ide.socketReconnecting);
             ide.socket.on("disconnect", ide.socketDisconnect);
             var _oldsend = ide.socket.send;

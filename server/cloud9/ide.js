@@ -8,7 +8,6 @@ var Async = require("asyncjs");
 var User = require("./user");
 var fs = require("fs");
 var sys = require("sys");
-var Path = require("path");
 var Url = require("url");
 var template = require("./template");
 var Workspace = require("cloud9/workspace");
@@ -29,7 +28,8 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
         paths: {
             "ace": staticUrl + "/support/ace/lib/ace",
             "debug": staticUrl + "/support/lib-v8debug/lib/v8debug",
-            "apf": staticUrl + "/support/apf"
+            "apf": staticUrl + "/support/apf",
+            "treehugger": staticUrl + "/support/treehugger/lib/treehugger"
         },
         waitSeconds: 30
     };
@@ -131,7 +131,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/nodeunit/nodeunit", 
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",
-    "ext/splitview/splitview"
+    "ext/vim/vim",
+    "ext/jslanguage/jslanguage"
     //"ext/acebugs/acebugs"
 ];
 
@@ -141,12 +142,19 @@ Ide.DEFAULT_PLUGINS = [
         var path = Url.parse(req.url).pathname;
 
         this.indexRe = this.indexRe || new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
+        this.reconnectRe = this.reconnectRe || new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "\\/reconnect$");
         this.workspaceRe = this.workspaceRe || new RegExp("^" + util.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
 
         if (path.match(this.indexRe)) {
             if (req.method !== "GET")
                 return next();
             this.$serveIndex(req, res, next);
+        }
+        else if (path.match(this.reconnectRe)) {
+            if (req.method !== "GET")
+                return next();
+            res.writeHead(200);
+            res.end(req.sessionID);
         }
         else if (path.match(this.workspaceRe)) {
             if (!this.davInited) {
@@ -248,7 +256,7 @@ Ide.DEFAULT_PLUGINS = [
 
                 setTimeout(function() {
                     var now = new Date().getTime();
-                    if((now - user.last_message_time) > 10000) {
+                    if ((now - user.last_message_time) > 10000) {
                         console.log("User fully disconnected", username);
                         _self.removeUser(user);
                     }

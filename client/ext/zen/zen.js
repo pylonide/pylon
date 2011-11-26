@@ -142,17 +142,17 @@ module.exports = ext.register("ext/zen/zen", {
     setupHandleListeners : function() {
         var _self = this;
 
-        this.zenHandleLeft.addEventListener("mousedown", function(e) {
+        apf.addListener(this.zenHandleLeft, "mousedown", function(e) {
             _self.browserWidth = window.innerWidth;
             _self.handleLeftMove = true;
         });
 
-        this.zenHandleRight.addEventListener("mousedown", function(e) {
+        apf.addListener(this.zenHandleRight, "mousedown", function(e) {
             _self.browserWidth = window.innerWidth;
             _self.handleRightMove = true;
         });
 
-        document.addEventListener("mousemove", function(e) {
+        apf.addListener(document, "mousemove", function(e) {
             if (_self.isFocused) {
                 // Now resize those love handles!
                 function afterCalculation() {
@@ -175,7 +175,7 @@ module.exports = ext.register("ext/zen/zen", {
             }
         });
 
-        document.addEventListener("mouseup", function() {
+        apf.addListener(document, "mouseup", function() {
             if (!_self.isFocused)
                 return;
 

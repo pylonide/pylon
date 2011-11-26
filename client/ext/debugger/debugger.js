@@ -177,8 +177,8 @@ module.exports = ext.register("ext/debugger/debugger", {
             _self.$syncTree();
         });
         mdlDbgSources.addEventListener("update", function(e) {
-            if (e.action != "add")
-                return;
+            if (e.action !== "add") return;
+            
             // TODO: optimize this!
             _self.$syncTree();
         });
@@ -209,31 +209,6 @@ module.exports = ext.register("ext/debugger/debugger", {
                     .showDebugFile(e.selected.getAttribute("scriptid"));
             });
         });
-        
-        mdlDbgBreakpoints.addEventListener("update", function(e) {
-            // when the breakpoint model is updated
-            // get the current IDE settings
-            var settingsMdl = settings.model.data;
-            // create a new element
-            var node = settingsMdl.ownerDocument.createElement("breakpoints");
-            
-            // find out all the breakpoints in the breakpoint model and iterate over them
-            var breakpoints = e.currentTarget.data.selectNodes("//breakpoint");
-            for (var ix = 0; ix < breakpoints.length; ix++) {
-                // clone and add to our new element
-                var cln = breakpoints[ix].cloneNode();
-                node.appendChild(cln);
-            }
-            
-            // if there is already a breakpoints section in the IDE settings remove it
-            var bpInSettingsFile = settingsMdl.selectSingleNode("//breakpoints");
-            if (bpInSettingsFile) {
-                bpInSettingsFile.parentNode.removeChild(bpInSettingsFile);
-            }
-            
-            // then append the current breakpoints to the IDE settings, tah dah
-            settingsMdl.appendChild(node);
-        });
 
         ide.addEventListener("afterfilesave", function(e) {
             var node = e.node;
@@ -249,6 +224,16 @@ module.exports = ext.register("ext/debugger/debugger", {
             dbg.changeLive(scriptId, NODE_PREFIX + value + NODE_POSTFIX, false, function(e) {
                 //console.log("v8 updated", e);
             });
+        });
+        
+        // we're subsribing to the 'running active' prop
+        // this property indicates whether the debugger is actually running (when on a break this value is false)
+        stRunning.addEventListener("prop.active", function (e) {
+            // if we are really running (so not on a break or something)
+            if (e.value) {
+                // we clear out mdlDbgStack
+                mdlDbgStack.load("<frames></frames>");
+            }
         });
     },
 

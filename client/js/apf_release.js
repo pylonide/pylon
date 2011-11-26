@@ -17297,7 +17297,7 @@ function SeleniumPlayer(browser){
 }).call(SeleniumPlayer.prototype);
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/uirecorder/ui.js)SIZE(11445)TIME(Thu, 24 Nov 2011 05:18:22 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/uirecorder/ui.js)SIZE(18464)TIME(Sat, 26 Nov 2011 06:03:24 GMT)*/
 
 
 
@@ -35016,7 +35016,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(50909)TIME(Sun, 20 Nov 2011 05:31:35 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(50792)TIME(Sat, 26 Nov 2011 06:06:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35203,75 +35203,63 @@ apf.BaseTree = function(){
             this.select(xmlNode);
     }
     
-    this.expandList = function(pathList, user_callback){
-        var pathLut = {};
-        function check(path, callback){
-            pathLut[path] = true;
+    /**
+     * Loads a list of folders
+     * paths {Array} Array of strings in the form of 'folder[1]/folder[2]'
+     * onFinished {function} Callback to be called when finished
+     */
+    this.expandList = function (paths, onFinished) {
+        var _self = this;
+        var root = this.xmlRoot;
             
-            var found;
-            for (var i = 0, l = pathList.length; i < l; i++) {
-                var ipath = pathList[i];
-                if (ipath) {
-                    if (ipath == path)
-                        delete pathList[i];
+        // recursive load function
+        function expand(currentSelector, allSelectors) {
+            // first expand the item passed in
+            _self.slideToggle(apf.xmldb.getHtmlNode(root.selectSingleNode(currentSelector), _self), 1, true, null, function () {
+                // the number of times the callback has fired, prevent it from executing forever
+                var timesRan = 0;
+                
+                // the callback fires, but we might be waiting for data from the server
+                var callback = function () {
+                    // check whether the node is loaded
+                    if (!_self.$hasLoadStatus(root.selectSingleNode(currentSelector), "loaded")) {
+                        // otherwise wait if timesRan under 30
+                        return ++timesRan < 30 ? setTimeout(callback, 1000 / 30) : null;
+                    }
                     
-                    var t = ipath.split("/"); t.pop();
-                    var parent = t.join("/");
-                    if (parent == path) {
-                        callback(ipath);
-                        found = true;
-                    }
-                }
-            }
-
-            if (!found)
-                user_callback();
-        };
+                    // notify
+                    hasExpanded(currentSelector);
+                    
+                    // when finished, find all the other selectors that start with the current selector
+                    // plus a slash to make it really really sure
+                    var childSelectors = allSelectors.filter(function (s) { return s.indexOf(currentSelector + "/") === 0; });
+                    
+                    // then expand each of the child items
+                    childSelectors.forEach(function (selector) {
+                        expand(selector, allSelectors);
+                    });
+                };
+                callback();
+            });
+        }
         
-        pathList.sort();
-        var cb, root = this.xmlRoot, _self = this;
-        check("", 
-            cb = function(item){
-                var paths = item.split("/");
-                var lastNode = root;//root.selectSingleNode(paths.shift());
-
-                //var lastPath = paths.pop();
-                apf.asyncForEach(paths, 
-                    function(part, next2, index) {
-                        apf.queue.empty();
-                        //This timeout is here to workaround a bug in chrome7 (and perhaps earlier)
-                        $setTimeout(function(){
-                            var xmlNode = (lastNode || root).selectSingleNode(part);
-                            if (xmlNode) {
-                                //if (index == paths.length - 1)
-                                    //return _self.select(xmlNode);
-                                
-                                lastNode = xmlNode;
-                                _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 1, true, null, function(){
-                                    next2();
-                                });
-                            }
-                            else {
-                                _self.slideToggle(apf.xmldb.getHtmlNode(lastNode, _self), 1, true, null, function(){
-                                    lastNode = lastNode.selectSingleNode(part);
-                                    if (!lastNode)
-                                        next2(true);
-                                    else
-                                        next2();
-                                });
-                            }
-                        },100);  
-                    }, function(err){
-                        //if (!err) {
-                            //next();
-                        //}
-                        check(item, cb);
-                    }
-                );
+        // function to be called when an item has expanded, used to determine whether we finished
+        var expandCount = 0;
+        function hasExpanded(selector) {
+            // if we have expanded all items, invoke the callback
+            if (++expandCount === paths.length) {
+                onFinished();
             }
-        );
-    }
-    
+        }
+        
+        // find all rootNodes (nodes without a slash in them)
+        var rootNodes = paths.filter(function (p) { return p.split("/").length === 1; });
+        
+        // expand all root nodes, expand will recursively expand all child items
+        rootNodes.forEach(function (node) {
+            expand(node, paths);
+        });
+    };    
     
     /**
      * @notimplemented
@@ -56570,7 +56558,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/debugger.js)SIZE(11064)TIME(Wed, 23 Nov 2011 04:52:53 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/debugger.js)SIZE(11358)TIME(Sat, 26 Nov 2011 06:06:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56780,8 +56768,15 @@ apf.dbg = module.exports = function(struct, tagName){
                 apf.xmldb.removeNode(bp);
             }
             else {
-                // strip the /workspace/ path if it is in front of the element
-                var displayText = script.getAttribute("path").replace(/^\/workspace\//, "");
+                // filename is something like blah/blah/workspace/realdir/file
+                // we are only interested in the part after workspace for display purposes
+                var tofind = "/workspace/";
+                var path = script.getAttribute("path");
+                var displayText = path;
+                if (path.indexOf(tofind) > -1) {
+                    displayText = path.substring(path.indexOf(tofind) + tofind.length);
+                }
+
                 var bp = apf.n("<breakpoint/>")
                     .attr("script", scriptName)
                     .attr("line", row)
@@ -58355,7 +58350,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/hbox.js)SIZE(40707)TIME(Mon, 21 Nov 2011 00:31:11 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/hbox.js)SIZE(40771)TIME(Sat, 26 Nov 2011 06:06:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58963,6 +58958,9 @@ apf.vbox = function(struct, tagName){
     }
     
     this.unregister = function(amlNode){
+        if(!amlNode.$propHandlers)
+            return;
+        
         amlNode.$propHandlers["left"]   = 
         amlNode.$propHandlers["top"]    = 
         amlNode.$propHandlers["right"]  = 
@@ -60899,7 +60897,7 @@ apf.aml.setElement("list",      apf.list);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/loader.js)SIZE(2153)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/loader.js)SIZE(3558)TIME(Sat, 26 Nov 2011 06:06:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60953,14 +60951,59 @@ apf.loader = function(){
         
         if (!apf.loaded) {
             var _self = this;
+            if(apf.config.loaderAnimIndicator)
+                _self.animateLoader(10);
             apf.addEventListener("load", function(){
-                if (apf.config.autoHideLoading) {
+                if (apf.isTrue(apf.config.autoHideLoading)) {
                     apf.queue.empty();
                     _self.hide();
+                }
+                else {
+                    if(apf.config.loaderAnimIndicator)
+                        _self.animateLoader(20);
                 }
             });
         }
     });
+    
+    this.lastLoaderStep = 0;
+    
+    /*
+     * Animates a loader indiacator
+     * 
+     * the step is in the % of the total width of the indicator
+     *
+     */
+    this.animateLoader = function(step){      
+        var _self    = this,
+            loaderEl = document.getElementById(apf.config.loaderAnimIndicator);
+        if(!loaderEl)
+            return;
+            
+        step = apf.config.loaderWidth * (step/100);
+
+        var fromStep = this.lastLoaderStep,
+            toStep   = this.lastLoaderStep + step;
+        
+        this.lastLoaderStep = toStep;
+
+        if(toStep > apf.config.loaderWidth)
+            toStep = apf.config.loaderWidth;
+
+        apf.tween.single(document.getElementById('animatedLoader'), {
+            steps    : 5,
+            anim     : apf.tween.EASEOUT,
+            type     : "width",
+            from     : fromStep,
+            to       : toStep,
+            onfinish : function() {
+                if(toStep >= apf.config.loaderWidth) {
+                    apf.queue.empty();
+                    _self.hide();
+                }
+            }
+        });
+    };
 };
 
 apf.loader.prototype = new apf.AmlElement();

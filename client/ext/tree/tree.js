@@ -9,7 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var fs = require("ext/filesystem/filesystem");
 var settings = require("ext/settings/settings");
 var panels = require("ext/panels/panels");
@@ -58,6 +57,10 @@ module.exports = ext.register("ext/tree/tree", {
             panels.initPanel(_self);
             _self.enable(true);
         });
+        
+        ide.addEventListener("filecallback", function (e) {
+            _self.refresh();
+        });
     },
 
     init : function() {
@@ -96,8 +99,10 @@ module.exports = ext.register("ext/tree/tree", {
 
         trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
             var settings = require("ext/settings/settings");
-            if (settings.model && trFiles.selected) {
+            if (settings.model && settings.model.data && trFiles.selected) {
                 var settings          = settings.model.data;
+                if (!settings)
+                    return;
                 var treeSelectionNode = settings.selectSingleNode("auto/tree_selection");
                 var nodeSelected      = trFiles.selected.getAttribute("path");
                 var nodeType          = trFiles.selected.getAttribute("type");

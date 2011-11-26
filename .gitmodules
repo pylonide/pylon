@@ -37,3 +37,6 @@
 [submodule "support/apollo"]
 	path = support/apollo
 	url = git://github.com/ajaxorg/apollo.git
+[submodule "support/treehugger"]
+	path = support/treehugger
+	url = git://github.com/ajaxorg/treehugger.git

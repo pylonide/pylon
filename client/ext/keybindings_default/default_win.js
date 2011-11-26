@@ -15,7 +15,8 @@ return keys.onLoad({
         },        
         "save" : {
             "quicksave": "Ctrl-S",
-            "saveas": "Ctrl-Shift-S"
+            "saveas": "Ctrl-Shift-S",
+            "reverttosaved": "Ctrl-Shift-Q"
         },
         "undo" : {
             "undo": "Ctrl-Z",
@@ -145,6 +146,10 @@ return keys.onLoad({
             "backspace": "Backspace",
             "outdent": "Shift-Tab",
             "indent": "Tab"
+        },
+        "language": {
+            "complete": "Ctrl-Space|Alt-Space",
+            "renameVar": "Crl-Alt-R"
         }
     }
 });
