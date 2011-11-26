@@ -189,13 +189,16 @@ apf.browser = function(struct, tagName){
         
         var _self = this;
         apf.addListener(this.$browser, "load", function(){
-            _self.dispatchEvent("load", {href: this.contentWindow.location.href});
-            _self.setProperty("src", this.contentWindow.location.href);
+            var loc = this.contentWindow.location.href;
+            _self.dispatchEvent("load", {href: loc});
+            if (loc)
+                _self.setProperty("src", loc);
         });
 
         apf.addListener(this.$browser, "error", function(){
             _self.dispatchEvent("error");
-            _self.setProperty("src", this.contentWindow.location.href);
+            if (this.contentWindow.location.href)
+                 _self.setProperty("src", this.contentWindow.location.href);
         });
 
         //this.$browser = this.$ext.contentWindow.document.body;
