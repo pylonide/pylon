@@ -163,6 +163,9 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
             enableRefactorings.push("renameVariable");
         },
         'Function(x, _, _)', function(b) {
+            // Only for named functions
+            if(!b.x.value)
+                return;
             highlightVariable(this.getAnnotation("scope")[b.x.value]);
             enableRefactorings.push("renameVariable");
         }
@@ -194,6 +197,8 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
             isDecl = true;
         },
         'Function(x, _, _)', function(b, node) {
+            if(!b.x.value)
+                return;
             v = node.getAnnotation("scope")[b.x.value];
             isDecl = true;
         },
