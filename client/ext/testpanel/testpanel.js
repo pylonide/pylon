@@ -48,6 +48,10 @@ module.exports = ext.register("ext/testpanel/testpanel", {
             panels.initPanel(_self);
             _self.enable(true);
         });
+        
+        apf.document.body.appendChild(new apf.state({
+            id : "stTestRun"
+        }));
     },
 
     init : function() {

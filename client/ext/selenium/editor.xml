@@ -1,14 +1,27 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:state id="stTestRecord" />
+
     <a:hbox id="mainUiRecorder" anchors="0 0 0 0" edge="0 4 3 6" padding="3" visible="false" splitters="true">
-        <a:vbox width="340" id="vboxUiRecorder">
-            <a:bar id="barUiRecorder" skin="basic" style="padding:2px;">
-                <a:hbox align="center" padding="5">
-                    <a:button id="btnUiRecordStart" onclick="require('ext/selenium/editor').start()">Record</a:button>
-                    <a:button id="btnUiRecordStop" icon="stop.png" visible="false" onclick="require('ext/selenium/editor').stop()">Stop</a:button>
+        <a:vbox width="340" id="vboxUiRecorder" padding="4">
+            <a:bar id="barUiRecorder" skin="basic" style="padding:1px 2px 2px 2px;background:#2f3032;height:27px;border:1px solid #222425;border-radius:4px;">
+                <a:hbox align="center" padding="0">
+                    <a:button id="btnUiRecordStart" 
+                      skin     = "c9-toolbarbutton" 
+                      icon     = "{stTestRecord.active ? 'recording-animation.gif' : 'record.png'}" 
+                      class    = "record" 
+                      caption  = "{stTestRecord.active ? 'Stop' : 'Record'}" />
                     
-                    <a:button id="btnUiRecordRemove" disabled="{!dgUiRecorder.selected}" onclick="dgUiRecorder.remove()">Remove</a:button>
-                    <a:button id="btnUiRecordAddAssert" disabled="{'action|assert'.indexOf(dgUiRecorder.selected and dgUiRecorder.selected.localName) == -1}" onclick="require('ext/selenium/editor').startAddAssert()">Add Assertion</a:button>
-                    <a:button onclick="
+                    <a:splitbutton id="btnTestRunInSelEditor"
+                      icon     = "run.png"
+                      caption  = "Run"
+                      disabled = "{stTestRecord.active or stTestRun.active}"
+                      onclick  = "require('ext/testpanel/testpanel').run(dgUiRecorder.getSelection());"
+                      margin   = "0 0 0 4" 
+                      submenu2  = "mnuRunSettings" />
+                    
+                    <a:button id="btnUiRecordRemove" skin="c9-toolbarbutton" disabled="{!dgUiRecorder.selected}" onclick="dgUiRecorder.remove()">Remove</a:button>
+                    <a:button id="btnUiRecordAddAssert" skin="c9-toolbarbutton" disabled="{'action|assert'.indexOf(dgUiRecorder.selected and dgUiRecorder.selected.localName) == -1}" onclick="require('ext/selenium/editor').startAddAssert()">Add Assertion</a:button>
+                    <a:button skin="c9-toolbarbutton" onclick="
                         uiRecordPreview.setAttribute('visible', !uiRecordPreview.visible);
                         if (uiRecordPreview.visible) {
                             vboxUiRecorder.setAttribute('width', vboxUiRecorder.lastWidth);
@@ -25,7 +38,7 @@
             
             <a:menu id="mnuUiRecorder">
                 <a:item match="[action|assert|test]" onclick="dgUiRecorder.remove()">Remove</a:item>
-                <a:item match="[action|assert]" onclick="require('ext/selenium/editor').startAddAssert()">Add Assertion</a:item>
+                <a:item match="[action]" onclick="require('ext/selenium/editor').startAddAssert()">Add Assertion</a:item>
             </a:menu>
         
             <a:bar skin="basic" flex="1">
@@ -88,6 +101,7 @@
                     <a:button onclick="brSeleniumPreview.forward()">&gt;</a:button>
                     <a:button onclick="brSeleniumPreview.reload()">reload</a:button>
                     <a:textbox flex="1" focusselect="true" id="tbUiRecordLoc" />
+                    <a:img src="/static/style/images/file-tree-load-spinner.gif" id="uiRecordLoadingIndicator" />
                 </a:hbox>
             </a:bar>
             <a:browser id="brSeleniumPreview" flex="1" style="border: 0;background:white;" />

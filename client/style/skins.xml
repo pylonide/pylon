@@ -1443,7 +1443,7 @@
         .c9-toolbarbuttonIcon .c9-icon{
             display : block;
         }
-
+        
         .c9-toolbarbuttonOver {
             -moz-border-radius    : 5px;
             -webkit-border-radius : 5px;
@@ -1481,7 +1481,10 @@
         }
 
         .c9-toolbarbuttonIcon .c9-label{
-            padding:3px 6px 0 22px;
+            padding:4px 6px 0 22px;
+        }
+        .record.c9-toolbarbuttonIcon .c9-label{
+            padding:4px 6px 0 26px;
         }
 
         .c9-toolbarbuttonIcon.preview .c9-label {
@@ -1511,6 +1514,9 @@
 
         .c9-toolbarbuttonDisabled .c9-icon {
             background-position : 0 -38px;
+        }
+        .record.c9-toolbarbuttonDisabled .c9-icon, .record.c9-toolbarbuttonDown .c9-icon {
+            background-position : 0 0;
         }
 
         .c9-toolbarbuttonDisabled .c9-label {
@@ -2365,8 +2371,8 @@
         }
 
         .datagrid .records .selected, .datagrid .records .selected span{
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(176,176,176)),color-stop(1, rgb(190,190,190)));
-            background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #CECECE),color-stop(1, #DEDEDE));
+            background: -moz-linear-gradient(center bottom,#CECECE 0%,#DEDEDE 100%);
         }
         .datagridFocus .records .selected, .datagridFocus .records .selected span,
         .datagridFocus .records .dragAppend, .datagridFocus .records .dragAppend span{

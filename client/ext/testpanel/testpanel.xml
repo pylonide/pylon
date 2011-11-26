@@ -7,8 +7,6 @@
       visible  = "true" 
       buttons  = "close" 
       optimize = "true">
-        <a:state id="stTestRun" />
-      
         <a:bar skin="c9-header-bar" top="-30" right="24" height="30">
             <a:hbox id="barTestTools">
                 <a:splitbutton

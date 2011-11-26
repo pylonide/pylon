@@ -50,6 +50,7 @@ var markup = require("text!ext/selenium/editor.xml");
 var proxyTemplate = require("text!ext/selenium/proxy.html");
 var editors = require("ext/editors/editors");
 var fs = require("ext/filesystem/filesystem");
+var testpanel = require('ext/testpanel/testpanel');
 
 var useProxy = true;
 
@@ -88,6 +89,7 @@ module.exports = ext.register("ext/selenium/editor", {
                 var xml = _self.convertToXml(json);
                 _self.model.load(xml);
                 
+                doc.seleniumXml = xml;
                 doc.isInited = true;
             });
             
@@ -105,12 +107,12 @@ module.exports = ext.register("ext/selenium/editor", {
                 if (this.editor != _self)
                     return;
                 
-                //??? destroy doc.acesession
             });
             
             doc.isSeleniumInited = true;
         }
 
+        //Switch from an other editor
         if (doc.editor && doc.editor != this) {
             var value = doc.getValue();
             if (JSON.stringify(_self.getTests(), null, '    ') !== value) {
@@ -118,8 +120,14 @@ module.exports = ext.register("ext/selenium/editor", {
                 doc.dispatchEvent("prop.value", {value : value});
             }
         }
-        else {
+        //First time load
+        else if (!doc.editor) {
             doc.editor = this;
+        }
+        //Reloading into this editor
+        else {
+            if (_self.model.data != doc.seleniumXml)
+                _self.model.load(doc.seleniumXml);
         }
     },
 
@@ -250,8 +258,8 @@ module.exports = ext.register("ext/selenium/editor", {
                 _self.inject();
             });
         }
-        else
-            this.inject();
+        //else
+            //this.inject();
         
         /**** Preview ****/
         
@@ -265,15 +273,42 @@ module.exports = ext.register("ext/selenium/editor", {
         
         brSeleniumPreview.addEventListener(useProxy ? "prop.proxy-source" : "load", function(e){
             tbUiRecordLoc.setValue(e.value || e.href);
+            uiRecordLoadingIndicator.hide();
+            
+            _self.currentLocation = e.value || e.ref;
         });
         
-        dgUiRecorder.addEventListener("afterselect", function(){
-            if (this.selected) {
-                var value = _self.findUrl(this.selected);
+        var updateUrl;
+        dgUiRecorder.addEventListener("afterselect", updateUrl = function(){
+            if (dgUiRecorder.selected) {
+                var value = _self.findUrl(dgUiRecorder.selected);
                 
                 if (value)
                     _self.loadUrl(value);
             }
+        });
+        dgUiRecorder.addEventListener("xmlupdate", updateUrl);
+        
+        /**** Play button ****/
+        
+        btnTestRunInSelEditor.addEventListener("click", function(){
+            ext.initExtension(testpanel);
+            
+            var w = testpanel.$lastWidth;
+            testpanel.disable();
+            testpanel.$lastWidth = w;
+            
+            //btnTestRunInSelEditor.setAttribute("submenu", "mnuRunSettings");
+            //btnTestRunInSelEditor.setAttribute("disabled", "{!(stTestRun.active or !dgUiRecorder.selected)}");
+            
+            btnTestRunInSelEditor.removeEventListener("click", arguments.callee);
+        });
+        
+        btnUiRecordStart.addEventListener("click", function(){
+            if (!stTestRecord.active) 
+                _self.start();
+            else 
+                _self.stop();
         });
     },
     
@@ -289,6 +324,11 @@ module.exports = ext.register("ext/selenium/editor", {
         }
         
         return url;
+    },
+    
+    getProxyUrl : function(){
+        var host = this.findUrl(dgUiRecorder.selected).replace(/(https?:\/\/[^\/]+(?:\/workspace)?)\/.*$/, "$1");
+        return host + "/.c9.proxy.html";
     },
 
     inject : function() {
@@ -311,24 +351,23 @@ module.exports = ext.register("ext/selenium/editor", {
             };
             
             //If we can't access location.href the proxy is already there
-            debugger;
-            if (this.target.location.href && !this.target.location.href.match(/.c9.proxy.html$/)) {
+            var proxyUrl = _self.getProxyUrl();
+            
+            if (brSeleniumPreview.src != proxyUrl) {
                 fs.saveFile("/workspace/.c9.proxy.html", proxyTemplate, function(data, state, extra){
                     if (state == apf.SUCCESS) {
-                        
-                        var host = _self.findUrl(dgUiRecorder.selected).replace(/(https?:\/\/[^\/]+(?:\/workspace)?)\/.*$/, "$1");
-                        var proxyUrl = host + "/.c9.proxy.html";
-                        
-                        if (brSeleniumPreview.src != proxyUrl) {
-                            brSeleniumPreview.addEventListener("load", function(e){
-                                inject();
-                                
-                                brSeleniumPreview.removeEventListener("load", arguments.callee);
-                            });
-                            brSeleniumPreview.setAttribute("src", proxyUrl);
-                        }
-                        else
+                        brSeleniumPreview.addEventListener("load", function(e){
                             inject();
+                            
+                            brSeleniumPreview.removeEventListener("load", arguments.callee);
+                            
+                            _self.proxyLoaded = true;
+                            if (_self.lastUrlToLoad) {
+                                _self.loadUrl(_self.lastUrlToLoad);
+                                _self.lastUrlToLoad = null;
+                            }
+                        });
+                        brSeleniumPreview.setAttribute("src", proxyUrl);
                     }
                     else {
                         throw new Error("Could not save proxy for Selenium testing");
@@ -352,11 +391,25 @@ module.exports = ext.register("ext/selenium/editor", {
     },
     
     loadUrl : function(value) {
+        tbUiRecordLoc.setValue(value);
+        
+        if (this.currentLocation != value)
+            uiRecordLoadingIndicator.show();
+        
         if (useProxy) {
-            this.target.postMessage(JSON.stringify({
-                type : "href",
-                href : value
-            }), "*");
+            if (this.getProxyUrl() != brSeleniumPreview.src)
+                this.proxyLoaded = false;
+            
+            if (this.proxyLoaded) {
+                this.target.postMessage(JSON.stringify({
+                    type : "href",
+                    href : value
+                }), "*");
+            }
+            else {
+                this.lastUrlToLoad = value;
+                this.inject();
+            }
         }
         else
             brSeleniumPreview.setAttribute('src', value);
@@ -387,6 +440,7 @@ module.exports = ext.register("ext/selenium/editor", {
                 "Fill in a url to the page to test in the textbox and press enter");
         
         this.isRecording = true;
+        stTestRecord.activate();
         
         if (this.connected == 2)
             return;
@@ -403,25 +457,13 @@ module.exports = ext.register("ext/selenium/editor", {
         }
         
         this.execute("record");
-
-        btnUiRecordStart.hide();
-        btnUiRecordStop.show();
-//        btnUiRecordStart.disable();
-//        btnUiRecordStop.enable();
     },
     
     stop : function(){
         this.execute("stop");
         
-        btnUiRecordStart.show();
-        btnUiRecordStop.hide();
-//        btnUiRecordStart.enable();
-//        btnUiRecordStop.disable();
-        
-//        btnUiRecordRun.setAttribute("disabled", 
-//            !apf.uirecorder.capture.actions.length);
-
         this.isRecording = false;
+        stTestRecord.deactivate();
     },
     
     getNewUrl : function(url){
@@ -537,7 +579,7 @@ module.exports = ext.register("ext/selenium/editor", {
             
             test = [];
             for (var j = 0; j < actions.length; j++) {
-                action = JSON.parse(actions[j].getAttribute("json"));
+                action = JSON.parse(actions[j].getAttribute("json")) || {};
                 action.name = actions[j].getAttribute("name");
                 action.value = actions[j].getAttribute("value");
                 
