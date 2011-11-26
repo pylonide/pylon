@@ -51,11 +51,14 @@ module.exports = ext.register("ext/language/language", {
         
         var worker = this.worker = new WorkerClient(["treehugger", "ext", "ace", "c9"], null, "ext/language/worker", "LanguageWorker");
         complete.setWorker(worker);
+        
+        //ide.addEventListener("init.ext/code/code", function(){
 		ide.addEventListener("afteropenfile", function(event){
-            ext.initExtension(_self);
-            if (!event.node) return;
+            if (!event.node)
+                return;
             if (!editors.currentEditor || !editors.currentEditor.ceEditor) // No editor, for some reason
                 return;
+            ext.initExtension(_self);
             var path = event.node.getAttribute("path");
             worker.call("switchFile", [path, editors.currentEditor.ceEditor.syntax, event.doc.getValue()]);
             event.doc.addEventListener("close", function() {
@@ -112,6 +115,9 @@ module.exports = ext.register("ext/language/language", {
     
     setPath: function() {
         var currentPath = tabEditors.getPage().getAttribute("id");
+        // Currently no code editor active
+        if(!editors.currentEditor.ceEditor)
+            return;
         this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue()]);
     },
     
