@@ -28172,7 +28172,7 @@ apf.StandardBinding.prototype = new apf.DataBinding();
 apf.Init.run("standardbinding");
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/multiselect.js)SIZE(71734)TIME(Sun, 20 Nov 2011 20:52:47 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/multiselect.js)SIZE(71734)TIME(Sat, 26 Nov 2011 05:35:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52314,7 +52314,7 @@ apf.aml.setElement("config", apf.AmlConfig);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/browser.js)SIZE(6388)TIME(Thu, 24 Nov 2011 21:28:25 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/browser.js)SIZE(6466)TIME(Sat, 26 Nov 2011 05:43:54 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52505,13 +52505,16 @@ apf.browser = function(struct, tagName){
         
         var _self = this;
         apf.addListener(this.$browser, "load", function(){
-            _self.dispatchEvent("load", {href: this.contentWindow.location.href});
-            _self.setProperty("src", this.contentWindow.location.href);
+            var loc = this.contentWindow.location.href;
+            _self.dispatchEvent("load", {href: loc});
+            if (loc)
+                _self.setProperty("src", loc);
         });
 
         apf.addListener(this.$browser, "error", function(){
             _self.dispatchEvent("error");
-            _self.setProperty("src", this.contentWindow.location.href);
+            if (this.contentWindow.location.href)
+                 _self.setProperty("src", this.contentWindow.location.href);
         });
 
         //this.$browser = this.$ext.contentWindow.document.body;

@@ -7,21 +7,22 @@ window.addEventListener("beforeunload", function(e) {
     capture.stop();
 });
 
-var parentHref = window.parent.location.href.replace(/\/$/, "");
-
 window.addEventListener("message", function(e) {
-    if (e.origin !== parentHref || unloading)
-        return;
+//    if (e.origin !== window.parent.location.origin || unloading)
+//        return;
 
     try {
         var json = typeof e.data == "string" ? JSON.parse(e.data) : e.data;
     } catch (e) {
         return;
     }
+    
+    if (!json.command)
+        return;
 
     switch (json.command) {
         case "ping":
-            e.source.postMessage(JSON.stringify({ type: "pong" }), parentHref);
+            e.source.postMessage(JSON.stringify({ type: "pong" }), "*");
             break;
         case "record":
             capture.source = e.source;
@@ -144,7 +145,7 @@ var capture = {
                 type  : "event",
                 name  : name,
                 event : e
-            }), parentHref);
+            }), "*");
     },
     
     setProperty : function(prop, value){
