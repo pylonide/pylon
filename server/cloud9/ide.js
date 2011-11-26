@@ -8,7 +8,6 @@ var Async = require("asyncjs");
 var User = require("./user");
 var fs = require("fs");
 var sys = require("sys");
-var Path = require("path");
 var Url = require("url");
 var template = require("./template");
 var Workspace = require("cloud9/workspace");
@@ -126,6 +125,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/stripws/stripws",
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",
+    "ext/vim/vim",
     "ext/jslanguage/jslanguage"
     //"ext/acebugs/acebugs"
 ];

@@ -1,4 +1,0 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:checkbox class="underlined" label="Enable autosave" value="[general/@autosave]" />
-</a:application>
-

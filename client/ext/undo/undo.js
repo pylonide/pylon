@@ -7,7 +7,6 @@
 
 define(function(require, exports, module) {
 
-var ide = require("core/ide");
 var ext = require("core/ext");
  
 module.exports = ext.register("ext/undo/undo", {
