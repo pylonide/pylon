@@ -52,10 +52,12 @@ module.exports = ext.register("ext/language/language", {
         var worker = this.worker = new WorkerClient(["treehugger", "ext", "ace", "c9"], null, "ext/language/worker", "LanguageWorker");
         complete.setWorker(worker);
 		ide.addEventListener("afteropenfile", function(event){
-            ext.initExtension(_self);
             if (!event.node) return;
             if (!editors.currentEditor || !editors.currentEditor.ceEditor) // No editor, for some reason
                 return;
+                
+            ext.initExtension(_self);
+            
             var path = event.node.getAttribute("path");
             worker.call("switchFile", [path, editors.currentEditor.ceEditor.syntax, event.doc.getValue()]);
             event.doc.addEventListener("close", function() {

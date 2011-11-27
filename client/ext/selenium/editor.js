@@ -26,7 +26,7 @@
         - Context Menu
             - Play until here
             - Play this test
-            - 
+            - copy/paste/cut/duplicate
         * Run should be disabled until a test is loaded/recorded
         * Datagrid needs drag indicators (seemed to have some before)
         - Datagrid should automatically scroll down during recording, unless
@@ -51,6 +51,7 @@ var proxyTemplate = require("text!ext/selenium/proxy.html");
 var editors = require("ext/editors/editors");
 var fs = require("ext/filesystem/filesystem");
 var testpanel = require('ext/testpanel/testpanel');
+var selenium = require('ext/selenium/selenium');
 
 var useProxy = true;
 
@@ -107,6 +108,9 @@ module.exports = ext.register("ext/selenium/editor", {
                 if (this.editor != _self)
                     return;
                 
+                if (_self.model.data == doc.seleniumXml)
+                    _self.model.clear();
+                doc.seleniumXml = null;
             });
             
             doc.isSeleniumInited = true;
@@ -132,13 +136,14 @@ module.exports = ext.register("ext/selenium/editor", {
     },
 
     hook : function() {
-        
     },
 
     init : function(amlPage) {
+        ide.dispatchEvent("init.testrunner");
+        
         amlPage.appendChild(mainUiRecorder);
         mainUiRecorder.show();
-
+        
         this.editor = mainUiRecorder;
         
         var _self = this;
@@ -312,6 +317,27 @@ module.exports = ext.register("ext/selenium/editor", {
         });
     },
     
+    run : function(){
+        if (!this.model.queryNodes("test").length)
+            return;
+        
+        if (!this.statusColumn) {
+            colUiRecorder.setAttribute("width", "60%");
+            this.statusColumn = new apf.BindingColumnRule({
+                caption : "Status", 
+                width   : "40%", 
+                value   : "[@status-message]"
+            })
+            dgUiRecorder.appendChild(this.statusColumn);
+        }
+        
+        stTestRun.activate();
+        
+        selenium.runSeleniumData(this.model.data, this.getTests(), function(){
+            stTestRun.deactivate();
+        });
+    },
+    
     findUrl : function(xmlNode){
         if ("repo|file".indexOf(xmlNode.localName) > -1)
             return apf.queryValue(this.selected, ".//action[@name='get']/@value");
@@ -413,6 +439,17 @@ module.exports = ext.register("ext/selenium/editor", {
         }
         else
             brSeleniumPreview.setAttribute('src', value);
+    },
+    
+    getIcon : function(value){
+        if (!value || value == -1)
+            return "bullet_blue.png";
+        else if (value == 5) //running
+            return "bullet_go.png";
+        else if (value == 1) //ran
+            return "bullet_green.png";
+        else if (value == 0) //error
+            return "bullet_red.png";
     },
     
     execute : function(cmd, arg1){
@@ -573,13 +610,14 @@ module.exports = ext.register("ext/selenium/editor", {
         var sp = new SeleniumPlayer();
         sp.realtime = false;
         
-        var test, tests = {}, actions, action, asserts, assert;
+        var test, tests = {}, actions, action, asserts, assert, json;
         for (var i = 0; i < nodes.length; i++) {
             actions = apf.queryNodes(nodes[i], "action");
             
             test = [];
             for (var j = 0; j < actions.length; j++) {
-                action = JSON.parse(actions[j].getAttribute("json")) || {};
+                json = actions[j].getAttribute("json");
+                action = json && JSON.parse(json) || {};
                 action.name = actions[j].getAttribute("name");
                 action.value = actions[j].getAttribute("value");
                 
@@ -587,7 +625,8 @@ module.exports = ext.register("ext/selenium/editor", {
                 
                 asserts = apf.queryNodes(actions[j], "assert");
                 for (var k = 0; k < asserts.length; k++) {
-                    assert = JSON.parse(asserts[k].getAttribute("json")) || {};
+                    json = asserts[k].getAttribute("json");
+                    assert = json && JSON.parse(json) || {};
                     
                     assert.element = JSON.parse(asserts[k].getAttribute("element"))
                     assert.value   = JSON.parse(asserts[k].getAttribute("value")) //@todo potential problem with newlines in content

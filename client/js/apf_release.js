@@ -17049,7 +17049,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/uirecorder/selenium.js)SIZE(9031)TIME(Sun, 20 Nov 2011 01:06:22 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/uirecorder/selenium.js)SIZE(9161)TIME(Sat, 26 Nov 2011 23:48:13 GMT)*/
 
 
 function SeleniumPlayer(browser){
@@ -17099,14 +17099,19 @@ function SeleniumPlayer(browser){
     
     this.compile = function(actions){
         var rules = [], stack;
-        var context, contexts = {length: 0};
-        var needsMove;
+        var contexts = {length: 0};
         
-        var minLength, elId, el, item, temp, lastMouseDown, lastCoords;
+        var elId, el, item, temp, lastMouseDown;
         for (var i = 0, l = actions.length; i < l; i++) {
             item    = actions[i];
             el      = item.element;
             stack   = [];
+            
+            if (item.name == "get") {
+                rules.push("browser.getDecoratedPage('" 
+                    + item.value.replace(/'/g, "\\'") + "');"); 
+                continue;
+            }
 
             if (!el) {
                 console.log("Found item without any element");
@@ -17134,7 +17139,7 @@ function SeleniumPlayer(browser){
                 case "mousemove":
                     // || !actions[i + 1] || !actions[i + 1].name == "mousemove"
                     stack.push("browser.moveTo(" + elId 
-                        + ", " + x + ", " + y + ");"); //@todo make these absolute
+                        + ", " + x + ", " + y + ");");
                         
                     break;
                 case "mousedown":
@@ -48375,7 +48380,7 @@ apf.CodeCompilation = function(code){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingrule.js)SIZE(8836)TIME(Mon, 21 Nov 2011 08:53:51 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingrule.js)SIZE(8842)TIME(Sun, 27 Nov 2011 00:09:33 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48505,7 +48510,7 @@ apf.BindingRule = function(struct, tagName){
         //If this node is added, add to set
         if (e.currentTarget == this) {
             (node.$bindings[this.localName] 
-                || (node.$bindings[this.localName] = [])).push(this);
+                || (node.$bindings[this.localName] = [])).pushUnique(this);
         }
         //@todo apf3.0 test if proc instr and cdata needs to be serialized
         //Else just update the binding value
@@ -50565,7 +50570,7 @@ apf.aml.setElement("color", apf.BindingColorRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingcolumnrule.js)SIZE(20001)TIME(Mon, 21 Nov 2011 18:35:14 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingcolumnrule.js)SIZE(20316)TIME(Sun, 27 Nov 2011 00:33:13 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50602,7 +50607,7 @@ apf.aml.setElement("color", apf.BindingColorRule);
  * @attribute {Boolean} tree
  */
 apf.BindingColumnRule = function(struct, tagName){
-    this.$init(tagName, apf.NODE_HIDDEN, struct);
+    this.$init(tagName || "column", apf.NODE_VISIBLE, struct);
     
     this.$className = "col" + this.$uniqueId;
 };
@@ -50641,6 +50646,14 @@ apf.BindingColumnRule = function(struct, tagName){
 
         this.$isPercentage = value && String(value).indexOf("%") > -1;
         this.$width = parseFloat(value);
+    
+        if (this.$isPercentage) {
+            apf.setStyleRule("." + this.$className, "width", this.$width + "%");
+        }
+        else {
+            var pNode = this.parentNode;
+            apf.setStyleRule("." + this.$className, "width", this.$width + "px", null, pNode.oWin); //Set
+        }
     }
     
     this.$propHandlers["options"]  = function(value, prop){
@@ -55316,7 +55329,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53741)TIME(Thu, 24 Nov 2011 21:12:01 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53762)TIME(Sun, 27 Nov 2011 00:23:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55813,8 +55826,9 @@ apf.datagrid = function(struct, tagName){
         if (!rules || !rules.length)
             return;
         
+        this.$cssRules = [];
         this.$headings = rules;
-        
+
         var fixed = 0, found = false;
         for (var h, i = 0, l = rules.length; i < l; i++) {
             h = rules[i];
@@ -70385,7 +70399,7 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/splitbutton.js)SIZE(4807)TIME(Tue, 22 Nov 2011 21:52:02 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/splitbutton.js)SIZE(4827)TIME(Sat, 26 Nov 2011 18:33:47 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70466,9 +70480,10 @@ apf.splitbutton = function(struct, tagName){
     
     this.$propHandlers["submenu"] = function(value) {
         this.$button2.setProperty("submenu", value);
+        
         var _self = this;
-        self[value].addEventListener("display", function() {
-            this.$ext.style.marginLeft = "-" + _self.$button1.$ext.offsetWidth + "px";
+        this.$button2.addEventListener("mousedown", function() {
+            self[value].$ext.style.marginLeft = "-" + _self.$button1.$ext.offsetWidth + "px";
         });
     }
     

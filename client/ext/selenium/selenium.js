@@ -42,10 +42,67 @@ module.exports = ext.register("ext/selenium/selenium", {
         var _self = this;
         ide.addEventListener("init.ext/testpanel/testpanel", function(){
             ext.initExtension(_self);
+            _self.initTestPanel();
+        });
+        
+        ide.addEventListener("init.testrunner", function(){
+            ext.initExtension(_self);
+            
+            ide.removeEventListener("init.testrunner", arguments.callee);
         });
     },
 
     init : function(amlNode) {
+        var _self = this;
+        
+        var nodes = seleniumSettings.childNodes;
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            this.nodes.push(mnuRunSettings.appendChild(nodes[0]));
+        }
+        
+        ide.addEventListener("test.expand.selenium", function(e){
+            var xmlNode = e.xmlNode;
+            _self.reloadTestFile(xmlNode);
+        });
+        
+        ide.addEventListener("test.hardstop", function(e){
+            //@todo clean up all events
+        });
+        
+        ide.addEventListener("test.stop", function(e){
+            if (!_self.running)
+                return;
+            _self.stop();
+        });
+        
+        ide.addEventListener("test.icon.selenium", function(e){
+            return "page_white_go.png";
+        });
+        
+        ide.addEventListener("test.run.selenium", function(e){
+            var nextFile = e.next;
+            _self.run(e.xmlNode, function(){
+                nextFile();
+            });
+        });
+    },
+    
+    createFlashPlayer : function(dgName, playerName){
+        return new apf.flashplayer({
+            id         : playerName,
+            margin     : "4",
+            src        : "/static/ext/selenium/flowplayer-3.2.7.swf",
+            flashvars  : 'config=\\{"playerId":"player","clip":\\{"url":"[{' 
+                + dgName 
+                + '.selected}::ancestor-or-self::file/@video]","autoPlay":false,"scaling":"fit"\\}\\}',
+            height     : "100",
+            visible    : "{!![{" + dgName + ".selected}::ancestor-or-self::file/@video]}",
+            bgcolor    : "000000",
+            allowfullscreen : "true"
+        });
+    },
+    
+    initTestPanel : function(){
         var _self = this;
         
         this.nodes.push(
@@ -66,14 +123,9 @@ module.exports = ext.register("ext/selenium/selenium", {
                 visible : "{flSeleniumMovie.visible}"
             })),
             
-            vboxTestPanel.appendChild(flSeleniumMovie)
+            vboxTestPanel.appendChild(this.createFlashPlayer("dgTestProject", "flSeleniumMovie"))
         );
         
-        var nodes = seleniumSettings.childNodes;
-        for (var i = 0, l = nodes.length; i < l; i++) {
-            this.nodes.push(mnuRunSettings.appendChild(nodes[0]));
-        }
-
         fs.list("/workspace/" + this.testpath, function(data, state, extra){
             if (state == apf.ERROR) {
                 if (data && data.indexOf("jsDAV_Exception_FileNotFound") > -1) {
@@ -109,231 +161,6 @@ module.exports = ext.register("ext/selenium/selenium", {
             }
         });
         
-        ide.addEventListener("test.expand.selenium", function(e){
-            var xmlNode = e.xmlNode;
-            _self.reloadTestFile(xmlNode);
-        });
-        
-        ide.addEventListener("test.hardstop", function(e){
-            //@todo clean up all events
-        });
-        
-        ide.addEventListener("test.stop", function(e){
-            if (!_self.running)
-                return;
-            _self.stop();
-        });
-        
-        ide.addEventListener("test.icon.selenium", function(e){
-            return "page_white_go.png";
-        });
-        
-        ide.addEventListener("test.run.selenium", function(e){
-            var fileNode = e.xmlNode;
-            var nextFile = e.next;
-            var path     = fileNode.getAttribute("path");
-            
-            _self.lastTestNode = fileNode;
-            
-            var sp       = new SeleniumPlayer();
-            sp.realtime  = false;
-            
-            _self.running = true;
-            _self.stopping = false; //@todo this shouldn't happen
-            _self.jobId = null;
-            
-            testpanel.setLog(fileNode, "reading");
-            
-            fs.readFile(path, function(data, state, extra){
-                if (state == apf.SUCCESS) {
-                    try {
-                        var testObject = JSON.parse(data);
-                    }
-                    catch(e) {
-                        testpanel.setError(fileNode,
-                            "Invalid JSON. Could not parse file format: "
-                            + e.message);
-                        
-                        _self.running = false;
-                        nextFile();
-                        return;
-                    }
-                    
-                    var tests = [];
-                    for (var prop in testObject) {
-                        if (prop.match(/^test /i))
-                            tests.push(prop);
-                    }
-                    var nodes = fileNode.selectNodes("test");
-                    if (!nodes.length) {
-                        dgTestProject.$setLoadStatus(fileNode, "loaded");
-                        _self.parseTestFile(data, fileNode);
-                        nodes = fileNode.selectNodes("test");
-                    }
-                    
-                    apf.asyncForEach(tests, function(name, nextTest, i){
-                        if (_self.stopping) {
-                            testpanel.setError(fileNode, "Test Cancelled");
-                            _self.stopped();
-                            return;
-                        }
-                        
-                        var actions  = testObject[name];
-                        var script   = sp.compile(actions);
-                        var testNode = nodes[i];
-                        
-                        _self.lastTestNode = testNode;
-
-                        testpanel.setLog(fileNode, "running test " + (i + 1) + " of " + tests.length);
-                        testpanel.setLog(testNode, "connecting");
-
-                        var data = {
-                            command : "selenium",
-                            argv    : ["selenium", script],
-                            line    : "",
-                            //cwd     : this.getCwd(),
-                            path    : testObject.url,
-                            close   : i == tests.length - 1,
-                            job     : _self.jobId,
-                            url     : testObject.url,
-                            
-                            where   : ddWhere.value,
-                            os      : ddSeOS.value,
-                            browser : ddSeBrowser.selected.getAttribute("value"),
-                            version : ddSeBrowser.selected.getAttribute("version")
-                        };
-  
-                        ide.addEventListener("socketMessage", function(e){
-                            if (e.message.subtype == "selenium") {
-                                var msg = e.message.body;
-
-                                switch (msg.code) {
-                                    case 0:
-                                        testpanel.setError(testNode, msg.err);
-                                        testpanel.setError(fileNode, msg.err);
-                                        
-                                        ide.removeEventListener("socketMessage", arguments.callee);
-                                        if (_self.stopping)
-                                            _self.stopped();
-                                        else {
-                                            _self.running = false;
-                                            nextFile();
-                                        }
-                                        break;
-                                    case 1: //PASS
-                                        var assertNode = 
-                                          apf.queryNode(testNode, "assert[@input=" 
-                                            + escapeXpathString(msg.data.input || "")
-                                            + " and @match="
-                                            + escapeXpathString(msg.data.match || "")
-                                            + "]");
-
-                                        if (!assertNode) {
-                                            assertNode = testNode.ownerDocument
-                                                .createElement("assert");
-                                            assertNode.setAttribute("name",
-                                                msg.data.input + " == " + msg.data.match);
-                                            assertNode.setAttribute("input",
-                                                msg.data.input);
-                                            assertNode.setAttribute("match",
-                                                msg.data.match);
-                                            apf.xmldb.appendChild(testNode, assertNode);
-                                        }
-                                        
-                                        testpanel.setPass(assertNode);
-                                        break;
-                                    case 2: //ERROR .data[input | match | measured]
-                                        if (_self.stopping)
-                                            return;
-                                            
-                                        if (typeof msg.data == "string") {
-                                            errorNode = testNode.ownerDocument
-                                                .createElement("error");
-                                            errorNode.setAttribute("name",
-                                                msg.data);
-                                            apf.xmldb.appendChild(testNode, errorNode);
-                                            return;
-                                        }
-                                    
-                                        var assertNode = 
-                                          apf.queryNode(testNode, "assert[@input=" 
-                                            + escapeXpathString(msg.data.input || "")
-                                            + " and @match="
-                                            + escapeXpathString(msg.data.match || "")
-                                            + "]");
-                                        
-                                        if (!assertNode) {
-                                            assertNode = testNode.ownerDocument
-                                                .createElement("assert");
-                                            assertNode.setAttribute("name",
-                                                msg.data.input + " == " + msg.data.match);
-                                            assertNode.setAttribute("input",
-                                                msg.data.input);
-                                            assertNode.setAttribute("match",
-                                                msg.data.match);
-                                            apf.xmldb.appendChild(testNode, assertNode);
-                                        }
-                                        
-                                        testpanel.setError(assertNode, "Got: "
-                                            + msg.data.measured);
-                                        break;
-                                    case 3: //LOG
-                                        testpanel.setLog(testNode, "command '" + msg.out + "'");
-                                        break;
-                                    case 4:
-                                        if (testNode.selectSingleNode("error|assert[@status=0]"))
-                                            testpanel.setError(testNode, "Test Failed");
-                                        else
-                                            testpanel.setPass(testNode);
-                                    
-                                        apf.xmldb.setAttribute(fileNode, "video", msg.video);
-                                        dgTestProject.reselect(); //Due to apf bug
-                                    
-                                        ide.removeEventListener("socketMessage", arguments.callee);
-                                        nextTest();
-                                        break;
-                                    case 5:
-                                        _self.jobId = msg.job;
-                                        if (_self.cancelOnJobId)
-                                            _self.stop();
-                                        break;
-                                }
-                            }
-                        });
-                        
-                        ide.send(JSON.stringify(data));
-                        
-                    }, function(){
-                        var nodes = apf.queryNodes(fileNode, "test[@status=0 or error]");
-
-                        if (_self.stopping) {
-                            testpanel.setError(fileNode, "Test Cancelled");
-                            return;
-                        }
-                        else if (nodes.length)
-                            testpanel.setError(fileNode, "failed " + (nodes.length) + " tests of " + tests.length);
-                        else
-                            testpanel.setPass(fileNode, "(" + tests.length + ")");
-                        
-                        _self.running = false;
-                        
-                        nextFile();
-                    });
-                }
-                else {
-                    testpanel.setError(fileNode,
-                        "Could not load file contents: " + extra.message);
-                    
-                    _self.running  = false;
-                    _self.stopping = false;
-                    
-                    if (!_self.stopping)
-                        nextFile();
-                    
-                }
-            });
-        });
-        
         ide.addEventListener("socketMessage", function(e) {
             if (_self.disabled) return;
             
@@ -362,6 +189,267 @@ module.exports = ext.register("ext/selenium/selenium", {
         });
         
         this.enable();
+    },
+    
+    run : function(fileNode, callback) {
+        var _self = this;
+        var path  = fileNode.getAttribute("path");
+        
+        _self.lastTestNode = fileNode;
+        
+        _self.running = true;
+        _self.stopping = false; //@todo this shouldn't happen
+        _self.jobId    = null;
+        
+        testpanel.setLog(fileNode, "reading");
+        
+        fs.readFile(path, function(data, state, extra){
+            if (state == apf.SUCCESS) {
+                try {
+                    var testObject = JSON.parse(data);
+                }
+                catch(e) {
+                    testpanel.setError(fileNode,
+                        "Invalid JSON. Could not parse file format: "
+                        + e.message);
+                    
+                    _self.running = false;
+                    callback();
+                    return;
+                }
+                
+                _self.runSeleniumDefinition(fileNode, testObject, callback);
+            }
+            else {
+                testpanel.setError(fileNode,
+                    "Could not load file contents: " + extra.message);
+                
+                _self.running  = false;
+                _self.stopping = false;
+                
+                if (!_self.stopping)
+                    callback();
+                
+            }
+        });
+    },
+    
+    actionLookup : {
+        "buttonDown" : "mousedown",
+        "buttonUp"   : "mouseup",
+        "doubleclick": "dblclick",
+        "type"       : "keydown"
+    },
+    
+    runSeleniumData : function(fileNode, testObject, callback) {
+        var _self    = this;
+        var sp       = new SeleniumPlayer();
+        sp.realtime  = false;
+        
+        _self.running = true;
+        _self.stopping = false; //@todo this shouldn't happen
+        _self.jobId    = null;
+        
+        var tests = [];
+        for (var prop in testObject) {
+            if (prop.match(/^test /i))
+                tests.push(prop);
+        }
+        
+        var nodes = fileNode.selectNodes("test");
+        if (!nodes.length) {
+            dgTestProject.$setLoadStatus(fileNode, "loaded");
+            _self.parseTestFile(data, fileNode);
+            nodes = fileNode.selectNodes("test");
+        }
+        
+        apf.asyncForEach(tests, function(name, nextTest, i){
+            if (_self.stopping) {
+                testpanel.setError(fileNode, "Test Cancelled");
+                _self.stopped();
+                return;
+            }
+            
+            var actions  = testObject[name];
+            var script   = sp.compile(actions);
+            var testNode = nodes[i];
+            var actionIndex = -1;
+            var assertIndex = -1;
+            
+            _self.lastTestNode = testNode;
+
+            testpanel.setLog(fileNode, "running test " + (i + 1) + " of " + tests.length);
+            testpanel.setLog(testNode, "connecting");
+
+            var data = {
+                command : "selenium",
+                argv    : ["selenium", script],
+                line    : "",
+                //cwd     : this.getCwd(),
+                path    : testObject.url,
+                close   : i == tests.length - 1,
+                job     : _self.jobId,
+                url     : testObject.url,
+                
+                where   : ddWhere.value,
+                os      : ddSeOS.value,
+                browser : ddSeBrowser.selected.getAttribute("value"),
+                version : ddSeBrowser.selected.getAttribute("version")
+            };
+
+            ide.addEventListener("socketMessage", function(e){
+                if (e.message.subtype == "selenium") {
+                    var msg = e.message.body;
+
+                    switch (msg.code) {
+                        case 0:
+                            testpanel.setError(testNode, msg.err);
+                            testpanel.setError(fileNode, msg.err);
+                            
+                            ide.removeEventListener("socketMessage", arguments.callee);
+                            if (_self.stopping)
+                                _self.stopped();
+                            else {
+                                _self.running = false;
+                                callback();
+                            }
+                            break;
+                        case 1: //PASS .data[input | match]
+                            var assertNode;
+                            var actions = testNode.selectNodes("action");
+                            if (actions.length) {
+                                var actionNode = actions[actionIndex];
+                                var asserts    = actionNode.selectNodes("assert");
+                                
+                                assertNode = asserts[++assertIndex];
+                                if (asserts[assertIndex + 1])
+                                    testpanel.setExecute(asserts[assertIndex + 1]);
+                            }
+                            else {
+                                assertNode = 
+                                  apf.queryNode(testNode, "assert[@input=" 
+                                    + escapeXpathString(msg.data.input || "")
+                                    + " and @match="
+                                    + escapeXpathString(msg.data.match || "")
+                                    + "]");
+    
+                                if (!assertNode) {
+                                    assertNode = testNode.ownerDocument
+                                        .createElement("assert");
+                                    assertNode.setAttribute("name",
+                                        msg.data.input + " == " + msg.data.match);
+                                    assertNode.setAttribute("input",
+                                        msg.data.input);
+                                    assertNode.setAttribute("match",
+                                        msg.data.match);
+                                    apf.xmldb.appendChild(testNode, assertNode);
+                                }
+                            }
+                            
+                            if (assertNode)
+                                testpanel.setPass(assertNode);
+                            break;
+                        case 2: //ERROR .data[input | match | measured]
+                            if (_self.stopping)
+                                return;
+                                
+                            var assertNode, actionNode, asserts;
+                            var actions = testNode.selectNodes("action");
+                            if (actions.length) {
+                                actionNode = actions[actionIndex];
+                                asserts    = actionNode.selectNodes("assert");
+                                assertNode = asserts[assertIndex];
+                            }
+                                
+                            if (typeof msg.data == "string") {
+                                errorNode = testNode.ownerDocument
+                                    .createElement("error");
+                                errorNode.setAttribute("name", msg.data);
+                                apf.xmldb.appendChild(testNode, errorNode, assertNode);
+                                return;
+                            }
+                            
+                            if (actions.length) {
+                                if (asserts[assertIndex + 1])
+                                    testpanel.setExecute(asserts[assertIndex + 1]);
+                            }
+                            else {
+                                assertNode = 
+                                  apf.queryNode(testNode, "assert[@input=" 
+                                    + escapeXpathString(msg.data.input || "")
+                                    + " and @match="
+                                    + escapeXpathString(msg.data.match || "")
+                                    + "]");
+                                
+                                if (!assertNode) {
+                                    assertNode = testNode.ownerDocument
+                                        .createElement("assert");
+                                    assertNode.setAttribute("name",
+                                        msg.data.input + " == " + msg.data.match);
+                                    assertNode.setAttribute("input",
+                                        msg.data.input);
+                                    assertNode.setAttribute("match",
+                                        msg.data.match);
+                                    apf.xmldb.appendChild(testNode, assertNode);
+                                }
+                            }
+                            
+                            if (assertNode)
+                                testpanel.setError(assertNode, "Got: "
+                                    + msg.data.measured);
+                            break;
+                        case 6: //CMD
+                            var actions = testNode.selectNodes("action");
+                            var actionNode = actions.length && actions[actionIndex+1];
+                            if (actionNode && actionNode.getAttribute("name") == (_self.actionLookup[msg.cmd] || msg.cmd)) {
+                                testpanel.setExecute(actionNode);
+                                actionIndex++;
+                            }
+                        case 3: //LOG
+                            testpanel.setLog(testNode, "command '" 
+                                + (msg.out || msg.cmd) + "'");
+                            break;
+                        case 4:
+                            if (testNode.selectSingleNode("error|assert[@status=0]"))
+                                testpanel.setError(testNode, "Test Failed");
+                            else
+                                testpanel.setPass(testNode);
+                        
+                            testpanel.setExecute();
+                        
+                            apf.xmldb.setAttribute(fileNode, "video", msg.video);
+                            dgTestProject.reselect(); //Due to apf bug
+                        
+                            ide.removeEventListener("socketMessage", arguments.callee);
+                            nextTest();
+                            break;
+                        case 5:
+                            _self.jobId = msg.job;
+                            if (_self.cancelOnJobId)
+                                _self.stop();
+                            break;
+                    }
+                }
+            });
+            
+            ide.send(JSON.stringify(data));
+            
+        }, function(){
+            var nodes = apf.queryNodes(fileNode, "test[@status=0 or error]");
+
+            if (_self.stopping) {
+                testpanel.setError(fileNode, "Test Cancelled");
+                return;
+            }
+            else if (nodes.length)
+                testpanel.setError(fileNode, "failed " + (nodes.length) + " tests of " + tests.length);
+            else
+                testpanel.setPass(fileNode, "(" + tests.length + ")");
+            
+            _self.running = false;
+            
+            callback();
+        });
     },
     
     stop : function(){

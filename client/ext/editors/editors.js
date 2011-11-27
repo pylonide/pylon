@@ -263,6 +263,7 @@ module.exports = ext.register("ext/editors/editors", {
         page.setAttribute("type", path);
         
         page.$editor = editor;
+        this.currentEditor = editor;
 
         this.beforeswitch({nextPage: page});
         this.afterswitch({nextPage: page, previousPage: {type: lastType}});

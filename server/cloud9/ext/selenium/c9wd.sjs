@@ -18,7 +18,7 @@ function wdInit(options, assert, callback) {
         
             browser.constructor.prototype[cmd] = function(){
                 if (cmd != "eval") 
-                    assert.log(cmd);
+                    assert.cmd(cmd);
                 
                 waitfor(err, res) {
                     var args = Array.prototype.slice.call(arguments);
@@ -36,176 +36,178 @@ function wdInit(options, assert, callback) {
         for (var cmd in browser) {
             __replace(cmd); //Inlining above code doesn't work
         }
-    }
-    
-    browser.constructor.prototype.decorated = true;
-
-    var jobId = browser.init(options.desired);
-    
-    assert.setJobId(jobId, browser);
-    
-    browser.get(options.url);
-    browser.setWaitTimeout(options.waitTimeout);
-    
-    //Wait until APF is loaded
-    browser.executeAsync("var cb = arguments[arguments.length - 1];
-        var _$loadTimer = setInterval(function(){
-            if (self.apf && apf.loaded) {
-                console.log('test');
-                clearInterval(_$loadTimer);
-                cb();
+        
+        browser.constructor.prototype.findApfElement = function (options) {
+            var elId = browser.eval("_$findApfElement(" + JSON.stringify(options) + ")");
+            if (!elId)
+                return;
+                
+            if (elId.message) {
+                assert.error('\n \033[31m%s \x1b[31m%t\x1b[37m'
+                    .replace('%s', "[ELEMENT NOT FOUND]")
+                    .replace('%t', elId.message), 
+                    elId.message);
+                return false;
             }
-        }, 10);");
-    
-    browser.execute("_$findApfElement = function (options){
-        var result;
-
-        if (options.eval) {
-            result = eval(options.eval);
-        }
-        else if (options.id) {
-            result = self[options.id];
-        }
-        else if (options.xpath) {
-            result = apf.document.selectSingleNode(options.xpath);
-        }
-    
-        if (!result) {
-            return {
-                message : 'Could not find AML Element ' + (options.id || options.xpath)
-            }
-        }
-    
-        if (options.xml) {
-            result = apf.xmldb.findHtmlNode(result.queryNode(options.xml), result);
             
-            if (!result) {
+            return elId.ELEMENT;
+        };
+        
+        browser.constructor.prototype.assert = function(input, match) {
+            var isEqual = browser.execute("try{
+                return _$equals(" + input + ", " + match + ");
+            } catch(e) {
                 return {
-                    message : 'Could not find XML Element ' + (options.xml)
+                    error   : true, 
+                    message : e.message
                 }
+            }");
+            
+            if (isEqual === false || isEqual.error) {
+                var value = isEqual.message || browser.eval(input);
+                
+                assert.error('\n \033[31m%s \x1b[31m%t\x1b[37m'
+                    .replace('%s', "[ASSERT FAILED]")
+                    .replace('%t', "'" 
+                        + input + "' expected '" + match + "' but got '"
+                        + (value) + "'"), 
+                    {
+                        input: input,
+                        match: match,
+                        measured: value
+                    });
+                return false;
             }
-        }
-        else {
-            if (options.property) {
-                result = result[options.property];
+            else if (isEqual === true) {
+                assert.pass('\n \033[32m%s \x1b[32m%t\x1b[37m'
+                    .replace('%s', "[ASSERT PASSED]")
+                    .replace('%t', "'" 
+                        + input + "' equals '" + match + "'"),
+                    {
+                        input: input,
+                        match: match
+                    });
+                return true;
             }
-            else {
-                result = result.$ext
-            }
+            else
+                return isEqual;
         }
         
-        if (options.htmlXpath) {
-            if (!apf.XPath)
-                apf.runXpath();
-    
-            result = apf.XPath.selectNodes(options.htmlXpath, result)[0];
+        browser.constructor.prototype.getDecoratedPage = function(url) {
+            browser.get(url);
             
-            if (!result) {
-                return {
-                    message : 'Could not find HTML Element (xpath) ' + (options.htmlXpath)
-                }
-            }
-        }
-    
-        if (options.html) {
-            if (options.html.dataType == apf.ARRAY) {
-                var temp, arr = options.html;
-                for (var i = 0; i < arr.length; i++) {
-                    if (!arr[i]) {
-                        break;
+            //Wait until APF is loaded
+            browser.executeAsync("var cb = arguments[arguments.length - 1];
+                var _$loadTimer = setInterval(function(){
+                    if (self.apf && apf.loaded) {
+                        console.log('test');
+                        clearInterval(_$loadTimer);
+                        cb();
                     }
-                    else if (temp = result.querySelector(arr[i])) {
-                        result = temp;
-                        break;
-                    }
+                }, 10);");
+            
+            browser.execute("_$findApfElement = function (options){
+                var result;
+        
+                if (options.eval) {
+                    result = eval(options.eval);
                 }
-            }
-            else {
-                result = result.querySelector(DOMSelector);
-                
+                else if (options.id) {
+                    result = self[options.id];
+                }
+                else if (options.xpath) {
+                    result = apf.document.selectSingleNode(options.xpath);
+                }
+            
                 if (!result) {
                     return {
-                        message : 'Could not find HTML Element ' + (options.html)
+                        message : 'Could not find AML Element ' + (options.id || options.xpath)
                     }
                 }
-            }
-        }
-    
-        return result;
-    }");
-    
-    browser.findApfElement = function (options) {
-        var elId = browser.eval("_$findApfElement(" + JSON.stringify(options) + ")");
-        if (!elId)
-            return;
             
-        if (elId.message) {
-            assert.error('\n \033[31m%s \x1b[31m%t\x1b[37m'
-                .replace('%s', "[ELEMENT NOT FOUND]")
-                .replace('%t', elId.message), 
-                elId.message);
-            return false;
-        }
-        
-        return elId.ELEMENT;
-    };
-    
-    browser.execute("_$equals = function (input, match){
-        if ('array|function|object'.indexOf(typeof input) == -1) {
-            return input == match;
-        }
-        else if (input.equals) {
-            return input.equals(match);
-        }
-        else {
-            for (var prop in input) {
-                if (!_$equals(input[prop], match[prop])) {
-                    return false;
+                if (options.xml) {
+                    result = apf.xmldb.findHtmlNode(result.queryNode(options.xml), result);
+                    
+                    if (!result) {
+                        return {
+                            message : 'Could not find XML Element ' + (options.xml)
+                        }
+                    }
                 }
-            }
-            return true;
-        }
-    }");
-    
-    browser.assert = function(input, match) {
-        var isEqual = browser.execute("try{
-            return _$equals(" + input + ", " + match + ");
-        } catch(e) {
-            return {
-                error   : true, 
-                message : e.message
-            }
-        }");
-        
-        if (isEqual === false || isEqual.error) {
-            var value = isEqual.message || browser.eval(input);
+                else {
+                    if (options.property) {
+                        result = result[options.property];
+                    }
+                    else {
+                        result = result.$ext
+                    }
+                }
+                
+                if (options.htmlXpath) {
+                    if (!apf.XPath)
+                        apf.runXpath();
             
-            assert.error('\n \033[31m%s \x1b[31m%t\x1b[37m'
-                .replace('%s', "[ASSERT FAILED]")
-                .replace('%t', "'" 
-                    + input + "' expected '" + match + "' but got '"
-                    + (value) + "'"), 
-                {
-                    input: input,
-                    match: match,
-                    measured: value
-                });
-            return false;
+                    result = apf.XPath.selectNodes(options.htmlXpath, result)[0];
+                    
+                    if (!result) {
+                        return {
+                            message : 'Could not find HTML Element (xpath) ' + (options.htmlXpath)
+                        }
+                    }
+                }
+            
+                if (options.html) {
+                    if (options.html.dataType == apf.ARRAY) {
+                        var temp, arr = options.html;
+                        for (var i = 0; i < arr.length; i++) {
+                            if (!arr[i]) {
+                                break;
+                            }
+                            else if (temp = result.querySelector(arr[i])) {
+                                result = temp;
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        result = result.querySelector(DOMSelector);
+                        
+                        if (!result) {
+                            return {
+                                message : 'Could not find HTML Element ' + (options.html)
+                            }
+                        }
+                    }
+                }
+            
+                return result;
+            }");
+            
+            browser.execute("_$equals = function (input, match){
+                if ('array|function|object'.indexOf(typeof input) == -1) {
+                    return input == match;
+                }
+                else if (input.equals) {
+                    return input.equals(match);
+                }
+                else {
+                    for (var prop in input) {
+                        if (!_$equals(input[prop], match[prop])) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            }");
         }
-        else if (isEqual === true) {
-            assert.pass('\n \033[32m%s \x1b[32m%t\x1b[37m'
-                .replace('%s', "[ASSERT PASSED]")
-                .replace('%t', "'" 
-                    + input + "' equals '" + match + "'"),
-                {
-                    input: input,
-                    match: match
-                });
-            return true;
-        }
-        else
-            return isEqual;
+        
+        browser.constructor.prototype.decorated = true;
     }
+
+    var jobId = browser.init(options.desired);
+    browser.setWaitTimeout(options.waitTimeout);
+    
+    assert.setJobId(jobId, browser);
     
     callback(null, browser, jobId);
 }

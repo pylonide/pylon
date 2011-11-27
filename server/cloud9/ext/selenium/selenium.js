@@ -100,8 +100,6 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                     });
                 }
                 else {
-//var args = ["var elId0 = browser.findApfElement({'id':'list1','xml':'item[1]','htmlXpath':'SPAN[1]/U[1]'});browser.moveTo(elId0, 27, 8);browser.buttonDown();var elId1 = browser.findApfElement({'id':'list2'});browser.moveTo(elId1, 117, 0);browser.buttonUp();browser.assert('list1.length', '3');browser.assert('list2.length', '2');hold(63);browser.assert('list1.selection', '[model24.queryNode(\"item[1]\")]');browser.assert('list1.value', '\"Item 2\"');hold(6);browser.assert('list2.selection', '[model26.queryNode(\"item[1]\")]');"];
-
                     var code = args.join(" ") 
                         + (message.close 
                             ? ";browser.close();browser.quit()"
@@ -188,6 +186,15 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                             err: null,
                             out: msg,
                             data: data
+                        });
+                    },
+                    cmd : function(data){
+                        _self.sendResult(0, message.command, {
+                            code: 6,
+                            argv: message.argv,
+                            err: null,
+                            out: "",
+                            cmd: data
                         });
                     },
                     log : function(data){

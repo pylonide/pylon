@@ -33,15 +33,6 @@
         </a:table>
     </a:bar>
     
-    <a:flashplayer id="flSeleniumMovie"
-      margin     = "4"
-      src        = "/static/ext/selenium/flowplayer-3.2.7.swf"
-      flashvars  = 'config=\{"playerId":"player","clip":\{"url":"[{dgTestProject.selected}::ancestor-or-self::file/@video]","autoPlay":false,"scaling":"fit"\}\}'
-      height     = "100" 
-      visible    = "{!![{dgTestProject.selected}::ancestor-or-self::file/@video]}"
-      bgcolor    = "000000"
-      allowfullscreen = "true"  />
-    
     <a:model id="mdlSelPlatforms">
         <data>
             <platform caption="Windows 2003 (XP)" value="XP">

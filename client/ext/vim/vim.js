@@ -67,7 +67,7 @@ var removeCommands = function removeCommands(editor, commands) {
 };
 
 var enableVim = function enableVim() {
-    if (editors.currentEditor) {
+    if (editors.currentEditor && editors.currentEditor.ceEditor) {
         var editor = editors.currentEditor.ceEditor.$editor;
 
         addCommands(editor, commands);
@@ -78,7 +78,7 @@ var enableVim = function enableVim() {
 };
 
 var disableVim = function() {
-    if (editors.currentEditor) {
+    if (editors.currentEditor && editors.currentEditor.ceEditor) {
         var editor = editors.currentEditor.ceEditor.$editor;
 
         removeCommands(editor, commands);

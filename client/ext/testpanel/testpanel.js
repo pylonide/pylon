@@ -34,7 +34,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         }), navbar.lastChild.previousSibling);
 
         var _self = this;
-        var model = this.model = new apf.model().load("<files />");
+        this.model = new apf.model().load("<files />");
 
         btn.addEventListener("mousedown", function(e){
             var value = this.value;
@@ -48,16 +48,27 @@ module.exports = ext.register("ext/testpanel/testpanel", {
             panels.initPanel(_self);
             _self.enable(true);
         });
-        
-        apf.document.body.appendChild(new apf.state({
-            id : "stTestRun"
-        }));
+
+        //ide.addEventListener("init.testrunner", function(){
+            apf.document.body.appendChild(new apf.state({
+                id : "stTestRun"
+            }));
+            
+            apf.document.body.appendChild(new apf.menu({
+                id : "mnuRunSettings",
+                pinned : "true"
+            }));
+            
+            //ide.removeEventListener("init.testrunner", arguments.callee);
+        //});
     },
 
     init : function() {
+        var _self  = this;
         this.panel = winTestPanel;
+        
+        ide.dispatchEvent("init.testrunner");
 
-        var _self = this;
         colLeft.appendChild(winTestPanel);
         
         mnuFilter.onitemclick = function(e){
@@ -160,6 +171,25 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         
         mnuRunSettings.hide();
         
+        if (!this.statusColumn) {
+            colTestProject.setAttribute("width", "60%");
+            
+            this.statusColumn = new apf.BindingColumnRule({
+                caption : "Status", 
+                width   : "40%", 
+                value   : "if ([@status] === '0')\
+                    <span style='color:red'>\\[[@status-message]\\]</span>\
+                else if ([@status] == '1')\
+                    <span style='color:green'>\\[PASS{[@status-message] and ' [@status-message]'}\\]</span>\
+                else if ([@status] == '-1')\
+                    <span>\\[{[@status-message].uCaseFirst()}\\]</span>\
+                else\
+                    '';"
+            })
+            dgUiRecorder.appendChild(this.statusColumn);
+        }
+        
+        
         var finish = function(){
             stTestRun.deactivate();
         }
@@ -246,6 +276,19 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     setLog : function(xmlNode, msg){
         apf.xmldb.setAttribute(xmlNode, "status", -1);
         apf.xmldb.setAttribute(xmlNode, "status-message", msg || "");
+    },
+    lastExecuteNode : null,
+    setExecute : function(xmlNode, msg){
+        if (xmlNode) {
+            apf.xmldb.setAttribute(xmlNode, "status", 5);
+            apf.xmldb.setAttribute(xmlNode, "status-message", msg || "");
+        }
+        if (this.lastExecuteNode 
+          && this.lastExecuteNode.getAttribute("status") == 5) {
+            apf.xmldb.setAttribute(this.lastExecuteNode, "status", 1);
+            apf.xmldb.setAttribute(this.lastExecuteNode, "status-message", "");
+        }
+        this.lastExecuteNode = xmlNode;
     },
     
     showSubmodules : true,

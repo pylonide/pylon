@@ -481,7 +481,7 @@ module.exports = ext.register("ext/zen/zen", {
             return;
         
         var classNames = ace_editor.getAttribute("class").split(" ");
-        for (var cn in classNames) {
+        for (var cn = 0; cn < classNames.length; cn++) {
             if (classNames[cn].indexOf("ace-") === 0) {
                 var selectorString = "." + classNames[cn] + " .ace_scroller";
                 var bgColor = apf.getStyleRule(selectorString, "background-color");

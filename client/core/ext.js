@@ -84,8 +84,13 @@ module.exports = ext = {
         this.extLut[path] = oExtension;
         this.extensions.push(oExtension);
 
-        if (oExtension.hook)
+        if (oExtension.hook) {
             oExtension.hook();
+            
+            ide.dispatchEvent("hook." + oExtension.path, {
+                ext : oExtension
+            });
+        }
 
         return oExtension;
     },

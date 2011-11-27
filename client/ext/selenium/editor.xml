@@ -15,9 +15,9 @@
                       icon     = "run.png"
                       caption  = "Run"
                       disabled = "{stTestRecord.active or stTestRun.active}"
-                      onclick  = "require('ext/testpanel/testpanel').run(dgUiRecorder.getSelection());"
+                      onclick  = "require('ext/selenium/editor').run();"
                       margin   = "0 0 0 4" 
-                      submenu2  = "mnuRunSettings" />
+                      submenu  = "mnuRunSettings" />
                     
                     <a:button id="btnUiRecordRemove" skin="c9-toolbarbutton" disabled="{!dgUiRecorder.selected}" onclick="dgUiRecorder.remove()">Remove</a:button>
                     <a:button id="btnUiRecordAddAssert" skin="c9-toolbarbutton" disabled="{'action|assert'.indexOf(dgUiRecorder.selected and dgUiRecorder.selected.localName) == -1}" onclick="require('ext/selenium/editor').startAddAssert()">Add Assertion</a:button>
@@ -28,7 +28,7 @@
                             vboxUiRecorder.removeAttribute('flex');
                         }
                         else {
-                            vboxUiRecorder.lastWidth = vboxUiRecorder.width;
+                            vboxUiRecorder.lastWidth = vboxUiRecorder.$ext.offsetWidth;
                             vboxUiRecorder.removeAttribute('width');
                             vboxUiRecorder.setAttribute('flex', 2);
                         }
@@ -43,18 +43,18 @@
         
             <a:bar skin="basic" flex="1">
                 <a:datagrid 
-                  id   = "dgUiRecorder"
-                  options = "size"
-                  anchors = "0 0 0 0"
-                  each = "[action|assert|test]"
+                  id          = "dgUiRecorder"
+                  options     = "size"
+                  anchors     = "0 0 0 0"
+                  each        = "[action|assert|test]"
                   multiselect = "true"
-                  class = "noscrollbar"
+                  class       = "noscrollbar"
                   startcollapsed = "false"
                   contextmenu = "mnuUiRecorder"
                   onmouseover = "require('ext/selenium/editor').highlightElement(event)"
                   onmouseout  = "require('ext/selenium/editor').hideHighlightElements(event)">
-                    <a:column caption="Name" width="140" value="[@name]" tree="1" check2="1" editor="textbox" skin="tbsimple" class="tbtree" />
-                    <a:column caption="Value" width="100%" value="[@value]" editor="textbox" skin="tbsimple" />
+                    <a:column caption="Name" width="140" icon="{require('ext/selenium/editor').getIcon([@status])}" value="[@name]" tree="1" check2="1" editor="textbox" skin="tbsimple" class="tbtree" />
+                    <a:column id="colUiRecorder" caption="Value" width="100%" value="[@value]" editor="textbox" skin="tbsimple" />
                     
                     <a:css match="[test]" value="testhead" />
                     
