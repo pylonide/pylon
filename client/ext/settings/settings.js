@@ -9,8 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
-var fs = require("ext/filesystem/filesystem");
 var markup = require("text!ext/settings/settings.xml");
 var template = require("text!ext/settings/template.xml");
 var panels = require("ext/panels/panels");

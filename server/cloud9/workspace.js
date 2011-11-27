@@ -1,4 +1,4 @@
-var lang = require("pilot/lang");
+var util = require("./util");
 
 var Workspace = module.exports = function(config) {
     if (config)
@@ -30,7 +30,7 @@ var Workspace = module.exports = function(config) {
     };
 
     this.getServerExclude = function(user) {
-        return lang.arrayToMap(user.getPermissions().server_exclude.split("|"));
+        return util.arrayToMap(user.getPermissions().server_exclude.split("|"));
     };
 
     this.execHook = function(hook, user /* varargs */) {

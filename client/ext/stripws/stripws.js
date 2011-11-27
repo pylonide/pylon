@@ -12,9 +12,7 @@ define(function (require, exports, module) {
 
 var ext = require("core/ext");
 var ide = require("core/ide");
-var canon = require("pilot/canon");
 var editors = require("ext/editors/editors");
-var Range = require("ace/range").Range;
 var settings = require("text!ext/stripws/settings.xml");
 var extSettings = require("ext/settings/settings");
 
@@ -26,7 +24,7 @@ var strip = module.exports.strip = function () {
         return;
 
     var editor = editors.currentEditor.ceEditor.$editor;
-    var session = editor.getSession()
+    var session = editor.getSession();
     var source = session.getValue();
     var selection = session.getSelection();
     var result = source.replace(RE_WS, "\n");

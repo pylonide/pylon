@@ -26,7 +26,8 @@ module.exports = ext.register("ext/save/save", {
 
     commands     : {
         "quicksave": {hint: "save the currently active file to disk"},
-        "saveas": {hint: "save the file to disk with a different filename"}
+        "saveas": {hint: "save the file to disk with a different filename"},
+        "reverttosaved": {hint: "downgrade the currently active file to the last saved version"}
     },
     hotitems    : {},
     nodes       : [],
@@ -57,8 +58,8 @@ module.exports = ext.register("ext/save/save", {
                             if (resetUndo)
                                 winCloseConfirm.page.$at.undo(-1);
                             delete winCloseConfirm.page;
-                        }
-                        
+                        };
+
                         if (winCloseConfirm.all == -200)
                             _self.quicksave(winCloseConfirm.page, f);
                         else
@@ -109,9 +110,9 @@ module.exports = ext.register("ext/save/save", {
                 onclick : this.quicksave.bind(this),
                 disabled : "{!!!tabEditors.activepage}"
             }), ide.mnuFile.firstChild),
-            
+
             ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
-            
+
             ide.mnuFile.insertBefore(new apf.item({
                 caption : "Revert to Saved",
                 onclick : function(){
@@ -121,8 +122,8 @@ module.exports = ext.register("ext/save/save", {
             }), ide.mnuFile.firstChild)
         );
 
-        this.hotitems["quicksave"] = [saveItem];
-        this.hotitems["saveas"]    = [saveAsItem];
+        this.hotitems.quicksave = [saveItem];
+        this.hotitems.saveas = [saveAsItem];
     },
 
     init : function(amlNode){
@@ -140,7 +141,7 @@ module.exports = ext.register("ext/save/save", {
             });
             btnSaveYes.addEventListener("click", function(){
                 winCloseConfirm.all = -200;
-                winCloseConfirm.hide()
+                winCloseConfirm.hide();
             });
             btnSaveNo.addEventListener("click", function(){
                 winCloseConfirm.all = 0;
@@ -150,7 +151,7 @@ module.exports = ext.register("ext/save/save", {
                 winCloseConfirm.all = -100;
                 winCloseConfirm.hide();
             });
-        }
+        };
 
         winSaveAs.addEventListener("hide", function(){
             if (winSaveAs.page) {
@@ -160,7 +161,7 @@ module.exports = ext.register("ext/save/save", {
             }
         });
     },
-    
+
     reverttosaved : function(){
         ide.dispatchEvent("reload", {doc : tabEditors.getPage().$doc});
     },
@@ -224,7 +225,7 @@ module.exports = ext.register("ext/save/save", {
 
         var doc  = page.$doc;
         var node = doc.getNode();
-        
+
         if (node.getAttribute("newfile")){
             this.saveas(page, callback);
             return;
@@ -272,54 +273,119 @@ module.exports = ext.register("ext/save/save", {
 
             panel.setAttribute("caption", "Saved file " + path);
             ide.dispatchEvent("afterfilesave", {node: node, doc: doc, value: value});
-            
+
             apf.xmldb.removeAttribute(node, "saving");
             apf.xmldb.removeAttribute(node, "new");
             apf.xmldb.setAttribute(node, "modifieddate", apf.queryValue(extra.data, "//d:getlastmodified"));
+
             if (_self.saveBuffer[path]) {
                 delete _self.saveBuffer[path];
                 _self.quicksave(page);
             }
-
-            //setTimeout(function(){
-            //    if (panel.caption == "Saved file " + path)
-            //        panel.removeAttribute("caption");
-            //}, 2500);
         });
-        
+
         var at = page.$at
         at.undo_ptr = at.$undostack[at.$undostack.length-1];
         page.$at.dispatchEvent("afterchange");
         return false;
     },
 
-    choosePath : function(path, select) {
-        var _self = this;
+    _saveAsNoUI: function(page, path, newPath) {
+        if (!page || !path)
+            return;
 
+        newPath = newPath || path;
+
+        var file = page.$model.data;
+        var saving = parseInt(file.getAttribute("saving"), 10);
+
+        if (saving) {
+            this.saveBuffer[path] = page;
+            return;
+        }
+        apf.xmldb.setAttribute(node, "saving", "1");
+
+        var self = this;
+        var panel = sbMain.firstChild;
+        var value = page.$doc.getValue();
+        fs.saveFile(newPath, value, function(value, state, extra) {
+            if (state != apf.SUCCESS) {
+                util.alert("Could not save document",
+                  "An error occurred while saving this document",
+                  "Please see if your internet connection is available and try again.");
+            }
+            panel.setAttribute("caption", "Saved file " + newPath);
+
+            var model = page.$model;
+            var node = model.getXml();
+            var doc = page.$doc;
+
+            if (path !== newPath || node.getAttribute("newfile") === 1) {
+                model.load(node);
+                file = model.data;
+                fs.beforeRename(file, null, newPath);
+                doc.setNode(file);
+            }
+
+            apf.xmldb.removeAttribute(node, "saving");
+
+            if (self.saveBuffer[path]) {
+                delete self.saveBuffer[path];
+                self._saveAsNoUI(page);
+            }
+
+            if (file.getAttribute("newfile") === 1) {
+                apf.xmldb.removeAttribute(file, "newfile");
+                apf.xmldb.removeAttribute(file, "changed");
+                var xpath = newPath.replace(new RegExp("\/" + cloud9config.davPrefix.split("/")[1]), "")
+                                    .replace(new RegExp("\/" + file.getAttribute("name")), "")
+                                    .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
+                                    .replace(/\/node\(\)\[@name="workspace"\]/, "")
+                                    .replace(/\//, "");
+                if (xpath) {
+                    var oNode  = trFiles.queryNode(xpath);
+                    if (oNode && !trFiles.queryNode('//node()[@path="' + newPath + '"]'))
+                        apf.xmldb.appendChild(oNode, file);
+                }
+            }
+
+            ide.dispatchEvent("afterfilesave", {
+                node: node,
+                doc: doc,
+                value: value
+            });
+        });
+
+        var at = page.$at
+        at.undo_ptr = at.$undostack[at.$undostack.length-1];
+        page.$at.dispatchEvent("afterchange");
+    },
+
+    choosePath : function(path, select) {
         fs.list((path.match(/(.*)\/[^/]*/) || {})[1] || path, function (data, state, extra) {
             if (new RegExp("<folder.*" + path + ".*>").test(data)) {
                 path  = path.replace(new RegExp('\/' + cloud9config.davPrefix.split('/')[1]), '')
                             .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
                             .replace(/\/node\(\)\[@name="workspace"\]/, "")
                             .replace(/\//, "");
-                // console.log(path);
+
                 trSaveAs.expandList([path], function() {
                     var node = trSaveAs.getModel().data.selectSingleNode(path);
-
                     trSaveAs.select(node);
                 });
-            } else
-                _self.saveFileAs();
+            }
         });
     },
 
+    // Function called from the 'Save As' menu dialog, and from the C9 CLI.
+    // It saves a file with a different name, involving UI.
     saveas : function(page, callback){
         if (!page || !page.$at)
             page = tabEditors.getPage();
 
         if (!page)
             return;
-        
+
         var path = page ? page.$model.data.getAttribute("path") : false;
         if (!path)
             return;
@@ -335,19 +401,19 @@ module.exports = ext.register("ext/save/save", {
                 }
             });
         }
-        
+
         var fooPath = path.split('/');
         txtSaveAs.setValue(fooPath.pop());
         lblPath.setProperty('caption', fooPath.join('/') + '/');
         winSaveAs.show();
     },
 
-    saveFileAs : function(page) {
-        var _self   = this,
-            page    = page || tabEditors.getPage(),
-            file    = page.$model.data,
-            path    = file.getAttribute("path"),
-            newPath = lblPath.getProperty('caption') + txtSaveAs.getValue();
+    // Called by the UI 'confirm' button in winSaveAs.
+    confirmSaveAs : function(page) {
+        page = page || tabEditors.getPage();
+        var file = page.$model.data;
+        var path = file.getAttribute("path");
+        var newPath = lblPath.getProperty('caption') + txtSaveAs.getValue();
 
         // check if we're already saving!
         var saving = parseInt(file.getAttribute("saving"), 10);
@@ -357,73 +423,18 @@ module.exports = ext.register("ext/save/save", {
         }
         apf.xmldb.setAttribute(node, "saving", "1");
 
-        function onconfirm() {
-            var panel   = sbMain.firstChild,
-                value   = page.$doc.getValue();
-
-            // console.log(value);
+        var self = this;
+        var doSave = function() {
             winConfirm.hide();
             winSaveAs.hide();
-
-            panel.setAttribute("caption", "Saving file " + newPath);
-            fs.saveFile(newPath, value, function(value, state, extra) {
-                if (state != apf.SUCCESS) {
-                   util.alert("Could not save document",
-                              "An error occurred while saving this document",
-                              "Please see if your internet connection is available and try again.");
-                }
-                panel.setAttribute("caption", "Saved file " + newPath);
-                
-                var model = page.$model,
-                    node  = model.getXml(),
-                    doc   = page.$doc;
-                    
-                if (path != newPath || node.getAttribute("newfile") == 1) {
-                    model.load(node);
-                    file = model.data;
-                    fs.beforeRename(file, null, newPath);
-                    doc.setNode(file);
-                }
-
-                apf.xmldb.removeAttribute(node, "saving");
-
-                if (_self.saveBuffer[path]) {
-                    delete _self.saveBuffer[path];
-                    _self.saveFileAs(page);
-                }
-
-                if (file.getAttribute("newfile") == 1) {
-                    apf.xmldb.removeAttribute(file, "newfile");
-                    apf.xmldb.removeAttribute(file, "changed");
-                    var xpath = newPath.replace(new RegExp("\/" + cloud9config.davPrefix.split("/")[1]), "")
-                                        .replace(new RegExp("\/" + file.getAttribute("name")), "")
-                                        .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                                        .replace(/\/node\(\)\[@name="workspace"\]/, "")
-                                        .replace(/\//, "");
-                    if (xpath) {
-                        var oNode  = trFiles.getModel().data.firstChild.selectSingleNode(xpath);
-                        if (oNode)
-                            apf.xmldb.appendChild(oNode, file);
-                    }
-                }
-                //setTimeout(function () {
-                //  if (panel.caption == "Saved file " + newPath)
-                //       panel.removeAttribute("caption");
-                //}, 2500);
-
-                ide.dispatchEvent("afterfilesave", {node: node, doc: doc, value: value});
-            });
-            
-            var at = page.$at
-            at.undo_ptr = at.$undostack[at.$undostack.length-1];
-            page.$at.dispatchEvent("afterchange");
+            self._saveAsNoUI(page, path, newPath);
         };
 
-        if (path != newPath || file.getAttribute("newfile") == 1) {
+        if (path !== newPath || file.getAttribute("newfile") === 1) {
             fs.exists(newPath, function (exists) {
                 if (exists) {
-                    var name    = newPath.match(/\/([^/]*)$/)[1],
-                        folder  = newPath.match(/\/([^/]*)\/[^/]*$/)[1];
+                    var name = newPath.match(/\/([^/]*)$/)[1];
+                    var folder = newPath.match(/\/([^/]*)\/[^/]*$/)[1];
 
                     util.confirm(
                         "Are you sure?",
@@ -431,14 +442,16 @@ module.exports = ext.register("ext/save/save", {
                         "A file or folder with the same name already exists in the folder "
                         + folder + ". "
                         + "Replacing it will overwrite it's current contents.",
-                        onconfirm);
+                        doSave);
                 }
-                else
-                    onconfirm();
+                else {
+                    doSave();
+                }
             });
         }
-        else
-            onconfirm();
+        else {
+            doSave();
+        }
     },
 
     expandTree : function(){

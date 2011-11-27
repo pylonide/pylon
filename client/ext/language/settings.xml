@@ -1,0 +1,11 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <div class="header">
+        <span></span><div>Language Support</div>
+    </div>
+    <a:checkbox class="underlined" label="Enable JSHint"
+        checked="{[language/@jshint] != '' ? [language/@jshint] : 'true'}"
+        value="[language/@jshint]" onclick="require('ext/language/language').setJSHint()"/>
+    <a:checkbox class="underlined" label="Variable instance highlighting"
+        checked="{[language/@instanceHighlight] != '' ? [language/@instanceHighlight] : 'true'}"
+        value="[language/@instanceHighlight]" onclick="require('ext/language/language').setInstanceHighlight()"/>
+</a:application>

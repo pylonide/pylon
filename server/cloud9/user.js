@@ -1,5 +1,5 @@
 var sys = require("sys");
-var lang = require("pilot/lang");
+var util = require("./util");
 var EventEmitter = require("events").EventEmitter;
 
 var User = function (uid, permissions, data) {
@@ -60,7 +60,7 @@ User.VISITOR_PERMISSIONS = {
 (function() {
     
     this.setPermissions = function(permissions) {
-        this.$server_exclude = lang.arrayToMap(permissions.server_exclude.split("|"));
+        this.$server_exclude = util.arrayToMap(permissions.server_exclude.split("|"));
         if (this.permissions === permissions)
             return;
         

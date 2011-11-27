@@ -62,7 +62,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         var node = tree.selected;
         if (!node)
             node = tree.xmlRoot.selectSingleNode("folder");
-        if (node.getAttribute("type") != "folder")
+        if (node.getAttribute("type") != "folder" && node.tagName != "folder")
             node = node.parentNode;
 
         if (this.webdav) {
@@ -92,7 +92,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
                         tree.slideOpen(null, node, true, function(data, flag, extra){
                             var folder;
-                            /* empty data means it didn't trigger <insert> binding, therefore the node was expanded already */
+                            // empty data means it didn't trigger <insert> binding, 
+                            // therefore the node was expanded already
                             if (!data)
                                 tree.add(apf.getXml(strXml), node);
 
@@ -117,11 +118,14 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             node = trFiles.selected;
             if (!node)
                 node = trFiles.xmlRoot.selectSingleNode("folder");
-            if (node.getAttribute("type") != "folder")
+            if (node.getAttribute("type") != "folder" && node.tagName != "folder")
                 node = node.parentNode;
         }
         else {
-            node = apf.getXml('<file newfile="1" type="file" size="" changed="1" name="Untitled.txt" contenttype="text/plain; charset=utf-8" modifieddate="" creationdate="" lockable="false" hidden="false" executable="false"></file>');
+            node = apf.getXml('<file newfile="1" type="file" size="" changed="1" '
+                + 'name="Untitled.txt" contenttype="text/plain; charset=utf-8" '
+                + 'modifieddate="" creationdate="" lockable="false" hidden="false" '
+                + 'executable="false"></file>');
         }
 
         if (this.webdav) {
@@ -143,9 +147,11 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 if (exists) {
                     filename = prefix + "." + index++;
                     _self.exists(path + "/" + filename, test);
-                } else {
-                    if(!newFile) {
-                        var file, both = 0;
+                }
+                else {
+                    if (!newFile) {
+                        var file
+                        var both = 0;
                         function done(){
                             if (both == 2) {
                                 file = apf.xmldb.appendChild(node, file);
@@ -161,13 +167,19 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
                         _self.webdav.exec("create", [path, filename], function(data) {
                             _self.webdav.exec("readdir", [path], function(data) {
-                                // @todo: in case of error, show nice alert dialog
-                                if (data instanceof Error)
-                                    throw Error;
+                                if (data instanceof Error) {
+                                    // @todo: should we display the error message in the Error object too?
+                                    return util.alert("Error", "File '" + filename + "' could not be created",
+                                        "An error occurred while creating a new file, please try again.");
+                                }
 
-                                var strXml = data.match(new RegExp(("(<file path='" + path +
-                                    "/" + filename + "'.*?>)").replace(/\//g, "\\/")))[1];
-                                file = apf.getXml(strXml);
+                                var m = data.match(new RegExp(("(<file path='" + path +
+                                    "/" + filename + "'.*?>)").replace(/\//g, "\\/")))
+                                if (!m) {
+                                    return util.alert("Error", "File '" + filename + "' could not be created",
+                                        "An error occurred while creating a new file, please try again.");
+                                }
+                                file = apf.getXml(m[1]);
 
                                 both++;
                                 done();
@@ -175,9 +187,9 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         });
                     }
                     else {
-                        node.setAttribute('name', filename);
-                        node.setAttribute('path', path + '/' + filename);
-                        ide.dispatchEvent("openfile", {doc: ide.createDocument(node), type:'newfile'});
+                        node.setAttribute("name", filename);
+                        node.setAttribute("path", path + "/" + filename);
+                        ide.dispatchEvent("openfile", {doc: ide.createDocument(node), type:"newfile"});
                     }
                 }
             };
@@ -217,7 +229,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
         for (var i = 0; i < length; ++i) {
             var childNode = childNodes[i];
-            if(!childNode)
+            if(!childNode || childNode.nodeType != 1)
                 continue;
             
             // The 'name' variable is redeclared here for some fucked up reason.
@@ -244,7 +256,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         // Check the newpath doesn't exists first
         // if (tree.getModel().queryNode("//node()[@path=\""+ newpath +"\"]")) {
         //             webdav.$undoFlag = true;
-        //             util.alert("Error", "Unable to move", "Couldn't move to this destination because there's already a node with the same name", function() {
+        //             util.alert("Error", "Unable to move", "Couldn't move to this "
+        //               + "destination because there's already a node with the same name", function() {
         //                 tree.getActionTracker().undo();
         //                 tree.enable();
         //             });
@@ -314,7 +327,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             console.log("ONLINE, INITIAL DATA IN");
             ide.removeEventListener("afteronline", arguments.callee);
         });*/
-        _self.model.load("<data><folder type='folder' name='" + ide.projectName + "' path='" + ide.davPrefix + "' root='1'/></data>");
+        _self.model.load("<data><folder type='folder' name='" + ide.projectName 
+            + "' path='" + ide.davPrefix + "' root='1'/></data>");
 
         var dav_url = location.href.replace(location.pathname + location.hash, "") + ide.davPrefix;
         this.webdav = new apf.webdav({
@@ -405,7 +419,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 fs.readFile(path, readfileCallback);
             }
             else {
-                doc.setValue('');
+                doc.setValue("");
                 ide.dispatchEvent("afteropenfile", {doc: doc, node: node});
             }
         });
