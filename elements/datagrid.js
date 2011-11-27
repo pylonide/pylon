@@ -843,7 +843,7 @@ apf.datagrid = function(struct, tagName){
         var _self = this, id, cell;
         while (!(id = htmlNode.getAttribute(apf.xmldb.htmlIdTag)) || id.indexOf("|") == -1) {
             htmlNode = (cell = htmlNode).parentNode;
-            if (htmlNode.nodeType != 1)
+            if (!htmlNode || htmlNode.nodeType != 1)
                 return;
         }
         

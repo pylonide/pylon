@@ -882,6 +882,23 @@ apf.BaseTree = function(){
     });
     // #endif
     
+    this.scrollIntoView = function(sNode, onTop) {
+        var selHtml = apf.xmldb.getHtmlNode(sNode, this), top;
+        if (!selHtml)
+            return;
+            
+        top     = apf.getAbsolutePosition(selHtml, this.$container)[1];
+        
+        if (onTop) {
+            if (top <= this.$container.scrollTop)
+                this.$container.scrollTop = top;
+        }
+        else {
+            if (top > this.$container.scrollTop + this.$container.offsetHeight)
+                this.$container.scrollTop = top - this.$container.offsetHeight + selHtml.offsetHeight;
+        }
+    }
+    
     // #ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode,
