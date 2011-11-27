@@ -182,7 +182,8 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                     testpanel.setError(fileNode, "Failed " + (nodes.length) 
                         + " tests of " + fileNode.selectNodes("test").length);
                 else
-                    testpanel.setPass(fileNode, "(" + tests.length + ")");
+                    testpanel.setPass(fileNode, 
+                        "(" + fileNode.selectNodes("test").length + ")");
             }
             
             function parseMessage(message){

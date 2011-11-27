@@ -218,7 +218,7 @@ module.exports = ext.register("ext/selenium/selenium", {
                     return;
                 }
                 
-                _self.runSeleniumDefinition(fileNode, testObject, callback);
+                _self.runSeleniumData(fileNode, testObject, callback, data);
             }
             else {
                 testpanel.setError(fileNode,
@@ -238,10 +238,10 @@ module.exports = ext.register("ext/selenium/selenium", {
         "buttonDown" : "mousedown",
         "buttonUp"   : "mouseup",
         "doubleclick": "dblclick",
-        "type"       : "keydown"
+        "type"       : "keypress"
     },
     
-    runSeleniumData : function(fileNode, testObject, callback) {
+    runSeleniumData : function(fileNode, testObject, callback, data) {
         var _self    = this;
         var sp       = new SeleniumPlayer();
         sp.realtime  = false;
@@ -315,6 +315,7 @@ module.exports = ext.register("ext/selenium/selenium", {
                             }
                             break;
                         case 1: //PASS .data[input | match]
+
                             var assertNode;
                             var actions = testNode.selectNodes("action");
                             if (actions.length) {
@@ -352,20 +353,24 @@ module.exports = ext.register("ext/selenium/selenium", {
                         case 2: //ERROR .data[input | match | measured]
                             if (_self.stopping)
                                 return;
-                                
+
                             var assertNode, actionNode, asserts;
                             var actions = testNode.selectNodes("action");
-                            if (actions.length) {
+                            if (actions.length && actionIndex > -1) {
                                 actionNode = actions[actionIndex];
                                 asserts    = actionNode.selectNodes("assert");
-                                assertNode = asserts[assertIndex];
+                                assertNode = asserts[++assertIndex];
                             }
                                 
                             if (typeof msg.data == "string") {
-                                errorNode = testNode.ownerDocument
+                                var errorNode = testNode.ownerDocument
                                     .createElement("error");
                                 errorNode.setAttribute("name", msg.data);
-                                apf.xmldb.appendChild(testNode, errorNode, assertNode);
+                                errorNode.setAttribute("status", 0);
+                                errorNode = apf.xmldb.appendChild(testNode, errorNode, assertNode);
+                                ide.dispatchEvent("test.pointer.selenium", {
+                                    xmlNode: errorNode
+                                });
                                 return;
                             }
                             
@@ -404,6 +409,7 @@ module.exports = ext.register("ext/selenium/selenium", {
                             if (actionNode && actionNode.getAttribute("name") == (_self.actionLookup[msg.cmd] || msg.cmd)) {
                                 testpanel.setExecute(actionNode);
                                 actionIndex++;
+                                assertIndex = -1;
                             }
                         case 3: //LOG
                             testpanel.setLog(testNode, "command '" 
@@ -482,6 +488,8 @@ module.exports = ext.register("ext/selenium/selenium", {
         this.stopping = false;
         
         testpanel.stopped();
+        
+        ide.dispatchEvent("selenium.stopped");
     },
     
     createAndOpenTest : function(){

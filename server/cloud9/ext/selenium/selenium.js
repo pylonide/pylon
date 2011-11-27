@@ -157,9 +157,8 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                         browserName: message.browser,
                         version: message.version,
                         platform: message.os
-                    },
+                    }
                     //waitTimeout: 2000,
-                    url : message.url
                 };
                 if (message.where == "sauce") {
                     options.where     = "sauce";
@@ -189,6 +188,7 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                         });
                     },
                     cmd : function(data){
+                        console.log("cmd:" + data);
                         _self.sendResult(0, message.command, {
                             code: 6,
                             argv: message.argv,

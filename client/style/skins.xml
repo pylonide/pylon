@@ -2369,7 +2369,11 @@
             border-top : 4px solid #c3c3c3;
             /*background : #ddd;*/
         }
-
+        
+        .datagrid .records .current_execution span {
+            background : #d4e0c6;
+        }
+        
         .datagrid .records .selected, .datagrid .records .selected span{
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #CECECE),color-stop(1, #DEDEDE));
             background: -moz-linear-gradient(center bottom,#CECECE 0%,#DEDEDE 100%);

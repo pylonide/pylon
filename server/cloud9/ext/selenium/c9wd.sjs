@@ -1,5 +1,6 @@
 exports.init = function(webdriver){
 
+var x = 0;
 function wdInit(options, assert, callback) {
     var browser = webdriver.remote(
         options.host, 
@@ -38,7 +39,7 @@ function wdInit(options, assert, callback) {
         }
         
         browser.constructor.prototype.findApfElement = function (options) {
-            var elId = browser.eval("_$findApfElement(" + JSON.stringify(options) + ")");
+            var elId = this.eval("_$findApfElement(" + JSON.stringify(options) + ")");
             if (!elId)
                 return;
                 
@@ -54,7 +55,7 @@ function wdInit(options, assert, callback) {
         };
         
         browser.constructor.prototype.assert = function(input, match) {
-            var isEqual = browser.execute("try{
+            var isEqual = this.execute("try{
                 return _$equals(" + input + ", " + match + ");
             } catch(e) {
                 return {
@@ -64,8 +65,8 @@ function wdInit(options, assert, callback) {
             }");
             
             if (isEqual === false || isEqual.error) {
-                var value = isEqual.message || browser.eval(input);
-                
+                var value = isEqual.message || this.eval(input);
+            
                 assert.error('\n \033[31m%s \x1b[31m%t\x1b[37m'
                     .replace('%s', "[ASSERT FAILED]")
                     .replace('%t', "'" 
@@ -94,11 +95,14 @@ function wdInit(options, assert, callback) {
         }
         
         browser.constructor.prototype.getDecoratedPage = function(url) {
-            browser.get(url);
+            this.get(url);
+            this.setWaitTimeout(options.waitTimeout || 2000);
+            this.setAsyncTimeout(30000);
             
             //Wait until APF is loaded
-            browser.executeAsync("var cb = arguments[arguments.length - 1];
+            this.executeAsync("var cb = arguments[arguments.length - 1];
                 var _$loadTimer = setInterval(function(){
+                    console.log('checking');
                     if (self.apf && apf.loaded) {
                         console.log('test');
                         clearInterval(_$loadTimer);
@@ -106,7 +110,7 @@ function wdInit(options, assert, callback) {
                     }
                 }, 10);");
             
-            browser.execute("_$findApfElement = function (options){
+            this.execute("_$findApfElement = function (options){
                 var result;
         
                 if (options.eval) {
@@ -183,7 +187,7 @@ function wdInit(options, assert, callback) {
                 return result;
             }");
             
-            browser.execute("_$equals = function (input, match){
+            this.execute("_$equals = function (input, match){
                 if ('array|function|object'.indexOf(typeof input) == -1) {
                     return input == match;
                 }
@@ -205,7 +209,6 @@ function wdInit(options, assert, callback) {
     }
 
     var jobId = browser.init(options.desired);
-    browser.setWaitTimeout(options.waitTimeout);
     
     assert.setJobId(jobId, browser);
     

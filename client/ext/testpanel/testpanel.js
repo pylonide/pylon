@@ -177,16 +177,16 @@ module.exports = ext.register("ext/testpanel/testpanel", {
             this.statusColumn = new apf.BindingColumnRule({
                 caption : "Status", 
                 width   : "40%", 
-                value   : "if ([@status] === '0')\
-                    <span style='color:red'>\\[[@status-message]\\]</span>\
-                else if ([@status] == '1')\
-                    <span style='color:green'>\\[PASS{[@status-message] and ' [@status-message]'}\\]</span>\
-                else if ([@status] == '-1')\
-                    <span>\\[{[@status-message].uCaseFirst()}\\]</span>\
-                else\
-                    '';"
+                value   : "{if ([@status] === '0')\n\
+                    <span style='color:red'>\\[[@status-message]\\]</span>\n\
+                else if ([@status] == '1')\n\
+                    <span style='color:green'>\\[PASS{[@status-message] and \" [@status-message]\"}\\]</span>\n\
+                else if ([@status] == '-1')\n\
+                    <span>\\[{[@status-message].uCaseFirst()}\\]</span>\n\
+                else\n\
+                    '';}"
             })
-            dgUiRecorder.appendChild(this.statusColumn);
+            dgTestProject.appendChild(this.statusColumn);
         }
         
         
@@ -282,6 +282,10 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         if (xmlNode) {
             apf.xmldb.setAttribute(xmlNode, "status", 5);
             apf.xmldb.setAttribute(xmlNode, "status-message", msg || "");
+            
+            ide.dispatchEvent("test.pointer." + apf.queryValue(xmlNode, "ancestor-or-self::test/../@type"), {
+                xmlNode : xmlNode
+            });
         }
         if (this.lastExecuteNode 
           && this.lastExecuteNode.getAttribute("status") == 5) {

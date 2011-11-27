@@ -35021,7 +35021,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(50792)TIME(Sat, 26 Nov 2011 06:06:41 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(51391)TIME(Sun, 27 Nov 2011 09:31:30 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35898,6 +35898,23 @@ apf.BaseTree = function(){
         }
     });
     
+    
+    this.scrollIntoView = function(sNode, onTop) {
+        var selHtml = apf.xmldb.getHtmlNode(sNode, this), top;
+        if (!selHtml)
+            return;
+            
+        top     = apf.getAbsolutePosition(selHtml, this.$container)[1];
+        
+        if (onTop) {
+            if (top <= this.$container.scrollTop)
+                this.$container.scrollTop = top;
+        }
+        else {
+            if (top > this.$container.scrollTop + this.$container.offsetHeight)
+                this.$container.scrollTop = top - this.$container.offsetHeight + selHtml.offsetHeight;
+        }
+    }
     
     
     this.addEventListener("keydown", function(e){
@@ -55329,7 +55346,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53762)TIME(Sun, 27 Nov 2011 00:23:39 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53775)TIME(Sun, 27 Nov 2011 06:10:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56154,7 +56171,7 @@ apf.datagrid = function(struct, tagName){
         var _self = this, id, cell;
         while (!(id = htmlNode.getAttribute(apf.xmldb.htmlIdTag)) || id.indexOf("|") == -1) {
             htmlNode = (cell = htmlNode).parentNode;
-            if (htmlNode.nodeType != 1)
+            if (!htmlNode || htmlNode.nodeType != 1)
                 return;
         }
         

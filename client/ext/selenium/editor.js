@@ -294,6 +294,12 @@ module.exports = ext.register("ext/selenium/editor", {
         });
         dgUiRecorder.addEventListener("xmlupdate", updateUrl);
         
+        ide.addEventListener("test.pointer.selenium", function(e){
+            dgUiRecorder.scrollIntoView(e.xmlNode);
+        });
+        
+        //Another.Earth.2011.BRRip.XviD-playXD.avi
+        
         /**** Play button ****/
         
         btnTestRunInSelEditor.addEventListener("click", function(){
@@ -322,13 +328,31 @@ module.exports = ext.register("ext/selenium/editor", {
             return;
         
         if (!this.statusColumn) {
-            colUiRecorder.setAttribute("width", "60%");
+            colUiRecorder.setAttribute("width", "50%");
             this.statusColumn = new apf.BindingColumnRule({
                 caption : "Status", 
-                width   : "40%", 
-                value   : "[@status-message]"
+                width   : "50%", 
+                value   : "{if ([@status] === '0')\n\
+                    <dd style='color:red;margin:0;'>\\[[@status-message]\\]</dd>\n\
+                else if ([@status] == '1')\n\
+                    <dd style='color:green;margin:0;'>\\[PASS{[@status-message] and ' [@status-message]'}\\]</dd>\n\
+                else if ([@status] == '-1')\n\
+                    <dd style='margin:0;'>\\[{[@status-message].uCaseFirst()}\\]</dd>\n\
+                else\n\
+                    '';}"
             })
             dgUiRecorder.appendChild(this.statusColumn);
+        }
+        
+        var cleanUp = this.model.queryNodes("//error");
+        for (var i = cleanUp.length - 1; i >= 0; i--) {
+            apf.xmldb.removeNode(cleanUp[i]);
+        }
+        
+        cleanUp = this.model.queryNodes("//node()[@status]");
+        for (var i = 0; i < cleanUp.length; i++) {
+            apf.xmldb.removeAttribute(cleanUp[i], "status");
+            apf.xmldb.removeAttribute(cleanUp[i], "status-message");
         }
         
         stTestRun.activate();
@@ -336,6 +360,20 @@ module.exports = ext.register("ext/selenium/editor", {
         selenium.runSeleniumData(this.model.data, this.getTests(), function(){
             stTestRun.deactivate();
         });
+    },
+    
+    stopPlayback : function(){
+        ide.addEventListener("selenium.stopped", function(e){
+            stTestRun.deactivate();
+            btnTestStopInSelEditor.enable();
+            
+            testpanel.setExecute();
+            
+            ide.removeEventListener("selenium.stopped", arguments.callee);
+        });
+
+        btnTestStopInSelEditor.disable();
+        selenium.stop();
     },
     
     findUrl : function(xmlNode){
@@ -405,7 +443,7 @@ module.exports = ext.register("ext/selenium/editor", {
         }
         else {
             var head = this.target.document.documentElement;
-            elScript = this.target.document.createElement("script");
+            var elScript = this.target.document.createElement("script");
             elScript.src = value;
             head.appendChild(elScript);
         
@@ -449,7 +487,7 @@ module.exports = ext.register("ext/selenium/editor", {
         else if (value == 1) //ran
             return "bullet_green.png";
         else if (value == 0) //error
-            return "bullet_red.png";
+            return "exclamation.png";//bullet_red.png";
     },
     
     execute : function(cmd, arg1){
@@ -647,7 +685,7 @@ module.exports = ext.register("ext/selenium/editor", {
     convertToXml : function(tests) {
         var testNode, actionNode, assertNode;
         var test, action, name, property, propName;
-        var xml = apf.getXml("<tests />");
+        var xml = apf.getXml("<tests type='selenium' />");
         var doc = xml.ownerDocument;
         
         // Tests

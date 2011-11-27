@@ -14,10 +14,17 @@
                     <a:splitbutton id="btnTestRunInSelEditor"
                       icon     = "run.png"
                       caption  = "Run"
-                      disabled = "{stTestRecord.active or stTestRun.active}"
+                      visible  = "{!stTestRecord.active and !stTestRun.active}"
                       onclick  = "require('ext/selenium/editor').run();"
                       margin   = "0 0 0 4" 
                       submenu  = "mnuRunSettings" />
+                    
+                    <a:button id="btnTestStopInSelEditor"
+                      icon     = "stop.png"
+                      caption  = "Stop"
+                      skin     = "c9-toolbarbutton"
+                      onclick  = "require('ext/selenium/editor').stopPlayback()"
+                      visible  = "{!btnTestRunInSelEditor.visible}" />
                     
                     <a:button id="btnUiRecordRemove" skin="c9-toolbarbutton" disabled="{!dgUiRecorder.selected}" onclick="dgUiRecorder.remove()">Remove</a:button>
                     <a:button id="btnUiRecordAddAssert" skin="c9-toolbarbutton" disabled="{'action|assert'.indexOf(dgUiRecorder.selected and dgUiRecorder.selected.localName) == -1}" onclick="require('ext/selenium/editor').startAddAssert()">Add Assertion</a:button>
@@ -46,7 +53,7 @@
                   id          = "dgUiRecorder"
                   options     = "size"
                   anchors     = "0 0 0 0"
-                  each        = "[action|assert|test]"
+                  each        = "[action|assert|test|error]"
                   multiselect = "true"
                   class       = "noscrollbar"
                   startcollapsed = "false"
@@ -57,6 +64,7 @@
                     <a:column id="colUiRecorder" caption="Value" width="100%" value="[@value]" editor="textbox" skin="tbsimple" />
                     
                     <a:css match="[test]" value="testhead" />
+                    <a:css match="[node()[@status='5']]" value="current_execution" />
                     
                     <a:drag match="[action|assert|test]" />
                     <a:drop 
