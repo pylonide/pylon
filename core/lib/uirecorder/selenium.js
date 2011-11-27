@@ -46,14 +46,19 @@ function SeleniumPlayer(browser){
     
     this.compile = function(actions){
         var rules = [], stack;
-        var context, contexts = {length: 0};
-        var needsMove;
+        var contexts = {length: 0};
         
-        var minLength, elId, el, item, temp, lastMouseDown, lastCoords;
+        var elId, el, item, temp, lastMouseDown;
         for (var i = 0, l = actions.length; i < l; i++) {
             item    = actions[i];
             el      = item.element;
             stack   = [];
+            
+            if (item.name == "get") {
+                rules.push("browser.getDecoratedPage('" 
+                    + item.value.replace(/'/g, "\\'") + "');"); 
+                continue;
+            }
 
             if (!el) {
                 console.log("Found item without any element");
@@ -81,7 +86,7 @@ function SeleniumPlayer(browser){
                 case "mousemove":
                     // || !actions[i + 1] || !actions[i + 1].name == "mousemove"
                     stack.push("browser.moveTo(" + elId 
-                        + ", " + x + ", " + y + ");"); //@todo make these absolute
+                        + ", " + x + ", " + y + ");");
                         
                     break;
                 case "mousedown":

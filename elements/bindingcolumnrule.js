@@ -33,7 +33,7 @@
  * @attribute {Boolean} tree
  */
 apf.BindingColumnRule = function(struct, tagName){
-    this.$init(tagName, apf.NODE_HIDDEN, struct);
+    this.$init(tagName || "column", apf.NODE_VISIBLE, struct);
     
     this.$className = "col" + this.$uniqueId;
 };
@@ -72,6 +72,14 @@ apf.BindingColumnRule = function(struct, tagName){
 
         this.$isPercentage = value && String(value).indexOf("%") > -1;
         this.$width = parseFloat(value);
+    
+        if (this.$isPercentage) {
+            apf.setStyleRule("." + this.$className, "width", this.$width + "%");
+        }
+        else {
+            var pNode = this.parentNode;
+            apf.setStyleRule("." + this.$className, "width", this.$width + "px", null, pNode.oWin); //Set
+        }
     }
     
     this.$propHandlers["options"]  = function(value, prop){

@@ -77,9 +77,10 @@ apf.splitbutton = function(struct, tagName){
     
     this.$propHandlers["submenu"] = function(value) {
         this.$button2.setProperty("submenu", value);
+        
         var _self = this;
-        self[value].addEventListener("display", function() {
-            this.$ext.style.marginLeft = "-" + _self.$button1.$ext.offsetWidth + "px";
+        this.$button2.addEventListener("mousedown", function() {
+            self[value].$ext.style.marginLeft = "-" + _self.$button1.$ext.offsetWidth + "px";
         });
     }
     

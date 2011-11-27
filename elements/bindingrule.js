@@ -126,7 +126,7 @@ apf.BindingRule = function(struct, tagName){
         //If this node is added, add to set
         if (e.currentTarget == this) {
             (node.$bindings[this.localName] 
-                || (node.$bindings[this.localName] = [])).push(this);
+                || (node.$bindings[this.localName] = [])).pushUnique(this);
         }
         //@todo apf3.0 test if proc instr and cdata needs to be serialized
         //Else just update the binding value
