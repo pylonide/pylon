@@ -1,0 +1,18 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <a:bar name="bar-liveinspect">
+        <a:style><![CDATA[
+            .bar-liveinspect {
+                z-index: 9015;
+                box-shadow: 4px 4px 4px #888;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main container=".">
+                <div class="bar bar-liveinspect">
+                    
+                </div>            
+            </a:main>
+        </a:presentation>
+    </a:bar>
+</a:skin>
