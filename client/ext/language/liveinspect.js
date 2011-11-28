@@ -324,8 +324,7 @@ module.exports = (function () {
         type    : ext.GENERAL,
         alone   : true,
         markup  : markup,
-        skin    : skin,
-        getHeight:getHeight
+        skin    : skin
     };
 } ());
 
