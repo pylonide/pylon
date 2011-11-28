@@ -110,7 +110,7 @@
                   onmouseover = "require('ext/selenium/editor').highlightElement(event)"
                   onmouseout  = "require('ext/selenium/editor').hideHighlightElements(event)">
                     <a:column id="colUiRecorder1" caption="Name" width="40%" icon="{require('ext/selenium/editor').getIcon([@status])}" value="[@name]" tree="1" check2="1" editor="textbox" skin="tbsimple" class="tbtree" />
-                    <a:column id="colUiRecorder2" caption="Value" width="60%" value="[@value]" editor="textbox" skin="tbsimple" />
+                    <a:column id="colUiRecorder2" caption="Value" width="61%" value="[@value]" editor="textbox" skin="tbsimple" />
                     
                     <a:css match="[test]" value="testhead" />
                     <a:css match="[node()[@status='5']]" value="current_execution" />

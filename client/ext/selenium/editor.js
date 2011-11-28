@@ -369,7 +369,7 @@ module.exports = ext.register("ext/selenium/editor", {
         
         if (!this.statusColumn) {
             colUiRecorder1.setAttribute("width", "33%");
-            colUiRecorder2.setAttribute("width", "33%");
+            colUiRecorder2.setAttribute("width", "34%");
             this.statusColumn = new apf.BindingColumnRule({
                 caption : "Status", 
                 width   : "34%", 
@@ -404,9 +404,13 @@ module.exports = ext.register("ext/selenium/editor", {
     },
     
     stopPlayback : function(){
+        var _self = this;
+        
         ide.addEventListener("selenium.stopped", function(e){
             stTestRun.deactivate();
             btnTestStopInSelEditor.enable();
+            
+            clearTimeout(_self.$stopTimer);
             
             testpanel.setExecute();
             
@@ -415,6 +419,11 @@ module.exports = ext.register("ext/selenium/editor", {
 
         btnTestStopInSelEditor.disable();
         selenium.stop();
+        
+        clearTimeout(this.$stopTimer);
+        this.$stopTimer = setTimeout(function(){
+            ide.dispatchEvent("selenium.stopped");
+        }, 10000);
     },
     
     findUrl : function(xmlNode){

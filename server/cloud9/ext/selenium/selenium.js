@@ -51,14 +51,17 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
             var browser = this.jobs[message.job];
             if (!browser)
                 return;
-            
+
+            for (var prop in browser) {
+                if (typeof browser[prop] == "function" 
+                  && prop != "close" && prop != "quit" && prop != "getOpts")
+                    browser[prop] = function(){
+                        arguments[arguments.length - 1]({message: "cancelled"});
+                    };
+            }
+
             var js = __oni_rt.c1.compile("browser.close();browser.quit();callback();");
             (new Function('browser', 'callback', js))(browser, function(){
-                for (var prop in browser) {
-                    if (typeof browser[prop] == "function")
-                        browser[prop] = function(){};
-                }
-                
                 _self.sendResult(0, message.command, {
                     code: 0,
                     argv: message.argv,

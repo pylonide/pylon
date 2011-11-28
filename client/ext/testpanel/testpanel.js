@@ -9,7 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var settings = require("ext/settings/settings");
 var panels = require("ext/panels/panels");
 var markup = require("text!ext/testpanel/testpanel.xml");
 var fs = require("ext/filesystem/filesystem");
@@ -255,7 +254,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
             ide.dispatchEvent("test.hardstop");
             
             _self.stopped();
-        }, 20000);
+        }, 10000);
     },
     
     stopped : function(){

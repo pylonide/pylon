@@ -40858,7 +40858,7 @@ apf.__XFORMS__ = 1 << 17;
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/contenteditable/clipboard.js)SIZE(3300)TIME(Sun, 27 Nov 2011 22:01:43 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/contenteditable/clipboard.js)SIZE(3349)TIME(Mon, 28 Nov 2011 22:00:18 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40929,7 +40929,9 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
         selected = amlNode.selected || amlNode.getFirstTraverseNode();
 
     if (amlNode.hasFeature(apf.__DRAGDROP__)) {
-        var candrop = amlNode.isDropAllowed(apf.clipboard.data, amlNode);
+        var candrop = amlNode.isDropAllowed(apf.clipboard.data, selected);
+        if (!candrop)
+            return false;
         var action = candrop[1] && candrop[1].action 
           || (amlNode.$isTreeArch ? "tree-append" : "list-append");
         amlNode.$dragDrop(selected, this.store, candrop && candrop[1], action)
@@ -53351,7 +53353,7 @@ apf.button.actions  = {
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/checkbox.js)SIZE(8188)TIME(Mon, 28 Nov 2011 06:45:48 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/checkbox.js)SIZE(8188)TIME(Mon, 28 Nov 2011 07:55:07 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55184,7 +55186,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53795)TIME(Sun, 27 Nov 2011 22:01:43 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53801)TIME(Mon, 28 Nov 2011 22:02:59 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55714,10 +55716,10 @@ apf.datagrid = function(struct, tagName){
             //cssRules[0][1] += ";margin-left:-" + vLeft + "px;";
             //cssRules[1][1] += ";margin-left:-" + vLeft + "px;";
             this.$cssRules.push(["." + this.$baseCSSname + " .row" + this.$uniqueId,
-                "padding-right:" + vLeft + "px;margin-right:-" + vLeft + "px"]);
+                "padding-right:" + (vLeft - 2) + "px;margin-right:-" + vLeft + "px"]);
         
             //headings and records have same padding-right
-            this.$container.style.paddingRight  = (vLeft - 1) + "px";
+            this.$container.style.paddingRight  = (vLeft - 2) + "px";
             this.$head.style.paddingRight = (vLeft - 2) + "px";
         }
         
