@@ -50,7 +50,7 @@ var states = exports.states = {
         },
         {
             regex: "^u$",
-            exec: "undo"
+            exec: "vimUndo"
         },
         {
             regex: "^i$",
