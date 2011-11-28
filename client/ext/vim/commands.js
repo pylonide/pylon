@@ -26,7 +26,7 @@ var ACTION   = 4;
 //var VISUAL_MODE = 2;
 //getSelectionLead
 
-var searchStore = module.exports.searchStore = {
+module.exports.searchStore = {
     current: "",
     options: {
         needle: "",
@@ -371,7 +371,7 @@ var inputBuffer = exports.inputBuffer = {
     }
 };
 
-var commands = exports.commands = {
+exports.commands = {
     commandLineCmd: {
         exec: function exec(editor) {
             editor.blur();
@@ -421,6 +421,12 @@ var commands = exports.commands = {
         exec: function appendEnd(editor) {
             editor.navigateLineEnd();
             util.insertMode(editor);
+        }
+    },
+    vimUndo: {
+        exec: function vimUndo(editor) {
+            editor.undo();
+            editor.selection.clearSelection();
         }
     }
 };
