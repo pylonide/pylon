@@ -50,7 +50,8 @@ var states = exports.states = {
         },
         {
             regex: "^u$",
-            exec: "undo"
+            match: inIdleState,
+            exec: "vimUndo"
         },
         {
             regex: "^i$",
@@ -77,7 +78,7 @@ var states = exports.states = {
             then: "insertMode"
         },
         {
-            comment: "Catch some keyboard input to stop it here",
+            // The rest of input will be processed here
             match: matchChar,
             exec: "builder"
         }
