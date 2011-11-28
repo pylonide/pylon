@@ -1,4 +1,10 @@
 /**
+ * Cloud9 Language Foundation
+ *
+ * @copyright 2011, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
+/**
  * This module implements the base handler object that other language handlers
  * can override.
  */

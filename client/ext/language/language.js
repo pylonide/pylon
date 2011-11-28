@@ -1,7 +1,7 @@
 /**
- * Code completion for the Cloud9 IDE
+ * Cloud9 Language Foundation
  *
- * @copyright 2010, Ajax.org B.V.
+ * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 define(function(require, exports, module) {
@@ -51,11 +51,14 @@ module.exports = ext.register("ext/language/language", {
         
         var worker = this.worker = new WorkerClient(["treehugger", "ext", "ace", "c9"], null, "ext/language/worker", "LanguageWorker");
         complete.setWorker(worker);
+        
+        //ide.addEventListener("init.ext/code/code", function(){
 		ide.addEventListener("afteropenfile", function(event){
-            ext.initExtension(_self);
-            if (!event.node) return;
+            if (!event.node)
+                return;
             if (!editors.currentEditor || !editors.currentEditor.ceEditor) // No editor, for some reason
                 return;
+            ext.initExtension(_self);
             var path = event.node.getAttribute("path");
             worker.call("switchFile", [path, editors.currentEditor.ceEditor.syntax, event.doc.getValue()]);
             event.doc.addEventListener("close", function() {
@@ -97,7 +100,7 @@ module.exports = ext.register("ext/language/language", {
                 oldSelection.removeEventListener("changeCursor", _self.$onCursorChange);
                 _self.editor.selection.on("changeCursor", _self.$onCursorChange);
                 oldSelection = _self.editor.selection;
-            });
+            }, 100);
         });
 
         this.editor.addEventListener("change", function(e) {
@@ -112,10 +115,13 @@ module.exports = ext.register("ext/language/language", {
     
     setPath: function() {
         var currentPath = tabEditors.getPage().getAttribute("id");
-        this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue()]);
+        // Currently no code editor active
+        if(!editors.currentEditor.ceEditor)
+            return;
+        this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition()]);
     },
     
-    setJSHint: function(e) {
+    setJSHint: function() {
         if(extSettings.model.queryValue("language/@jshint") != "false")
             this.worker.call("enableFeature", ["jshint"]);
         else
@@ -123,7 +129,7 @@ module.exports = ext.register("ext/language/language", {
         this.setPath();
     },
     
-    setInstanceHighlight: function(e) {
+    setInstanceHighlight: function() {
         if(extSettings.model.queryValue("language/@instanceHighlight") != "false")
             this.worker.call("enableFeature", ["instanceHighlight"]);
         else

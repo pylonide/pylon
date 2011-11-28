@@ -1,11 +1,9 @@
 /**
- * Code completion for the Cloud9 IDE
+ * Cloud9 Language Foundation
  *
- * @copyright 2010, Ajax.org B.V.
+ * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-
-
 define(function(require, exports, module) {
 
 var ext = require("core/ext");

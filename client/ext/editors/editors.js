@@ -347,7 +347,7 @@ module.exports = ext.register("ext/editors/editors", {
         // okay don't know if you would want this, but this is the way the 'open file' dialog
         // handles it so let's do that
         setTimeout(function () {
-            if (ceEditor)
+            if (typeof ceEditor !== "undefined")
                 ceEditor.focus();
         }, 100);
 

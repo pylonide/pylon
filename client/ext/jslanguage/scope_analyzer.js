@@ -23,12 +23,18 @@ handler.handlesLanguage = function(language) {
 };
 
 function Variable(declaration) {
-    this.declaration = declaration;
+    this.declarations = [];
+    if(declaration)
+        this.declarations.push(declaration);
     this.uses = [];
 }
 
 Variable.prototype.addUse = function(node) {
     this.uses.push(node);
+};
+
+Variable.prototype.addDeclaration = function(node) {
+    this.declarations.push(node);
 };
 
 handler.analyze = function(doc, ast) {
@@ -40,13 +46,19 @@ handler.analyze = function(doc, ast) {
             // var bla;
             'VarDecl(x)', function(b, node) {
                 node.setAnnotation("scope", scope);
-                scope[b.x.value] = new Variable(b.x);
+                if(!scope.hasOwnProperty(b.x.value))
+                    scope[b.x.value] = new Variable(b.x);
+                else
+                    scope[b.x.value].addDeclaration(b.x);
                 return node;
             },
             // var bla = 10;
             'VarDeclInit(x, _)', function(b, node) {
                 node.setAnnotation("scope", scope);
-                scope[b.x.value] = new Variable(b.x);
+                if(!scope.hasOwnProperty(b.x.value))
+                    scope[b.x.value] = new Variable(b.x);
+                else
+                    scope[b.x.value].addDeclaration(b.x);
                 return node;
             },
             // function bla(farg) { }
@@ -56,17 +68,13 @@ handler.analyze = function(doc, ast) {
                     scope[b.x.value] = new Variable(b.x);
                 }
                 return node;
-            },
-            // catch(e) { ... }
-            'Catch(_, _, _)', function(b, node) {
-                return node;
             }
         );
     }
     
-    function scopeAnalyzer(scope, node) {
+    function scopeAnalyzer(scope, node, parentLocalVars) {
         preDeclareHoisted(scope, node);
-        var localVariables = [];
+        var localVariables = parentLocalVars || [];
         node.traverseTopDown(
             'VarDecl(x)', function(b) {
                 localVariables.push(scope[b.x.value]);
@@ -96,25 +104,33 @@ handler.analyze = function(doc, ast) {
                 b.fargs.forEach(function(farg) {
                     farg.setAnnotation("scope", newScope);
                     newScope[farg[0].value] = new Variable(farg);
+                    localVariables.push(newScope[farg[0].value]);
                 });
                 scopeAnalyzer(newScope, b.body);
                 return node;
             },
             'Catch(x, body)', function(b, node) {
-                var newScope = Object.create(scope);
-                newScope[b.x.value] = new Variable(b.x);
-                scopeAnalyzer(newScope, b.body);
+                var oldVar = scope[b.x.value];
+                // Temporarily override
+                scope[b.x.value] = new Variable(b.x);
+                scopeAnalyzer(scope, b.body, localVariables);
+                // Put back
+                scope[b.x.value] = oldVar;
                 return node;
             }
         );
-        for (var i = 0; i < localVariables.length; i++) {
-            if (localVariables[i].uses.length === 0) {
-                var v = localVariables[i];
-                markers.push({
-                    pos: v.declaration.getPos(),
-                    type: 'unused',
-                    message: 'Unused variable.'
-                });
+        if(!parentLocalVars) {
+            for (var i = 0; i < localVariables.length; i++) {
+                if (localVariables[i].uses.length === 0) {
+                    var v = localVariables[i];
+                    v.declarations.forEach(function(decl) {
+                        markers.push({
+                            pos: decl.getPos(),
+                            type: 'unused',
+                            message: 'Unused variable.'
+                        });
+                    });
+                }
             }
         }
     }
@@ -131,11 +147,13 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
     function highlightVariable(v) {
         if (!v)
             return;
-        if (v.declaration && v.declaration.getPos())
-            markers.push({
-                pos: v.declaration.getPos(),
-                type: 'occurrence_main'
-            });
+        v.declarations.forEach(function(decl) {    
+            if(decl.getPos())    
+                markers.push({
+                    pos: decl.getPos(),
+                    type: 'occurrence_main'
+                });
+        });    
         v.uses.forEach(function(node) {
             markers.push({
                 pos: node.getPos(),
@@ -145,9 +163,10 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
     }
     currentNode.rewrite(
         'Var(x)', function(b) {
-            highlightVariable(this.getAnnotation("scope")[b.x.value]);
-            // Let's not enable renaming 'this'
-            if(b.x.value !== "this")
+            var v = this.getAnnotation("scope")[b.x.value];
+            highlightVariable(v);
+            // Let's not enable renaming 'this' and only rename declared variables
+            if(b.x.value !== "this" && v)
                 enableRefactorings.push("renameVariable");
         },
         'VarDeclInit(x, _)', function(b) {
@@ -163,6 +182,9 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
             enableRefactorings.push("renameVariable");
         },
         'Function(x, _, _)', function(b) {
+            // Only for named functions
+            if(!b.x.value)
+                return;
             highlightVariable(this.getAnnotation("scope")[b.x.value]);
             enableRefactorings.push("renameVariable");
         }
@@ -179,38 +201,42 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
 
 handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
     var v;
-    var isDecl = false;
+    var mainNode;    
     currentNode.rewrite(
         'VarDeclInit(x, _)', function(b, node) {
             v = node.getAnnotation("scope")[b.x.value];
-            isDecl = true;
+            mainNode = b.x;    
         },
         'VarDecl(x)', function(b, node) {
             v = node.getAnnotation("scope")[b.x.value];
-            isDecl = true;
+            mainNode = b.x;
         },
         'FArg(x)', function(b, node) {
             v = node.getAnnotation("scope")[b.x.value];
-            isDecl = true;
+            mainNode = node;
         },
         'Function(x, _, _)', function(b, node) {
+            if(!b.x.value)
+                return;
             v = node.getAnnotation("scope")[b.x.value];
-            isDecl = true;
+            mainNode = b.x;
         },
         'Var(x)', function(b, node) {
             v = node.getAnnotation("scope")[b.x.value];
+            mainNode = node;
         }
     );
-    var pos;
+    var pos = mainNode.getPos();
     var others = [];
-    if(isDecl)
-        pos = v.declaration.getPos();
-    else {
-        pos = currentNode.getPos();
-        var otherPos = v.declaration.getPos();
-        others.push({column: otherPos.sc, row: otherPos.sl});
-    }
+
     var length = pos.ec - pos.sc;
+
+    v.declarations.forEach(function(node) {
+         if(node !== currentNode[0]) {
+            var pos = node.getPos();
+            others.push({column: pos.sc, row: pos.sl});
+        }
+    });
     
     v.uses.forEach(function(node) {
         if(node !== currentNode) {
