@@ -912,13 +912,13 @@ apf.slider = function(struct, tagName){
         //#endif
     };
     
-    // #ifdef __WITH_UIRECORDER
+    // #ifdef __ENABLE_UIRECORDER_HOOK
     this.$getActiveElements = function() {
         // init $activeElements
         if (!this.$activeElements) {
             this.$activeElements = {
-                $knob       : this.oKnob,
-                $slider     : this.oSlider
+                oKnob       : this.oKnob,
+                oSlider     : this.oSlider
             }
         }
 

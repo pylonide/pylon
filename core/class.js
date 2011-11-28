@@ -740,7 +740,7 @@ apf.Class.prototype = new (function(){
 
                     //Check if rule has single xpath
                     if (r.cvalue.type == 3) {
-                        //#ifdef __WITH_UIRECORDER
+                        //#ifdef __ENABLE_UIRECORDER_HOOK
                         if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10) {
                             if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
                                 if (this.ownerDocument && this.$aml)
@@ -775,7 +775,7 @@ apf.Class.prototype = new (function(){
             if (this.$handlePropSet(prop, value, forceOnMe) === false)
                 return;
             
-            //#ifdef __WITH_UIRECORDER
+            //#ifdef __ENABLE_UIRECORDER_HOOK
             if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10) {
                 if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
                     if (this.ownerDocument && this.$aml)
@@ -978,7 +978,7 @@ apf.Class.prototype = new (function(){
         
         this.$eventDepth--;
 
-        //#ifdef __WITH_UIRECORDER
+        //#ifdef __ENABLE_UIRECORDER_HOOK
         if (apf.uirecorder && apf.uirecorder.captureDetails) {
             if (["debug"].indexOf(eventName) == -1 && (!e || e.currentTarget == this)) { // ,"DOMNodeRemoved","DOMNodeRemovedFromDocument","DOMNodeInsertedIntoDocument"
                 //if (apf.uirecorder.isLoaded) { // skip init loading and drawing of elements

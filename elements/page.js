@@ -741,7 +741,7 @@ apf.page = function(struct, tagName){
         }
     };
     
-    // #ifdef __WITH_UIRECORDER
+    // #ifdef __ENABLE_UIRECORDER_HOOK
     this.$getActiveElements = function() {
         // init $activeElements
         if (!this.$activeElements) {

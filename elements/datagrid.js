@@ -532,8 +532,8 @@ apf.datagrid = function(struct, tagName){
                 "padding-right:" + vLeft + "px;margin-right:-" + vLeft + "px"]);
         
             //headings and records have same padding-right
-            this.$container.style.paddingRight  =
-            this.$head.style.paddingRight = (vLeft - 1) + "px";
+            this.$container.style.paddingRight  = (vLeft - 1) + "px";
+            this.$head.style.paddingRight = (vLeft - 2) + "px";
         }
         
         this.$fixed = fixed;

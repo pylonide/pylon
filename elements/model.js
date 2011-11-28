@@ -947,7 +947,7 @@ apf.model = function(struct, tagName){
             this.$at = UndoObj.at;
         //#endif
 
-        //#ifdef __WITH_UIRECORDER
+        //#ifdef __ENABLE_UIRECORDER_HOOK
         if (apf.uirecorder && apf.uirecorder.captureDetails) {
             if (apf.uirecorder.isLoaded && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {// only capture events when recording
                 if (this.ownerDocument && this.$aml) {

@@ -392,7 +392,7 @@ apf.cancelBubble = function(e, o, noPropagate){
     //if (apf.isGecko)
         //apf.window.$mousedown(e);
     
-    //#ifdef __WITH_UIRECORDER
+    //#ifdef __ENABLE_UIRECORDER_HOOK
     if (apf.uirecorder && apf.uirecorder.captureDetails 
       && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {
         apf.uirecorder.capture.nextStream(e.type || e.name);

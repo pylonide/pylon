@@ -424,9 +424,12 @@ apf.DragDrop = function(){
         else
             action = defaction;
 
+        if (!event)
+            event = {};
+
         //copy convenience variables
         var context = {
-              internal : apf.DragServer.dragdata.host == this,
+              internal : apf.DragServer.dragdata && apf.DragServer.dragdata.host == this,
               ctrlKey  : event.ctrlKey,
               keyCode  : event.keyCode
           },
@@ -455,7 +458,7 @@ apf.DragDrop = function(){
             }
         }
 
-        if (!ifcopy) { //Implemented one copy is all copy
+        if (!ifcopy && srcRule) { //Implemented one copy is all copy
             for (var i = 0, l = srcRule.length; i < l; i++) {
                 ifcopy = typeof srcRule[i] == "object" && srcRule[i].copy
                     ? !apf.isFalse((srcRule[i].ccopy || srcRule[i].compile("copy"))(xmlNodeList[0], context))

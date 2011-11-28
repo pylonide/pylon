@@ -461,12 +461,12 @@ apf.radiobutton = function(struct, tagName){
             this.$group.$removeRadio(this);
     };
     
-    // #ifdef __WITH_UIRECORDER
+    // #ifdef __ENABLE_UIRECORDER_HOOK
     this.$getActiveElements = function() {
         // init $activeElements
         if (!this.$activeElements) {
             this.$activeElements = {
-                $radiobutton       : this.oInput
+                oInput       : this.oInput
             }
         }
 

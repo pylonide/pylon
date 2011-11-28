@@ -533,12 +533,12 @@ apf.spinner = function(struct, tagName){
         this.$buttonMinus.onmouseup = null;
     };
     
-    // #ifdef __WITH_UIRECORDER
+    // #ifdef __ENABLE_UIRECORDER_HOOK
     this.$getActiveElements = function() {
         // init $activeElements
         if (!this.$activeElements) {
             this.$activeElements = {
-                $input          : this.oInput,
+                oInput          : this.oInput,
                 $buttonPlus     : this.$buttonPlus,
                 $buttonMinus    : this.$buttonMinus
             }
