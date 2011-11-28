@@ -2,7 +2,7 @@
 
 define(function(require, exports, module) {
 module.exports = {
-    x: {
+    "x": {
         operator: {
             char: "d",
             count: 1

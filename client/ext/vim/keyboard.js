@@ -77,7 +77,7 @@ var states = exports.states = {
             then: "insertMode"
         },
         {
-            comment: "Catch some keyboard input to stop it here",
+            // The rest of input will be processed here
             match: matchChar,
             exec: "builder"
         }
