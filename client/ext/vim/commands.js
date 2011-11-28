@@ -183,6 +183,28 @@ var actions = {
             editor.setOverwrite(true);
             editor.selection.clearSelection();
         }
+    },
+    "shift-j": {
+        fn: function(editor, range, count, param) {
+            var pos = editor.getCursorPosition();
+
+            if (editor.session.getLength() === pos.row + 1)
+                return;
+
+            var nextLine = editor.session.getLine(pos.row + 1);
+            var cleanLine = /^\s*(.*)$/.exec(nextLine)[1];
+
+            editor.navigateDown();
+            editor.removeLines();
+
+            if (editor.session.getLength() > editor.getCursorPosition().row + 1)
+                editor.navigateUp();
+
+            editor.navigateLineEnd();
+            editor.insert(" " + (cleanLine || ""));
+            editor.moveCursorTo(pos.row, pos.column);
+
+        }
     }
 };
 
