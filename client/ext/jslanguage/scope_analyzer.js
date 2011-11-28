@@ -201,7 +201,6 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
 
 handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
     var v;
-    //var isDecl = false;
     var mainNode;    
     currentNode.rewrite(
         'VarDeclInit(x, _)', function(b, node) {
