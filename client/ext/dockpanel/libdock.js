@@ -169,14 +169,16 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 var sections = bar.selectNodes("vbox");
                 for (var i = 0; i < sections.length; i++) {
                     var buttons = sections[i].selectNodes("button");
-                    var menu = self[buttons[0].submenu];
-                    
-                    for (var j = 0; j < buttons.length; j++) {
-                        //Store pages
-                        this.$cbStorePage(buttons[j].$dockpage);
+                    if (buttons && buttons.length) {
+                        var menu = self[buttons[0].submenu];
+
+                        for (var j = 0; j < buttons.length; j++) {
+                            //Store pages
+                            this.$cbStorePage(buttons[j].$dockpage);
+                        }
+
+                        menu.destroy(true, true);
                     }
-                    
-                    menu.destroy(true, true);
                 }
             }
             else if (!bar.bar) {
