@@ -32,13 +32,12 @@
                 width: auto;
                 height: 19px;
                 right: 73px;
-                top: 3px;
+                top: 2px;
             }
             
             #divSearchCount .searchIter,
             #divSearchCount .searchTotal {
-                background-color: #aaa;
-                color: #fff;
+                color: #aaa;
                 font-size: 11px;
                 height: 19px;
                 line-height: 20px;
@@ -49,26 +48,13 @@
             }
             
             #divSearchCount .searchIter {
-                -webkit-border-top-left-radius: 10px;
-                -webkit-border-top-right-radius: 0px;
-                -webkit-border-bottom-left-radius: 10px;
-                -webkit-border-bottom-right-radius: 0px;
-                -moz-border-radius-topleft: 10px;
-                -moz-border-radius-topright: 0px;
-                -moz-border-radius-bottomleft: 10px;
-                -moz-border-radius-bottomright: 0px;
-                border-top-left-radius: 10px;
-                border-top-right-radius: 0px;
-                border-bottom-left-radius: 10px;
-                border-bottom-right-radius: 0px;
-                
                 margin: 0 1px 0 0;
-                padding: 0 5px 0 7px;
+                padding: 0 0 0 7px;
             }
             
             #divSearchCount .searchTotal {
                 margin: 0;
-                padding: 0 5px 0 5px;
+                padding: 0 5px 0 2px;
             }
         ]]></a:style>
 

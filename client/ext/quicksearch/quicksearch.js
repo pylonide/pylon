@@ -96,11 +96,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor)
             editor.ceEditor.parentNode.appendChild(winQuickSearch);
-            
-        var p = document.getElementById("divSearchCount");
-        var spans = p.getElementsByTagName("span");
-        oIter  = spans[0];
-        oTotal = spans[1];
     },
     
     navigateList : function(type){
@@ -134,6 +129,14 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     
     updateCounter: function() {
         var ace = this.$getAce();
+        
+        if (!oIter) {
+            var p = document.getElementById("divSearchCount");
+            var spans = p.getElementsByTagName("span");
+            oIter  = spans[0];
+            oTotal = spans[1];
+        }
+        
         if (!ace || !winQuickSearch.visible) {
             oIter.parentNode.style.width = "0px";
             return;
@@ -141,9 +144,16 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         else
             oIter.parentNode.style.width = "auto";
         
+        setTimeout(function() {
+            var width = oIter.parentNode.offsetWidth;
+            txtQuickSearch.$button.style.right = (width) + "px";
+            txtQuickSearch.$input.parentNode.style.paddingRight = (width + txtQuickSearch.$button.offsetWidth + 10) + "px";
+        });
+        
         var ranges = ace.$search.findAll(ace.getSession());
         if (!ranges || !ranges.length) {
-            oIter.innerHTML = oTotal.innerHTML = "0";
+            oIter.innerHTML = "0"
+            oTotal.innerHTML = "of 0";
             return;
         }
         var crtIdx = -1;
@@ -162,12 +172,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             }
         }
         oIter.innerHTML = String(++crtIdx);
-        oTotal.innerHTML = ranges.length;
-        setTimeout(function() {
-            var width = oIter.parentNode.offsetWidth;
-            txtQuickSearch.$button.style.right = (width + 8) + "px";
-            txtQuickSearch.$input.parentNode.style.paddingRight = (width + txtQuickSearch.$button.offsetWidth + 10) + "px";
-        });
+        oTotal.innerHTML = "of " + ranges.length;
     },
 
     toggleDialog: function(force) {
