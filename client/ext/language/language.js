@@ -100,7 +100,7 @@ module.exports = ext.register("ext/language/language", {
                 oldSelection.removeEventListener("changeCursor", _self.$onCursorChange);
                 _self.editor.selection.on("changeCursor", _self.$onCursorChange);
                 oldSelection = _self.editor.selection;
-            });
+            }, 100);
         });
 
         this.editor.addEventListener("change", function(e) {
@@ -118,10 +118,10 @@ module.exports = ext.register("ext/language/language", {
         // Currently no code editor active
         if(!editors.currentEditor.ceEditor)
             return;
-        this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue()]);
+        this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition()]);
     },
     
-    setJSHint: function(e) {
+    setJSHint: function() {
         if(extSettings.model.queryValue("language/@jshint") != "false")
             this.worker.call("enableFeature", ["jshint"]);
         else
@@ -129,7 +129,7 @@ module.exports = ext.register("ext/language/language", {
         this.setPath();
     },
     
-    setInstanceHighlight: function(e) {
+    setInstanceHighlight: function() {
         if(extSettings.model.queryValue("language/@instanceHighlight") != "false")
             this.worker.call("enableFeature", ["instanceHighlight"]);
         else
