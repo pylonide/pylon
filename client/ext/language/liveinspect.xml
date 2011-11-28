@@ -6,7 +6,7 @@
       modal     = "false" 
       center    = "false"
       width     = "450"
-      height    = "300"
+      height    = "200"
       visible   = "false"
 skinset   = "inlinedg" 
           skin      = "bar-liveinspect"       >
