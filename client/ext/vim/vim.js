@@ -35,7 +35,6 @@ var onConsoleCommand = function onConsoleCommand(e) {
                 console.log("Vim command '" + cmd + "' not implemented.");
 
             domEditor.focus();
-            e.returnValue = false;
         }
         else if (cmd[0] === "/") {
             cmd = cmd.substr(1);
@@ -44,6 +43,7 @@ var onConsoleCommand = function onConsoleCommand(e) {
             txtConsoleInput.blur();
             domEditor.focus();
         }
+        e.returnValue = false;
     }
 };
 
@@ -75,7 +75,6 @@ var enableVim = function enableVim() {
         commands.stop.exec(editor);
         enabled = true;
     }
-
 };
 
 var disableVim = function() {
