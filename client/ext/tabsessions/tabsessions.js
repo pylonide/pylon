@@ -10,8 +10,6 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
-var save = require("ext/save/save");
-var panels = require("ext/panels/panels");
 var settings = require("ext/settings/settings");
 var tabbehaviors = require("ext/tabbehaviors/tabbehaviors");
 var css = require("text!ext/save/save.css");
@@ -58,7 +56,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             sessionnames.sort();
             
             var name;
-            for (i = 0, l = sessionnames.length; i < l; i++){ 
+            sessionnames.forEach(function(name) {
                 name = sessionnames[i];
                 mnuTabLoadSessions.appendChild(new apf.item({
                     caption : name,
@@ -70,7 +68,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                     //type    : "radio",
                     value   : name
                 }));
-            }
+            });
     
             _self.nodes.push(
                 ide.mnuFile.appendChild(new apf.item({
@@ -95,12 +93,6 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                     disabled: !sessions.length
                 }))
             );
-            
-            // load dropdown with saved tab sessions
-            // on select session loadsession
-            // add save session option to tabMenu
-                // open save session dialog
-
         });
     },
     
@@ -173,7 +165,6 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                             return require("ext/tabsessions/tabsessions").loadSession(name, true);
                         }
                     );
-                    break;
                 }
                 else {
                     page.$doc.getNode().setAttribute("changed", 0);
@@ -187,11 +178,10 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             
         // close open tabs
         pages = tabEditors.getPages();
-        for (var i = 0, l = pages.length; i < l; i++) {
-            page = pages[i];
+        pages.forEach(function(page) {
             tabbehaviors.removeItem(page);
             page.removeNode();
-        }
+        });
 
         // open session files
         var active = settings.model.queryValue("auto/sessions/session[@name=\"" + name + "\"]/files/@active");
@@ -201,12 +191,13 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             doc = ide.createDocument(nodes[i]);
             
             var state = nodes[i].getAttribute("state");
-            try {
-                if (state)
+            if (state) {
+                try {
                     doc.state = JSON.parse(state);
+                }
+                catch(e) {}
             }
-            catch (ex) {}
-
+            
             ide.dispatchEvent("openfile", {
                 doc    : doc,
                 init   : true,
