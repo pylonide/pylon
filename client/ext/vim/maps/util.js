@@ -1,6 +1,9 @@
 "use strict";
 
+
 define(function(require, exports, module) {
+var registers = require("ext/vim/registers");
+
 module.exports = {
     onVisualMode: false,
     onVisualLineMode: false,
@@ -64,6 +67,16 @@ module.exports = {
             return char[char.length - 1].toUpperCase();
         else
             return "";
+    },
+    copyLine: function(editor) {
+        var pos = editor.getCursorPosition();
+        editor.selection.clearSelection();
+        editor.moveCursorTo(pos.row, pos.column);
+        editor.selection.selectLine();
+        registers._default.isLine = true;
+        registers._default.text = editor.getCopyText();
+        editor.selection.clearSelection();
+        editor.moveCursorTo(pos.row, pos.column);
     }
 };
 });

@@ -130,22 +130,7 @@ var actions = {
     },
     "shift-y": {
         fn: function(editor, range, count, param) {
-            var pos = editor.getCursorPosition();
-            editor.selection.clearSelection();
-            editor.moveCursorTo(pos.row, pos.column);
-            editor.selection.selectLine();
-            registers._default.isLine = true;
-            registers._default.text = editor.getCopyText();
-            editor.selection.clearSelection();
-            editor.moveCursorTo(pos.row, pos.column);
-        }
-    },
-    "y": {
-        fn: function(editor, range, count, param) {
-            registers._default.text = editor.getCopyText();
-            registers._default.isLine = false;
-            editor.selection.clearSelection();
-            util.normalMode(editor);
+            util.copyLine(editor);
         }
     },
     "p": {
