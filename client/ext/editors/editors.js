@@ -588,10 +588,12 @@ module.exports = ext.register("ext/editors/editors", {
         });
 
         ide.addEventListener("savesettings", function(e){
-            var changed = false,
-                pNode   = e.model.data.selectSingleNode("auto/files"),
-                state   = pNode && pNode.xml,
-                pages   = tabEditors.getPages();
+            var changed = false;
+            if (!e.model.data)
+                return;
+            var pNode   = e.model.data.selectSingleNode("auto/files");
+            var state   = pNode && pNode.xml;
+            var pages   = tabEditors.getPages();
 
             if (pNode) {
                 pNode.parentNode.removeChild(pNode);

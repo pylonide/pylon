@@ -169,7 +169,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 var sections = bar.selectNodes("vbox");
                 for (var i = 0; i < sections.length; i++) {
                     var buttons = sections[i].selectNodes("button");
-                    if (buttons && buttons.length) {
+                    if (buttons && buttons.length && buttons[0]) {
                         var menu = self[buttons[0].submenu];
 
                         for (var j = 0; j < buttons.length; j++) {

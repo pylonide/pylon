@@ -84,6 +84,8 @@ module.exports = ext.register("ext/language/language", {
         var _self = this;
         var worker = this.worker;
         apf.importCssString(css);
+        if (!editors.currentEditor)
+            return;
         this.editor = editors.currentEditor.ceEditor.$editor;
         this.$onCursorChange = this.onCursorChangeDefer.bind(this);
         this.editor.selection.on("changeCursor", this.$onCursorChange);

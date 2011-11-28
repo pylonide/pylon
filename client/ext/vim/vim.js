@@ -128,8 +128,6 @@ module.exports = ext.register("ext/vim/vim", {
             var vimEnabled = e.currentTarget.queryValue("editors/code/@vimmode");
             self.toggle(vimEnabled === "true");
         });
-
-        txtConsoleInput.addEventListener("keydown", cliKeyDown);
     },
 
     toggle: function(show) {
@@ -148,6 +146,7 @@ module.exports = ext.register("ext/vim/vim", {
     },
 
     init : function() {
+        txtConsoleInput.addEventListener("keydown", cliKeyDown);
         this.inited = true;
     },
 

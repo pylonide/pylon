@@ -163,7 +163,10 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
     }
     currentNode.rewrite(
         'Var(x)', function(b) {
-            var v = this.getAnnotation("scope")[b.x.value];
+            var scope = this.getAnnotation("scope");
+            if (!scope)
+                return;
+            var v = scope[b.x.value];
             highlightVariable(v);
             // Let's not enable renaming 'this' and only rename declared variables
             if(b.x.value !== "this" && v)
