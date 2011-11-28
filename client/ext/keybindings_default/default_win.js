@@ -149,7 +149,7 @@ return keys.onLoad({
         },
         "language": {
             "complete": "Ctrl-Space|Alt-Space",
-            "renameVar": "Crl-Alt-R"
+            "renameVar": "Ctrl-Alt-R"
         }
     }
 });

@@ -6069,7 +6069,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/util/style.js)SIZE(18143)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/util/style.js)SIZE(18610)TIME(Mon, 28 Nov 2011 22:46:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6285,12 +6285,26 @@ apf.importStylesheet = function (def, win) {
     }    
     
     for (var i = 0; i < def.length; i++) {
-        if (!def[i][1]) continue;
-        
+        if (!def[i][1])
+            continue;
+
         if (apf.isIE)
             styleSheet.addRule(def[i][0], def[i][1]);
-        else
-            styleSheet.insertRule(def[i][0] + " {" + def[i][1] + "}", 0);
+        else {
+            var rule = def[i][0] + " {" + def[i][1] + "}";
+            try {
+                styleSheet.insertRule(rule, 0);
+            }
+            catch (e) {
+                // Firefox has trouble with inserting rules at index 0.
+                // Probably not the cause for this to err, but the try/catch
+                // avoids it.
+                console && console.error(
+                    "Could not insert CSS rule " + rule + " in stylesheet ",
+                    styleSheet
+                );
+            }
+        }
     }
 }
 
@@ -55186,7 +55200,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53801)TIME(Mon, 28 Nov 2011 22:02:59 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53795)TIME(Mon, 28 Nov 2011 22:05:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55716,10 +55730,10 @@ apf.datagrid = function(struct, tagName){
             //cssRules[0][1] += ";margin-left:-" + vLeft + "px;";
             //cssRules[1][1] += ";margin-left:-" + vLeft + "px;";
             this.$cssRules.push(["." + this.$baseCSSname + " .row" + this.$uniqueId,
-                "padding-right:" + (vLeft - 2) + "px;margin-right:-" + vLeft + "px"]);
+                "padding-right:" + vLeft + "px;margin-right:-" + vLeft + "px"]);
         
             //headings and records have same padding-right
-            this.$container.style.paddingRight  = (vLeft - 2) + "px";
+            this.$container.style.paddingRight  = (vLeft - 1) + "px";
             this.$head.style.paddingRight = (vLeft - 2) + "px";
         }
         

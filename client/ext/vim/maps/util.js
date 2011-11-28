@@ -1,10 +1,17 @@
 "use strict";
 
+
 define(function(require, exports, module) {
+var registers = require("ext/vim/registers");
+
 module.exports = {
     onVisualMode: false,
     onVisualLineMode: false,
     insertMode: function(editor) {
+        var isDarkTheme;
+        if (editor && editor.getTheme())
+            isDarkTheme = require(editor.getTheme()).isDark;
+
         // Switch editor to insert mode
         var cursor = document.getElementsByClassName("ace_cursor")[0];
 
@@ -13,7 +20,9 @@ module.exports = {
         cursor.style.backgroundColor = null;
         cursor.style.opacity = null;
         cursor.style.border = null;
-        cursor.style.borderLeft = "2px solid black";
+        cursor.style.borderLeftColor = isDarkTheme? "#eeeeee" : "#333333";
+        cursor.style.borderLeftStyle = "solid";
+        cursor.style.borderLeftWidth = "2px";
 
         editor.setOverwrite(false);
         editor.keyBinding.$data.buffer = "";
@@ -64,6 +73,16 @@ module.exports = {
             return char[char.length - 1].toUpperCase();
         else
             return "";
+    },
+    copyLine: function(editor) {
+        var pos = editor.getCursorPosition();
+        editor.selection.clearSelection();
+        editor.moveCursorTo(pos.row, pos.column);
+        editor.selection.selectLine();
+        registers._default.isLine = true;
+        registers._default.text = editor.getCopyText();
+        editor.selection.clearSelection();
+        editor.moveCursorTo(pos.row, pos.column);
     }
 };
 });

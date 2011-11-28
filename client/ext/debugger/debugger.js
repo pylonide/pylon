@@ -53,9 +53,13 @@ module.exports = ext.register("ext/debugger/debugger", {
         ide.addEventListener("loadsettings", function (e) {
             // restore the breakpoints from the IDE settings
             var bpFromIde = e.model.data.selectSingleNode("//breakpoints");
-            if (bpFromIde) {
-                mdlDbgBreakpoints.load(bpFromIde);
-            }
+            // not there yet, create element
+            if (!bpFromIde) {
+                bpFromIde = e.model.data.ownerDocument.createElement("breakpoints");
+                e.model.data.appendChild(bpFromIde);
+            }           
+            // bind it to the Breakpoint model
+            mdlDbgBreakpoints.load(bpFromIde);
         });
         
         stDebugProcessRunning.addEventListener("activate", function() {

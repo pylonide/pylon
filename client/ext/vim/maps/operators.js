@@ -61,6 +61,32 @@ module.exports = {
                         }
                 }
             }
+    },
+    "y": {
+        selFn: function(editor, range, count, param) {
+            registers._default.text = editor.getCopyText();
+            registers._default.isLine = false;
+            editor.selection.clearSelection();
+            util.normalMode(editor);
+        },
+        fn: function(editor, range, count, param) {
+            count = parseInt(count || 1, 10);
+            switch (param) {
+                case "y":
+                    util.copyLine(editor);
+                    break;
+                default:
+                    if (range) {
+                        var pos = editor.getCursorPosition();
+
+                        editor.selection.setSelectionRange(range);
+                        registers._default.text = editor.getCopyText();
+                        registers._default.isLine = false;
+                        editor.selection.clearSelection();
+                        editor.moveCursorTo(pos.row, pos.column);
+                    }
+            }
+        }
     }
 };
 });

@@ -35,7 +35,6 @@ var onConsoleCommand = function onConsoleCommand(e) {
                 console.log("Vim command '" + cmd + "' not implemented.");
 
             domEditor.focus();
-            e.returnValue = false;
         }
         else if (cmd[0] === "/") {
             cmd = cmd.substr(1);
@@ -44,6 +43,7 @@ var onConsoleCommand = function onConsoleCommand(e) {
             txtConsoleInput.blur();
             domEditor.focus();
         }
+        e.returnValue = false;
     }
 };
 
@@ -73,8 +73,8 @@ var enableVim = function enableVim() {
         addCommands(editor, commands);
         editor.setKeyboardHandler(handler);
         commands.stop.exec(editor);
+        enabled = true;
     }
-    enabled = true;
 };
 
 var disableVim = function() {
@@ -84,8 +84,9 @@ var disableVim = function() {
         removeCommands(editor, commands);
         editor.setKeyboardHandler(null);
         commands.start.exec(editor);
+        enabled = false;
     }
-    enabled = false;
+
 };
 
 var cliKeyDown = function(e) {
@@ -127,9 +128,6 @@ module.exports = ext.register("ext/vim/vim", {
             var vimEnabled = e.currentTarget.queryValue("editors/code/@vimmode");
             self.toggle(vimEnabled === "true");
         });
-
-        if (self.txtConsoleInput) //@todo this should be an event
-            txtConsoleInput.addEventListener("keydown", cliKeyDown);
     },
 
     toggle: function(show) {
@@ -148,18 +146,19 @@ module.exports = ext.register("ext/vim/vim", {
     },
 
     init : function() {
+        txtConsoleInput.addEventListener("keydown", cliKeyDown);
         this.inited = true;
     },
 
     enable : function() {
         ide.addEventListener("consolecommand", onConsoleCommand);
-        ide.addEventListener('afteropenfile',  enableVim);
+        ide.addEventListener("afteropenfile",  enableVim);
         enableVim();
     },
 
     disable : function() {
         ide.removeEventListener("consolecommand", onConsoleCommand);
-        ide.removeEventListener('afteropenfile',  enableVim);
+        ide.removeEventListener("afteropenfile",  enableVim);
         disableVim();
     },
 

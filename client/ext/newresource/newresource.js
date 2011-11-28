@@ -70,27 +70,25 @@ module.exports = ext.register("ext/newresource/newresource", {
         if (!type) type = "";
 
         var node = apf.getXml("<file />");
-        
+        var path = "/workspace/";
         var sel = trFiles.selected;
+
         if (!sel) {
             trFiles.select(trFiles.$model.queryNode('folder'));
             sel = trFiles.selected
         }
-            
-        if (!path) {
-            //path = "/workspace/";
-            path = sel.getAttribute("path");
-            if (trFiles.selected.getAttribute("type") == "file" 
-              || trFiles.selected.tagName == "file")
-                path = path.replace(/\/[^\/]*$/, "/");
-            else
-                path = path + "/";
-        }
-        
+        if (!sel)
+            return;
+
+        path = sel.getAttribute("path");
+        if (trFiles.selected.getAttribute("type") == "file" || trFiles.selected.tagName == "file")
+            path = path.replace(/\/[^\/]*$/, "/");
+        else
+            path = path + "/";
+
         var name = "Untitled", count = 1;
-        while(tabEditors.getPage(path + name + count + type)) {
+        while (tabEditors.getPage(path + name + count + type))
             count++;
-        }
         
         node.setAttribute("name", name + count + type);
         node.setAttribute("path", path + name + count + type);
