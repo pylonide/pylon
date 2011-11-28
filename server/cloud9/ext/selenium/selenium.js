@@ -100,8 +100,11 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                     });
                 }
                 else {
+                    if (browser.settings.where == "sauce")
+                        message.quit = true;
+                    
                     var code = args.join(" ") 
-                        + (message.close 
+                        + (message.close && message.quit 
                             ? ";browser.close();browser.quit()"
                             : "") + ";callback();";
 
@@ -120,7 +123,7 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                                 .replace('%t', e.stack)
                         });
                         
-                        var js = __oni_rt.c1.compile((message.close 
+                        var js = __oni_rt.c1.compile((message.close && message.quit 
                             ? "browser.close();browser.quit()"
                             : "") + ";callback();");
                     }

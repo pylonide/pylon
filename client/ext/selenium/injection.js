@@ -23,10 +23,9 @@ window.addEventListener("message", function(e) {
     switch (json.command) {
         case "ping":
             e.source.postMessage(JSON.stringify({ type: "pong" }), "*");
-            break;
-        case "record":
             capture.source = e.source;
             capture.origin = e.origin;
+            break;
         default:
             capture[json.command].apply(capture, json.args);
             break;
@@ -81,12 +80,27 @@ var capture = {
             str.unshift((lNode.nodeType == 1 ? lNode.tagName : "text()")
                 + "[" + (useAID && (id = lNode.nodeType == 1 && lNode.getAttribute(apf.xmldb.xmlIdTag))
                     ? "@" + apf.xmldb.xmlIdTag + "='" + id + "'"
-                    : (apf.getChildNumber(lNode, lNode.parentNode.selectNodes(lNode.nodeType == 1 ? lNode.tagName : "text()")) + 1))
+                    : (this.getChildNumber(lNode) + 1))
                  + "]");
             lNode = lNode.parentNode;
         };
     
         return (str[0] == "/" || xmlContext && xmlContext.nodeType == 1 ? "" : "/") + str.join("/"); //pfx +
+    },
+
+    //@todo support for text()
+    getChildNumber : function(node){
+        var tagName = node.tagName;
+        var nodes = node.parentNode.childNodes;
+        for (var j = 0, i = 0; i < nodes.length; i++) {
+            if (nodes[i].tagName == tagName) {
+                if (nodes[i] == node)
+                    return j;
+                j++;
+            }
+        }
+        
+        return -1;
     },
     
     getStyle : function(el, prop) {
@@ -386,8 +400,9 @@ var capture = {
     },
     
     captureHtmlEvent : function(eventName, e, value) {
-        if (this.lastStream.name)
-            throw new Error("Stream collission error");
+        if (!this.lastStream || this.lastStream.name)
+            throw new Error("Stream collission error. " 
+                + (!this.lastStream ? "Missing stream" : ""));
 
         // Set action object
         
@@ -571,8 +586,8 @@ var capture = {
             name        : prop,
             async       : this.lastStream.async,
             time        : new Date().getTime() - this.lastStream.abstime,
-            value       : this.getCleanCopy(value),
-            oldvalue    : this.getCleanCopy(oldvalue),
+            value       : this.getCleanCopy(value, target),
+            oldvalue    : this.getCleanCopy(oldvalue, target),
             element     : this.getElementLookupDef(null, target)
         });
         
@@ -638,6 +653,17 @@ var capture = {
         
         if (!amlNode)
             amlNode = self.apf && apf.findHost(htmlNode);
+        
+        if (e && !amlNode) {
+            var top = htmlNode.style.top;
+            htmlNode.style.top = "-2000px";
+            var tempNode = document.elementFromPoint(e.x, e.y);
+            amlNode = apf.findHost(tempNode);
+            htmlNode.style.top = top;
+            
+            if (amlNode)
+                htmlNode = tempNode;
+        }
 
         if (amlNode && amlNode.$ignoreRecorder)
             return false;
@@ -662,8 +688,8 @@ var capture = {
             if (!htmlNode)
                 return searchObj;
             
-            if (amlNode.hasFeature(apf.__MULTISELECT__)) {
-                xmlNode = apf.xmldb.findXmlNode(htmlNode);
+            if (amlNode.hasFeature(apf.__MULTISELECT__) && htmlNode) {
+                var xmlNode = apf.xmldb.findXmlNode(htmlNode);
                 if (xmlNode) {
                     var xpath = this.xmlToXpath(xmlNode, amlNode.xmlRoot);
                     if (xpath != ".") {
@@ -701,7 +727,7 @@ var capture = {
         return searchObj;
     },
     
-    getCleanCopy : function(obj, recur) {
+    getCleanCopy : function(obj, target, recur) {
         var o = {};
         
         if (!obj || "object|array".indexOf(typeof obj) == -1)
@@ -718,9 +744,18 @@ var capture = {
             o = this.getElementLookupDef(obj);
         else if (obj.nodeType) {
             try {
-                var model = apf.xmldb.findModel(obj);
+                var id, model = apf.xmldb.findModel(obj);
+                if (target && target.getModel() == model) {
+                    var amlDef = this.getElementLookupDef(target);
+                    id = amlDef.id 
+                        ? amlDef.id 
+                        : "apf.document.selectSingleNode('" 
+                            + amlDef.xpath.replace(/'/g, "\\'") + "').getModel()";
+                }
+                else
+                    id = model.id;
                 o = {
-                    eval : model.id + ".queryNode('" 
+                    eval : id + ".queryNode('" 
                         + this.xmlToXpath(obj, model.data).replace(/'/g, "\\'")
                         + "')",
                 }
@@ -735,7 +770,7 @@ var capture = {
             for (var prop in obj) {
                 if (typeof obj[prop] == "function")
                     continue;
-                o[prop] = this.getCleanCopy(obj[prop], true);
+                o[prop] = this.getCleanCopy(obj[prop], target, true);
             }
         }
         
@@ -851,13 +886,12 @@ var capture = {
                 var props = amlNode.$supportedProperties;
                 
                 var xml = apf.getXml("<properties />");
-                var doc = xml.ownerDocument;
                 
                 div.style.top = lastTop;
                 
                 //show
                 var obj = [];
-                for (var prop, i = 0; i < props.length; i++) {
+                for (var i = 0; i < props.length; i++) {
                     if (amlNode[props[i]] != undefined) {
                         obj.push({
                             caption : props[i], 
@@ -865,7 +899,7 @@ var capture = {
                         });
                     }
                 }
-                
+
                 capture.dispatchEvent("showmenu", {
                     props : obj,
                     element : ui.getElementLookupDef(null, amlNode),
@@ -899,8 +933,8 @@ var capture = {
         var amlNode, htmlPropNode, resHtml;
     
         //@todo fix this for html-only support
-        if (!apf)
-            return;
+        if (!self.apf)
+            return false;
     
         if (options.eval)
             amlNode = eval(options.eval);
@@ -966,7 +1000,7 @@ var capture = {
     hideHighlightElements : function(){
         if (!this.divs) return;
         
-        this.divs.each(function(div){
+        this.divs.forEach(function(div){
             div.style.display = "none";
         });
     },
@@ -1084,4 +1118,4 @@ var capture = {
 };
 
 if (self.apf)
-    apf.uirecorder.capture = capture;
+    (apf.uirecorder || (apf.uirecorder = {})).capture = capture;

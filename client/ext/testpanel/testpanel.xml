@@ -77,7 +77,7 @@
                   startcollapsed = "true"
                   contextmenu    = "mnuTestContext"
                   empty-message  = "No tests yet"
-                  onbeforeremove = "return remove(this)">
+                  onbeforeremove = "return require('core/util').removeInteractive(this)">
                     <a:column id="colTestProject" caption="Name" width="100%" tree="1" icon="{require('ext/testpanel/testpanel').getIcon(%[.])}"><?lm
                         if (localName() == "error")
                             <span style='color:red'>[@name]</span>

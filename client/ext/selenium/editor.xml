@@ -14,7 +14,8 @@
                     <a:splitbutton id="btnTestRunInSelEditor"
                       icon     = "run.png"
                       caption  = "Run"
-                      visible  = "{!stTestRecord.active and !stTestRun.active}"
+                      visible  = "{!stTestRun.active}"
+                      disabled = "{stTestRecord.active}"
                       onclick  = "require('ext/selenium/editor').run();"
                       margin   = "0 0 0 4" 
                       submenu  = "mnuRunSettings" />
@@ -26,8 +27,40 @@
                       onclick  = "require('ext/selenium/editor').stopPlayback()"
                       visible  = "{!btnTestRunInSelEditor.visible}" />
                     
-                    <a:button id="btnUiRecordRemove" skin="c9-toolbarbutton" disabled="{!dgUiRecorder.selected}" onclick="dgUiRecorder.remove()">Remove</a:button>
-                    <a:button id="btnUiRecordAddAssert" skin="c9-toolbarbutton" disabled="{'action|assert'.indexOf(dgUiRecorder.selected and dgUiRecorder.selected.localName) == -1}" onclick="require('ext/selenium/editor').startAddAssert()">Add Assertion</a:button>
+                    <a:button id="btnUiRecordRemove" 
+                      skin     = "c9-toolbarbutton" 
+                      disabled = "{!dgUiRecorder.selected}" 
+                      onclick  = "dgUiRecorder.remove()"
+                      caption  = "Remove" />
+                      
+                    <a:splitbutton id="btnUiRecordInsert" 
+                      onclick  = "mnuInsert.dispatchEvent('itemclick')"
+                      caption  = "Insert" 
+                      submenu  = "mnuInsert" />
+                    
+                    <a:menu id="mnuInsert" 
+                      onitemclick = "
+                        var se = require('ext/selenium/editor');
+                        if (event.value == 'assert-picker')
+                            se.startAddAssert();
+                        else {
+                            var s = event.value.split('-');
+                            se.addNewNode(s[0], s[1]);
+                        }
+                      ">
+                        <a:item type="radio" value="test" caption="Test" selected="true" />
+                        <a:item type="radio" value="action" caption="Action" />
+                        <a:item type="radio" value="assert-picker" disabled="{!!%[{dgUiRecorder.selected}::self::test]}" caption="Assertion (picker)" />
+                        <a:item type="radio" value="assert" disabled="{!!%[{dgUiRecorder.selected}::self::test]}" caption="Assertion (code)" />
+                        <a:divider skin="c9-divider-hor" caption="Actions" margin="10 0 5 0" />
+                        <a:item type="radio" value="action-setTimeout" caption="setTimeout" />
+                        <a:item type="radio" value="action-hold" caption="hold" />
+                        <a:item type="radio" value="action-waitFor" caption="waitFor" />
+                        <a:item type="radio" value="action-get" caption="get" />
+                        <a:item type="radio" value="action-execute" caption="execute" />
+                        <a:item type="radio" value="action-executeAsync" caption="executeAsync" />
+                    </a:menu>
+                     
                     <a:button skin="c9-toolbarbutton" onclick="
                         uiRecordPreview.setAttribute('visible', !uiRecordPreview.visible);
                         if (uiRecordPreview.visible) {
@@ -44,6 +77,22 @@
             </a:bar>
             
             <a:menu id="mnuUiRecorder">
+                <a:item match="[node()]" onclick="
+                    apf.clipboard.cutSelection(apf.activeElement);
+                ">Cut</a:item>
+                <a:item match="[node()]" onclick="
+                    apf.clipboard.copySelection(apf.activeElement);
+                ">Copy</a:item>
+                <a:item 
+                  disabled="{
+                    apf.clipboard.empty ||
+                    !apf.activeElement.isDropAllowed(
+                        apf.clipboard.data[0], apf.activeElement.selected);
+                  }" 
+                  onclick="
+                    apf.clipboard.pasteSelection(apf.activeElement);
+                  ">Paste</a:item>
+                <a:divider />
                 <a:item match="[action|assert|test]" onclick="dgUiRecorder.remove()">Remove</a:item>
                 <a:item match="[action]" onclick="require('ext/selenium/editor').startAddAssert()">Add Assertion</a:item>
             </a:menu>
@@ -60,8 +109,8 @@
                   contextmenu = "mnuUiRecorder"
                   onmouseover = "require('ext/selenium/editor').highlightElement(event)"
                   onmouseout  = "require('ext/selenium/editor').hideHighlightElements(event)">
-                    <a:column caption="Name" width="140" icon="{require('ext/selenium/editor').getIcon([@status])}" value="[@name]" tree="1" check2="1" editor="textbox" skin="tbsimple" class="tbtree" />
-                    <a:column id="colUiRecorder" caption="Value" width="100%" value="[@value]" editor="textbox" skin="tbsimple" />
+                    <a:column id="colUiRecorder1" caption="Name" width="40%" icon="{require('ext/selenium/editor').getIcon([@status])}" value="[@name]" tree="1" check2="1" editor="textbox" skin="tbsimple" class="tbtree" />
+                    <a:column id="colUiRecorder2" caption="Value" width="60%" value="[@value]" editor="textbox" skin="tbsimple" />
                     
                     <a:css match="[test]" value="testhead" />
                     <a:css match="[node()[@status='5']]" value="current_execution" />

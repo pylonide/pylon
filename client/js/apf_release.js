@@ -1763,7 +1763,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/class.js)SIZE(45315)TIME(Wed, 23 Nov 2011 08:30:01 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/class.js)SIZE(45336)TIME(Mon, 28 Nov 2011 06:37:28 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2459,6 +2459,13 @@ apf.Class.prototype = new (function(){
                     //Check if rule has single xpath
                     if (r.cvalue.type == 3) {
                         
+                        if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10) {
+                            if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
+                                if (this.ownerDocument && this.$aml)
+                                    apf.uirecorder.capture.capturePropertyChange(this, prop, value, oldvalue); 
+                            }
+                        }
+                        
                         
                         //Set the xml value - this should probably use execProperty
                         return apf.setNodeValue(
@@ -2475,6 +2482,13 @@ apf.Class.prototype = new (function(){
             if (this.$handlePropSet(prop, value, forceOnMe) === false)
                 return;
             
+            
+            if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10) {
+                if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
+                    if (this.ownerDocument && this.$aml)
+                        apf.uirecorder.capture.capturePropertyChange(this, prop, this[prop], oldvalue); 
+                }
+            }
             
             
             value = this[prop];
@@ -2666,6 +2680,21 @@ apf.Class.prototype = new (function(){
         
         this.$eventDepth--;
 
+        
+        if (apf.uirecorder && apf.uirecorder.captureDetails) {
+            if (["debug"].indexOf(eventName) == -1 && (!e || e.currentTarget == this)) { // ,"DOMNodeRemoved","DOMNodeRemovedFromDocument","DOMNodeInsertedIntoDocument"
+                //if (apf.uirecorder.isLoaded) { // skip init loading and drawing of elements
+                    if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) { // only capture events when recording
+                        apf.uirecorder.capture.captureEvent(eventName, e || (e = new apf.AmlEvent(eventName, options)));
+                    } 
+                //}
+                // when eventName == "load" all elements are loaded and drawn
+                /*
+                if (eventName == "load" && this.isIE != undefined)
+                    apf.uirecorder.isLoaded = true;
+                */
+            }
+        }
         
         
         if (options) {
@@ -6578,7 +6607,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/util/utilities.js)SIZE(18978)TIME(Mon, 07 Nov 2011 02:19:31 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/util/utilities.js)SIZE(18985)TIME(Sun, 27 Nov 2011 23:15:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6965,6 +6994,11 @@ apf.cancelBubble = function(e, o, noPropagate){
     //if (apf.isGecko)
         //apf.window.$mousedown(e);
     
+    
+    if (apf.uirecorder && apf.uirecorder.captureDetails 
+      && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {
+        apf.uirecorder.capture.nextStream(e.type || e.name);
+    }
     
 };
 
@@ -14793,8 +14827,23 @@ return {
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/uirecorder.js)SIZE(386)TIME(Wed, 02 Nov 2011 23:11:55 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/uirecorder.js)SIZE(397)TIME(Sun, 27 Nov 2011 23:14:31 GMT)*/
 
+
+/**
+ * Provides a way to record user actions, store them and play them back.
+ * @experimental
+ */
+apf.uirecorder = {
+    $inited         : false,
+    isRecording     : false,
+    isPlaying       : false,
+    isPaused        : false,
+    captureDetails  : false,
+    $o3             : null,
+
+    setTimeout      : self.setTimeout
+}
 
 
 
@@ -16135,7 +16184,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/teleport/http.js)SIZE(38113)TIME(Wed, 16 Nov 2011 23:15:46 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/teleport/http.js)SIZE(38120)TIME(Mon, 28 Nov 2011 06:37:28 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16332,6 +16381,12 @@ apf.http = function(){
         var id    = options.id;
         
         
+        
+        if (apf.uirecorder && apf.uirecorder.captureDetails) {
+            if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
+                apf.uirecorder.capture.trackHttpCall(this, url, options); 
+            }
+        }
         
 
         var binary = apf.hasXhrBinary && options.binary;
@@ -17041,7 +17096,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/uirecorder/capture.js)SIZE(21922)TIME(Sun, 20 Nov 2011 01:07:29 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/uirecorder/capture.js)SIZE(21922)TIME(Mon, 28 Nov 2011 06:37:28 GMT)*/
 
 
 
@@ -17051,255 +17106,6 @@ apf.Init.run("http");
 
 /*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/uirecorder/selenium.js)SIZE(9161)TIME(Sat, 26 Nov 2011 23:48:13 GMT)*/
 
-
-function SeleniumPlayer(browser){
-    this.browser = browser;
-};
-
-(function(){
-    this.realtime = true;
-    
-    this.play = function(name, actions){
-        var script = this.compile(actions);
-        new Function('browser', script)();
-    }
-    
-    this.writeTestFile = function(actions, filename, name) {
-        
-    }
-    
-    this.writeTestOnly = function(actions, filename){
-        
-    }
-    
-    function findElement(element, contexts, stack, extra) {
-        var elName;
-        var obj = extra ? apf.extend({}, element, extra) : element;
-        var serialized = JSON.stringify(obj);
-        
-        if (!contexts[serialized]) {
-            elName = contexts[serialized] = "elId" + contexts.length++; 
-            stack.push("", 
-                'var ' + elName + ' = browser.findApfElement('
-                + serialized
-                + ');');
-        }
-        else
-            elName = contexts[serialized];
-        
-        return elName;
-    }
-    
-    var keys = [
-        {name: "ctrlKey",  char: "\uE009", state: false}, 
-        {name: "metaKey",  char: "\uE03E", state: false},
-        {name: "shiftKey", char: "\uE008", state: false},
-        {name: "altKey",   char: "\uE00A", state: false}
-    ];
-    
-    this.compile = function(actions){
-        var rules = [], stack;
-        var contexts = {length: 0};
-        
-        var elId, el, item, temp, lastMouseDown;
-        for (var i = 0, l = actions.length; i < l; i++) {
-            item    = actions[i];
-            el      = item.element;
-            stack   = [];
-            
-            if (item.name == "get") {
-                rules.push("browser.getDecoratedPage('" 
-                    + item.value.replace(/'/g, "\\'") + "');"); 
-                continue;
-            }
-
-            if (!el) {
-                console.log("Found item without any element");
-                continue;
-            }
-            
-            if (!this.realtime && item.name == "mousemove")
-                continue;
-
-            elId = findElement(item.element, contexts, stack);
-
-            var x  = item.offsetX;
-            var y  = item.offsetY;
-            
-            if (!item.name.indexOf("key")) {
-                keys.each(function(info){
-                    if (item[info.name] != info.state) {
-                        info.state = !info.state;
-                        stack.push("browser.keyToggle('" + info.char + "');")
-                    }
-                });
-            }
-            
-            switch(item.name) {
-                case "mousemove":
-                    // || !actions[i + 1] || !actions[i + 1].name == "mousemove"
-                    stack.push("browser.moveTo(" + elId 
-                        + ", " + x + ", " + y + ");");
-                        
-                    break;
-                case "mousedown":
-                    lastMouseDown = [elId, item.x, item.y];
-                    
-                    stack.push("browser.moveTo(" + elId 
-                        + ", " + x + ", " + y + ");");
-                    
-                    if (item.button == 2) {
-                        stack.push("browser.click('" + elId + ", 2);");
-                    }
-                    //@todo think about moving this to a cleanup.
-                    else if (
-                        (temp = actions[i + 1]) && contexts[temp.element] == elId 
-                            && temp.name == "mouseup" &&
-                        (temp = actions[i + 2]) && contexts[temp.element] == elId
-                            && temp.name == "mousedown" &&
-                        (temp = actions[i + 3]) && contexts[temp.element] == elId
-                            && temp.name == "mouseup" &&
-                        (temp = actions[i + 4]) && contexts[temp.element] == elid
-                            && temp.name == "dblclick"
-                    ) {
-                        // double click detection
-                        i += 3;
-                        continue;
-                    }
-                    else {
-                        stack.push("browser.buttonDown();");
-                    }
-                    break;
-                case "mouseup":
-                    if (lastMouseDown && lastMouseDown[0] == elId) {
-                        if (lastMouseDown[1] != item.x || lastMouseDown[2] != item.y) {
-                            x += item.x - lastMouseDown[1];
-                            y += item.y - lastMouseDown[2];
-                            lastMouseDown = null;
-                            
-                            stack.push("browser.moveTo(" + elId 
-                                + ", " + x + ", " + y + ");");
-                        }
-                    }
-                    else {
-                        stack.push("browser.moveTo(" + elId 
-                            + ", " + x + ", " + y + ");");
-                    }
-                    
-                    if (item.button == 2) {
-                        //Ignore
-                    }
-                    else {
-                        stack.push("browser.buttonUp();");
-                    }
-                    break;
-                case "mousescroll":
-                    throw new Error("Selenium doesn't support the mouse wheel");
-                    break;
-                case "dblclick":
-                    stack.push("browser.moveTo(" + elId 
-                        + ", " + x + ", " + y + ");");
-                    
-                    //stack.push("browser.doubleclick();");
-                    stack.push("browser.buttonDown();");
-                    stack.push("browser.buttonUp();");
-                    stack.push("browser.buttonDown();");
-                    stack.push("browser.buttonUp();");
-                    break;
-                case "keydown":
-                    break;
-                case "keyup":
-                    break;
-                case "keypress":
-                    //@todo !realtime
-                    //@todo modifier Keys
-                    //@todo This should be keydown and keyup
-                    
-                    var inputId = findElement(item.element, contexts, stack, {
-                        html : ["input", "*[contenteditable]", ""]
-                    });
-
-                    stack.push("browser.type(" + inputId
-                        + "', ['" + item.value + "']);");
-                    break;
-            }
-            
-            /**** Assertions ****/
-            
-            function contextToExpression(def, nosel){
-                var res;
-                if (def.id) 
-                    res = def.id;
-                else
-                    res = "apf.document.selectSingleNode(\"" 
-                      + def.xpath
-                        .replace(/^html\[1\]\//i, "")
-                        .replace(/"/g, "\\\"") + "\")";
-                
-                if (def.xml)
-                    res += ".$xmlRoot.selectSingleNode('"
-                      + def.xml.replace(/"/g, "\\\"") + "')";
-                
-                return res;
-            }
-            
-            //@todo this function can be expanded to cover all cases
-            //      but I haven't seen them occur yet
-            function serializeValue(value) {
-                if (value && (value.id || value.xpath 
-                  || value.htmlXpath || value.xml || value.eval))
-                    return contextToExpression(prop.value);
-                else if (value.dataType == apf.ARRAY) {
-                    var o = [];
-                    for (var i = 0; i < value.length; i++) {
-                        o.push(value[i] && value[i].eval
-                            ? value[i].eval
-                            : JSON.stringify(value[i]));
-                    }
-                    return "[" + o.toString() + "]";
-                }
-//                else if (typeof value == "object") {
-//                    
-//                }
-                else
-                    return JSON.stringify(value);
-            }
-            
-            // Properties
-            var time = 0;
-            for (var prop, j = 0; j < item.properties.length; j++) {
-                prop = item.properties[j];
-                var ident = contextToExpression(prop.element);
-                
-                if (prop.async && prop.time > time) {
-                    stack.push("hold(" + ((prop.time - time) * 3) + ")");
-                    time = prop.time;
-                }
-
-                stack.push("browser.assert('" 
-                    + ident + "." + prop.name + "', '"
-                    + serializeValue(prop.value).replace(/'/g, "\\'")
-                    + "');");
-                
-                if (stack[stack.length - 1].indexOf("Could not serialize") > -1)
-                    stack.pop();
-            }
-            
-            // HTTP
-            //@todo
-            
-            // Data
-            //@todo
-            
-            if (this.realtime && actions[i + 1])
-                stack.push("hold(10);");
-            
-            rules = rules.concat(stack);
-        }
-        
-        return rules.join("\n");
-    }
-}).call(SeleniumPlayer.prototype);
 
 
 /*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/uirecorder/ui.js)SIZE(18464)TIME(Sat, 26 Nov 2011 06:03:24 GMT)*/
@@ -26827,7 +26633,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(47184)TIME(Sun, 20 Nov 2011 21:16:22 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(47339)TIME(Sun, 27 Nov 2011 23:37:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27660,8 +27466,11 @@ apf.MultiselectBinding = function(){
             clearTimeout(this.$selectTimer.timer);
             // Determine next selection
             if (action == "remove" && apf.isChildOf(xmlNode, this.selected, true)
-              || xmlNode == this.$selectTimer.nextNode)
+              || xmlNode == this.$selectTimer.nextNode) {
                 this.$selectTimer.nextNode = this.getDefaultNext(xmlNode, this.$isTreeArch);
+                if (this.$selectTimer.nextNode == this.xmlRoot && !this.renderRoot)
+                    this.$selectTimer.nextNode = null;
+            }
 
             //@todo Fix this by putting it after xmlUpdate when its using a timer
             var _self = this;
@@ -36504,7 +36313,7 @@ apf.config.$inheritProperties["render-delay"] = 1;
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/dragdrop.js)SIZE(55919)TIME(Mon, 07 Nov 2011 06:05:16 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/dragdrop.js)SIZE(56002)TIME(Sun, 27 Nov 2011 21:22:47 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36926,9 +36735,12 @@ apf.DragDrop = function(){
         else
             action = defaction;
 
+        if (!event)
+            event = {};
+
         //copy convenience variables
         var context = {
-              internal : apf.DragServer.dragdata.host == this,
+              internal : apf.DragServer.dragdata && apf.DragServer.dragdata.host == this,
               ctrlKey  : event.ctrlKey,
               keyCode  : event.keyCode
           },
@@ -36957,7 +36769,7 @@ apf.DragDrop = function(){
             }
         }
 
-        if (!ifcopy) { //Implemented one copy is all copy
+        if (!ifcopy && srcRule) { //Implemented one copy is all copy
             for (var i = 0, l = srcRule.length; i < l; i++) {
                 ifcopy = typeof srcRule[i] == "object" && srcRule[i].copy
                     ? !apf.isFalse((srcRule[i].ccopy || srcRule[i].compile("copy"))(xmlNodeList[0], context))
@@ -41046,7 +40858,7 @@ apf.__XFORMS__ = 1 << 17;
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/contenteditable/clipboard.js)SIZE(2951)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/contenteditable/clipboard.js)SIZE(3300)TIME(Sun, 27 Nov 2011 22:01:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -41077,9 +40889,11 @@ apf.clipboard.empty = true;
 apf.clipboard.copied = null;
 apf.clipboard.put = function(item){
     this.store = item;
+    this.setProperty("data", item);
     this.setProperty("empty", item ? false : true);
 };
 apf.clipboard.clear = function(){
+    this.setProperty("data", null);
     this.setProperty("empty", true);
 }
 apf.clipboard.get = function(){
@@ -41114,8 +40928,14 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
     if (!selected)
         selected = amlNode.selected || amlNode.getFirstTraverseNode();
 
-    if (amlNode.hasFeature(apf.__DRAGDROP__))
-        amlNode.copy(nodes, selected, undefined, !this.copied);
+    if (amlNode.hasFeature(apf.__DRAGDROP__)) {
+        var candrop = amlNode.isDropAllowed(apf.clipboard.data, amlNode);
+        var action = candrop[1] && candrop[1].action 
+          || (amlNode.$isTreeArch ? "tree-append" : "list-append");
+        amlNode.$dragDrop(selected, this.store, candrop && candrop[1], action)
+        
+        //amlNode.copy(nodes, selected, undefined, !this.copied);
+    }
     else {
         if (nodes[0].parentNode) {
             for (var i = 0, l = nodes.length; i < l; i++) {
@@ -41129,7 +40949,11 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
         }
     }
     
-    this.$highlightSelection(amlNode, nodes, true);
+    if (!this.copied) {
+        this.$highlightSelection(amlNode, nodes, true);
+        apf.clipboard.clear();
+    }
+    
     amlNode.selectList(nodes);
 };
 
@@ -43191,7 +43015,7 @@ apf.runIE = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/browsers/non_ie.js)SIZE(24968)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/browsers/non_ie.js)SIZE(24354)TIME(Sun, 27 Nov 2011 23:15:19 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53451,7 +53275,7 @@ apf.button.actions  = {
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/calendar.js)SIZE(29646)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/calendar.js)SIZE(28862)TIME(Sun, 27 Nov 2011 23:15:46 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53527,7 +53351,7 @@ apf.button.actions  = {
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/checkbox.js)SIZE(8077)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/checkbox.js)SIZE(8188)TIME(Mon, 28 Nov 2011 06:45:48 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53619,6 +53443,9 @@ apf.checkbox = function(struct, tagName){
      */
     this.$propHandlers["value"] = function(value){
         value = (typeof value == "string" ? value.trim() : value);
+
+        if (value == "" && this["default"])
+            value = this.value = apf.isTrue(this["default"]);
 
         if (this.$values) {
             this.checked = (typeof value != "undefined" && value !== null
@@ -53788,6 +53615,17 @@ apf.checkbox = function(struct, tagName){
     })
     
     
+    
+    this.$getActiveElements = function() {
+        // init $activeElements
+        if (!this.$activeElements) {
+            this.$activeElements = {
+                $input       : this.$input
+            }
+        }
+
+        return this.$activeElements;
+    }
     
 }).call(apf.checkbox.prototype = new apf.BaseButton());
 
@@ -55346,7 +55184,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53775)TIME(Sun, 27 Nov 2011 06:10:34 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53795)TIME(Sun, 27 Nov 2011 22:01:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55879,8 +55717,8 @@ apf.datagrid = function(struct, tagName){
                 "padding-right:" + vLeft + "px;margin-right:-" + vLeft + "px"]);
         
             //headings and records have same padding-right
-            this.$container.style.paddingRight  =
-            this.$head.style.paddingRight = (vLeft - 1) + "px";
+            this.$container.style.paddingRight  = (vLeft - 1) + "px";
+            this.$head.style.paddingRight = (vLeft - 2) + "px";
         }
         
         this.$fixed = fixed;
@@ -57208,7 +57046,7 @@ apf.aml.setElement("divider", apf.divider);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/dropdown.js)SIZE(15377)TIME(Sun, 20 Nov 2011 20:28:47 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/dropdown.js)SIZE(15384)TIME(Sun, 27 Nov 2011 23:15:55 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57649,6 +57487,17 @@ apf.dropdown = function(struct, tagName){
         this.oSlider = null;
     };
 
+    
+    this.$getActiveElements = function() {
+        // init $activeElements
+        if (!this.$activeElements) {
+            this.$activeElements = {
+                $button       : this.$button
+            }
+        }
+
+        return this.$activeElements;
+    }
     
 }).call(apf.dropdown.prototype = new apf.BaseList());
 
@@ -58182,7 +58031,7 @@ apf.aml.setElement("flashplayer", apf.flashplayer);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/frame.js)SIZE(4989)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/frame.js)SIZE(4838)TIME(Sun, 27 Nov 2011 23:16:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58319,6 +58168,17 @@ apf.frame    = function(struct, tagName){
     };
     
         
+    this.$getActiveElements = function() {
+        // init $activeElements
+        if (!this.$activeElements) {
+            this.$activeElements = {
+                oCaption       : this.oCaption
+            }
+        }
+
+        return this.$activeElements;
+    }
+    
 }).call(apf.frame.prototype = new apf.Presentation());
 
 apf.panel.prototype    =
@@ -61794,7 +61654,7 @@ apf.method = function(struct, tagName){
 apf.aml.setElement("method", apf.method);
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/modalwindow.js)SIZE(24661)TIME(Mon, 07 Nov 2011 02:32:12 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/modalwindow.js)SIZE(24668)TIME(Sun, 27 Nov 2011 23:16:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62491,6 +62351,19 @@ apf.AmlWindow = function(struct, tagName){
     };
     
     
+    this.$getActiveElements = function() {
+        // init $activeElements
+        if (!this.$activeElements) {
+            this.$activeElements = {
+                oTitle   : this.oTitle,
+                oIcon    : this.oIcon,
+                oDrag    : this.oDrag
+            }
+        }
+
+        return this.$activeElements;
+    }
+    
 
     
     this.addEventListener("$skinchange", function(){
@@ -62527,7 +62400,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/model.js)SIZE(42598)TIME(Thu, 24 Nov 2011 20:39:49 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/model.js)SIZE(42605)TIME(Sun, 27 Nov 2011 23:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63409,6 +63282,20 @@ apf.model = function(struct, tagName){
         
 
         
+        if (apf.uirecorder && apf.uirecorder.captureDetails) {
+            if (apf.uirecorder.isLoaded && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {// only capture events when recording
+                if (this.ownerDocument && this.$aml) {
+                    apf.uirecorder.capture.captureModelChange({
+                        action      : action,
+                        amlNode     : this,
+                        xmlNode     : xmlNode,
+                        listenNode  : listenNode,
+                        UndoObj     : UndoObj
+                    }); 
+                }
+            }
+        }
+        
         
         var p, b;
         for (var id in this.$listeners) {
@@ -64057,7 +63944,7 @@ apf.aml.setElement("event", apf.event);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/page.js)SIZE(26413)TIME(Wed, 16 Nov 2011 23:06:07 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/page.js)SIZE(26420)TIME(Sun, 27 Nov 2011 23:16:52 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64789,6 +64676,17 @@ apf.page = function(struct, tagName){
         }
     };
     
+    
+    this.$getActiveElements = function() {
+        // init $activeElements
+        if (!this.$activeElements) {
+            this.$activeElements = {
+                $button : this.$button
+            }
+        }
+
+        return this.$activeElements;
+    }
     
 }).call(apf.page.prototype = new apf.Presentation());
 
@@ -66569,7 +66467,7 @@ apf.aml.setElement("color",       apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/radiobutton.js)SIZE(16930)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/radiobutton.js)SIZE(16931)TIME(Sun, 27 Nov 2011 23:16:59 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67029,6 +66927,17 @@ apf.radiobutton = function(struct, tagName){
             this.$group.$removeRadio(this);
     };
     
+    
+    this.$getActiveElements = function() {
+        // init $activeElements
+        if (!this.$activeElements) {
+            this.$activeElements = {
+                oInput       : this.oInput
+            }
+        }
+
+        return this.$activeElements;
+    };
     
 }).call(apf.radiobutton.prototype = new apf.Presentation());
 
@@ -68918,7 +68827,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/slider.js)SIZE(32334)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/slider.js)SIZE(32341)TIME(Sun, 27 Nov 2011 23:17:08 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69871,7 +69780,7 @@ apf.aml.setElement("source", apf.source);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/spinner.js)SIZE(17516)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/spinner.js)SIZE(16965)TIME(Sun, 27 Nov 2011 23:17:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70407,6 +70316,19 @@ apf.spinner = function(struct, tagName){
     };
     
     
+    this.$getActiveElements = function() {
+        // init $activeElements
+        if (!this.$activeElements) {
+            this.$activeElements = {
+                oInput          : this.oInput,
+                $buttonPlus     : this.$buttonPlus,
+                $buttonMinus    : this.$buttonMinus
+            }
+        }
+
+        return this.$activeElements;
+    }
+    
 
 
 }).call(apf.spinner.prototype = new apf.StandardBinding());
@@ -70416,7 +70338,7 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/splitbutton.js)SIZE(4827)TIME(Sat, 26 Nov 2011 18:33:47 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/splitbutton.js)SIZE(4993)TIME(Mon, 28 Nov 2011 03:51:22 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70500,7 +70422,11 @@ apf.splitbutton = function(struct, tagName){
         
         var _self = this;
         this.$button2.addEventListener("mousedown", function() {
-            self[value].$ext.style.marginLeft = "-" + _self.$button1.$ext.offsetWidth + "px";
+            self[value].addEventListener("display", function(){
+                self[value].$ext.style.marginLeft = "-" + _self.$button1.$ext.offsetWidth + "px";
+            });
+            
+            this.removeEventListener("mousedown", arguments.callee);
         });
     }
     

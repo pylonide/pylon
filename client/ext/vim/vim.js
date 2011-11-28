@@ -128,7 +128,8 @@ module.exports = ext.register("ext/vim/vim", {
             self.toggle(vimEnabled === "true");
         });
 
-        txtConsoleInput.addEventListener("keydown", cliKeyDown);
+        if (self.txtConsoleInput) //@todo this should be an event
+            txtConsoleInput.addEventListener("keydown", cliKeyDown);
     },
 
     toggle: function(show) {

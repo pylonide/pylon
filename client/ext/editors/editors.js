@@ -26,7 +26,7 @@ module.exports = ext.register("ext/editors/editors", {
     fileExtensions  : {},
 
     register : function(oExtension){
-        var id = "rb" + oExtension.path.replace(/\//g, "_");
+        //var id = "rb" + oExtension.path.replace(/\//g, "_");
 
         /*oExtension.$rbEditor = barButtons.appendChild(new apf.radiobutton({
             id        : id,
@@ -90,7 +90,7 @@ module.exports = ext.register("ext/editors/editors", {
         var tab = new apf.bar({
             skin     : "basic",
             style    : "padding : 0 0 33px 0;position:absolute;", //53px
-            htmlNode : document.body,
+            //htmlNode : document.body,
             childNodes: [
                 new apf.tab({
                     id      : "tabEditors",
@@ -149,6 +149,8 @@ module.exports = ext.register("ext/editors/editors", {
                 })*/
             ]
         });
+        
+        apf.document.body.appendChild(tab);
 
         tabEditors.$buttons.appendChild(btn.$ext);
         tabEditors.addEventListener("DOMNodeInserted",function(e){
@@ -252,6 +254,16 @@ module.exports = ext.register("ext/editors/editors", {
             return;
 
         var lastType = page.type;
+        
+        var info;
+        if ((info = page.$doc.dispatchEvent("validate", info)) !== true) {
+            util.alert(
+                "Could not switch editor",
+                "Could not switch editor because this document is invalid.",
+                "Please fix the error and try again:" + info
+            );
+            return;
+        }
 
         var editor = ext.extLut[path];
         if (!editor.inited)
@@ -271,7 +283,6 @@ module.exports = ext.register("ext/editors/editors", {
 
     openEditor : function(doc, init, active) {
         var xmlNode  = doc.getNode();
-        var filename = xmlNode.getAttribute("name");
         var filepath = xmlNode.getAttribute("path");
 
         var page = tabEditors.getPage(filepath);

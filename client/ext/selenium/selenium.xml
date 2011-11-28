@@ -30,6 +30,15 @@
               caption   = "[@caption]"
               each      = "[browser]"
               maxitems  = "20" />
+            <a:checkbox id="cbSeQuit"
+              span    = "2"
+              margin  = "0 0 0 60"
+              style   = "color: #bbb"
+              default2 = "true"
+              value2   = "[{require('ext/settings/settings').model}::test/selenium/@quit]"
+              value   = "true"
+              label   = "Quit browser after running test" 
+              visible = "{ddWhere.value == 'local'}" />
         </a:table>
     </a:bar>
     

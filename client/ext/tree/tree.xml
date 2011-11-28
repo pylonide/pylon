@@ -4,58 +4,6 @@
             return (xmlNode.tagName == "folder" ? 0 : 1) + value.toLowerCase();
         }
 
-        var confirmed = false;
-
-        function remove(amlNode) {
-            if (window.cloud9config.readonly == true)
-                return false;
-            if (!confirmed) {
-                var files = amlNode.getSelection();
-
-                function confirm(file) {
-                    var name = file.getAttribute("name");
-                
-                    require("core/util").question(
-                        "Remove file?",
-                        "You are about to remove the file " + name,
-                        "Do you want continue? (This change cannot be undone)",
-                        function () { // Yes
-                            confirmed = true;
-                            amlNode.remove(file);
-                            confirmed = false;
-                            if (files.length > 0)
-                                confirm(files.shift());
-                            else
-                                winQuestion.hide();
-                        },
-                        function () { // Yes to all
-                            confirmed = true;
-                            amlNode.remove(file);
-                            files.forEach(function (file) {
-                                amlNode.remove(file);
-                            });
-                            confirmed = false;
-                            winQuestion.hide();
-                        },
-                        function () { // No
-                            if (files.length > 0)
-                                confirm(files.shift());
-                            else
-                                winQuestion.hide();
-                        },
-                        function () { // No to all
-                            winQuestion.hide();
-                        }
-                    );
-                    btnQuestionYesToAll.setAttribute("visible", files.length > 0);
-                    btnQuestionNoToAll.setAttribute("visible", files.length > 0);
-                }
-                confirm(files.shift());
-                return false;
-            } else
-                return true;
-        };
-
         function createPath(a, b){
             return b + "/" + apf.getFilename(a);
         }
@@ -87,8 +35,8 @@
         </a:menu>
         
         <a:tree id="trFiles" canrename="true" border="0" simpledata="true"
-          contextmenu="mnuCtxTree" multiselect="false" reselectable="true" 
-          onbeforeremove="return remove(this)" disabled="{{!stServerConnected.active}}"
+          contextmenu="mnuCtxTree" multiselect="true" reselectable="true" 
+          onbeforeremove="return require('core/util').removeInteractive(this)" disabled="{{!stServerConnected.active}}"
           onbeforemove="this.disable();" autoselect="false"
           flex="1" anchors="0 0 0 0"
         >
@@ -142,7 +90,7 @@
             <a:item match="[file|folder[not(@root)]]" onclick="
                 apf.clipboard.copySelection(apf.activeElement);
             ">Copy</a:item>
-            <a:item match="[folder|project]" disabled="{!apf.clipboard.empty}" onclick="
+            <a:item match="[folder|project]" disabled="{apf.clipboard.empty}" onclick="
                 apf.clipboard.pasteSelection(apf.activeElement);
             ">Paste</a:item>
             <a:divider />

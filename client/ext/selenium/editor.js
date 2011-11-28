@@ -6,6 +6,13 @@
  */
 
 /*
+    Saving in the code editor doesn't work:
+                {
+            "name": "get",
+            "value": "http://127.0.0.1:5001/workspace/support/apf/tabs.html",
+            "properties": []
+        },
+
     Ideas:
         * Hover over the datagrid highlights the element it pertains
         * Easily remove and add assertions/actions
@@ -44,6 +51,7 @@
  
 define(function(require, exports, module) {
 
+var util = require("core/util");
 var ide = require("core/ide");
 var ext = require("core/ext");
 var markup = require("text!ext/selenium/editor.xml");
@@ -52,6 +60,7 @@ var editors = require("ext/editors/editors");
 var fs = require("ext/filesystem/filesystem");
 var testpanel = require('ext/testpanel/testpanel');
 var selenium = require('ext/selenium/selenium');
+var UiRecorderToWD = require("ext/selenium/converter");
 
 var useProxy = true;
 
@@ -71,34 +80,36 @@ module.exports = ext.register("ext/selenium/editor", {
 
         var _self = this;
         
-        if (!doc.isSeleniumInited) {
+        if (!doc.hasSeleniumEvents) {
             doc.addEventListener("prop.value", function(e) {
                 if (this.editor != _self)
                     return;
                 
                 try {
-                    var json = JSON.parse(e.value);
+                    var json = e.value && JSON.parse(e.value) || {};
                 }
                 catch(e) {
-                    dgUiRecorder.setAttribute("empty-message", 
+                    dgUiRecorder.setProperty("empty-message", 
                         "Could not load test: " + e.message);
-                    dgUiRecorder.clear();
+                    _self.model.clear();
                     
                     return;
                 }
+                
+                dgUiRecorder.setProperty("empty-message", "No tests yet");
     
                 var xml = _self.convertToXml(json);
                 _self.model.load(xml);
                 
                 doc.seleniumXml = xml;
-                doc.isInited = true;
+                doc.isSeleniumInited = true;
             });
             
             doc.addEventListener("retrievevalue", function(e) {
                 if (this.editor != _self)
                     return;
 
-                if (!doc.isInited) 
+                if (!doc.isSeleniumInited) 
                     return e.value;
                 else 
                     return JSON.stringify(_self.getTests(), null, '    ');
@@ -113,26 +124,43 @@ module.exports = ext.register("ext/selenium/editor", {
                 doc.seleniumXml = null;
             });
             
-            doc.isSeleniumInited = true;
+            doc.addEventListener("validate", function(e){
+                if (this.editor != _self) {
+                    try {
+                        JSON.parse(this.dispatchEvent("retrievevalue"));
+                    }
+                    catch(err) {
+                        return err.message;
+                    }
+                }
+                
+                return true;
+            })
+            
+            doc.hasSeleniumEvents = true;
         }
 
         //Switch from an other editor
         if (doc.editor && doc.editor != this) {
             var value = doc.getValue();
-            if (JSON.stringify(_self.getTests(), null, '    ') !== value) {
+            if (!dgUiRecorder.xmlRoot
+              || JSON.stringify(_self.getTests(), null, '    ') !== value) {
                 doc.editor = this;
                 doc.dispatchEvent("prop.value", {value : value});
             }
         }
-        //First time load
-        else if (!doc.editor) {
-            doc.editor = this;
-        }
         //Reloading into this editor
-        else {
-            if (_self.model.data != doc.seleniumXml)
+        else if (doc.editor) {
+            if (!dgUiRecorder.xmlRoot || _self.model.data != doc.seleniumXml)
                 _self.model.load(doc.seleniumXml);
         }
+        else {
+            doc.editor = this;
+            if (doc.value)
+                doc.dispatchEvent("prop.value", {value : doc.value});
+        }
+        
+        doc.editor = this;
     },
 
     hook : function() {
@@ -190,10 +218,14 @@ module.exports = ext.register("ext/selenium/editor", {
             //dgUiRecorder.select(testNode);
         });
         ide.addEventListener("selenium.stop", function(e){
-            var nodes = _self.model.queryNodes("test[last()]/action");
+            if (!e.actions)
+                return;
+            
+            var json, nodes = _self.model.queryNodes("test[last()]/action");
             for (var i = 0; i < nodes.length; i++) {
-                nodes[i].setAttribute("json", 
-                    JSON.stringify(e.actions[nodes[i].getAttribute("index")]));
+                json = e.actions[nodes[i].getAttribute("index")];
+                if (json)
+                    nodes[i].setAttribute("json", JSON.stringify(json));
             }
         });
         ide.addEventListener("selenium.action", function(e){
@@ -242,10 +274,10 @@ module.exports = ext.register("ext/selenium/editor", {
             
         });
         
-        ide.addEventListener("hidemenu", function(e){
+        ide.addEventListener("selenium.hidemenu", function(e){
             _self.hidePropertyMenu(e);
         });
-        ide.addEventListener("showmenu", function(e){
+        ide.addEventListener("selenium.showmenu", function(e){
             _self.showPropertyMenu(e);
         });
         
@@ -285,7 +317,7 @@ module.exports = ext.register("ext/selenium/editor", {
         
         var updateUrl;
         dgUiRecorder.addEventListener("afterselect", updateUrl = function(){
-            if (dgUiRecorder.selected) {
+            if (dgUiRecorder.selected && !_self.isRecording) {
                 var value = _self.findUrl(dgUiRecorder.selected);
                 
                 if (value)
@@ -321,6 +353,14 @@ module.exports = ext.register("ext/selenium/editor", {
             else 
                 _self.stop();
         });
+        
+        vboxUiRecorder.appendChild(new apf.splitter({
+            visible : "{flSeleniumEditMovie.visible}"
+        }));
+        
+        vboxUiRecorder.appendChild(selenium.createFlashPlayer("dgUiRecorder", "flSeleniumEditMovie"));
+        
+        flSeleniumEditMovie.setAttribute("margin", "3 0 0 0");
     },
     
     run : function(){
@@ -328,10 +368,11 @@ module.exports = ext.register("ext/selenium/editor", {
             return;
         
         if (!this.statusColumn) {
-            colUiRecorder.setAttribute("width", "50%");
+            colUiRecorder1.setAttribute("width", "33%");
+            colUiRecorder2.setAttribute("width", "33%");
             this.statusColumn = new apf.BindingColumnRule({
                 caption : "Status", 
-                width   : "50%", 
+                width   : "34%", 
                 value   : "{if ([@status] === '0')\n\
                     <dd style='color:red;margin:0;'>\\[[@status-message]\\]</dd>\n\
                 else if ([@status] == '1')\n\
@@ -377,6 +418,9 @@ module.exports = ext.register("ext/selenium/editor", {
     },
     
     findUrl : function(xmlNode){
+        if (!xmlNode)
+            return;
+        
         if ("repo|file".indexOf(xmlNode.localName) > -1)
             return apf.queryValue(this.selected, ".//action[@name='get']/@value");
         
@@ -391,7 +435,10 @@ module.exports = ext.register("ext/selenium/editor", {
     },
     
     getProxyUrl : function(){
-        var host = this.findUrl(dgUiRecorder.selected).replace(/(https?:\/\/[^\/]+(?:\/workspace)?)\/.*$/, "$1");
+        var host = (dgUiRecorder.selected
+          ? this.findUrl(dgUiRecorder.selected) || ""
+          : tbUiRecordLoc.value || "")
+            .replace(/(https?:\/\/[^\/]+)\/.*$/, "$1") + "/workspace"; //(?:\/workspace)?)
         return host + "/.c9.proxy.html";
     },
 
@@ -550,16 +597,50 @@ module.exports = ext.register("ext/selenium/editor", {
         this.model.appendXml(actionNode, "test[last()]");
     },
     
+    assertMouse: function(){
+        require("ext/selenium/editor").stopAddAssert();
+    },
+    assertKey: function(e){
+        if (e.keyCode == 27)
+            require("ext/selenium/editor").stopAddAssert();
+    },
+    
     startAddAssert : function(){
         this.execute("startAddAssert");
         
-        barUiRecorder.disable();
+        apf.addListener(document, "mousedown", this.assertMouse);
+        apf.addListener(document, "keydown", this.assertKey);
+        
+        //barUiRecorder.disable();
+        btnUiRecordInsert.disable();
     },
     
     stopAddAssert : function(){
         this.execute("stopAddAssert");
         
-        barUiRecorder.enable();
+        apf.removeListener(document, "mousedown", this.assertMouse);
+        apf.removeListener(document, "keydown", this.assertKey);
+        
+        //barUiRecorder.enable();
+        btnUiRecordInsert.enable();
+    },
+    
+    addNewNode : function(tag, name){
+        var lut = {
+            'test': 'tests',
+            'action' : 'test',
+            'assert' : 'action'
+        };
+    
+        var doc = this.model.data.ownerDocument;
+        var el = doc.createElement(tag);
+        if (name)
+            el.setAttribute('name', name);
+        
+        var node  = dgUiRecorder.selected;
+        var pNode = node.selectSingleNode('ancestor-or-self::' + lut[tag]);
+            
+        apf.xmldb.appendChild(pNode, el, node.parentNode == pNode ? node : null);
     },
     
     highlightElement : function(e) {
@@ -596,7 +677,7 @@ module.exports = ext.register("ext/selenium/editor", {
     
     showPropertyMenu : function(e){
         var ui = this;
-        
+
         var element = e.element;
         
         this.menu = apf.document.body.appendChild(new apf.menu());
@@ -606,7 +687,6 @@ module.exports = ext.register("ext/selenium/editor", {
                 var node = dgUiRecorder.selected;
                 if (node.localName == "assert")
                     node = node.parentNode;
-                
                 var doc = node.ownerDocument;
                 var assert = doc.createElement("assert");
                 assert.setAttribute("name", e.relatedNode.caption);
@@ -622,7 +702,7 @@ module.exports = ext.register("ext/selenium/editor", {
         });
         
         var props = e.props;
-        for (var prop, i = 0; i < props.length; i++) {
+        for (var i = 0; i < props.length; i++) {
             this.menu.appendChild(new apf.item({
                 caption : props[i].caption,
                 value   : props[i].value
@@ -645,7 +725,7 @@ module.exports = ext.register("ext/selenium/editor", {
         var model = this.model;
         var nodes = model.queryNodes("test");
         
-        var sp = new SeleniumPlayer();
+        var sp = new UiRecorderToWD();
         sp.realtime = false;
         
         var test, tests = {}, actions, action, asserts, assert, json;

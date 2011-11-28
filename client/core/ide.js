@@ -231,6 +231,8 @@ define(function(require, exports, module) {
                 // pass a lambda to enable socket.io ACK
                 _oldsend.call(ide.socket, msg, function() {});
             };
+            
+            this.inited = true;
         });
         
         ide.$msgQueue = [];

@@ -9,13 +9,12 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var settings = require("ext/settings/settings");
-var panels = require("ext/panels/panels");
 var fs = require("ext/filesystem/filesystem");
 var newresource = require("ext/newresource/newresource");
 var testpanel = require("ext/testpanel/testpanel");
 var template = require("text!ext/selenium/selenium.template");
 var markup = require("text!ext/selenium/selenium.xml");
+var UiRecorderToWD = require("ext/selenium/converter");
 
 function escapeXpathString(name){
     if (name.indexOf('"') > -1) {
@@ -87,16 +86,17 @@ module.exports = ext.register("ext/selenium/selenium", {
         });
     },
     
+    flashPlayerCount : 0,
     createFlashPlayer : function(dgName, playerName){
         return new apf.flashplayer({
             id         : playerName,
             margin     : "4",
             src        : "/static/ext/selenium/flowplayer-3.2.7.swf",
-            flashvars  : 'config=\\{"playerId":"player","clip":\\{"url":"[{' 
-                + dgName 
-                + '.selected}::ancestor-or-self::file/@video]","autoPlay":false,"scaling":"fit"\\}\\}',
+            flashvars  : 'config=\\{"playerId":"player' + this.flashPlayerCount++ 
+                + '","clip":\\{"url":"[{' + dgName 
+                + '.selected}::ancestor-or-self::node()/@video]","autoPlay":false,"scaling":"fit"\\}\\}',
             height     : "100",
-            visible    : "{!![{" + dgName + ".selected}::ancestor-or-self::file/@video]}",
+            visible    : "{!![{" + dgName + ".selected}::ancestor-or-self::node()/@video]}",
             bgcolor    : "000000",
             allowfullscreen : "true"
         });
@@ -238,12 +238,14 @@ module.exports = ext.register("ext/selenium/selenium", {
         "buttonDown" : "mousedown",
         "buttonUp"   : "mouseup",
         "doubleclick": "dblclick",
-        "type"       : "keypress"
+        "type"       : "keypress",
+        
+        "setTimeout" : "setWaitTimeout"
     },
     
     runSeleniumData : function(fileNode, testObject, callback, data) {
         var _self    = this;
-        var sp       = new SeleniumPlayer();
+        var sp       = new UiRecorderToWD();
         sp.realtime  = false;
         
         _self.running = true;
@@ -294,7 +296,8 @@ module.exports = ext.register("ext/selenium/selenium", {
                 where   : ddWhere.value,
                 os      : ddSeOS.value,
                 browser : ddSeBrowser.selected.getAttribute("value"),
-                version : ddSeBrowser.selected.getAttribute("version")
+                version : ddSeBrowser.selected.getAttribute("version"),
+                quit    : cbSeQuit.value
             };
 
             ide.addEventListener("socketMessage", function(e){
@@ -367,7 +370,7 @@ module.exports = ext.register("ext/selenium/selenium", {
                                     .createElement("error");
                                 errorNode.setAttribute("name", msg.data);
                                 errorNode.setAttribute("status", 0);
-                                errorNode = apf.xmldb.appendChild(testNode, errorNode, assertNode);
+                                errorNode = apf.xmldb.appendChild(testNode, errorNode, assertNode || actionNode && actionNode.nextSibling);
                                 ide.dispatchEvent("test.pointer.selenium", {
                                     xmlNode: errorNode
                                 });
@@ -406,10 +409,14 @@ module.exports = ext.register("ext/selenium/selenium", {
                         case 6: //CMD
                             var actions = testNode.selectNodes("action");
                             var actionNode = actions.length && actions[actionIndex+1];
-                            if (actionNode && actionNode.getAttribute("name") == (_self.actionLookup[msg.cmd] || msg.cmd)) {
-                                testpanel.setExecute(actionNode);
-                                actionIndex++;
-                                assertIndex = -1;
+                            if (actionNode) {
+                                var actionName = actionNode.getAttribute("name");
+                                if ((_self.actionLookup[actionName] || actionName) 
+                                  == (_self.actionLookup[msg.cmd] || msg.cmd)) {
+                                    testpanel.setExecute(actionNode);
+                                    actionIndex++;
+                                    assertIndex = -1;
+                                }
                             }
                         case 3: //LOG
                             testpanel.setLog(testNode, "command '" 
@@ -424,7 +431,12 @@ module.exports = ext.register("ext/selenium/selenium", {
                             testpanel.setExecute();
                         
                             apf.xmldb.setAttribute(fileNode, "video", msg.video);
-                            dgTestProject.reselect(); //Due to apf bug
+                            
+                            //Small hack
+                            if (self.dgTestProject)
+                                dgTestProject.reselect(); //Due to apf bug
+                            if (self.dgUiRecorder)
+                                dgUiRecorder.reselect(); //Due to apf bug
                         
                             ide.removeEventListener("socketMessage", arguments.callee);
                             nextTest();

@@ -258,9 +258,8 @@ module.exports = ext.register("ext/code/code", {
                 doc.dispatchEvent("prop.value", {value : value});
             }
         }
-        else {
-            doc.editor = this;
-        }
+        
+        doc.editor = this;
     },
 
     hook: function() {

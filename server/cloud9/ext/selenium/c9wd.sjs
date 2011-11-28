@@ -38,7 +38,14 @@ function wdInit(options, assert, callback) {
             __replace(cmd); //Inlining above code doesn't work
         }
         
+        browser.constructor.prototype.hold = function(ms){
+            assert.cmd("hold");
+            hold(ms);
+        };
+        
         browser.constructor.prototype.findApfElement = function (options) {
+            this.waitFor("_$elementExists(" + JSON.stringify(options) + ")");
+            
             var elId = this.eval("_$findApfElement(" + JSON.stringify(options) + ")");
             if (!elId)
                 return;
@@ -97,14 +104,12 @@ function wdInit(options, assert, callback) {
         browser.constructor.prototype.getDecoratedPage = function(url) {
             this.get(url);
             this.setWaitTimeout(options.waitTimeout || 2000);
-            this.setAsyncTimeout(30000);
+            this.setAsyncTimeout(5000);
             
             //Wait until APF is loaded
             this.executeAsync("var cb = arguments[arguments.length - 1];
                 var _$loadTimer = setInterval(function(){
-                    console.log('checking');
                     if (self.apf && apf.loaded) {
-                        console.log('test');
                         clearInterval(_$loadTimer);
                         cb();
                     }
@@ -125,7 +130,9 @@ function wdInit(options, assert, callback) {
             
                 if (!result) {
                     return {
-                        message : 'Could not find AML Element ' + (options.id || options.xpath)
+                        message : 'Could not find AML Element ' 
+                            + (options.eval || options.id || options.xpath)
+                            + ' ' + JSON.stringify(options)
                     }
                 }
             
@@ -185,9 +192,14 @@ function wdInit(options, assert, callback) {
                 }
             
                 return result;
-            }");
+            }; 
             
-            this.execute("_$equals = function (input, match){
+            _$elementExists = function(options){
+                var elId = _$findApfElement(options);
+                return elId && elId.style;
+            };
+            
+            _$equals = function (input, match){
                 if ('array|function|object'.indexOf(typeof input) == -1) {
                     return input == match;
                 }
