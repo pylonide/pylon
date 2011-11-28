@@ -8,6 +8,7 @@ module.exports = {
     onVisualMode: false,
     onVisualLineMode: false,
     insertMode: function(editor) {
+        var isDarkTheme = require(editor.getTheme()).isDark;
         // Switch editor to insert mode
         var cursor = document.getElementsByClassName("ace_cursor")[0];
 
@@ -16,7 +17,9 @@ module.exports = {
         cursor.style.backgroundColor = null;
         cursor.style.opacity = null;
         cursor.style.border = null;
-        cursor.style.borderLeft = "2px solid black";
+        cursor.style.borderLeftColor = isDarkTheme? "#eeeeee" : "#333333";
+        cursor.style.borderLeftStyle = "solid";
+        cursor.style.borderLeftWidth = "2px";
 
         editor.setOverwrite(false);
         editor.keyBinding.$data.buffer = "";
