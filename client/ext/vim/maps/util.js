@@ -8,7 +8,10 @@ module.exports = {
     onVisualMode: false,
     onVisualLineMode: false,
     insertMode: function(editor) {
-        var isDarkTheme = require(editor.getTheme()).isDark;
+        var isDarkTheme;
+        if (editor && editor.getTheme())
+            isDarkTheme = require(editor.getTheme()).isDark;
+
         // Switch editor to insert mode
         var cursor = document.getElementsByClassName("ace_cursor")[0];
 
