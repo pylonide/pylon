@@ -48,7 +48,6 @@
               border     = "0"
               options    = "size|move"
               caching    = "false"
-              prerender  = "true"
               model      = "mdlDbgStack"
               disabled   = "{!stDebugProcessRunning.active or stRunning.active}"
               selected   = "{dbg.activeframe}">
@@ -140,8 +139,7 @@
               model      = "mdlDbgBreakpoints"
               each       = "[breakpoint]"
               caption    = "[@text]"
-              icon       = "debugger/brkp_obj.png"
-              prerender  = "true">
+              icon       = "debugger/brkp_obj.png">
                 <a:actions />
             </a:list>
         </a:page>
