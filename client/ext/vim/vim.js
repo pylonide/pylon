@@ -67,25 +67,27 @@ var removeCommands = function removeCommands(editor, commands) {
 };
 
 var enableVim = function enableVim() {
-    if (editors.currentEditor) {
+    if (editors.currentEditor && editors.currentEditor.ceEditor) {
         var editor = editors.currentEditor.ceEditor.$editor;
 
         addCommands(editor, commands);
         editor.setKeyboardHandler(handler);
         commands.stop.exec(editor);
+        enabled = true;
     }
-    enabled = true;
+
 };
 
 var disableVim = function() {
-    if (editors.currentEditor) {
+    if (editors.currentEditor && editors.currentEditor.ceEditor) {
         var editor = editors.currentEditor.ceEditor.$editor;
 
         removeCommands(editor, commands);
         editor.setKeyboardHandler(null);
         commands.start.exec(editor);
+        enabled = false;
     }
-    enabled = false;
+
 };
 
 var cliKeyDown = function(e) {
@@ -152,13 +154,13 @@ module.exports = ext.register("ext/vim/vim", {
 
     enable : function() {
         ide.addEventListener("consolecommand", onConsoleCommand);
-        ide.addEventListener('afteropenfile',  enableVim);
+        ide.addEventListener("afteropenfile",  enableVim);
         enableVim();
     },
 
     disable : function() {
         ide.removeEventListener("consolecommand", onConsoleCommand);
-        ide.removeEventListener('afteropenfile',  enableVim);
+        ide.removeEventListener("afteropenfile",  enableVim);
         disableVim();
     },
 
