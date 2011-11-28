@@ -226,12 +226,26 @@ apf.importStylesheet = function (def, win) {
     }    
     
     for (var i = 0; i < def.length; i++) {
-        if (!def[i][1]) continue;
-        
+        if (!def[i][1])
+            continue;
+
         if (apf.isIE)
             styleSheet.addRule(def[i][0], def[i][1]);
-        else
-            styleSheet.insertRule(def[i][0] + " {" + def[i][1] + "}", 0);
+        else {
+            var rule = def[i][0] + " {" + def[i][1] + "}";
+            try {
+                styleSheet.insertRule(rule, 0);
+            }
+            catch (e) {
+                // Firefox has trouble with inserting rules at index 0.
+                // Probably not the cause for this to err, but the try/catch
+                // avoids it.
+                console && console.error(
+                    "Could not insert CSS rule " + rule + " in stylesheet ",
+                    styleSheet
+                );
+            }
+        }
     }
 }
 
