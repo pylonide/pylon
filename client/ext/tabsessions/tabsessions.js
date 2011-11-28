@@ -188,7 +188,9 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         // close open tabs
         pages = tabEditors.getPages();
         for (var i = 0, l = pages.length; i < l; i++) {
-            pages[i].removeNode();
+            page = pages[i];
+            tabbehaviors.removeItem(page);
+            page.removeNode();
         }
 
         // open session files
@@ -204,14 +206,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                     doc.state = JSON.parse(state);
             }
             catch (ex) {}
-            /*
-            if (nodes[i].getAttribute("changed") == 1) {
-                doc.cachedValue = nodes[i].firstChild.nodeValue
-                    .replace(/\n]\n]/g, "]]")
-                    .replace(/\\r/g, "\r")
-                    .replace(/\\n/g, "\n");
-            }
-            */
+
             ide.dispatchEvent("openfile", {
                 doc    : doc,
                 init   : true,
@@ -220,7 +215,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                     : i == l - 1
             });
         }
-        
+  
         var oldfiles = settings.model.queryNode("auto/files");
         if (oldfiles)
             settings.model.removeXml("auto/files");
