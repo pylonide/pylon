@@ -216,6 +216,14 @@ module.exports = (function () {
             return;
         }
         
+        // if there is any modal window open, then don't show
+        var windows = getNumericProperties(document.querySelectorAll(".winadv") || {}).filter(function (w) {
+            return w.style.display !== "none";
+        });
+        if (windows.length) {
+            return;
+        }
+        
         // evaluate the expression in the debugger, and receive model as callback
         inspector.evaluate(expr, function (model) {
             // bind it to the datagrid
@@ -249,7 +257,7 @@ module.exports = (function () {
         // map them thru getValue
         // join em with a little dot
         return getNumericProperties(d)
-            .map(function (m) { return getExpressionValue(d[m]); })
+            .map(function (m) { return getExpressionValue(m); })
             .join(".");
     };
     
@@ -257,7 +265,7 @@ module.exports = (function () {
     var expCall = function (d) {
         var method = getExpressionValue(d[0]);
         var args = getNumericProperties(d[1])
-                    .map(function (k) { return getExpressionValue(d[1][k]); })
+                    .map(function (k) { return getExpressionValue(k); })
                     .join(", ");
                     
         return method + "(" + args + ")";
@@ -288,7 +296,7 @@ module.exports = (function () {
     };
     
     var getNumericProperties = function (obj) {
-        return Object.keys(obj).filter(function (k) { return !isNaN(k); });
+        return Object.keys(obj).filter(function (k) { return !isNaN(k); }).map(function (k) { return obj[k]; });
     };
     
     // get a string value of any expression
