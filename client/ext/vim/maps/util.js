@@ -13,7 +13,6 @@ module.exports = {
             isDarkTheme = require(editor.getTheme()).isDark;
 
         this.currentMode = 'insert';    
-
         // Switch editor to insert mode
         var cursor = document.getElementsByClassName("ace_cursor")[0];
 
@@ -35,7 +34,6 @@ module.exports = {
     normalMode: function(editor) {
         // Switch editor to normal mode
         var cursor = document.getElementsByClassName("ace_cursor")[0];
-
         this.currentMode = 'normal';    
 
         editor.setStyle('normal-mode');

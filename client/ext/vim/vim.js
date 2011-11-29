@@ -69,32 +69,17 @@ var removeCommands = function removeCommands(editor, commands) {
 };
 
 var onCursorMove = function() {
-    if(onCursorMove.scheduled) return;
-    onCursorMove.scheduled = true;
-    setTimeout(function() {
-        cmdModule.onCursorMove();
-        onCursorMove.scheduled = false;
-    });
+    cmdModule.onCursorMove();
+    onCursorMove.scheduled = false;
 };
 
-var oldSelection;
 var enableVim = function enableVim() {
     if (editors.currentEditor && editors.currentEditor.ceEditor) {
         var editor = editors.currentEditor.ceEditor.$editor;
 
         addCommands(editor, commands)
-        if(!enabled) {
-            editor.on("changeSession", function() {
-                setTimeout(function() {
-                    oldSelection.removeListener("changeCursor", onCursorMove);
-                    editor.selection.on("changeCursor", onCursorMove);
-                    oldSelection = editor.selection;                
-                }, 100);
-            });
-            oldSelection = editor.selection;
-
-            editor.selection.on("changeCursor", onCursorMove);
-        }
+        if(!enabled)
+            ceEditor.$editor.renderer.container.addEventListener("click", onCursorMove);
 
         editor.setKeyboardHandler(handler);
         commands.stop.exec(editor);
@@ -110,7 +95,7 @@ var disableVim = function() {
         removeCommands(editor, commands);
         editor.setKeyboardHandler(null);
         commands.start.exec(editor);
-        oldSelection.removeListener("changeCursor", onCursorMove);
+        ceEditor.$editor.renderer.container.removeEventListener("click", onCursorMove);
         enabled = false;
     }
 
