@@ -99,6 +99,8 @@ handler.analyze = function(doc, ast) {
                 return node;
             },
             'Function(x, fargs, body)', function(b, node) {
+                node.setAnnotation("scope", scope);
+
                 var newScope = Object.create(scope);
                 newScope['this'] = new Variable();
                 b.fargs.forEach(function(farg) {
