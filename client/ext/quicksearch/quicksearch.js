@@ -58,7 +58,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         txtQuickSearch.addEventListener("keydown", function(e){
             switch (e.keyCode){
                 case 13: //ENTER
-                    _self.execSearch(false, e.shiftKey);
+                    _self.execSearch(false, !!e.shiftKey);
                     return false;
                 case 27: //ESCAPE
                     _self.toggleDialog(-1);
@@ -145,9 +145,10 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             oIter.parentNode.style.width = "auto";
         
         setTimeout(function() {
-            var width = oIter.parentNode.offsetWidth;
-            txtQuickSearch.$button.style.right = (width) + "px";
-            txtQuickSearch.$input.parentNode.style.paddingRight = (width + txtQuickSearch.$button.offsetWidth + 10) + "px";
+            var width = oIter.parentNode.offsetWidth || 0;
+            txtQuickSearch.$button.style.right = width + "px";
+            var buttonWidth = txtQuickSearch.$button.offsetWidth || 0;
+            txtQuickSearch.$input.parentNode.style.paddingRight = (width + buttonWidth + 10) + "px";
         });
         
         var ranges = ace.$search.findAll(ace.getSession());
@@ -161,11 +162,12 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         if (cur) {
             // sort ranges by position in the current document
             ranges.sort(cur.compareRange.bind(cur));
+            var range;
             var start = cur.start;
             var end   = cur.end;
-            for (var r, i = 0, l = ranges.length; i < l; ++i) {
-                r = ranges[i];
-                if (r.isStart(start.row, start.column) && r.isEnd(end.row, end.column)) {
+            for (var i = 0, l = ranges.length; i < l; ++i) {
+                range = ranges[i];
+                if (range.isStart(start.row, start.column) && range.isEnd(end.row, end.column)) {
                     crtIdx = i;
                     break;
                 }
