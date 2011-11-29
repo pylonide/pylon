@@ -203,7 +203,12 @@ var inputBuffer = exports.inputBuffer = {
     operator: null,
     motion: null,
 
-    push: function(editor, char) {
+    push: function(editor, char, keyId) {
+        if (char && char.length > 1) { // There is a modifier key
+            if (!char[char.length - 1].match(/[A-za-z]/) && keyId) // It is a letter
+                char = keyId;
+        }
+
         this.idle = false;
         var wObj = this.waitingForParam;
         if (wObj) {
