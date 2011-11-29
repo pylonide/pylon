@@ -495,6 +495,8 @@ apf.datagrid = function(struct, tagName){
         
         this.$cssRules = [];
         this.$headings = rules;
+        
+        this.clearAllCache();
 
         var fixed = 0, found = false;
         for (var h, i = 0, l = rules.length; i < l; i++) {

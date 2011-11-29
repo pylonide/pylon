@@ -80,9 +80,13 @@ apf.splitbutton = function(struct, tagName){
         
         var _self = this;
         this.$button2.addEventListener("mousedown", function() {
-            self[value].addEventListener("display", function(){
-                self[value].$ext.style.marginLeft = "-" + _self.$button1.$ext.offsetWidth + "px";
-            });
+            if (!self[value].$splitInited) {
+                self[value].addEventListener("display", function(){
+                    var split = this.opener.parentNode;
+                    this.$ext.style.marginLeft = "-" + split.$button1.$ext.offsetWidth + "px";
+                });
+                self[value].$splitInited = true;
+            }
             
             this.removeEventListener("mousedown", arguments.callee);
         });
