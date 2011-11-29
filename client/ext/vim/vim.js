@@ -70,8 +70,8 @@ var removeCommands = function removeCommands(editor, commands) {
 var onCursorMove = function cursorMove() {
     // Solving the behavior at the end of the line due to the
     // different 0 index-based colum positions in ACE.
-    // only in modes other than insert mode    
-    if(util.currentMode === 'insert')
+    // only in modes other than insert mode   
+    if(util.currentMode === 'insert' || !ceEditor.$editor.selection.isEmpty())
         return;
 
     var editor = ceEditor.$editor;

@@ -36,7 +36,7 @@ module.exports = {
         // Switch editor to normal mode
         var cursor = document.getElementsByClassName("ace_cursor")[0];
 
-        this.mode = 'normal';    
+        this.currentMode = 'normal';    
 
         editor.setStyle('normal-mode');
         editor.clearSelection();
