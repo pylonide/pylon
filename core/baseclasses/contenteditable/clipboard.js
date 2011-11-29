@@ -67,7 +67,9 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
         selected = amlNode.selected || amlNode.getFirstTraverseNode();
 
     if (amlNode.hasFeature(apf.__DRAGDROP__)) {
-        var candrop = amlNode.isDropAllowed(apf.clipboard.data, amlNode);
+        var candrop = amlNode.isDropAllowed(apf.clipboard.data, selected);
+        if (!candrop)
+            return false;
         var action = candrop[1] && candrop[1].action 
           || (amlNode.$isTreeArch ? "tree-append" : "list-append");
         amlNode.$dragDrop(selected, this.store, candrop && candrop[1], action)
