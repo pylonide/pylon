@@ -207,23 +207,26 @@ apf.importStylesheet = function (def, win) {
         
     var re = new RegExp("^" + document.domain, 'g');
     var doc = (win || window).document;
-    for (var index=0; index < document.styleSheets.length; index++) {
+    for (var index=document.styleSheets.length - 1; index >= 0; index--) {
         if (!doc.styleSheets[index].href || doc.styleSheets[index].href.match(re)) {
             break;
         }
     }
     var styleSheet = doc.styleSheets[index];
     
-    if (!styleSheet) {
+    function newStyleSheet(){
         if (doc.createStyleSheet)
-            styleSheet = doc.createStyleSheet();
+            return doc.createStyleSheet();
         else {
             var elem = doc.createElement("style");
             elem.type = "text/css";
             doc.getElementsByTagName("head")[0].appendChild(elem);
-            styleSheet = elem.sheet;
+            return elem.sheet;
         }
-    }    
+    }
+    
+    if (!styleSheet)
+        styleSheet = newStyleSheet();
     
     for (var i = 0; i < def.length; i++) {
         if (!def[i][1])
@@ -237,13 +240,8 @@ apf.importStylesheet = function (def, win) {
                 styleSheet.insertRule(rule, 0);
             }
             catch (e) {
-                // Firefox has trouble with inserting rules at index 0.
-                // Probably not the cause for this to err, but the try/catch
-                // avoids it.
-                console && console.error(
-                    "Could not insert CSS rule " + rule + " in stylesheet ",
-                    styleSheet
-                );
+                styleSheet = newStyleSheet();
+                styleSheet.insertRule(rule, 0);
             }
         }
     }
