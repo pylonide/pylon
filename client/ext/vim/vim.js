@@ -35,6 +35,7 @@ var onConsoleCommand = function onConsoleCommand(e) {
                 console.log("Vim command '" + cmd + "' not implemented.");
 
             domEditor.focus();
+            e.returnValue = false;
         }
         else if (cmd[0] === "/") {
             cmd = cmd.substr(1);
@@ -42,8 +43,8 @@ var onConsoleCommand = function onConsoleCommand(e) {
             domEditor.$editor.find(cmd, cmdModule.searchStore.options);
             txtConsoleInput.blur();
             domEditor.focus();
+            e.returnValue = false;
         }
-        e.returnValue = false;
     }
 };
 
