@@ -88,50 +88,48 @@ module.exports = {
             }
         }
     },
-    // ">"
-    "shift-.": {
-            selFn: function(editor, range, count, param) {
-                count = parseInt(count || 1, 10);
-                for (var i = 0; i < count; i++) {
-                    editor.indent();
-                }
-                util.normalMode(editor);
-            },
-            fn: function(editor, range, count, param) {
-                count = parseInt(count || 1, 10);
-                switch (param) {
-                    case "shift-.":
-                        var row = editor.getCursorPosition().row;
-                        for (var i = 0; i < count; i++) {
-                            editor.session.indentRows(row, row, "\t");
-                        }
-                        editor.navigateLineEnd();
-                        editor.navigateLineStart();
-                        break;
-                }
+    ">": {
+        selFn: function(editor, range, count, param) {
+            count = parseInt(count || 1, 10);
+            for (var i = 0; i < count; i++) {
+                editor.indent();
             }
+            util.normalMode(editor);
+        },
+        fn: function(editor, range, count, param) {
+            count = parseInt(count || 1, 10);
+            switch (param) {
+                case "shift-.":
+                    var row = editor.getCursorPosition().row;
+                    for (var i = 0; i < count; i++) {
+                        editor.session.indentRows(row, row, "\t");
+                    }
+                    editor.navigateLineEnd();
+                    editor.navigateLineStart();
+                    break;
+            }
+        }
     },
-    // "<"
-    "shift-,": {
-            selFn: function(editor, range, count, param) {
-                count = parseInt(count || 1, 10);
-                for (var i = 0; i < count; i++) {
-                    editor.blockOutdent();
-                }
-                util.normalMode(editor);
-            },
-            fn: function(editor, range, count, param) {
-                count = parseInt(count || 1, 10);
-                switch (param) {
-                    case "shift-,":
-                        for (var i = 0; i < count; i++) {
-                            editor.blockOutdent();
-                        }
-                        editor.navigateLineEnd();
-                        editor.navigateLineStart();
-                        break;
-                }
+    "<": {
+        selFn: function(editor, range, count, param) {
+            count = parseInt(count || 1, 10);
+            for (var i = 0; i < count; i++) {
+                editor.blockOutdent();
             }
+            util.normalMode(editor);
+        },
+        fn: function(editor, range, count, param) {
+            count = parseInt(count || 1, 10);
+            switch (param) {
+                case "shift-,":
+                    for (var i = 0; i < count; i++) {
+                        editor.blockOutdent();
+                    }
+                    editor.navigateLineEnd();
+                    editor.navigateLineStart();
+                    break;
+            }
+        }
     }
 };
 });
