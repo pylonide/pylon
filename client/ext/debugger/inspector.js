@@ -213,6 +213,8 @@ exports.calcName = function(xmlNode, useDisplay){
  * Given an xmlNode determines whether this item can be edited in realtime
  */
 exports.isEditable = function(xmlNode) {
+    if (!xmlNode) return false;
+    
     var type = xmlNode.getAttribute("type");
     
     // we can edit these types

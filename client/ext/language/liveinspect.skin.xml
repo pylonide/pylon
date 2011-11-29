@@ -4,7 +4,23 @@
         <a:style><![CDATA[
             .bar-liveinspect {
                 z-index: 9015;
-                box-shadow: 4px 4px 4px rgba(0,0,0,0.5);
+                
+                border                : 8px solid rgba(0,0,0,0);
+                -moz-border-radius    : 8px;
+                -webkit-border-radius : 8px;
+                border-radius         : 8px;
+                background            : -webkit-gradient(linear,left bottom,left top,color-stop(0, #202020),color-stop(1, #2f2f2f));
+                background            : -moz-linear-gradient(center bottom,#202020 0%, #2f2f2f 100%);
+                padding               : 5px 4px 4px;
+                            
+                -webkit-box-shadow: 0px 0px 9px 3px rgba(0, 0, 0, 0.31);
+                -moz-box-shadow: 0px 0px 9px 3px rgba(0, 0, 0, 0.31);
+                box-shadow: 0px 0px 9px 3px rgba(0, 0, 0, 0.31);            
+            }
+            
+            .bar-liveinspect .datagridFocus .records .selected, .datagridFocus .records .selected span {
+                background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #49494f),color-stop(1, #646469));
+                background: -moz-linear-gradient(center bottom,#49494f 0%,#646469 100%);                
             }
         ]]></a:style>
         <a:presentation>

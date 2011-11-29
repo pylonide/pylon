@@ -77,6 +77,9 @@ module.exports = (function () {
             // determine height based on first one
             var height = rows[0].offsetHeight * rows.length;
             
+            // add border of the container
+            height += (windowHtml.offsetHeight - windowHtml.scrollHeight);
+            
             // find header
             var header = datagridHtml.querySelector(".headings");
             if (header) {
@@ -241,8 +244,13 @@ module.exports = (function () {
             apf.xmldb.appendChild(root, model);
             dgLiveInspect.getModel().load(root);
             
+            // clean UI to remove selected elements
+            dgLiveInspect.selected = null; 
+            dgLiveInspect.selection = []; 
+            dgLiveInspect.sellength = 0;
+            
             // store it
-            currentExpression = expr;
+            currentExpression = expr;        
                         
             // show window
             winLiveInspect.show();
