@@ -58,6 +58,35 @@ module.exports = (function () {
         
         // yes, this is superhacky but the editor function in APF is crazy
         datagridHtml.addEventListener("dblclick", initializeEditor);
+        
+        // when collapsing or expanding the datagrid we want to resize
+        dgLiveInspect.addEventListener("expand", resizeWindow);
+        dgLiveInspect.addEventListener("collapse", resizeWindow);
+    };
+    
+    var resizeWindow = function () {
+        var gridRows = datagridHtml.querySelectorAll(".row");
+        // iterate over all properties
+        var rows = Object.keys(gridRows)
+            .filter(function (r) { return !isNaN(r); }) // filter non numeric properties
+            .map(function (r) { return gridRows[r]; }) // map them into real objects
+            .filter(function (r) { return r.offsetHeight > 0; }); // check whether they are visible
+        
+        if (rows && rows.length) {
+            var height = rows[0].offsetHeight * rows.length;
+            
+            var header = datagridHtml.querySelector(".headings");
+            if (header) {
+                height += header.offsetHeight;
+            }
+            
+            var maxHeight = (document.height - winLiveInspect.$ext.offsetTop) - 30;
+            if (height > maxHeight) {
+                height = maxHeight;
+            }
+            
+            winLiveInspect.setAttribute("height", height);
+        }
     };
         
     /**
@@ -238,9 +267,12 @@ module.exports = (function () {
             
             // store it
             currentExpression = expr;
-            
+                        
             // show window
             winLiveInspect.show();
+            
+            // resize the window
+            resizeWindow();
         });
     };
     
