@@ -19,6 +19,7 @@ var extSettings = require("ext/settings/settings");
 var cmdModule = require("ext/vim/commands");
 var commands = cmdModule.commands;
 var cliCmds = require("ext/vim/cli");
+var util = require("ext/vim/maps/util");
 
 var enabled;
 
@@ -66,11 +67,34 @@ var removeCommands = function removeCommands(editor, commands) {
     });
 };
 
+var onCursorMove = function cursorMove() {
+    // Solving the behavior at the end of the line due to the
+    // different 0 index-based colum positions in ACE.
+    // only in modes other than insert mode    
+    if(util.currentMode === 'insert')
+        return;
+
+    var editor = ceEditor.$editor;
+    var pos = editor.getCursorPosition();
+    var lineLen = editor.session.getLine(pos.row).length;
+
+    if (lineLen && pos.column === lineLen)
+        editor.navigateLeft();
+};
+
 var enableVim = function enableVim() {
     if (editors.currentEditor && editors.currentEditor.ceEditor) {
         var editor = editors.currentEditor.ceEditor.$editor;
 
         addCommands(editor, commands);
+        var oldSelection = editor.selection;
+        editor.on("changeSession", function() {
+            oldSelection.removeListener("changeCursor", onCursorMove);
+            editor.selection.on("changeCursor", onCursorMove);
+            oldSelection = editor.selection;
+        });
+        editor.selection.on("changeCursor", onCursorMove);
+
         editor.setKeyboardHandler(handler);
         commands.stop.exec(editor);
         enabled = true;

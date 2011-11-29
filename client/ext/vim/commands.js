@@ -313,19 +313,10 @@ var inputBuffer = exports.inputBuffer = {
             var selectable = motionObj.sel;
 
             if (!o) {
-                if ((util.onVisualMode || util.onVisualLineMode) && selectable) {
+                if ((util.onVisualMode || util.onVisualLineMode) && selectable)
                     run(motionObj.sel);
-                }
-                else {
+                else
                     run(motionObj.nav);
-                    var pos = editor.getCursorPosition();
-                    var lineLen = editor.session.getLine(pos.row).length;
-
-                    // Solving the behavior at the end of the line due to the
-                    // different 0 index-based colum positions in ACE.
-                    if (lineLen && pos.column === lineLen)
-                        editor.navigateLeft();
-                }
             }
             else if (selectable) {
                 repeat(function() {
@@ -404,8 +395,8 @@ exports.commands = {
     },
     appendEnd: {
         exec: function appendEnd(editor) {
-            editor.navigateLineEnd();
             util.insertMode(editor);
+            editor.navigateLineEnd();
         }
     },
     vimUndo: {

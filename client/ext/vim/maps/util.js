@@ -1,16 +1,18 @@
 "use strict";
 
-
 define(function(require, exports, module) {
 var registers = require("ext/vim/registers");
 
 module.exports = {
     onVisualMode: false,
     onVisualLineMode: false,
+    currentMode: 'normal',    
     insertMode: function(editor) {
         var isDarkTheme;
         if (editor && editor.getTheme())
             isDarkTheme = require(editor.getTheme()).isDark;
+
+        this.currentMode = 'insert';    
 
         // Switch editor to insert mode
         var cursor = document.getElementsByClassName("ace_cursor")[0];
@@ -33,6 +35,8 @@ module.exports = {
     normalMode: function(editor) {
         // Switch editor to normal mode
         var cursor = document.getElementsByClassName("ace_cursor")[0];
+
+        this.mode = 'normal';    
 
         editor.setStyle('normal-mode');
         editor.clearSelection();
