@@ -20,7 +20,7 @@ module.exports = (function () {
         datagridHtml = dgLiveInspect.$ext;
     };
     
-    var hook = function(whoa, worker) {
+    var hook = function(_ext, worker) {
         ext.initExtension(this);
         
         // listen to the worker's response
