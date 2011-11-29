@@ -22,6 +22,10 @@
                 background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #49494f),color-stop(1, #646469));
                 background: -moz-linear-gradient(center bottom,#49494f 0%,#646469 100%);                
             }
+            
+            .bar-liveinspect .datagridFocus .records .selected span u {
+                border-left: 1px solid #808080;
+            }
         ]]></a:style>
         <a:presentation>
             <a:main container=".">
