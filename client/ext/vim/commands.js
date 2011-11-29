@@ -190,7 +190,27 @@ var actions = {
             editor.moveCursorTo(pos.row, pos.column);
 
         }
-    }
+    },
+    "u": {
+        fn: function(editor, range, count, param) {
+            editor.undo();
+            editor.selection.clearSelection();
+        }
+    },
+    ":": {
+        fn: function(editor, range, count, param) {
+            editor.blur();
+            txtConsoleInput.focus();
+            txtConsoleInput.setValue(":");
+        }
+    },
+    "/": {
+        fn: function(editor, range, count, param) {
+            editor.blur();
+            txtConsoleInput.focus();
+            txtConsoleInput.setValue("/");
+        }
+    },
 };
 
 var inputBuffer = exports.inputBuffer = {
@@ -362,20 +382,6 @@ var inputBuffer = exports.inputBuffer = {
 };
 
 exports.commands = {
-    commandLineCmd: {
-        exec: function exec(editor) {
-            editor.blur();
-            txtConsoleInput.focus();
-            txtConsoleInput.setValue(":");
-        }
-    },
-    commandLineSearch: {
-        exec: function exec(editor) {
-            editor.blur();
-            txtConsoleInput.focus();
-            txtConsoleInput.setValue("/");
-        }
-    },
     start: {
         exec: function start(editor) {
             util.insertMode(editor);
@@ -411,12 +417,6 @@ exports.commands = {
         exec: function appendEnd(editor) {
             editor.navigateLineEnd();
             util.insertMode(editor);
-        }
-    },
-    vimUndo: {
-        exec: function vimUndo(editor) {
-            editor.undo();
-            editor.selection.clearSelection();
         }
     }
 };

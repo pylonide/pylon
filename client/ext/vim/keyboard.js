@@ -45,19 +45,6 @@ var states = exports.states = {
             then: "start"
         },
         {
-            regex: "^(:|shift-º)$", // Ace doesn't always reacts to ':'
-            exec: "commandLineCmd"
-        },
-        {
-            regex: "^/$",
-            exec: "commandLineSearch"
-        },
-        {
-            regex: "^u$",
-            match: inIdleState,
-            exec: "vimUndo"
-        },
-        {
             regex: "^i$",
             match: inIdleState,
             exec: "start",
