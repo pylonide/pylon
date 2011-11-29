@@ -144,11 +144,23 @@ oop.inherits(LanguageWorker, Mirror);
      * Request the AST node on the current position
      */
     this.inspect = function (event) {
+        var _self = this;
+        
         if (this.cachedAst) {
+            // find the current node based on the ast and the position data
             var ast = this.cachedAst;
             var node = ast.findNode({ line: event.data.row, col: event.data.col });
             
-            this.scheduleEmit("inspect", node);
+            // find a handler that can build an expression for this language
+            var handler = this.handlers.filter(function (h) { 
+                return h.handlesLanguage(_self.$language) && h.buildExpression;
+            });
+            
+            // then invoke it and build an expression out of this
+            if (handler && handler.length) {
+                var expression = handler[0].buildExpression(node);
+                this.scheduleEmit("inspect", expression);
+            }
         }
     };
 

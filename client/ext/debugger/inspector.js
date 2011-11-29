@@ -209,4 +209,80 @@ exports.calcName = function(xmlNode, useDisplay){
     return path.join(".").replace(/\.\[/g, "[");
 };
 
+/**
+ * Given an xmlNode determines whether this item can be edited in realtime
+ */
+exports.isEditable = function(xmlNode) {
+    var type = xmlNode.getAttribute("type");
+    
+    // we can edit these types
+    switch (type) {
+        case "string":
+        case "null":
+        case "number":
+        case "boolean":
+            break;
+        default:
+            return false;
+    }
+    
+    // V8 debugger cannot change variables that are locally scoped, so we need at least 
+    // one parent property.
+    if (exports.calcName(xmlNode, true).indexOf(".") === -1) {
+        return false;
+    }
+    
+    // ok, move along
+    return true;
+};
+
+/**
+ * Determines whether a new value is valid to pass into an attribute
+ */
+exports.validateNewValue = function(xmlNode, value) {
+    var type = xmlNode.getAttribute("type");
+    var validator;
+    
+    switch (type) {
+        case "string":
+        case "null":
+            validator = /.+/;
+            break;
+        case "number":
+            validator = /^\d+(\.\d+)?$/;
+            break;
+        case "boolean":
+            validator = /^(true|false)$/;
+            break;
+        default:
+            return false; // other types cannot be edited
+    }
+    
+    return validator.test(value);
+};
+
+/**
+ * Updates the value of a property to a new value
+ */
+exports.setNewValue = function(xmlNode, value, callback) {
+    // find the prop plus its ancestors
+    var expression = exports.calcName(xmlNode, true);
+      
+    // build an instruction for the compiler
+    var instruction;
+    switch (xmlNode.getAttribute("type")) {
+        case "string":
+        case "null":
+            // escape strings
+            instruction = expression + " = \"" + value.replace(/"/g, "\\\"") + "\"";
+            break;
+        default:
+            instruction = expression + " = " + value;
+            break;
+    }
+    
+    // dispatch it to the debugger
+    exports.evaluate(instruction, callback);    
+};
+
 });

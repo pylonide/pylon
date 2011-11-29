@@ -3,8 +3,8 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var inspector = require("ext/debugger/inspector");
-var markup = require("text!ext/language/liveinspect.xml");
 var ext = require("core/ext");
+var markup = require("text!ext/language/liveinspect.xml");
 var skin = require("text!ext/language/liveinspect.skin.xml");
 
 module.exports = (function () {
@@ -31,7 +31,7 @@ module.exports = (function () {
             }
             
             // create an expression that the debugger understands
-            var expression = getExpressionValue(event.data);
+            var expression = event.data;
             if (expression) {
                 liveWatch(expression);
             }
@@ -72,19 +72,24 @@ module.exports = (function () {
             .map(function (r) { return gridRows[r]; }) // map them into real objects
             .filter(function (r) { return r.offsetHeight > 0; }); // check whether they are visible
         
+        // if we have any rows
         if (rows && rows.length) {
+            // determine height based on first one
             var height = rows[0].offsetHeight * rows.length;
             
+            // find header
             var header = datagridHtml.querySelector(".headings");
             if (header) {
                 height += header.offsetHeight;
             }
             
+            // we don't want this to fall of the screen
             var maxHeight = (document.height - winLiveInspect.$ext.offsetTop) - 30;
             if (height > maxHeight) {
                 height = maxHeight;
             }
             
+            // update height
             winLiveInspect.setAttribute("height", height);
         }
     };
@@ -102,25 +107,15 @@ module.exports = (function () {
           && target.parentNode.parentNode.childNodes[1] === target.parentNode /* [1] index */
           && !target.parentNode.hid /* and no header */) {
               
-            // grab the type
-            var type = target.parentNode.parentNode.childNodes[2];
+            // check whether we are able to edit this item
+            if (!inspector.isEditable(dgLiveInspect.selected)) {
+                return;
+            }
+            
             // regex validator to make sure we don't mess up
             var validator = null;
               
-            switch ((type.innerText || "").trim()) {
-                case "string":
-                case "null":
-                    validator = /.+/;
-                    break;
-                case "number":
-                    validator = /^\d+(\.\d+)?$/;
-                    break;
-                case "boolean":
-                    validator = /^(true|false)$/;
-                    break;
-                default:
-                    return; // other types cannot be edited
-            }
+
             
             // V8 debugger cannot change variables that are locally scoped, so we need at least 
             // one parent property.
@@ -143,8 +138,8 @@ module.exports = (function () {
                 edit.removeEventListener("blur", onBlur);
                 
                 // test for correct value
-                if (!validator.test(this.value)) {
-                    alert("invalid value for type " + type.innerText);
+                if (!inspector.validateNewValue(dgLiveInspect.selected, this.value)) {
+                    alert("invalid value for type " + dgLiveInspect.selected.getAttribute("type"));
                     return false;
                 }
                 
@@ -155,26 +150,7 @@ module.exports = (function () {
                 target.style.display = originalDisplay;
                 target.innerText = this.value;
                 
-                // find the prop plus its ancestors
-                var expression = inspector.calcName(dgLiveInspect.selected, true);
-                  
-                // build an instruction for the compiler
-                var instruction;
-                switch ((type.innerText || "").trim()) {
-                    case "string":
-                    case "null":
-                        // escape strings
-                        instruction = expression + " = \"" + this.value.replace(/"/g, "\\\"") + "\"";
-                        break;
-                    default:
-                        instruction = expression + " = " + this.value;
-                        break;
-                }
-                
-                // dispatch it to the debugger
-                inspector.evaluate(instruction, function () {
-                    // todo: do something fancy with the result
-                });
+                inspector.setNewValue(dgLiveInspect.selected, this.value, function (res) { });
             };
             
             // when blurring, update
@@ -276,88 +252,8 @@ module.exports = (function () {
         });
     };
     
-    /*** These should go into a different module probably ***/
-    
-    // variable declaration
-    var expVarDeclInit = function (d) {
-        return d[0].value;
-    };
-    
-    // variable calling
-    var expVar = function (d) {
-        return d[0].value;
-    };
-    
-    // property access
-    var expPropAccess = function (d) {        
-        // find all numeric keys
-        // map them thru getValue
-        // join em with a little dot
-        return getNumericProperties(d)
-            .map(function (m) { return getExpressionValue(m); })
-            .join(".");
-    };
-    
-    // method call
-    var expCall = function (d) {
-        var method = getExpressionValue(d[0]);
-        var args = getNumericProperties(d[1])
-                    .map(function (k) { return getExpressionValue(k); })
-                    .join(", ");
-                    
-        return method + "(" + args + ")";
-    };
-    
-    // numeric f.e. used in index [1]
-    var expNum = function (d) {
-        return d[0].value;
-    };
-    
-    // index calling
-    var expIndex = function (d) {
-        return getExpressionValue(d[0]) + "[" + getExpressionValue(d[1]) + "]";
-    };
-    
-    // new X()
-    var expNew = function (d) {
-        return "new "
-                + getExpressionValue(d[0])
-                + "("
-                + getNumericProperties(d[1]).map(function (arg) { return arg.value; }).join(", ")
-                + ")";
-    };
-    
-    // function parameter
-    var expFarg = function (d) {
-        return d[0].value;
-    };
-    
     var getNumericProperties = function (obj) {
         return Object.keys(obj).filter(function (k) { return !isNaN(k); }).map(function (k) { return obj[k]; });
-    };
-    
-    // get a string value of any expression
-    var getExpressionValue = function(d) {
-        if (d.value) return d.value;
-        
-        switch (d.cons) {
-            case "VarDeclInit":
-                return expVarDeclInit(d);
-            case "PropAccess":
-                return expPropAccess(d);
-            case "Var":
-                return expVar(d);
-            case "Call":
-                return expCall(d);
-            case "Num":
-                return expNum(d);
-            case "Index":
-                return expIndex(d);
-            case "New":
-                return expNew(d);
-            case "FArg":
-                return expFarg(d);
-        }
     };
     
     // public interfaces
