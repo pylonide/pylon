@@ -37,9 +37,7 @@
                            <a:caption match="[@name]" />
                            <a:icon
                              value = "page_white_text.png" />
-                           <!--a:css match="[file]" value="file_item"></a:css-->
                         </a:each>
-                        <!--a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/-->
                     </a:list>
                     
                     <a:scrollbar
@@ -52,7 +50,6 @@
                 </a:hbox>
             </div>
 
-            <!--a:divider skin="hordivider" /-->
             <a:hbox
               edge    = "4 0 0"
               pack    = "end"

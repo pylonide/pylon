@@ -57,7 +57,6 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             
             var name;
             sessionnames.forEach(function(name) {
-                name = sessionnames[i];
                 mnuTabLoadSessions.appendChild(new apf.item({
                     caption : name,
                     //type    : "radio",
@@ -107,10 +106,11 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         // check if session with given name already exists
         var session = settings.model.queryNode("auto/sessions/session[@name=\"" + name + "\"]");
         if (session && !overwrite) {
+            var _self = this;
             return util.confirm("Overwrite Session", "Overwrite Session",
                 "You're about to overwrite the session named " + name + ". Are you sure you want to do this?",
                 function() {
-                    require("ext/tabsessions/tabsessions").saveSession(name, true);
+                    _self.saveSession(name, true);
                     winSaveSessionAs.hide();
                     return;
                 }
@@ -130,12 +130,12 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         else {
             mnuTabLoadSessions.appendChild(new apf.item({
                 caption : name,
-                type    : "radio",
+                //type    : "radio",
                 value   : name
             }));
             mnuTabDeleteSessions.appendChild(new apf.item({
                 caption : name,
-                type    : "radio",
+                //type    : "radio",
                 value   : name
             }));
         }
@@ -159,10 +159,11 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             page = pages[i];
             if (page.$doc.getNode().getAttribute("changed") == 1) {
                 if (!ignoreChanges) {
+                    var _self = this;
                     return util.confirm("Unsaved changes", "Unsaved changes",
                         "Your unsaved changes will be lost. Are you sure you want to continue?",
                         function() {
-                            return require("ext/tabsessions/tabsessions").loadSession(name, true);
+                            return _self.loadSession(name, true);
                         }
                     );
                 }
@@ -188,9 +189,10 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         var nodes  = settings.model.queryNodes("auto/sessions/session[@name=\"" + name + "\"]/files/file");
         
         for (var doc, i = 0, l = nodes.length; i < l; i++) {
-            doc = ide.createDocument(nodes[i]);
+            var node = nodes[i];
+            doc = ide.createDocument(node);
             
-            var state = nodes[i].getAttribute("state");
+            var state = node.getAttribute("state");
             if (state) {
                 try {
                     doc.state = JSON.parse(state);
@@ -202,7 +204,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                 doc    : doc,
                 init   : true,
                 active : active 
-                    ? active == nodes[i].getAttribute("path")
+                    ? active == node.getAttribute("path")
                     : i == l - 1
             });
         }
