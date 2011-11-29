@@ -1,4 +1,10 @@
 /**
+ * Cloud9 Language Foundation
+ *
+ * @copyright 2011, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
+/**
  * Language Worker
  * This code runs in a WebWorker in the browser. Its main job is to
  * delegate messages it receives to the various handlers that have registered
@@ -18,7 +24,7 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     var _self = this;
     this.handlers = [];
     this.currentMarkers = [];
-    this.lastAggregateActions = {markers: [], hint: null};
+    this.$lastAggregateActions = {};
     
     Mirror.call(this, sender);
     this.setTimeout(500);
@@ -53,6 +59,15 @@ oop.inherits(LanguageWorker, Mirror);
 
 (function() {
     
+    this.getLastAggregateActions = function() {
+        if(!this.$lastAggregateActions[this.$path])
+            this.$lastAggregateActions[this.$path] = {markers: [], hint: null};
+        return this.$lastAggregateActions[this.$path];
+    };
+    
+    this.setLastAggregateActions = function(actions) {
+        this.$lastAggregateActions[this.$path] = actions;
+    };
     
     this.enableFeature = function(name) {
         disabledFeatures[name] = false;
@@ -81,7 +96,7 @@ oop.inherits(LanguageWorker, Mirror);
                         return ast;
                     }
                 } catch(e) {
-                    console.log("Parse exception: " + e.message);
+                    // Ignore parse errors
                 }
             }
         }
@@ -106,8 +121,8 @@ oop.inherits(LanguageWorker, Mirror);
             }
         }
         var extendedMakers = markers;
-        if (this.lastAggregateActions.markers.length > 0)
-            extendedMakers = markers.concat(this.lastAggregateActions.markers);
+        if (this.getLastAggregateActions().markers.length > 0)
+            extendedMakers = markers.concat(this.getLastAggregateActions().markers);
         this.scheduleEmit("markers", extendedMakers);
         this.currentMarkers = markers;
         if (this.postponedCursorMove) {
@@ -146,11 +161,11 @@ oop.inherits(LanguageWorker, Mirror);
         var pos = event.data;
         var hintMessage = this.checkForMarker(pos) || "";
         // Not going to parse for this, only if already parsed successfully
+        var aggregateActions = {markers: [], hint: null, enableRefactorings: []};
         if (this.cachedAst) {
             var ast = this.cachedAst;
             var currentNode = ast.findNode({line: pos.row, col: pos.column});
             if (currentNode !== this.lastCurrentNode || pos.force) {
-                var aggregateActions = {markers: [], hint: null, enableRefactorings: []};
                 for (var i = 0; i < this.handlers.length; i++) {
                     var handler = this.handlers[i];
                     if (handler.handlesLanguage(this.$language)) {
@@ -175,8 +190,10 @@ oop.inherits(LanguageWorker, Mirror);
                 this.scheduleEmit("markers", this.currentMarkers.concat(aggregateActions.markers));
                 this.scheduleEmit("enableRefactorings", aggregateActions.enableRefactorings);
                 this.lastCurrentNode = currentNode;
-                this.lastAggregateActions = aggregateActions;
+                this.setLastAggregateActions(aggregateActions);
             }
+        } else {
+            this.setLastAggregateActions(aggregateActions);
         }
         this.scheduleEmit("hint", hintMessage);
     };
@@ -215,6 +232,7 @@ oop.inherits(LanguageWorker, Mirror);
         this.$path = path;
         this.$language = language;
         this.cachedAst = null;
+        this.lastCurrentNode = null;
         this.setValue(code);
         for (var i = 0; i < this.handlers.length; i++) {
             var handler = this.handlers[i];

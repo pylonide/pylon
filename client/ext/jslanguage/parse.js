@@ -1,3 +1,9 @@
+/**
+ * Cloud9 Language Foundation
+ *
+ * @copyright 2011, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
 define(function(require, exports, module) {
 
 var parser = require("treehugger/js/parse");
@@ -10,6 +16,7 @@ parseHandler.handlesLanguage = function(language) {
 };
     
 parseHandler.parse = function(code) {
+    code = code.replace(/^(#!.*\n)/, "//$1");
     return parser.parse(code);
 };
 
