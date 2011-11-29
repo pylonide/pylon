@@ -131,10 +131,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         var ace = this.$getAce();
         
         if (!oIter) {
-            var p = document.getElementById("divSearchCount");
-            var spans = p.getElementsByTagName("span");
-            oIter  = spans[0];
-            oTotal = spans[1];
+            oIter  = document.getElementById("spanSearchIter");
+            oTotal = document.getElementById("spanSearchTotal");
         }
         
         if (!ace || !winQuickSearch.visible) {
