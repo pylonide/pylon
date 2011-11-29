@@ -198,7 +198,27 @@ var actions = {
             editor.moveCursorTo(pos.row, pos.column);
 
         }
-    }
+    },
+    "u": {
+        fn: function(editor, range, count, param) {
+            editor.undo();
+            editor.selection.clearSelection();
+        }
+    },
+    ":": {
+        fn: function(editor, range, count, param) {
+            editor.blur();
+            txtConsoleInput.focus();
+            txtConsoleInput.setValue(":");
+        }
+    },
+    "/": {
+        fn: function(editor, range, count, param) {
+            editor.blur();
+            txtConsoleInput.focus();
+            txtConsoleInput.setValue("/");
+        }
+    },
 };
 
 var inputBuffer = exports.inputBuffer = {
@@ -211,7 +231,12 @@ var inputBuffer = exports.inputBuffer = {
     operator: null,
     motion: null,
 
-    push: function(editor, char) {
+    push: function(editor, char, keyId) {
+        if (char && char.length > 1) { // There is a modifier key
+            if (!char[char.length - 1].match(/[A-za-z]/) && keyId) // It is a letter
+                char = keyId;
+        }
+
         this.idle = false;
         var wObj = this.waitingForParam;
         if (wObj) {
@@ -357,20 +382,6 @@ var inputBuffer = exports.inputBuffer = {
 };
 
 exports.commands = {
-    commandLineCmd: {
-        exec: function exec(editor) {
-            editor.blur();
-            txtConsoleInput.focus();
-            txtConsoleInput.setValue(":");
-        }
-    },
-    commandLineSearch: {
-        exec: function exec(editor) {
-            editor.blur();
-            txtConsoleInput.focus();
-            txtConsoleInput.setValue("/");
-        }
-    },
     start: {
         exec: function start(editor) {
             util.insertMode(editor);
@@ -406,12 +417,6 @@ exports.commands = {
         exec: function appendEnd(editor) {
             util.insertMode(editor);
             editor.navigateLineEnd();
-        }
-    },
-    vimUndo: {
-        exec: function vimUndo(editor) {
-            editor.undo();
-            editor.selection.clearSelection();
         }
     }
 };
