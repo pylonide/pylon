@@ -68,6 +68,7 @@
                 <a:datagrid 
                   id        = "dgTestProject"
                   anchors   = "0 0 0 0"
+                  border    = "0"
                   options   = "size"
                   model     = "mdlTests"
                   each      = "[repo|file|test|assert|error]"
@@ -78,7 +79,7 @@
                   contextmenu    = "mnuTestContext"
                   empty-message  = "No tests yet"
                   onbeforeremove = "return require('core/util').removeInteractive(this)">
-                    <a:column id="colTestProject" caption="Name" width="100%" tree="1" icon="{require('ext/testpanel/testpanel').getIcon(%[.])}"><?lm
+                    <a:column id="colTestProject" caption="Name" width="101%" tree="1" icon="{require('ext/testpanel/testpanel').getIcon(localName(), [@status], [@type])}"><?lm
                         if (localName() == "error")
                             <span style='color:red'>[@name]</span>
                         else

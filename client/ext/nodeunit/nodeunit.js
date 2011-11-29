@@ -9,8 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var settings = require("ext/settings/settings");
-var panels = require("ext/panels/panels");
 var fs = require("ext/filesystem/filesystem");
 var newresource = require("ext/newresource/newresource");
 var noderunner = require("ext/noderunner/noderunner");
@@ -134,8 +132,13 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
             testpanel.setLog(fileNode, "running");
             
             //@todo this should be loaded via file contents
-            if (testpanel.expandTests)
-                dgTestProject.slideOpen(null, fileNode);
+            if (testpanel.expandTests) {
+                if (dgTestProject.$hasLoadStatus(fileNode, "potential"))
+                    dgTestProject.slideOpen(null, fileNode);
+                else {
+                    _self.reloadTestFile(fileNode);
+                }
+            }
 
             var timer = setInterval(function(){
                 if (fileNode.selectNodes("test").length) {
@@ -208,12 +211,12 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                     if (!parts)
                         return;
 
+                    var match;
                     for (var i = 0; i < parts.length; i++) {
                         var part = parts[i];
                         //FAIL
                         if (part.substr(0, 3) == "[31") {
                             match = part.match(/^\[31m\[(\d+)\/(\d+)\]\s+(.*?)\s+FAIL.*([\S\s]*?)(?=\[\d+m|$)/);
-                            if (!match) debugger;
                             
                             var testNode = fileNode.selectSingleNode("test[@name=" + escapeXpathString(match[3]) + "]");
                             testpanel.setError(testNode, "Test Failed");
@@ -334,18 +337,28 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
     reloadTestFile : function(xmlNode) {
         fs.readFile(xmlNode.getAttribute("path"), function(data, state, extra){
             if (state == apf.SUCCESS) {
-                var nodes = xmlNode.childNodes;
-                for (var i = 0; i < nodes.length; i++) {
-                    apf.xmldb.removeNode(nodes[i]);
-                }
+                var node, found = [];
 
                 var json = JSON.parse(data.match(/module\.exports\s*=\s*\{[\s\S]*?\s*}\s*\n\}/)[0].replace(/function[\s\S]*?    \}(\n\s*\}|,\n\s*\n    )/g, "10$1").replace(/module\.exports\s*=\s*/, ""));
                 var doc  = xmlNode.ownerDocument;
                 for (var prop in json) {
-                    var node = doc.createElement("test");
-                    node.setAttribute("name", prop);
+                    node = xmlNode.selectSingleNode("test[@name=" 
+                      + escapeXpathString(prop) + "]");
+                        
+                    if (!node) {
+                        node = doc.createElement("test");
+                        node.setAttribute("name", prop);
+                        
+                        apf.xmldb.appendChild(xmlNode, node);
+                    }
                     
-                    apf.xmldb.appendChild(xmlNode, node);
+                    found.push(node);
+                }
+                
+                var nodes = xmlNode.childNodes;
+                for (var i = nodes.length - 1; i >= 0; i--) {
+                    if (found.indexOf(nodes[i]) == -1)
+                        apf.xmldb.removeNode(nodes[i]);
                 }
             }
         });

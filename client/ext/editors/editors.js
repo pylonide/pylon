@@ -592,7 +592,7 @@ module.exports = ext.register("ext/editors/editors", {
                     catch (ex) {}
 
                     // node.firstChild is not always present (why?)
-                    if ((node.getAttribute("changed") === 1) && node.firstChild) {
+                    if ((node.getAttribute("changed") == 1) && node.firstChild) {
                         doc.cachedValue = node.firstChild.nodeValue
                             .replace(/\n]\n]/g, "]]")
                             .replace(/\\r/g, "\r")
@@ -613,7 +613,6 @@ module.exports = ext.register("ext/editors/editors", {
         });
 
         ide.addEventListener("savesettings", function(e){
-            var changed = false;
             if (!e.model.data)
                 return;
             var pNode   = e.model.data.selectSingleNode("auto/files");

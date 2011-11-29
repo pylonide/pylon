@@ -148,18 +148,25 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         return "<file />";
     },
     
-    getIcon : function(xmlNode) {
-        if (xmlNode.tagName == "repo")
+    getIcon : function(tagName, value, type) {
+        if (tagName == "repo")
             return "folder.png";
-        if (xmlNode.tagName == "test")
-            return "brkp_obj.gif";
-        if (xmlNode.tagName == "assert")
-            return "brkp_obj.gif";
-        if (xmlNode.tagName == "error")
+        if (tagName == "test")
+            return "bullet_blue.png";
+        if (tagName == "assert" || tagName == "error") {
+            if (!value || value == -1)
+                return "bullet_blue.png";
+            else if (value == 5) //running
+                return "bullet_go.png";
+            else if (value == 1) //ran
+                return "bullet_green.png";
+            else if (value == 0) //error
+                return "exclamation.png";//bullet_red.png";
+        }
+        if (tagName == "error")
             return "exclamation.png";
         else
-            return ide.dispatchEvent("test.icon." 
-                + xmlNode.getAttribute("type")) || "page_white_text.png";
+            return ide.dispatchEvent("test.icon." + type) || "page_white_text.png";
     },
     
     run : function(nodes){
@@ -175,7 +182,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
             
             this.statusColumn = new apf.BindingColumnRule({
                 caption : "Status", 
-                width   : "40%", 
+                width   : "41%", 
                 value   : "{if ([@status] === '0')\n\
                     <span style='color:red'>\\[[@status-message]\\]</span>\n\
                 else if ([@status] == '1')\n\
@@ -202,14 +209,12 @@ module.exports = ext.register("ext/testpanel/testpanel", {
             for (var k = 0; k < cleanNodes.length; k++) {
                 apf.xmldb.removeAttribute(cleanNodes[k], "status");
             }
-            var errorNodes = node.selectNodes(".//error");
-            for (var k = 0; k < errorNodes.length; k++) {
-                apf.xmldb.removeNode(errorNodes[k]);
-            }
-            var assertNodes = node.selectNodes(".//assert");
-            for (var k = 0; k < assertNodes.length; k++) {
-                apf.xmldb.removeNode(assertNodes[k]);
-            }
+            [".//error", ".//assert"].forEach(function(type){
+                var nodes = node.selectNodes(type);
+                for (var k = 0; k < nodes.length; k++) {
+                    apf.xmldb.removeNode(nodes[k]);
+                }
+            });
         });
         
         //Expand list

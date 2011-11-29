@@ -6,9 +6,12 @@
  */
 var Plugin = require("cloud9/plugin");
 var sys = require("sys");
+var path = require('path'); 
 var util = require("cloud9/util");
-var apollo = require("apollo/oni-apollo-node.js");
+var Spawn = require("child_process").spawn;
 var webdriver = require("wd/lib/main");
+
+require("apollo/oni-apollo-node.js")
 
 require.extensions['.sjs'] = function(module, filename) {
     var content = require('fs').readFileSync(filename, 'utf8');
@@ -40,7 +43,7 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
         }});
         callback();
     };
-
+    
     this.command = function(user, message, client) {
         if (message.command != "selenium")
             return false;
@@ -173,66 +176,131 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                     options.username  = username;
                     options.accessKey = "4681d68d-46eb-4d17-b09b-1cb4575796ad";
                 }
-                
-                wdInit(options, {
-                    pass : function(msg, data){
+                    
+                function start(err){
+                    if (err) {
                         _self.sendResult(0, message.command, {
-                            code: 1,
+                            code: 0,
                             argv: message.argv,
-                            err: null,
-                            out: msg,
-                            data: data
-                        });
-                    },
-                    error : function(msg, data){
-                        _self.sendResult(0, message.command, {
-                            code: 2,
-                            argv: message.argv,
-                            err: null,
-                            out: msg,
-                            data: data
-                        });
-                    },
-                    cmd : function(data){
-                        console.log("cmd:" + data);
-                        _self.sendResult(0, message.command, {
-                            code: 6,
-                            argv: message.argv,
-                            err: null,
-                            out: "",
-                            cmd: data
-                        });
-                    },
-                    log : function(data){
-                        _self.sendResult(0, message.command, {
-                            code: 3,
-                            argv: message.argv,
-                            err: null,
-                            out: data
-                        });
-                    },
-                    setJobId : function(jobId, browser){
-                        _self.sendResult(0, message.command, {
-                            code: 5,
-                            argv: message.argv,
-                            err: null,
-                            out: "",
-                            job: jobId
+                            err: "Could not start Selenium Server: " 
+                                + err.message,
+                            out: null
                         });
                         
-                        _self.jobs[jobId] = browser;
-                        
-                        if (!browser.settings)
-                            browser.settings = options;
+                        return;
                     }
-                }, runTest);
+                    
+                    wdInit(options, {
+                        pass : function(msg, data){
+                            _self.sendResult(0, message.command, {
+                                code: 1,
+                                argv: message.argv,
+                                err: null,
+                                out: msg,
+                                data: data
+                            });
+                        },
+                        error : function(msg, data){
+                            _self.sendResult(0, message.command, {
+                                code: 2,
+                                argv: message.argv,
+                                err: null,
+                                out: msg,
+                                data: data
+                            });
+                        },
+                        cmd : function(data){
+                            console.log("cmd:" + data);
+                            _self.sendResult(0, message.command, {
+                                code: 6,
+                                argv: message.argv,
+                                err: null,
+                                out: "",
+                                cmd: data
+                            });
+                        },
+                        log : function(data){
+                            _self.sendResult(0, message.command, {
+                                code: 3,
+                                argv: message.argv,
+                                err: null,
+                                out: data
+                            });
+                        },
+                        setJobId : function(jobId, browser){
+                            _self.sendResult(0, message.command, {
+                                code: 5,
+                                argv: message.argv,
+                                err: null,
+                                out: "",
+                                job: jobId
+                            });
+                            
+                            _self.jobs[jobId] = browser;
+                            
+                            if (!browser.settings)
+                                browser.settings = options;
+                        }
+                    }, runTest);
+                }
+                
+                if (message.where != "sauce" && !_self.$serverRunning)
+                    this.$runServer(start);
+                else
+                    start();
             }
         }
         
         return true;
     };
     
+    this.$runServer = function(callback){
+        var cwd = path.resolve(path.dirname(module.filename), 
+            'bin');
+        
+        var _self = this;
+        var child = _self.child = Spawn("java", 
+            ["-jar", "selenium-server-standalone-2.11.0.jar"], 
+            {cwd: cwd/*, env: env*/});
+
+        child.stdout.on("data", function(data){
+            if (data.toString("utf8")
+              .indexOf("Started org.openqa.jetty.jetty.Server") > -1) {
+                callback();
+                _self.$serverRunning = true;
+                child.stdout.removeListener("data", arguments.callee);
+            }
+        });
+
+        child.on("exit", function(code) {
+            _self.$serverRunning = false;
+            _self.child = null;
+        });
+    }
+    
+    this.$kill = function(){
+        var child = this.child;
+        if (!child)
+            return;
+        try {
+            child.removeAllListeners("exit");
+            child.kill();
+            
+            this.$serverRunning = false;
+            
+            // check after 2sec if the process is really dead
+            // If not kill it harder
+            setTimeout(function() {
+                if (child.pid > 0)
+                    child.kill("SIGKILL");
+            }, 2000)
+        }
+        catch(e) {}
+    }
+    
     this.dispose = function(callback) {
+        this.$kill();
+        
         // TODO kill all running processes!
         callback();
     };

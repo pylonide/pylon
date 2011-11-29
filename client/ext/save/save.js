@@ -320,7 +320,7 @@ module.exports = ext.register("ext/save/save", {
             var node = model.getXml();
             var doc = page.$doc;
 
-            if (path !== newPath || node.getAttribute("newfile") === 1) {
+            if (path !== newPath || node.getAttribute("newfile") == 1) {
                 model.load(node);
                 file = model.data;
                 fs.beforeRename(file, null, newPath);
@@ -334,7 +334,7 @@ module.exports = ext.register("ext/save/save", {
                 self._saveAsNoUI(page);
             }
 
-            if (file.getAttribute("newfile") === 1) {
+            if (file.getAttribute("newfile") == 1) {
                 apf.xmldb.removeAttribute(file, "newfile");
                 apf.xmldb.removeAttribute(file, "changed");
                 var xpath = newPath.replace(new RegExp("\/" + cloud9config.davPrefix.split("/")[1]), "")
@@ -430,7 +430,7 @@ module.exports = ext.register("ext/save/save", {
             self._saveAsNoUI(page, path, newPath);
         };
 
-        if (path !== newPath || file.getAttribute("newfile") === 1) {
+        if (path !== newPath || file.getAttribute("newfile") == 1) {
             fs.exists(newPath, function (exists) {
                 if (exists) {
                     var name = newPath.match(/\/([^/]*)$/)[1];
