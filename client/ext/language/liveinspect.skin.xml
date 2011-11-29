@@ -4,7 +4,7 @@
         <a:style><![CDATA[
             .bar-liveinspect {
                 z-index: 9015;
-                box-shadow: 4px 4px 4px #888;
+                box-shadow: 4px 4px 4px rgba(0,0,0,0.5);
             }
         ]]></a:style>
         <a:presentation>
