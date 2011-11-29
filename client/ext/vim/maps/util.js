@@ -84,7 +84,7 @@ module.exports = {
         editor.moveCursorTo(pos.row, pos.column);
         editor.selection.selectLine();
         registers._default.isLine = true;
-        registers._default.text = editor.getCopyText();
+        registers._default.text = editor.getCopyText().replace(/\n$/, "");
         editor.selection.clearSelection();
         editor.moveCursorTo(pos.row, pos.column);
     }

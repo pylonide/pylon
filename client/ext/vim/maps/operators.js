@@ -99,7 +99,7 @@ module.exports = {
         fn: function(editor, range, count, param) {
             count = parseInt(count || 1, 10);
             switch (param) {
-                case "shift-.":
+                case ">":
                     var row = editor.getCursorPosition().row;
                     for (var i = 0; i < count; i++) {
                         editor.session.indentRows(row, row, "\t");
@@ -121,7 +121,7 @@ module.exports = {
         fn: function(editor, range, count, param) {
             count = parseInt(count || 1, 10);
             switch (param) {
-                case "shift-,":
+                case "<":
                     for (var i = 0; i < count; i++) {
                         editor.blockOutdent();
                     }
