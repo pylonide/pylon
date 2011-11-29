@@ -84,7 +84,7 @@ module.exports = (function () {
             }
             
             // we don't want this to fall of the screen
-            var maxHeight = (document.height - winLiveInspect.$ext.offsetTop) - 30;
+            var maxHeight = (window.innerHeight - winLiveInspect.$ext.offsetTop) - 30;
             if (height > maxHeight) {
                 height = maxHeight;
             }
