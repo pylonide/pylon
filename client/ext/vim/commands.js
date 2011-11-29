@@ -67,7 +67,7 @@ var actions = {
         }
     },
 
-    "shift-8": {
+    "*": {
         fn: function(editor, range, count, param) {
             editor.selection.selectWord();
             var wordToSearch = editor.getCopyText();
@@ -83,7 +83,7 @@ var actions = {
             editor.navigateWordLeft();
         }
     },
-    "shift-3": {
+    "#": {
         fn: function(editor, range, count, param) {
             editor.selection.selectWord();
             var wordToSearch = editor.getCopyText();
