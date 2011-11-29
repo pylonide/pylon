@@ -41,7 +41,7 @@ module.exports = (function () {
         ide.addEventListener("afteropenfile", function (e) {
             if (e.editor && e.editor.ceEditor) {
                 e.editor.ceEditor.$editor.addEventListener("mousemove", onEditorMouseMove);
-                e.editor.ceEditor.$editor.addEventListener("click", onEditorClick);
+                e.editor.ceEditor.$editor.addEventListener("mousedown", onEditorClick);
             }
         });
         
@@ -221,6 +221,11 @@ module.exports = (function () {
             return w.style.display !== "none";
         });
         if (windows.length) {
+            return;
+        }
+        
+        // if context menu open, then also disable
+        if (mnuCtxEditor && mnuCtxEditor.visible) {
             return;
         }
         
