@@ -67,19 +67,13 @@ var removeCommands = function removeCommands(editor, commands) {
     });
 };
 
-var onCursorMove = function cursorMove() {
-    // Solving the behavior at the end of the line due to the
-    // different 0 index-based colum positions in ACE.
-    // only in modes other than insert mode   
-    if(util.currentMode === 'insert' || !ceEditor.$editor.selection.isEmpty())
-        return;
-
-    var editor = ceEditor.$editor;
-    var pos = editor.getCursorPosition();
-    var lineLen = editor.session.getLine(pos.row).length;
-
-    if (lineLen && pos.column === lineLen)
-        editor.navigateLeft();
+var onCursorMove = function() {
+    if(onCursorMove.scheduled) return;
+    onCursorMove.scheduled = true;
+    setTimeout(function() {
+        cmdModule.onCursorMove();
+        onCursorMove.scheduled = false;
+    });
 };
 
 var oldSelection;
@@ -89,7 +83,6 @@ var enableVim = function enableVim() {
 
         addCommands(editor, commands)
         if(!enabled) {
-            console.log("Setting session");
             editor.on("changeSession", function() {
                 setTimeout(function() {
                     oldSelection.removeListener("changeCursor", onCursorMove);

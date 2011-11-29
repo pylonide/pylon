@@ -224,9 +224,10 @@ module.exports = {
                 content += "\n";
 
             if (content.length) {
+                util.insertMode(editor);
+
                 editor.navigateLineEnd()
                 editor.insert(content);
-                util.insertMode(editor);
             }
         }
     },
@@ -238,10 +239,11 @@ module.exports = {
                 content += "\n";
 
             if (content.length) {
+                util.insertMode(editor);
+
                 editor.navigateUp();
                 editor.navigateLineEnd()
                 editor.insert(content);
-                util.insertMode(editor);
             }
         }
     },
