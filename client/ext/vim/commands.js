@@ -68,7 +68,17 @@ var actions = {
             }
         }
     },
-
+    // "~" HACK
+    "shift-`": {
+        fn: function(editor, range, count) {
+            repeat(function() {
+                var pos = editor.getCursorPosition();
+                var line = editor.session.getLine(pos.row);
+                var ch = line[pos.column];
+                editor.insert(toggleCase(ch));
+            }, count || 1);
+        }
+    },
     "*": {
         fn: function(editor, range, count, param) {
             editor.selection.selectWord();
@@ -470,5 +480,12 @@ var handleCursorMove = exports.onCursorMove = function() {
         handleCursorMove.running = false;
     }
 };
+
+function toggleCase(ch) {
+    if(ch.toUpperCase() === ch)
+        return ch.toLowerCase();
+    else
+        return ch.toUpperCase();
+}
 
 });
