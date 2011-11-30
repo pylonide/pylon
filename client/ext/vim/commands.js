@@ -15,7 +15,6 @@ var motions = require("ext/vim/maps/motions");
 var operators = require("ext/vim/maps/operators");
 var alias = require("ext/vim/maps/aliases");
 var registers = require("ext/vim/registers");
-var Range = require("ace/range").Range;
 
 var NUMBER   = 1;
 var OPERATOR = 2;
@@ -53,6 +52,9 @@ var actions = {
                 case "z":
                     editor.centerSelection();
                     break;
+                case "t":
+                    editor.scrollToRow(editor.getCursorPosition().row);
+                    break;
             }
         }
     },
@@ -66,7 +68,17 @@ var actions = {
             }
         }
     },
-
+    // "~" HACK
+    "shift-`": {
+        fn: function(editor, range, count) {
+            repeat(function() {
+                var pos = editor.getCursorPosition();
+                var line = editor.session.getLine(pos.row);
+                var ch = line[pos.column];
+                editor.insert(toggleCase(ch));
+            }, count || 1);
+        }
+    },
     "*": {
         fn: function(editor, range, count, param) {
             editor.selection.selectWord();
@@ -201,7 +213,19 @@ var actions = {
     },
     "u": {
         fn: function(editor, range, count, param) {
-            editor.undo();
+            count = parseInt(count || 1, 10);
+            for (var i = 0; i < count; i++) {
+                editor.undo();
+            }
+            editor.selection.clearSelection();
+        }
+    },
+    "shift-r": {
+        fn: function(editor, range, count, param) {
+            count = parseInt(count || 1, 10);
+            for (var i = 0; i < count; i++) {
+                editor.redo();
+            }
             editor.selection.clearSelection();
         }
     },
@@ -456,5 +480,12 @@ var handleCursorMove = exports.onCursorMove = function() {
         handleCursorMove.running = false;
     }
 };
+
+function toggleCase(ch) {
+    if(ch.toUpperCase() === ch)
+        return ch.toLowerCase();
+    else
+        return ch.toUpperCase();
+}
 
 });
