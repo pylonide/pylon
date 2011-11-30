@@ -472,9 +472,11 @@ module.exports = ext.register("ext/zen/zen", {
         // Set the background color so animating doesn't show a dumb gray background
         var ace_editor = document.getElementsByClassName("ace_editor")[0];
         var classNames = ace_editor.getAttribute("class").split(" ");
-        for (var cn in classNames) {
-            if (classNames[cn].indexOf("ace-") === 0) {
-                var selectorString = "." + classNames[cn] + " .ace_scroller";
+        var cn;
+        for (var i = 0, l = classNames.length; i < l; ++i) {
+            cn = classNames[i];
+            if (cn && cn.indexOf("ace-") === 0) {
+                var selectorString = "." + cn + " .ace_scroller";
                 var bgColor = apf.getStyleRule(selectorString, "background-color");
                 if (!bgColor)
                     bgColor = apf.getStyleRule(".ace_scroller", "background-color");

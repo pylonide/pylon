@@ -31,3 +31,6 @@
 [submodule "support/uglify-js"]
 	path = support/uglify-js
 	url = https://github.com/ajaxorg/UglifyJS.git
+[submodule "support/treehugger"]
+	path = support/treehugger
+	url = git://github.com/ajaxorg/treehugger.git

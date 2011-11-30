@@ -212,16 +212,18 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 for (var i = 0; i < sections.length; i++) {
                     var section = sections[i];
                     var buttons = section.selectNodes("button");
-                    var menu = self[buttons[0].submenu];
-                    for (var j = 0; j < buttons.length; j++) {
-                        var button = buttons[j];
-                        if(soft) {
-                            //button.destroy(true, true);
-                           // button.parentNode.removeChild(button);
-                        }
-                        else {
-                            //Store pages
-                            this.$cbStorePage(button.$dockpage);
+                    if (buttons && buttons.length && buttons[0]) {
+                        var menu = self[buttons[0].submenu];
+                        for (var j = 0; j < buttons.length; j++) {
+                            var button = buttons[j];
+                            if(soft) {
+                                //button.destroy(true, true);
+                               // button.parentNode.removeChild(button);
+                            }
+                            else {
+                                //Store pages
+                                this.$cbStorePage(button.$dockpage);
+                            }
                         }
                     }
                     
