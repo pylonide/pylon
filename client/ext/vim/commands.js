@@ -413,7 +413,6 @@ function setPreviousCommand(fn) {
 exports.commands = {
     start: {
         exec: function start(editor) {
-            console.log("Inserting!");
             util.insertMode(editor);
             setPreviousCommand(start);
         }
