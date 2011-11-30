@@ -8,28 +8,31 @@ module.exports = {
     onVisualLineMode: false,
     currentMode: 'normal',    
     insertMode: function(editor) {
-        var isDarkTheme;
-        if (editor && editor.getTheme())
-            isDarkTheme = require(editor.getTheme()).isDark;
+        var _self = this;
+        var theme = editor && editor.getTheme() || "ace/theme/textmate";
+        
+        require(["require", theme], function (require) {
+            var isDarkTheme = require(theme).isDark;
+            
+            _self.currentMode = 'insert';    
+            // Switch editor to insert mode
+            var cursor = document.getElementsByClassName("ace_cursor")[0];
 
-        this.currentMode = 'insert';    
-        // Switch editor to insert mode
-        var cursor = document.getElementsByClassName("ace_cursor")[0];
-
-        editor.unsetStyle('insert-mode');
-        cursor.style.display = null;
-        cursor.style.backgroundColor = null;
-        cursor.style.opacity = null;
-        cursor.style.border = null;
-        cursor.style.borderLeftColor = isDarkTheme? "#eeeeee" : "#333333";
-        cursor.style.borderLeftStyle = "solid";
-        cursor.style.borderLeftWidth = "2px";
-
-        editor.setOverwrite(false);
-        editor.keyBinding.$data.buffer = "";
-        editor.keyBinding.$data.state = "insertMode";
-        this.onVisualMode = false;
-        this.onVisualLineMode = false;
+            editor.unsetStyle('insert-mode');
+            cursor.style.display = null;
+            cursor.style.backgroundColor = null;
+            cursor.style.opacity = null;
+            cursor.style.border = null;
+            cursor.style.borderLeftColor = isDarkTheme? "#eeeeee" : "#333333";
+            cursor.style.borderLeftStyle = "solid";
+            cursor.style.borderLeftWidth = "2px";
+    
+            editor.setOverwrite(false);
+            editor.keyBinding.$data.buffer = "";
+            editor.keyBinding.$data.state = "insertMode";
+            _self.onVisualMode = false;
+            _self.onVisualLineMode = false;            
+        });        
     },
     normalMode: function(editor) {
         // Switch editor to normal mode
