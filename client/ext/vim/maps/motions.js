@@ -129,7 +129,7 @@ module.exports = {
             }
         }
     },
-    "shift-6": {
+    "^": {
         nav: function(editor) {
             editor.navigateLineStart();
         },
@@ -137,7 +137,7 @@ module.exports = {
             editor.selection.selectLineStart();
         }
     },
-    "shift-4": {
+    "$": {
         nav: function(editor) {
             editor.navigateLineEnd();
         },
@@ -224,9 +224,10 @@ module.exports = {
                 content += "\n";
 
             if (content.length) {
+                util.insertMode(editor);
+
                 editor.navigateLineEnd()
                 editor.insert(content);
-                util.insertMode(editor);
             }
         }
     },
@@ -238,14 +239,15 @@ module.exports = {
                 content += "\n";
 
             if (content.length) {
+                util.insertMode(editor);
+
                 editor.navigateUp();
                 editor.navigateLineEnd()
                 editor.insert(content);
-                util.insertMode(editor);
             }
         }
     },
-    "shift-5": {
+    "%": {
         nav: function(editor, range, count, param) {
             var cursor = editor.getCursorPosition();
             var match = editor.session.findMatchingBracket({

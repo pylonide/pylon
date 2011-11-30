@@ -19,6 +19,7 @@ var extSettings = require("ext/settings/settings");
 var cmdModule = require("ext/vim/commands");
 var commands = cmdModule.commands;
 var cliCmds = require("ext/vim/cli");
+var util = require("ext/vim/maps/util");
 
 var enabled;
 
@@ -67,14 +68,23 @@ var removeCommands = function removeCommands(editor, commands) {
     });
 };
 
+var onCursorMove = function() {
+    cmdModule.onCursorMove();
+    onCursorMove.scheduled = false;
+};
+
 var enableVim = function enableVim() {
     if (editors.currentEditor && editors.currentEditor.ceEditor) {
         var editor = editors.currentEditor.ceEditor.$editor;
 
-        addCommands(editor, commands);
+        addCommands(editor, commands)
+        if(!enabled)
+            ceEditor.$editor.renderer.container.addEventListener("click", onCursorMove);
+
         editor.setKeyboardHandler(handler);
         commands.stop.exec(editor);
         enabled = true;
+        util.currentMode = 'normal';
     }
 };
 
@@ -85,6 +95,7 @@ var disableVim = function() {
         removeCommands(editor, commands);
         editor.setKeyboardHandler(null);
         commands.start.exec(editor);
+        ceEditor.$editor.renderer.container.removeEventListener("click", onCursorMove);
         enabled = false;
     }
 

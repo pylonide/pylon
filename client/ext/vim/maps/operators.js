@@ -65,7 +65,7 @@ module.exports = {
     "y": {
         selFn: function(editor, range, count, param) {
             registers._default.text = editor.getCopyText();
-            registers._default.isLine = false;
+            registers._default.isLine = util.onVisualLineMode;
             editor.selection.clearSelection();
             util.normalMode(editor);
         },
@@ -85,6 +85,49 @@ module.exports = {
                         editor.selection.clearSelection();
                         editor.moveCursorTo(pos.row, pos.column);
                     }
+            }
+        }
+    },
+    ">": {
+        selFn: function(editor, range, count, param) {
+            count = parseInt(count || 1, 10);
+            for (var i = 0; i < count; i++) {
+                editor.indent();
+            }
+            util.normalMode(editor);
+        },
+        fn: function(editor, range, count, param) {
+            count = parseInt(count || 1, 10);
+            switch (param) {
+                case ">":
+                    var row = editor.getCursorPosition().row;
+                    for (var i = 0; i < count; i++) {
+                        editor.session.indentRows(row, row, "\t");
+                    }
+                    editor.navigateLineEnd();
+                    editor.navigateLineStart();
+                    break;
+            }
+        }
+    },
+    "<": {
+        selFn: function(editor, range, count, param) {
+            count = parseInt(count || 1, 10);
+            for (var i = 0; i < count; i++) {
+                editor.blockOutdent();
+            }
+            util.normalMode(editor);
+        },
+        fn: function(editor, range, count, param) {
+            count = parseInt(count || 1, 10);
+            switch (param) {
+                case "<":
+                    for (var i = 0; i < count; i++) {
+                        editor.blockOutdent();
+                    }
+                    editor.navigateLineEnd();
+                    editor.navigateLineStart();
+                    break;
             }
         }
     }

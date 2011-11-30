@@ -15,6 +15,7 @@ var motions = require("ext/vim/maps/motions");
 var operators = require("ext/vim/maps/operators");
 var alias = require("ext/vim/maps/aliases");
 var registers = require("ext/vim/registers");
+var Range = require("ace/range").Range;
 
 var NUMBER   = 1;
 var OPERATOR = 2;
@@ -26,7 +27,7 @@ var ACTION   = 4;
 //var VISUAL_MODE = 2;
 //getSelectionLead
 
-module.exports.searchStore = {
+exports.searchStore = {
     current: "",
     options: {
         needle: "",
@@ -65,15 +66,8 @@ var actions = {
             }
         }
     },
-    // Not truly like Vim's "VISUAL LINE" mode. Needs improvement.
-    "shift-v": {
-        fn: function(editor, range, count, param) {
-            util.onVisualLineMode = true;
-            editor.selection.selectLine();
-            editor.selection.selectLeft();
-        }
-    },
-    "shift-8": {
+
+    "*": {
         fn: function(editor, range, count, param) {
             editor.selection.selectWord();
             var wordToSearch = editor.getCopyText();
@@ -89,7 +83,7 @@ var actions = {
             editor.navigateWordLeft();
         }
     },
-    "shift-3": {
+    "#": {
         fn: function(editor, range, count, param) {
             editor.selection.selectWord();
             var wordToSearch = editor.getCopyText();
@@ -128,6 +122,18 @@ var actions = {
             cursor.style.display = "none";
         }
     },
+    "shift-v": {
+        fn: function(editor, range, count, param) {
+            util.onVisualLineMode = true;
+            //editor.selection.selectLine();
+            //editor.selection.selectLeft();
+            var row = editor.getCursorPosition().row;
+            editor.selection.clearSelection();
+            editor.selection.moveCursorTo(row, 0);
+            editor.selection.selectLineEnd();
+            editor.selection.visualLineStart = row;
+        }
+    },
     "shift-y": {
         fn: function(editor, range, count, param) {
             util.copyLine(editor);
@@ -140,7 +146,8 @@ var actions = {
             editor.setOverwrite(false);
             if (defaultReg.isLine) {
                 var pos = editor.getCursorPosition();
-                editor.session.getDocument().insertLines(pos.row + 1, [defaultReg.text]);
+                var lines = defaultReg.text.split("\n");
+                editor.session.getDocument().insertLines(pos.row + 1, lines); 
                 editor.moveCursorTo(pos.row + 1, 0);
             }
             else {
@@ -159,7 +166,8 @@ var actions = {
 
             if (defaultReg.isLine) {
                 var pos = editor.getCursorPosition();
-                editor.session.getDocument().insertLines(pos.row, [defaultReg.text]);
+                var lines = defaultReg.text.split("\n");
+                editor.session.getDocument().insertLines(pos.row, lines); 
                 editor.moveCursorTo(pos.row, 0);
             }
             else {
@@ -190,7 +198,27 @@ var actions = {
             editor.moveCursorTo(pos.row, pos.column);
 
         }
-    }
+    },
+    "u": {
+        fn: function(editor, range, count, param) {
+            editor.undo();
+            editor.selection.clearSelection();
+        }
+    },
+    ":": {
+        fn: function(editor, range, count, param) {
+            editor.blur();
+            txtConsoleInput.focus();
+            txtConsoleInput.setValue(":");
+        }
+    },
+    "/": {
+        fn: function(editor, range, count, param) {
+            editor.blur();
+            txtConsoleInput.focus();
+            txtConsoleInput.setValue("/");
+        }
+    },
 };
 
 var inputBuffer = exports.inputBuffer = {
@@ -203,7 +231,12 @@ var inputBuffer = exports.inputBuffer = {
     operator: null,
     motion: null,
 
-    push: function(editor, char) {
+    push: function(editor, char, keyId) {
+        if (char && char.length > 1) { // There is a modifier key
+            if (!char[char.length - 1].match(/[A-za-z]/) && keyId) // It is a letter
+                char = keyId;
+        }
+
         this.idle = false;
         var wObj = this.waitingForParam;
         if (wObj) {
@@ -313,19 +346,10 @@ var inputBuffer = exports.inputBuffer = {
             var selectable = motionObj.sel;
 
             if (!o) {
-                if ((util.onVisualMode || util.onVisualLineMode) && selectable) {
+                if ((util.onVisualMode || util.onVisualLineMode) && selectable)
                     run(motionObj.sel);
-                }
-                else {
+                else
                     run(motionObj.nav);
-                    var pos = editor.getCursorPosition();
-                    var lineLen = editor.session.getLine(pos.row).length;
-
-                    // Solving the behavior at the end of the line due to the
-                    // different 0 index-based colum positions in ACE.
-                    if (lineLen && pos.column === lineLen)
-                        editor.navigateLeft();
-                }
             }
             else if (selectable) {
                 repeat(function() {
@@ -339,6 +363,7 @@ var inputBuffer = exports.inputBuffer = {
             a.fn(editor, editor.getSelectionRange(), a.count, param);
             this.reset();
         }
+        handleCursorMove();
     },
 
     isAccepting: function(type) {
@@ -357,20 +382,6 @@ var inputBuffer = exports.inputBuffer = {
 };
 
 exports.commands = {
-    commandLineCmd: {
-        exec: function exec(editor) {
-            editor.blur();
-            txtConsoleInput.focus();
-            txtConsoleInput.setValue(":");
-        }
-    },
-    commandLineSearch: {
-        exec: function exec(editor) {
-            editor.blur();
-            txtConsoleInput.focus();
-            txtConsoleInput.setValue("/");
-        }
-    },
     start: {
         exec: function start(editor) {
             util.insertMode(editor);
@@ -396,23 +407,54 @@ exports.commands = {
         exec: function append(editor) {
             var pos = editor.getCursorPosition();
             var lineLen = editor.session.getLine(pos.row).length;
+            util.insertMode(editor);
+
             if (lineLen)
                 editor.navigateRight();
-
-            util.insertMode(editor);
         }
     },
     appendEnd: {
         exec: function appendEnd(editor) {
-            editor.navigateLineEnd();
             util.insertMode(editor);
-        }
-    },
-    vimUndo: {
-        exec: function vimUndo(editor) {
-            editor.undo();
-            editor.selection.clearSelection();
+            editor.navigateLineEnd();
         }
     }
 };
+
+var handleCursorMove = exports.onCursorMove = function() {
+    var editor = ceEditor.$editor;
+
+    if(util.currentMode === 'insert' || handleCursorMove.running)
+        return;
+    else if(!ceEditor.$editor.selection.isEmpty()) {
+        handleCursorMove.running = true;
+        if(util.onVisualLineMode) {
+            var originRow = editor.selection.visualLineStart;
+            var cursorRow = editor.getCursorPosition().row;
+            if(originRow <= cursorRow) {
+                var endLine = editor.session.getLine(cursorRow);
+                editor.selection.clearSelection();
+                editor.selection.moveCursorTo(originRow, 0);
+                editor.selection.selectTo(cursorRow, endLine.length);
+            } else {
+                var endLine = editor.session.getLine(originRow);
+                editor.selection.clearSelection();
+                editor.selection.moveCursorTo(originRow, endLine.length);
+                editor.selection.selectTo(cursorRow, 0);
+            }
+        }
+        handleCursorMove.running = false;
+        return;
+    }
+    else {
+        handleCursorMove.running = true;
+        var pos = editor.getCursorPosition();
+        var lineLen = editor.session.getLine(pos.row).length;
+    
+        if (lineLen && pos.column === lineLen)
+            editor.navigateLeft();
+        handleCursorMove.running = false;
+    }
+};
+
 });

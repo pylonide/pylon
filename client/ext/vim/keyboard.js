@@ -6,20 +6,24 @@ var StateHandler = require("ace/keyboard/state_handler").StateHandler;
 var cmds = require("ext/vim/commands");
 var editors = require("ext/editors/editors");
 
-var matchChar = function(buffer, hashId, key, symbolicName) {
+var matchChar = function(buffer, hashId, key, symbolicName, keyId) {
     // If no command keys are pressed, then catch the input.
     // If only the shift key is pressed and a character key, then
     // catch that input as well.
     // Otherwise, we let the input got through.
     var matched = ((hashId === 0) || (((hashId === 1) || (hashId === 4)) && key.length === 1));
-    //console.log("INFO", buffer, hashId, key, symbolicName, matched)
+    //console.log("INFO", arguments)
 
     if (matched) {
+        if (keyId) {
+            keyId = String.fromCharCode(parseInt(keyId.replace("U+", "0x")));
+        }
+
         var editor = editors.currentEditor.ceEditor.$editor;
         editor.commands.addCommand({
             name: "builder",
             exec: function(editor) {
-                cmds.inputBuffer.push.call(cmds.inputBuffer, editor, symbolicName);
+                cmds.inputBuffer.push.call(cmds.inputBuffer, editor, symbolicName, keyId);
             }
         });
     }
@@ -39,19 +43,6 @@ var states = exports.states = {
             key: "esc",
             exec: "stop",
             then: "start"
-        },
-        {
-            regex: "^(:|shift-º)$", // Ace doesn't always reacts to ':'
-            exec: "commandLineCmd"
-        },
-        {
-            regex: "^/$",
-            exec: "commandLineSearch"
-        },
-        {
-            regex: "^u$",
-            match: inIdleState,
-            exec: "vimUndo"
         },
         {
             regex: "^i$",
