@@ -82,33 +82,19 @@ var actions = {
     "*": {
         fn: function(editor, range, count, param) {
             editor.selection.selectWord();
-            var wordToSearch = editor.getCopyText();
-            editor.find(wordToSearch, {
-                needle: wordToSearch,
-                backwards: false,
-                wrap: true,
-                caseSensitive: false,
-                wholeWord: true,
-                regExp: false
-            });
-            editor.selection.clearSelection();
-            editor.navigateWordLeft();
+            editor.findNext();
+            var cursor = editor.selection.getCursor();
+            var range  = editor.session.getWordRange(cursor.row, cursor.column);
+            editor.selection.setSelectionRange(range, true);
         }
     },
     "#": {
         fn: function(editor, range, count, param) {
             editor.selection.selectWord();
-            var wordToSearch = editor.getCopyText();
-            editor.find(wordToSearch, {
-                needle: wordToSearch,
-                backwards: true,
-                wrap: true,
-                caseSensitive: false,
-                wholeWord: true,
-                regExp: false
-            });
-            editor.selection.clearSelection();
-            editor.navigateWordLeft();
+            editor.findPrevious();
+            var cursor = editor.selection.getCursor();
+            var range  = editor.session.getWordRange(cursor.row, cursor.column);
+            editor.selection.setSelectionRange(range, true);
         }
     },
     "n": {
