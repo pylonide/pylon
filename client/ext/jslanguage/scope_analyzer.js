@@ -119,6 +119,13 @@ handler.analyze = function(doc, ast) {
                 // Put back
                 scope[b.x.value] = oldVar;
                 return node;
+            },
+            'PropAccess(_, "lenght")', function(b, node) {
+                markers.push({
+                    pos: node.getPos(),
+                    type: 'warning',
+                    message: "Did you mean 'length'?"
+                });
             }
         );
         if(!parentLocalVars) {
@@ -206,11 +213,11 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
 
 handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
     var v;
-    var mainNode;    
+    var mainNode;
     currentNode.rewrite(
         'VarDeclInit(x, _)', function(b, node) {
             v = node.getAnnotation("scope")[b.x.value];
-            mainNode = b.x;    
+            mainNode = b.x;
         },
         'VarDecl(x)', function(b, node) {
             v = node.getAnnotation("scope")[b.x.value];
@@ -237,7 +244,7 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
     var length = pos.ec - pos.sc;
 
     v.declarations.forEach(function(node) {
-         if(node !== currentNode[0]) {
+         if(node !== mainNode) {
             var pos = node.getPos();
             others.push({column: pos.sc, row: pos.sl});
         }

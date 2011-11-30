@@ -82,33 +82,19 @@ var actions = {
     "*": {
         fn: function(editor, range, count, param) {
             editor.selection.selectWord();
-            var wordToSearch = editor.getCopyText();
-            editor.find(wordToSearch, {
-                needle: wordToSearch,
-                backwards: false,
-                wrap: true,
-                caseSensitive: false,
-                wholeWord: true,
-                regExp: false
-            });
-            editor.selection.clearSelection();
-            editor.navigateWordLeft();
+            editor.findNext();
+            var cursor = editor.selection.getCursor();
+            var range  = editor.session.getWordRange(cursor.row, cursor.column);
+            editor.selection.setSelectionRange(range, true);
         }
     },
     "#": {
         fn: function(editor, range, count, param) {
             editor.selection.selectWord();
-            var wordToSearch = editor.getCopyText();
-            editor.find(wordToSearch, {
-                needle: wordToSearch,
-                backwards: true,
-                wrap: true,
-                caseSensitive: false,
-                wholeWord: true,
-                regExp: false
-            });
-            editor.selection.clearSelection();
-            editor.navigateWordLeft();
+            editor.findPrevious();
+            var cursor = editor.selection.getCursor();
+            var range  = editor.session.getWordRange(cursor.row, cursor.column);
+            editor.selection.setSelectionRange(range, true);
         }
     },
     "n": {
@@ -220,7 +206,7 @@ var actions = {
             editor.selection.clearSelection();
         }
     },
-    "shift-r": {
+    "ctrl-r": {
         fn: function(editor, range, count, param) {
             count = parseInt(count || 1, 10);
             for (var i = 0; i < count; i++) {
@@ -243,6 +229,13 @@ var actions = {
             txtConsoleInput.setValue("/");
         }
     },
+    ".": {
+        fn: function(editor, range, count, param) {
+            var previous = inputBuffer.previous;
+            util.onInsertReplaySequence = inputBuffer.lastInsertCommands;
+            inputBuffer.exec(editor, previous.action, previous.param);
+        }
+    }
 };
 
 var inputBuffer = exports.inputBuffer = {
@@ -254,6 +247,8 @@ var inputBuffer = exports.inputBuffer = {
     // Types
     operator: null,
     motion: null,
+    
+    lastInsertCommands: [],
 
     push: function(editor, char, keyId) {
         if (char && char.length > 1) { // There is a modifier key
@@ -341,6 +336,13 @@ var inputBuffer = exports.inputBuffer = {
         var o = action.operator;
         var a = action.action;
 
+        if(o) {
+            this.previous = {
+                action: action,
+                param: param
+            };
+        }
+        
         if (o && !editor.selection.isEmpty()) {
             if (operators[o.char].selFn) {
                 operators[o.char].selFn(editor, editor.getSelectionRange(), o.count, param);
@@ -398,23 +400,28 @@ var inputBuffer = exports.inputBuffer = {
         this.operator = null;
         this.motion = null;
         this.currentCount = "";
-
         this.accepting = [NUMBER, OPERATOR, MOTION, ACTION];
         this.idle = true;
         this.waitingForParam = null;
     }
 };
 
+function setPreviousCommand(fn) {
+    inputBuffer.previous = { action: { action: { fn: fn } } };
+}
+
 exports.commands = {
     start: {
         exec: function start(editor) {
             util.insertMode(editor);
+            setPreviousCommand(start);
         }
     },
     startBeginning: {
-        exec: function start(editor) {
+        exec: function startBeginning(editor) {
             editor.navigateLineStart();
             util.insertMode(editor);
+            setPreviousCommand(startBeginning);
         }
     },
     // Stop Insert mode as soon as possible. Works like typing <Esc> in
@@ -424,23 +431,24 @@ exports.commands = {
             inputBuffer.reset();
             util.onVisualMode = false;
             util.onVisualLineMode = false;
-            util.normalMode(editor);
+            inputBuffer.lastInsertCommands = util.normalMode(editor);
         }
     },
     append: {
         exec: function append(editor) {
             var pos = editor.getCursorPosition();
             var lineLen = editor.session.getLine(pos.row).length;
-            util.insertMode(editor);
-
             if (lineLen)
                 editor.navigateRight();
+            util.insertMode(editor);
+            setPreviousCommand(append);
         }
     },
     appendEnd: {
         exec: function appendEnd(editor) {
-            util.insertMode(editor);
             editor.navigateLineEnd();
+            util.insertMode(editor);
+            setPreviousCommand(appendEnd);
         }
     }
 };

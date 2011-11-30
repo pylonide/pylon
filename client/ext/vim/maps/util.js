@@ -8,28 +8,42 @@ module.exports = {
     onVisualLineMode: false,
     currentMode: 'normal',    
     insertMode: function(editor) {
-        var isDarkTheme;
-        if (editor && editor.getTheme())
-            isDarkTheme = require(editor.getTheme()).isDark;
+        var _self = this;
+        var theme = editor && editor.getTheme() || "ace/theme/textmate";
+        
+        require(["require", theme], function (require) {
+            var isDarkTheme = require(theme).isDark;
+            
+            _self.currentMode = 'insert';    
+            // Switch editor to insert mode
+            var cursor = document.getElementsByClassName("ace_cursor")[0];
 
-        this.currentMode = 'insert';    
-        // Switch editor to insert mode
-        var cursor = document.getElementsByClassName("ace_cursor")[0];
-
-        editor.unsetStyle('insert-mode');
-        cursor.style.display = null;
-        cursor.style.backgroundColor = null;
-        cursor.style.opacity = null;
-        cursor.style.border = null;
-        cursor.style.borderLeftColor = isDarkTheme? "#eeeeee" : "#333333";
-        cursor.style.borderLeftStyle = "solid";
-        cursor.style.borderLeftWidth = "2px";
-
-        editor.setOverwrite(false);
-        editor.keyBinding.$data.buffer = "";
-        editor.keyBinding.$data.state = "insertMode";
-        this.onVisualMode = false;
-        this.onVisualLineMode = false;
+            editor.unsetStyle('insert-mode');
+            cursor.style.display = null;
+            cursor.style.backgroundColor = null;
+            cursor.style.opacity = null;
+            cursor.style.border = null;
+            cursor.style.borderLeftColor = isDarkTheme? "#eeeeee" : "#333333";
+            cursor.style.borderLeftStyle = "solid";
+            cursor.style.borderLeftWidth = "2px";
+    
+            editor.setOverwrite(false);
+            editor.keyBinding.$data.buffer = "";
+            editor.keyBinding.$data.state = "insertMode";
+            _self.onVisualMode = false;
+            _self.onVisualLineMode = false;            
+            if(_self.onInsertReplaySequence) {
+                // Ok, we're apparently replaying ("."), so let's do it
+                editor.commands.macro = _self.onInsertReplaySequence;
+                editor.commands.replay(editor);
+                _self.onInsertReplaySequence = null;
+                _self.normalMode(editor);
+            } else {
+                // Record any movements, insertions in insert mode
+                if(!editor.commands.recording)
+                    editor.commands.toggleRecording();
+            }
+        });        
     },
     normalMode: function(editor) {
         // Switch editor to normal mode
@@ -54,6 +68,14 @@ module.exports = {
         editor.keyBinding.$data.state = "start";
         this.onVisualMode = false;
         this.onVisualLineMode = false;
+        // Save recorded keystrokes
+        if(editor.commands.recording) {
+            editor.commands.toggleRecording();
+            return editor.commands.macro;
+        }
+        else {
+            return [];
+        }
     },
     getRightNthChar: function(editor, cursor, char, n) {
         var line = editor.getSession().getLine(cursor.row);

@@ -29,7 +29,7 @@ module.exports = {
                             editor.session.remove(selRange);
                             editor.selection.clearSelection();
                         }
-
+                        registers._default.text = registers._default.text.replace(/\n$/, "");
                         break;
                     default:
                         if (range) {
