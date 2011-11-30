@@ -32,6 +32,17 @@ module.exports = {
             editor.keyBinding.$data.state = "insertMode";
             _self.onVisualMode = false;
             _self.onVisualLineMode = false;            
+            if(_self.onInsertReplaySequence) {
+                // Ok, we're apparently replaying ("."), so let's do it
+                editor.commands.macro = _self.onInsertReplaySequence;
+                editor.commands.replay(editor);
+                _self.onInsertReplaySequence = null;
+                _self.normalMode(editor);
+            } else {
+                // Record any movements, insertions in insert mode
+                if(!editor.commands.recording)
+                    editor.commands.toggleRecording();
+            }
         });        
     },
     normalMode: function(editor) {
@@ -57,6 +68,14 @@ module.exports = {
         editor.keyBinding.$data.state = "start";
         this.onVisualMode = false;
         this.onVisualLineMode = false;
+        // Save recorded keystrokes
+        if(editor.commands.recording) {
+            editor.commands.toggleRecording();
+            return editor.commands.macro;
+        }
+        else {
+            return [];
+        }
     },
     getRightNthChar: function(editor, cursor, char, n) {
         var line = editor.getSession().getLine(cursor.row);
