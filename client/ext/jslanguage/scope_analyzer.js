@@ -217,7 +217,7 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
     currentNode.rewrite(
         'VarDeclInit(x, _)', function(b, node) {
             v = node.getAnnotation("scope")[b.x.value];
-            mainNode = b.x;    
+            mainNode = b.x;
         },
         'VarDecl(x)', function(b, node) {
             v = node.getAnnotation("scope")[b.x.value];
@@ -256,14 +256,6 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
             others.push({column: pos.sc, row: pos.sl});
         }
     });
-    console.log(JSON.stringify({
-        length: length,
-        pos: {
-            row: pos.sl,
-            column: pos.sc
-        },
-        others: others
-    }, null, 2));
     return {
         length: length,
         pos: {
