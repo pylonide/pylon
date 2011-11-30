@@ -60,7 +60,7 @@
         .c9-menu-bar {
             position      : relative;
             overflow      : visible;
-            height        : 35px;
+            height        : 36px;
             background    : url(images/c9-menu-backg.png) repeat-x 0 0;
             border-bottom : 1px solid #000000;
         }
@@ -1830,7 +1830,7 @@
             width: 100%;
         }
         .dockcol .dockheader .dockheader-footer {
-            top: 10px;
+            top: 9px;
         }
     ]]></a:style>
 
@@ -3734,6 +3734,12 @@
         .expandedpanel .c9-divider.runcommandsdivider {
             display: none;
         }
+        
+        .expandedpanel .c9-divider,
+        .dockbar .c9-divider {
+            border-left:1px solid #2a2a2c;
+            border-right:1px solid #4d4e52;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -4624,6 +4630,16 @@
             background-image: -moz-linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
             background-image: -webkit-linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
+
+            background-image: -webkit-gradient(
+                linear,
+                left bottom,
+                left top,
+                color-stop(0, rgb(50,51,54)),
+                color-stop(1, rgb(68,69,72))
+            );
+
+
             
             -webkit-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
             -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
@@ -4645,7 +4661,11 @@
             width: 11px;
         }
     ]]></a:style>
-    
+    <a:style condition="apf.isChrome"><![CDATA[
+        .dockwin_runbtns {
+            margin-top: 13px;
+        }
+    ]]></a:style>
     <a:presentation>
         <a:main container=".">
             <div class="dockwin_runbtns">
@@ -7631,8 +7651,9 @@
         }
         
         .expandedpanel .dockbar {
-            border-bottom: 1px solid #000000;
-            box-shadow: 0 1px 0 #505053;
+            /*border-bottom: 1px solid #000000;
+            box-shadow: 0 1px 0 #505053;*/
+            border-bottom: 1px solid #505053
         }
         
         .dockcol .dockbar {

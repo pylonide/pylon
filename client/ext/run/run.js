@@ -102,6 +102,10 @@ module.exports = ext.register("ext/run/run", {
         winRunCfgNew.addEventListener("hide", function() {
             mdlRunConfigurations.data.setAttribute("debug", "0");
         });
+        
+        stProcessRunning.addEventListener("deactivate", function(){
+//           dock.hideSection(["ext/run/run", "ext/debugger/debugger"]); 
+        });
     },
 
     duplicate : function() {
