@@ -97,6 +97,18 @@ var jsonTourIde = {
     ]
 };
 
+var jsonQuickStart = {
+    identifiers: [
+        {
+            el : navbar,
+            name : "qsProjectBar",
+            pos: "right"
+        }
+    ]
+};
+// require("ext/settings/settings").model.queryValue("auto/help/@show") == "false"
+//ide.addEventListener("loadsettings", function(){
+
 module.exports = ext.register("ext/guidedtour/guidedtour", {
     name     : "Guided Tour",
     dev      : "Cloud9 IDE, Inc.",
@@ -113,9 +125,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
 
     init : function(amlNode){
         this.overlay.setAttribute("style",
-            "z-index:999998;display:none;position:absolute;width:100%;height:100%;opacity:0.6;background:#000;");
-        document.body.appendChild(this.overlay);
-
+            "z-index:998;position:absolute;width:100%;height:100%;opacity:0.3;background:#000;");
+        //document.body.appendChild(this.overlay);
+        
         this.hlElement.setAttribute("style",
             "z-index:999999;display:none;position:absolute;box-shadow:0px 0px 15px #000;");
         document.body.appendChild(this.hlElement);
@@ -123,6 +135,8 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         winTourDesc.setValue(this.tour.initialText);
         
         winTourGuide.addEventListener("hide", this.shutdown(this.hlElement)); 
+      
+        quickStartDialog.addEventListener("show", this.arrangeQSImages()); 
     },
     
     hook : function(){
@@ -139,8 +153,38 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
                     }
             }))
         );
+        
+        this.nodes.push(
+            ide.mnuFile.appendChild(new apf.item({
+                caption : "Quick Start",
+                onclick : function(){
+                    ext.initExtension(_self);
+                    quickStartDialog.show();
+                },
+                onclose : function(e){
+                        _self.close(e.page);
+                    }
+            }))
+        );
     },
-
+    
+    /**
+    * Arrange the images pointing out the locations
+    */
+    
+    arrangeQSImages : function()
+    {
+        for (var i = 0; i < jsonQuickStart.identifiers.length; i++)
+        {
+            var divToId = this.getElementPosition(jsonQuickStart.identifiers[i].el);
+            var position = jsonQuickStart.identifiers[i].pos;
+            var imgDiv = apf.document.getElementById(jsonQuickStart.identifiers[i].name);
+            
+        this.setPositions(position, divToId, imgDiv);     
+        imgDiv.show();
+        }
+    },
+    
     /**
      * Play controls
      */
@@ -245,30 +289,37 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         var pos = this.getElementPosition(step.el);
         winTourText.setAttribute("class", step.pos);
         
-        if (step.pos == "top")
-        {
-             winTourText.setAttribute("bottom", (window.innerHeight - pos[1]) + 25);
-             winTourText.setAttribute("left", (pos[0] + (pos[2]/2)) - (winTourText.getWidth()/2));
-        }
-        else if (step.pos == "right")
-        {
-            winTourText.setAttribute("left", pos[0] + pos[2] + 25);
-            winTourText.setAttribute("top", (pos[1] + (pos[3]/2)) - (winTourText.getHeight()/2));            
-        }
-        else if (step.pos == "bottom")
-        {
-            winTourText.setAttribute("top", pos[3] + 25);   
-            winTourText.setAttribute("right", (pos[0] + (pos[2]/2)) - (winTourText.getWidth()/2));
-        }
-        else if (step.pos == "left")
-        {
-            winTourText.setAttribute("top", (pos[1] + (pos[3]/2)) + 50);
-            winTourText.setAttribute("right", (pos[0] + (pos[1]/2) + 45));
-        }       
+        this.setPositions(step.pos, pos, winTourText);     
 
         winTourText.show();
     },
 
+    setPositions : function(position, posArray, div)
+    {
+        if (position == "top")
+        {
+             div.setAttribute("bottom", (window.innerHeight - posArray[1]) + 25);
+             div.setAttribute("left", (posArray[0] + (posArray[2]/2)) - (div.getWidth()/2));
+        }
+        else if (position == "right")
+        {
+            div.setAttribute("left", posArray[0] + posArray[2] + 25);
+            div.setAttribute("top", (posArray[1] + (posArray[3]/2)) - (div.getHeight()/2));            
+        }
+        else if (position == "bottom")
+        {
+            div.setAttribute("top", posArray[3] + 25);   
+            div.setAttribute("right", (posArray[0] + (posArray[2]/2)) - (div.getWidth()/2));
+        }
+        else if (position == "left")
+        {
+            div.setAttribute("top", (posArray[1] + (posArray[3]/2)) + 50);
+            div.setAttribute("right", (posArray[0] + (posArray[1]/2) + 45));
+        }  
+        
+        return div;
+    },
+    
     /**
      * Element methods
      */
@@ -309,6 +360,10 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         });
     },
 
+    closeStart : function() {
+        quickStartDialog.hide();
+    },
+    
     shutdown : function(hlElement) {
         return function() {
             winTourText.hide();
