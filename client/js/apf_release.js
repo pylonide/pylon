@@ -6905,7 +6905,7 @@ var sType=this.getAttribute("type");if(sType){this.fake=true;this.relPage=this.p
 }if(this.parentNode.$hasButtons){this.parentNode.$getNewContext("button");var elBtn=this.parentNode.$getLayoutNode("button");
 elBtn.setAttribute(this.parentNode.$getOption("main","select")||"onmousedown","apf.lookup("+this.$uniqueId+").$btnDown(this, event);");
 elBtn.setAttribute("onmouseup","apf.lookup("+this.$uniqueId+").$btnUp(this)");elBtn.setAttribute("onmouseover","var o = apf.lookup("+this.$uniqueId+").parentNode;if(apf.lookup("+this.$uniqueId+") != o.$activepage"+(this.parentNode.overactivetab?" || true":"")+') o.$setStyleClass(this, "over", null, true);');
-elBtn.setAttribute("onmouseout","var o = apf.lookup("+this.$uniqueId+").$btnOut(this, event);");
+elBtn.setAttribute("onmouseout","var o = apf.lookup("+this.$uniqueId+");o&&o.$btnOut(this, event);");
 var closebtn=this.getAttribute("closebtn");if((apf.isTrue(closebtn)||((this.parentNode.buttons||"").indexOf("close")>-1&&!apf.isFalse(closebtn)))){var btncontainer=this.parentNode.$getLayoutNode("button","container");
 this.parentNode.$getNewContext("btnclose");var elBtnClose=this.parentNode.$getLayoutNode("btnclose");
 if(elBtnClose){apf.setStyleClass(elBtn,"btnclose");elBtnClose.setAttribute("onmousedown","apf.cancelBubble(event, apf.lookup("+this.$uniqueId+"));");
