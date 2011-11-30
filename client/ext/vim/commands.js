@@ -53,6 +53,9 @@ var actions = {
                 case "z":
                     editor.centerSelection();
                     break;
+                case "t":
+                    editor.scrollToRow(editor.getCursorPosition().row);
+                    break;
             }
         }
     },
