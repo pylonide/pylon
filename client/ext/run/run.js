@@ -151,9 +151,10 @@ module.exports = ext.register("ext/run/run", {
     },
 
     runConfig : function(config, debug) {
-        var model = settings.model;
-        var saveallbeforerun = model.queryValue("general/@saveallbeforerun");
-        if(saveallbeforerun) save.saveall();
+        //a) This is annoying b) the setting doesn't work
+        //var model = settings.model;
+        //var saveallbeforerun = model.queryValue("general/@saveallbeforerun");
+        //if(saveallbeforerun) save.saveall();
         
         if (debug === undefined)
             debug = config.parentNode.getAttribute("debug") == "1";

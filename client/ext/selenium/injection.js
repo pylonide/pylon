@@ -10,30 +10,38 @@ window.addEventListener("beforeunload", function(e) {
 window.addEventListener("message", function(e) {
 //    if (e.origin !== window.parent.location.origin || unloading)
 //        return;
-
     try {
         var json = typeof e.data == "string" ? JSON.parse(e.data) : e.data;
     } catch (e) {
         return;
     }
     
-    if (!json.command)
-        return;
-
-    switch (json.command) {
-        case "ping":
-            e.source.postMessage(JSON.stringify({ type: "pong" }), "*");
-            capture.source = e.source;
-            capture.origin = e.origin;
-            break;
-        default:
-            capture[json.command].apply(capture, json.args);
-            break;
+    //Receive from Parent
+    if (json.to == capture.parentUniqueId) {
+        if (!json.command)
+            return;
+    
+        switch (json.command) {
+            case "ping":
+                e.source.postMessage(JSON.stringify({ 
+                    to   : capture.parentUniqueId,
+                    type : "pong" 
+                }), "*");
+                capture.source = window.parent;//e.source;
+                //capture.origin = e.origin;
+                break;
+            default:
+                capture[json.command].apply(capture, json.args);
+                break;
+        }
     }
-
 }, false);
 
+var t = location.href.match(/c9proxyid=(.*?)(?:$|\&)/);
 var capture = {
+    uniqueId       : Math.random(),
+    parentUniqueId : t && t[1] || -1,
+    
     validKeys      : [ 37, 38, 39, 40,  //arrowkeys
                         27,             // Esc
                         16, 17, 18,     // Shift, Ctrl, Alt
@@ -156,6 +164,7 @@ var capture = {
         
         if (this.source)
             this.source.postMessage(JSON.stringify({
+                to    : this.parentUniqueId,
                 type  : "event",
                 name  : name,
                 event : e
@@ -263,12 +272,12 @@ var capture = {
         var _self = this;
 
         // listeners for user mouse interaction
-        /*this.addListener(document, "dblclick", 
+        this.addListener(document, "dblclick", 
             _self.dblclick = function(e) {
                 if (!_self.canCapture())
                     return;
                 _self.captureHtmlEvent("dblclick", e || event);
-            }, true);*/
+            }, true);
 
         this.addListener(document, "mousedown",
             _self.mousedown = function(e) {
@@ -400,9 +409,18 @@ var capture = {
     },
     
     captureHtmlEvent : function(eventName, e, value) {
-        if (!this.lastStream || this.lastStream.name)
-            throw new Error("Stream collission error. " 
-                + (!this.lastStream ? "Missing stream" : ""));
+        if (!this.lastStream || this.lastStream.name) {
+            /*console.warn("Stream collission error. Probably cancelBubble "
+                + "preventing proper cleanup. Trying to recover. " 
+                + (!this.lastStream ? "Missing stream" : ""));*/
+            
+            if (this.lastCleanUpCallback) {
+                this.nextStream(this.lastCleanUpCallback.eventName);
+            }
+            else {
+                throw new Error("Could not recover from collission error.");
+            }
+        }
 
         // Set action object
         
@@ -456,6 +474,7 @@ var capture = {
         this.addListener(document, eventName, this.lastCleanUpCallback = function(){
             _self.nextStream(eventName);
         });
+        this.lastCleanUpCallback.eventName = eventName;
         
         this.dispatchEvent("action", {
             stream : stream
@@ -470,6 +489,7 @@ var capture = {
             this.createStream();
 
         this.removeListener(document, eventName, this.lastCleanUpCallback);
+        delete this.lastCleanUpCallback;
     },
     
     replaceTimeout : function(stream) {
@@ -566,7 +586,7 @@ var capture = {
             name        : eventName,
             async       : this.lastStream.async,
             time        : new Date().getTime() - this.lastStream.abstime,
-            event       : this.getCleanCopy(e),
+            event       : this.getCleanCopy(e, target),
             element     : this.getElementLookupDef(null, target)
         });
         
@@ -746,11 +766,12 @@ var capture = {
             try {
                 var id, model = apf.xmldb.findModel(obj);
                 if (target && target.getModel() == model) {
-                    var amlDef = this.getElementLookupDef(target);
-                    id = amlDef.id 
+                    var amlDef = this.getElementLookupDef(null, target);
+                    id = (amlDef.id 
                         ? amlDef.id 
                         : "apf.document.selectSingleNode('" 
-                            + amlDef.xpath.replace(/'/g, "\\'") + "').getModel()";
+                            + amlDef.xpath.replace(/'/g, "\\'") + "')")
+                        + ".getModel()";
                 }
                 else
                     id = model.id;
@@ -895,7 +916,7 @@ var capture = {
                     if (amlNode[props[i]] != undefined) {
                         obj.push({
                             caption : props[i], 
-                            value   : capture.getCleanCopy(amlNode[props[i]])
+                            value   : capture.getCleanCopy(amlNode[props[i]], amlNode)
                         });
                     }
                 }
@@ -947,7 +968,8 @@ var capture = {
             return false;
     
         if (options.xml) {
-            resHtml = apf.xmldb.findHtmlNode(amlNode.queryNode(options.xml), amlNode);
+            var xmlNode = amlNode.queryNode(options.xml);
+            resHtml = xmlNode && apf.xmldb.findHtmlNode(xmlNode, amlNode);
             
             if (!resHtml)
                 return false;
@@ -1059,7 +1081,7 @@ var capture = {
         
         //Aml Element
         var div = this.divs[0];
-        if (nodeInfo.aml 
+        if (nodeInfo.aml && nodeInfo.aml.$ext
           && (nodeInfo.aml.$ext.offsetHeight || nodeInfo.aml.$ext.offsetWidth)) {
             div.style.display = "block";
             var pos = lastPos = capture.getAbsolutePosition(nodeInfo.aml.$ext);

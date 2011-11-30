@@ -9,7 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var markup = require("text!ext/noderunner/noderunner.xml");
 
 module.exports = ext.register("ext/noderunner/noderunner", {

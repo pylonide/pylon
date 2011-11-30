@@ -6,6 +6,9 @@
                 var iframe = document.getElementById("proxyframe");
                 var target = iframe.contentWindow;
                 var timer;
+                var uniqueId = Math.random();
+                var t = location.href.match(/c9proxyid=(.*?)(?:$|\&)/);
+                var parentUniqueId = t && t[1] || -1;
             
                 window.addEventListener("message", function(e) {
 //                    if (e.origin !== window.parent.location.origin)
@@ -14,32 +17,42 @@
                     try {
                         var json = typeof e.data == "string" ? JSON.parse(e.data) : e.data;
                     } catch (e) { return; }
-                    
-                    if (json.type == "href") {
-                        if (target.location.href != json.href)
-                            target.location.href = json.href;
-                    }
-                    else if (json.type == "inject") {
-                        if (!target.capture) {
-                            var head = target.document.documentElement;
-                            elScript = target.document.createElement("script");
-                            elScript.src = json.href;
-                            head.appendChild(elScript);
+
+                    //Received from Parent
+                    if (json.to == parentUniqueId) {
+                        if (json.type == "href") {
+                            if (target.location.href != json.href)
+                                target.location.href = json.href
+                                    + (json.href.indexOf("?") > -1 ? "&" : "?") 
+                                    + "c9proxyid=" + uniqueId;
+                        }
+                        else if (json.type == "inject") {
+                            if (!target.capture) {
+                                var head = target.document.documentElement;
+                                elScript = target.document.createElement("script");
+                                elScript.src = json.href;
+                                head.appendChild(elScript);
+                            }
+                        }
+                        else {
+                            json.to = uniqueId;
+                            
+                            //Forward to Child
+                            target.postMessage(JSON.stringify(json), "*");
                         }
                     }
-                    else
-                        target.postMessage(e.data, "*");
-                }, false);
-                
-                window.addEventListener("message", function(e) {
-                    if (e.origin !== target.location.origin)
-                        return;
-                    
-                    window.parent.postMessage(e.data, "*");
+                    //Received from Child
+                    else if (json.to == uniqueId || json.to == -1) {
+                        json.to = parentUniqueId;
+                        
+                        //Forward to parent
+                        window.parent.postMessage(JSON.stringify(json), "*");
+                    }
                 }, false);
                 
                 iframe.addEventListener("load", function(){
                     window.parent.postMessage(JSON.stringify({
+                        to   : parentUniqueId,
                         type : "load",
                         href : target.location.href
                     }), "*");
@@ -47,6 +60,7 @@
                 
                 iframe.addEventListener("error", function(){
                     window.parent.postMessage(JSON.stringify({
+                        to   : parentUniqueId,
                         type : "error",
                         href : target.location.href
                     }), "*");

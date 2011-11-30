@@ -36,7 +36,7 @@ module.exports = ext.register("ext/selenium/selenium", {
     testpath        : "test/selenium",
     template        : template,
     markup          : markup,
-
+    
     hook : function(){
         var _self = this;
         ide.addEventListener("init.ext/testpanel/testpanel", function(){
@@ -281,7 +281,7 @@ module.exports = ext.register("ext/selenium/selenium", {
             _self.lastTestNode = testNode;
 
             testpanel.setLog(fileNode, "running test " + (i + 1) + " of " + tests.length);
-            testpanel.setLog(testNode, "connecting");
+            testpanel.setLog(testNode, "connecting...");
 
             var data = {
                 command : "selenium",
@@ -304,7 +304,7 @@ module.exports = ext.register("ext/selenium/selenium", {
                 if (e.message.subtype == "selenium") {
                     var msg = e.message.body;
 
-                    switch (msg.code) {
+                    switch (msg.type) {
                         case 0:
                             testpanel.setError(testNode, msg.err);
                             testpanel.setError(fileNode, msg.err);
@@ -462,7 +462,7 @@ module.exports = ext.register("ext/selenium/selenium", {
             else if (nodes.length)
                 testpanel.setError(fileNode, "failed " + (nodes.length) + " tests of " + tests.length);
             else
-                testpanel.setPass(fileNode, "(" + tests.length + ")");
+                testpanel.setPass(fileNode, tests.length + " of " + tests.length);
             
             _self.running = false;
             

@@ -367,7 +367,7 @@ module.exports = ext.register("ext/console/console", {
                 if (res) {
                     if (res.out)
                         Logger.logNodeStream(res.out);
-                    if (res.err)
+                    if (res.err && typeof res.err == "string")
                         Logger.logNodeStream(res.err);
                     if (res.code) // End of command
                         Logger.log("", "divider");

@@ -114,7 +114,7 @@ function UiRecorderToWD(browser){
                         stack.push("browser.click('" + elId + ", 2);");
                     }
                     //@todo think about moving this to a cleanup.
-                    else if (
+                    /*else if (
                         (temp = actions[i + 1]) && contexts[temp.element] == elId 
                             && temp.name == "mouseup" &&
                         (temp = actions[i + 2]) && contexts[temp.element] == elId
@@ -127,7 +127,7 @@ function UiRecorderToWD(browser){
                         // double click detection
                         i += 3;
                         continue;
-                    }
+                    }*/
                     else {
                         stack.push("browser.buttonDown();");
                     }
@@ -162,11 +162,11 @@ function UiRecorderToWD(browser){
                     stack.push("browser.moveTo(" + elId 
                         + ", " + x + ", " + y + ");");
                     
-                    //stack.push("browser.doubleclick();");
-                    stack.push("browser.buttonDown();");
+                    stack.push("browser.doubleclick();");
+                    /*stack.push("browser.buttonDown();");
                     stack.push("browser.buttonUp();");
                     stack.push("browser.buttonDown();");
-                    stack.push("browser.buttonUp();");
+                    stack.push("browser.buttonUp();");*/
                     break;
                 case "keydown":
                     break;
@@ -192,6 +192,8 @@ function UiRecorderToWD(browser){
                 var res;
                 if (def.id) 
                     res = def.id;
+                else if (def.eval)
+                    res = "(" + def.eval + ")";
                 else
                     res = "apf.document.selectSingleNode(\"" 
                       + def.xpath

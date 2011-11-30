@@ -54,8 +54,8 @@ module.exports = ext.register("ext/testpanel/testpanel", {
             }));
             
             apf.document.body.appendChild(new apf.menu({
-                id : "mnuRunSettings",
-                pinned : "true"
+                id : "mnuRunSettings"
+                //pinned : "true"
             }));
             
             //ide.removeEventListener("init.testrunner", arguments.callee);
@@ -75,13 +75,13 @@ module.exports = ext.register("ext/testpanel/testpanel", {
                 _self.filter(e.value);
         }
     
-        var shiftState;
+        var altKey;
         apf.addListener(document, "keydown", function(e){
-            shiftState = (e || event).shiftKey;
+            altKey = (e || event).altKey;
         });
         
         apf.addListener(document, "keyup", function(e){
-            shiftState = (e || event).shiftKey ? false : shiftState;
+            altKey = (e || event).altKey ? false : altKey;
         });
     
         dgTestProject.addEventListener("afterchoose", function(e){
@@ -90,7 +90,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
                 return;
 
             //Open
-            if (shiftState) {
+            if (altKey) {
                 if (node.tagName != "file"
                   || !ide.onLine && !ide.offlineFileSystemSupport)
                     return;
@@ -107,6 +107,15 @@ module.exports = ext.register("ext/testpanel/testpanel", {
                 
                 _self.run([node]);
             }
+        });
+        
+        ide.addEventListener("afteroffline", function(){
+            btnTestRun.disable();
+            _self.stop(true);
+        });
+        
+        ide.addEventListener("afteronline", function(){
+            btnTestRun.enable();
         });
         
         this.submodules = [];
@@ -151,9 +160,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     getIcon : function(tagName, value, type) {
         if (tagName == "repo")
             return "folder.png";
-        if (tagName == "test")
-            return "bullet_blue.png";
-        if (tagName == "assert" || tagName == "error") {
+        if (tagName == "assert" || tagName == "error" || tagName == "test") {
             if (!value || value == -1)
                 return "bullet_blue.png";
             else if (value == 5) //running
@@ -249,7 +256,10 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         next();
     },
     
-    stop : function(){
+    stop : function(immediate){
+        if (!stTestRun.active)
+            return;
+        
         ide.dispatchEvent("test.stop");
         stTestRun.setAttribute("stopping", 1);
         
@@ -259,7 +269,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
             ide.dispatchEvent("test.hardstop");
             
             _self.stopped();
-        }, 10000);
+        }, immediate ? 0 : 10000);
     },
     
     stopped : function(){

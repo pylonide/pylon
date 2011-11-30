@@ -23,7 +23,6 @@
                 <a:splitbutton id="btnTestRun"
                   caption  = "Run tests"
                   onclick  = "require('ext/testpanel/testpanel').run(dgTestProject.getSelection());"
-                  margin   = "0 0 0 4"
                   submenu  = "mnuRunSettings" 
                   visible  = "{!(stTestRun.active or !dgTestProject.selected)}" />
             
@@ -116,6 +115,10 @@
                   onclick="var ide = require('core/ide');ide.dispatchEvent('openfile', {doc: ide.createDocument(dgTestProject.selected)});">Edit</a:item>
                 <a:divider />
                 <a:item match="[file]" onclick="dgTestProject.remove()">Remove</a:item>
+                <a:divider />
+                <a:item match="[file]" onclick="
+                    require('ext/tabbehaviors/tabbehaviors').revealfile(dgTestProject.selected);
+                ">Show in File Tree</a:item>
             </a:menu>
         </a:vbox>
     </a:window>

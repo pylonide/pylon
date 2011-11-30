@@ -74,7 +74,8 @@ module.exports = ext.register("ext/settings/settings", {
         var _self = this;
 
         //@todo this should actually be an identifier to know that it was rights that prevented loading it
-        ide.settings = ide.settings == "defaults" ? template : ide.settings;
+        var resetSettings = location.href.indexOf('reset=1') > -1
+        ide.settings = resetSettings || ide.settings == "defaults" ? template : ide.settings;
 
         if (!ide.settings) {
             ide.addEventListener("socketMessage", function(e){

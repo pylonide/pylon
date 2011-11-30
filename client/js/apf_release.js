@@ -6069,7 +6069,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/util/style.js)SIZE(18610)TIME(Mon, 28 Nov 2011 22:46:35 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/util/style.js)SIZE(18416)TIME(Tue, 29 Nov 2011 05:49:11 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6266,23 +6266,26 @@ apf.importStylesheet = function (def, win) {
         
     var re = new RegExp("^" + document.domain, 'g');
     var doc = (win || window).document;
-    for (var index=0; index < document.styleSheets.length; index++) {
+    for (var index=document.styleSheets.length - 1; index >= 0; index--) {
         if (!doc.styleSheets[index].href || doc.styleSheets[index].href.match(re)) {
             break;
         }
     }
     var styleSheet = doc.styleSheets[index];
     
-    if (!styleSheet) {
+    function newStyleSheet(){
         if (doc.createStyleSheet)
-            styleSheet = doc.createStyleSheet();
+            return doc.createStyleSheet();
         else {
             var elem = doc.createElement("style");
             elem.type = "text/css";
             doc.getElementsByTagName("head")[0].appendChild(elem);
-            styleSheet = elem.sheet;
+            return elem.sheet;
         }
-    }    
+    }
+    
+    if (!styleSheet)
+        styleSheet = newStyleSheet();
     
     for (var i = 0; i < def.length; i++) {
         if (!def[i][1])
@@ -6296,13 +6299,8 @@ apf.importStylesheet = function (def, win) {
                 styleSheet.insertRule(rule, 0);
             }
             catch (e) {
-                // Firefox has trouble with inserting rules at index 0.
-                // Probably not the cause for this to err, but the try/catch
-                // avoids it.
-                console && console.error(
-                    "Could not insert CSS rule " + rule + " in stylesheet ",
-                    styleSheet
-                );
+                styleSheet = newStyleSheet();
+                styleSheet.insertRule(rule, 0);
             }
         }
     }
@@ -55200,7 +55198,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53795)TIME(Mon, 28 Nov 2011 22:05:43 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53834)TIME(Tue, 29 Nov 2011 02:06:36 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55699,6 +55697,8 @@ apf.datagrid = function(struct, tagName){
         
         this.$cssRules = [];
         this.$headings = rules;
+        
+        this.clearAllCache();
 
         var fixed = 0, found = false;
         for (var h, i = 0, l = rules.length; i < l; i++) {
@@ -60998,7 +60998,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/menu.js)SIZE(18901)TIME(Wed, 09 Nov 2011 06:15:17 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/menu.js)SIZE(18901)TIME(Tue, 29 Nov 2011 03:34:59 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70354,7 +70354,7 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/splitbutton.js)SIZE(4993)TIME(Mon, 28 Nov 2011 03:51:22 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/splitbutton.js)SIZE(5162)TIME(Tue, 29 Nov 2011 03:44:21 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70438,9 +70438,13 @@ apf.splitbutton = function(struct, tagName){
         
         var _self = this;
         this.$button2.addEventListener("mousedown", function() {
-            self[value].addEventListener("display", function(){
-                self[value].$ext.style.marginLeft = "-" + _self.$button1.$ext.offsetWidth + "px";
-            });
+            if (!self[value].$splitInited) {
+                self[value].addEventListener("display", function(){
+                    var split = this.opener.parentNode;
+                    this.$ext.style.marginLeft = "-" + split.$button1.$ext.offsetWidth + "px";
+                });
+                self[value].$splitInited = true;
+            }
             
             this.removeEventListener("mousedown", arguments.callee);
         });

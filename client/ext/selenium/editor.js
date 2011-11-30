@@ -178,29 +178,36 @@ module.exports = ext.register("ext/selenium/editor", {
         window.addEventListener("message", function(e) {
 //            if (e.origin !== brSeleniumPreview.$browser.contentWindow.location.origin)
 //                return;
-            
+
             try {
                 var json = typeof e.data == "string" ? JSON.parse(e.data) : e.data;
             } catch (e) {
                 return;
             }
-        
-            switch (json.type) {
-                case "pong":
-                    _self.pong();
-                    break;
-                case "event":
-                    ide.dispatchEvent("selenium." + json.name, json.event);
-                    break;
-                case "load":
-                case "error":
-                    //brSeleniumPreview.dispatchEvent(json.type, {href: json.href});
-                    brSeleniumPreview.setProperty("proxy-source", json.href);
-                    _self.inject();
-                    break;
+
+            //Receive from Child
+            if (json.to == _self.uniqueId) {
+                switch (json.type) {
+                    case "pong":
+                        _self.pong();
+                        break;
+                    case "event":
+                        ide.dispatchEvent("selenium." + json.name, json.event);
+                        break;
+                    case "load":
+                    case "error":
+                        //brSeleniumPreview.dispatchEvent(json.type, {href: json.href});
+                        brSeleniumPreview.setProperty("proxy-source", json.href);
+                        _self.inject();
+                        break;
+                }
             }
             
         }, false);
+        
+        this.uniqueId = Math.random();
+        var t = location.href.match(/c9proxyid=(.*?)(?:$|\&)/);
+        this.parentUniqueId = t && t[1] || -1;
         
         ide.addEventListener("selenium.record", function(e){
             var nr = _self.model.queryNodes("test").length + 1;
@@ -211,9 +218,9 @@ module.exports = ext.register("ext/selenium/editor", {
             
             testNode = dgUiRecorder.add(testNode, dgUiRecorder.xmlRoot);
             
-            var url = brSeleniumPreview[useProxy ? "proxy-source" : "src"];
+            var url = _self.getChildUrl();
             if (url && _self.findUrl(_self.model.queryNode("test[last()]")) != url)
-                _self.getNewUrl(brSeleniumPreview[useProxy ? "proxy-source" : "src"]);
+                _self.getNewUrl(_self.getChildUrl());
             
             //dgUiRecorder.select(testNode);
         });
@@ -233,12 +240,23 @@ module.exports = ext.register("ext/selenium/editor", {
                 return;
             
             var doc = _self.model.data.ownerDocument;
-            
             var actionNode = doc.createElement("action");
             actionNode.setAttribute("name", e.stream.name);
             actionNode.setAttribute("element", JSON.stringify(e.stream.element));
             actionNode.setAttribute("index", e.streamIndex);
             actionNode.setAttribute("value", e.stream.value || "");
+            
+            if (e.stream.name == "dblclick") {
+                var nodes = _self.model.queryNodes("test[last()]/action");
+                var assertNodes;
+                for (var i = nodes.length - 1; i >= nodes.length - 4; i--) {
+                    apf.xmldb.setAttribute(nodes[i], "execute", "false");
+                    assertNodes = nodes[i].selectNodes("assert");
+                    for (var j = assertNodes.length - 1; j >= 0; j--) {
+                        actionNode.appendChild(assertNodes[j]);
+                    }
+                }
+            }
             
             _self.model.appendXml(actionNode, "test[last()]");
         });
@@ -281,6 +299,15 @@ module.exports = ext.register("ext/selenium/editor", {
             _self.showPropertyMenu(e);
         });
         
+        ide.addEventListener("afteroffline", function(){
+            btnTestRunInSelEditor.disable();
+            _self.stopPlayback();
+        });
+        
+        ide.addEventListener("afteronline", function(){
+            btnTestRunInSelEditor.enable();
+        });
+        
         this.model = new apf.model();
         this.model.$ignoreRecorder = true;
         this.model.load("<tests></tests>");
@@ -305,14 +332,16 @@ module.exports = ext.register("ext/selenium/editor", {
                 _self.loadUrl(this.value);
             }
             else if (event.keyCode == 27) 
-                this.setValue(brSeleniumPreview[useProxy ? "proxy-source" : "src"]);
+                this.setValue(_self.getChildUrl());
         });
         
         brSeleniumPreview.addEventListener(useProxy ? "prop.proxy-source" : "load", function(e){
-            tbUiRecordLoc.setValue(e.value || e.href);
+            var value = (e.value || e.href)
+                .replace(/[&|\?]c9proxyid=.*?(?:\&|$)/, "");
+            tbUiRecordLoc.setValue(value);
             uiRecordLoadingIndicator.hide();
             
-            _self.currentLocation = e.value || e.ref;
+            _self.currentLocation = value;
         });
         
         var updateUrl;
@@ -367,6 +396,8 @@ module.exports = ext.register("ext/selenium/editor", {
         if (!this.model.queryNodes("test").length)
             return;
         
+        mnuRunSettings.hide();
+        
         if (!this.statusColumn) {
             colUiRecorder1.setAttribute("width", "33%");
             colUiRecorder2.setAttribute("width", "34%");
@@ -404,6 +435,9 @@ module.exports = ext.register("ext/selenium/editor", {
     },
     
     stopPlayback : function(){
+        if (!stTestRun.active)
+            return;
+            
         var _self = this;
         
         ide.addEventListener("selenium.stopped", function(e){
@@ -424,6 +458,11 @@ module.exports = ext.register("ext/selenium/editor", {
         this.$stopTimer = setTimeout(function(){
             ide.dispatchEvent("selenium.stopped");
         }, 10000);
+    },
+    
+    getChildUrl : function(){
+        return (brSeleniumPreview[useProxy ? "proxy-source" : "src"] || "")
+                    .replace(/[&|\?]c9proxyid=.*?(?:\&|$)/, "")
     },
     
     findUrl : function(xmlNode){
@@ -448,7 +487,7 @@ module.exports = ext.register("ext/selenium/editor", {
           ? this.findUrl(dgUiRecorder.selected) || ""
           : tbUiRecordLoc.value || "")
             .replace(/(https?:\/\/[^\/]+)\/.*$/, "$1") + "/workspace"; //(?:\/workspace)?)
-        return host + "/.c9.proxy.html";
+        return host + "/.c9.proxy.html?c9proxyid=" + this.uniqueId;
     },
 
     inject : function() {
@@ -460,6 +499,7 @@ module.exports = ext.register("ext/selenium/editor", {
         if (useProxy) {
             var inject = function(){
                 _self.target.postMessage(JSON.stringify({
+                    to   : _self.uniqueId,
                     type : "inject",
                     href : value
                 }), "*");
@@ -513,8 +553,10 @@ module.exports = ext.register("ext/selenium/editor", {
     loadUrl : function(value) {
         tbUiRecordLoc.setValue(value);
         
-        if (this.currentLocation != value)
-            uiRecordLoadingIndicator.show();
+        if (this.currentLocation == value)
+            return;
+        
+        uiRecordLoadingIndicator.show();
         
         if (useProxy) {
             if (this.getProxyUrl() != brSeleniumPreview.src)
@@ -522,6 +564,7 @@ module.exports = ext.register("ext/selenium/editor", {
             
             if (this.proxyLoaded) {
                 this.target.postMessage(JSON.stringify({
+                    to   : this.uniqueId,
                     type : "href",
                     href : value
                 }), "*");
@@ -548,6 +591,7 @@ module.exports = ext.register("ext/selenium/editor", {
     
     execute : function(cmd, arg1){
         this.target.postMessage(JSON.stringify({
+            to      : this.uniqueId,
             command : cmd,
             args    : [arg1]
         }), "*");
@@ -658,7 +702,7 @@ module.exports = ext.register("ext/selenium/editor", {
             return;
         
         var url = this.findUrl(xmlNode);
-        if (url != brSeleniumPreview[useProxy ? "proxy-source" : "src"])
+        if (url != this.getChildUrl())
             return;
         
         var element = xmlNode.getAttribute("element");
@@ -739,7 +783,7 @@ module.exports = ext.register("ext/selenium/editor", {
         
         var test, tests = {}, actions, action, asserts, assert, json;
         for (var i = 0; i < nodes.length; i++) {
-            actions = apf.queryNodes(nodes[i], "action");
+            actions = apf.queryNodes(nodes[i], "action[not(@execute='false')]");
             
             test = [];
             for (var j = 0; j < actions.length; j++) {

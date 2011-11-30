@@ -53,7 +53,7 @@
                         list.push("ace/editor");
 
                     require(list, function(ide, ext, util){
-                        ide.settings = <%settingsXml%>;
+                        ide.settings = <%settingsXml%>
 
                         var plugins = <%plugins%>;
                         apf.addEventListener("load", function(){

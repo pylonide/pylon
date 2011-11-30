@@ -16,6 +16,9 @@ var testpanel = require("ext/testpanel/testpanel");
 var console = require("ext/console/console");
 var template = require("text!ext/nodeunit/nodeunit.template");
 
+var parser = require("treehugger/js/parse");
+require("treehugger/traverse");
+
 function escapeXpathString(name){
     if (name.indexOf('"') > -1) {
         var out = [], parts = name.split('"');
@@ -339,22 +342,29 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
             if (state == apf.SUCCESS) {
                 var node, found = [];
 
-                var json = JSON.parse(data.match(/module\.exports\s*=\s*\{[\s\S]*?\s*}\s*\n\}/)[0].replace(/function[\s\S]*?    \}(\n\s*\}|,\n\s*\n    )/g, "10$1").replace(/module\.exports\s*=\s*/, ""));
+                var ast = parser.parse(data);
                 var doc  = xmlNode.ownerDocument;
-                for (var prop in json) {
-                    node = xmlNode.selectSingleNode("test[@name=" 
-                      + escapeXpathString(prop) + "]");
-                        
-                    if (!node) {
-                        node = doc.createElement("test");
-                        node.setAttribute("name", prop);
-                        
-                        apf.xmldb.appendChild(xmlNode, node);
+                ast.traverseTopDown(
+                    'Assign(PropAccess(Var("module"),"exports"), ObjectInit(inits))', function(b) {
+                        b.inits.forEach(function(init) {
+                            // init now contains PropertyInit("name", value) nodes, first branch is the name node
+                            var name = init[0].value;
+                            
+                            node = xmlNode.selectSingleNode("test[@name=" 
+                              + escapeXpathString(name) + "]");
+                                
+                            if (!node) {
+                                node = doc.createElement("test");
+                                node.setAttribute("name", name);
+                                
+                                apf.xmldb.appendChild(xmlNode, node);
+                            }
+                            
+                            found.push(node);
+                        });
                     }
-                    
-                    found.push(node);
-                }
-                
+                );
+
                 var nodes = xmlNode.childNodes;
                 for (var i = nodes.length - 1; i >= 0; i--) {
                     if (found.indexOf(nodes[i]) == -1)

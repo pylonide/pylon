@@ -17,7 +17,6 @@
                       visible  = "{!stTestRun.active}"
                       disabled = "{stTestRecord.active}"
                       onclick  = "require('ext/selenium/editor').run();"
-                      margin   = "0 0 0 4" 
                       submenu  = "mnuRunSettings" />
                     
                     <a:button id="btnTestStopInSelEditor"
@@ -102,7 +101,7 @@
                   id          = "dgUiRecorder"
                   options     = "size"
                   anchors     = "0 0 0 0"
-                  each        = "[action|assert|test|error]"
+                  each        = "[action[not(@execute='false')]|assert|test|error]"
                   multiselect = "true"
                   class       = "noscrollbar"
                   startcollapsed = "false"

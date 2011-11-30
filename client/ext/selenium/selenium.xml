@@ -32,6 +32,7 @@
               maxitems  = "20" />
             <a:checkbox id="cbSeQuit"
               span    = "2"
+              skin    = "checkbox_black"
               margin  = "0 0 0 60"
               style   = "color: #bbb"
               default2 = "true"

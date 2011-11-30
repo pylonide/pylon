@@ -1469,7 +1469,7 @@
             color:#d6d6d6;
             line-height:14px;
             height:15px;
-            padding:3px 6px 0 6px;
+            padding:4px 6px 0 6px;
         }
 
         .c9-toolbarbuttonEmpty .c9-icon {
@@ -1983,6 +1983,58 @@
     <a:presentation>
         <a:main label="span/text()" minheight="18" minwidth="18">
             <div class='cbcontainer'>
+                <div class='checkbox'> </div>
+                <span>-</span>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:checkbox>
+<a:checkbox name="checkbox_black">
+    <a:style><![CDATA[
+        .cbblack.cbcontainer {
+            padding    : 2px 2px 2px 20px;
+        }
+
+        .cbblack.cbcontainer span {
+            color : #C0C0C0;
+            top         : 0;
+        }
+
+        .cbblack.cbcontainer .checkbox {
+            width      : 16px;
+            height     : 17px;
+            background : url("images/checkbox_black.png") no-repeat 0 0;
+        }
+
+        .cbblack.cbcontainerDown .checkbox{
+            background-position : 0 -17px;
+        }
+
+        .cbblack.cbcontainerChecked .checkbox {
+            background-position : 0 -34px;
+        }
+        
+        .cbblack.cbcontainerChecked.cbcontainerDown .checkbox {
+            background-position : 0 -51px;
+        }
+
+        .cbblack.cbcontainerError span {
+            background-color : #ffb500;
+            color            : #fbfbfb;
+        }
+
+        .cbblack.cbcontainerDisabled .checkbox {
+            background-position : 0 -68px;
+        }
+
+        .cbblack.cbcontainerDisabled span {
+            color : #bebebe;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main label="span/text()" minheight="18" minwidth="18">
+            <div class='cbcontainer cbblack'>
                 <div class='checkbox'> </div>
                 <span>-</span>
             </div>
@@ -5613,8 +5665,11 @@
         }
 
         .c9-dropdown-btnDisabled .c9-label {
-            padding:1px 4px 0 26px;
+            padding:1px 4px 0 7px;
         }
+        .c9-dropdown-btnIcon.c9-dropdown-btnDisabled .c9-label {
+            padding:1px 4px 0 26px;
+         }
 
         .c9-dropdown-btnDisabled .c9-arrow {
             background-position : 0 6px;

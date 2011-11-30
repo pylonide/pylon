@@ -333,8 +333,15 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             page = tabEditors.getPage();
         if (!page)
             return false;
+        
+        this.revealfile(page.$doc.getNode());
+    },
+    
+    revealfile : function(docNode) {
+        var path = docNode.getAttribute('path');
+        var node = trFiles.queryNode('//file[@path="' + path + '"]');
 
-        var node = trFiles.queryNode('//file[@path="' + page.name + '"]');
+        require("ext/tree/tree").enable();
 
         if (node) {
             trFiles.expandAndSelect(node);
@@ -342,7 +349,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             scrollToFile();
         }
         else {
-            var parts = page.name.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
+            var parts = path.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
             var file = parts.pop();
             var pathList = ["folder[1]"];
             var str = "";
@@ -361,7 +368,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             });
         }
 
-        var parts = page.name.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
+        var parts = path.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
         var file = parts.pop();
         var pathList = ["folder[1]"];
         var str = "";
@@ -372,7 +379,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
         
         var xpath = pathList[pathList.length - 1];
-        var docNode = page.$doc.getNode();
+        //var docNode = page.$doc.getNode();
         // Show spinner in active tab the file is being looked up
         apf.xmldb.setAttribute(docNode, "lookup", "1");
         

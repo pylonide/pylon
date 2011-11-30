@@ -66,7 +66,8 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
             var js = __oni_rt.c1.compile("browser.close();browser.quit();callback();");
             (new Function('browser', 'callback', js))(browser, function(){
                 _self.sendResult(0, message.command, {
-                    code: 0,
+                    code: 1,
+                    type: 0,
                     argv: message.argv,
                     err: "Test Cancelled",
                     out: '\n \033[31m%s \x1b[31m%t\x1b[37m'
@@ -87,10 +88,10 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
             //Display help message
             
             _self.sendResult(0, message.command, {
-                code: code,
+                code: 1,
+                type: 0,
                 argv: message.argv,
-                err: null,
-                out: null
+                err: null
             });
             
             return;
@@ -99,10 +100,10 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
             function runTest(err, browser, jobId){
                 if (err) {
                     _self.sendResult(0, message.command, {
-                        code: 0,
+                        code: 1,
+                        type: 0,
                         argv: message.argv,
-                        err: err.message,
-                        out: null
+                        err: err.message
                     });
                 }
                 else {
@@ -118,10 +119,11 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                         var js = __oni_rt.c1.compile(code);//, {filename: filename});
                     }
                     catch(e){
-                        console.log(args.join(" "), "\n\n", e.message, e.stack);
+                        //console.log(args.join(" "), "\n\n", e.message, e.stack);
                         
                         _self.sendResult(0, message.command, {
-                            code: 0,
+                            code: 1,
+                            type: 0,
                             argv: message.argv,
                             err: e,
                             out: '\n \033[31m%s \x1b[31m%t\x1b[37m'
@@ -140,14 +142,14 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                     //@todo How can I pass a callback???
                     (new Function('browser', 'callback', js))(browser, function(){
                         _self.sendResult(0, message.command, {
-                            code: 4,
+                            code: 1,
+                            type: 4,
                             argv: message.argv,
                             err: null,
                             video: browser.settings.where == "sauce"
                                 ? "https://saucelabs.com/rest/" + username 
                                     + "/jobs/" + jobId + "/results/video.flv"
-                                : "",
-                            out: ""
+                                : ""
                         });
                     });
                 }
@@ -180,11 +182,11 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                 function start(err){
                     if (err) {
                         _self.sendResult(0, message.command, {
-                            code: 0,
+                            code: 1,
+                            type: 0,
                             argv: message.argv,
                             err: "Could not start Selenium Server: " 
-                                + err.message,
-                            out: null
+                                + err.message
                         });
                         
                         return;
@@ -193,7 +195,8 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                     wdInit(options, {
                         pass : function(msg, data){
                             _self.sendResult(0, message.command, {
-                                code: 1,
+                                code: 0,
+                                type: 1,
                                 argv: message.argv,
                                 err: null,
                                 out: msg,
@@ -202,7 +205,8 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                         },
                         error : function(msg, data){
                             _self.sendResult(0, message.command, {
-                                code: 2,
+                                code: 0,
+                                type: 2,
                                 argv: message.argv,
                                 err: null,
                                 out: msg,
@@ -210,18 +214,19 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                             });
                         },
                         cmd : function(data){
-                            console.log("cmd:" + data);
+                            console.log(cmd);
                             _self.sendResult(0, message.command, {
-                                code: 6,
+                                code: 0,
+                                type: 6,
                                 argv: message.argv,
                                 err: null,
-                                out: "",
                                 cmd: data
                             });
                         },
                         log : function(data){
                             _self.sendResult(0, message.command, {
-                                code: 3,
+                                code: 0,
+                                type: 3,
                                 argv: message.argv,
                                 err: null,
                                 out: data
@@ -229,10 +234,10 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                         },
                         setJobId : function(jobId, browser){
                             _self.sendResult(0, message.command, {
-                                code: 5,
+                                code: 0,
+                                type: 5,
                                 argv: message.argv,
                                 err: null,
-                                out: "",
                                 job: jobId
                             });
                             
@@ -264,17 +269,32 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
             {cwd: cwd/*, env: env*/});
 
         child.stdout.on("data", function(data){
+            console.log(data.toString("utf8"));
             if (data.toString("utf8")
               .indexOf("Started org.openqa.jetty.jetty.Server") > -1) {
-                callback();
                 _self.$serverRunning = true;
+                callback();
                 child.stdout.removeListener("data", arguments.callee);
+            }
+        });
+        
+        var alreadyStarted = false;
+        child.stderr.on("data", function(data){
+            console.log(data.toString("utf8"));
+            if (data.toString("utf8")
+              .indexOf("Selenium is already running") > -1) {
+                _self.$serverRunning = true;
+                alreadyStarted = true;
+                callback();
+                child.stderr.removeListener("data", arguments.callee);
             }
         });
 
         child.on("exit", function(code) {
-            _self.$serverRunning = false;
-            _self.child = null;
+            if (!alreadyStarted) {
+                _self.$serverRunning = false;
+                _self.child = null;
+            }
         });
     }
     
