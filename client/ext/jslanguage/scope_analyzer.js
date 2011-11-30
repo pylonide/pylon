@@ -119,6 +119,13 @@ handler.analyze = function(doc, ast) {
                 // Put back
                 scope[b.x.value] = oldVar;
                 return node;
+            },
+            'PropAccess(_, "lenght")', function(b, node) {
+                markers.push({
+                    pos: node.getPos(),
+                    type: 'warning',
+                    message: "Did you mean 'length'?"
+                });
             }
         );
         if(!parentLocalVars) {
