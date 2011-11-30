@@ -224,26 +224,30 @@ module.exports = {
                 content += "\n";
 
             if (content.length) {
-                util.insertMode(editor);
-
                 editor.navigateLineEnd()
                 editor.insert(content);
+                util.insertMode(editor);
             }
         }
     },
     "shift-o": {
         nav: function(editor, range, count, param) {
+            var row = editor.getCursorPosition().row;
             count = count || 1;
             var content = "";
             while (0 < count--)
                 content += "\n";
 
             if (content.length) {
+                if(row > 0) {
+                    editor.navigateUp();
+                    editor.navigateLineEnd()
+                    editor.insert(content);
+                } else {
+                    editor.session.insert({row: 0, column: 0}, content);
+                    editor.navigateUp();
+                }
                 util.insertMode(editor);
-
-                editor.navigateUp();
-                editor.navigateLineEnd()
-                editor.insert(content);
             }
         }
     },
