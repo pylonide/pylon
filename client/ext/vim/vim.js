@@ -21,7 +21,7 @@ var commands = cmdModule.commands;
 var cliCmds = require("ext/vim/cli");
 var util = require("ext/vim/maps/util");
 
-var enabled;
+var enabled = false;
 
 var onConsoleCommand = function onConsoleCommand(e) {
     var cmd = e.data.command;
@@ -80,7 +80,7 @@ var onCursorMove = function() {
 };
 
 var enableVim = function enableVim() {
-    if (editors.currentEditor && editors.currentEditor.ceEditor) {
+    if (editors.currentEditor && editors.currentEditor.ceEditor && !enabled) {
         var editor = editors.currentEditor.ceEditor.$editor;
 
         addCommands(editor, commands)
