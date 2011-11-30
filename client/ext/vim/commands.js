@@ -15,7 +15,6 @@ var motions = require("ext/vim/maps/motions");
 var operators = require("ext/vim/maps/operators");
 var alias = require("ext/vim/maps/aliases");
 var registers = require("ext/vim/registers");
-var Range = require("ace/range").Range;
 
 var NUMBER   = 1;
 var OPERATOR = 2;
@@ -204,7 +203,19 @@ var actions = {
     },
     "u": {
         fn: function(editor, range, count, param) {
-            editor.undo();
+            count = parseInt(count || 1, 10);
+            for (var i = 0; i < count; i++) {
+                editor.undo();
+            }
+            editor.selection.clearSelection();
+        }
+    },
+    "shift-r": {
+        fn: function(editor, range, count, param) {
+            count = parseInt(count || 1, 10);
+            for (var i = 0; i < count; i++) {
+                editor.redo();
+            }
             editor.selection.clearSelection();
         }
     },
