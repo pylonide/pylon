@@ -46,6 +46,7 @@
                     <a:item value="lisp">Lisp files</a:item>
                     <a:item value="lua">Lua files</a:item>
                     <a:item value="make">Make files</a:item>
+                    <a:item value="markdown">Markdown files</a:item>
                     <a:item value="mason">Mason files</a:item>
                     <a:item value="objc">Obj-C files</a:item>
                     <a:item value="objcpp">Obj-C++ files</a:item>
@@ -110,7 +111,7 @@
           autoselect      = "false">
             <a:model />
             <a:caption match="[d:querydetail]">Search results for '{apf.htmlentities([@query])}'</a:caption>
-            <a:caption match="[d:maxreached]">Your search yielded too many results. The first hits are listed below:</a:caption>
+            <a:caption match="[d:maxreached]">Your search yielded too many results. The first 50 hits are listed below:</a:caption>
             <a:caption match="[d:response]">[@path] (#[d:excerpt])</a:caption>
             <a:caption match="[d:excerpt]"><div class="linenumber">[@line]</div><pre class="excerpt">{apf.htmlentities([text()])}</pre></a:caption>
         </a:tree>
