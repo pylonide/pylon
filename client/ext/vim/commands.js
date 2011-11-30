@@ -406,16 +406,23 @@ var inputBuffer = exports.inputBuffer = {
     }
 };
 
+function setPreviousCommand(fn) {
+    inputBuffer.previous = { action: { action: { fn: fn } } };
+}
+
 exports.commands = {
     start: {
         exec: function start(editor) {
+            console.log("Inserting!");
             util.insertMode(editor);
+            setPreviousCommand(start);
         }
     },
     startBeginning: {
-        exec: function start(editor) {
+        exec: function startBeginning(editor) {
             editor.navigateLineStart();
             util.insertMode(editor);
+            setPreviousCommand(startBeginning);
         }
     },
     // Stop Insert mode as soon as possible. Works like typing <Esc> in
@@ -435,12 +442,14 @@ exports.commands = {
             if (lineLen)
                 editor.navigateRight();
             util.insertMode(editor);
+            setPreviousCommand(append);
         }
     },
     appendEnd: {
         exec: function appendEnd(editor) {
             editor.navigateLineEnd();
             util.insertMode(editor);
+            setPreviousCommand(appendEnd);
         }
     }
 };
