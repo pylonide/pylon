@@ -34,7 +34,7 @@ var onConsoleCommand = function onConsoleCommand(e) {
                 cliCmds[cmd](domEditor.$editor, e.data);
             }
             else if (cmd.match(/^\d+$/)) {
-                domEditor.$editor.gotoLine(parseInt(cmd), 0);
+                domEditor.$editor.gotoLine(parseInt(cmd, 10), 0);
                 domEditor.$editor.navigateLineStart();
             }
             else {
