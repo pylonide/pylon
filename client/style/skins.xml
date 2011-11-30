@@ -60,7 +60,7 @@
         .c9-menu-bar {
             position      : relative;
             overflow      : visible;
-            height        : 36px;
+            height        : 35px;
             background    : url(images/c9-menu-backg.png) repeat-x 0 0;
             border-bottom : 1px solid #000000;
         }
@@ -68,14 +68,14 @@
         .c9-menu-bar .c9-mbar-logo {
             position   : relative;
             overflow   : visible;
-            height     : 36px;
+            height     : 35px;
             /*background : url(images/cloud9logo.png) no-repeat right 0;*/
         }
 
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont {
             position   : relative;
             overflow   : visible;
-            height     : 36px;
+            height     : 35px;
             margin-right:164px;
         }
 
@@ -86,7 +86,7 @@
             right:0;
             background:url(images/c9-menu-round.png) no-repeat 0 0;
             width:42px;
-            height:34px;
+            height:35px;
         }
 
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-offline {
@@ -108,8 +108,8 @@
             position:relative;
             overflow:visible;
             margin:0 42px 0 0;
-            height:34px;
-            background:url(images/c9-menu-backg2.png) repeat-x 0 5px;
+            height:35px;
+            background:url(images/c9-menu-backg2.png) repeat-x 0 0px;
         }
 
         .c9-menu-bar .mainlogo {
