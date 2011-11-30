@@ -30,10 +30,16 @@ var onConsoleCommand = function onConsoleCommand(e) {
         if (cmd[0] === ":") {
             cmd = cmd.substr(1);
 
-            if (cliCmds[cmd])
+            if (cliCmds[cmd]) {
                 cliCmds[cmd](domEditor.$editor, e.data);
-            else
+            }
+            else if (cmd.match(/^\d+$/)) {
+                domEditor.$editor.gotoLine(parseInt(cmd, 10), 0);
+                domEditor.$editor.navigateLineStart();
+            }
+            else {
                 console.log("Vim command '" + cmd + "' not implemented.");
+            }
 
             domEditor.focus();
             e.returnValue = false;
