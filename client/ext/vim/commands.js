@@ -206,7 +206,7 @@ var actions = {
             editor.selection.clearSelection();
         }
     },
-    "shift-r": {
+    "ctrl-r": {
         fn: function(editor, range, count, param) {
             count = parseInt(count || 1, 10);
             for (var i = 0; i < count; i++) {
