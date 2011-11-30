@@ -16,6 +16,7 @@ parseHandler.handlesLanguage = function(language) {
 };
     
 parseHandler.parse = function(code) {
+    code = code.replace(/^(#!.*\n)/, "//$1");
     return parser.parse(code);
 };
 

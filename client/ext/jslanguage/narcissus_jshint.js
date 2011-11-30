@@ -22,6 +22,8 @@ handler.analysisRequiresParsing = function() {
 
 handler.analyze = function(doc) {
     var value = doc.getValue();
+    value = value.replace(/^(#!.*\n)/, "//$1");
+
     var markers = [];
     try {
         parser.parse(value);
