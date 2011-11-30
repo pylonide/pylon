@@ -323,7 +323,7 @@ module.exports = ext.register("ext/save/save", {
             if (path !== newPath || node.getAttribute("newfile") === 1) {
                 model.load(node);
                 file = model.data;
-                fs.beforeRename(file, null, newPath);
+                fs.beforeRename(file, null, newPath, false);
                 doc.setNode(file);
             }
 
