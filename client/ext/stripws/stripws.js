@@ -29,6 +29,7 @@ var strip = module.exports.strip = function () {
     var selection = session.getSelection();
     var result = source.replace(RE_WS, "\n");
     var pos, lead, anchor;
+    var scrollTopRow = editor.renderer.getScrollTopRow();
 
     // Check whether the user has text selected
     if (!selection.isEmpty()) {
@@ -42,16 +43,16 @@ var strip = module.exports.strip = function () {
     session.setValue(result);
 
     if (lead && anchor) {
-        var selection = session.getSelection();
-
+        selection = session.getSelection();
         selection.setSelectionAnchor(anchor.row, anchor.column);
         selection.moveCursorTo(lead.row, lead.column);
     } else if (pos) {
         editor.moveCursorTo(pos.row, pos.column);
     }
+    editor.renderer.scrollToRow(scrollTopRow);
 
     return result;
-}
+};
 
 module.exports = ext.register("ext/stripws/stripws", {
     name: "Strip Whitespace",
