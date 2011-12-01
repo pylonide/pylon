@@ -334,7 +334,7 @@ module.exports = ext.register("ext/save/save", {
                 self._saveAsNoUI(page);
             }
 
-            if (parseInt(file.getAttribute("newfile") || "0", 10) == 1) {
+            if (parseInt(file.getAttribute("newfile") || "0", 10) === 1) {
                 apf.xmldb.removeAttribute(file, "newfile");
                 apf.xmldb.removeAttribute(file, "changed");
                 var xpath = newPath.replace(new RegExp("\/" + cloud9config.davPrefix.split("/")[1]), "")
