@@ -181,11 +181,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         // remove existing markers
         _self.$clearMarker();
 
-        // if we are actually going to set the marker,
-        // only then we'll switch
-        if (_self.$updateMarkerPrerequisite()) {
-        	_self.$editor.setSession(doc);
-        }
+        _self.$editor.setSession(doc);
         
         _self.$updateMarker();
         _self.$updateBreakpoints(doc);
@@ -227,16 +223,21 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         if (!frame) {
             return;
         }
-        var script = this.xmlRoot;
-        if (script.getAttribute("scriptid") !== frame.getAttribute("scriptid")) {
-            return;
-        }
         
         // when running node with 'debugbrk' it will auto break on the first line of executable code
         // we don't want to really break here so we put this:                
         if (frame.getAttribute("name") === "anonymous(exports, require, module, __filename, __dirname)"
                 && frame.getAttribute("index") === "0" && frame.getAttribute("line") === "0") {
-            console.log("stop execution!");
+                    
+            var fileNameNode = frame.selectSingleNode("//frame/vars/item[@name='__filename']");
+            var fileName = fileNameNode ? fileNameNode.getAttribute("value") : "";
+            var model = this["model-breakpoints"].data;
+            
+            // is there a breakpoint on the exact same line and file? then continue
+            if (fileName && model && model.selectSingleNode("//breakpoints/breakpoint[@script='" + fileName + "' and @line=0]")) {
+                return frame;
+            }
+            
             return;
         }
         
@@ -249,6 +250,11 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         var frame = this.$updateMarkerPrerequisite();
         if (!frame) {
         	return;
+        }
+        
+        var script = this.xmlRoot;
+        if (script.getAttribute("scriptid") !== frame.getAttribute("scriptid")) {
+            return;
         }
         
         var head = this.$debugger.$mdlStack.queryNode("frame[1]");
@@ -441,6 +447,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             if (!e || !e.data) {
                 return;
             }
+            
+            _self.$updateMarker();
         };
         this.$onBeforeContinue = function() {
             _self.$clearMarker();
