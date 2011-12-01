@@ -245,6 +245,11 @@ module.exports = ext.register("ext/debugger/debugger", {
 
     showDebugFile : function(scriptId, row, column, text) {
         var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
+        
+        // check prerequisites
+        if (!ceEditor.$updateMarkerPrerequisite()) {
+            return;
+        }
 
         if (file) {
             editors.jump(file, row, column, text, null, true);

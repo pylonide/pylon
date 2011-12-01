@@ -755,7 +755,7 @@ module.exports = ext.register("ext/editors/editors", {
                 });
         }
 
-        if (!hasData && !page)
+        if (!hasData)
             ide.dispatchEvent("openfile", {
                 doc: doc || ide.createDocument(fileEl)
             });
