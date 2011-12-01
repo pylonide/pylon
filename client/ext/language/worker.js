@@ -105,6 +105,27 @@ oop.inherits(LanguageWorker, Mirror);
         this.sender.emit(messageType, data);
     };
     
+    /**
+     * If the program contains a syntax error, the parser will try its best to still produce
+     * an AST, although it will contain some problems. To avoid that those problems result in
+     * invalid warning, let's filter out warnings that appear within a line or too after the
+     * syntax error. 
+     */
+    function filterMarkersAroundError(ast, markers) {
+        if(!ast)
+            return;
+        var error = ast.getAnnotation("error");
+        if(!error)
+            return;
+        for (var i = 0; i < markers.length; i++) {
+            var marker = markers[i];
+            if(marker.type !== 'error' && marker.pos.sl >= error.line && marker.pos.el <= error.line + 2) {
+                markers.splice(i, 1);
+                i--;
+            }
+        }
+    }
+    
     this.analyze = function() {
         var ast = this.parse();
         var markers = [];
@@ -117,6 +138,7 @@ oop.inherits(LanguageWorker, Mirror);
             }
         }
         var extendedMakers = markers;
+        filterMarkersAroundError(ast, markers);
         if (this.getLastAggregateActions().markers.length > 0)
             extendedMakers = markers.concat(this.getLastAggregateActions().markers);
         this.scheduleEmit("markers", extendedMakers);
