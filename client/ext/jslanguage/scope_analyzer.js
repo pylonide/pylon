@@ -131,7 +131,7 @@ handler.analyze = function(doc, ast) {
                 markers.push({
                     pos: this[0].getPos(),
                     type: 'warning',
-                    message: "Missing radix argument, consider using '10' as a second argument."
+                    message: "Missing radix argument."
                 });
             }
         );

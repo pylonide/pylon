@@ -106,14 +106,10 @@ oop.inherits(LanguageWorker, Mirror);
     };
     
     /**
-     * If the AST is recovered (i.e., if there is a syntactic error in the program),
-     * let's hide warnings in the close vinicity (anything but errors, those are probably parse errors), 
-     * in case those are a result of the recovery. Is this a perfect solution? 
-     * No, but hey, error recovery is not an exact science. Or... it may be.
-     * 
-     * Oh well.
-     * 
-     * This function fixes stuff! It's magic.
+     * If the program contains a syntax error, the parser will try its best to still produce
+     * an AST, although it will contain some problems. To avoid that those problems result in
+     * invalid warning, let's filter out warnings that appear within a line or too after the
+     * syntax error. 
      */
     function filterMarkersAroundError(ast, markers) {
         if(!ast)
