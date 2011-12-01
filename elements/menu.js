@@ -112,7 +112,7 @@ apf.menu = function(struct, tagName){
             this.$ext.style.display = "none";
 
             var lastFocus = apf.menu.lastFocus;
-
+            var opener    = this.opener;
             //@todo test this with a list being the opener of the menu
             if (lastFocus != this.opener && this.opener && this.opener.$blur)
                 this.opener.$blur();
@@ -197,6 +197,8 @@ apf.menu = function(struct, tagName){
                 apf.setStyleClass(this.$selected.$ext, "", ["hover"]);
                 this.$selected = null;
             }
+            
+            this.dispatchEvent("hide", {opener: opener});
         }
     };
 
