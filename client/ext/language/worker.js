@@ -105,6 +105,31 @@ oop.inherits(LanguageWorker, Mirror);
         this.sender.emit(messageType, data);
     };
     
+    /**
+     * If the AST is recovered (i.e., if there is a syntactic error in the program),
+     * let's hide warnings in the close vinicity (anything but errors, those are probably parse errors), 
+     * in case those are a result of the recovery. Is this a perfect solution? 
+     * No, but hey, error recovery is not an exact science. Or... it may be.
+     * 
+     * Oh well.
+     * 
+     * This function fixes stuff! It's magic.
+     */
+    function filterMarkersAroundError(ast, markers) {
+        if(!ast)
+            return;
+        var error = ast.getAnnotation("error");
+        if(!error)
+            return;
+        for (var i = 0; i < markers.length; i++) {
+            var marker = markers[i];
+            if(marker.type !== 'error' && marker.pos.sl >= error.line && marker.pos.el <= error.line + 2) {
+                markers.splice(i, 1);
+                i--;
+            }
+        }
+    }
+    
     this.analyze = function() {
         var ast = this.parse();
         var markers = [];
@@ -117,6 +142,7 @@ oop.inherits(LanguageWorker, Mirror);
             }
         }
         var extendedMakers = markers;
+        filterMarkersAroundError(ast, markers);
         if (this.getLastAggregateActions().markers.length > 0)
             extendedMakers = markers.concat(this.getLastAggregateActions().markers);
         this.scheduleEmit("markers", extendedMakers);
