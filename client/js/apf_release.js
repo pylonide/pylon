@@ -6487,7 +6487,8 @@ this.animate=apf.enableAnim;};(function(){this.$focussable=apf.KEYBOARD;this.$po
 this.visible=false;this.matchhide=false;this.$booleanProperties.animate=true;this.$booleanProperties.pinned=true;
 this.$booleanProperties.matchhide=true;this.$propHandlers.visible=function(value,prop,force,nofocus,hideOpener){if(value){this.$ext.style.display="block";
 if(this.opener&&this.opener.localName.indexOf("item")>-1){this.opener.parentNode.$showingSubMenu=this;
-}}else{this.$ext.style.display="none";var lastFocus=apf.menu.lastFocus;if(lastFocus!=this.opener&&this.opener&&this.opener.$blur){this.opener.$blur();
+}}else{this.$ext.style.display="none";var lastFocus=apf.menu.lastFocus;var opener=this.opener;
+if(lastFocus!=this.opener&&this.opener&&this.opener.$blur){this.opener.$blur();
 }if(this.opener&&this.opener.parentNode&&this.opener.parentNode.localName=="menu"){if(!this.$hideTree){this.$hideTree=-1;
 }this.opener.parentNode.focus();}else{if(lastFocus){if(apf.window.$settingFocus){if(apf.window.$settingFocus!=lastFocus&&lastFocus.$blur){lastFocus.$blur();
 }this.$blur();if(apf.window.$settingFocus.localName!="menu"){apf.menu.lastFocus=null;
@@ -6501,7 +6502,8 @@ if(visTest&&apf.window.moveNext()===false){apf.window.$focusRoot();}}else{lastFo
 this.$showingSubMenu=null;}if(this.opener&&this.opener.$submenu){this.opener.$submenu(true,true);
 if(this.$hideTree===true&&this.opener&&this.opener.parentNode&&this.opener.parentNode.localName=="menu"){this.opener.parentNode.$hideTree=true;
 this.opener.parentNode.hide();}this.opener=null;}this.$hideTree=null;if(this.$selected){apf.setStyleClass(this.$selected.$ext,"",["hover"]);
-this.$selected=null;}}};var lastFocus;this.display=function(x,y,noanim,opener,xmlNode,openMenuId,btnWidth){this.opener=opener;
+this.$selected=null;}this.dispatchEvent("hide",{opener:opener});}};var lastFocus;
+this.display=function(x,y,noanim,opener,xmlNode,openMenuId,btnWidth){this.opener=opener;
 if(xmlNode&&!this.disabled){var last,i,node,nodes=this.childNodes,c=0,l=nodes.length,result;
 for(i=0;i<l;i++){node=nodes[i];if(node.nodeType!=1||node.localName!="item"){continue;
 }result=!xmlNode||!node.match||(node.cmatch||(node.cmatch=apf.lm.compile(node.match,{xpathmode:3,injectself:true})))(xmlNode);
@@ -7890,12 +7892,13 @@ apf.aml.setElement("tree",apf.tree);apf.aml.setElement("checked",apf.BindingRule
 apf.webdav=function(struct,tagName){this.$init(tagName||"webdav",apf.NODE_HIDDEN,struct);
 this.$locks={};this.$lockedStack=[];this.$lockId=0;this.$serverVars={};this.$fsCache={};
 };(function(){this.useHTTP=true;this.method="GET";this.$showHidden=false;this.$booleanProperties.showhidden=true;
-this.$supportedProperties.push("showhidden");this.$propHandlers.showhidden=function(value){this.$showHidden=value;
+this.$supportedProperties.push("showhidden","force-host");this.$propHandlers.showhidden=function(value){this.$showHidden=value;
 };this.$regVar=function(name,value){this.$serverVars[name]=value;return value;};
 function unregister(){for(var i=0;i<arguments.length;i++){if(typeof this.$serverVars[arguments[i]]!="undefined"){this.$serverVars[arguments[i]]=null;
 delete this.$serverVars[arguments[i]];}}}this.$getVar=function(name){return this.$serverVars[name]||"";
 };this.doRequest=function(fCallback,sPath,sBody,oHeaders,bUseXml,oBinary,fCallback2){if(!this.$getVar("authenticated")){return onAuth.call(this,{method:this.doRequest,context:this,args:arguments});
 }if(bUseXml){if(!oHeaders){oHeaders={};}oHeaders["Content-type"]="text/xml; charset=utf-8";
+}var fHost=this["force-host"];if(fHost&&sPath.indexOf(fHost)===-1){sPath=fHost.replace(/[\/]+$/,"")+"/"+sPath.replace(/^[\/]+/,"");
 }var _self=this;return this.get(sPath||this.$server,{callback:function(data,state,extra){if(state!=apf.SUCCESS){var oError;
 oError=WebDAVError.call(_self,"Url: "+extra.url+"\nInfo: "+extra.message);if(fCallback){return fCallback.call(_self,data,state,extra,fCallback2);
 }else{throw oError;}}extra.headers=oHeaders;var iStatus=parseInt(extra.status);

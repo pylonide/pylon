@@ -104,7 +104,10 @@ module.exports = ext.register("ext/run/run", {
         });
         
         stProcessRunning.addEventListener("deactivate", function(){
-//           dock.hideSection(["ext/run/run", "ext/debugger/debugger"]); 
+           dock.hideSection(["ext/run/run", "ext/debugger/debugger"]); 
+        });
+        stProcessRunning.addEventListener("activate", function(){
+           dock.showSection(["ext/run/run", "ext/debugger/debugger"], true); 
         });
     },
 
@@ -208,8 +211,8 @@ module.exports = ext.register("ext/run/run", {
             debug = config.parentNode.getAttribute("debug") == "1";
         }
         
-        if(debug)
-            dock.showSection(["ext/debugger/debugger", "ext/run/run"], true);
+//        if(debug)
+//            dock.showSection(["ext/debugger/debugger", "ext/run/run"], true);
 
         config.parentNode.setAttribute("debug", "0");
         noderunner.run(config.getAttribute("path"), config.getAttribute("args").split(" "), debug);

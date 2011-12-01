@@ -46,8 +46,9 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                     return item.page;
 
                 var page = item.getPage();
-
-                page.$arrExtension = arrExtension;
+                
+                if(page)
+                    page.$arrExtension = arrExtension;
                 /*vManager.permanent(page, function(e){
                     item.mnuItem.check();
                 }, function(){
@@ -140,6 +141,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             onclick : function(){
                 var defaultSettings = settings.model.queryValue("auto/dockpanel_default/text()"),
                     state;
+                    
                 if (defaultSettings) {
                     // JSON parse COULD fail
                     try {
@@ -156,6 +158,9 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                     settings.model.setQueryValue("auto/dockpanel/text()", state)
                     
                     settings.save();
+                    
+                    if(stProcessRunning.active)
+                        _self.showSection(["ext/run/run", "ext/debugger/debugger"], true); 
                 }
             }
         }));
@@ -188,17 +193,23 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
 
         panel[type].mnuItem = mnuToolbar.appendChild(new apf.item({
             caption : options.menu.split("/").pop(),
+            id      : "mnu" + type,
             type    : "check",
             onclick : function(){
                 var page = getPage();
-
+                
+                var pNode = page && page.parentNode;
+                
                 //Problem state might not be removed from 
-                if (!page.parentNode || !page.parentNode.dock) {
+                if (!pNode || !pNode.dock) {                   
                     layout.addItem(_self.sections[name][type]);
                     layout.show(page);
                     
                     _self.changed = true;
                     settings.save()
+                }
+                else if (pNode.parentNode && pNode.parentNode.tagName == 'vbox' && pNode.parentNode.expanded){
+                    pNode.set(page)
                 }
                 else {
                     layout.show(page);
