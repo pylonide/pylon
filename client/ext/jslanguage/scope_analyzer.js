@@ -126,6 +126,13 @@ handler.analyze = function(doc, ast) {
                     type: 'warning',
                     message: "Did you mean 'length'?"
                 });
+            },
+            'Call(Var("parseInt"), [_])', function() {
+                markers.push({
+                    pos: this[0].getPos(),
+                    type: 'warning',
+                    message: "Missing radix argument, consider using '10' as a second argument."
+                });
             }
         );
         if(!parentLocalVars) {
