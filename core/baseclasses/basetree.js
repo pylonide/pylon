@@ -214,7 +214,11 @@ apf.BaseTree = function(){
                     
                     // when finished, find all the other selectors that start with the current selector
                     // plus a slash to make it really really sure
-                    var childSelectors = allSelectors.filter(function (s) { return s.indexOf(currentSelector + "/") === 0; });
+                    // plus we check whether it's a child and not a grand child
+                    var childSelectors = allSelectors.filter(function (s) { 
+                        return s.indexOf(currentSelector + "/") === 0
+                                && currentSelector.split("/").length + 1 === s.split("/").length;
+                    });
                     
                     // then expand each of the child items
                     childSelectors.forEach(function (selector) {
