@@ -85,7 +85,7 @@ var enableVim = function enableVim() {
 
         addCommands(editor, commands);
         if (!enabled)
-            ceEditor.$editor.renderer.container.addEventListener("click", onCursorMove);
+            ceEditor.$editor.renderer.container.addEventListener("click", onCursorMove, false);
 
         editor.setKeyboardHandler(handler);
         // So, apparently 'prop.checked' can't be trusted, since it happens
@@ -109,7 +109,7 @@ var disableVim = function() {
         removeCommands(editor, commands);
         editor.setKeyboardHandler(null);
         commands.start.exec(editor);
-        ceEditor.$editor.renderer.container.removeEventListener("click", onCursorMove);
+        ceEditor.$editor.renderer.container.removeEventListener("click", onCursorMove, false);
         enabled = false;
     }
 
