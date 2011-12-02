@@ -658,7 +658,7 @@ apf.page = function(struct, tagName){
                 + this.$uniqueId + ').parentNode;if(apf.lookup(' + this.$uniqueId
                 + ') != o.$activepage'  + (this.parentNode.overactivetab ? " || true" : "")  + ') o.$setStyleClass(this, "over", null, true);');
             elBtn.setAttribute("onmouseout", 'var o = apf.lookup('
-                + this.$uniqueId + ').$btnOut(this, event);');
+                + this.$uniqueId + ');o&&o.$btnOut(this, event);');
 
             //var cssClass = this.getAttribute("class");
             //if (cssClass) {

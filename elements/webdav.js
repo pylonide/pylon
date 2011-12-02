@@ -124,7 +124,7 @@ apf.webdav = function(struct, tagName){
      *                                    should be passed
      */
     this.$booleanProperties["showhidden"]  = true;
-    this.$supportedProperties.push("showhidden");
+    this.$supportedProperties.push("showhidden", "force-host");
 
     this.$propHandlers["showhidden"]  = function(value) {
         this.$showHidden = value;
@@ -202,6 +202,10 @@ apf.webdav = function(struct, tagName){
                 oHeaders = {};
             oHeaders["Content-type"] = "text/xml; charset=utf-8";
         }
+        
+        var fHost = this["force-host"];
+        if (fHost && sPath.indexOf(fHost) === -1)
+            sPath = fHost.replace(/[\/]+$/, "") + "/" + sPath.replace(/^[\/]+/, "");
 
         var _self = this;
         return this.get(sPath || this.$server, {
