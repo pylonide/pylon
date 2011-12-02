@@ -214,7 +214,6 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
                             });
                         },
                         cmd : function(data){
-                            console.log(cmd);
                             _self.sendResult(0, message.command, {
                                 code: 0,
                                 type: 6,
@@ -263,13 +262,20 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
         var cwd = path.resolve(path.dirname(module.filename), 
             'bin');
         
+        this.sendResult(0, "selenium", {
+            code: 0,
+            type: 3,
+            argv: [],
+            err: null,
+            out: "Starting Selenium Server..."
+        });
+        
         var _self = this;
         var child = _self.child = Spawn("java", 
             ["-jar", "selenium-server-standalone-2.11.0.jar"], 
             {cwd: cwd/*, env: env*/});
 
         child.stdout.on("data", function(data){
-            console.log(data.toString("utf8"));
             if (data.toString("utf8")
               .indexOf("Started org.openqa.jetty.jetty.Server") > -1) {
                 _self.$serverRunning = true;
@@ -280,7 +286,6 @@ sys.inherits(ShellSeleniumPlugin, Plugin);
         
         var alreadyStarted = false;
         child.stderr.on("data", function(data){
-            console.log(data.toString("utf8"));
             if (data.toString("utf8")
               .indexOf("Selenium is already running") > -1) {
                 _self.$serverRunning = true;

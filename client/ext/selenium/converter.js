@@ -163,6 +163,7 @@ function UiRecorderToWD(browser){
                         + ", " + x + ", " + y + ");");
                     
                     stack.push("browser.doubleclick();");
+                    
                     /*stack.push("browser.buttonDown();");
                     stack.push("browser.buttonUp();");
                     stack.push("browser.buttonDown();");

@@ -100,7 +100,7 @@ function wdInit(options, assert, callback) {
             else
                 return isEqual;
         }
-        
+
         browser.constructor.prototype.getDecoratedPage = function(url) {
             this.get(url);
             this.setWaitTimeout(options.waitTimeout || 2000);
@@ -216,12 +216,12 @@ function wdInit(options, assert, callback) {
                 }
             }");
         }
-        
+
         browser.constructor.prototype.decorated = true;
     }
 
     var jobId = browser.init(options.desired);
-    
+
     assert.setJobId(jobId, browser);
     
     callback(null, browser, jobId);

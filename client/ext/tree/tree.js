@@ -82,6 +82,7 @@ module.exports = ext.register("ext/tree/tree", {
             id      : "mnuitemHiddenFiles",
             type    : "check",
             caption : "Show Hidden Files",
+            visible : "{trFiles.visible}",
             checked : "[{require('ext/settings/settings').model}::auto/tree/@showhidden]",
             onclick : function(){
                 _self.changed = true;
@@ -119,7 +120,8 @@ module.exports = ext.register("ext/tree/tree", {
 
         trFiles.addEventListener("afterchoose", this.$afterselect = function(e) {
             var node = this.selected;
-            if (!node || node.tagName != "file" || this.selection.length > 1 || !ide.onLine && !ide.offlineFileSystemSupport) //ide.onLine can be removed after update apf
+            if (!node || node.tagName != "file" || this.selection.length > 1 
+              || !ide.onLine && !ide.offlineFileSystemSupport) //ide.onLine can be removed after update apf
                     return;
 
             ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});

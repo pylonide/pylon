@@ -94,6 +94,15 @@
                 <a:divider />
                 <a:item match="[action|assert|test]" onclick="dgUiRecorder.remove()">Remove</a:item>
                 <a:item match="[action]" onclick="require('ext/selenium/editor').startAddAssert()">Add Assertion</a:item>
+                <a:divider />
+                <a:item submenu="mnuColumns">Columns</a:item>
+            </a:menu>
+            
+            <a:menu id="mnuColumns">
+                <a:item type="check" checked="{colUiRecorder1.visible}" value="colUiRecorder1">Name</a:item>
+                <a:item type="check" checked="{colUiRecorder2.visible}" value="colUiRecorder2">Value</a:item>
+                <a:item type="check" checked="{colUiRecorder3.visible}" value="colUiRecorder3">Element</a:item>
+                <a:item type="check" checked="{colUiRecorder4.visible}" value="colUiRecorder4">Status</a:item>
             </a:menu>
         
             <a:bar skin="basic" flex="1">
@@ -101,15 +110,52 @@
                   id          = "dgUiRecorder"
                   options     = "size"
                   anchors     = "0 0 0 0"
-                  each        = "[action[not(@execute='false')]|assert|test|error]"
+                  each        = "[action|assert|test|error]"
                   multiselect = "true"
                   class       = "noscrollbar"
                   startcollapsed = "false"
                   contextmenu = "mnuUiRecorder"
                   onmouseover = "require('ext/selenium/editor').highlightElement(event)"
                   onmouseout  = "require('ext/selenium/editor').hideHighlightElements(event)">
-                    <a:column id="colUiRecorder1" caption="Name" width="40%" icon="{require('ext/selenium/editor').getIcon([@status])}" value="[@name]" tree="1" check2="1" editor="textbox" skin="tbsimple" class="tbtree" />
-                    <a:column id="colUiRecorder2" caption="Value" width="61%" value="[@value]" editor="textbox" skin="tbsimple" />
+                    <a:column id="colUiRecorder1" 
+                      caption   = "Name"
+                      visible   = "[{require('ext/settings/settings').model}::editors/uirecorder/colname/@visible]"
+                      width     = "[{require('ext/settings/settings').model}::editors/uirecorder/colname/@width]" 
+                      icon      = "{require('ext/selenium/editor').getIcon([@status])}" 
+                      value     = "[@name]" 
+                      tree      = "1" 
+                      editor    = "textbox" 
+                      skin      = "tbsimple" 
+                      class     = "tbtree" />
+                    <a:column id="colUiRecorder2" 
+                      caption   = "Value" 
+                      visible   = "[{require('ext/settings/settings').model}::editors/uirecorder/colvalue/@visible]"
+                      width     = "[{require('ext/settings/settings').model}::editors/uirecorder/colvalue/@width]" 
+                      value     = "[@value]" 
+                      editor    = "textbox" 
+                      skin      = "tbsimple" />
+                    <a:column id="colUiRecorder3" 
+                      caption   = "Element" 
+                      visible   = "[{require('ext/settings/settings').model}::editors/uirecorder/colelement/@visible]"
+                      width     = "[{require('ext/settings/settings').model}::editors/uirecorder/colelement/@width]" 
+                      value     = "{[@element]||''}" 
+                      editor    = "textbox" 
+                      skin      = "tbsimple" />
+                    <a:column id="colUiRecorder4" 
+                      caption   = "Status" 
+                      visible   = "false"
+                      width     = "[{require('ext/settings/settings').model}::editors/uirecorder/colstatus/@width]" 
+                      editor    = "textbox" 
+                      skin      = "tbsimple"><?lm
+                        if ([@status] === '0')
+                            <dd style='color:red;margin:0;'>\[[@status-message]\]</dd>
+                        else if ([@status] == '1')
+                            <dd style='color:green;margin:0;'>\[PASS{[@status-message] and ' [@status-message]'}\]</dd>
+                        else if ([@status] == '-1')
+                            <dd style='margin:0;'>\[{[@status-message].uCaseFirst()}\]</dd>
+                        else
+                            '';
+                    ?></a:column>
                     
                     <a:css match="[test]" value="testhead" />
                     <a:css match="[node()[@status='5']]" value="current_execution" />

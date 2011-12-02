@@ -53,6 +53,17 @@
             <a:item type="check" checked="true" onclick="
                 require('ext/testpanel/testpanel').toggleExpandTests(this.value);
             ">Auto Expand Tests</a:item>
+            <a:divider />
+            <a:item submenu="mnuAutorunTests">Auto-run Tests</a:item>
+        </a:menu>
+        <a:menu id="mnuAutorunTests">
+            <a:group id="grpAutoRunTests" value="[{require('ext/settings/settings').model}::auto/testpanel/@autorun]" />
+            <a:item group="grpAutoRunTests" type="radio" value="none">None</a:item>
+            <a:divider />
+            <a:item group="grpAutoRunTests" type="radio" value="selection">Selection</a:item>
+            <a:item group="grpAutoRunTests" type="radio" value="pattern" onclick="
+                require('ext/testpanel/testpanel').editAutoRunPattern();
+            ">Pattern</a:item>
         </a:menu>
         <a:vbox anchors = "0 0 0 0" id="vboxTestPanel" style="background:#333">
             <a:model id="mdlTests">

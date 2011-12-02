@@ -52,9 +52,9 @@
                     if (VERSION == RELEASE)
                         list.push("ace/editor");
 
+                    apf.IdeSettings = <%settingsXml%>
+                    
                     require(list, function(ide, ext, util){
-                        ide.settings = <%settingsXml%>
-
                         var plugins = <%plugins%>;
                         apf.addEventListener("load", function(){
                             //Load extensions

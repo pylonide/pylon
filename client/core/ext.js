@@ -186,6 +186,9 @@ module.exports = ext = {
         ide.dispatchEvent("init." + oExtension.path, {
             ext : oExtension
         });
+        ide.addEventListener("$event.init." + oExtension.path, function(callback){
+            callback.call(this, {ext : oExtension});
+        });
     },
 
     execCommand: function(cmd, data) {

@@ -29,6 +29,9 @@ module.exports = ext.register("ext/settings/settings", {
     nodes : [],
 
     save : function() {
+        if (!this.canSave)
+            return;
+        
         var _self = this;
         clearTimeout(this.$customSaveTimer);
 
@@ -73,9 +76,14 @@ module.exports = ext.register("ext/settings/settings", {
     load : function(){
         var _self = this;
 
+        if (!ide.settings)
+            ide.settings = apf.IdeSettings;
+
         //@todo this should actually be an identifier to know that it was rights that prevented loading it
         var resetSettings = location.href.indexOf('reset=1') > -1
-        ide.settings = resetSettings || ide.settings == "defaults" ? template : ide.settings;
+        ide.settings = resetSettings || ide.settings == "defaults" 
+            ? template 
+            : ide.settings;
 
         if (!ide.settings) {
             ide.addEventListener("socketMessage", function(e){
@@ -104,6 +112,10 @@ module.exports = ext.register("ext/settings/settings", {
         ide.dispatchEvent("loadsettings", {
             model : _self.model
         });
+        
+        ide.addEventListener("$event.loadsettings", function(cb){
+            cb({model : _self.model});
+        });
 
         var checkSave = function() {
             if (ide.dispatchEvent("savesettings", {
@@ -115,15 +127,16 @@ module.exports = ext.register("ext/settings/settings", {
 
         apf.addEventListener("exit", checkSave);
 
-        ide.addEventListener("$event.loadsettings", function(callback) {
-            callback({model: _self.model});
-        });
-
         ide.removeEventListener("afteronline", this.$handleOnline);
     },
 
     hook : function(){
         panels.register(this);
+        
+        var _self = this;
+        ide.addEventListener("extload", function(){
+            _self.canSave = true;
+        });
 
         var btn = this.button = navbar.insertBefore(new apf.button({
             skin    : "mnubtn",
@@ -131,8 +144,6 @@ module.exports = ext.register("ext/settings/settings", {
             "class" : "preferences",
             caption : "Preferences"
         }), navbar.lastChild.previousSibling);
-
-        var _self = this;
 
         btn.addEventListener("mousedown", function(e){
             var value = this.value;
@@ -148,8 +159,39 @@ module.exports = ext.register("ext/settings/settings", {
 
         this.model = new apf.model();
 
+        //@todo remove this event handler
         ide.addEventListener("afteronline", this.$handleOnline = function(){
             _self.load();
+        });
+        
+        /**** Settings ****/
+        
+        //@todo this needs to be refactored to only read from local storage while offline
+        var settings = this;
+        var sIdent = "cloud9.settings." + ide.workspaceId;
+        
+        settings.$saveToFile = settings.saveToFile;
+        settings.saveToFile = function(){
+            if (settings.model.data)
+                localStorage[sIdent] = apf.xmldb.cleanXml(settings.model.data.xml) || "";
+            
+            if (ide.onLine)
+                settings.$saveToFile();
+        };
+        
+        ide.addEventListener("beforeonline", function(){
+            if (localStorage[sIdent] && !settings.model.data) {
+                ide.settings = localStorage[sIdent];
+                settings.load();
+            }
+            delete localStorage[sIdent];
+        });
+        
+        ide.addEventListener("afteroffline", function(){
+            if (localStorage[sIdent] && !settings.model.data) {
+                ide.settings = localStorage[sIdent];
+                settings.load();
+            }
         });
     },
 

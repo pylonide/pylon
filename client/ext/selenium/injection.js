@@ -755,7 +755,7 @@ var capture = {
         else if (obj.dataType == (self.apf && apf.ARRAY || 4)) {
             o = [];
             for (var i = 0; i < obj.length; i++) {
-                o[i] = this.getCleanCopy(obj[i]);
+                o[i] = this.getCleanCopy(obj[i], target);
             }
         }
         else if (obj.nodeFunc)

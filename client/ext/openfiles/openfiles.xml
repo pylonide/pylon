@@ -4,10 +4,16 @@
             return (xmlNode.tagName == "folder" ? 0 : 1) + value.toLowerCase();
         }
     ]]></a:script>
-    <a:list id="lstOpenFiles" canrename="true" flex="1" border="0"
-      multiselect="true" skin="tree" visible="false">
+    <a:list id="lstOpenFiles" 
+      canrename   = "true" 
+      flex        = "1" 
+      border      = "0"
+      multiselect = "true" 
+      autoselect  = "false"
+      skin        = "tree" 
+      visible     = "false">
         <a:each match="[file]" sort="[@name]" sort-method="filesort">
-            <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.] + ' - ' + [../@path].split('/').slice(-2).join('/')}" />
+            <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.] + (cbShowFiles.checked ? ' - ' + [../@path].split('/').slice(-2).join('/') : '')}" />
             <a:icon match="[folder|project]" value="folder.png" />
             <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
         </a:each>

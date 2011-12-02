@@ -2292,7 +2292,6 @@
 		}
 
         .datagrid .headings div{
-            display : inline-block;
             background : -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(229,229,229)),color-stop(1, rgb(248,248,248)));
             background: -moz-linear-gradient(center bottom,rgb(229,229,229) 0%,rgb(248,248,248) 100%);
             overflow : hidden;
@@ -2358,7 +2357,6 @@
         }
 
         .datagrid .records .row span{
-            display : inline-block;
             height : 18px;
             background : white no-repeat 0 50%;
             /*border-bottom : 1px solid #d6d6d6;*/

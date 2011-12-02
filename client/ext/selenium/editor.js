@@ -57,6 +57,7 @@ var ext = require("core/ext");
 var markup = require("text!ext/selenium/editor.xml");
 var proxyTemplate = require("text!ext/selenium/proxy.html");
 var editors = require("ext/editors/editors");
+var settings = require("ext/settings/settings");
 var fs = require("ext/filesystem/filesystem");
 var testpanel = require('ext/testpanel/testpanel');
 var selenium = require('ext/selenium/selenium');
@@ -174,6 +175,18 @@ module.exports = ext.register("ext/selenium/editor", {
         
         this.editor = mainUiRecorder;
         
+        [{n: "colname", v: true, w: "40%"},
+         {n: "colvalue", v: true, w: "60%"}, 
+         {n: "colelement", v: false, w: "33%"},
+         {n: "colstatus", v: false, w: "40%"}].forEach(function(col){
+            var model = settings.model;
+            var xpath = "editors/uirecorder/" + col.n;
+            if (!model.queryNode(xpath)) {
+                model.setQueryValue(xpath + "/@visible", col.v);
+                model.setQueryValue(xpath + "/@width", col.w);
+            }
+        });
+        
         var _self = this;
         window.addEventListener("message", function(e) {
 //            if (e.origin !== brSeleniumPreview.$browser.contentWindow.location.origin)
@@ -245,20 +258,19 @@ module.exports = ext.register("ext/selenium/editor", {
             actionNode.setAttribute("element", JSON.stringify(e.stream.element));
             actionNode.setAttribute("index", e.streamIndex);
             actionNode.setAttribute("value", e.stream.value || "");
+            _self.model.appendXml(actionNode, "test[last()]");
             
             if (e.stream.name == "dblclick") {
                 var nodes = _self.model.queryNodes("test[last()]/action");
                 var assertNodes;
-                for (var i = nodes.length - 1; i >= nodes.length - 4; i--) {
-                    apf.xmldb.setAttribute(nodes[i], "execute", "false");
+                for (var i = nodes.length - 2; i >= nodes.length - 5; i--) {
+                    apf.xmldb.setAttribute(nodes[i], "dblclick", "1");
                     assertNodes = nodes[i].selectNodes("assert");
                     for (var j = assertNodes.length - 1; j >= 0; j--) {
-                        actionNode.appendChild(assertNodes[j]);
+                        apf.xmldb.appendChild(actionNode, assertNodes[j]);
                     }
                 }
             }
-            
-            _self.model.appendXml(actionNode, "test[last()]");
         });
         ide.addEventListener("selenium.capture.http", function(e){
             
@@ -279,7 +291,11 @@ module.exports = ext.register("ext/selenium/editor", {
             assertNode.setAttribute("value", JSON.stringify(e.prop.value));
             assertNode.setAttribute("json", JSON.stringify(e.prop));
             
-            _self.model.appendXml(assertNode, "test[last()]/action[@index=" + index + "]");
+            var pNode = _self.model.queryNode("test[last()]/action[@index=" + index + "]");
+            if (pNode.getAttribute("dblclick")){
+                pNode = pNode.selectSingleNode("following-sibling::action[@name='dblclick']");
+            }
+            apf.xmldb.appendChild(pNode, assertNode);
         });
         ide.addEventListener("selenium.capture.event", function(e){
             if ("dragstop|dragdrop".indexOf(e.event.name) > -1) {
@@ -398,23 +414,8 @@ module.exports = ext.register("ext/selenium/editor", {
         
         mnuRunSettings.hide();
         
-        if (!this.statusColumn) {
-            colUiRecorder1.setAttribute("width", "33%");
-            colUiRecorder2.setAttribute("width", "34%");
-            this.statusColumn = new apf.BindingColumnRule({
-                caption : "Status", 
-                width   : "34%", 
-                value   : "{if ([@status] === '0')\n\
-                    <dd style='color:red;margin:0;'>\\[[@status-message]\\]</dd>\n\
-                else if ([@status] == '1')\n\
-                    <dd style='color:green;margin:0;'>\\[PASS{[@status-message] and ' [@status-message]'}\\]</dd>\n\
-                else if ([@status] == '-1')\n\
-                    <dd style='margin:0;'>\\[{[@status-message].uCaseFirst()}\\]</dd>\n\
-                else\n\
-                    '';}"
-            })
-            dgUiRecorder.appendChild(this.statusColumn);
-        }
+        if (!this.statusColumn)
+            colUiRecorder4.show();
         
         var cleanUp = this.model.queryNodes("//error");
         for (var i = cleanUp.length - 1; i >= 0; i--) {
@@ -693,7 +694,7 @@ module.exports = ext.register("ext/selenium/editor", {
         var node  = dgUiRecorder.selected;
         var pNode = node.selectSingleNode('ancestor-or-self::' + lut[tag]);
             
-        apf.xmldb.appendChild(pNode, el, node.parentNode == pNode ? node : null);
+        dgUiRecorder.add(el, pNode, node.parentNode == pNode ? node : null);
     },
     
     highlightElement : function(e) {
@@ -746,9 +747,10 @@ module.exports = ext.register("ext/selenium/editor", {
                 assert.setAttribute("value", JSON.stringify(e.relatedNode.value));
                 assert.setAttribute("element", JSON.stringify(element));
                 
-                apf.xmldb.appendChild(node, assert);
+                dgUiRecorder.add(assert, node);
+                //apf.xmldb.appendChild(node, assert);
                 
-                dgUiRecorder.select(assert);
+                //dgUiRecorder.select(assert);
             }
             
             ui.stopAddAssert();
@@ -783,7 +785,7 @@ module.exports = ext.register("ext/selenium/editor", {
         
         var test, tests = {}, actions, action, asserts, assert, json;
         for (var i = 0; i < nodes.length; i++) {
-            actions = apf.queryNodes(nodes[i], "action[not(@execute='false')]");
+            actions = apf.queryNodes(nodes[i], "action");
             
             test = [];
             for (var j = 0; j < actions.length; j++) {

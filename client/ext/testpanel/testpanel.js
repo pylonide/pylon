@@ -9,9 +9,22 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var panels = require("ext/panels/panels");
 var markup = require("text!ext/testpanel/testpanel.xml");
 var fs = require("ext/filesystem/filesystem");
+var settings = require("ext/settings/settings");
+
+function escapeXpathString(name){
+    if (name.indexOf('"') > -1) {
+        var out = [], parts = name.split('"');
+        parts.each(function(part) {
+            out.push(part == '' ? "'\"'" : '"' + part + '"');
+        })
+        return "concat(" + out.join(", ") + ")";
+    }
+    return '"' + name + '"';
+}
 
 module.exports = ext.register("ext/testpanel/testpanel", {
     name            : "Test Panel",
@@ -33,7 +46,6 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         }), navbar.lastChild.previousSibling);
 
         var _self = this;
-        this.model = new apf.model().load("<files />");
 
         btn.addEventListener("mousedown", function(e){
             var value = this.value;
@@ -60,6 +72,42 @@ module.exports = ext.register("ext/testpanel/testpanel", {
             
             //ide.removeEventListener("init.testrunner", arguments.callee);
         //});
+        
+        ide.addEventListener("afterfilesave", function(e) {
+            if (stRunning.active || !self.grpAutoRunTests)
+                return;
+            
+            if (grpAutoRunTests.value == "none")
+                return;
+            
+            if (grpAutoRunTests.value == "selection") {
+                var sel = dgTestProject.getSelection();
+                if (sel.length)
+                    _self.run(sel);
+            }
+            else if (grpAutoRunTests.value == "pattern") {
+                var list = (new Function('path', _self.getPattern()))(
+                    e.node.getAttribute("path"));
+                
+                if (!list || list.dataType != apf.ARRAY) {
+                    util.alert("Wrong output from pattern",
+                        "Wrong output from pattern",
+                        "Pattern did not generate list of strings");
+                    return;
+                }
+                
+                var nodes = [], node;
+                list.forEach(function(path){
+                    node = mdlTests.queryNode("//node()[@path=" 
+                        + escapeXpathString(path) + "]");
+                    if (node)
+                        nodes.push(node);
+                });
+                
+                if (nodes.length)
+                    _self.run(nodes);
+            }
+        });
     },
 
     init : function() {
@@ -128,6 +176,50 @@ module.exports = ext.register("ext/testpanel/testpanel", {
                 
                 _self.submodules.push(m);
             });
+        });
+    },
+    
+    getPattern : function(){
+        return settings.model.queryValue("auto/testpanel/pattern/text()") ||
+            "// Enter any code below that returns the paths of the tests in an array of strings.\n"
+            + "// You have access to the 'path' variable.\n"
+            + "// Save this file to store the pattern.\n"
+            + "var tests = [];\n"
+            + "return tests.pushUnique(\n"
+            + "    path.replace(/(?:_test)?\.js$/, \"_test.js\"),\n"
+            + "    path.replace(/(?:_Test)?\.js$/, \"Test.js\")\n"
+            + ");";
+    },
+    
+    editAutoRunPattern : function(){
+        var node = apf.getXml("<file />");
+        node.setAttribute("name", "Pattern.js");
+        node.setAttribute("path", "/workspace/.c9.test.pattern");
+        node.setAttribute("changed", "1");
+        node.setAttribute("newfile", "1");
+                
+        var pattern = this.getPattern();
+                
+        var doc = ide.createDocument(node);
+        doc.cachedValue = pattern;
+                    
+        ide.dispatchEvent("openfile", {doc: doc, node: node});
+        
+        ide.addEventListener("beforefilesave", function(e){
+            if (e.node == node) {
+                
+                var value = doc.getValue();
+                settings.model.setQueryValue("auto/testpanel/pattern/text()", value);
+                node.removeAttribute("changed");
+                node.removeAttribute("newfile");
+                
+                var page = tabEditors.getPage("/workspace/.c9.test.pattern");
+                tabEditors.remove(page);
+                
+                ide.removeEventListener("beforefilesave", arguments.callee);
+                
+                return false;
+            }
         });
     },
     

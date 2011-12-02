@@ -297,35 +297,6 @@ module.exports = ext.register("ext/offline/offline", {
         fs.model.addEventListener("update", saveModel);
         fs.model.addEventListener("afterload", saveModel);
         
-        /**** Settings ****/
-        
-        var settings = require("ext/settings/settings");
-        var sIdent = "cloud9.settings." + ide.workspaceId;
-        
-        settings.$saveToFile = settings.saveToFile;
-        settings.saveToFile = function(){
-            if (settings.model.data)
-                localStorage[sIdent] = apf.xmldb.cleanXml(settings.model.data.xml) || "";
-            
-            if (ide.onLine)
-                settings.$saveToFile();
-        };
-        
-        ide.addEventListener("beforeonline", function(){
-            if (localStorage[sIdent] && !settings.model.data) {
-                ide.settings = localStorage[sIdent];
-                settings.load();
-            }
-            delete localStorage[sIdent];
-        });
-        
-        ide.addEventListener("afteroffline", function(){
-            if (localStorage[sIdent] && !settings.model.data) {
-                ide.settings = localStorage[sIdent];
-                settings.load();
-            }
-        });
-        
         //File contents
         /**
          * This is where we save the files if we have offline support

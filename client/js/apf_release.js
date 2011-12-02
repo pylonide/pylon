@@ -3,7 +3,7 @@
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/apf.js)SIZE(95961)TIME(Wed, 23 Nov 2011 08:30:01 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/apf.js)SIZE(96065)TIME(Thu, 01 Dec 2011 02:34:55 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -977,6 +977,10 @@ VERSION:'3.0beta',
             ? url
             : (!url || !base || url.match(/^\w+\:\/\//) ? url : base.replace(/\/$/, "") + "/" + url.replace(/^\//, ""));
     },
+    
+    getCtrlKey : function(event){
+        return apf.isMac ? event.metaKey : event.ctrlKey;
+    },
 
     /**
      * Loads javascript from a url.
@@ -1763,7 +1767,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/class.js)SIZE(45336)TIME(Mon, 28 Nov 2011 06:37:28 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/class.js)SIZE(45592)TIME(Fri, 02 Dec 2011 02:30:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2138,7 +2142,7 @@ apf.Class.prototype = new (function(){
                         return;
                     
                     isBeingCalled = true;
-                    _self.setProperty(myProp, bObject[bProp], true, false, 10);//e.initial ? 0 :  
+                    _self.setProperty(myProp, bObject[bProp], false, false, 10);//e.initial ? 0 :  
                     isBeingCalled = false;
                 });
         };
@@ -2441,7 +2445,9 @@ apf.Class.prototype = new (function(){
         try{
             var isChanged = (typeof value == OBJ)
                 ? value != (typeof oldvalue == OBJ ? oldvalue : null)
-                : String(oldvalue) !== String(value);
+                : (this.$booleanProperties && this.$booleanProperties[prop]
+                    ? oldvalue != apf.isTrue(value)
+                    : String(oldvalue) !== String(value));
         } catch(e){
             var isChanged = true;
         }
@@ -2459,9 +2465,9 @@ apf.Class.prototype = new (function(){
                     //Check if rule has single xpath
                     if (r.cvalue.type == 3) {
                         
-                        if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10) {
+                        if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10 && inherited != 2) {
                             if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
-                                if (this.ownerDocument && this.$aml)
+                                if (this.ownerDocument && this.$aml && this.$amlLoaded)
                                     apf.uirecorder.capture.capturePropertyChange(this, prop, value, oldvalue); 
                             }
                         }
@@ -2483,9 +2489,9 @@ apf.Class.prototype = new (function(){
                 return;
             
             
-            if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10) {
+            if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10 && inherited != 2) {
                 if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
-                    if (this.ownerDocument && this.$aml)
+                    if (this.ownerDocument && this.$aml && this.$amlLoaded)
                         apf.uirecorder.capture.capturePropertyChange(this, prop, this[prop], oldvalue); 
                 }
             }
@@ -2603,6 +2609,9 @@ apf.Class.prototype = new (function(){
     //var allowEvents = {"DOMNodeInsertedIntoDocument":1,"DOMNodeRemovedFromDocument":1};
     this.dispatchEvent = function(eventName, options, e){
         var arr, result, rValue, i, l;
+
+        if (!apf.AmlEvent)
+            return;
 
         apf.$eventDepth++;
         this.$eventDepth++;
@@ -7332,7 +7341,7 @@ apf.visibilitymanager = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/util/xml.js)SIZE(45423)TIME(Mon, 07 Nov 2011 21:18:17 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/util/xml.js)SIZE(45505)TIME(Fri, 02 Dec 2011 02:30:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7617,7 +7626,8 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
             nodeValue = nodeValue.replace(/&/g, "&amp;");
 
         var oldValue      = xmlNode.nodeValue;
-        xmlNode.nodeValue = apf.isNot(nodeValue) ? "" : nodeValue;
+        xmlNode.nodeValue = nodeValue == undefined || nodeValue == null 
+                              || nodeValue == NaN ? "" : String(nodeValue);
 
         if (undoObj) {
             undoObj.name = xmlNode.nodeName;
@@ -14886,7 +14896,7 @@ apf.uirecorder = {
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/xmldb.js)SIZE(39949)TIME(Sun, 06 Nov 2011 19:36:13 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/xmldb.js)SIZE(39996)TIME(Thu, 01 Dec 2011 01:48:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15457,19 +15467,12 @@ apf.xmldb = new (function(){
      */
     this.appendChild =
     apf.appendChild  = function(pNode, xmlNode, beforeNode, unique, xpath, undoObj){
-        if (pNode == xmlNode.parentNode)
+        if (pNode == xmlNode.parentNode) //Shouldn't this be the same document?
             return apf.xmldb.moveNode(pNode, xmlNode, beforeNode, null, xpath, undoObj);
         
         if (unique && pNode.selectSingleNode(xmlNode.tagName))
             return false;
         
-        if (undoObj && !undoObj.$filled) {
-            undoObj.$filled = true;
-            this.cleanNode(xmlNode);
-        }
-        else
-            this.cleanNode(xmlNode);
-
         // @todo: only do this once! - should store on the undo object
         if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument) {
             var oldNode = xmlNode;
@@ -15494,6 +15497,13 @@ apf.xmldb = new (function(){
         }
         else if (xmlNode.parentNode)
             this.removeNode(xmlNode);
+        
+        if (undoObj && !undoObj.$filled) {
+            undoObj.$filled = true;
+            this.cleanNode(xmlNode);
+        }
+        else
+            this.cleanNode(xmlNode);
 
         pNode.insertBefore(xmlNode, beforeNode);
 
@@ -17125,7 +17135,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16782)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16786)TIME(Wed, 30 Nov 2011 05:02:44 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17365,7 +17375,7 @@ apf.DOMParser.prototype = new (function(){
             //Second pass - Document Insert signalling
             prios.sort();
             for (i = 0, l = prios.length; i < l; i++) {
-                nodes = nodelist[prios[i]];
+                var nodes = nodelist[prios[i]];
                 for (j = 0, l2 = nodes.length; j < l2; j++) {
                     if (!(node = nodes[j]).parentNode || node.$amlLoaded) //@todo generalize this using compareDocumentPosition
                         continue;
@@ -18170,7 +18180,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/aml/element.js)SIZE(21829)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/aml/element.js)SIZE(21902)TIME(Fri, 02 Dec 2011 02:30:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18704,7 +18714,7 @@ apf.AmlElement = function(struct, tagName){
     });
     
     this.$handlePropSet = function(prop, value, force){
-        if (value && this.$booleanProperties[prop])
+        if (this.$booleanProperties[prop])
             value = apf.isTrue(value);
 
         
@@ -18754,9 +18764,11 @@ apf.AmlElement = function(struct, tagName){
         for (i = 0, l = attr.length; i < l; i++) {
             attr[i].dispatchEvent("DOMNodeInsertedIntoDocument");
         }
-
-        this.$amlLoaded = true;
     }, true);
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        this.$amlLoaded = true;
+    });
 }).call(apf.AmlElement.prototype = new apf.AmlNode());
 
 
@@ -26645,7 +26657,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(47339)TIME(Sun, 27 Nov 2011 23:37:34 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(47502)TIME(Thu, 01 Dec 2011 02:03:04 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27204,9 +27216,13 @@ apf.MultiselectBinding = function(){
             listenNode = this.xmlRoot;
 
         if (action == "redo-remove") {
+            var loc = [xmlNode.parentNode, xmlNode.nextSibling];
             lastParent.appendChild(xmlNode); //ahum, i'm not proud of this one
             var eachNode = this.isTraverseNode(xmlNode);
-            lastParent.removeChild(xmlNode);
+            if (loc[0])
+                loc[0].insertBefore(xmlNode, loc[1]);
+            else
+                lastParent.removeChild(xmlNode);
             
             if (!eachNode)
                 xmlNode = lastParent;
@@ -27636,8 +27652,8 @@ apf.MultiselectBinding = function(){
                 ? value.replace(/^\[|\]$/g, "")
                 : value;
             
-            if (value.indexOf("::") > -1) {
-                var model = value.split("::"); //@todo could be optimized
+            if (value.match(/^\w+::/)) {
+                var model = value.split("::"); //@todo this is all very bad
                 if (!apf.xPathAxis[model[0]]) {
                     this.setProperty("model", model[0]);
                     this.each = model[1];
@@ -27998,7 +28014,7 @@ apf.StandardBinding.prototype = new apf.DataBinding();
 apf.Init.run("standardbinding");
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/multiselect.js)SIZE(71734)TIME(Sat, 26 Nov 2011 05:35:51 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/multiselect.js)SIZE(71734)TIME(Thu, 01 Dec 2011 02:31:36 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34842,7 +34858,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(51391)TIME(Sun, 27 Nov 2011 09:31:30 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(51381)TIME(Thu, 01 Dec 2011 02:31:18 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35787,7 +35803,7 @@ apf.BaseTree = function(){
 
                 //DELETE
                 //this.remove();
-                this.remove(this.caret); //this.mode != "check"
+                this.remove(); //this.mode != "check"
                 break;
             case 36:
                 //HOME
@@ -50425,7 +50441,7 @@ apf.aml.setElement("color", apf.BindingColorRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingcolumnrule.js)SIZE(20316)TIME(Sun, 27 Nov 2011 00:33:13 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingcolumnrule.js)SIZE(21698)TIME(Fri, 02 Dec 2011 06:59:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50469,12 +50485,14 @@ apf.BindingColumnRule = function(struct, tagName){
 
 (function(){
     this.$defaultwidth = "100";
-    this.$width        = 100;
+    this.$width        = 0;
     
     this.$sortable  = true; //@todo set defaults based on localName of element to which its applied
     this.$resizable = true;
     this.$movable   = true;
     this.$cssInit   = false;
+    
+    this.visible    = true;
     
     //1 = force no bind rule, 2 = force bind rule
     this.$attrExcludePropBind = apf.extend({
@@ -50491,23 +50509,56 @@ apf.BindingColumnRule = function(struct, tagName){
         "check", "editor", "colspan", "align", "css", "sorted", "each", 
         "eachvalue", "eachcaption", "model");
     
-    this.$booleanProperties["tree"]  = true;
-    this.$booleanProperties["check"] = true;
+    this.$booleanProperties["tree"]    = true;
+    this.$booleanProperties["check"]   = true;
     this.$booleanProperties["sorted"]  = true;
+    this.$booleanProperties["visible"] = true;
+    
+    this.$setParentFixedWidth = function(){
+        var pNode = this.parentNode;
+        var vLeft = (pNode.$fixed) + "px";
+        if (!this.$isFixedGrid) {
+            //apf.setStyleRule("." + this.$baseCSSname + " .headings ." + hFirst.$className, "marginLeft", "-" + vLeft); //Set
+            //apf.setStyleRule("." + this.$baseCSSname + " .records ." + hFirst.$className, "marginLeft", "-" + vLeft); //Set
+            apf.setStyleRule("." + pNode.$baseCSSname + " .row" + pNode.$uniqueId,
+                "paddingRight", vLeft, null, this.oWin); //Set
+            apf.setStyleRule("." + pNode.$baseCSSname + " .row" + pNode.$uniqueId,
+                "marginRight", "-" + vLeft, null, pNode.oWin); //Set
+        
+            //headings and records have same padding-right
+            if (pNode.$container)
+                pNode.$container.style.paddingRight = vLeft;
+            if (pNode.$head)
+                pNode.$head.style.paddingRight = vLeft;
+        }
+    }
     
     this.$propHandlers["width"]  = function(value, prop){
         if (!value)
-            value = this.$defaultwidth;
+            return;
+
+        var diff = value - this.$width;
 
         this.$isPercentage = value && String(value).indexOf("%") > -1;
         this.$width = parseFloat(value);
-    
+
+        var pNode = this.parentNode;
+        
         if (this.$isPercentage) {
             apf.setStyleRule("." + this.$className, "width", this.$width + "%");
+            
+            //if (apf.z && !this.resizing)
+                //this.resize(this.$width, pNode, true);
         }
         else {
-            var pNode = this.parentNode;
             apf.setStyleRule("." + this.$className, "width", this.$width + "px", null, pNode.oWin); //Set
+            
+            if (pNode.$amlLoaded) {
+                if (this.visible)
+                    pNode.$fixed += diff;
+                
+                this.$setParentFixedWidth();
+            }
         }
     }
     
@@ -50517,91 +50568,111 @@ apf.BindingColumnRule = function(struct, tagName){
         this.$movable   = value.indexOf("move") > -1;
     }
     
-    this.resize = function(newsize, pNode){
+    this.$propHandlers["visible"] = function(value, prop, el, force){
+        var pNode = this.parentNode;
+        
+        if (!force && !this.$amlLoaded)
+            return;
+
+        if (value) {
+            apf.setStyleRule("." + this.$className,
+                "display", "inline-block", null, this.oWin);
+            
+            var size = this.$isPercentage
+                ? (this.$ext.offsetWidth - (pNode.$widthdiff - 3))
+                : this.$width;
+
+            this.resize(size, pNode, true);
+        }
+        else {
+            apf.setStyleRule("." + this.$className,
+                "display", "none", null, this.oWin);
+
+            this.resize(0, pNode, true);
+        }
+    }
+    
+    this.resize = function(newsize, pNode, toggleShowHide){
         var hN;
+        
         if (this.$isPercentage) {
-            var oldsize = (this.$ext.offsetWidth - (pNode.$widthdiff - 3)),
-                ratio = newsize / oldsize, //div 0 ??
+            var oldsize = (this.visible && this.$ext.offsetWidth
+              ? this.$ext.offsetWidth - (pNode.$widthdiff - 3)
+              : 0),
+                ratio = oldsize ? newsize / oldsize : 1, //div 0 ??
                 next  = [],
                 fixed = [],
                 total = 0,
-                node  = this.$ext.nextSibling;
+                node  = toggleShowHide 
+                    ? this.$ext.parentNode.firstChild 
+                    : this.$ext.nextSibling;
             
             while (node && node.getAttribute("hid")) {
                 hN = apf.all[node.getAttribute("hid")];
-                if (hN.$isPercentage) {
-                    next.push(hN);
-                    total += hN.$width;
+                if (hN.visible !== false) {
+                    if (hN.$isPercentage) {
+                        next.push(hN);
+                        total += hN.$width;
+                    }
+                    else fixed.push(hN);
                 }
-                else fixed.push(hN);
                 node = node.nextSibling;
             }
             
             if (fixed.length && !next.length)
                 return fixed[0].resize(fixed[0].$width + (oldsize - newsize), pNode);
-            
-            var newPerc  = ratio * this.$width,
-                diffPerc = newPerc - this.$width,
+
+            var diffPerc, diffRatio;
+            if (ratio == 1 && total < 101) {
+                ratio = total/101;
+                diffRatio = 1/ratio;
+            }
+            else if (total > 101) {
+                ratio = ratio * 101/total
+                diffRatio = ratio;
+            }
+            else {
+                diffPerc = (ratio - 1) * this.$width;
                 diffRatio = (total - diffPerc) / total;
-            if (diffRatio < 0.01) {
-                if (newsize < 20) return;
-                return this.resize(newsize - 10, pNode);//pNode.resizeColumn(nr, newsize - 10);
+                if (diffRatio < 0.01 && diffRatio > 0) {
+                    if (newsize < 20) return;
+                    return this.resize(newsize - 10, pNode);//pNode.resizeColumn(nr, newsize - 10);
+                }
             }
             
             for (var n, i = 0; i < next.length; i++) {
                 n = next[i];
-                n.$width *= diffRatio;
-                apf.setStyleRule("." + n.$className, "width", n.$width + "%"); //Set
-                //apf.setStyleRule("." + pNode.$baseCSSname + " .records ."
-                    //+ n.$className, "width", n.$width + "%", null, pNode.oWin); //Set
+                if (n == this)
+                    continue;
+                
+                n.setProperty("width", String(n.$width * diffRatio) + "%", false, true);
             }
             
-            this.$width = newPerc;
-            apf.setStyleRule("." + this.$className, "width", this.$width + "%"); //Set
-            //apf.setStyleRule("." + pNode.$baseCSSname + " .records ."
-                //+ h.$className, "width", this.$width + "%", null, pNode.oWin); //Set
+            if (this.visible !== false) {
+                this.setProperty("width", String(ratio * this.$width) + "%", false, true);
+            }
+        }
+        else if (toggleShowHide) {
+            var diff = newsize;
+            pNode.$fixed += diff;
+            this.$setParentFixedWidth();
         }
         else {
-            var diff = newsize - this.$width;
-            this.$width = newsize;
-            if (apf.isIE && pNode.oIframe) {
+            if (apf.isIE && pNode.oIframe)
                 this.$ext.style.width = newsize + "px";
-            }
-            else {
-                //apf.setStyleRule("." + this.$className, "width", newsize + "px"); //Set
-            }
-            apf.setStyleRule("." + this.$className, "width", newsize + "px", null, pNode.oWin); //Set
 
-            pNode.$fixed += diff;
-            var vLeft = (pNode.$fixed) + "px";
-
-            if (!this.$isFixedGrid) {
-                //apf.setStyleRule("." + this.$baseCSSname + " .headings ." + hFirst.$className, "marginLeft", "-" + vLeft); //Set
-                //apf.setStyleRule("." + this.$baseCSSname + " .records ." + hFirst.$className, "marginLeft", "-" + vLeft); //Set
-                apf.setStyleRule("." + pNode.$baseCSSname + " .row" + pNode.$uniqueId,
-                    "paddingRight", vLeft, null, this.oWin); //Set
-                apf.setStyleRule("." + pNode.$baseCSSname + " .row" + pNode.$uniqueId,
-                    "marginRight", "-" + vLeft, null, pNode.oWin); //Set
-            
-                //headings and records have same padding-right
-                pNode.$container.style.paddingRight  =
-                pNode.$head.style.paddingRight = vLeft;
-            }
+            this.setProperty("width", newsize, false, true);
         }
     }
     
     this.hide = function(){
-        apf.setStyleRule("." + this.$baseCSSname + " .records ." + h.$className,
-            "visibility", "hidden", null, this.oWin);
-        
-        //Change percentages here
+        this.setProperty("visible", false, false, true);
+        return this;
     }
     
     this.show = function(){
-        apf.setStyleRule("." + this.$baseCSSname + " .records ." + h.$className,
-            "visibility", "visible", null, this.oWin);
-        
-        //Change percentages here
+        this.setProperty("visible", true, false, true);
+        return this;
     }
     
     /**
@@ -50711,10 +50782,11 @@ apf.BindingColumnRule = function(struct, tagName){
         //"." + this.$baseCSSname + " .headings 
         //if initial
         //only needs once if this works
+
         apf.importStylesheet([
-          ["." + this.$className,
-            "width:" + this.$width + (this.$isPercentage ? "%;" : "px;")
-            + "text-align:" + this.align]
+            ["." + this.$className,
+                "width:" + this.$width + (this.$isPercentage ? "%;" : "px;")
+                + "text-align:" + this.align + ";display: inline-block"],
         ]);
         
         //Add to htmlRoot
@@ -50947,6 +51019,9 @@ apf.BindingColumnRule = function(struct, tagName){
         if (!this.options && pNode.options)
             this.$propHandlers["options"].call(this, 
                 this.options = pNode.options);
+
+        if (this.visible === false)
+            this.$propHandlers["visible"].call(this, false, null, null, true);
         
         return this;
     }
@@ -53365,7 +53440,7 @@ apf.button.actions  = {
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/checkbox.js)SIZE(8188)TIME(Mon, 28 Nov 2011 07:55:07 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/checkbox.js)SIZE(8188)TIME(Fri, 02 Dec 2011 02:58:30 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55198,7 +55273,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53834)TIME(Tue, 29 Nov 2011 02:06:36 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53853)TIME(Fri, 02 Dec 2011 06:38:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55275,11 +55350,7 @@ apf.datagrid = function(struct, tagName){
 };
 
 (function(){
-    var HAS_CHILD = 1 << 1,
-        IS_CLOSED = 1 << 2,
-        IS_LAST   = 1 << 3,
-        IS_ROOT   = 1 << 4,
-        treeState = this.$treeState;
+    var treeState = this.$treeState;
 
     
     this.implement(
@@ -55300,6 +55371,7 @@ apf.datagrid = function(struct, tagName){
     this.$defaultwidth   = 0;
     this.$useiframe      = 0;
     this.$needsDepth     = true;
+    this.$fixed          = 0;
 
     
     this.canrename = false; //@todo remove rename from basetree and move to tree.js
@@ -55706,10 +55778,12 @@ apf.datagrid = function(struct, tagName){
             
             
             
-            if (!h.$isPercentage)
-                fixed += parseFloat(h.$width) || 0;
-            else 
-                found = true;
+            if (h.visible !== false) {
+                if (!h.$isPercentage)
+                    fixed += parseFloat(h.$width) || 0;
+                else 
+                    found = true;
+            }
         }
         
         if (!found) { //@todo removal???
@@ -55770,8 +55844,8 @@ apf.datagrid = function(struct, tagName){
                 var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  this.hasPassedDown = true;\
-                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
-                     o.select(this, event.ctrlKey, event.shiftKey, -1);'
+                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !apf.getCtrlKey(event))\
+                     o.select(this, apf.getCtrlKey(event), event.shiftKey, -1);'
                 + (this.cellselect || this.namevalue ? 'o.selectCell(event, this, isSelected);' : ''));
             
             oRow.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
@@ -55779,12 +55853,12 @@ apf.datagrid = function(struct, tagName){
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  if (o.hasFeature(apf.__DRAGDROP__))\
-                     o.select(this, event.ctrlKey, event.shiftKey, -1);');
+                     o.select(this, apf.getCtrlKey(event), event.shiftKey, -1);');
         } //@todo add DRAGDROP ifdefs
         else {
             oRow.setAttribute("onmousedown", 'var o = apf.lookup(' + this.$uniqueId + ');\
                 var wasSelected = o.$selected == this;\
-                o.select(this, event.ctrlKey, event.shiftKey, -1);'
+                o.select(this, apf.getCtrlKey(event), event.shiftKey, -1);'
                 + (this.cellselect || this.namevalue ? 'o.selectCell(event, this, wasSelected);' : ''));
         }
         
@@ -59499,7 +59573,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/item.js)SIZE(23371)TIME(Wed, 16 Nov 2011 23:15:46 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/item.js)SIZE(23457)TIME(Fri, 02 Dec 2011 09:18:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59570,6 +59644,9 @@ apf.item  = function(struct, tagName){
     this.$attrExcludePropBind = apf.extend({
         "match" : 1
     }, this.$attrExcludePropBind);
+
+    this.$booleanProperties["checked"] = true;
+    this.$booleanProperties["selected"] = true;
 
     this.$supportedProperties.push("submenu", "value", "match", "group", "icon",
                                    "checked", "selected", "disabled", "caption", 
@@ -59681,12 +59758,12 @@ apf.item  = function(struct, tagName){
         var group = typeof value == "string"
             ? 
             
-            apf.nameserver.get("radiogroup", value)
+            apf.nameserver.get("group", value)
             
             : value;
         if (!group) {
             
-            group = apf.nameserver.register("radiogroup", value, 
+            group = apf.nameserver.register("group", value, 
                 new apf.$group());
             group.setAttribute("id", value);
             group.dispatchEvent("DOMNodeInsertedIntoDocument");
@@ -62416,7 +62493,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/model.js)SIZE(42605)TIME(Sun, 27 Nov 2011 23:16:43 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/model.js)SIZE(42499)TIME(Thu, 01 Dec 2011 02:15:56 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62925,11 +63002,8 @@ apf.model = function(struct, tagName){
         
         if (typeof xmlNode == "string")
             xmlNode = apf.getXml(xmlNode);
-        else {
-            xmlNode = !xmlNode.nodeType //Check if a model was passed
-                ? xmlNode.getXml()
-                : apf.xmldb.getCleanCopy(xmlNode);
-        }
+        else if (xmlNode.nodeFunc)
+            xmlNode = xmlNode.getXml();
         
         if (!xmlNode) return;
 
@@ -66483,7 +66557,7 @@ apf.aml.setElement("color",       apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/radiobutton.js)SIZE(16931)TIME(Sun, 27 Nov 2011 23:16:59 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/radiobutton.js)SIZE(17089)TIME(Fri, 02 Dec 2011 10:00:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66509,7 +66583,7 @@ apf.aml.setElement("color",       apf.BindingRule);
 
 /**
  * Element displaying a two state button which is one of a grouped set.
- * Only one of these buttons in the set can be checked at the same time.
+ * Only one of these buttons in the set can be selected at the same time.
  * Example:
  * <code>
  *  <a:frame caption="Options">
@@ -66585,20 +66659,20 @@ apf.radiobutton = function(struct, tagName){
     
     //1 = force no bind rule, 2 = force bind rule
     /*this.$attrExcludePropBind = apf.extend({
-        checked: 1
+        selected: 1
     }, this.$attrExcludePropBind);*/
 
     /**** Properties and Attributes ****/
 
-    this.$booleanProperties["checked"] = true;
+    this.$booleanProperties["selected"] = true;
     this.$supportedProperties.push("value", "background", "group",
-        "label", "checked", "tooltip", "icon");
+        "label", "selected", "tooltip", "icon");
 
     /**
      * @attribute {String} group the name of the group to which this radio
-     * button belongs. Only one item in the group can be checked at the same
+     * button belongs. Only one item in the group can be selected at the same
      * time. When no group is specified the parent container functions as the
-     * group; only one radiobutton within that parent can be checked.
+     * group; only one radiobutton within that parent can be selected.
      */
     this.$propHandlers["group"] = function(value){
         if (!this.$amlLoaded)
@@ -66672,9 +66746,9 @@ apf.radiobutton = function(struct, tagName){
     };
 
     /**
-     * @attribute {String} checked whether this radiobutton is the checked one in the group it belongs to.
+     * @attribute {String} selected whether this radiobutton is the selected one in the group it belongs to.
      */
-    this.$propHandlers["checked"] = function(value){
+    this.$propHandlers["selected"] = function(value){
         if (!this.$group)
             return;
 
@@ -66683,10 +66757,6 @@ apf.radiobutton = function(struct, tagName){
         //else if (this.$group.value == this.value)
             //this.$group.setProperty("value", "");
     };
-    
-    this.$propHandlers["selected"] = function(value){
-        this.setProperty("checked", value);
-    }
     
     this.addEventListener("prop.model", function(e){
         if (this.$group)
@@ -66750,14 +66820,13 @@ apf.radiobutton = function(struct, tagName){
         return this.value;
     };
     
-    this.select = 
-    this.check = function(){
-        this.setProperty("checked", true, false, true);
+    this.select = function(){
+        this.setProperty("selected", true, false, true);
     }
     
-    this.uncheck = function(){
-        this.setProperty("checked", false, false, true);
-    }
+    /*this.uncheck = function(){
+        this.setProperty("selected", false, false, true);
+    }*/
     
     this.getGroup = function(){
         return this.$group;
@@ -66766,21 +66835,21 @@ apf.radiobutton = function(struct, tagName){
     
 
     /**
-     * Sets the checked state and related value
+     * Sets the selected state and related value
      */
     this.$check = function(visually){
-        this.$setStyleClass(this.$ext, this.$baseCSSname + "Checked");
-        this.checked = true;
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "selected");
+        this.selected = true;
         if (this.oInput)
-            this.oInput.checked = true;
+            this.oInput.selected = true;
         this.doBgSwitch(2);
     };
 
     this.$uncheck = function(){
-        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Checked"]);
-        this.checked = false;
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "selected"]);
+        this.selected = false;
         if (this.oInput)
-            this.oInput.checked = false;
+            this.oInput.selected = false;
         this.doBgSwitch(1);
     };
 
@@ -67002,9 +67071,17 @@ apf.$group = function(struct, tagName){
         if (!rb.value)
             rb.setProperty("value", id);
         
+        var _self = this;
+        rb.addEventListener("prop.value", function(e){
+            if (this.selected)
+                _self.setProperty("value", e.value);
+            else if (_self.value == e.value)
+                this.select();
+        });
+        
         if (this.value && rb.value == this.value)
             this.setProperty("selectedItem", rb);
-        else if (rb.checked)
+        else if (rb.selected)
             this.setProperty("value", rb.value);
     };
 
@@ -73433,7 +73510,7 @@ apf.aml.setElement("toolbar", apf.toolbar);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/tree.js)SIZE(17397)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/tree.js)SIZE(17445)TIME(Thu, 01 Dec 2011 02:35:50 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73665,12 +73742,12 @@ apf.tree = function(struct, tagName){
             if (ocAction != "ondblclick") {
                 elIcon.setAttribute(ocAction, 
                   "var o = apf.lookup(" + this.$uniqueId + ");" +
-                   (ocAction == "onmousedown" ? "o.select(this, event.ctrlKey, event.shiftKey, event.button);" : "") +
+                   (ocAction == "onmousedown" ? "o.select(this, apf.getCtrlKey(event), event.shiftKey, event.button);" : "") +
                    (true ? "o.slideToggle(this, null, null, true);" : ""));
             }
             if (ocAction != "onmousedown") {
                 elIcon.setAttribute("onmousedown", 
-                  "apf.lookup(" + this.$uniqueId + ").select(this, event.ctrlKey, event.shiftKey, event.button);");
+                  "apf.lookup(" + this.$uniqueId + ").select(this, apf.getCtrlKey(event), event.shiftKey, event.button);");
             }
             
             elIcon.setAttribute("ondblclick", 
@@ -73698,8 +73775,8 @@ apf.tree = function(struct, tagName){
                     o.stopRename();\
                  else if (!o.renaming && o.hasFocus() && isSelected == 1) \
                     this.dorename = true;\
-                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
-                     o.select(this, event.ctrlKey, event.shiftKey, event.button);\
+                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !apf.getCtrlKey(event))\
+                     o.select(this, apf.getCtrlKey(event), event.shiftKey, event.button);\
                  apf.cancelBubble(event, o);';
             
             elSelect.setAttribute("onmouseout", 'this.hasPassedDown = false;' + (elSelect.getAttribute("onmouseout") || ""));
@@ -73713,12 +73790,12 @@ apf.tree = function(struct, tagName){
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  if (o.hasFeature(apf.__DRAGDROP__))\
-                     o.select(this, event.ctrlKey, event.shiftKey, event.button);');
+                     o.select(this, apf.getCtrlKey(event), event.shiftKey, event.button);');
         }
         else 
         
         {
-            strMouseDown = "o.select(this, event.ctrlKey, event.shiftKey, event.button);\
+            strMouseDown = "o.select(this, apf.getCtrlKey(event), event.shiftKey, event.button);\
                             apf.cancelBubble(event, o);";
         }
         

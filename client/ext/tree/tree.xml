@@ -27,6 +27,7 @@
           skin="header-btn"
           right="29"
           icon="refresh.png"
+          visible = "{trFiles.visible}"
           onclick="require('ext/tree/tree').refresh()" />
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
         
