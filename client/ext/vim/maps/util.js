@@ -6,32 +6,34 @@ var registers = require("ext/vim/registers");
 module.exports = {
     onVisualMode: false,
     onVisualLineMode: false,
-    currentMode: 'normal',    
+    currentMode: 'normal',
     insertMode: function(editor) {
         var _self = this;
         var theme = editor && editor.getTheme() || "ace/theme/textmate";
-        
+
         require(["require", theme], function (require) {
             var isDarkTheme = require(theme).isDark;
-            
-            _self.currentMode = 'insert';    
-            // Switch editor to insert mode
-            var cursor = document.getElementsByClassName("ace_cursor")[0];
 
+            _self.currentMode = 'insert';
+            // Switch editor to insert mode
             editor.unsetStyle('insert-mode');
-            cursor.style.display = null;
-            cursor.style.backgroundColor = null;
-            cursor.style.opacity = null;
-            cursor.style.border = null;
-            cursor.style.borderLeftColor = isDarkTheme? "#eeeeee" : "#333333";
-            cursor.style.borderLeftStyle = "solid";
-            cursor.style.borderLeftWidth = "2px";
-    
+
+            var cursor = document.getElementsByClassName("ace_cursor")[0];
+            if (cursor) {
+                cursor.style.display = null;
+                cursor.style.backgroundColor = null;
+                cursor.style.opacity = null;
+                cursor.style.border = null;
+                cursor.style.borderLeftColor = isDarkTheme? "#eeeeee" : "#333333";
+                cursor.style.borderLeftStyle = "solid";
+                cursor.style.borderLeftWidth = "2px";
+            }
+
             editor.setOverwrite(false);
             editor.keyBinding.$data.buffer = "";
             editor.keyBinding.$data.state = "insertMode";
             _self.onVisualMode = false;
-            _self.onVisualLineMode = false;            
+            _self.onVisualLineMode = false;
             if(_self.onInsertReplaySequence) {
                 // Ok, we're apparently replaying ("."), so let's do it
                 editor.commands.macro = _self.onInsertReplaySequence;
@@ -43,19 +45,22 @@ module.exports = {
                 if(!editor.commands.recording)
                     editor.commands.toggleRecording();
             }
-        });        
+        });
     },
     normalMode: function(editor) {
         // Switch editor to normal mode
-        var cursor = document.getElementsByClassName("ace_cursor")[0];
-        this.currentMode = 'normal';    
+        this.currentMode = 'normal';
 
         editor.setStyle('normal-mode');
         editor.clearSelection();
-        cursor.style.display = null;
-        cursor.style.backgroundColor = "red";
-        cursor.style.opacity = ".5";
-        cursor.style.border = "0";
+
+        var cursor = document.getElementsByClassName("ace_cursor")[0];
+        if (cursor) {
+            cursor.style.display = null;
+            cursor.style.backgroundColor = "red";
+            cursor.style.opacity = ".5";
+            cursor.style.border = "0";
+        }
 
         var pos;
         if (!editor.getOverwrite()) {
