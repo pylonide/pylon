@@ -1792,11 +1792,7 @@
         }
         
         .dockcol .dockheader {
-            border-bottom: 1px solid #505053;
-        }
-
-        .dockcol .dockheader {
-            border-bottom: 1px solid #505053;
+            border-bottom: 1px solid #38393b;
         }
 
         .dockheader span{
@@ -3737,8 +3733,8 @@
         
         .expandedpanel .c9-divider,
         .dockbar .c9-divider {
-            border-left:1px solid #2a2a2c;
-            border-right:1px solid #4d4e52;
+            border-left:1px solid #1d1e1f;
+            border-right:1px solid #373737;
         }
     ]]></a:style>
 
@@ -6396,7 +6392,7 @@
 
         .dockcol .splitter.horizontal{
             height : 2px;
-            background-color: #505053;
+            background-color: #38393b;
             border-top: 1px solid #000000;
             /*background : #333;*/
         }
@@ -7653,7 +7649,7 @@
         .expandedpanel .dockbar {
             /*border-bottom: 1px solid #000000;
             box-shadow: 0 1px 0 #505053;*/
-            border-bottom: 1px solid #505053
+            border-bottom: 1px solid #38393b;
         }
         
         .dockcol .dockbar {

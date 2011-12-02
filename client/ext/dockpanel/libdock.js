@@ -435,11 +435,11 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         if (this.$currentMenu)
             this.$currentMenu.hide();
         
-        var parentNode = bar.parentNode || this.$parentHBox;
+        var pNode = bar.parentNode || this.$parentHBox;
 
         if (!bar.vbox) {
             var _self = this;
-            bar.vbox = parentNode.insertBefore(new apf.vbox({
+            bar.vbox = pNode.insertBefore(new apf.vbox({
                 padding   : 0,
                 width     : bar.$dockData && bar.$dockData.width || 260,
                 splitters : true,
@@ -466,7 +466,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             if(!bar.vbox)
                 return;
 
-            bar.splitter = parentNode.insertBefore(new apf.splitter({
+            bar.splitter = pNode.insertBefore(new apf.splitter({
                 scale   : "right",
                 "class" : "splitter-editor-right" + " panelsplitter",//+ (panelSplittersCount > 0 ? " panelsplitter" : ""),
                 width   : "0"
@@ -477,8 +477,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             //panelSplittersCount++;
         }
         else {
-            parentNode.insertBefore(bar.vbox, bar);
-            parentNode.insertBefore(bar.splitter, bar.vbox);
+            pNode.insertBefore(bar.vbox, bar);
+            pNode.insertBefore(bar.splitter, bar.vbox);
         }
         
         var vbox = bar.selectNodes("vbox");
@@ -530,11 +530,17 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         if (this.$currentMenu)
             this.$currentMenu.hide();
         
-        var vbox = bar.selectNodes("vbox");
+        var skip = 0;
+        var vboxes = bar.selectNodes("vbox");
         var tabs = bar.vbox.selectNodes("tab");
-        for (var i = 0; i < vbox.length; i++) {
-            var menu = self[vbox[i].selectSingleNode("button").submenu];
-            menu.appendChild(tabs[i]);
+        for (var i = 0; i < vboxes.length; i++) {
+            if(!vboxes[i].getAttribute("visible")) {
+                skip++;
+                continue;
+            }
+
+            var menu = self[vboxes[i].selectSingleNode("button").submenu];
+            menu.appendChild(tabs[i-skip]);
         }
         
         bar.show();
@@ -1297,7 +1303,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             }
         }
         else if (dragAml.localName == "divider") {
-            var buttons = dragAml.parentNode.selectNodes("button");
+            var buttons = dragAml.parentNode && dragAml.parentNode.selectNodes("button");
             for (var i = buttons.length - 1; i >= 0; i--) {
                 var button = buttons[i];
 //                if(button.visible)
@@ -1363,7 +1369,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             resizable : dockOpt.resizable === false ? false : "left bottom",
             dock      : 1,
             onhide    : function(e){
-               var mnuItem = e.opener && self["mnu" + e.opener.$dockData.ext[1]];
+               var mnuItem = e.opener && e.opener.$dockData && self["mnu" + e.opener.$dockData.ext[1]];
                 if(mnuItem)
                     mnuItem.uncheck();
             },
@@ -1395,7 +1401,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     }
                 });
                 
-                var mnuItem = menu.opener && self["mnu" + menu.opener.$dockData.ext[1]];
+                var mnuItem = menu.opener && menu.opener.$dockData && self["mnu" + menu.opener.$dockData.ext[1]];
                 if(mnuItem)
                     mnuItem.check();
             },
@@ -1696,8 +1702,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             draggable : drag,
             onmousedown  : function(){
                 btnLock = true;
-                
-                self[this.submenu].firstChild && self[this.submenu].firstChild.set && self[this.submenu].firstChild.set(page);
+
+                self[this.submenu] && self[this.submenu].firstChild && self[this.submenu].firstChild.set && self[this.submenu].firstChild.set(page);
                 btnLock = false;
                 
                 if (options && (tmp = options.primary)) {
