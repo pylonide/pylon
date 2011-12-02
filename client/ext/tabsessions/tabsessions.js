@@ -70,27 +70,28 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             });
     
             _self.nodes.push(
-                ide.mnuFile.appendChild(new apf.item({
+                mnuTabs.appendChild(new apf.item({
                     id      : "mnuFileLoadSession",
-                    caption : "Load Session",
+                    caption : "Restore Tab Session",
                     submenu : "mnuTabLoadSessions",
                     disabled: !sessions.length
                 })),
     
-                ide.mnuFile.appendChild(new apf.item({
-                    caption : "Save Session",
+                mnuTabs.appendChild(new apf.item({
+                    caption : "Save Open Files as Tab Session",
                     onclick : function(){
                         winSaveSessionAs.show();
                     },
                     disabled : "{!!!tabEditors.activepage}"
                 })),
                 
-                ide.mnuFile.appendChild(new apf.item({
+                mnuTabs.appendChild(new apf.item({
                     id      : "mnuFileDeleteSession",
-                    caption : "Delete Session",
+                    caption : "Delete Tab Session",
                     submenu : "mnuTabDeleteSessions",
                     disabled: !sessions.length
-                }))
+                })),
+                mnuTabs.appendChild(new apf.divider())
             );
         });
     },
