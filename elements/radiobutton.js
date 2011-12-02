@@ -22,7 +22,7 @@
 
 /**
  * Element displaying a two state button which is one of a grouped set.
- * Only one of these buttons in the set can be checked at the same time.
+ * Only one of these buttons in the set can be selected at the same time.
  * Example:
  * <code>
  *  <a:frame caption="Options">
@@ -98,20 +98,20 @@ apf.radiobutton = function(struct, tagName){
     
     //1 = force no bind rule, 2 = force bind rule
     /*this.$attrExcludePropBind = apf.extend({
-        checked: 1
+        selected: 1
     }, this.$attrExcludePropBind);*/
 
     /**** Properties and Attributes ****/
 
-    this.$booleanProperties["checked"] = true;
+    this.$booleanProperties["selected"] = true;
     this.$supportedProperties.push("value", "background", "group",
-        "label", "checked", "tooltip", "icon");
+        "label", "selected", "tooltip", "icon");
 
     /**
      * @attribute {String} group the name of the group to which this radio
-     * button belongs. Only one item in the group can be checked at the same
+     * button belongs. Only one item in the group can be selected at the same
      * time. When no group is specified the parent container functions as the
-     * group; only one radiobutton within that parent can be checked.
+     * group; only one radiobutton within that parent can be selected.
      */
     this.$propHandlers["group"] = function(value){
         if (!this.$amlLoaded)
@@ -190,9 +190,9 @@ apf.radiobutton = function(struct, tagName){
     };
 
     /**
-     * @attribute {String} checked whether this radiobutton is the checked one in the group it belongs to.
+     * @attribute {String} selected whether this radiobutton is the selected one in the group it belongs to.
      */
-    this.$propHandlers["checked"] = function(value){
+    this.$propHandlers["selected"] = function(value){
         if (!this.$group)
             return;
 
@@ -201,10 +201,6 @@ apf.radiobutton = function(struct, tagName){
         //else if (this.$group.value == this.value)
             //this.$group.setProperty("value", "");
     };
-    
-    this.$propHandlers["selected"] = function(value){
-        this.setProperty("checked", value);
-    }
     
     this.addEventListener("prop.model", function(e){
         if (this.$group)
@@ -268,14 +264,13 @@ apf.radiobutton = function(struct, tagName){
         return this.value;
     };
     
-    this.select = 
-    this.check = function(){
-        this.setProperty("checked", true, false, true);
+    this.select = function(){
+        this.setProperty("selected", true, false, true);
     }
     
-    this.uncheck = function(){
-        this.setProperty("checked", false, false, true);
-    }
+    /*this.uncheck = function(){
+        this.setProperty("selected", false, false, true);
+    }*/
     
     this.getGroup = function(){
         return this.$group;
@@ -284,21 +279,21 @@ apf.radiobutton = function(struct, tagName){
     //#endif
 
     /**
-     * Sets the checked state and related value
+     * Sets the selected state and related value
      */
     this.$check = function(visually){
-        this.$setStyleClass(this.$ext, this.$baseCSSname + "Checked");
-        this.checked = true;
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "selected");
+        this.selected = true;
         if (this.oInput)
-            this.oInput.checked = true;
+            this.oInput.selected = true;
         this.doBgSwitch(2);
     };
 
     this.$uncheck = function(){
-        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Checked"]);
-        this.checked = false;
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "selected"]);
+        this.selected = false;
         if (this.oInput)
-            this.oInput.checked = false;
+            this.oInput.selected = false;
         this.doBgSwitch(1);
     };
 
@@ -522,9 +517,17 @@ apf.$group = function(struct, tagName){
         if (!rb.value)
             rb.setProperty("value", id);
         
+        var _self = this;
+        rb.addEventListener("prop.value", function(e){
+            if (this.selected)
+                _self.setProperty("value", e.value);
+            else if (_self.value == e.value)
+                this.select();
+        });
+        
         if (this.value && rb.value == this.value)
             this.setProperty("selectedItem", rb);
-        else if (rb.checked)
+        else if (rb.selected)
             this.setProperty("value", rb.value);
     };
 

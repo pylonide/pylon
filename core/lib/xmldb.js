@@ -582,19 +582,12 @@ apf.xmldb = new (function(){
      */
     this.appendChild =
     apf.appendChild  = function(pNode, xmlNode, beforeNode, unique, xpath, undoObj){
-        if (pNode == xmlNode.parentNode)
+        if (pNode == xmlNode.parentNode) //Shouldn't this be the same document?
             return apf.xmldb.moveNode(pNode, xmlNode, beforeNode, null, xpath, undoObj);
         
         if (unique && pNode.selectSingleNode(xmlNode.tagName))
             return false;
         
-        if (undoObj && !undoObj.$filled) {
-            undoObj.$filled = true;
-            this.cleanNode(xmlNode);
-        }
-        else
-            this.cleanNode(xmlNode);
-
         // @todo: only do this once! - should store on the undo object
         if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument) {
             var oldNode = xmlNode;
@@ -621,6 +614,13 @@ apf.xmldb = new (function(){
         }
         else if (xmlNode.parentNode)
             this.removeNode(xmlNode);
+        
+        if (undoObj && !undoObj.$filled) {
+            undoObj.$filled = true;
+            this.cleanNode(xmlNode);
+        }
+        else
+            this.cleanNode(xmlNode);
 
         pNode.insertBefore(xmlNode, beforeNode);
 

@@ -602,9 +602,13 @@ apf.MultiselectBinding = function(){
             listenNode = this.xmlRoot;
 
         if (action == "redo-remove") {
+            var loc = [xmlNode.parentNode, xmlNode.nextSibling];
             lastParent.appendChild(xmlNode); //ahum, i'm not proud of this one
             var eachNode = this.isTraverseNode(xmlNode);
-            lastParent.removeChild(xmlNode);
+            if (loc[0])
+                loc[0].insertBefore(xmlNode, loc[1]);
+            else
+                lastParent.removeChild(xmlNode);
             
             if (!eachNode)
                 xmlNode = lastParent;
@@ -1061,8 +1065,8 @@ apf.MultiselectBinding = function(){
                 ? value.replace(/^\[|\]$/g, "")
                 : value;
             
-            if (value.indexOf("::") > -1) {
-                var model = value.split("::"); //@todo could be optimized
+            if (value.match(/^\w+::/)) {
+                var model = value.split("::"); //@todo this is all very bad
                 if (!apf.xPathAxis[model[0]]) {
                     this.setProperty("model", model[0]);
                     this.each = model[1];

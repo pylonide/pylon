@@ -548,11 +548,8 @@ apf.model = function(struct, tagName){
         
         if (typeof xmlNode == "string")
             xmlNode = apf.getXml(xmlNode);
-        else {
-            xmlNode = !xmlNode.nodeType //Check if a model was passed
-                ? xmlNode.getXml()
-                : apf.xmldb.getCleanCopy(xmlNode);
-        }
+        else if (xmlNode.nodeFunc)
+            xmlNode = xmlNode.getXml();
         
         if (!xmlNode) return;
 

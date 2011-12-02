@@ -73,11 +73,7 @@ apf.datagrid = function(struct, tagName){
 };
 
 (function(){
-    var HAS_CHILD = 1 << 1,
-        IS_CLOSED = 1 << 2,
-        IS_LAST   = 1 << 3,
-        IS_ROOT   = 1 << 4,
-        treeState = this.$treeState;
+    var treeState = this.$treeState;
 
     //#ifdef __WITH_DATAACTION
     this.implement(
@@ -98,6 +94,7 @@ apf.datagrid = function(struct, tagName){
     this.$defaultwidth   = 0;
     this.$useiframe      = 0;
     this.$needsDepth     = true;
+    this.$fixed          = 0;
 
     //#ifdef __WITH_RENAME
     this.canrename = false; //@todo remove rename from basetree and move to tree.js
@@ -507,10 +504,12 @@ apf.datagrid = function(struct, tagName){
                 throw new Error("missing width"); //temporary check
             //#endif
             
-            if (!h.$isPercentage)
-                fixed += parseFloat(h.$width) || 0;
-            else 
-                found = true;
+            if (h.visible !== false) {
+                if (!h.$isPercentage)
+                    fixed += parseFloat(h.$width) || 0;
+                else 
+                    found = true;
+            }
         }
         
         if (!found) { //@todo removal???
@@ -571,8 +570,8 @@ apf.datagrid = function(struct, tagName){
                 var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  this.hasPassedDown = true;\
-                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
-                     o.select(this, event.ctrlKey, event.shiftKey, -1);'
+                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !apf.getCtrlKey(event))\
+                     o.select(this, apf.getCtrlKey(event), event.shiftKey, -1);'
                 + (this.cellselect || this.namevalue ? 'o.selectCell(event, this, isSelected);' : ''));
             
             oRow.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
@@ -580,12 +579,12 @@ apf.datagrid = function(struct, tagName){
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  if (o.hasFeature(apf.__DRAGDROP__))\
-                     o.select(this, event.ctrlKey, event.shiftKey, -1);');
+                     o.select(this, apf.getCtrlKey(event), event.shiftKey, -1);');
         } //@todo add DRAGDROP ifdefs
         else {
             oRow.setAttribute("onmousedown", 'var o = apf.lookup(' + this.$uniqueId + ');\
                 var wasSelected = o.$selected == this;\
-                o.select(this, event.ctrlKey, event.shiftKey, -1);'
+                o.select(this, apf.getCtrlKey(event), event.shiftKey, -1);'
                 + (this.cellselect || this.namevalue ? 'o.selectCell(event, this, wasSelected);' : ''));
         }
         

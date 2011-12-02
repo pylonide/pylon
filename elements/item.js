@@ -68,6 +68,9 @@ apf.item  = function(struct, tagName){
         "match" : 1
     }, this.$attrExcludePropBind);
 
+    this.$booleanProperties["checked"] = true;
+    this.$booleanProperties["selected"] = true;
+
     this.$supportedProperties.push("submenu", "value", "match", "group", "icon",
                                    "checked", "selected", "disabled", "caption", 
                                    "type");
@@ -178,14 +181,14 @@ apf.item  = function(struct, tagName){
         var group = typeof value == "string"
             ? 
             //#ifdef __WITH_NAMESERVER
-            apf.nameserver.get("radiogroup", value)
+            apf.nameserver.get("group", value)
             /* #else
             {}
             #endif */
             : value;
         if (!group) {
             //#ifdef __WITH_NAMESERVER
-            group = apf.nameserver.register("radiogroup", value, 
+            group = apf.nameserver.register("group", value, 
                 new apf.$group());
             group.setAttribute("id", value);
             group.dispatchEvent("DOMNodeInsertedIntoDocument");

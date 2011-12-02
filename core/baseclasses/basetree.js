@@ -949,7 +949,7 @@ apf.BaseTree = function(){
 
                 //DELETE
                 //this.remove();
-                this.remove(this.caret); //this.mode != "check"
+                this.remove(); //this.mode != "check"
                 break;
             case 36:
                 //HOME
