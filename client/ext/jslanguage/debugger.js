@@ -76,6 +76,11 @@ define(function(require, exports, module) {
                 + ")";
     };
     
+    // equation
+    var expOp = function (d) {        
+        return getExpressionValue(d[1]) + " " + getExpressionValue(d[0]) + " " + getExpressionValue(d[2]);
+    };
+    
     // function parameter
     var expFarg = function (d) {
         return d[0].value;
@@ -106,6 +111,8 @@ define(function(require, exports, module) {
                 return expNew(d);
             case "FArg":
                 return expFarg(d);
+            case "Op":
+                return expOp(d);
             default:
                 return "";
         }

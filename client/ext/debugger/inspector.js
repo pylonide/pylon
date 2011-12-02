@@ -248,7 +248,7 @@ exports.validateNewValue = function(xmlNode, value) {
     switch (type) {
         case "string":
         case "null":
-            validator = /.+/;
+            validator = /(.*|^$)/;
             break;
         case "number":
             validator = /^\d+(\.\d+)?$/;
