@@ -3,6 +3,15 @@
 define(function(require, exports, module) {
 
 var util = require("ext/vim/maps/util");
+
+var keepScrollPosition = function(editor, fn) {
+    var scrollTopRow = editor.renderer.getScrollTopRow();
+    var initialRow = editor.getCursorPosition().row;
+    var diff = initialRow - scrollTopRow;
+    fn && fn.call(editor);
+    editor.renderer.scrollToRow(editor.getCursorPosition().row - diff);
+};
+
 module.exports = {
     "w": {
         nav: function(editor) {
@@ -173,20 +182,21 @@ module.exports = {
     },
     "ctrl-d": {
         nav: function(editor, range, count, param) {
-            editor.selection.clearSelection(); // Why does it select in the first place?
-            editor.gotoPageDown();
+            editor.selection.clearSelection();
+            keepScrollPosition(editor, editor.gotoPageDown);
         },
         sel: function(editor, range, count, param) {
-            editor.selectPageDown();
+            keepScrollPosition(editor, editor.selectPageDown);
         }
     },
     "ctrl-u": {
         nav: function(editor, range, count, param) {
-            editor.selection.clearSelection(); // Why does it select in the first place?
-            editor.gotoPageUp();
+            editor.selection.clearSelection();
+            keepScrollPosition(editor, editor.gotoPageUp);
+
         },
         sel: function(editor, range, count, param) {
-            editor.selectPageUp();
+            keepScrollPosition(editor, editor.selectPageUp);
         }
     },
     "g": {
