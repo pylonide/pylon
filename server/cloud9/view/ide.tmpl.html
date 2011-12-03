@@ -53,10 +53,10 @@
                         list.push("ace/editor");
 
                     apf.IdeSettings = <%settingsXml%>
-                    loader.animateLoader(20);
+                    //loader.animateLoader(20);
                     require(list, function(ide, ext, util){
                         var plugins = <%plugins%>;
-                        loader.animateLoader(50);
+                        //loader.animateLoader(50);
                         apf.addEventListener("load", function(){
                             //Load extensions
 //                            loader.animateLoader(20);
@@ -153,7 +153,7 @@
         <!-- default model -->
         <a:model />
 
-        <a:loader id="loader">
+        <!--a:loader id="loader">
             <div id="loaderContainer" class="bk-window-cover loader">tset
                 <div class="header"> </div>
                 <div class="logo"> </div>
@@ -164,7 +164,7 @@
                     </div>
                 </div>
             </div>
-        </a:loader>
+        </a:loader-->
 
         <a:state id="stServerConnected" active="false" />
         <a:state id="stProcessRunning" active="false" />

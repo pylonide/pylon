@@ -3,7 +3,7 @@
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/apf.js)SIZE(96065)TIME(Thu, 01 Dec 2011 02:34:55 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/apf.js)SIZE(96065)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -1767,7 +1767,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/class.js)SIZE(45592)TIME(Fri, 02 Dec 2011 02:30:39 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/class.js)SIZE(45592)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7341,7 +7341,7 @@ apf.visibilitymanager = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/util/xml.js)SIZE(45505)TIME(Fri, 02 Dec 2011 02:30:39 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/util/xml.js)SIZE(45505)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14896,7 +14896,7 @@ apf.uirecorder = {
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/xmldb.js)SIZE(39996)TIME(Thu, 01 Dec 2011 01:48:39 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/xmldb.js)SIZE(39996)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17135,7 +17135,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16786)TIME(Wed, 30 Nov 2011 05:02:44 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16786)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18180,7 +18180,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/aml/element.js)SIZE(21902)TIME(Fri, 02 Dec 2011 02:30:39 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/aml/element.js)SIZE(21902)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -26657,7 +26657,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(47502)TIME(Thu, 01 Dec 2011 02:03:04 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(47502)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34858,7 +34858,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(51603)TIME(Fri, 02 Dec 2011 10:25:27 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(51603)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50445,7 +50445,7 @@ apf.aml.setElement("color", apf.BindingColorRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingcolumnrule.js)SIZE(21698)TIME(Fri, 02 Dec 2011 06:59:03 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingcolumnrule.js)SIZE(21698)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53726,7 +53726,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/codeeditor.js)SIZE(22377)TIME(Fri, 02 Dec 2011 10:25:27 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/codeeditor.js)SIZE(22377)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55307,7 +55307,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53853)TIME(Fri, 02 Dec 2011 06:38:58 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53853)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59607,7 +59607,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/item.js)SIZE(23457)TIME(Sat, 03 Dec 2011 04:43:02 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/item.js)SIZE(23457)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61109,7 +61109,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/menu.js)SIZE(19012)TIME(Fri, 02 Dec 2011 10:25:27 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/menu.js)SIZE(19012)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62529,7 +62529,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/model.js)SIZE(42499)TIME(Thu, 01 Dec 2011 02:15:56 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/model.js)SIZE(42499)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64070,7 +64070,7 @@ apf.aml.setElement("event", apf.event);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/page.js)SIZE(26425)TIME(Fri, 02 Dec 2011 10:25:27 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/page.js)SIZE(26425)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66593,7 +66593,7 @@ apf.aml.setElement("color",       apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/radiobutton.js)SIZE(17089)TIME(Sat, 03 Dec 2011 04:43:02 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/radiobutton.js)SIZE(17092)TIME(Sat, 03 Dec 2011 14:19:26 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66711,7 +66711,7 @@ apf.radiobutton = function(struct, tagName){
      * group; only one radiobutton within that parent can be selected.
      */
     this.$propHandlers["group"] = function(value){
-        if (!this.$amlLoaded)
+        if (!this.$ext)
             return;
         
         if (this.$group && this.$group.$removeRadio)
@@ -73546,7 +73546,7 @@ apf.aml.setElement("toolbar", apf.toolbar);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/tree.js)SIZE(17445)TIME(Thu, 01 Dec 2011 02:35:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/tree.js)SIZE(17445)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74062,7 +74062,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/webdav.js)SIZE(50239)TIME(Fri, 02 Dec 2011 10:25:27 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/webdav.js)SIZE(50239)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional

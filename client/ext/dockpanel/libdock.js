@@ -1690,7 +1690,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     this.$addButton = function(section, submenu, page, options){
         var _self  = this, btnLock, tmp;
         var drag = true; 
-        if(typeof options.draggable != "undefined" )
+        if (typeof options.draggable != "undefined" )
             drag = false;
         
         var button = section.appendChild(new apf.button({

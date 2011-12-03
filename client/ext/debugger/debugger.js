@@ -89,6 +89,28 @@ module.exports = ext.register("ext/debugger/debugger", {
             sections : [
                 {
                     hidden  : false,
+                    height  : 30,
+                    width   : 150,
+                    noflex  : true,
+//                  draggable: false,
+                    barNum  : 0,
+                    options : {
+                        resizable  : false,
+                        skin       : "dockwin_runbtns",
+                        noTab      : true,
+                        position   : 1
+                    },
+                    buttons : [{
+                        id      : "btnRunCommands",
+                        caption : "Run Commands", 
+                        "class" : "btn-runcommands",
+                        ext     : [name, "pgDebugNav"],
+//                      draggable: false,
+                        hidden  : true
+                    }]
+                },
+                {
+                    hidden  : false,
                     buttons : [
                         { caption: "Interactive", ext : [name, "dbInteractive"], hidden: true},
                         { caption: "Variables", ext : [name, "dbgVariable"], hidden: true},
@@ -104,6 +126,19 @@ module.exports = ext.register("ext/debugger/debugger", {
                 
             ]
         });
+        
+        dock.register(name, "pgDebugNav", {
+            menu : "Run Commands",
+            primary : {
+                backgroundImage: "/static/style/images/debugicons.png",
+                defaultState: { x: -6, y: -265 },
+                activeState: { x: -6, y: -265 }
+            }
+        }, function(type) {
+            debugger;
+            ext.initExtension(_self);
+            return pgDebugNav;
+        });
 
         dock.register(name, "dbgCallStack", {
             menu : "Debugger/Call Stack",
@@ -113,7 +148,7 @@ module.exports = ext.register("ext/debugger/debugger", {
                 activeState: { x: -8, y: -47 }
             }
         }, function(type) {
-            ext.initExtension(_self);            
+            ext.initExtension(_self);
             return dbgCallStack;
         });
         
@@ -164,20 +199,6 @@ module.exports = ext.register("ext/debugger/debugger", {
 
     init : function(amlNode){
         var _self = this;
-
-        while (tbDebug.childNodes.length) {
-            var button = tbDebug.firstChild;
-
-            if (button.nodeType == 1 && button.getAttribute("id") == "btnDebug")
-                ide.barTools.insertBefore(button, btnRun);
-            else
-                ide.barTools.appendChild(button);
-            
-            //collect all the elements that are normal nodes
-            if (button.nodeType == 1) {
-                this.nodesAll.push(button);
-            }
-        }
 
         this.hotitems["resume"]   = [btnResume];
         this.hotitems["stepinto"] = [btnStepInto];

@@ -88,8 +88,8 @@
                     <a:checkbox id="chkSFRegEx" height="20" label="Regular Expressions" />
                 </a:fieldset>
                 <a:fieldset flex="1" caption="Scope">
-                    <a:radiobutton group="grpSFScope" skin="classic" checked="false" value="projects" label="Project" />
-                    <a:radiobutton group="grpSFScope" id="rbSFSelection" skin="classic" checked="true" value="selection" label="Selection" />
+                    <a:radiobutton group="grpSFScope" skin="classic" selected="false" value="projects" label="Project" />
+                    <a:radiobutton group="grpSFScope" id="rbSFSelection" skin="classic" selected="true" value="selection" label="Selection" />
                 </a:fieldset>
             </a:hbox>
         </a:vbox>

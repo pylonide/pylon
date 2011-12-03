@@ -33,8 +33,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
      */
     init : function(amlNode){
         var _self = this;
-        
-        var vManager = new apf.visibilitymanager();
+
         this.layout = new DockableLayout(hboxDockPanel, 
             //Find Page
             function(arrExtension){
@@ -88,8 +87,9 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             }
         );
 
-        ide.addEventListener("loadsettings", function(e){
-            var model = e.model;
+        //@todo was loadsettings
+        ide.addEventListener("extload", function(e){
+            var model = settings.model;
             var strSettings = model.queryValue("auto/dockpanel");
             
             var state = _self.defaultState;
@@ -109,8 +109,8 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             _self.layout.loadState(state);
             _self.loaded = true;
             
-            if(!state.changed)
-                settings.save();
+            //if (!state.changed)
+                //settings.save();
         });
 
         ide.addEventListener("savesettings", function(e){
@@ -134,7 +134,6 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             }
             return true;
         });
-        
                 
         mnuToolbar.appendChild(new apf.item({
             caption : "Restore Default",

@@ -77,14 +77,12 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             }
         });
         
-        var restricted = [38, 40, 36, 35];
         dgGoToFile.addEventListener("keydown", function(e) {
-            console.log(e.keyCode);
             if (e.keyCode == 38 && !e.shiftKey) {
                 if (this.selected == this.getFirstTraverseNode())
                     txtGoToFile.focus();
             }
-            else if (apf.isCharacter(e.keyCode)) { //restricted.indexOf(e.keyCode) == -1) {
+            else if (apf.isCharacter(e.keyCode)) {
                 txtGoToFile.focus();
             }
         }, true);
