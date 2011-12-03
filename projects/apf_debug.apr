@@ -1,15 +1,13 @@
 <p:project name="Ajax.org PlatForm" xmlns:p="http://ajax.org/2008/Processor">
     <p:settings
-      buildnr  = "{String(++cwd.get('jpfbuildnr.txt').data).pad('0', 4) &amp;&amp; ''}"
+      buildnr  = "{String(parseInt(Fs.readFileSync(__dirname + '/../buildnr', 'utf8').toString())+1).pad('0', 4) || ''}"
       verbose  = "2"
       version  = "3.0.{buildnr}.Beta"
       name     = "apf_{version.replace(/\./g, '_')}"
-      out      = "/var/run/{name}"
-      cwd      = "{cwd.path}"
+      cwd      = "{__dirname}/.."
       tmp      = "/tmp"
-      platform = "/var/lib/platform/source/trunk"
-      release  = "~">
-    </p:settings>
+      platform = "{__dirname}/../support/apf"
+      release  = "~" />
 
     <p:process>
         <p:combine

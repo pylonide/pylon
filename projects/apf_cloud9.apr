@@ -41,10 +41,10 @@
           group    = "ace"
           out      = "{cwd}/../../client/js/ace.js"
           filehead = "1" /-->
-        <p:compress
+        <!--p:compress
           cmd      = "yuicompressor"
           in       = "{cwd}/build/apf_release.js"
-          out      = "{cwd}/build/apf_release.js" />
+          out      = "{cwd}/build/apf_release.js" /-->
     </p:process>
 
     <p:files>
@@ -228,7 +228,8 @@
         <p:define name="__WITH_INLINE_DATABINDING" value="1" />
         <p:define name="__WITH_AML_BINDINGS" value="1" />
         <p:define name="__WITH_KEYBOARD" value="1" />
-
+	<p:define name="__ENABLE_SELENIUM_PLAYER" value="0" />
+	<p:define name="__ENABLE_UIRECORDER_HOOK" value="1" />
 
         <p:define name="__WITH_MODEL_VALIDATION" value="1" />
         <p:define name="__WITH_MOUSESCROLL" value="1" />
@@ -571,9 +572,9 @@
         <p:define name="__AMLVIDEO" value="1" />
         <p:define name="__AMLCALENDAR" value="1" />
         <p:define name="__AMLCALDROPDOWN" value="1" />
-        <p:define name="__AMLACCORDION" value="1" />
+        <p:define name="__AMLACCORDION" value="1" /-->
         <p:define name="__AMLFLASHPLAYER" value="1" />
-        <p:define name="__AMLICONMAP" value="1" /-->
+        <!--p:define name="__AMLICONMAP" value="1" /-->
         <p:define name="__AMLCOLORPICKER" value="1" />
         <!--p:define name="__AMLCHART" value="1" />
         <p:define name="__AMLCOLLECTION" value="1" />
