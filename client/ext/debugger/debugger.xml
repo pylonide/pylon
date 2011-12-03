@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:tab id="tabDebug" skin="docktab" visible="false" activepage="0" buttons="close">
-        <a:page id="pgDebugNav">
+    <a:tab id="tabDebugButtons" skin="dockbar" visible="false">
+        <a:page id="pgDebugNav" render="runtime">
             <a:hbox padding="3" edge="4 3 5">
                 <div class="expand-panel-bg"></div>
         <!--        <a:button tooltip="Stop"
@@ -37,7 +37,9 @@
                 <a:divider skin="c9-divider" class="runcommandsdivider" />
             </a:hbox>
         </a:page>
-        <a:page id="dbgCallStack" caption="Call Stack" prerender="true">
+    </a:tab>
+    <a:tab id="tabDebug" skin="docktab" visible="false" activepage="0" buttons="close">
+        <a:page id="dbgCallStack" caption="Call Stack" render="runtime" prerender="true">
             <a:datagrid
               id         = "dgStack"
               anchors    = "0 0 0 0"
@@ -56,7 +58,7 @@
                 </a:each>
             </a:datagrid>
         </a:page>
-        <a:page id="dbInteractive" caption="Interactive" render="runtime" visible="false">
+        <a:page id="dbInteractive" caption="Interactive" render="runtime">
             <a:vbox anchors="0 0 0 0">
                 <a:toolbar>
                     <a:bar border="0 0 1 0">
@@ -106,7 +108,7 @@
                   printmargincolumn = "0" />
             </a:vbox>
         </a:page>
-        <a:page id="dbgVariable" caption="Variables" render="runtime" visible="false">
+        <a:page id="dbgVariable" caption="Variables" render="runtime">
             <a:datagrid id="dgVars"
               anchors    = "0 0 0 0" 
               border     = "0"
@@ -126,7 +128,7 @@
                 </a:each>
             </a:datagrid>
         </a:page>
-        <a:page id="dbgBreakpoints" caption="Breakpoints" prerender="true" visible="false">
+        <a:page id="dbgBreakpoints" caption="Breakpoints" render="runtime" prerender="true">
             <a:list id="lstBreakpoints"
               autoselect = "false"
               reselectable = "true"
@@ -140,7 +142,7 @@
             </a:list>
         </a:page>
         <a:model id="mdlAceAnnotations"></a:model>
-        <a:page id="aceAnnotations" caption="Bugs" render="runtime" visible="false">
+        <a:page id="aceAnnotations" caption="Bugs" render="runtime">
             <a:datagrid id="dgAceAnnotations"
               anchors    = "0 0 0 0" 
               border     = "0"

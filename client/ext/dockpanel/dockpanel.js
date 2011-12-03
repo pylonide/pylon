@@ -34,6 +34,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
     init : function(amlNode){
         var _self = this;
 
+        var vManager = new apf.visibilitymanager();
         this.layout = new DockableLayout(hboxDockPanel, 
             //Find Page
             function(arrExtension){
@@ -46,7 +47,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
 
                 var page = item.getPage();
                 
-                if(page)
+                if (page)
                     page.$arrExtension = arrExtension;
                 /*vManager.permanent(page, function(e){
                     item.mnuItem.check();
@@ -70,8 +71,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
 
                 item.mnuItem.uncheck();
 
-                _self.changed = true;
-                settings.save();
+                _self.saveSettings();
             },
             //Find Button Options
             function(arrExtension){
@@ -82,63 +82,39 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             },
             //Change State Handler
             function(){
-                _self.changed = true;
-                settings.save();
+                _self.saveSettings();
             }
         );
 
         //@todo was loadsettings
         ide.addEventListener("extload", function(e){
             var model = settings.model;
-            var strSettings = model.queryValue("auto/dockpanel");
-            
+            var strSettings = model.queryValue("auto/dockpanel/text()");
+
             var state = _self.defaultState;
             if (strSettings) {
                 // JSON parse COULD fail
                 try {
                     var objSettings = JSON.parse(strSettings);
                     state = objSettings.state;
+                    
+                    //@todo this is the wrong type (.hidden is array - should be hash)
                     apf.extend(_self.sections, objSettings.hidden);
                 }
                 catch (ex) {}
             }
             
-            if(!state || !state.type || state.type != 'new_type')
+            if (!state || !state.type || state.type != 'new_type')
                 state = _self.defaultState;
-            
+
             _self.layout.loadState(state);
             _self.loaded = true;
-            
-            //if (!state.changed)
-                //settings.save();
         });
 
-        ide.addEventListener("savesettings", function(e){
-            if (!_self.changed) {
-                if(!e.model.queryNode("auto/dockpanel_default")) {
-                    var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/dockpanel_default/text()");
-                    xmlSettings.nodeValue = apf.serialize({
-                        state  : _self.layout.getState(),
-                        hidden : _self.sections
-                    });
-                }
-                return;
-            }
-            
-            if(!_self.loadDefault) {
-                var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/dockpanel/text()");
-                xmlSettings.nodeValue = apf.serialize({
-                    state  : _self.layout.getState(true),
-                    hidden : _self.sections
-                });
-            }
-            return true;
-        });
-                
         mnuToolbar.appendChild(new apf.item({
             caption : "Restore Default",
             onclick : function(){
-                var defaultSettings = settings.model.queryValue("auto/dockpanel_default/text()"),
+                var defaultSettings = _self.defaultState,//settings.model.queryValue("auto/dockpanel_default/text()"),
                     state;
                     
                 if (defaultSettings) {
@@ -156,15 +132,44 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                     
                     settings.model.setQueryValue("auto/dockpanel/text()", state)
                     
-                    settings.save();
+                    _self.saveSettings();
                     
-                    if(stProcessRunning.active)
+                    if (stProcessRunning.active)
                         _self.showSection(["ext/run/run", "ext/debugger/debugger"], true); 
                 }
             }
         }));
         
         mnuToolbar.appendChild(new apf.divider());
+    },
+    
+    /*
+        Why didn't you just use this.defaultState?
+        
+        if (!_self.changed) {
+            if (!e.model.queryNode("auto/dockpanel_default")) {
+                var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/dockpanel_default/text()");
+                xmlSettings.nodeValue = apf.serialize({
+                    state  : _self.layout.getState(),
+                    hidden : _self.sections
+                });
+            }
+            return;
+        }
+    */
+    saveSettings : function(){
+        clearTimeout(this.$timer);
+        
+        var _self = this;;
+        this.$timer = setTimeout(function(){
+            settings.model.setQueryValue(
+                "auto/dockpanel/text()",
+                JSON.stringify({
+                    state  : _self.layout.getState(true),
+                    hidden : _self.sections
+                })
+            );
+        });
     },
 
     enable : function(){
@@ -200,12 +205,17 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 var pNode = page && page.parentNode;
                 
                 //Problem state might not be removed from 
-                if (!pNode || !pNode.dock) {                   
-                    layout.addItem(_self.sections[name][type]);
-                    layout.show(page);
+                if (!pNode || !pNode.dock) {
+                    var section = _self.sections[name][type];
+                    section.hidden = false;
+                    for (var i = 0; i < section.buttons.length; i++) {
+                        section.buttons[i].hidden = false;
+                    }
                     
-                    _self.changed = true;
-                    settings.save()
+                    layout.addItem(section);
+                    layout.show(page);
+
+                    _self.saveSettings();
                 }
                 else if (pNode.parentNode && pNode.parentNode.tagName == 'vbox' && pNode.parentNode.expanded){
                     pNode.set(page)
@@ -218,27 +228,28 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
     },
 
     addDockable : function(def){        
-        if (this.loaded) {
+        /*if (this.loaded) {
             this.layout.addItem(def);
             return;
-        }
+        }*/
+        
         var _self = this,
             state = this.defaultState;
             
-        function collectSections(buttons){
+        function collectSections(buttons, section){
 //            var buttons = def.buttons;
             for (var i = 0; i < buttons.length; i++) {
                 var ext = buttons[i].ext;
-                (_self.sections[ext[0]] || (_self.sections[ext[0]] = {}))[ext[1]] = def;
+                (_self.sections[ext[0]] || (_self.sections[ext[0]] = {}))[ext[1]] = section;
             }
         }
         
-        if(!def.barNum)
+        if (!def.barNum)
             def.barNum = 0;
         
         if (def.sections) {
-            if(def.barNum || def.barNum === 0) {
-                if(state.bars[def.barNum])
+            if (def.barNum || def.barNum === 0) {
+                if (state.bars[def.barNum])
                     state.bars[def.barNum].sections.merge(def.sections);
                 else
                     state.bars[def.barNum] = def;
@@ -247,14 +258,15 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 state.bars.push(def);
             
             for(var i = 0, l = def.sections.length; i < l; i++)
-                collectSections(def.sections[i].buttons);
+                collectSections(def.sections[i].buttons, def.sections[i]);
                 
             return;
         }
         
         
 //        if (def.hidden) {
-        collectSections(def.buttons);
+        if (def.buttons)
+            collectSections(def.buttons, def);
 //            var buttons = def.buttons;
 //            for (var i = 0; i < buttons.length; i++) {
 //                var ext = buttons[i].ext;
@@ -300,10 +312,10 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
      */
     increaseNotificationCount: function(windowIdent){
         /*for(var doi = 0; doi < this.dockObjects.length; doi++) {
-            if(this.dockObjects[doi].ident == windowIdent) {
+            if (this.dockObjects[doi].ident == windowIdent) {
                 // Only increase notification count if window is hidden
-                if(this.dockObjects[doi].btn.value == false) {
-                    if(this.dockObjects[doi].notCount >= 99)
+                if (this.dockObjects[doi].btn.value == false) {
+                    if (this.dockObjects[doi].notCount >= 99)
                         return true;
 
                     this.dockObjects[doi].notCount++;
@@ -324,10 +336,10 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
      * Resets the notification count to 0
      */
     resetNotificationCount: function(windowIdent){
-        if(windowIdent == -1) return;
+        if (windowIdent == -1) return;
 
         for(var doi = 0; doi < this.dockObjects.length; doi++) {
-            if(this.dockObjects[doi].ident == windowIdent) {
+            if (this.dockObjects[doi].ident == windowIdent) {
                 this.dockObjects[doi].notCount = 0;
                 this.updateNotificationElement(this.dockObjects[doi].btn, 0);
                 return true;
@@ -341,7 +353,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
      * Updates the notification element to visually reflect notCount
      */
     updateNotificationElement: function(btnObj, count){
-        if(count == 0) {
+        if (count == 0) {
             var countInner = "";
         }
         
@@ -349,7 +361,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             var countInner = count;
         }
 
-        if(apf.isGecko) {
+        if (apf.isGecko) {
             btnObj.$ext.getElementsByClassName("dock_notification")[0].textContent = countInner;
         }
             

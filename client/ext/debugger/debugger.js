@@ -92,8 +92,8 @@ module.exports = ext.register("ext/debugger/debugger", {
                     height  : 30,
                     width   : 150,
                     noflex  : true,
-//                  draggable: false,
-                    barNum  : 0,
+//                    draggable: false,
+//                    barNum  : 0,
                     options : {
                         resizable  : false,
                         skin       : "dockwin_runbtns",
@@ -105,7 +105,7 @@ module.exports = ext.register("ext/debugger/debugger", {
                         caption : "Run Commands", 
                         "class" : "btn-runcommands",
                         ext     : [name, "pgDebugNav"],
-//                      draggable: false,
+//                        draggable: false,
                         hidden  : true
                     }]
                 },
@@ -135,7 +135,6 @@ module.exports = ext.register("ext/debugger/debugger", {
                 activeState: { x: -6, y: -265 }
             }
         }, function(type) {
-            debugger;
             ext.initExtension(_self);
             return pgDebugNav;
         });
@@ -200,11 +199,6 @@ module.exports = ext.register("ext/debugger/debugger", {
     init : function(amlNode){
         var _self = this;
 
-        this.hotitems["resume"]   = [btnResume];
-        this.hotitems["stepinto"] = [btnStepInto];
-        this.hotitems["stepover"] = [btnStepOver];
-        this.hotitems["stepout"]  = [btnStepOut];
-
         this.paths = {};
 
         mdlDbgSources.addEventListener("afterload", function() {
@@ -226,6 +220,13 @@ module.exports = ext.register("ext/debugger/debugger", {
         //@todo move this to noderunner...
         dbg.addEventListener("changeframe", function(e) {
             e.data && _self.showDebugFile(e.data.getAttribute("scriptid"));
+        });
+        
+        pgDebugNav.addEventListener("afterrender", function(){
+            _self.hotitems["resume"]   = [btnResume];
+            _self.hotitems["stepinto"] = [btnStepInto];
+            _self.hotitems["stepover"] = [btnStepOver];
+            _self.hotitems["stepout"]  = [btnStepOut];
         });
         
         dbgBreakpoints.addEventListener("afterrender", function(){

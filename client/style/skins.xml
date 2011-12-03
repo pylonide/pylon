@@ -7880,7 +7880,7 @@
             </div>
         </a:main>
         <a:button
-          caption   = "div[1]/text()"
+          caption   = "text()"
           container = "."
           maxwidth  = "100"
           minwidth  = "10">

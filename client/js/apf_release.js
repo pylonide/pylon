@@ -33282,7 +33282,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(57586)TIME(Mon, 07 Nov 2011 01:01:19 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(57681)TIME(Sat, 03 Dec 2011 17:43:26 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34569,16 +34569,18 @@ apf.BaseTab = function(){
                 this.setProperty("activepagenr", info.position);
             }
         }
-        else if (!this.activepage && !this.$activepage)
+        else if (!this.activepage && !this.$activepage 
+          && !amlNode.render || amlNode.$rendered) {
             this.set(amlNode);
         
-        
-        if (this.$scale && amlNode.visible && !e.$isMoveWithinParent) 
-            this.$scaleinit(amlNode, "add");
-        else 
-        
-        {
-            amlNode.dispatchEvent("afteropen");
+            
+            if (this.$scale && amlNode.visible && !e.$isMoveWithinParent) 
+                this.$scaleinit(amlNode, "add");
+            else 
+            
+            {
+                amlNode.dispatchEvent("afteropen");
+            }
         }
         
         
@@ -64070,7 +64072,7 @@ apf.aml.setElement("event", apf.event);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/page.js)SIZE(26425)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/page.js)SIZE(26466)TIME(Sat, 03 Dec 2011 15:33:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64794,7 +64796,8 @@ apf.page = function(struct, tagName){
 
     this.$destroy = function(){
         if (this.$button) {
-            if (this.parentNode && !this.parentNode.$amlDestroyed)
+            if (this.parentNode && !this.parentNode.$amlDestroyed
+              && this.$button.parentNode)
                 this.$button.parentNode.removeChild(this.$button);
             
             this.$button.host = null;
