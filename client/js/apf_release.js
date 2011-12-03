@@ -28014,7 +28014,7 @@ apf.StandardBinding.prototype = new apf.DataBinding();
 apf.Init.run("standardbinding");
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/multiselect.js)SIZE(71734)TIME(Thu, 01 Dec 2011 02:31:36 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/multiselect.js)SIZE(71734)TIME(Sat, 03 Dec 2011 04:43:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59607,7 +59607,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/item.js)SIZE(23457)TIME(Fri, 02 Dec 2011 09:18:39 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/item.js)SIZE(23457)TIME(Sat, 03 Dec 2011 04:43:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66593,7 +66593,7 @@ apf.aml.setElement("color",       apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/radiobutton.js)SIZE(17089)TIME(Fri, 02 Dec 2011 10:00:35 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/radiobutton.js)SIZE(17089)TIME(Sat, 03 Dec 2011 04:43:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional

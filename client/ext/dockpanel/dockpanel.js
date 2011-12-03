@@ -46,8 +46,9 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                     return item.page;
 
                 var page = item.getPage();
-                page.$arrExtension = arrExtension;
-
+                
+                if(page)
+                    page.$arrExtension = arrExtension;
                 /*vManager.permanent(page, function(e){
                     item.mnuItem.check();
                 }, function(){
@@ -91,33 +92,80 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             var model = e.model;
             var strSettings = model.queryValue("auto/dockpanel");
             
-            var settings = _self.defaultState;
+            var state = _self.defaultState;
             if (strSettings) {
                 // JSON parse COULD fail
                 try {
                     var objSettings = JSON.parse(strSettings);
-                    settings = objSettings.state;
+                    state = objSettings.state;
                     apf.extend(_self.sections, objSettings.hidden);
                 }
                 catch (ex) {}
             }
             
-            _self.layout.loadState(_self.defaultState);
+            if(!state || !state.type || state.type != 'new_type')
+                state = _self.defaultState;
+            
+            _self.layout.loadState(state);
             _self.loaded = true;
+            
+            if(!state.changed)
+                settings.save();
         });
 
         ide.addEventListener("savesettings", function(e){
-            if (!_self.changed)
+            if (!_self.changed) {
+                if(!e.model.queryNode("auto/dockpanel_default")) {
+                    var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/dockpanel_default/text()");
+                    xmlSettings.nodeValue = apf.serialize({
+                        state  : _self.layout.getState(),
+                        hidden : _self.sections
+                    });
+                }
                 return;
-
-            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/dockpanel/text()");
-            xmlSettings.nodeValue = apf.serialize({
-                state  : _self.layout.getState(),
-                hidden : _self.sections
-            });
+            }
             
+            if(!_self.loadDefault) {
+                var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/dockpanel/text()");
+                xmlSettings.nodeValue = apf.serialize({
+                    state  : _self.layout.getState(true),
+                    hidden : _self.sections
+                });
+            }
             return true;
         });
+        
+                
+        mnuToolbar.appendChild(new apf.item({
+            caption : "Restore Default",
+            onclick : function(){
+                var defaultSettings = settings.model.queryValue("auto/dockpanel_default/text()"),
+                    state;
+                    
+                if (defaultSettings) {
+                    // JSON parse COULD fail
+                    try {
+                        _self.loadDefault = true;
+                        var objSettings = JSON.parse(defaultSettings);
+                        apf.extend(_self.sections, objSettings.hidden);
+                        state = objSettings.state;
+                    }
+                    catch (ex) {}
+                    _self.layout.clearState(true);
+                    _self.layout.loadState(state, true);
+                    _self.loadDefault = false;
+                    
+                    settings.model.setQueryValue("auto/dockpanel/text()", state)
+                    
+                    settings.save();
+                    
+                    if(stProcessRunning.active)
+                        _self.showSection(["ext/run/run", "ext/debugger/debugger"], true); 
+                }
+            }
+        }));
+        
+        mnuToolbar.appendChild(new apf.divider());
     },
 
     enable : function(){
@@ -143,51 +191,84 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
 
         var layout = this.layout, _self = this;
 
-        panel[type].mnuItem = mnuWindows.appendChild(new apf.item({
+        panel[type].mnuItem = mnuToolbar.appendChild(new apf.item({
             caption : options.menu.split("/").pop(),
+            id      : "mnu" + type,
             type    : "check",
             onclick : function(){
                 var page = getPage();
-
+                
+                var pNode = page && page.parentNode;
+                
                 //Problem state might not be removed from 
-                if (!page.parentNode || !page.parentNode.dock) {
+                if (!pNode || !pNode.dock) {                   
                     layout.addItem(_self.sections[name][type]);
                     layout.show(page);
+                    
+                    _self.changed = true;
+                    settings.save()
+                }
+                else if (pNode.parentNode && pNode.parentNode.tagName == 'vbox' && pNode.parentNode.expanded){
+                    pNode.set(page)
                 }
                 else {
                     layout.show(page);
                 }
             }
-        }));
-        
-        
+        }));        
     },
 
-    addDockable : function(def){
+    addDockable : function(def){        
         if (this.loaded) {
             this.layout.addItem(def);
             return;
         }
-        
-        var state = this.defaultState;
-        if (def.sections) {
-            state.bars.push(def);
-            return;
-        }
-        
-        if (def.hidden) {
-            var buttons = def.buttons;
+        var _self = this,
+            state = this.defaultState;
+            
+        function collectSections(buttons){
+//            var buttons = def.buttons;
             for (var i = 0; i < buttons.length; i++) {
                 var ext = buttons[i].ext;
-                (this.sections[ext[0]] || (this.sections[ext[0]] = {}))[ext[1]] = def;
+                (_self.sections[ext[0]] || (_self.sections[ext[0]] = {}))[ext[1]] = def;
             }
+        }
+        
+        if(!def.barNum)
+            def.barNum = 0;
+        
+        if (def.sections) {
+            if(def.barNum || def.barNum === 0) {
+                if(state.bars[def.barNum])
+                    state.bars[def.barNum].sections.merge(def.sections);
+                else
+                    state.bars[def.barNum] = def;
+            }
+            else
+                state.bars.push(def);
+            
+            for(var i = 0, l = def.sections.length; i < l; i++)
+                collectSections(def.sections[i].buttons);
+                
             return;
         }
+        
+        
+//        if (def.hidden) {
+        collectSections(def.buttons);
+//            var buttons = def.buttons;
+//            for (var i = 0; i < buttons.length; i++) {
+//                var ext = buttons[i].ext;
+//                (this.sections[ext[0]] || (this.sections[ext[0]] = {}))[ext[1]] = def;
+//            }
+//            return;
+//        }
 
-        if (!state.bars[0])
-            state.bars[0] = {expanded: false, width: 200, sections: []};
+        if (!state.bars[def.barNum || 0])
+            state.bars[def.barNum || 0] = {expanded: false, width: 230, sections: []};
 
-        var bar = state.bars[0];
+        var bar = state.bars[def.barNum || 0];
+        
         if (def.buttons) {
             bar.sections.push(def);
         }
@@ -202,6 +283,14 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         
         return bar.sections.slice(-1);
     }, //properties.forceShow ??
+    
+    hideSection: function(section){
+        this.layout.hideSection(section);
+    },
+    
+    showSection: function(section, expand){
+        this.layout.showSection(section, expand);
+    },
     
     //@todo removal of pages
     

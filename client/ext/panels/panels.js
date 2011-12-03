@@ -38,10 +38,10 @@ module.exports = ext.register("ext/panels/panels", {
         panelExt.panel.setAttribute("draggable", "false");
     },
     
-    register : function(panelExt){
+    register : function(panelExt, menu){
         var _self = this;
         if (!panelExt.alwayson) {
-            panelExt.mnuItem = mnuPanels.appendChild(new apf.item({
+            panelExt.mnuItem = (menu || mnuProjectBar).appendChild(new apf.item({
                 caption : panelExt.name,
                 type    : "check",
                 //checked : panelExt.visible || false,

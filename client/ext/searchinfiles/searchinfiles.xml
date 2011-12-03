@@ -4,13 +4,15 @@
   	media-path = "/static/ext/searchinfiles/images/" />
 	
     <a:window id="winSearchInFiles"
-      onhide="require('ext/searchinfiles/searchinfiles').onHide()"
-      title="Search in Files"
-      buttons="close" 
-      modal="false" 
-      center="true" 
-      width="350" 
-      kbclose="true">
+      onhide  = "require('ext/searchinfiles/searchinfiles').onHide()"
+      title   = "Search in Files"
+      buttons = "close" 
+      skin    = "bk-window"
+      class   = "relative"
+      modal   = "false" 
+      center  = "true" 
+      width   = "350" 
+      kbclose = "true">
         <a:vbox edge="10" padding="5">
             <a:hbox align="center">
                 <a:label width="95">Containing Text</a:label>
@@ -91,12 +93,11 @@
                 </a:fieldset>
             </a:hbox>
         </a:vbox>
-        <a:divider />
-        <a:hbox padding="5" pack="end" edge="10 10 5 10">
+        <a:hbox padding="10" pack="end" edge="6 10 10">
             <!--a:button id="btnReplace">Replace</a:button>
             <a:button id="btnReplaceAll">Replace All</a:button-->
-            <a:button id="btnSFFind" default="2" class="ui-btn-green">Find</a:button>
-            <a:button onclick="winSearchInFiles.hide()">Close</a:button>
+            <a:button id="btnSFFind" default="2" class="btn-green" skin="btn-default-css3">Find</a:button>
+            <a:button onclick="winSearchInFiles.hide()" skin="btn-default-css3">Close</a:button>
         </a:hbox>
     </a:window>
 

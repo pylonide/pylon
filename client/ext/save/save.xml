@@ -6,7 +6,9 @@
       center    = "true"
       render    = "runtime"
       width     = "512"
-      skin      = "change_photo">
+      skin      = "bk-window"
+      draggable = "false"
+      class     = "relative">
         <a:vbox padding="10" edge="15 20 10 20">
             <h3 class="wheader">Save this file?</h3>
             <div>This file has unsaved changes. Would you like to save the file before closing?</div>
@@ -14,13 +16,13 @@
 
         <a:vbox>
             <a:divider skin="hordivider" />
-            <a:hbox pack="end" padding="7" edge="10 10 5 10">
-                <a:button id="btnYesAll" caption="Yes to all" />
-                <a:button id="btnNoAll" caption="No to all" />
+            <a:hbox pack="end" padding="7" edge="2 10 12">
+                <a:button id="btnYesAll" caption="Yes to all" skin="btn-default-css3" />
+                <a:button id="btnNoAll" caption="No to all" skin="btn-default-css3"/>
                 <a:filler />
-                <a:button id="btnSaveYes" width="80" default="3" class="ui-btn-green" caption="Yes" />
-                <a:button id="btnSaveNo" width="80" class="ui-btn-red" caption="No" />
-                <a:button id="btnSaveCancel" width="80">Cancel</a:button>
+                <a:button id="btnSaveYes" default="3" class="btn-green" caption="Yes" skin="btn-default-css3"/>
+                <a:button id="btnSaveNo" class="btn-red" caption="No" skin="btn-default-css3"/>
+                <a:button id="btnSaveCancel" skin="btn-default-css3">Cancel</a:button>
             </a:hbox>
         </a:vbox>
     </a:window>
@@ -40,14 +42,16 @@
     <a:window
       id        = "winSaveAs"
       center    = "true"
-      height    = "410"
+      height    = "395"
       icon      = ""
       buttons   = "close"
+      skin      = "bk-window"
       kbclose   = "true"
       resizable = "true"
       title     = "Save As"
       onshow    = "require('ext/save/save').expandTree();"
-      width     = "480">
+      width     = "480"
+      draggable = "false">
         <a:vbox
           anchors   = "10 10 0 10"
           padding   = "5">
@@ -132,18 +136,19 @@
                         apf.setStyleClass(trSaveAs.$ext, 'hidefiles');
                   ">Show files in tree</a:checkbox>
             </a:hbox>
-            <a:divider skin="hordivider" />
             <a:hbox
-              edge    = "4 0 0"
+              edge    = "17 0 10"
               pack    = "end"
-              padding = "5">
+              padding = "10">
                 <a:button
+                  skin    = "btn-default-css3"
                   onclick = "winSaveAs.hide()">
                     Cancel
                 </a:button>
                 <a:button
-                  class    = "ui-btn-green"
+                  class    = "btn-green"
                   default  = "2"
+                  skin     = "btn-default-css3"
                   onclick  = "require('ext/save/save').confirmSaveAs()">
                     Save
                 </a:button>

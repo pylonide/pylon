@@ -7,10 +7,11 @@
       render    = "runtime"
       width     = "350"
       height    = "300"
-      skin      = "change_photo"
+      skin      = "bk-window"
       resizable = "true"
       kbclose   = "true"
-      buttons   = "close">
+      buttons   = "close"
+      draggable = "false">
         <a:scrollbar
             for      = "lstFileTemplates"
             margin   = "2"
@@ -35,10 +36,9 @@
               onafterchoose = "
                 btnFileTemplateSave.dispatchEvent('click');
               " />
-            <a:divider skin="hordivider" />
-            <a:hbox pack="end" padding="7" edge="0 10 5 5">
+            <a:hbox pack="end" padding="7" edge="10">
                 <a:button id="btnFileTemplateSave" width="80" default="2" 
-                  class="ui-btn-green" caption="Create" 
+                  class="btn-green" skin="btn-default-css3" caption="Create" 
                   onclick="
                     require('ext/newresource/newresource').newfile(
                         '.' + lstFileTemplates.value,
@@ -46,7 +46,7 @@
                     );
                     winNewFileTemplate.hide();
                   "/>
-                <a:button id="btnFileTemplateCancel" width="80"
+                <a:button id="btnFileTemplateCancel" skin="btn-default-css3" width="80"
                   onclick="winNewFileTemplate.hide()">Cancel</a:button>
             </a:hbox>
         </a:vbox>
