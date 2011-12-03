@@ -66,7 +66,7 @@ var jsonTourIde = {
             desc : "There's a tabbed arrangement of all your active files here. You can rearrange the tabs however you like, swap through them with keyboard shortcuts, and open the same file up in a split-window view.",
             pos : "bottom",
             time : 5
-        }/*,
+        },
         {
             el : ceEditor,
             desc : "Your editor's gutter can do more than just show line numbers. It also detects and displays warnings and errors in your code. If you're debugging an application, you can also set your breakpoints here.",
@@ -74,11 +74,11 @@ var jsonTourIde = {
             time : 5
         },
         {
-            el : ceEditor,
+            el : apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[4]/a:hbox[1]/bar[1]'),
             desc : "These buttons control all aspects of the debugger. You can identify breakpoints, view the call stack, and inspect the values of variables.",
             pos : "right",
             time : 5
-        }*/,
+        },
         {
             el : apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:bar[1]/a:vbox[1]/a:hbox[1]'),
             desc : "This area down here acts just like a command line for your project in the Cloud9 IDE. You can always type 'help' to get a list of the available commands.",
@@ -97,18 +97,6 @@ var jsonTourIde = {
     ]
 };
 
-var jsonQuickStart = {
-    identifiers: [
-        {
-            el : navbar,
-            name : "qsProjectBar",
-            pos: "right"
-        }
-    ]
-};
-// require("ext/settings/settings").model.queryValue("auto/help/@show") == "false"
-//ide.addEventListener("loadsettings", function(){
-
 module.exports = ext.register("ext/guidedtour/guidedtour", {
     name     : "Guided Tour",
     dev      : "Cloud9 IDE, Inc.",
@@ -125,8 +113,8 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
 
     init : function(amlNode){
         this.overlay.setAttribute("style",
-            "z-index:998;position:absolute;width:100%;height:100%;opacity:0.3;background:#000;");
-        //document.body.appendChild(this.overlay);
+            "z-index:998;display:none;position:absolute;width:100%;height:100%;opacity:0.3;background:#000;");
+        document.body.appendChild(this.overlay);
         
         this.hlElement.setAttribute("style",
             "z-index:999999;display:none;position:absolute;box-shadow:0px 0px 15px #000;");
@@ -135,8 +123,6 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         winTourDesc.setValue(this.tour.initialText);
         
         winTourGuide.addEventListener("hide", this.shutdown(this.hlElement)); 
-      
-        quickStartDialog.addEventListener("show", this.arrangeQSImages()); 
     },
     
     hook : function(){
@@ -146,20 +132,8 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
                 caption : "Take a Guided Tour",
                 onclick : function(){
                     ext.initExtension(_self);
-                    winTourGuide.show();
-                },
-                onclose : function(e){
-                        _self.close(e.page);
-                    }
-            }))
-        );
-        
-        this.nodes.push(
-            ide.mnuFile.appendChild(new apf.item({
-                caption : "Quick Start",
-                onclick : function(){
-                    ext.initExtension(_self);
-                    quickStartDialog.show();
+                    require("ext/guidedtour/guidedtour").launchGT();
+                    
                 },
                 onclose : function(e){
                         _self.close(e.page);
@@ -168,21 +142,8 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         );
     },
     
-    /**
-    * Arrange the images pointing out the locations
-    */
-    
-    arrangeQSImages : function()
-    {
-        for (var i = 0; i < jsonQuickStart.identifiers.length; i++)
-        {
-            var divToId = this.getElementPosition(jsonQuickStart.identifiers[i].el);
-            var position = jsonQuickStart.identifiers[i].pos;
-            var imgDiv = apf.document.getElementById(jsonQuickStart.identifiers[i].name);
-            
-        this.setPositions(position, divToId, imgDiv);     
-        imgDiv.show();
-        }
+    launchGT : function() {
+        winTourGuide.show();
     },
     
     /**
@@ -256,11 +217,6 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             this.commonStepOps(step);
         }
     },
-
-    stepClose : function() {
-        winTourText.close();
-        this.hlElement.style.display = "none";
-    },
     
     finalStep : function() {
         winTourText.close();
@@ -298,7 +254,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     {
         if (position == "top")
         {
-             div.setAttribute("bottom", (window.innerHeight - posArray[1]) + 25);
+             div.setAttribute("bottom", (window.innerHeight - posArray[1]) + 100);
              div.setAttribute("left", (posArray[0] + (posArray[2]/2)) - (div.getWidth()/2));
         }
         else if (position == "right")
@@ -308,13 +264,13 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         }
         else if (position == "bottom")
         {
-            div.setAttribute("top", posArray[3] + 25);   
+            div.setAttribute("top", posArray[3]);
             div.setAttribute("right", (posArray[0] + (posArray[2]/2)) - (div.getWidth()/2));
         }
         else if (position == "left")
         {
-            div.setAttribute("top", (posArray[1] + (posArray[3]/2)) + 50);
-            div.setAttribute("right", (posArray[0] + (posArray[1]/2) + 45));
+            div.setAttribute("bottom", posArray[3] - 125);
+            div.setAttribute("right", (posArray[2]) - 25);
         }  
         
         return div;
@@ -358,10 +314,6 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         this.nodes.each(function(item){
             item.enable();
         });
-    },
-
-    closeStart : function() {
-        quickStartDialog.hide();
     },
     
     shutdown : function(hlElement) {

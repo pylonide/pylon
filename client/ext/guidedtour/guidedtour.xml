@@ -4,50 +4,6 @@
       media-path = "/static/ext/guidedtour/images/" />
     
     <a:window
-        id = "quickStartDialog"
-        title = ""
-        center = "true"
-        modal = "false"
-        buttons = "close"
-        kbclose   = "true"
-        width     = "500"
-        skinset   = "guidedtour"
-        skin ="quickstart"
-        draggable = "false">
-        <a:vbox >
-            <a:text id="quickStartTitle" class="qstitle" value="Here are a few pointers to get you started!"/>
-            <a:divider />
-          <a:text id="tourGuideText" class="tgtext">For a detailed guided tour, <a href="alert('noi');"
-                class="tgLink">click here!</a></a:text>
-          <a:divider />
-            <a:text id="supportText" class="qsSupportText" value="If you ever run into trouble, be sure to check out our support page on &lt;a href=&quot;http://c9.io/support&quot; class=&quot;supportLink&quot; target=&quot;_blank&quot;>c9.io/support&lt;/a>, or talk to us on &lt;a href=&quot;https://twitter.com/#!/C9Support&quot; class=&quot;supportLink&quot; target=&quot;_blank&quot;>Twitter&lt;/a>!"/>
-          <a:divider />
-          <a:hbox padding="5" pack="center">
-                <a:checkbox id="quickStartCheckbox" 
-                    label   = "Show this quick start on startup" 
-                    value   = "[{require('ext/settings/settings').model}::auto/help/@show]" />
-                <a:text id="gotoEditor" value="Just take me to the editor" />
-            </a:hbox>
-            
-        </a:vbox> 
-    </a:window>
-    
-    <a:window
-        id = "qsProjectBar"
-        title = ""
-        center = "false"
-        modal = "false"
-        buttons = ""
-        kbclose   = "false"
-        width     = "200"
-        skinset   = "guidedtour"
-        skin ="qsImage"
-        draggable = "false">
-        <a:vbox class="qsProjectBar">
-        </a:vbox>
-    </a:window>
-    
-    <a:window
       id        = "winTourGuide"
       title     = "Guided Tour"
       center    = "true"
