@@ -1,0 +1,162 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+<a:window name="qsImage">
+        <a:style><![CDATA[
+            .qsProjectBar {
+                position:absolute;
+                width: 167px;
+                height: 117px;
+                background: url(images/your_project_bar.png) no-repeat 0 0;
+                z-index  : 999999;
+            }
+            
+            .qsMenuBar {
+                position:absolute;
+                width: 167px;
+                height: 117px;
+                background: url(images/your_top_menu.png) no-repeat 0 0;
+                z-index  : 999999;
+            }
+            
+            .qsToolbar {
+                position:absolute;
+                width: 167px;
+                height: 117px;
+                background: url(images/your_toolbar.png) no-repeat 0 0;
+                z-index  : 999999;
+            }
+            
+             .qsCLI {
+                position:absolute;
+                width: 167px;
+                height: 200px;
+                background: url(images/your_command_line.png) no-repeat 0 0;
+                z-index  : 999999;
+            }
+        ]]></a:style>
+    
+        <a:presentation>
+        <a:main
+              collapsed-height = "30"
+              minheight        = "30"
+              minwidth         = "60"
+              container        = "div[2]"
+              drag             = "div[2]"
+              title            = "div[1]/div[1]/text()">
+                <div>
+                    <div>
+                    </div>
+                    <div class="image"> </div>
+                </div>
+            </a:main>
+        </a:presentation>
+    </a:window>
+    
+    <a:window name="quickstart">
+        <a:style><![CDATA[
+            .quickstart {
+                position : relative;
+                overflow : visible;
+                z-index  : 999999;
+                box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.25);
+                border-radius: 4px;
+            }
+            
+            .quickstart .header {
+                width: 20px;
+                height: 20px;
+                position: absolute;
+                top: -5px;
+                right: 0;
+                background: url(images/close.png) no-repeat 0 0;
+            }
+            
+            .quickstart .header:hover {
+                background-position: -22px 0px;
+            }
+            .quickstart .header:active {
+                background-position: -44px 0px;
+            }
+            
+            .quickstart .buttons {
+                background: url(images/close.png) no-repeat 0 0;
+            }
+            
+            .qstitle, .tgtext, .qsSupportText, .tgLink {
+                background : #000;
+                color: #fff;
+                padding: 0 5px 0 5px;
+                             border-bottom: 2px solid #666;
+             font-family: Tahoma, Arial;
+             margin-bottom: -16px;
+            }
+
+            .qstitle {
+                font-size: 20px;
+                padding-left: 30px;
+            }
+            
+            .tgtext {
+                color: orange;
+                font-size: 16px;
+margin-top: 16px;
+padding-top: 5px;
+padding-left: 30px;
+            }
+            
+            .qsSupportText {
+                font-size: 12px;
+                padding-left: 25px;
+                margin-top: 16px;
+padding-top: 5px;
+margin-bottom: 0px;
+            }
+            
+            .supportLink {
+                color: #6495ED;
+            }
+            
+
+.cbcontainer {
+color: white;
+}
+
+.qsCBContainer { 
+    width: 450px;
+    margin: 0 auto;
+    height: 40px;
+    background: black;
+}
+.checkboxDiv    {
+    width: 200px;
+    border-right: 1px solid #666;
+    float: left;
+padding: 10px 0 10px 10px;
+}
+
+.buttonDiv {
+width: 197px;
+margin-left: 240px;
+padding-top: 10px;
+}
+
+        ]]></a:style>
+
+    
+        <a:presentation>
+        <a:main
+              collapsed-height = "30"
+              minheight        = "30"
+              minwidth         = "60"
+              container        = "div[2]"
+              drag             = "div[2]"
+              title            = "div[1]/div[1]/text()">
+                <div class="quickstart">
+                    <div class="header" onclick="require('ext/quickstart/quickstart').closeStart();">
+                    </div>
+                    <div class="content"> </div>
+                </div>      
+            </a:main>
+        </a:presentation>
+    </a:window>
+</a:skin>
