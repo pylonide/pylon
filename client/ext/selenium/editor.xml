@@ -206,7 +206,7 @@
                     <a:button onclick="brSeleniumPreview.reload()" skin="browser-btn" icon="browser_refresh.png" />
                     <a:textbox flex="1" focusselect="true" id="tbUiRecordLoc" style="border-radius:4px" />
                 </a:hbox>
-                <a:img src="/static/style/images/file-tree-load-spinner.gif" id="uiRecordLoadingIndicator" right="14" top="14" />
+                <a:img src="/static/style/images/file-tree-load-spinner.gif" id="uiRecordLoadingIndicator" right="10" top="10" />
             </a:bar>
             <a:browser id="brSeleniumPreview" flex="1" style="border: 0;background:white;border-radius:0 0 6px 6px;border:1px solid #c6c6c6;border-width:0 1px 1px 1px;" />
         </a:vbox>

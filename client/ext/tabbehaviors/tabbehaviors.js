@@ -205,8 +205,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             
             pages.each(function(page){
                 //page.$at.undo(-1);
-                _self.removeItem(page);
-                tabs.remove(page, true);
+                //_self.removeItem(page);
+                tabs.remove(page);
             });
         });
     },
@@ -229,8 +229,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             
             set.each(function(page){
                 //page.$at.undo(-1);
-                _self.removeItem(page);
-                tabs.remove(page, true);
+                //_self.removeItem(page);
+                tabs.remove(page);
             });
         });
         

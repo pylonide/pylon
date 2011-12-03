@@ -48,7 +48,7 @@
             var config = <%requirejsConfig%>;
             require(config, [apfLoc], function(){
                 apf.addEventListener("load", function(){
-                    var list = ["core/ide", "core/ext", "core/util", "ext/editors/editors"];
+                    var list = ["core/ide", "core/ext", "core/util", "core/settings", "ext/editors/editors"];
                     if (VERSION == RELEASE)
                         list.push("ace/editor");
 

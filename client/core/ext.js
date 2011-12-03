@@ -1,17 +1,6 @@
 /**
  * Extension manager for the Ajax.org Cloud IDE
  *
- * Modules that extend the functionality of the editing environment
- * - Add menubuttons/menus
- * - Add items to menus (optional show/hide toggle)
- * - Add toolbar (optional show/hide toggle)
- * - Add buttons to toolbar (optional show/hide toggle)
- * - Add custom non-file tree items
- * - Register an editor to the application for file extensions
- * - Add features to existing editors
- * - Add AML elements
- * - Add layout modes
- *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
