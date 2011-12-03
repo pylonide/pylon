@@ -114,7 +114,7 @@ apf.radiobutton = function(struct, tagName){
      * group; only one radiobutton within that parent can be selected.
      */
     this.$propHandlers["group"] = function(value){
-        if (!this.$amlLoaded)
+        if (!this.$ext)
             return;
         
         if (this.$group && this.$group.$removeRadio)
@@ -130,7 +130,7 @@ apf.radiobutton = function(struct, tagName){
             //#ifdef __WITH_NAMESERVER
             apf.nameserver.get("group", value)
             /* #else
-            {}
+            self[value]
             #endif */
             : value;
         if (!group) {

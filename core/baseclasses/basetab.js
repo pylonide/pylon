@@ -1292,16 +1292,18 @@ apf.BaseTab = function(){
                 this.setProperty("activepagenr", info.position);
             }
         }
-        else if (!this.activepage && !this.$activepage)
+        else if (!this.activepage && !this.$activepage 
+          && !amlNode.render || amlNode.$rendered) {
             this.set(amlNode);
         
-        //#ifdef __ENABLE_TAB_SCALE
-        if (this.$scale && amlNode.visible && !e.$isMoveWithinParent) 
-            this.$scaleinit(amlNode, "add");
-        else 
-        //#endif
-        {
-            amlNode.dispatchEvent("afteropen");
+            //#ifdef __ENABLE_TAB_SCALE
+            if (this.$scale && amlNode.visible && !e.$isMoveWithinParent) 
+                this.$scaleinit(amlNode, "add");
+            else 
+            //#endif
+            {
+                amlNode.dispatchEvent("afteropen");
+            }
         }
         
         //#ifdef __WITH_PROPERTY_BINDING
