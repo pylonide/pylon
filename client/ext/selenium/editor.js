@@ -176,7 +176,7 @@ module.exports = ext.register("ext/selenium/editor", {
         this.editor = mainUiRecorder;
         
         [{n: "colname", v: true, w: "40%"},
-         {n: "colvalue", v: true, w: "60%"}, 
+         {n: "colvalue", v: true, w: "61%"}, 
          {n: "colelement", v: false, w: "33%"},
          {n: "colstatus", v: false, w: "40%"}].forEach(function(col){
             var model = settings.model;

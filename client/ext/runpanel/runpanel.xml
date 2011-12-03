@@ -8,14 +8,7 @@
       flex     = "1" 
       visible  = "true"
       modal    = "false">
-        <a:button
-          top="-22"
-          skin="header-btn"
-          right="5"
-          icon="settings.png"
-          submenu="mnuDebugSettings" />
-
-        <a:bar skin="c9-header-bar" top="-30" right="24" height="30">
+        <a:bar skin="c9-header-bar" top="-30" right="28" height="30">
             <a:hbox id="barTestTools" height="23">
                 <a:button
                   caption  = "add"
@@ -45,6 +38,13 @@
                   visible  = "{stProcessRunning.active and 1}" /-->
             </a:hbox>
         </a:bar>
+        
+        <a:button
+          top="-22"
+          skin="header-btn"
+          right="5"
+          icon="panel_settings.png"
+          submenu="mnuDebugSettings" />
       
         <a:vbox anchors="0 0 0 0">
             <a:list id="lstRunCfg" 

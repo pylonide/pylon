@@ -1645,9 +1645,8 @@
             background-position : 0 -15px;
         }
 
-        .header-btnDisabled {
+        .header-btnDown {
             background-position : 0 -30px;
-            cursor: default;
         }
     ]]></a:style>
 
@@ -1657,6 +1656,51 @@
           background = "."
           icon       = ".">
             <div class="header-btn"> </div>
+        </a:main>
+    </a:presentation>
+</a:button>
+<a:button name="browser-btn">
+    <a:style><![CDATA[
+        .browser-btn {
+            height              : 27px;
+            width               : 25px;
+            overflow            : hidden;
+            cursor              : pointer;
+            position            : relative;
+            cursor              : default;
+            -moz-user-select    : none;
+            -khtml-user-select  : none;
+            user-select         : none;
+            background-position : 0 27px;
+            background-repeat   : no-repeat;
+            background-image    : url(images/browser_button.png);
+        }
+        
+        .browser-btn span{
+            display : block;
+            width : 17px;
+            height : 17px;
+            position : absolute;
+            left : 5px;
+            top : 5px;
+            background-repeat   : no-repeat;
+        }
+
+        .browser-btnOver {
+            background-position : 0 0px;
+        }
+
+        .browser-btnDown {
+            background-position : 0 -27px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main
+          caption      = "text()"
+          background = "."
+          icon       = "span">
+            <div class="browser-btn"><span> </span></div>
         </a:main>
     </a:presentation>
 </a:button>
