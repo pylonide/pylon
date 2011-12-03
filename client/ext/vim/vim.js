@@ -19,6 +19,7 @@ var extSettings = require("ext/settings/settings");
 var cmdModule = require("ext/vim/commands");
 var commands = cmdModule.commands;
 var cliCmds = require("ext/vim/cli");
+var util = require("ext/vim/maps/util");
 
 var enabled;
 
@@ -29,12 +30,19 @@ var onConsoleCommand = function onConsoleCommand(e) {
         if (cmd[0] === ":") {
             cmd = cmd.substr(1);
 
-            if (cliCmds[cmd])
+            if (cliCmds[cmd]) {
                 cliCmds[cmd](domEditor.$editor, e.data);
-            else
+            }
+            else if (cmd.match(/^\d+$/)) {
+                domEditor.$editor.gotoLine(parseInt(cmd, 10), 0);
+                domEditor.$editor.navigateLineStart();
+            }
+            else {
                 console.log("Vim command '" + cmd + "' not implemented.");
+            }
 
             domEditor.focus();
+            e.returnValue = false;
         }
         else if (cmd[0] === "/") {
             cmd = cmd.substr(1);
@@ -42,8 +50,8 @@ var onConsoleCommand = function onConsoleCommand(e) {
             domEditor.$editor.find(cmd, cmdModule.searchStore.options);
             txtConsoleInput.blur();
             domEditor.focus();
+            e.returnValue = false;
         }
-        e.returnValue = false;
     }
 };
 
@@ -66,13 +74,30 @@ var removeCommands = function removeCommands(editor, commands) {
     });
 };
 
+var onCursorMove = function() {
+    cmdModule.onCursorMove();
+    onCursorMove.scheduled = false;
+};
+
 var enableVim = function enableVim() {
     if (editors.currentEditor && editors.currentEditor.ceEditor) {
         var editor = editors.currentEditor.ceEditor.$editor;
 
         addCommands(editor, commands);
+        if (!enabled)
+            ceEditor.$editor.renderer.container.addEventListener("click", onCursorMove, false);
+
         editor.setKeyboardHandler(handler);
-        commands.stop.exec(editor);
+        // So, apparently 'prop.checked' can't be trusted, since it happens
+        // a million times. Since that will trigger execution of this very
+        // function, we can't put a fix that checks for an already enabled vim
+        // mode, because the editor might not be ready yet. This is a problem
+        // in our core and it has to be fixed. For now, we add extra checks in
+        // case we are already in insert mode, and not drive the user crazy by
+        // randomly switching to normal mode.
+        if (util.currentMode !== "insert") {
+            commands.stop.exec(editor);
+        }
         enabled = true;
     }
 };
@@ -84,6 +109,7 @@ var disableVim = function() {
         removeCommands(editor, commands);
         editor.setKeyboardHandler(null);
         commands.start.exec(editor);
+        ceEditor.$editor.renderer.container.removeEventListener("click", onCursorMove, false);
         enabled = false;
     }
 

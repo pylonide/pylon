@@ -34858,7 +34858,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(51381)TIME(Thu, 01 Dec 2011 02:31:18 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(51603)TIME(Fri, 02 Dec 2011 10:25:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35074,7 +35074,11 @@ apf.BaseTree = function(){
                     
                     // when finished, find all the other selectors that start with the current selector
                     // plus a slash to make it really really sure
-                    var childSelectors = allSelectors.filter(function (s) { return s.indexOf(currentSelector + "/") === 0; });
+                    // plus we check whether it's a child and not a grand child
+                    var childSelectors = allSelectors.filter(function (s) { 
+                        return s.indexOf(currentSelector + "/") === 0
+                                && currentSelector.split("/").length + 1 === s.split("/").length;
+                    });
                     
                     // then expand each of the child items
                     childSelectors.forEach(function (selector) {
@@ -53722,7 +53726,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/codeeditor.js)SIZE(21244)TIME(Wed, 16 Nov 2011 23:06:07 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/codeeditor.js)SIZE(22377)TIME(Fri, 02 Dec 2011 10:25:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53890,28 +53894,27 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             doc.hasValue = true;
         }
 
-        //apf.queue.add("ce" + _self.$uniqueId, function() {
-            _self.$getMode(_self.syntax, function(mode) {
-                doc.setMode(mode);
-            });
-            doc.setTabSize(parseInt(_self.tabsize, 10));
-            doc.setUseSoftTabs(_self.softtabs);
-            doc.setUseWrapMode(_self.wrapmode);
-            doc.setWrapLimitRange(_self.wraplimitmin, _self.wraplimitmax);
+        _self.$getMode(_self.syntax, function(mode) {
+            doc.setMode(mode);
+        });
+        
+        doc.setTabSize(parseInt(_self.tabsize, 10));
+        doc.setUseSoftTabs(_self.softtabs);
+        doc.setUseWrapMode(_self.wrapmode);
+        doc.setWrapLimitRange(_self.wraplimitmin, _self.wraplimitmax);
 
-            _self.$removeDocListeners && _self.$removeDocListeners();
-            _self.$removeDocListeners = _self.$addDocListeners(doc);
+        _self.$removeDocListeners && _self.$removeDocListeners();
+        _self.$removeDocListeners = _self.$addDocListeners(doc);
 
-            _self.$editor.setShowPrintMargin(_self.showprintmargin);
-            
-            // remove existing markers
-            _self.$clearMarker();
-            _self.$editor.setSession(doc);
+        _self.$editor.setShowPrintMargin(_self.showprintmargin);
+        
+        // remove existing markers
+        _self.$clearMarker();
 
-            // update markers
-            _self.$updateMarker();
-            _self.$updateBreakpoints(doc);
-        //})
+        _self.$editor.setSession(doc);
+        
+        _self.$updateMarker();
+        _self.$updateBreakpoints(doc);
     };
 
     this.$addDocListeners = function(doc) {
@@ -53938,37 +53941,63 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.$marker = null;
         }
     };
-
-    //@todo fix that this is not called three times
-    this.$updateMarker = function() {
+    
+    /**
+     * Indicates whether we are going to set a marker
+     */
+    this.$updateMarkerPrerequisite = function () {
+        if (!this.$debugger) {
+            return;
+        }
+        var frame = this.$debugger.activeframe;
+        if (!frame) {
+            return;
+        }
+        
+        // when running node with 'debugbrk' it will auto break on the first line of executable code
+        // we don't want to really break here so we put this:                
+        if (frame.getAttribute("name") === "anonymous(exports, require, module, __filename, __dirname)"
+                && frame.getAttribute("index") === "0" && frame.getAttribute("line") === "0") {
+                    
+            var fileNameNode = frame.selectSingleNode("//frame/vars/item[@name='__filename']");
+            var fileName = fileNameNode ? fileNameNode.getAttribute("value") : "";
+            var model = this["model-breakpoints"].data;
+            
+            // is there a breakpoint on the exact same line and file? then continue
+            if (fileName && model && model.selectSingleNode("//breakpoints/breakpoint[@script='" + fileName + "' and @line=0]")) {
+                return frame;
+            }
+            
+            return;
+        }
+        
+        return frame;
+    };
+    
+    this.$updateMarker = function () {
         this.$clearMarker();
         
-        if (!this.$debugger)
-            return;
-
-        var frame = this.$debugger.activeframe;
-        if (!frame)
-            return;
-
-        var script = this.xmlRoot;
-        if (script.getAttribute("scriptid") !== frame.getAttribute("scriptid"))
-            return;
-
-        var head  = this.$debugger.$mdlStack.queryNode("frame[1]");
-        var isTop = frame == head;
+        var frame = this.$updateMarkerPrerequisite();
+        if (!frame) {
+        	return;
+        }
         
+        var script = this.xmlRoot;
+        if (script.getAttribute("scriptid") !== frame.getAttribute("scriptid")) {
+            return;
+        }
+        
+        var head = this.$debugger.$mdlStack.queryNode("frame[1]");
+        var isTop = frame == head;
         var lineOffset = parseInt(script.getAttribute("lineoffset") || "0", 10);
         var row = parseInt(frame.getAttribute("line"), 10) - lineOffset;
-        var range = new Range(row, 0, row+1, 0);
-
+        var range = new Range(row, 0, row + 1, 0);
         this.$marker = this.$editor.getSession().addMarker(range, isTop ? "ace_step" : "ace_stack", "line");
         var type = isTop ? "arrow" : "stack";
         this.$lastRow = [row, type];
         this.$editor.renderer.addGutterDecoration(row, type);
-        
         this.$editor.gotoLine(row + 1, parseInt(frame.getAttribute("column"), 10));
-        //this.$editor.moveCursorTo(row, parseInt(frame.getAttribute("column")));
-    };
+    };    
 
     this.$updateBreakpoints = function(doc) {
         doc = doc || this.$editor.getSession();
@@ -54141,6 +54170,11 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         this.$updateMarker();
         var _self = this;
         this.$onChangeActiveFrame = function(e) {
+            // if you dont have data, we aren't interested in ya
+            if (!e || !e.data) {
+                return;
+            }
+            
             _self.$updateMarker();
         };
         this.$onBeforeContinue = function() {
@@ -61075,7 +61109,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/menu.js)SIZE(18901)TIME(Tue, 29 Nov 2011 03:34:59 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/menu.js)SIZE(19012)TIME(Fri, 02 Dec 2011 10:25:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61191,7 +61225,7 @@ apf.menu = function(struct, tagName){
             this.$ext.style.display = "none";
 
             var lastFocus = apf.menu.lastFocus;
-
+            var opener    = this.opener;
             //@todo test this with a list being the opener of the menu
             if (lastFocus != this.opener && this.opener && this.opener.$blur)
                 this.opener.$blur();
@@ -61276,6 +61310,8 @@ apf.menu = function(struct, tagName){
                 apf.setStyleClass(this.$selected.$ext, "", ["hover"]);
                 this.$selected = null;
             }
+            
+            this.dispatchEvent("hide", {opener: opener});
         }
     };
 
@@ -64034,7 +64070,7 @@ apf.aml.setElement("event", apf.event);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/page.js)SIZE(26420)TIME(Sun, 27 Nov 2011 23:16:52 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/page.js)SIZE(26425)TIME(Fri, 02 Dec 2011 10:25:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64687,7 +64723,7 @@ apf.page = function(struct, tagName){
                 + this.$uniqueId + ').parentNode;if(apf.lookup(' + this.$uniqueId
                 + ') != o.$activepage'  + (this.parentNode.overactivetab ? " || true" : "")  + ') o.$setStyleClass(this, "over", null, true);');
             elBtn.setAttribute("onmouseout", 'var o = apf.lookup('
-                + this.$uniqueId + ').$btnOut(this, event);');
+                + this.$uniqueId + ');o&&o.$btnOut(this, event);');
 
             //var cssClass = this.getAttribute("class");
             //if (cssClass) {
@@ -74026,7 +74062,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/webdav.js)SIZE(50041)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/webdav.js)SIZE(50239)TIME(Fri, 02 Dec 2011 10:25:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74154,7 +74190,7 @@ apf.webdav = function(struct, tagName){
      *                                    should be passed
      */
     this.$booleanProperties["showhidden"]  = true;
-    this.$supportedProperties.push("showhidden");
+    this.$supportedProperties.push("showhidden", "force-host");
 
     this.$propHandlers["showhidden"]  = function(value) {
         this.$showHidden = value;
@@ -74232,6 +74268,10 @@ apf.webdav = function(struct, tagName){
                 oHeaders = {};
             oHeaders["Content-type"] = "text/xml; charset=utf-8";
         }
+        
+        var fHost = this["force-host"];
+        if (fHost && sPath.indexOf(fHost) === -1)
+            sPath = fHost.replace(/[\/]+$/, "") + "/" + sPath.replace(/^[\/]+/, "");
 
         var _self = this;
         return this.get(sPath || this.$server, {

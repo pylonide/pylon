@@ -321,11 +321,11 @@ module.exports = ext.register("ext/save/save", {
             var model = page.$model;
             var node = model.getXml();
             var doc = page.$doc;
-
-            if (path !== newPath || node.getAttribute("newfile") == 1) {
+            
+            if (path !== newPath || parseInt(node.getAttribute("newfile") || 0, 10) === 1) {
                 model.load(node);
                 file = model.data;
-                fs.beforeRename(file, null, newPath);
+                fs.beforeRename(file, null, newPath, false);
                 doc.setNode(file);
             }
 
@@ -336,7 +336,7 @@ module.exports = ext.register("ext/save/save", {
                 self._saveAsNoUI(page);
             }
 
-            if (file.getAttribute("newfile") == 1) {
+            if (parseInt(file.getAttribute("newfile") || "0", 10) === 1) {
                 apf.xmldb.removeAttribute(file, "newfile");
                 apf.xmldb.removeAttribute(file, "changed");
                 var xpath = newPath.replace(new RegExp("\/" + cloud9config.davPrefix.split("/")[1]), "")
@@ -356,6 +356,7 @@ module.exports = ext.register("ext/save/save", {
                 doc: doc,
                 value: value
             });
+            ide.dispatchEvent("filecallback");            
         });
 
         var at = page.$at
@@ -432,7 +433,7 @@ module.exports = ext.register("ext/save/save", {
             self._saveAsNoUI(page, path, newPath);
         };
 
-        if (path !== newPath || file.getAttribute("newfile") == 1) {
+        if (path !== newPath || parseInt(file.getAttribute("newfile") || 0, 10) === 1) {
             fs.exists(newPath, function (exists) {
                 if (exists) {
                     var name = newPath.match(/\/([^/]*)$/)[1];

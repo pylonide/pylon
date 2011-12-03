@@ -557,8 +557,16 @@ module.exports = ext.register("ext/editors/editors", {
                 var parent_path = apf.getDirname(path).replace(/\/$/, "");
                 var expandEventListener = function(e) {
                     if (e.xmlNode && e.xmlNode.getAttribute("path") == parent_path) {
-                        if (doc.getNode().getAttribute("newfile") != 1)
+                        // if the file has been loaded from the tree
+                        if (doc.getNode().getAttribute("newfile") != 1) {
+                            // databind the node from the tree to the document
                             doc.setNode(e.xmlNode.selectSingleNode("node()[@path='" + path + "']"));
+                        }
+                        else {
+                            // if not? then keep it this way, but invoke setNode() anyway because
+                            // it triggers events
+                            doc.setNode(doc.getNode());
+                        }
                         trFiles.removeEventListener("expand", expandEventListener);
                     }
                 };
@@ -780,7 +788,7 @@ module.exports = ext.register("ext/editors/editors", {
                 });
         }
 
-        if (!hasData && !page)
+        if (!hasData)
             ide.dispatchEvent("openfile", {
                 doc: doc || ide.createDocument(fileEl)
             });

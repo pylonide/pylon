@@ -26,7 +26,7 @@ var ACTION   = 4;
 //var VISUAL_MODE = 2;
 //getSelectionLead
 
-module.exports.searchStore = {
+exports.searchStore = {
     current: "",
     options: {
         needle: "",
@@ -52,6 +52,9 @@ var actions = {
                 case "z":
                     editor.centerSelection();
                     break;
+                case "t":
+                    editor.scrollToRow(editor.getCursorPosition().row);
+                    break;
             }
         }
     },
@@ -65,44 +68,33 @@ var actions = {
             }
         }
     },
-    // Not truly like Vim's "VISUAL LINE" mode. Needs improvement.
-    "shift-v": {
-        fn: function(editor, range, count, param) {
-            util.onVisualLineMode = true;
-            editor.selection.selectLine();
-            editor.selection.selectLeft();
+    // "~" HACK
+    "shift-`": {
+        fn: function(editor, range, count) {
+            repeat(function() {
+                var pos = editor.getCursorPosition();
+                var line = editor.session.getLine(pos.row);
+                var ch = line[pos.column];
+                editor.insert(toggleCase(ch));
+            }, count || 1);
         }
     },
-    "shift-8": {
+    "*": {
         fn: function(editor, range, count, param) {
             editor.selection.selectWord();
-            var wordToSearch = editor.getCopyText();
-            editor.find(wordToSearch, {
-                needle: wordToSearch,
-                backwards: false,
-                wrap: true,
-                caseSensitive: false,
-                wholeWord: true,
-                regExp: false
-            });
-            editor.selection.clearSelection();
-            editor.navigateWordLeft();
+            editor.findNext();
+            var cursor = editor.selection.getCursor();
+            var range  = editor.session.getWordRange(cursor.row, cursor.column);
+            editor.selection.setSelectionRange(range, true);
         }
     },
-    "shift-3": {
+    "#": {
         fn: function(editor, range, count, param) {
             editor.selection.selectWord();
-            var wordToSearch = editor.getCopyText();
-            editor.find(wordToSearch, {
-                needle: wordToSearch,
-                backwards: true,
-                wrap: true,
-                caseSensitive: false,
-                wholeWord: true,
-                regExp: false
-            });
-            editor.selection.clearSelection();
-            editor.navigateWordLeft();
+            editor.findPrevious();
+            var cursor = editor.selection.getCursor();
+            var range  = editor.session.getWordRange(cursor.row, cursor.column);
+            editor.selection.setSelectionRange(range, true);
         }
     },
     "n": {
@@ -128,6 +120,18 @@ var actions = {
             cursor.style.display = "none";
         }
     },
+    "shift-v": {
+        fn: function(editor, range, count, param) {
+            util.onVisualLineMode = true;
+            //editor.selection.selectLine();
+            //editor.selection.selectLeft();
+            var row = editor.getCursorPosition().row;
+            editor.selection.clearSelection();
+            editor.selection.moveCursorTo(row, 0);
+            editor.selection.selectLineEnd();
+            editor.selection.visualLineStart = row;
+        }
+    },
     "shift-y": {
         fn: function(editor, range, count, param) {
             util.copyLine(editor);
@@ -140,7 +144,8 @@ var actions = {
             editor.setOverwrite(false);
             if (defaultReg.isLine) {
                 var pos = editor.getCursorPosition();
-                editor.session.getDocument().insertLines(pos.row + 1, [defaultReg.text]);
+                var lines = defaultReg.text.split("\n");
+                editor.session.getDocument().insertLines(pos.row + 1, lines); 
                 editor.moveCursorTo(pos.row + 1, 0);
             }
             else {
@@ -159,7 +164,8 @@ var actions = {
 
             if (defaultReg.isLine) {
                 var pos = editor.getCursorPosition();
-                editor.session.getDocument().insertLines(pos.row, [defaultReg.text]);
+                var lines = defaultReg.text.split("\n");
+                editor.session.getDocument().insertLines(pos.row, lines); 
                 editor.moveCursorTo(pos.row, 0);
             }
             else {
@@ -190,6 +196,45 @@ var actions = {
             editor.moveCursorTo(pos.row, pos.column);
 
         }
+    },
+    "u": {
+        fn: function(editor, range, count, param) {
+            count = parseInt(count || 1, 10);
+            for (var i = 0; i < count; i++) {
+                editor.undo();
+            }
+            editor.selection.clearSelection();
+        }
+    },
+    "ctrl-r": {
+        fn: function(editor, range, count, param) {
+            count = parseInt(count || 1, 10);
+            for (var i = 0; i < count; i++) {
+                editor.redo();
+            }
+            editor.selection.clearSelection();
+        }
+    },
+    ":": {
+        fn: function(editor, range, count, param) {
+            editor.blur();
+            txtConsoleInput.focus();
+            txtConsoleInput.setValue(":");
+        }
+    },
+    "/": {
+        fn: function(editor, range, count, param) {
+            editor.blur();
+            txtConsoleInput.focus();
+            txtConsoleInput.setValue("/");
+        }
+    },
+    ".": {
+        fn: function(editor, range, count, param) {
+            var previous = inputBuffer.previous;
+            util.onInsertReplaySequence = inputBuffer.lastInsertCommands;
+            inputBuffer.exec(editor, previous.action, previous.param);
+        }
     }
 };
 
@@ -202,8 +247,15 @@ var inputBuffer = exports.inputBuffer = {
     // Types
     operator: null,
     motion: null,
+    
+    lastInsertCommands: [],
 
-    push: function(editor, char) {
+    push: function(editor, char, keyId) {
+        if (char && char.length > 1) { // There is a modifier key
+            if (!char[char.length - 1].match(/[A-za-z]/) && keyId) // It is a letter
+                char = keyId;
+        }
+
         this.idle = false;
         var wObj = this.waitingForParam;
         if (wObj) {
@@ -284,6 +336,13 @@ var inputBuffer = exports.inputBuffer = {
         var o = action.operator;
         var a = action.action;
 
+        if(o) {
+            this.previous = {
+                action: action,
+                param: param
+            };
+        }
+        
         if (o && !editor.selection.isEmpty()) {
             if (operators[o.char].selFn) {
                 operators[o.char].selFn(editor, editor.getSelectionRange(), o.count, param);
@@ -313,19 +372,10 @@ var inputBuffer = exports.inputBuffer = {
             var selectable = motionObj.sel;
 
             if (!o) {
-                if ((util.onVisualMode || util.onVisualLineMode) && selectable) {
+                if ((util.onVisualMode || util.onVisualLineMode) && selectable)
                     run(motionObj.sel);
-                }
-                else {
+                else
                     run(motionObj.nav);
-                    var pos = editor.getCursorPosition();
-                    var lineLen = editor.session.getLine(pos.row).length;
-
-                    // Solving the behavior at the end of the line due to the
-                    // different 0 index-based colum positions in ACE.
-                    if (lineLen && pos.column === lineLen)
-                        editor.navigateLeft();
-                }
             }
             else if (selectable) {
                 repeat(function() {
@@ -339,6 +389,7 @@ var inputBuffer = exports.inputBuffer = {
             a.fn(editor, editor.getSelectionRange(), a.count, param);
             this.reset();
         }
+        handleCursorMove();
     },
 
     isAccepting: function(type) {
@@ -349,37 +400,28 @@ var inputBuffer = exports.inputBuffer = {
         this.operator = null;
         this.motion = null;
         this.currentCount = "";
-
         this.accepting = [NUMBER, OPERATOR, MOTION, ACTION];
         this.idle = true;
         this.waitingForParam = null;
     }
 };
 
+function setPreviousCommand(fn) {
+    inputBuffer.previous = { action: { action: { fn: fn } } };
+}
+
 exports.commands = {
-    commandLineCmd: {
-        exec: function exec(editor) {
-            editor.blur();
-            txtConsoleInput.focus();
-            txtConsoleInput.setValue(":");
-        }
-    },
-    commandLineSearch: {
-        exec: function exec(editor) {
-            editor.blur();
-            txtConsoleInput.focus();
-            txtConsoleInput.setValue("/");
-        }
-    },
     start: {
         exec: function start(editor) {
             util.insertMode(editor);
+            setPreviousCommand(start);
         }
     },
     startBeginning: {
-        exec: function start(editor) {
+        exec: function startBeginning(editor) {
             editor.navigateLineStart();
             util.insertMode(editor);
+            setPreviousCommand(startBeginning);
         }
     },
     // Stop Insert mode as soon as possible. Works like typing <Esc> in
@@ -389,7 +431,7 @@ exports.commands = {
             inputBuffer.reset();
             util.onVisualMode = false;
             util.onVisualLineMode = false;
-            util.normalMode(editor);
+            inputBuffer.lastInsertCommands = util.normalMode(editor);
         }
     },
     append: {
@@ -398,21 +440,60 @@ exports.commands = {
             var lineLen = editor.session.getLine(pos.row).length;
             if (lineLen)
                 editor.navigateRight();
-
             util.insertMode(editor);
+            setPreviousCommand(append);
         }
     },
     appendEnd: {
         exec: function appendEnd(editor) {
             editor.navigateLineEnd();
             util.insertMode(editor);
-        }
-    },
-    vimUndo: {
-        exec: function vimUndo(editor) {
-            editor.undo();
-            editor.selection.clearSelection();
+            setPreviousCommand(appendEnd);
         }
     }
 };
+
+var handleCursorMove = exports.onCursorMove = function() {
+    var editor = ceEditor.$editor;
+
+    if(util.currentMode === 'insert' || handleCursorMove.running)
+        return;
+    else if(!ceEditor.$editor.selection.isEmpty()) {
+        handleCursorMove.running = true;
+        if(util.onVisualLineMode) {
+            var originRow = editor.selection.visualLineStart;
+            var cursorRow = editor.getCursorPosition().row;
+            if(originRow <= cursorRow) {
+                var endLine = editor.session.getLine(cursorRow);
+                editor.selection.clearSelection();
+                editor.selection.moveCursorTo(originRow, 0);
+                editor.selection.selectTo(cursorRow, endLine.length);
+            } else {
+                var endLine = editor.session.getLine(originRow);
+                editor.selection.clearSelection();
+                editor.selection.moveCursorTo(originRow, endLine.length);
+                editor.selection.selectTo(cursorRow, 0);
+            }
+        }
+        handleCursorMove.running = false;
+        return;
+    }
+    else {
+        handleCursorMove.running = true;
+        var pos = editor.getCursorPosition();
+        var lineLen = editor.session.getLine(pos.row).length;
+    
+        if (lineLen && pos.column === lineLen)
+            editor.navigateLeft();
+        handleCursorMove.running = false;
+    }
+};
+
+function toggleCase(ch) {
+    if(ch.toUpperCase() === ch)
+        return ch.toLowerCase();
+    else
+        return ch.toUpperCase();
+}
+
 });
