@@ -471,16 +471,19 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 ]
             }), bar);
 
-            //style hack
-            //bar.vbox.$ext.style.borderLeft = "1px solid #333";
             if (!bar.vbox)
                 return;
+
+            var ps = bar.vbox.previousSibling;
 
             bar.splitter = pNode.insertBefore(new apf.splitter({
                 scale   : "right",
                 "class" : "splitter-editor-right" + " panelsplitter",//+ (panelSplittersCount > 0 ? " panelsplitter" : ""),
                 width   : "0"
             }), bar.vbox);
+            
+            if (!ps)
+                bar.splitter.setAttribute("parent", bar.parentNode.parentNode.parentNode);
             
             bar.splitter.bar = 
             bar.vbox.bar     = bar;

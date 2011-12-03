@@ -34,7 +34,6 @@
                   skin     = "c9-sidepanelsbutton"
                   onclick  = "dbg.stepOut();"
                   disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
-                <a:divider skin="c9-divider" class="runcommandsdivider" />
             </a:hbox>
         </a:page>
     </a:tab>

@@ -49,11 +49,12 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 
                 if (page)
                     page.$arrExtension = arrExtension;
-                /*vManager.permanent(page, function(e){
+                
+                vManager.permanent(page, function(e){
                     item.mnuItem.check();
                 }, function(){
                     item.mnuItem.uncheck();
-                });*/
+                });
 
                 return page;
             }, 
