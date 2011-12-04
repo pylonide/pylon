@@ -1465,7 +1465,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
      */
     this.$addBar = function(before){
         this.columnCounter++;
-        if (before && before.previousSibling.tagName == 'splitter' )
+        if (before && before.previousSibling 
+          && before.previousSibling.tagName == 'splitter' )
             before = before.previousSibling;
 
         var _self = this;
@@ -1511,6 +1512,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 /*var menu = origMenu.cloneNode(false);
                 menu.removeAttribute("id");
                 apf.document.body.appendChild(menu);*/
+                
+                this.$ext.style.zIndex = "";
 
                 var tab = this.parentNode.cloneNode(false);
                 tab.removeAttribute("id");

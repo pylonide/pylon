@@ -6589,21 +6589,12 @@
         }
 
         .dockcol .splitter.horizontal{
-            height : 2px;
-            background-color: #38393b;
-            border-top: 1px solid #000000;
-            /*background : #333;*/
+            height : 0px;
+            margin : 0;
         }
         
-        .dockcol > div:nth-child(2),
-        .dockcol > div:nth-child(4) {
-            display: none !important;
-            height : 3px;
-            /*background : #333;*/
-        }
         .dockcol .splitter.horizontal div{
-            height : 3px;
-            margin-top : 0;
+            height : 4px;
         }
         
         .splitter-editor-right {
@@ -7926,7 +7917,7 @@
         .docktab .btncontainer{
             padding : 0;
             z-index : 100;
-            height: 24px;
+            height: 22px;
             overflow: visible;
             white-space: nowrap;
             width : auto;
@@ -7935,7 +7926,7 @@
             background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);*/
         }
         .dockcol .docktab .btncontainer{
-            padding-top: 6px;
+            padding-top: 4px;
             padding-left: 3px;
             padding-right: 5px;
         }
@@ -8110,7 +8101,7 @@
         .docktab .page {
             display : none;
             position : absolute;
-            top : 23px;
+            top : 21px;
             bottom : 0;
             left : 0;
             right : 0;
@@ -8124,7 +8115,7 @@
         }
 
         .dockcol .docktab .page {
-            top: 26px;
+            top: 24px;
             right: 5px;
             left: 3px;
             bottom: 5px;

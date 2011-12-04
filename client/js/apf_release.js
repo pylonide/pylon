@@ -58367,7 +58367,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/hbox.js)SIZE(40771)TIME(Sat, 26 Nov 2011 06:06:41 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/hbox.js)SIZE(41301)TIME(Sun, 04 Dec 2011 00:00:21 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58619,7 +58619,8 @@ apf.vbox = function(struct, tagName){
             else {
                 var isLast = isLastVisibleChild(this);
                 if (!isLast) {
-                    if (!this.nextSibling.$splitter && !this.nextSibling.nosplitter) {
+                    if (!this.nextSibling.$splitter && !this.nextSibling.nosplitter
+                      && (!isFirstVisibleChild(this) || !this.nosplitter)) {
                         this.parentNode.insertBefore(
                             this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
                             this.nextSibling);
@@ -58813,9 +58814,20 @@ apf.vbox = function(struct, tagName){
         }
     }
     
+    function isFirstVisibleChild(amlNode){
+        var firstChild = amlNode.parentNode.firstChild;
+        while (firstChild && (firstChild.nodeFunc != apf.NODE_VISIBLE 
+          || firstChild.visible === false 
+          || firstChild.visible == 2 && apf.isFalse(firstChild.getAttribute("visible")))) {
+            firstChild = firstChild.nextSibling;
+        }
+        
+        return firstChild && firstChild == amlNode;
+    }
+    
     function isLastVisibleChild(amlNode){
         var lastChild = amlNode.parentNode.lastChild;
-        while(lastChild && (lastChild.nodeFunc != apf.NODE_VISIBLE 
+        while (lastChild && (lastChild.nodeFunc != apf.NODE_VISIBLE 
           || lastChild.visible === false 
           || lastChild.visible == 2 && apf.isFalse(lastChild.getAttribute("visible")))) {
             lastChild = lastChild.previousSibling;
@@ -58951,7 +58963,8 @@ apf.vbox = function(struct, tagName){
             }
             
             else if (this.splitters && !amlNode.$splitter && amlNode.visible !== false && !amlNode.nosplitter) {
-                if (amlNode.$ext.nextSibling != (amlNode.nextSibling && (amlNode.nextSibling.$altExt || amlNode.nextSibling.$ext))) {
+                if (amlNode.$ext.nextSibling != (amlNode.nextSibling 
+                  && (amlNode.nextSibling.$altExt || amlNode.nextSibling.$ext))) {
                     var _self = this;
                     setTimeout(function(){
                         _self.insertBefore(

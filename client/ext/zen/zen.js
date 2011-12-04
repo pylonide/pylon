@@ -239,7 +239,8 @@ module.exports = ext.register("ext/zen/zen", {
         var _self = this;
 
         this.saveTabEditorsParentStyles();
-        btnZenFullscreen.setAttribute("class", "full");
+        if (self.btnZenFullscreen)
+            btnZenFullscreen.setAttribute("class", "full");
 
         // Calculates the destination position and dimensions of
         // the animated container
