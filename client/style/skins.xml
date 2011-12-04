@@ -4783,7 +4783,7 @@
             position              : relative;
             padding               : 5px 4px;
             margin-left : -42px;
-            margin-top : 15px;
+            margin-top : 6px;
         }
         
         .dockwin_runbtns .dockwin_runbtns-bg {
@@ -4805,8 +4805,6 @@
                 color-stop(0, rgb(50,51,54)),
                 color-stop(1, rgb(68,69,72))
             );
-
-
             
             -webkit-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
             -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
@@ -4830,7 +4828,7 @@
     ]]></a:style>
     <a:style condition="apf.isChrome"><![CDATA[
         .dockwin_runbtns {
-            margin-top: 13px;
+            margin-top: 4px;
         }
     ]]></a:style>
     <a:presentation>
@@ -7990,7 +7988,7 @@
 
             text-shadow : #303030 0px 1px 0px;
             font-family : "Arial", Tahoma;
-            font-size : 12px;
+            font-size : 11px;
         }
 
         .docktab .btncontainer .btntab.btnclose .tab_title {
@@ -8101,7 +8099,7 @@
         .docktab .page {
             display : none;
             position : absolute;
-            top : 21px;
+            top : 19px;
             bottom : 0;
             left : 0;
             right : 0;
@@ -8115,7 +8113,7 @@
         }
 
         .dockcol .docktab .page {
-            top: 24px;
+            top: 23px;
             right: 5px;
             left: 3px;
             bottom: 5px;
@@ -8128,10 +8126,6 @@
     <a:style condition="apf.isWebkit">
         .docktab .btncontainer .btntab {
             padding : 2px 2px 3px 2px;
-        }
-        
-        .docktab .page {
-            top: 21px;
         }
         
         .docktab .btncontainer .btnclose strong {

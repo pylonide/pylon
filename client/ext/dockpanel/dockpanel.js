@@ -21,6 +21,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
     defaultState   : {
         bars : []
     },
+    defaultSections : {},
 
     nodes          : [],
     dockpanels     : [],
@@ -63,12 +64,25 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 var arrExtension = amlPage.$arrExtension;
                 var item = _self.dockpanels[arrExtension[0]][arrExtension[1]];
                 item.page = amlPage;
-
-                _self.sections[arrExtension[0]][arrExtension[1]] = {
-                    buttons : [
-                        { ext : [arrExtension[0], arrExtension[1]] }
-                    ]
-                };
+                
+                var section = _self.sections[arrExtension[0]][arrExtension[1]];
+                if (!section) { //could this ever happen?
+                    _self.sections[arrExtension[0]][arrExtension[1]] = {
+                        buttons : [
+                            { ext : [arrExtension[0], arrExtension[1]] }
+                        ]
+                    };
+                }
+                else {
+                    var buttons = section.buttons;
+                    for (var i = 0; i < buttons.length; i++) {
+                        if (buttons[i].ext[0] == arrExtension[0]
+                          && buttons[i].ext[1] == arrExtension[1]) {
+                            buttons[i].hidden = true;
+                            break;
+                        }
+                    }
+                }
 
                 item.mnuItem.uncheck();
 
@@ -122,12 +136,13 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                     // JSON parse COULD fail
                     try {
                         _self.loadDefault = true;
-                        var objSettings = JSON.parse(defaultSettings);
-                        apf.extend(_self.sections, objSettings.hidden);
-                        state = objSettings.state;
+                        //var objSettings = JSON.parse(defaultSettings);
+                        //apf.extend(_self.sections, objSettings.hidden);
+                        _self.sections = JSON.parse(JSON.stringify(_self.defaultSections));
+                        state = defaultSettings;//objSettings.state;
                     }
                     catch (ex) {}
-                    _self.layout.clearState(true);
+                    _self.layout.clearState();
                     _self.layout.loadState(state, true);
                     _self.loadDefault = false;
                     
@@ -144,20 +159,6 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         mnuToolbar.appendChild(new apf.divider());
     },
     
-    /*
-        Why didn't you just use this.defaultState?
-        
-        if (!_self.changed) {
-            if (!e.model.queryNode("auto/dockpanel_default")) {
-                var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/dockpanel_default/text()");
-                xmlSettings.nodeValue = apf.serialize({
-                    state  : _self.layout.getState(),
-                    hidden : _self.sections
-                });
-            }
-            return;
-        }
-    */
     saveSettings : function(){
         clearTimeout(this.$timer);
         
@@ -204,7 +205,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 var page = getPage();
                 
                 var pNode = page && page.parentNode;
-                
+
                 //Problem state might not be removed from 
                 if (!pNode || !pNode.dock) {
                     var section = _self.sections[name][type];
@@ -214,7 +215,11 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                     }
                     
                     layout.addItem(section);
-                    layout.show(page);
+                    
+                    if (page.parentNode.$ext.offsetWidth)
+                        page.parentNode.set(page);
+                    else
+                        layout.show(page);
 
                     _self.saveSettings();
                 }
@@ -242,6 +247,8 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             for (var i = 0; i < buttons.length; i++) {
                 var ext = buttons[i].ext;
                 (_self.sections[ext[0]] || (_self.sections[ext[0]] = {}))[ext[1]] = section;
+                (_self.defaultSections[ext[0]] || (_self.defaultSections[ext[0]] = {}))[ext[1]] 
+                    = JSON.parse(JSON.stringify(section));
             }
         }
         

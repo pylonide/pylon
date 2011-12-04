@@ -18180,7 +18180,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/aml/element.js)SIZE(21902)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/aml/element.js)SIZE(21902)TIME(Sun, 04 Dec 2011 12:32:00 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33282,7 +33282,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(57681)TIME(Sat, 03 Dec 2011 20:18:27 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(57973)TIME(Sun, 04 Dec 2011 13:22:05 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33609,12 +33609,20 @@ apf.BaseTab = function(){
         scalersz.call(this)
     }
     
-    var btnMoHandler;
-    this.$scaleinit = function(node, type, callback){
+    this.$scaleinit = function(node, type, callback, force){
         var pg = this.getPages();
         var l  = pg.length;
         this.minwidth = this.$minBtnWidth * l + 10; //@todo padding + margin of button container
         this.$ext.style.minWidth = Math.max(0, this.minwidth - apf.getWidthDiff(this.$ext)) + "px";
+        
+        if (force && !this.$ext.offsetWidth && !this.$ext.offsetHeight) {
+            if (type == "add")
+                node.dispatchEvent("afteropen");
+            else if (type == "remove")
+                node.dispatchEvent("afterclose");
+            
+            return false;
+        }
         
         if (!apf.window.vManager.check(this, "tabscale", visCheck))
             return;
@@ -34092,7 +34100,7 @@ apf.BaseTab = function(){
             this.$scaleinit(page, "remove", function(){
                 //page.removeNode();
                 page.destroy(true, true);
-            });
+            }, true);
         }
         else 
         
@@ -36200,7 +36208,7 @@ apf.BaseTree = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/delayedrender.js)SIZE(5243)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/delayedrender.js)SIZE(4936)TIME(Sun, 04 Dec 2011 11:48:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36317,15 +36325,9 @@ apf.DelayedRender = function(){
         this.$ext.style.visibility = "";
     };
     
-    var f;
-    this.addEventListener("prop.visible", f = function(){
-        if (arguments[0].value) {
-            
-            this.$render();
-            
-            
-            this.removeEventListener("prop.visible", f);
-        }
+    var _self = this;
+    apf.window.vManager.check(this, "delayedrender", function(){
+        _self.$render();
     });
 };
 

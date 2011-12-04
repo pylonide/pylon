@@ -36,9 +36,9 @@ return keys.onLoad({
         },
         "debugger": {
             "resume": "F8",
-            "stepinto": "F9",
+            "stepinto": "F11",
             "stepover": "F10",
-            "stepout": "Shift-F9"
+            "stepout": "Shift-F11"
         },
         "zen": {
             "zen": "Ctrl-E",

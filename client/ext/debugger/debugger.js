@@ -83,17 +83,16 @@ module.exports = ext.register("ext/debugger/debugger", {
 
         dock.addDockable({
             expanded : false,
-            hidden : false,
-            width : 300,
-            barNum  : 0,
+            hidden   : false,
+            width    : 300,
+            name     : name,
             sections : [
                 {
                     hidden  : false,
                     height  : 30,
                     width   : 150,
                     noflex  : true,
-//                    draggable: false,
-//                    barNum  : 0,
+                    draggable: false,
                     options : {
                         resizable  : false,
                         skin       : "dockwin_runbtns",
@@ -105,7 +104,7 @@ module.exports = ext.register("ext/debugger/debugger", {
                         caption : "Run Commands", 
                         "class" : "btn-runcommands",
                         ext     : [name, "pgDebugNav"],
-//                        draggable: false,
+                        draggable: false,
                         hidden  : true
                     }]
                 },
@@ -227,6 +226,8 @@ module.exports = ext.register("ext/debugger/debugger", {
             _self.hotitems["stepinto"] = [btnStepInto];
             _self.hotitems["stepover"] = [btnStepOver];
             _self.hotitems["stepout"]  = [btnStepOut];
+            
+            require("ext/keybindings/keybindings").update(_self);
         });
         
         dbgBreakpoints.addEventListener("afterrender", function(){

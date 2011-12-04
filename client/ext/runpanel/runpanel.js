@@ -12,6 +12,7 @@ var ext = require("core/ext");
 var noderunner = require("ext/noderunner/noderunner");
 var panels = require("ext/panels/panels");
 var settings = require("ext/settings/settings");
+var dock = require("ext/dockpanel/dockpanel");
 var save = require("ext/save/save");
 var markup = require("text!ext/runpanel/runpanel.xml");
 var buttonsMarkup = require("text!ext/runpanel/runbuttons.xml");
@@ -105,6 +106,13 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                     .attr("curfile", "1").node();
                 runConfigs.insertBefore(cfg, runConfigs.firstChild);
             }
+        });
+        
+        stProcessRunning.addEventListener("deactivate", function(){
+           dock.hideSection(["ext/debugger/debugger"]); 
+        });
+        stProcessRunning.addEventListener("activate", function(){
+           dock.showSection(["ext/debugger/debugger"], true); 
         });
         
         this.hotitems["run"]  = [btnRun];
@@ -235,6 +243,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
     stop : function() {
         noderunner.stop();
+        
+        //dock.hideSection(["ext/run/run", "ext/debugger/debugger"]);
     },
 
     enable : function(noButton){
