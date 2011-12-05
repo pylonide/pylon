@@ -4,7 +4,7 @@
  * accidentally leaves the editor without saving.
  *
  * @author Sergi Mansilla <sergi AT ajax DOT org>
- * @copyright 2010, Ajax.org B.V.
+ * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
@@ -12,13 +12,14 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var fs = require("ext/filesystem/filesystem");
 var settings = require("text!ext/autosave/settings.xml");
 var markup = require("text!ext/autosave/autosave.xml");
 var extSettings = require("ext/settings/settings");
+//aasadao
 
-var INTERVAL = 1000 * 60 * 5; // 5 minutes
+
+var INTERVAL = 10000;// * 60 * 5; // 5 minutes
 var FILE_SUFFIX = "swp";
 
 module.exports = ext.register("ext/autosave/autosave", {
@@ -29,22 +30,21 @@ module.exports = ext.register("ext/autosave/autosave", {
     markup      : markup,
     deps        : [fs],
     offline     : true,
-
     nodes       : [],
     saveBuffer  : {},
 
     hook : function(){
-        if (!self.tabEditors)
+        if (!tabEditors)
             return;
-
-        var that = this;
+//
+        var self = this;
         // This is the main interval. Whatever it happens, every `INTERVAL`
         // milliseconds, the plugin will attempt to save every file that is
         // open and dirty.
         // We might want to detect user "bursts" in writing and autosave after
         // those happen. Left as an exercise for the reader.
         this.autoSaveInterval = setInterval(function() {
-            that.doAutoSave();
+            self.doAutoSave();
         }, INTERVAL);
 
         ide.addEventListener("openfile", function(data) {
@@ -53,7 +53,7 @@ module.exports = ext.register("ext/autosave/autosave", {
 
             var node = data.doc.getNode();
             var dateOriginal = new Date(node.getAttribute("modifieddate"));
-            var bkpPath = that._getTempPath(node.getAttribute("path"));
+            var bkpPath = self._getTempPath(node.getAttribute("path"));
 
             // If there is already a backup file
             fs.exists(bkpPath, function(exists) {
@@ -66,7 +66,7 @@ module.exports = ext.register("ext/autosave/autosave", {
                 // If the date of the backed up file is newer than the file we
                 // are trying to open, present the user with a choice dialog
                 if (date && date.getTime() > dateOriginal.getTime()) {
-                    ext.initExtension(that);
+                    ext.initExtension(self);
 
                     fs.readFile(bkpPath, function(contents) {
                         // Set up some state into the indow itself. Not great,
@@ -82,17 +82,16 @@ module.exports = ext.register("ext/autosave/autosave", {
 
         // Remove any temporary file after the user saves willingly.
         ide.addEventListener("afterfilesave", function(obj) {
-            that._removeFile(that._getTempPath(obj.node.getAttribute("path")));
+            self._removeFile(self._getTempPath(obj.node.getAttribute("path")));
         });
 
         ide.addEventListener("init.ext/settings/settings", function (e) {
             barSettings.insertMarkup(settings);
         });
-    },
+},
 
-    init : function(amlNode) {
+    init : function() {
         var self = this;
-
         var resetWinAndHide = function() {
             winNewerSave.restoredContents = null;
             winNewerSave.doc = null;
@@ -108,6 +107,7 @@ module.exports = ext.register("ext/autosave/autosave", {
                 resetWinAndHide();
             });
 
+
             btnRestoreNo.addEventListener("click", function() {
                 // It is understood that if the user doesn't want to restore
                 // contents from the previous file the first time, he will
@@ -115,7 +115,7 @@ module.exports = ext.register("ext/autosave/autosave", {
                 winNewerSave.path && self._removeFile(winNewerSave.path);
                 resetWinAndHide();
             });
-        }
+        };
     },
 
     doAutoSave: function() {
@@ -176,8 +176,16 @@ module.exports = ext.register("ext/autosave/autosave", {
         panel.setAttribute("caption", "Saving file " + path);
 
         var self = this;
+
         var value = doc.getValue();
-        var bkpPath = path + "." + FILE_SUFFIX;
+        var pathLeafs = path.split("/");
+        var fileName = pathLeafs.pop();
+        var dirName = pathLeafs.join("/");
+
+        fileName = "." + fileName + "." + FILE_SUFFIX;
+
+        var bkpPath = dirName + "/" + fileName;
+
         fs.saveFile(bkpPath, value, function(data, state, extra) {
             if (state != apf.SUCCESS)
                 return;

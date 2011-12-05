@@ -20,7 +20,8 @@
                     <span></span><div>General</div>
                 </div>
                 <a:checkbox class="underlined first" value="[general/@openfiles]">On Load, Restore Previous State</a:checkbox>
-                <a:checkbox value="[general/@saveallbeforerun]">Save All Files Before Running</a:checkbox>
+                <a:checkbox class="underlined" value="[general/@saveallbeforerun]">Save All Files Before Running</a:checkbox>
+                <a:checkbox value="[general/@autosave]">Enable File Auto-saving</a:checkbox>
             </a:bar>
             <a:scrollbar
                 for      = "barSettings"
