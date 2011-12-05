@@ -1076,7 +1076,7 @@ apf.Class.prototype = new (function(){
     this.hasEventListener = function(eventName){
         return (this.$eventsStack[eventName] && this.$eventsStack[eventName].length > 0);
     };
-
+    
     /**
      * Destructor of a Class.
      * Calls all destructor functions and removes all mem leaking references.

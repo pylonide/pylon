@@ -332,12 +332,20 @@ apf.BaseTab = function(){
         scalersz.call(this)
     }
     
-    var btnMoHandler;
-    this.$scaleinit = function(node, type, callback){
+    this.$scaleinit = function(node, type, callback, force){
         var pg = this.getPages();
         var l  = pg.length;
         this.minwidth = this.$minBtnWidth * l + 10; //@todo padding + margin of button container
         this.$ext.style.minWidth = Math.max(0, this.minwidth - apf.getWidthDiff(this.$ext)) + "px";
+        
+        if (force && !this.$ext.offsetWidth && !this.$ext.offsetHeight) {
+            if (type == "add")
+                node.dispatchEvent("afteropen");
+            else if (type == "remove")
+                node.dispatchEvent("afterclose");
+            
+            return false;
+        }
         
         if (!apf.window.vManager.check(this, "tabscale", visCheck))
             return;
@@ -815,7 +823,7 @@ apf.BaseTab = function(){
             this.$scaleinit(page, "remove", function(){
                 //page.removeNode();
                 page.destroy(true, true);
-            });
+            }, true);
         }
         else 
         // #endif
