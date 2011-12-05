@@ -103,7 +103,8 @@
             <a:drag match="[folder|file]" />
             <a:drop match="[folder|file]" target="[folder]"
                 action="tree-append" copy="{event.ctrlKey}" />
-                
+            <a:drop match="[folder|file]" target="[file]"
+                action="insert-before" copy="{event.ctrlKey}" />    
         </a:tree>
         
         <a:scrollbar
