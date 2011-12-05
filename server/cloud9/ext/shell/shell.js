@@ -123,20 +123,19 @@ sys.inherits(ShellPlugin, Plugin);
         var to    = message.argv.pop(),
             path  = message.cwd || this.workspace.workspaceDir,
             _self = this;
-        if (to != "/") {
-            path = Path.normalize(path + "/" + to.replace(/^\//g, ""));
-            if (path.indexOf(this.workspace.workspaceDir) === -1)
-                return this.sendResult();
-            Fs.stat(path, function(err, stat) {
-                if (err) {
-                    return _self.sendResult(0, "error",
-                        err.toString().replace("Error: ENOENT, ", ""));
-                }
-                if (!stat.isDirectory())
-                    return _self.sendResult(0, "error", "Not a directory.");
-                _self.sendResult(0, message.command, {cwd: path});
-            });
-        }
+            
+        path = Path.normalize(path + "/" + to.replace(/^\//g, ""));
+        if (path.indexOf(this.workspace.workspaceDir) === -1)
+            return this.sendResult();
+        Fs.stat(path, function(err, stat) {
+            if (err) {
+                return _self.sendResult(0, "error",
+                    err.toString().replace("Error: ENOENT, ", ""));
+            }
+            if (!stat.isDirectory())
+                return _self.sendResult(0, "error", "Not a directory.");
+            _self.sendResult(0, message.command, {cwd: path});
+        });
     };
     
     this.bash = function(message) {
