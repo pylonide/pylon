@@ -12,7 +12,7 @@ var parser = require("ace/narcissus/jsparse");
 
 var handler = module.exports = Object.create(baseLanguageHandler);
 
-var disabledJSHintWarnings = ["Missing radix parameter."];
+var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./];
 
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
@@ -54,15 +54,17 @@ handler.analyze = function(doc) {
         lint.errors.forEach(function(warning) {
             if (!warning)
                 return;
-            if(disabledJSHintWarnings.indexOf(warning.reason) === -1)
-                markers.push({
-                    pos: {
-                        sl: warning.line-1,
-                        sc: warning.column-1
-                    },
-                    type: 'warning',
-                    message: warning.reason
-                });
+            for (var i = 0; i < disabledJSHintWarnings.length; i++)
+                if(disabledJSHintWarnings[i].test(warning.reason))
+                    return;
+            markers.push({
+                pos: {
+                    sl: warning.line-1,
+                    sc: warning.column-1
+                },
+                type: 'warning',
+                message: warning.reason
+            });
         });
     }
     return markers;
