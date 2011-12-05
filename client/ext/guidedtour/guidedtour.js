@@ -16,8 +16,8 @@ var skin = require("text!ext/guidedtour/skin.xml");
 var markup = require("text!ext/guidedtour/guidedtour.xml");
 
 var jsonTourIde = {
-    initialText : "This guided tour will introduce you to some of the ways we've made it easy for you to program better, faster, and safer.\n\nClick the <span class='strong'>►</span> button below to be taken on the tour automatically. Or, you can click the <span class='strong'>&rarr;</span> and <span class='strong'>&larr;</span> buttons to navigate on your own.",
-    finalText : "Well, that's everything! Still have questions? Head on over to our documentation site, located at blahhh.",
+    initialText : "This guided tour introduces you to some of the ways Cloud 9 IDE makes it easy for you to program better.\n\nClick the play button below to be taken on the tour automatically. Or, you can click the forward and backward buttons to navigate on your own.",
+    finalText : "Well, that's everything! Still have questions? Head on over to <a href=\"http://support.cloud9ide.com/forums\" target=\"_blank\">our documentation site</a>.",
     steps : [
         {
             el : navbar,
@@ -62,21 +62,21 @@ var jsonTourIde = {
             time : 6
         },
         { 
-            el : logobar,
-            desc : "There's a tabbed arrangement of all your active files here. You can rearrange the tabs however you like, swap through them with keyboard shortcuts, and open the same file up in a split-window view.",
+            el : (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabEditors.$ext),
+            desc : "There's a tabbed arrangement of all your active files here. You can rearrange the tabs however you like and swap through them with keyboard shortcuts. You can also preview XML and HTML files.",
             pos : "bottom",
             time : 5
         },
         {
-            el : ceEditor,
-            desc : "Your editor's gutter can do more than just show line numbers. It also detects and displays warnings and errors in your code. If you're debugging an application, you can also set your breakpoints here.",
+            el : splitterPanelLeft,
+            desc : "The gutter can do more than just show line numbers. It also detects and displays warnings and errors in your code. If you're debugging an application, you can also set your breakpoints here.",
             pos : "right",
             time : 5
         },
         {
-            el : apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[4]/a:hbox[1]/bar[1]'),
+            el : splitterPanelLeft,
             desc : "These buttons control all aspects of the debugger. You can identify breakpoints, view the call stack, and inspect the values of variables.",
-            pos : "right",
+            pos : "left",
             time : 5
         },
         {
@@ -123,6 +123,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         winTourDesc.setValue(this.tour.initialText);
         
         winTourGuide.addEventListener("hide", this.shutdown(this.hlElement)); 
+        tourControlsDialog.addEventListener("hide", this.shutdown(this.hlElement)); 
     },
     
     hook : function(){
@@ -143,6 +144,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     },
     
     launchGT : function() {
+        ext.initExtension(this);
         winTourGuide.show();
     },
     
@@ -157,13 +159,13 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     },
 
     play : function() {
-        btnTourPlay.setCaption("| |");
+        btnTourPlay.$ext.childNodes[1].style.backgroundPosition = "-22px 5px";
         this.playing = true;
         this.stepForwardAuto();
     },
 
     pause : function() {
-        btnTourPlay.setCaption("►");
+        btnTourPlay.$ext.childNodes[1].style.backgroundPosition = "20px 5px";
         this.playing = false;
         clearTimeout(this.$timerForward);
     },
@@ -175,15 +177,17 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
 
     startTour : function() {
         this.currentStep = -1;
-        //winTourGuide.hide();
+        winTourGuide.hide();
         tourControlsDialog.show();
         this.stepForward();
     },
     
     stepBack : function() {
         this.currentStep--;
-        if (this.currentStep === 0)
+        if (this.currentStep === 0) {
             btnTourStepBack.disable();
+            btnTourStepBack.$ext.childNodes[1].style.backgroundPosition = "25px -20px";
+        }
 
         btnTourStepForward.enable();
         var step = this.tour.steps[this.currentStep];
@@ -210,8 +214,10 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             this.finalStep();
         else
         {
-            if (this.currentStep > 0)
+            if (this.currentStep > 0) {
                 btnTourStepBack.enable();
+                btnTourStepBack.$ext.childNodes[1].style.backgroundPosition = "25px 5px";
+            }
     
             var step = this.tour.steps[this.currentStep];
             this.commonStepOps(step);
@@ -264,7 +270,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         }
         else if (position == "bottom")
         {
-            div.setAttribute("top", posArray[3]);
+             div.setAttribute("top", posArray[3] + 50);
             div.setAttribute("right", (posArray[0] + (posArray[2]/2)) - (div.getWidth()/2));
         }
         else if (position == "left")
@@ -300,14 +306,23 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         this.hlElement.style.width = pos[2] + "px";
         this.hlElement.style.height = pos[3] + "px";
         this.hlElement.style.display = "block";
-        this.hlElement.style.border = "solid 5px red";
+        this.hlElement.style.border = "solid 2px #bee82c";
     },
     
     getElementPosition : function(el) {
-        var pos = apf.getAbsolutePosition(el.$ext);
-        var w = el.getWidth();
-        var h = el.getHeight();
-        return [ pos[0], pos[1], w, h ];
+        var elExt = el.$ext;
+        if (elExt === undefined)
+        {
+            var pos = apf.getAbsolutePosition(el[0]);
+            return [pos[0], pos[1], el[0].offsetWidth - 10, el[0].offsetHeight];
+        }
+        else
+        {
+            var pos = apf.getAbsolutePosition(elExt);
+            var w = el.getWidth();
+            var h = el.getHeight();
+            return [ pos[0], pos[1], w, h ];
+        }
     },
 
     enable : function(){
@@ -316,8 +331,13 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         });
     },
     
+    closeTG : function() {
+        winTourGuide.hide();    
+    },
+    
     shutdown : function(hlElement) {
         return function() {
+            require("ext/guidedtour/guidedtour").pause();
             winTourText.hide();
             tourControlsDialog.hide();
             hlElement.style.display = "none";

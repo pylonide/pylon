@@ -21,17 +21,17 @@ var jsonQuickStart = {
             name : "qsProjectBar",
             pos: "right"
         },
-                {
+        {
             el : logobar,
             name : "qsMenuBar",
             pos: "bottom"
         },
-        {
-            el : apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[4]/a:hbox[1]/bar[1]'),
+       {
+            el : tabEditors,
             name : "qsToolbar",
             pos: "left"
         },
-                        {
+        {
             el : apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:bar[1]/a:vbox[1]/a:hbox[1]'),
             name : "qsCLI",
             pos: "top"
@@ -57,19 +57,21 @@ module.exports = ext.register("ext/quickstart/quickstart", {
           this.overlay.setAttribute("style",
           "z-index:9016;display:none;position:absolute;width:100%;height:100%;opacity:0.3;background:#000;");
          document.body.appendChild(this.overlay);
-         
 
     },
     
     hook : function(){
         var _self = this;
 
-     /*   ide.addEventListener("loadsettings", function(e) {
-
+        ide.addEventListener("loadsettings", function(e) {
         var showQS = require("ext/settings/settings").model.queryValue("auto/help/@show");
-             if (showQS)
+             if (showQS == "true")
+             {
+                 ext.initExtension(_self);
                  require("ext/quickstart/quickstart").launchQS();
-         }); */
+             }
+                 
+         }); 
          
         this.nodes.push(
             ide.mnuFile.appendChild(new apf.item({
@@ -115,7 +117,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
             imgDiv.show();
         }
     },
-
+    
     setPositions : function(position, posArray, div)
     {
         if (position == "top")
@@ -135,8 +137,8 @@ module.exports = ext.register("ext/quickstart/quickstart", {
         }
         else if (position == "left")
         {
-            div.setAttribute("bottom", posArray[3] - 125);
-            div.setAttribute("right", (posArray[2]) - 25);
+            div.setAttribute("top", 125);
+            div.setAttribute("right", 25);
         }  
         
         return div;
@@ -152,6 +154,11 @@ module.exports = ext.register("ext/quickstart/quickstart", {
             
             imgDiv.hide();
         }
+    },
+    
+    shutdownQSStartGT : function() {
+        this.closeStart();
+        require('ext/guidedtour/guidedtour').launchGT();
     }
 });
 

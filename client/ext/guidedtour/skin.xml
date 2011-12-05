@@ -1,5 +1,5 @@
 <?xml version='1.0'?>
-<a:skin xmlns:a="http://ajax.org/2005/aml">     
+<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
     <a:window name="guidetool">
         <a:style><![CDATA[
             .guidetool {
@@ -13,21 +13,21 @@
                 display : none;
             }
             .guidetool .gt-content {
-                background : #fff;
+                background : #222222;
                 border : 1px solid #999;
                 border-radius: 4px;
                 padding: 10px 15px;
                 text-align: center;
             }
             .guidetool .gt-content .text {
-                color: #555;
+                color: #cee57f;
+                background-color: #222222;
             }
             .guidetool .gt-arrow {
                 position: absolute;
                 width : 16px;
                 height : 16px;
-                background : #fff;
-                border: 1px solid #999;
+                background : transparent;
             }
             .guidetool.top .gt-arrow {
                 left: 50%;
@@ -36,30 +36,67 @@
                 border-top: none;
             }
             .guidetool.bottom .gt-arrow {
-                left: 50%;
-                margin-left: -8px;
-                top: 0;
-                margin-top: -15px;
-                border-bottom: none;
+        left: 50%;
+        top: -9px;
+width: 0px;
+height: 0px;
+border-left: 10px solid transparent;
+border-right: 10px solid transparent;
+border-bottom: 10px solid #222;
             }
             .guidetool.left .gt-arrow {
-                right: 0px;
-                top: 50%;
-                margin-top: -8px;
-                margin-left: 16px;
-                border-left: none;
-            }
-            .guidetool.right .gt-arrow {
-                left: 0px;
-                top: 50%;
-                margin-top: -8px;
-                margin-left: -16px;
-                border-right: none;
+width: 0px;
+height: 0px;
+border-top: 10px solid transparent;
+border-bottom: 10px solid transparent;
+border-right: 10px solid 222;
             }
             
-            .guidetool .btn {
-                color: red;
+            .guidetool.right .gt-arrow {
+            left: -9px;	
+               top: 43%;
+width: 0px;
+height: 0px;
+border-top: 10px solid transparent;
+border-bottom: 10px solid transparent;
+border-right: 10px solid #222;
             }
+            
+            .wn_cp_content .btnIcon .lbl span {
+                width: 40px;
+            }
+             
+             .tgDialog > .bk-header {
+                padding-bottom: 10px;
+                }
+                
+             .tgDesc {
+             background-color: transparent;
+             }
+             
+            .tgControlButton {
+            width: 85px;
+            }
+            
+            .tgPlayButton {
+            width: 40px;
+            }
+            
+            .tgPlayButton .caption {
+                height: 15px;
+               background: url(images/tg_button_play.png) no-repeat 20px 5px;
+            }
+            
+            .tgBackButton .caption {
+            height: 15px;
+                background: url(images/tg_button_back.png) no-repeat 25px -20px;
+            }
+            
+                        .tgForwardButton .caption {
+            height: 15px;
+                background: url(images/tg_button_forward.png) no-repeat 25px 5px;
+            }
+            
         ]]></a:style>
     
         <a:presentation>
