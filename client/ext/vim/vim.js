@@ -137,7 +137,7 @@ module.exports = ext.register("ext/vim/vim", {
             checked : "[{require('ext/settings/settings').model}::editors/code/@vimmode]"
         });
         // In order to behave like a code extension (i.e. hiding when we are not
-        // in a code editor, we import it into the code plugin nodes instead of
+        // in a code editor) we import it into the code plugin nodes instead of
         // ours.
         require("ext/code/code").nodes.push(mnuView.appendChild(menuItem));
 
