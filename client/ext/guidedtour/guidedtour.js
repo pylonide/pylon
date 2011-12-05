@@ -16,7 +16,7 @@ var skin = require("text!ext/guidedtour/skin.xml");
 var markup = require("text!ext/guidedtour/guidedtour.xml");
 
 var jsonTourIde = {
-    initialText : "This guided tour introduces you to some of the ways Cloud 9 IDE makes it easy for you to program better.\n\nClick the play button below to be taken on the tour automatically. Or, you can click the forward and backward buttons to navigate on your own.",
+    initialText : "This guided tour introduces you to some of the ways Cloud 9 IDE makes it easy for you to program faster and smarter.\n\nClick the play button below to be taken on the tour automatically. Or, you can click the forward and backward buttons to navigate on your own.",
     finalText : "Well, that's everything! Still have questions? Head on over to <a href=\"http://support.cloud9ide.com/forums\" target=\"_blank\">our documentation site</a>.",
     steps : [
         {
@@ -73,13 +73,16 @@ var jsonTourIde = {
             pos : "right",
             time : 5
         },
-        {
-            el : splitterPanelLeft,
+       /* { There's a bug here...
+            el : apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[4]/a:hbox[1]/bar[1]'),
             desc : "These buttons control all aspects of the debugger. You can identify breakpoints, view the call stack, and inspect the values of variables.",
             pos : "left",
             time : 5
-        },
+        },*/
         {
+            before : function() {
+                require("ext/console/console").disable();
+            },
             el : apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:bar[1]/a:vbox[1]/a:hbox[1]'),
             desc : "This area down here acts just like a command line for your project in the Cloud9 IDE. You can always type 'help' to get a list of the available commands.",
             pos : "top",
@@ -90,7 +93,7 @@ var jsonTourIde = {
                 require("ext/console/console").enable();
             },
             el : txtConsoleInput,
-            desc : "After clicking the expand arrows, you'll be able to get to the full console view. Any output from your program--for example, from console.log(), or compilation errors--is displayed here.",
+            desc : "After clicking the expand arrows, you'll be able to get to the full console view. Any output from your program&mdash;like console.log() messages or compilation errors&mdash;appears here.",
             pos : "top",
             time : 6
         }
@@ -120,8 +123,6 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             "z-index:999999;display:none;position:absolute;box-shadow:0px 0px 15px #000;");
         document.body.appendChild(this.hlElement);
         
-        winTourDesc.setValue(this.tour.initialText);
-        
         winTourGuide.addEventListener("hide", this.shutdown(this.hlElement)); 
         tourControlsDialog.addEventListener("hide", this.shutdown(this.hlElement)); 
     },
@@ -145,7 +146,12 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     
     launchGT : function() {
         ext.initExtension(this);
+        
+        this.currentStep = -1;
+        winTourDesc.setValue(this.tour.initialText);
         winTourGuide.show();
+        winTourButtonStart.show();
+        winTourButtonClose.hide();
     },
     
     /**
@@ -160,12 +166,14 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
 
     play : function() {
         btnTourPlay.$ext.childNodes[1].style.backgroundPosition = "-22px 5px";
+        btnTourPlay.tooltip = "Play";
         this.playing = true;
         this.stepForwardAuto();
     },
 
     pause : function() {
         btnTourPlay.$ext.childNodes[1].style.backgroundPosition = "20px 5px";
+        btnTourPlay.tooltip = "Pause";
         this.playing = false;
         clearTimeout(this.$timerForward);
     },
@@ -225,12 +233,16 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     },
     
     finalStep : function() {
+        require("ext/console/console").disable();
         winTourText.close();
+        tourControlsDialog.hide();
         this.hlElement.style.display = "none";
         
         winTourGuide.show();
         winTourDesc.setValue(this.tour.finalText);
-        startTour.hide();
+        this.currentStep = -1;
+        winTourButtonStart.hide();
+        winTourButtonClose.show();
     },
     
     // These are common operations we do for step
@@ -260,7 +272,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     {
         if (position == "top")
         {
-             div.setAttribute("bottom", (window.innerHeight - posArray[1]) + 100);
+             div.setAttribute("bottom", (window.innerHeight - posArray[1]) + 25);
              div.setAttribute("left", (posArray[0] + (posArray[2]/2)) - (div.getWidth()/2));
         }
         else if (position == "right")
@@ -341,6 +353,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             winTourText.hide();
             tourControlsDialog.hide();
             hlElement.style.display = "none";
+            this.currentStep = -1;
         };
     },
     
