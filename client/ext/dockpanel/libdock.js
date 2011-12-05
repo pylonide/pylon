@@ -300,12 +300,11 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     
     this.hide = function(uniqueId){
         var item  = lookup[uniqueId].data;
-        var _self = this;
-        debugger;
+
         (item.bars || [item]).each(function(bar){
             (bar.sections || [bar]).each(function(section){
                 (section.buttons || [section]).each(function(button){
-                    var page = _self.lookup[button.uniqueId].node.$dockpage;
+                    var page = lookup[button.uniqueId].node.$dockpage;
                     page.parentNode.remove(page);
                 });
             });
