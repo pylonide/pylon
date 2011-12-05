@@ -55,9 +55,13 @@ module.exports = ext.register("ext/debugger/debugger", {
         ide.addEventListener("loadsettings", function (e) {
             // restore the breakpoints from the IDE settings
             var bpFromIde = e.model.data.selectSingleNode("//breakpoints");
-            if (bpFromIde) {
-                mdlDbgBreakpoints.load(bpFromIde);
-            }
+            // not there yet, create element
+            if (!bpFromIde) {
+                bpFromIde = e.model.data.ownerDocument.createElement("breakpoints");
+                e.model.data.appendChild(bpFromIde);
+            }           
+            // bind it to the Breakpoint model
+            mdlDbgBreakpoints.load(bpFromIde);
         });
         
         stDebugProcessRunning.addEventListener("activate", function() {
@@ -179,8 +183,8 @@ module.exports = ext.register("ext/debugger/debugger", {
             _self.$syncTree();
         });
         mdlDbgSources.addEventListener("update", function(e) {
-            if (e.action != "add")
-                return;
+            if (e.action !== "add") return;
+            
             // TODO: optimize this!
             _self.$syncTree();
         });
@@ -211,31 +215,6 @@ module.exports = ext.register("ext/debugger/debugger", {
                     .showDebugFile(e.selected.getAttribute("scriptid"));
             });
         });
-        
-        mdlDbgBreakpoints.addEventListener("update", function(e) {
-            // when the breakpoint model is updated
-            // get the current IDE settings
-            var settingsMdl = settings.model.data;
-            // create a new element
-            var node = settingsMdl.ownerDocument.createElement("breakpoints");
-            
-            // find out all the breakpoints in the breakpoint model and iterate over them
-            var breakpoints = e.currentTarget.data.selectNodes("//breakpoint");
-            for (var ix = 0; ix < breakpoints.length; ix++) {
-                // clone and add to our new element
-                var cln = breakpoints[ix].cloneNode();
-                node.appendChild(cln);
-            }
-            
-            // if there is already a breakpoints section in the IDE settings remove it
-            var bpInSettingsFile = settingsMdl.selectSingleNode("//breakpoints");
-            if (bpInSettingsFile) {
-                bpInSettingsFile.parentNode.removeChild(bpInSettingsFile);
-            }
-            
-            // then append the current breakpoints to the IDE settings, tah dah
-            settingsMdl.appendChild(node);
-        });
 
         ide.addEventListener("afterfilesave", function(e) {
             var node = e.node;
@@ -252,10 +231,25 @@ module.exports = ext.register("ext/debugger/debugger", {
                 //console.log("v8 updated", e);
             });
         });
+        
+        // we're subsribing to the 'running active' prop
+        // this property indicates whether the debugger is actually running (when on a break this value is false)
+        stRunning.addEventListener("prop.active", function (e) {
+            // if we are really running (so not on a break or something)
+            if (e.value) {
+                // we clear out mdlDbgStack
+                mdlDbgStack.load("<frames></frames>");
+            }
+        });
     },
 
     showDebugFile : function(scriptId, row, column, text) {
         var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
+        
+        // check prerequisites
+        if (!ceEditor.$updateMarkerPrerequisite()) {
+            return;
+        }
 
         if (file) {
             editors.jump(file, row, column, text, null, true);

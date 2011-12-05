@@ -1,7 +1,7 @@
 /**
  * Code Editor for the Cloud9 IDE
  *
- * @copyright 2010, Ajax.org B.V.
+ * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
@@ -9,8 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var editors = require("ext/editors/editors");
-var settings = require("ext/settings/settings");
 var panels = require("ext/panels/panels");
 var markup = require("text!ext/openfiles/openfiles.xml");
 
@@ -26,7 +24,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
         // Fix to prevent Active Files button is placed above Project Files
         var el = navbar.firstChild;
-        if (navbar.firstChild.class == "project_files") {
+        if (navbar.firstChild["class"] === "project_files") {
             el = navbar.childNodes[1];
         }
 
@@ -67,7 +65,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         });
 
         ide.addEventListener("updatefile", function(e){
-            var node  = e.xmlNode;
+            var node = e.xmlNode;
             var fNode = model.queryNode("//node()[@path='" + e.path + "']");
             if (node && fNode) {
                 fNode.setAttribute("path", node.getAttribute("path"));
@@ -111,11 +109,14 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
         ide.addEventListener("treechange", function(e) {
             var path = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                        .replace(/\[@name="workspace"\]/, "")
-                        .replace(/\//, "");
-            var parent  = trFiles.getModel().data.selectSingleNode(path);
-            var nodes   = parent.childNodes;
-            var files   = e.files;
+                .replace(/\[@name="workspace"\]/, "")
+                .replace(/\//, "");
+            var parent = trFiles.getModel().data.selectSingleNode(path);
+            if (!parent)
+                return;
+
+            var nodes = parent.childNodes;
+            var files = e.files;
             var removed = [];
 
             for (var i = 0; i < nodes.length; ++i) {
@@ -133,13 +134,13 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             });
 
             path = parent.getAttribute("path");
-            for (var name in files) {
-                var file = files[name];
+            for (var filename in files) {
+                var file = files[filename];
 
-                xmlNode = "<" + file.type +
+                var xmlNode = "<" + file.type +
                     " type='" + file.type + "'" +
-                    " name='" + name + "'" +
-                    " path='" + path + "/" + name + "'" +
+                    " name='" + filename + "'" +
+                    " path='" + path + "/" + filename + "'" +
                 "/>";
 
                 trFiles.add(xmlNode, parent);

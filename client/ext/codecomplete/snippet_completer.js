@@ -1,36 +1,48 @@
+var globalRequire = require;
+
 define(function(require, exports, module) {
 
 var completeUtil = require("ext/codecomplete/complete_util");
+var baseLanguageHandler = require('ext/language/base_handler');
 
-var javascriptSnippets = require("ext/codecomplete/snippets/javascript");
-var JavascriptMode = require("ace/mode/javascript").Mode;
-var htmlSnippets = require("ext/codecomplete/snippets/html");
-var HTMLMode = require("ace/mode/html").Mode;
+var completer = module.exports = Object.create(baseLanguageHandler);
 
-exports.hook = function() {
+var snippetCache = {}; // extension -> snippets
+    
+completer.handlesLanguage = function(language) {
+    return true;
 };
 
-exports.analyze = function(editor, callback) {
-    callback();
+completer.fetchText = function(path) {
+    var chunks = path.split("/");
+    chunks[0] = globalRequire.tlns[chunks[0]] || chunks[0];
+    var url = chunks.join("/");
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, false);
+    xhr.send();
+    if(xhr.status === 200)
+        return xhr.responseText;
+    else
+        return false;
 };
 
-exports.complete = function(editor, callback) {
-    var pos = editor.getCursorPosition();
-    var line = editor.getSession().getLine(pos.row);
+completer.complete = function(doc, fullAst, pos, currentNode) {
+    var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
+
+    var snippets = snippetCache[this.language];
     
-    var snippets = {};
-    var editorMode = editor.getSession().getMode();
-    
-    if(editorMode instanceof JavascriptMode)
-        snippets = javascriptSnippets;
-    else if(editorMode instanceof HTMLMode)
-        snippets = htmlSnippets;
+    if (snippets === undefined) {
+        var text = this.fetchText('ext/codecomplete/snippets/' + this.language + '.json');
+        snippets = text ? JSON.parse(text) : {};
+        // Cache
+        snippetCache[this.language] = snippets;
+    }
     
     var allIdentifiers = Object.keys(snippets);
     
     var matches = completeUtil.findCompletions(identifier, allIdentifiers);
-    callback(matches.map(function(m) {
+    return matches.map(function(m) {
         return {
           name        : m,
           replaceText : snippets[m],
@@ -38,7 +50,8 @@ exports.complete = function(editor, callback) {
           meta        : "snippet",
           priority    : 2
         };
-    }));
+    });
 };
+
 
 });

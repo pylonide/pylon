@@ -34,7 +34,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
             apf.document.body.appendChild(this.menu = new apf.menu({
                 id : "mnuRecent",
                 childNodes : [
-                    this.divider = new apf.divider(), 
+                    this.divider = new apf.divider(),
                     new apf.item({
                         caption : "Clear Menu",
                         onclick : function(){
@@ -44,7 +44,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
                 ]
             }))
         );
-        
+
         ide.addEventListener("loadsettings", function(e){
             var model = e.model;
             var strSettings = model.queryValue("auto/recentfiles");
@@ -56,9 +56,9 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
                     //fail! revert to default
                     var currentSettings = [];
                 }
-                
+
                 _self.clearMenu();
-                
+
                 for (var i = currentSettings.length - 1; i >= 0; i--) {
                     _self.$add(currentSettings[i]);
                 }
@@ -70,7 +70,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
                 return;
 
             var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/recentfiles/text()");
-            
+
             var currentSettings = [];
             var nodes = _self.menu.childNodes;
             for (var i = 0; i < nodes.length; i++) {
@@ -86,34 +86,37 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
             xmlSettings.nodeValue = apf.serialize(currentSettings);
             return true;
         });
-        
+
         function evHandler(e){
             var node = e.node || e.xmlNode;
-            
+
+            if (!node)
+                return;
+
             if (e.name != "afterfilesave" && node.getAttribute("newfile") == 1)
                 return;
-            
+
             var obj = {
                 caption : node.getAttribute("name"),
                 value   : node.getAttribute("path"),
                 node    : node
             };
-            
+
             _self.currentSettings.shift(obj);
-            
+
             _self.$add(obj);
         }
-        
+
         ide.addEventListener("afteropenfile", evHandler);
         ide.addEventListener("afterfilesave", evHandler);
         ide.addEventListener("closefile", evHandler);
     },
-    
+
     $add : function(def) {
         var found, nodes = this.menu.childNodes;
         for (var i = 0; i < nodes.length; i++) {
             if (nodes[i].nodeType != 1) continue;
-            
+
             if (nodes[i].localName == "item") {
                 if (nodes[i].value == def.value) {
                     found = nodes[i];
@@ -122,7 +125,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
             }
             else break;
         }
-        
+
         if (found) {
             this.menu.insertBefore(found, this.menu.firstChild);
         }
@@ -134,16 +137,16 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
                     var node = apf.getXml("<file />");
                     node.setAttribute("name", def.caption);
                     node.setAttribute("path", def.value);
-                    
+
                     ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
                 }
             }), this.menu.firstChild);
         }
-        
+
         while (this.menu.childNodes.length > 12) {
             this.menu.removeChild(this.divider.previousSibling);
         }
-        
+
         this.changed = true;
     },
 

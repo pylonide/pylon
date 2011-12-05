@@ -2,10 +2,10 @@
     <div class="header">
         <span></span><div>JS Beautify</div>
     </div>
-    <a:checkbox class="underlined" label="Preserve empty lines"
+    <a:checkbox class="underlined" label="Preserve Empty Lines"
         checked="{[beautify/jsbeautify/@preserveempty] != '' ? [beautify/jsbeautify/@preserveempty] : 'true'}"
         value="[beautify/jsbeautify/@preserveempty]" />
-    <a:checkbox class="underlined" label="Keep array indentation"
+    <a:checkbox class="underlined" label="Keep Array Indentation"
         checked="{[beautify/jsbeautify/@keeparrayindentation] != '' ? [beautify/jsbeautify/@keeparrayindentation] : 'true'}"
         value="[beautify/jsbeautify/@keeparrayindentation]" />
     <a:checkbox class="underlined" label="JSLint Strict Whitespace"

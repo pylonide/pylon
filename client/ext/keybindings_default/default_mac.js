@@ -14,7 +14,8 @@ return keys.onLoad({
         },
         "save" : {
             "quicksave": "Command-S",
-            "saveas": "Command-Shift-S"
+            "saveas": "Command-Shift-S",
+	    "reverttosaved": "Command-Shift-Q"
         },
         "undo" : {
             "undo": "Command-Z",
@@ -141,6 +142,10 @@ return keys.onLoad({
             "backspace": "Command-Backspace|Option-Backspace|Backspace",
             "outdent": "Shift-Tab",
             "indent": "Tab"
+        },
+        "language": {
+            "complete": "Ctrl-Space|Alt-Space",
+            "renameVar": "Command-Option-R"
         }
     }
 });

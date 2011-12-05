@@ -13,7 +13,6 @@ define(function (require, exports, module) {
 var ext = require("core/ext");
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
-var Range = require("ace/range").Range;
 var settings = require("text!ext/stripws/settings.xml");
 var extSettings = require("ext/settings/settings");
 
@@ -25,11 +24,12 @@ var strip = module.exports.strip = function () {
         return;
 
     var editor = editors.currentEditor.ceEditor.$editor;
-    var session = editor.getSession()
+    var session = editor.getSession();
     var source = session.getValue();
     var selection = session.getSelection();
     var result = source.replace(RE_WS, "\n");
     var pos, lead, anchor;
+    var scrollTopRow = editor.renderer.getScrollTopRow();
 
     // Check whether the user has text selected
     if (!selection.isEmpty()) {
@@ -43,16 +43,16 @@ var strip = module.exports.strip = function () {
     session.setValue(result);
 
     if (lead && anchor) {
-        var selection = session.getSelection();
-
+        selection = session.getSelection();
         selection.setSelectionAnchor(anchor.row, anchor.column);
         selection.moveCursorTo(lead.row, lead.column);
     } else if (pos) {
         editor.moveCursorTo(pos.row, pos.column);
     }
+    editor.renderer.scrollToRow(scrollTopRow);
 
     return result;
-}
+};
 
 module.exports = ext.register("ext/stripws/stripws", {
     name: "Strip Whitespace",
