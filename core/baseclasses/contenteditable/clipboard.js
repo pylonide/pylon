@@ -72,7 +72,8 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
             return false;
         var action = candrop[1] && candrop[1].action 
           || (amlNode.$isTreeArch ? "tree-append" : "list-append");
-        amlNode.$dragDrop(selected, this.store, candrop && candrop[1], action)
+        amlNode.$dragDrop(selected, this.store, candrop && candrop[1], action, 
+            null, null, null, true)
         
         //amlNode.copy(nodes, selected, undefined, !this.copied);
     }

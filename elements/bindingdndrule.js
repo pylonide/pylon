@@ -70,13 +70,13 @@ apf.BindingDndRule = function(struct, tagName){
         target   : 1,
         parent   : 1,
         action   : 1,
-        dragcopy : 1
+        copy     : 1
     }, this.$attrExcludePropBind);
 
     this.$propHandlers["target"]   = 
     this.$propHandlers["parent"]   = 
     this.$propHandlers["action"]   = 
-    this.$propHandlers["dragcopy"] = function(value, prop){
+    this.$propHandlers["copy"]     = function(value, prop){
         delete this["c" + prop];
     }
     
