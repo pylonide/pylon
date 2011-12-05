@@ -14,6 +14,7 @@ var EditSession = require("ace/edit_session").EditSession;
 var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
 var useragent = require("ace/lib/useragent");
 var Document = require("ace/document").Document;
+var Range = require("ace/range").Range;
 var ProxyDocument = require("ext/code/proxydocument");
 var CommandManager = require("ace/commands/command_manager").CommandManager;
 var defaultCommands = require("ace/commands/default_commands").commands;
@@ -147,16 +148,25 @@ module.exports = ext.register("ext/code/code", {
     nodes : [],
     commandManager: new CommandManager(useragent.isMac ? "mac" : "win", defaultCommands),
     
-    getState : function(doc){
+    getState : function(doc) {
         doc = doc ? doc.acesession : this.getDocument();
         if (!doc || typeof doc.getSelection != "function") 
             return;
+        
+        var folds = doc.getAllFolds().map(function(fold) { 
+            return { 
+                start: fold.start,
+                end: fold.end,
+                placeholder: fold.placeholder
+            };
+        });
         
         var sel = doc.getSelection();
         return {
             scrolltop  : ceEditor.$editor.renderer.getScrollTop(),
             scrollleft : ceEditor.$editor.renderer.getScrollLeft(),
-            selection  : sel.getRange()
+            selection  : sel.getRange(),
+            folds      : folds
         };
     },
     
@@ -171,6 +181,11 @@ module.exports = ext.register("ext/code/code", {
         sel.setSelectionRange(state.selection, false);
         ceEditor.$editor.renderer.scrollToY(state.scrolltop);
         ceEditor.$editor.renderer.scrollToX(state.scrollleft);
+        
+        for (var i = 0; i < state.folds.length; i++) {
+            var fold = state.folds[i];
+            aceDoc.addFold(fold.placeholder, Range.fromPoints(fold.start, fold.end));
+        }
         
         // if newfile == 1 and there is text cached, restore it
         var node = doc.getNode && doc.getNode();
