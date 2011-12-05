@@ -39,9 +39,10 @@
               options = "size"
               each = "[action|assert|test]"
               multiselect = "true"
+              startcollapsed = "false"
               onmouseover = "apf.uirecorder.ui.highlightElement(event)"
               onmouseout  = "apf.uirecorder.ui.hideHighlightElements(event)">
-                <a:column caption="Name" width="40%" value="[@name]" tree="1" check2="1" editor="textbox" />
+                <a:column caption="Name" width="40%" value="[@name]" tree="1" check2="1" editor="textbox" skin="tbsimple" />
                 <a:column caption="Value" width="60%" value="[@value]" editor="textbox" />
                 <a:column caption="Element" width="50"><?lm
                     

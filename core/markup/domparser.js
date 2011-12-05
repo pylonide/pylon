@@ -247,7 +247,7 @@ apf.DOMParser.prototype = new (function(){
             //Second pass - Document Insert signalling
             prios.sort();
             for (i = 0, l = prios.length; i < l; i++) {
-                nodes = nodelist[prios[i]];
+                var nodes = nodelist[prios[i]];
                 for (j = 0, l2 = nodes.length; j < l2; j++) {
                     if (!(node = nodes[j]).parentNode || node.$amlLoaded) //@todo generalize this using compareDocumentPosition
                         continue;

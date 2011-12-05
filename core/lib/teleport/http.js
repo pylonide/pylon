@@ -275,7 +275,7 @@ apf.http = function(){
         }
         //#endif
         
-        //#ifdef __WITH_UIRECORDER
+        //#ifdef __ENABLE_UIRECORDER_HOOK
         if (apf.uirecorder && apf.uirecorder.captureDetails) {
             if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
                 apf.uirecorder.capture.trackHttpCall(this, url, options); 

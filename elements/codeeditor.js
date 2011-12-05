@@ -164,29 +164,28 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             doc.hasValue = true;
         }
 
-        //apf.queue.add("ce" + _self.$uniqueId, function() {
-            _self.$getMode(_self.syntax, function(mode) {
-                doc.setMode(mode);
-            });
-            doc.setTabSize(parseInt(_self.tabsize, 10));
-            doc.setUseSoftTabs(_self.softtabs);
-            doc.setFoldStyle(_self.folding ? "markbegin" : "manual");
-            doc.setUseWrapMode(_self.wrapmode);
-            doc.setWrapLimitRange(_self.wraplimitmin, _self.wraplimitmax);
+        _self.$getMode(_self.syntax, function(mode) {
+            doc.setMode(mode);
+        });
+        
+        doc.setTabSize(parseInt(_self.tabsize, 10));
+        doc.setUseSoftTabs(_self.softtabs);
+        doc.setUseWrapMode(_self.wrapmode);
+        doc.setWrapLimitRange(_self.wraplimitmin, _self.wraplimitmax);
+        doc.setFoldStyle(_self.folding ? "markbegin" : "manual");
 
-            _self.$removeDocListeners && _self.$removeDocListeners();
-            _self.$removeDocListeners = _self.$addDocListeners(doc);
+        _self.$removeDocListeners && _self.$removeDocListeners();
+        _self.$removeDocListeners = _self.$addDocListeners(doc);
 
-            _self.$editor.setShowPrintMargin(_self.showprintmargin);
-            
-            // remove existing markers
-            _self.$clearMarker();
-            _self.$editor.setSession(doc);
+        _self.$editor.setShowPrintMargin(_self.showprintmargin);
+        
+        // remove existing markers
+        _self.$clearMarker();
 
-            // update markers
-            _self.$updateMarker();
-            _self.$updateBreakpoints(doc);
-        //})
+        _self.$editor.setSession(doc);
+        
+        _self.$updateMarker();
+        _self.$updateBreakpoints(doc);
     };
 
     this.$addDocListeners = function(doc) {
@@ -213,37 +212,63 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.$marker = null;
         }
     };
-
-    //@todo fix that this is not called three times
-    this.$updateMarker = function() {
+    
+    /**
+     * Indicates whether we are going to set a marker
+     */
+    this.$updateMarkerPrerequisite = function () {
+        if (!this.$debugger) {
+            return;
+        }
+        var frame = this.$debugger.activeframe;
+        if (!frame) {
+            return;
+        }
+        
+        // when running node with 'debugbrk' it will auto break on the first line of executable code
+        // we don't want to really break here so we put this:                
+        if (frame.getAttribute("name") === "anonymous(exports, require, module, __filename, __dirname)"
+                && frame.getAttribute("index") === "0" && frame.getAttribute("line") === "0") {
+                    
+            var fileNameNode = frame.selectSingleNode("//frame/vars/item[@name='__filename']");
+            var fileName = fileNameNode ? fileNameNode.getAttribute("value") : "";
+            var model = this["model-breakpoints"].data;
+            
+            // is there a breakpoint on the exact same line and file? then continue
+            if (fileName && model && model.selectSingleNode("//breakpoints/breakpoint[@script='" + fileName + "' and @line=0]")) {
+                return frame;
+            }
+            
+            return;
+        }
+        
+        return frame;
+    };
+    
+    this.$updateMarker = function () {
         this.$clearMarker();
         
-        if (!this.$debugger)
-            return;
-
-        var frame = this.$debugger.activeframe;
-        if (!frame)
-            return;
-
-        var script = this.xmlRoot;
-        if (script.getAttribute("scriptid") !== frame.getAttribute("scriptid"))
-            return;
-
-        var head  = this.$debugger.$mdlStack.queryNode("frame[1]");
-        var isTop = frame == head;
+        var frame = this.$updateMarkerPrerequisite();
+        if (!frame) {
+        	return;
+        }
         
+        var script = this.xmlRoot;
+        if (script.getAttribute("scriptid") !== frame.getAttribute("scriptid")) {
+            return;
+        }
+        
+        var head = this.$debugger.$mdlStack.queryNode("frame[1]");
+        var isTop = frame == head;
         var lineOffset = parseInt(script.getAttribute("lineoffset") || "0", 10);
         var row = parseInt(frame.getAttribute("line"), 10) - lineOffset;
-        var range = new Range(row, 0, row+1, 0);
-
+        var range = new Range(row, 0, row + 1, 0);
         this.$marker = this.$editor.getSession().addMarker(range, isTop ? "ace_step" : "ace_stack", "line");
         var type = isTop ? "arrow" : "stack";
         this.$lastRow = [row, type];
         this.$editor.renderer.addGutterDecoration(row, type);
-        
         this.$editor.gotoLine(row + 1, parseInt(frame.getAttribute("column"), 10));
-        //this.$editor.moveCursorTo(row, parseInt(frame.getAttribute("column")));
-    };
+    };    
 
     this.$updateBreakpoints = function(doc) {
         doc = doc || this.$editor.getSession();
@@ -423,6 +448,11 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         this.$updateMarker();
         var _self = this;
         this.$onChangeActiveFrame = function(e) {
+            // if you dont have data, we aren't interested in ya
+            if (!e || !e.data) {
+                return;
+            }
+            
             _self.$updateMarker();
         };
         this.$onBeforeContinue = function() {

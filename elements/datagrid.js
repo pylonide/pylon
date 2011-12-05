@@ -73,11 +73,7 @@ apf.datagrid = function(struct, tagName){
 };
 
 (function(){
-    var HAS_CHILD = 1 << 1,
-        IS_CLOSED = 1 << 2,
-        IS_LAST   = 1 << 3,
-        IS_ROOT   = 1 << 4,
-        treeState = this.$treeState;
+    var treeState = this.$treeState;
 
     //#ifdef __WITH_DATAACTION
     this.implement(
@@ -98,6 +94,7 @@ apf.datagrid = function(struct, tagName){
     this.$defaultwidth   = 0;
     this.$useiframe      = 0;
     this.$needsDepth     = true;
+    this.$fixed          = 0;
 
     //#ifdef __WITH_RENAME
     this.canrename = false; //@todo remove rename from basetree and move to tree.js
@@ -493,8 +490,11 @@ apf.datagrid = function(struct, tagName){
         if (!rules || !rules.length)
             return;
         
+        this.$cssRules = [];
         this.$headings = rules;
         
+        this.clearAllCache();
+
         var fixed = 0, found = false;
         for (var h, i = 0, l = rules.length; i < l; i++) {
             h = rules[i];
@@ -504,10 +504,12 @@ apf.datagrid = function(struct, tagName){
                 throw new Error("missing width"); //temporary check
             //#endif
             
-            if (!h.$isPercentage)
-                fixed += parseFloat(h.$width) || 0;
-            else 
-                found = true;
+            if (h.visible !== false) {
+                if (!h.$isPercentage)
+                    fixed += parseFloat(h.$width) || 0;
+                else 
+                    found = true;
+            }
         }
         
         if (!found) { //@todo removal???
@@ -531,8 +533,8 @@ apf.datagrid = function(struct, tagName){
                 "padding-right:" + vLeft + "px;margin-right:-" + vLeft + "px"]);
         
             //headings and records have same padding-right
-            this.$container.style.paddingRight  =
-            this.$head.style.paddingRight = vLeft + "px";
+            this.$container.style.paddingRight  = (vLeft - 1) + "px";
+            this.$head.style.paddingRight = (vLeft - 2) + "px";
         }
         
         this.$fixed = fixed;
@@ -568,8 +570,8 @@ apf.datagrid = function(struct, tagName){
                 var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  this.hasPassedDown = true;\
-                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
-                     o.select(this, event.ctrlKey, event.shiftKey, -1);'
+                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !apf.getCtrlKey(event))\
+                     o.select(this, apf.getCtrlKey(event), event.shiftKey, -1);'
                 + (this.cellselect || this.namevalue ? 'o.selectCell(event, this, isSelected);' : ''));
             
             oRow.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
@@ -577,12 +579,12 @@ apf.datagrid = function(struct, tagName){
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  if (o.hasFeature(apf.__DRAGDROP__))\
-                     o.select(this, event.ctrlKey, event.shiftKey, -1);');
+                     o.select(this, apf.getCtrlKey(event), event.shiftKey, -1);');
         } //@todo add DRAGDROP ifdefs
         else {
             oRow.setAttribute("onmousedown", 'var o = apf.lookup(' + this.$uniqueId + ');\
                 var wasSelected = o.$selected == this;\
-                o.select(this, event.ctrlKey, event.shiftKey, -1);'
+                o.select(this, apf.getCtrlKey(event), event.shiftKey, -1);'
                 + (this.cellselect || this.namevalue ? 'o.selectCell(event, this, wasSelected);' : ''));
         }
         
@@ -842,7 +844,7 @@ apf.datagrid = function(struct, tagName){
         var _self = this, id, cell;
         while (!(id = htmlNode.getAttribute(apf.xmldb.htmlIdTag)) || id.indexOf("|") == -1) {
             htmlNode = (cell = htmlNode).parentNode;
-            if (htmlNode.nodeType != 1)
+            if (!htmlNode || htmlNode.nodeType != 1)
                 return;
         }
         
@@ -896,7 +898,7 @@ apf.datagrid = function(struct, tagName){
         }
 
         if (ceditor.type == 2) {
-            if (!this.$editors[editor]) {
+            if (!this.$editors[h.$uniqueId + ":" + editor]) {
                 var constr = apf.namespaces[apf.ns.aml].elements[editor];
                 var info   = {
                     htmlNode : editParent,
@@ -906,7 +908,10 @@ apf.datagrid = function(struct, tagName){
                         + "]",
                     focussable : false
                 };
-                if (!h.tree)
+
+                if (h.tree)
+                    info.width = "100% - " + (editParent.offsetLeft + parseInt(this.$getOption("treecell", "editoroffset")));
+                else
                     info.width = "100%-3";
                 
                 //@todo copy all non-known properties of the prop element
@@ -932,8 +937,10 @@ apf.datagrid = function(struct, tagName){
                 
                 if (h.skin)
                     info.skin = h.skin;
+                if (h["class"])
+                    info["class"] = h["class"];
 
-                oEditor = this.$editors[editor] = new constr(info);
+                oEditor = this.$editors[h.$uniqueId + ":" + editor] = new constr(info);
 
                 var box = apf.getBox(apf.getStyle(oEditor.$ext, "margin"));
                 if (box[1] || box[3]) {
@@ -972,7 +979,7 @@ apf.datagrid = function(struct, tagName){
                 }
             }
             else {
-                oEditor = this.$editors[editor];
+                oEditor = this.$editors[h.$uniqueId + ":" + editor];
                 
                 if (oEditor.hasFeature(apf.__MULTISELECT__) && !h.model) {
                     //oEditor.setAttribute("model", "{" + this.id + ".selected}");
@@ -985,15 +992,18 @@ apf.datagrid = function(struct, tagName){
                         + (v = h.value).substr(1, v.length - 2) 
                         + "]");
                 }
-
-                /*oEditor.setAttribute("value", "[{" + this.id + ".selected}::" 
-                    + (v = h.value).substr(1, v.length - 2) 
-                    + "]");*/
+                else {
+                    oEditor.setAttribute("value", "[{" + this.id + ".selected}::" 
+                        + (v = h.value).substr(1, v.length - 2) 
+                        + "]");
+                }
 
                 oEditor.setProperty("visible", true);
                 editParent.appendChild(oEditor.$ext);
                 
-                oEditor.setAttribute("width", h.tree ? "" : "100%-3");
+                oEditor.setAttribute("width", h.tree 
+                    ? "100% - " + (editParent.offsetLeft + parseInt(this.$getOption("treecell", "editoroffset"))) 
+                    : "100%-3");
             }
             
             /*setTimeout(function(){
@@ -1046,7 +1056,7 @@ apf.datagrid = function(struct, tagName){
                 if (!nodes[i].host) {
                     if (nodes[i].nodeType == 1)
                         nodes[i].style.display = "";
-                    else if (!ed[0].value) {
+                    else if (!ed[0].value || ed[0].value == this.$lastTextValue) {
                         nodes[i].nodeValue = this.$lastTextValue; //@todo
                     }
                 }

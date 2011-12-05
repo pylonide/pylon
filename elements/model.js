@@ -548,11 +548,8 @@ apf.model = function(struct, tagName){
         
         if (typeof xmlNode == "string")
             xmlNode = apf.getXml(xmlNode);
-        else {
-            xmlNode = !xmlNode.nodeType //Check if a model was passed
-                ? xmlNode.getXml()
-                : apf.xmldb.getCleanCopy(xmlNode);
-        }
+        else if (xmlNode.nodeFunc)
+            xmlNode = xmlNode.getXml();
         
         if (!xmlNode) return;
 
@@ -947,7 +944,7 @@ apf.model = function(struct, tagName){
             this.$at = UndoObj.at;
         //#endif
 
-        //#ifdef __WITH_UIRECORDER
+        //#ifdef __ENABLE_UIRECORDER_HOOK
         if (apf.uirecorder && apf.uirecorder.captureDetails) {
             if (apf.uirecorder.isLoaded && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {// only capture events when recording
                 if (this.ownerDocument && this.$aml) {

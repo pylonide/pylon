@@ -1336,6 +1336,10 @@ var apf = {
             ? url
             : (!url || !base || url.match(/^\w+\:\/\//) ? url : base.replace(/\/$/, "") + "/" + url.replace(/^\//, ""));
     },
+    
+    getCtrlKey : function(event){
+        return apf.isMac ? event.metaKey : event.ctrlKey;
+    },
 
     /**
      * Loads javascript from a url.

@@ -214,7 +214,11 @@ apf.BaseTree = function(){
                     
                     // when finished, find all the other selectors that start with the current selector
                     // plus a slash to make it really really sure
-                    var childSelectors = allSelectors.filter(function (s) { return s.indexOf(currentSelector + "/") === 0; });
+                    // plus we check whether it's a child and not a grand child
+                    var childSelectors = allSelectors.filter(function (s) { 
+                        return s.indexOf(currentSelector + "/") === 0
+                                && currentSelector.split("/").length + 1 === s.split("/").length;
+                    });
                     
                     // then expand each of the child items
                     childSelectors.forEach(function (selector) {
@@ -882,6 +886,23 @@ apf.BaseTree = function(){
     });
     // #endif
     
+    this.scrollIntoView = function(sNode, onTop) {
+        var selHtml = apf.xmldb.getHtmlNode(sNode, this), top;
+        if (!selHtml)
+            return;
+            
+        top     = apf.getAbsolutePosition(selHtml, this.$container)[1];
+        
+        if (onTop) {
+            if (top <= this.$container.scrollTop)
+                this.$container.scrollTop = top;
+        }
+        else {
+            if (top > this.$container.scrollTop + this.$container.offsetHeight)
+                this.$container.scrollTop = top - this.$container.offsetHeight + selHtml.offsetHeight;
+        }
+    }
+    
     // #ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode,
@@ -932,7 +953,7 @@ apf.BaseTree = function(){
 
                 //DELETE
                 //this.remove();
-                this.remove(this.caret); //this.mode != "check"
+                this.remove(); //this.mode != "check"
                 break;
             case 36:
                 //HOME

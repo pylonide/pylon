@@ -33,19 +33,21 @@
  * @attribute {Boolean} tree
  */
 apf.BindingColumnRule = function(struct, tagName){
-    this.$init(tagName, apf.NODE_HIDDEN, struct);
+    this.$init(tagName || "column", apf.NODE_VISIBLE, struct);
     
     this.$className = "col" + this.$uniqueId;
 };
 
 (function(){
     this.$defaultwidth = "100";
-    this.$width        = 100;
+    this.$width        = 0;
     
     this.$sortable  = true; //@todo set defaults based on localName of element to which its applied
     this.$resizable = true;
     this.$movable   = true;
     this.$cssInit   = false;
+    
+    this.visible    = true;
     
     //1 = force no bind rule, 2 = force bind rule
     this.$attrExcludePropBind = apf.extend({
@@ -62,16 +64,57 @@ apf.BindingColumnRule = function(struct, tagName){
         "check", "editor", "colspan", "align", "css", "sorted", "each", 
         "eachvalue", "eachcaption", "model");
     
-    this.$booleanProperties["tree"]  = true;
-    this.$booleanProperties["check"] = true;
+    this.$booleanProperties["tree"]    = true;
+    this.$booleanProperties["check"]   = true;
     this.$booleanProperties["sorted"]  = true;
+    this.$booleanProperties["visible"] = true;
+    
+    this.$setParentFixedWidth = function(){
+        var pNode = this.parentNode;
+        var vLeft = (pNode.$fixed) + "px";
+        if (!this.$isFixedGrid) {
+            //apf.setStyleRule("." + this.$baseCSSname + " .headings ." + hFirst.$className, "marginLeft", "-" + vLeft); //Set
+            //apf.setStyleRule("." + this.$baseCSSname + " .records ." + hFirst.$className, "marginLeft", "-" + vLeft); //Set
+            apf.setStyleRule("." + pNode.$baseCSSname + " .row" + pNode.$uniqueId,
+                "paddingRight", vLeft, null, this.oWin); //Set
+            apf.setStyleRule("." + pNode.$baseCSSname + " .row" + pNode.$uniqueId,
+                "marginRight", "-" + vLeft, null, pNode.oWin); //Set
+        
+            //headings and records have same padding-right
+            if (pNode.$container)
+                pNode.$container.style.paddingRight = vLeft;
+            if (pNode.$head)
+                pNode.$head.style.paddingRight = vLeft;
+        }
+    }
     
     this.$propHandlers["width"]  = function(value, prop){
         if (!value)
-            value = this.$defaultwidth;
+            return;
+
+        var diff = value - this.$width;
 
         this.$isPercentage = value && String(value).indexOf("%") > -1;
         this.$width = parseFloat(value);
+
+        var pNode = this.parentNode;
+        
+        if (this.$isPercentage) {
+            apf.setStyleRule("." + this.$className, "width", this.$width + "%");
+            
+            //if (apf.z && !this.resizing)
+                //this.resize(this.$width, pNode, true);
+        }
+        else {
+            apf.setStyleRule("." + this.$className, "width", this.$width + "px", null, pNode.oWin); //Set
+            
+            if (pNode.$amlLoaded) {
+                if (this.visible)
+                    pNode.$fixed += diff;
+                
+                this.$setParentFixedWidth();
+            }
+        }
     }
     
     this.$propHandlers["options"]  = function(value, prop){
@@ -80,91 +123,111 @@ apf.BindingColumnRule = function(struct, tagName){
         this.$movable   = value.indexOf("move") > -1;
     }
     
-    this.resize = function(newsize, pNode){
+    this.$propHandlers["visible"] = function(value, prop, el, force){
+        var pNode = this.parentNode;
+        
+        if (!force && !this.$amlLoaded)
+            return;
+
+        if (value) {
+            apf.setStyleRule("." + this.$className,
+                "display", "inline-block", null, this.oWin);
+            
+            var size = this.$isPercentage
+                ? (this.$ext.offsetWidth - (pNode.$widthdiff - 3))
+                : this.$width;
+
+            this.resize(size, pNode, true);
+        }
+        else {
+            apf.setStyleRule("." + this.$className,
+                "display", "none", null, this.oWin);
+
+            this.resize(0, pNode, true);
+        }
+    }
+    
+    this.resize = function(newsize, pNode, toggleShowHide){
         var hN;
+        
         if (this.$isPercentage) {
-            var oldsize = (this.$ext.offsetWidth - (pNode.$widthdiff - 3)),
-                ratio = newsize / oldsize, //div 0 ??
+            var oldsize = (this.visible && this.$ext.offsetWidth
+              ? this.$ext.offsetWidth - (pNode.$widthdiff - 3)
+              : 0),
+                ratio = oldsize ? newsize / oldsize : 1, //div 0 ??
                 next  = [],
                 fixed = [],
                 total = 0,
-                node  = this.$ext.nextSibling;
+                node  = toggleShowHide 
+                    ? this.$ext.parentNode.firstChild 
+                    : this.$ext.nextSibling;
             
             while (node && node.getAttribute("hid")) {
                 hN = apf.all[node.getAttribute("hid")];
-                if (hN.$isPercentage) {
-                    next.push(hN);
-                    total += hN.$width;
+                if (hN.visible !== false) {
+                    if (hN.$isPercentage) {
+                        next.push(hN);
+                        total += hN.$width;
+                    }
+                    else fixed.push(hN);
                 }
-                else fixed.push(hN);
                 node = node.nextSibling;
             }
             
             if (fixed.length && !next.length)
                 return fixed[0].resize(fixed[0].$width + (oldsize - newsize), pNode);
-            
-            var newPerc  = ratio * this.$width,
-                diffPerc = newPerc - this.$width,
+
+            var diffPerc, diffRatio;
+            if (ratio == 1 && total < 101) {
+                ratio = total/101;
+                diffRatio = 1/ratio;
+            }
+            else if (total > 101) {
+                ratio = ratio * 101/total
+                diffRatio = ratio;
+            }
+            else {
+                diffPerc = (ratio - 1) * this.$width;
                 diffRatio = (total - diffPerc) / total;
-            if (diffRatio < 0.01) {
-                if (newsize < 20) return;
-                return this.resize(newsize - 10, pNode);//pNode.resizeColumn(nr, newsize - 10);
+                if (diffRatio < 0.01 && diffRatio > 0) {
+                    if (newsize < 20) return;
+                    return this.resize(newsize - 10, pNode);//pNode.resizeColumn(nr, newsize - 10);
+                }
             }
             
             for (var n, i = 0; i < next.length; i++) {
                 n = next[i];
-                n.$width *= diffRatio;
-                apf.setStyleRule("." + n.$className, "width", n.$width + "%"); //Set
-                //apf.setStyleRule("." + pNode.$baseCSSname + " .records ."
-                    //+ n.$className, "width", n.$width + "%", null, pNode.oWin); //Set
+                if (n == this)
+                    continue;
+                
+                n.setProperty("width", String(n.$width * diffRatio) + "%", false, true);
             }
             
-            this.$width = newPerc;
-            apf.setStyleRule("." + this.$className, "width", this.$width + "%"); //Set
-            //apf.setStyleRule("." + pNode.$baseCSSname + " .records ."
-                //+ h.$className, "width", this.$width + "%", null, pNode.oWin); //Set
+            if (this.visible !== false) {
+                this.setProperty("width", String(ratio * this.$width) + "%", false, true);
+            }
+        }
+        else if (toggleShowHide) {
+            var diff = newsize;
+            pNode.$fixed += diff;
+            this.$setParentFixedWidth();
         }
         else {
-            var diff = newsize - this.$width;
-            this.$width = newsize;
-            if (apf.isIE && pNode.oIframe) {
+            if (apf.isIE && pNode.oIframe)
                 this.$ext.style.width = newsize + "px";
-            }
-            else {
-                //apf.setStyleRule("." + this.$className, "width", newsize + "px"); //Set
-            }
-            apf.setStyleRule("." + this.$className, "width", newsize + "px", null, pNode.oWin); //Set
 
-            pNode.$fixed += diff;
-            var vLeft = (pNode.$fixed) + "px";
-
-            if (!this.$isFixedGrid) {
-                //apf.setStyleRule("." + this.$baseCSSname + " .headings ." + hFirst.$className, "marginLeft", "-" + vLeft); //Set
-                //apf.setStyleRule("." + this.$baseCSSname + " .records ." + hFirst.$className, "marginLeft", "-" + vLeft); //Set
-                apf.setStyleRule("." + pNode.$baseCSSname + " .row" + pNode.$uniqueId,
-                    "paddingRight", vLeft, null, this.oWin); //Set
-                apf.setStyleRule("." + pNode.$baseCSSname + " .row" + pNode.$uniqueId,
-                    "marginRight", "-" + vLeft, null, pNode.oWin); //Set
-            
-                //headings and records have same padding-right
-                pNode.$container.style.paddingRight  =
-                pNode.$head.style.paddingRight = vLeft;
-            }
+            this.setProperty("width", newsize, false, true);
         }
     }
     
     this.hide = function(){
-        apf.setStyleRule("." + this.$baseCSSname + " .records ." + h.$className,
-            "visibility", "hidden", null, this.oWin);
-        
-        //Change percentages here
+        this.setProperty("visible", false, false, true);
+        return this;
     }
     
     this.show = function(){
-        apf.setStyleRule("." + this.$baseCSSname + " .records ." + h.$className,
-            "visibility", "visible", null, this.oWin);
-        
-        //Change percentages here
+        this.setProperty("visible", true, false, true);
+        return this;
     }
     
     /**
@@ -274,10 +337,11 @@ apf.BindingColumnRule = function(struct, tagName){
         //"." + this.$baseCSSname + " .headings 
         //if initial
         //only needs once if this works
+
         apf.importStylesheet([
-          ["." + this.$className,
-            "width:" + this.$width + (this.$isPercentage ? "%;" : "px;")
-            + "text-align:" + this.align]
+            ["." + this.$className,
+                "width:" + this.$width + (this.$isPercentage ? "%;" : "px;")
+                + "text-align:" + this.align + ";display: inline-block"],
         ]);
         
         //Add to htmlRoot
@@ -510,6 +574,9 @@ apf.BindingColumnRule = function(struct, tagName){
         if (!this.options && pNode.options)
             this.$propHandlers["options"].call(this, 
                 this.options = pNode.options);
+
+        if (this.visible === false)
+            this.$propHandlers["visible"].call(this, false, null, null, true);
         
         return this;
     }

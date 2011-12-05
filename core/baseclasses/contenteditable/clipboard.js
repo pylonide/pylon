@@ -27,9 +27,11 @@ apf.clipboard.empty = true;
 apf.clipboard.copied = null;
 apf.clipboard.put = function(item){
     this.store = item;
+    this.setProperty("data", item);
     this.setProperty("empty", item ? false : true);
 };
 apf.clipboard.clear = function(){
+    this.setProperty("data", null);
     this.setProperty("empty", true);
 }
 apf.clipboard.get = function(){
@@ -64,8 +66,17 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
     if (!selected)
         selected = amlNode.selected || amlNode.getFirstTraverseNode();
 
-    if (amlNode.hasFeature(apf.__DRAGDROP__))
-        amlNode.copy(nodes, selected, undefined, !this.copied);
+    if (amlNode.hasFeature(apf.__DRAGDROP__)) {
+        var candrop = amlNode.isDropAllowed(apf.clipboard.data, selected);
+        if (!candrop)
+            return false;
+        var action = candrop[1] && candrop[1].action 
+          || (amlNode.$isTreeArch ? "tree-append" : "list-append");
+        amlNode.$dragDrop(selected, this.store, candrop && candrop[1], action, 
+            null, null, null, true)
+        
+        //amlNode.copy(nodes, selected, undefined, !this.copied);
+    }
     else {
         if (nodes[0].parentNode) {
             for (var i = 0, l = nodes.length; i < l; i++) {
@@ -79,7 +90,11 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
         }
     }
     
-    this.$highlightSelection(amlNode, nodes, true);
+    if (!this.copied) {
+        this.$highlightSelection(amlNode, nodes, true);
+        apf.clipboard.clear();
+    }
+    
     amlNode.selectList(nodes);
 };
 //#endif

@@ -1,4 +1,4 @@
-// #ifdef __WITH_UIRECORDER
+// #ifdef __WITH_UIRECORDER || __ENABLE_UIRECORDER_HOOK
 /**
  * Provides a way to record user actions, store them and play them back.
  * @experimental

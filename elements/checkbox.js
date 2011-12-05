@@ -91,6 +91,9 @@ apf.checkbox = function(struct, tagName){
     this.$propHandlers["value"] = function(value){
         value = (typeof value == "string" ? value.trim() : value);
 
+        if (value == "" && this["default"])
+            value = this.value = apf.isTrue(this["default"]);
+
         if (this.$values) {
             this.checked = (typeof value != "undefined" && value !== null
                 && value.toString() == this.$values[0].toString());
@@ -259,12 +262,12 @@ apf.checkbox = function(struct, tagName){
     })
     //#endif
     
-    // #ifdef __WITH_UIRECORDER
+    // #ifdef __ENABLE_UIRECORDER_HOOK
     this.$getActiveElements = function() {
         // init $activeElements
         if (!this.$activeElements) {
             this.$activeElements = {
-                $checkbox       : this.$input
+                $input       : this.$input
             }
         }
 

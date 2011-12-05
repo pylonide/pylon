@@ -405,7 +405,7 @@ apf.DragDrop = function(){
         return false;
     };
 
-    this.$dragDrop = function(xmlReceiver, xmlNodeList, rule, defaction, isParent, srcRule, event){
+    this.$dragDrop = function(xmlReceiver, xmlNodeList, rule, defaction, isParent, srcRule, event, forceCopy){
         // @todo apf3.0 action not known here yet... should be moved down?
         if (action == "tree-append" && isParent) 
             return false;
@@ -424,16 +424,21 @@ apf.DragDrop = function(){
         else
             action = defaction;
 
+        if (!event)
+            event = {};
+
         //copy convenience variables
         var context = {
-              internal : apf.DragServer.dragdata.host == this,
+              internal : apf.DragServer.dragdata && apf.DragServer.dragdata.host == this,
               ctrlKey  : event.ctrlKey,
               keyCode  : event.keyCode
           },
           //@todo apf3.0 below should actually be compileNode with with_options
           ifcopy = rule && rule.copy;//.getAttribute("copy");
 
-        if (ifcopy) {
+        if (typeof forceCopy == "boolean")
+            ifcopy = forceCopy;
+        else if (ifcopy) {
             ifcopy = !apf.isFalse((rule.ccopy || rule.compile("copy"))(xmlNodeList[0], context));
         }
         else if (typeof this.dragcopy == "boolean" || typeof this.dropcopy == "boolean") { //@todo apf3.0 boolean here?
@@ -455,7 +460,7 @@ apf.DragDrop = function(){
             }
         }
 
-        if (!ifcopy) { //Implemented one copy is all copy
+        if (!ifcopy && srcRule) { //Implemented one copy is all copy
             for (var i = 0, l = srcRule.length; i < l; i++) {
                 ifcopy = typeof srcRule[i] == "object" && srcRule[i].copy
                     ? !apf.isFalse((srcRule[i].ccopy || srcRule[i].compile("copy"))(xmlNodeList[0], context))

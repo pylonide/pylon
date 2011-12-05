@@ -658,7 +658,7 @@ apf.page = function(struct, tagName){
                 + this.$uniqueId + ').parentNode;if(apf.lookup(' + this.$uniqueId
                 + ') != o.$activepage'  + (this.parentNode.overactivetab ? " || true" : "")  + ') o.$setStyleClass(this, "over", null, true);');
             elBtn.setAttribute("onmouseout", 'var o = apf.lookup('
-                + this.$uniqueId + ').$btnOut(this, event);');
+                + this.$uniqueId + ');o&&o.$btnOut(this, event);');
 
             //var cssClass = this.getAttribute("class");
             //if (cssClass) {
@@ -733,7 +733,8 @@ apf.page = function(struct, tagName){
 
     this.$destroy = function(){
         if (this.$button) {
-            if (this.parentNode && !this.parentNode.$amlDestroyed)
+            if (this.parentNode && !this.parentNode.$amlDestroyed
+              && this.$button.parentNode)
                 this.$button.parentNode.removeChild(this.$button);
             
             this.$button.host = null;
@@ -741,7 +742,7 @@ apf.page = function(struct, tagName){
         }
     };
     
-    // #ifdef __WITH_UIRECORDER
+    // #ifdef __ENABLE_UIRECORDER_HOOK
     this.$getActiveElements = function() {
         // init $activeElements
         if (!this.$activeElements) {

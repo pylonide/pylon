@@ -602,9 +602,13 @@ apf.MultiselectBinding = function(){
             listenNode = this.xmlRoot;
 
         if (action == "redo-remove") {
+            var loc = [xmlNode.parentNode, xmlNode.nextSibling];
             lastParent.appendChild(xmlNode); //ahum, i'm not proud of this one
             var eachNode = this.isTraverseNode(xmlNode);
-            lastParent.removeChild(xmlNode);
+            if (loc[0])
+                loc[0].insertBefore(xmlNode, loc[1]);
+            else
+                lastParent.removeChild(xmlNode);
             
             if (!eachNode)
                 xmlNode = lastParent;
@@ -893,8 +897,11 @@ apf.MultiselectBinding = function(){
             clearTimeout(this.$selectTimer.timer);
             // Determine next selection
             if (action == "remove" && apf.isChildOf(xmlNode, this.selected, true)
-              || xmlNode == this.$selectTimer.nextNode)
+              || xmlNode == this.$selectTimer.nextNode) {
                 this.$selectTimer.nextNode = this.getDefaultNext(xmlNode, this.$isTreeArch);
+                if (this.$selectTimer.nextNode == this.xmlRoot && !this.renderRoot)
+                    this.$selectTimer.nextNode = null;
+            }
 
             //@todo Fix this by putting it after xmlUpdate when its using a timer
             var _self = this;
@@ -1058,8 +1065,8 @@ apf.MultiselectBinding = function(){
                 ? value.replace(/^\[|\]$/g, "")
                 : value;
             
-            if (value.indexOf("::") > -1) {
-                var model = value.split("::"); //@todo could be optimized
+            if (value.match(/^\w+::/)) {
+                var model = value.split("::"); //@todo this is all very bad
                 if (!apf.xPathAxis[model[0]]) {
                     this.setProperty("model", model[0]);
                     this.each = model[1];

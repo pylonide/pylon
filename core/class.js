@@ -398,7 +398,7 @@ apf.Class.prototype = new (function(){
                         return;
                     
                     isBeingCalled = true;
-                    _self.setProperty(myProp, bObject[bProp], true, false, 10);//e.initial ? 0 :  
+                    _self.setProperty(myProp, bObject[bProp], false, false, 10);//e.initial ? 0 :  
                     isBeingCalled = false;
                 });
         };
@@ -723,7 +723,9 @@ apf.Class.prototype = new (function(){
         try{
             var isChanged = (typeof value == OBJ)
                 ? value != (typeof oldvalue == OBJ ? oldvalue : null)
-                : String(oldvalue) !== String(value);
+                : (this.$booleanProperties && this.$booleanProperties[prop]
+                    ? oldvalue != apf.isTrue(value)
+                    : String(oldvalue) !== String(value));
         } catch(e){
             var isChanged = true;
         }
@@ -740,10 +742,10 @@ apf.Class.prototype = new (function(){
 
                     //Check if rule has single xpath
                     if (r.cvalue.type == 3) {
-                        //#ifdef __WITH_UIRECORDER
-                        if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10) {
+                        //#ifdef __ENABLE_UIRECORDER_HOOK
+                        if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10 && inherited != 2) {
                             if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
-                                if (this.ownerDocument && this.$aml)
+                                if (this.ownerDocument && this.$aml && this.$amlLoaded)
                                     apf.uirecorder.capture.capturePropertyChange(this, prop, value, oldvalue); 
                             }
                         }
@@ -775,10 +777,10 @@ apf.Class.prototype = new (function(){
             if (this.$handlePropSet(prop, value, forceOnMe) === false)
                 return;
             
-            //#ifdef __WITH_UIRECORDER
-            if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10) {
+            //#ifdef __ENABLE_UIRECORDER_HOOK
+            if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10 && inherited != 2) {
                 if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
-                    if (this.ownerDocument && this.$aml)
+                    if (this.ownerDocument && this.$aml && this.$amlLoaded)
                         apf.uirecorder.capture.capturePropertyChange(this, prop, this[prop], oldvalue); 
                 }
             }
@@ -897,6 +899,9 @@ apf.Class.prototype = new (function(){
     this.dispatchEvent = function(eventName, options, e){
         var arr, result, rValue, i, l;
 
+        if (!apf.AmlEvent)
+            return;
+
         apf.$eventDepth++;
         this.$eventDepth++;
 
@@ -978,7 +983,7 @@ apf.Class.prototype = new (function(){
         
         this.$eventDepth--;
 
-        //#ifdef __WITH_UIRECORDER
+        //#ifdef __ENABLE_UIRECORDER_HOOK
         if (apf.uirecorder && apf.uirecorder.captureDetails) {
             if (["debug"].indexOf(eventName) == -1 && (!e || e.currentTarget == this)) { // ,"DOMNodeRemoved","DOMNodeRemovedFromDocument","DOMNodeInsertedIntoDocument"
                 //if (apf.uirecorder.isLoaded) { // skip init loading and drawing of elements
@@ -1071,7 +1076,7 @@ apf.Class.prototype = new (function(){
     this.hasEventListener = function(eventName){
         return (this.$eventsStack[eventName] && this.$eventsStack[eventName].length > 0);
     };
-
+    
     /**
      * Destructor of a Class.
      * Calls all destructor functions and removes all mem leaking references.
