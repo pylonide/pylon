@@ -83,12 +83,9 @@ module.exports = ext.register("ext/debugger/debugger", {
 
         dock.addDockable({
             expanded : false,
-            hidden   : false,
             width    : 300,
-            name     : name,
             sections : [
                 {
-                    hidden  : false,
                     height  : 30,
                     width   : 150,
                     noflex  : true,
@@ -109,20 +106,17 @@ module.exports = ext.register("ext/debugger/debugger", {
                     }]
                 },
                 {
-                    hidden  : false,
+                    buttons : [
+                        { caption: "Call Stack", ext : [name, "dbgCallStack"], hidden: true}
+                    ]
+                },
+                {
                     buttons : [
                         { caption: "Interactive", ext : [name, "dbInteractive"], hidden: true},
                         { caption: "Variables", ext : [name, "dbgVariable"], hidden: true},
                         { caption: "Breakpoints", ext : [name, "dbgBreakpoints"], hidden: true}
                     ]
-                },
-                {
-                    hidden  : false,
-                    buttons : [
-                        { caption: "Call Stack", ext : [name, "dbgCallStack"], hidden: true}
-                    ]
                 }
-                
             ]
         });
         
@@ -277,7 +271,7 @@ module.exports = ext.register("ext/debugger/debugger", {
         var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
         
         // check prerequisites
-        if (!ceEditor.$updateMarkerPrerequisite()) {
+        if (self.ceEditor && !ceEditor.$updateMarkerPrerequisite()) {
             return;
         }
 

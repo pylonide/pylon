@@ -1767,7 +1767,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/class.js)SIZE(45592)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/class.js)SIZE(45596)TIME(Sun, 04 Dec 2011 22:25:17 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2779,7 +2779,7 @@ apf.Class.prototype = new (function(){
     this.hasEventListener = function(eventName){
         return (this.$eventsStack[eventName] && this.$eventsStack[eventName].length > 0);
     };
-
+    
     /**
      * Destructor of a Class.
      * Calls all destructor functions and removes all mem leaking references.
@@ -3442,7 +3442,7 @@ apf.asyncChain = function(funcs) {
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/util/ecmaext.js)SIZE(25941)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/util/ecmaext.js)SIZE(25965)TIME(Sun, 04 Dec 2011 19:03:37 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3818,7 +3818,8 @@ Array.prototype.search = function(){
 Array.prototype.each =
 Array.prototype.forEach = Array.prototype.forEach || function(fn) {
     for (var i = 0, l = this.length; i < l; i++)
-        fn.call(this, this[i], i, this) === false
+        if (fn.call(this, this[i], i, this) === false)
+            break;
     return this;
 }
 
@@ -33282,7 +33283,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(57973)TIME(Sun, 04 Dec 2011 13:22:05 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(57973)TIME(Sun, 04 Dec 2011 13:28:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional

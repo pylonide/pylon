@@ -109,10 +109,10 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         });
         
         stProcessRunning.addEventListener("deactivate", function(){
-           dock.hideSection(["ext/debugger/debugger"]); 
+           dock.hideSection("ext/debugger/debugger"); 
         });
         stProcessRunning.addEventListener("activate", function(){
-           dock.showSection(["ext/debugger/debugger"], true); 
+           dock.showSection("ext/debugger/debugger", true); 
         });
         
         this.hotitems["run"]  = [btnRun];

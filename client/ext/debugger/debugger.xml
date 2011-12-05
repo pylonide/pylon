@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:tab id="tabDebugButtons" skin="dockbar" visible="false">
-        <a:page id="pgDebugNav" render="runtime">
+        <a:page id="pgDebugNav" render="runtime" nosplitter="true">
             <a:hbox padding="3" edge="4 3 5">
                 <div class="expand-panel-bg"></div>
         <!--        <a:button tooltip="Stop"
