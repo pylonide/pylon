@@ -85,13 +85,14 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$booleanProperties["gutter"]                   = true;
     this.$booleanProperties["highlightselectedword"]    = true;
     this.$booleanProperties["autohidehorscrollbar"]     = true;
-    this.$booleanProperties["behaviors"]                = true;    
+    this.$booleanProperties["behaviors"]                = true;
+    this.$booleanProperties["folding"]                  = true;
     
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
         "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
         "theme", "gutter", "highlightselectedword", "autohidehorscrollbar",
-        "behaviors");
+        "behaviors", "folding");
 
     this.$getCacheKey = function(value) {
         if (typeof value == "string") {
@@ -169,7 +170,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             });
             doc.setTabSize(parseInt(_self.tabsize, 10));
             doc.setUseSoftTabs(_self.softtabs);
-            doc.setFoldStyle(_self.foldstyle || "manual");
+            doc.setFoldStyle(_self.folding ? "markbegin" : "manual");
             doc.setUseWrapMode(_self.wrapmode);
             doc.setWrapLimitRange(_self.wraplimitmin, _self.wraplimitmax);
 
@@ -334,8 +335,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         this.$editor.getSession().setTabSize(parseInt(value, 10));
     };
 
-    this.$propHandlers["foldstyle"] = function(value, prop, initial) {
-        this.$editor.getSession().setFoldStyle(value);
+    this.$propHandlers["folding"] = function(value, prop, initial) {
+        this.$editor.getSession().setFoldStyle(value ? "markbegin" : "manual");
     };
 
     this.$propHandlers["softtabs"] = function(value, prop, initial) {
