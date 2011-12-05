@@ -30,10 +30,13 @@
                 background : transparent;
             }
             .guidetool.top .gt-arrow {
-                left: 50%;
-                margin-left: -8px;
-                margin-top: -1px;
-                border-top: none;
+        left: 50%;
+        bottom: -9px;
+width: 0px;
+height: 0px;
+border-left: 10px solid transparent;
+border-right: 10px solid transparent;
+border-top: 10px solid #222;
             }
             .guidetool.bottom .gt-arrow {
         left: 50%;
@@ -74,6 +77,11 @@ border-right: 10px solid #222;
              background-color: transparent;
              }
              
+             .tgDesc a {
+             color: blue;
+text-decoration: none;
+}
+
             .tgControlButton {
             width: 85px;
             }

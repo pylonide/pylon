@@ -41,7 +41,8 @@
                   ">Show this quick start on startup</a:checkbox>
             </div>
             <div class="buttonDiv">
-            <a:button default="2" class="ui-btn-green" onclick="require('ext/quickstart/quickstart').closeStart();">Just take me to the editor</a:button>              
+            <a:button default="2" skin="btn-default-css3" class="btn-green tgPlayButton" 
+            onclick="require('ext/quickstart/quickstart').closeStart();">Just the editor, please</a:button>              
             </div>
         </div>
     </a:window>
