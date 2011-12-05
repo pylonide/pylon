@@ -19,7 +19,7 @@
         </div>
         
         <div id="tourGuideText" class="tgtext">
-            <p>For a detailed guided tour, <a href="#" class="tgLink" onclick="require('ext/quickstart/quickstart').closeStart();require('ext/guidedtour/guidedtour').launchGT();">click here!</a></p>
+            <p>For a detailed guided tour, <a href="#" class="tgLink" onclick="require('ext/quickstart/quickstart').shutdownQSStartGT();">click here!</a></p>
         </div>
         
          <div id="supportText" class="qsSupportText">

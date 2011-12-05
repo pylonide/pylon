@@ -82,7 +82,15 @@
                 background: url(images/close.png) no-repeat 0 0;
             }
             
-            .qstitle, .tgtext, .qsSupportText, .tgLink {
+            .tgLink {
+            background : #000;
+                color: #fff;
+                padding: 0 5px 0 5px;
+             font-family: Tahoma, Arial;
+             margin-bottom: -16px;
+            }
+            
+            .qstitle, .tgtext, .qsSupportText {
                 background : #000;
                 color: #fff;
                 padding: 0 5px 0 5px;

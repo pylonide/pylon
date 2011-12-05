@@ -2,7 +2,7 @@
     <a:skin id="guidedtour"
       src        = "{require('ext/guidedtour/guidedtour').skin}"
       media-path = "/static/ext/guidedtour/images/" />
-    
+      
     <a:window
       id        = "winTourGuide"
       title     = "Guided Tour"
@@ -10,49 +10,61 @@
       modal     = "false"
       buttons   = "close"
       kbclose   = "true"
-      width     = "300">
-        <a:vbox>
-        <a:text id="winTourDesc" />
-        <a:hbox padding="5" pack="end" edge="10 10 5 10">
-            <a:button id="startTour" default="2" class="ui-btn-green" onclick = "
-                        require('ext/guidedtour/guidedtour').startTour();
-                    ">Let's start!</a:button>
-        </a:hbox>
+      width     = "395"
+      skin      = "bk-window"
+      class   = "relative">
+        <a:vbox edge="10" padding="5">
+            <a:text id="winTourDesc" height="75" class="tgDesc"/>
+            <a:hbox padding="5" pack="end">
+                <a:button id="startTour" default="2" class="btn-green" skin="btn-default-css3" onclick = "
+                            require('ext/guidedtour/guidedtour').startTour();
+                        ">Let's start!</a:button>
+            </a:hbox>
         </a:vbox>
     </a:window>
     <a:window
         id        = "tourControlsDialog"
-        title     = "Controls"
-        center    = "false"
+        title     = "Guided Tour Controls"
+        center    = "true"
         modal     = "false"
-        buttons   = ""
+        buttons   = "close"
         kbclose   = "false"
-        width     = "160">
-                <a:hbox padding="5" pack="end" edge="10 10 5 10">
+        width     = "325"
+        skin      = "bk-window"
+        class     = "tgDialog">
+        <a:vbox>
+        <a:text />
+                <a:hbox padding="10" pack="end" edge="6 50 10">
                 <!-- Play pause etc -->
                 <a:button
                     id = "btnTourStepBack"
+                    class = "tgControlButton tgBackButton"
+                    skin="btn-default-css3"
                     disabled = "true"
-                    caption = "←"
-                    onclick = "
-                        require('ext/guidedtour/guidedtour').stepBack();
-                    "
-                />
+                    tooltip="Go Back"
+                    onclick = "require('ext/guidedtour/guidedtour').stepBack();"
+                    width="75"
+                    height="30"/>
                 <a:button
                     id = "btnTourPlay"
-                    caption = "►"
-                    onclick = "
-                        require('ext/guidedtour/guidedtour').togglePlay();
-                    "
+                    class = "btn-green tgPlayButton"
+                    tooltip = "Play"
+                    onclick = "require('ext/guidedtour/guidedtour').togglePlay();"
+                    width    = "50"
+                    height = "30"
+                    skin="btn-default-css3"
                 />
                 <a:button
                     id = "btnTourStepForward"
-                    caption = "→"
-                    onclick = "
-                        require('ext/guidedtour/guidedtour').stepForward();
-                    "
+                    class = "tgControlButton tgForwardButton"
+                    skin="btn-default-css3"
+                    tooltip="Go Forward"
+                    onclick = "require('ext/guidedtour/guidedtour').stepForward();"   
+                    width="75"
+                    height="30"
                 />
-            </a:hbox>   
+            </a:hbox>
+            </a:vbox>
     </a:window>
         
     <a:window
