@@ -659,6 +659,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.autohidehorscrollbar = !ed.renderer.getHScrollBarAlwaysVisible();
         if (this.behaviors === undefined)
             this.behaviors = !ed.getBehavioursEnabled();
+        if (this.folding === undefined)
+            this.folding = true;
     };
 
 // #ifdef __WITH_DATABINDING
