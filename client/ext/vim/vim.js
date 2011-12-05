@@ -136,7 +136,10 @@ module.exports = ext.register("ext/vim/vim", {
             type: "check",
             checked : "[{require('ext/settings/settings').model}::editors/code/@vimmode]"
         });
-        this.nodes.push(mnuView.appendChild(menuItem));
+        // In order to behave like a code extension (i.e. hiding when we are not
+        // in a code editor, we import it into the code plugin nodes instead of
+        // ours.
+        require("ext/code/code").nodes.push(mnuView.appendChild(menuItem));
 
         var self = this;
 
