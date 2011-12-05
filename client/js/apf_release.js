@@ -36326,9 +36326,15 @@ apf.DelayedRender = function(){
         this.$ext.style.visibility = "";
     };
     
-    var _self = this;
-    apf.window.vManager.check(this, "delayedrender", function(){
-        _self.$render();
+    var f;
+    this.addEventListener("prop.visible", f = function(){
+        if (arguments[0].value) {
+            // #ifdef __WITH_DELAYEDRENDER
+            this.$render();
+            // #endif
+            
+            this.removeEventListener("prop.visible", f);
+        }
     });
 };
 

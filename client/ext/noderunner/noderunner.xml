@@ -32,9 +32,9 @@
       width     = "450" 
       height    = "200" 
       buttons   = "close"
+      kbclose   = "true"
       skin      = "bk-window"
-      visible   = "false"
-      draggable = "false">
+      visible   = "false">
         <a:list id="lstTabs" 
           model="mdlTabs" 
           anchors="10 10 56 10" 

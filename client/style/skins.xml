@@ -265,6 +265,10 @@
             -webkit-box-shadow : 0 1px 0 #404042;
             box-shadow: 0 1px 0 #404042;
         }
+        
+        .docksection {
+            background       : url(images/debug-panel_bg.png) 0 0;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -1869,7 +1873,7 @@
             display : block;
             right : 2px;
             top : 1px;
-            background : url(images/toolbar-arrows.png) 0 -10px;
+            background : url(images/toolbar-arrows.png) 0 0;
         }
 
         .dockheaderOver {
@@ -1881,7 +1885,7 @@
         }
 
         .dockheader.expanded span{
-            background-position : 0 0;
+            background-position : 0 -10px;
             right : 3px;
         }
         
@@ -2777,6 +2781,16 @@
             color: #333;
             border-bottom: 1px solid #BFBFBF;
         }
+        
+        .docktab .datagrid .headings div {
+            background-image: linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 49%, rgb(244,246,248) 50%, rgb(250,252,254) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 49%, rgb(244,246,248) 50%, rgb(250,252,254) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 49%, rgb(244,246,248) 50%, rgb(250,252,254) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 49%, rgb(244,246,248) 50%, rgb(250,252,254) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 49%, rgb(244,246,248) 50%, rgb(250,252,254) 100%);
+            border-bottom: 1px solid #e1e5ea;
+        }
+        
         .datagrid .headings div u{
             padding : 2px 4px 1px 3px;
             display : block;
@@ -2786,7 +2800,13 @@
             border-right : 1px solid #bfbfbf;
             border-top : 1px solid white;
         }
-
+        
+        .docktab .datagrid .headings div u{
+            border-top: 1px solid #fafcfe;
+            border-left : 1px solid #fafbfc;
+            border-right : 1px solid #c8c8c8;
+        }
+        
         .datagrid .headings div.hover,
         .datagrid .headings div.down,
         .datagrid .headings div.drag{
@@ -4276,16 +4296,21 @@
     <a:alias>fieldset</a:alias>
     <a:style><![CDATA[
         .frame{
-            padding: 0 7px 7px 7px;
-            border: 1px solid #dcd8d8;
+            
+            border: 1px solid #bbbbbb;
             color: #333;
             font-family: Tahoma, Arial;
             font-size: 8pt;
             position: relative;
             cursor : default;
             margin : 0;
+            -webkit-box-shadow: 0px 1px 0px #EDEDED;
+            -moz-box-shadow: 0px 1px 0px #EDEDED;
+            box-shadow: 0px 1px 0px #EDEDED, inset 0px 1px 0px 0px #ededed;
+            padding-bottom: 2px;
+            padding-left: 6px;
+            padding-right: 6px;
         }
-
         .frame .legend{
             /*margin-top: 0px;
             position: absolute;
@@ -4294,7 +4319,7 @@
             top: -8px;
             padding: 0 2px 0 2px;
             margin: 0px;*/
-            margin : 0 0 7px -7px;
+            margin : 0 0 2px -7px;
             cursor : default;
             z-index : 10000;
             position : relative;
@@ -4307,7 +4332,7 @@
     </a:style>
     <a:style condition="!apf.isIE">
     	.frame .legend{
-    	    margin : 5px 0 7px -3px;
+    	    margin : 5px 0 2px -3px;
     	}
     </a:style>
     <a:style condition="apf.isWebkit">
@@ -4320,7 +4345,7 @@
             padding-top : 10px;
         }
         .frame .legend{
-    	    margin : -15px 0 7px -3px;
+    	    margin : -15px 0 2px -3px;
     	}
     </a:style>
     <a:style condition="apf.isChrome"><![CDATA[
@@ -4331,7 +4356,9 @@
 
     <a:presentation>
         <a:main container="." caption="legend">
-            <fieldset class="frame"><legend class="legend"> </legend></fieldset>
+            <fieldset class="frame">
+                <legend class="legend"> </legend>
+            </fieldset>
         </a:main>
     </a:presentation>
 </a:frame>
@@ -5511,7 +5538,7 @@
         .bk-window .bk-header .hcontent .buttons {
             position: absolute;
             right: 7px;
-            top: 8px;
+            top: 9px;
         }
         
         .bk-window .bk-header .hcontent .buttons .close {
@@ -5521,7 +5548,10 @@
         }
         
         .bk-window .bk-header .hcontent .buttons .close.hover {
-            background-position: 0 -15px;
+            background-position: 0 -19px;
+        }
+        .bk-window .bk-header .hcontent .buttons .close.down {
+            background-position: 0 -39px;
         }
         
         .bk-window .bk-container {
@@ -5627,6 +5657,36 @@
                 <div class="logo"> </div>
             </div>
         </a:cover>
+    </a:presentation>
+</a:modalwindow>
+<a:modalwindow name="bk-window2">
+    <a:presentation>
+        <a:main
+          collapsed-height = "26"
+          minheight        = "50"
+          minwidth         = "50"
+          container        = "div[3]"
+          drag             = "div[1]/div[1]"
+          title            = "div[1]/div[1]/text()"
+          icon             = "div[1]/div[1]/div[1]"
+          buttons          = "div[1]/div[1]/div[2]">
+            <div class="bk-window">
+                <div class="bk-header">
+                    <div class="hcontent">
+                        -
+                        <div class="icon"></div>
+                        <div class="buttons"></div>
+                    </div>
+                </div>
+                <div class="bg-bk-content"></div>
+                <div class="bk-container"> 
+                    <div class="bk-win-footer"></div>
+                </div>
+            </div>
+        </a:main>
+        <a:button>
+            <div/>
+        </a:button>
     </a:presentation>
 </a:modalwindow>
 <a:pages name="pages">
@@ -7906,7 +7966,8 @@
             /*border-bottom: 1px solid white;*/
         }
         
-        .dockcol .docktab {
+        .dockcol .docktab,
+        .dragging.docktab {
             -webkit-border-radius: 0;
             -moz-border-radius: 0;
             border-radius: 0;
@@ -7928,7 +7989,12 @@
             padding-left: 3px;
             padding-right: 5px;
         }
-
+        
+        .dragging.docktab .btncontainer {
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #202020),color-stop(1, #2f2f2f));
+            background: -moz-linear-gradient(center bottom,#202020 0%, #2f2f2f 100%);
+        }
+        
         .docktab .btncontainer>div {
             display: block;
             display : inline-block;
@@ -8014,8 +8080,11 @@
             color       : #202020;
             cursor      : default;
             z-index     : 1;
-            background: -webkit-gradient(linear,left bottom,left top,from(#ffffff),color-stop(1, #fafcfe));
-            background: -moz-linear-gradient(center bottom,#ffffff 60%,#fafcfe 100%);
+            background-image: linear-gradient(bottom, rgb(250,252,254) 60%, rgb(255,255,255) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(250,252,254) 60%, rgb(255,255,255) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(250,252,254) 60%, rgb(255,255,255) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(250,252,254) 60%, rgb(255,255,255) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(250,252,254) 60%, rgb(255,255,255) 100%);
             border-right : 1px solid #8c8c8c;
             border-bottom: 1px solid #FAFCFE;
         }
@@ -8038,7 +8107,7 @@
         .docktab .btncontainer .btnclose strong {
             width               : 14px;
             height              : 14px;
-            display             : none;
+            /*display             : none;*/
             position            : absolute;
             right               : 2px;
             top                 : 5px;
@@ -8728,12 +8797,11 @@
             /*background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(222,224,227)),color-stop(1, rgb(239,241,244)));
             background: -moz-linear-gradient(center bottom,rgb(222,224,227) 0%,rgb(239,241,244) 100%);*/
             
-            background-image: linear-gradient(bottom, #ECEFF2 0%, #EDF0F3 50%, #F3F6F8 51%, #FAFCFE 100%);
-            background-image: -o-linear-gradient(bottom, #ECEFF2 0%, #EDF0F3 50%, #F3F6F8 51%, #FAFCFE 100%);
-            background-image: -moz-linear-gradient(bottom, #ECEFF2 0%, #EDF0F3 50%, #F3F6F8 51%, #FAFCFE 100%);
-            background-image: -webkit-linear-gradient(bottom, #ECEFF2 0%, #EDF0F3 50%, #F3F6F8 51%, #FAFCFE 100%);
-            background-image: -ms-linear-gradient(bottom, #ECEFF2 0%, #EDF0F3 50%, #F3F6F8 51%, #FAFCFE 100%);
-            
+            background-image: linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 49%, rgb(243,246,248) 50%, rgb(250,252,254) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 49%, rgb(243,246,248) 50%, rgb(250,252,254) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 49%, rgb(243,246,248) 50%, rgb(250,252,254) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 49%, rgb(243,246,248) 50%, rgb(250,252,254) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 49%, rgb(243,246,248) 50%, rgb(250,252,254) 100%);
             
             font-family: Arial;
             font-size: 12px;

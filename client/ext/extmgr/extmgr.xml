@@ -11,7 +11,7 @@
       height    = "400"
       kbclose   = "true"
       draggable = "true">
-        <a:vbox anchors="0 0 0 0" edge="0 0 12 0">
+        <a:vbox anchors="0 0 0 0" edge="0 0 11 0">
             <a:tab flex="1" id="tabExtMgr" skin="extensions_tab">
                 <a:page caption="User Extensions">
                     <a:vbox anchors="10 10 10 10">
@@ -57,7 +57,7 @@
                     </a:vbox>
                 </a:page>
             </a:tab>
-            <a:hbox edge="10 10 0 0" pack="end" visible="{tabExtMgr.activepage == 0}">
+            <a:hbox edge="11 10 0 0" pack="end" visible="{tabExtMgr.activepage == 0}">
                 <a:button
                   skin = "btn-default-css3"
                   disabled = "{!dgExtUser.selected}"
@@ -83,7 +83,7 @@
                   onclick = "winExt.close()"
                 />
             </a:hbox>
-            <a:hbox edge="10 10 0 0" pack="end" visible="{tabExtMgr.activepage == 1}">
+            <a:hbox edge="11 10 0 0" pack="end" visible="{tabExtMgr.activepage == 1}">
                 <a:button
                   skin = "btn-default-css3"
                   disabled = "{!dgExt.selected}"
