@@ -16,10 +16,8 @@ var fs = require("ext/filesystem/filesystem");
 var settings = require("text!ext/autosave/settings.xml");
 var markup = require("text!ext/autosave/autosave.xml");
 var extSettings = require("ext/settings/settings");
-//aasadao
 
-
-var INTERVAL = 10000;// * 60 * 5; // 5 minutes
+var INTERVAL = 10000; // Auto-save every 10 seconds for the sake of debug
 var FILE_SUFFIX = "swp";
 
 module.exports = ext.register("ext/autosave/autosave", {
@@ -36,7 +34,7 @@ module.exports = ext.register("ext/autosave/autosave", {
     hook : function(){
         if (!tabEditors)
             return;
-//
+
         var self = this;
         // This is the main interval. Whatever it happens, every `INTERVAL`
         // milliseconds, the plugin will attempt to save every file that is
@@ -69,8 +67,8 @@ module.exports = ext.register("ext/autosave/autosave", {
                     ext.initExtension(self);
 
                     fs.readFile(bkpPath, function(contents) {
-                        // Set up some state into the indow itself. Not great,
-                        // but easiest way and not awful either
+                        // Set up some state into the window itself. Not great,
+                        // but easiest way and not too awful
                         winNewerSave.restoredContents = contents;
                         winNewerSave.doc = data.doc;
                         winNewerSave.path = bkpPath;
@@ -84,11 +82,7 @@ module.exports = ext.register("ext/autosave/autosave", {
         ide.addEventListener("afterfilesave", function(obj) {
             self._removeFile(self._getTempPath(obj.node.getAttribute("path")));
         });
-
-        ide.addEventListener("init.ext/settings/settings", function (e) {
-            barSettings.insertMarkup(settings);
-        });
-},
+    },
 
     init : function() {
         var self = this;
@@ -96,7 +90,6 @@ module.exports = ext.register("ext/autosave/autosave", {
             winNewerSave.restoredContents = null;
             winNewerSave.doc = null;
             winNewerSave.path = null;
-
             winNewerSave.hide();
         };
 
@@ -155,17 +148,14 @@ module.exports = ext.register("ext/autosave/autosave", {
 
         var doc = page.$doc;
         var node = doc.getNode();
-        if (node.getAttribute('newfile')) {
-            return; // for now
+        if (/* for now */ node.getAttribute('newfile') ||
+            node.getAttribute("debug")) {
+            return;
         }
 
-        if (node.getAttribute("debug"))
-            return;
-
-        var path = node.getAttribute("path");
-
-        // check if we're already saving!
+        // Check if we're already saving!
         var saving = parseInt(node.getAttribute("saving"));
+        var path = node.getAttribute("path");
         if (saving) {
             this.saveBuffer[path] = page;
             return;
@@ -175,17 +165,15 @@ module.exports = ext.register("ext/autosave/autosave", {
         var panel = sbMain.firstChild;
         panel.setAttribute("caption", "Saving file " + path);
 
-        var self = this;
-
-        var value = doc.getValue();
         var pathLeafs = path.split("/");
         var fileName = pathLeafs.pop();
         var dirName = pathLeafs.join("/");
 
-        fileName = "." + fileName + "." + FILE_SUFFIX;
+        fileName = fileName + "." + FILE_SUFFIX;
 
+        var self = this;
         var bkpPath = dirName + "/" + fileName;
-
+        var value = doc.getValue();
         fs.saveFile(bkpPath, value, function(data, state, extra) {
             if (state != apf.SUCCESS)
                 return;
