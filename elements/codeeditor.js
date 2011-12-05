@@ -93,7 +93,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         "theme", "gutter", "highlightselectedword", "autohidehorscrollbar",
         "behaviors");
 
-    var cacheId = 0;
     this.$getCacheKey = function(value) {
         if (typeof value == "string") {
             var key = this.xmlRoot
@@ -116,7 +115,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             delete this.$cache[key];                    
     };
     
-    this.addEventListener("unloadmodel", function(e) {
+    this.addEventListener("unloadmodel", function() {
         this.syncValue();
     });
     
@@ -170,6 +169,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             });
             doc.setTabSize(parseInt(_self.tabsize, 10));
             doc.setUseSoftTabs(_self.softtabs);
+            doc.setFoldStyle(_self.foldstyle || "manual");
             doc.setUseWrapMode(_self.wrapmode);
             doc.setWrapLimitRange(_self.wraplimitmin, _self.wraplimitmax);
 
@@ -332,6 +332,10 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$propHandlers["tabsize"] = function(value, prop, initial) {
         this.$editor.getSession().setTabSize(parseInt(value, 10));
+    };
+
+    this.$propHandlers["foldstyle"] = function(value, prop, initial) {
+        this.$editor.getSession().setFoldStyle(value);
     };
 
     this.$propHandlers["softtabs"] = function(value, prop, initial) {
