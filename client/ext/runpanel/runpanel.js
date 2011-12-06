@@ -25,6 +25,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     //offline : false,
     markup  : markup,
     deps    : [noderunner],
+    
+    defaultWidth : 270,
+    
     commands : {
         "run": {
             "hint": "run and debug a node program on the server",
@@ -43,34 +46,19 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     hotitems: {},
 
     nodes : [],
-    nodesRest : [],
     
     hook : function(){
-        panels.register(this);
-
-        var btn = this.button = navbar.insertBefore(new apf.button({
-            skin    : "mnubtn",
-            state   : "true",
-            "class" : "rundebug",
-            caption : "Run"
-        }), navbar.lastChild.previousSibling);
-        
         var _self = this;
-        btn.addEventListener("mousedown", function(e){
-            var value = this.value;
-            if (navbar.current && (navbar.current != _self || value)) {
-                navbar.current.disable(navbar.current == _self);
-                if (value)
-                    return;
-            }
-
-            panels.initPanel(_self);
-            _self.enable(true);
+        
+        panels.register(this, {
+            position : 20,
+            caption: "Run",
+            "class": "rundebug"
         });
-      
+
         apf.document.body.insertMarkup(buttonsMarkup);
         
-        this.nodesRest.push(
+        this.nodes.push(
             mnuRunCfg,
             mnuDebugSettings
         );
@@ -80,7 +68,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             
             ide.barTools.appendChild(button);
             if (button.nodeType == 1) {
-                this.nodesRest.push(button);
+                this.nodes.push(button);
             }
         }
         
@@ -95,34 +83,20 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         ide.addEventListener("loadsettings", function(e){
             var runConfigs = e.model.queryNode("auto/configurations");
-            if (!runConfigs)
+            if (!runConfigs) {
                 runConfigs = apf.createNodeFromXpath(e.model.data, "auto/configurations");
+                apf.xmldb.setAttribute(runConfigs, "debug", "true");
+            }
 
             mdlRunConfigurations.load(runConfigs);
             
             if (!runConfigs.selectSingleNode("config[@curfile]")) {
                 var cfg = apf.n("<config />")
-                    .attr("name", "Currently Active File")
+                    .attr("name", " (active file)")
                     .attr("curfile", "1").node();
                 runConfigs.insertBefore(cfg, runConfigs.firstChild);
             }
         });
-        
-        stProcessRunning.addEventListener("deactivate", function(){
-           dock.hideSection("ext/debugger/debugger"); 
-        });
-        stProcessRunning.addEventListener("activate", function(){
-           dock.showSection("ext/debugger/debugger", true); 
-        });
-        
-        this.hotitems["run"]  = [btnRun];
-        this.hotitems["stop"] = [btnStop];
-    },
-
-    init : function(amlNode){
-        this.panel = winRunPanel;
-
-        colLeft.appendChild(winRunPanel);
         
         var page = tabEditors.getPage();
         if (page) {
@@ -139,6 +113,25 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             mdlRunConfigurations.setQueryValue("config[@curfile]/@name", 
                 path.split("/").pop() + " (active file)");
         });
+        
+        stProcessRunning.addEventListener("deactivate", function(){
+            dock.hideSection("ext/debugger/debugger");
+        });
+        stProcessRunning.addEventListener("activate", function(){
+            if (_self.shouldRunInDebugMode())
+                dock.showSection("ext/debugger/debugger", true); 
+        });
+        
+        this.hotitems["run"]  = [btnRun];
+        this.hotitems["stop"] = [btnStop];
+    },
+
+    init : function(amlNode){
+        this.panel = winRunPanel;
+
+        colLeft.appendChild(winRunPanel);
+        
+        this.nodes.push(winRunPanel);
     },
 
     duplicate : function() {
@@ -178,13 +171,17 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     showRunConfigs : function() {
         this.enable();
     },
+    
+    shouldRunInDebugMode : function(){
+        return apf.isTrue(settings.model.queryValue('auto/configurations/@debug'));
+    },
 
     run : function(debug) {
         this.runConfig(self.winRunPanel && winRunPanel.visible
             ? lstRunCfg.selected
             : (this.$lastRun 
                 || mdlRunConfigurations.queryNode("config[@curfile]")), 
-            itmDebug.checked);
+            this.shouldRunInDebugMode());
         ide.dispatchEvent("track_action", {type: debug ? "debug" : "run"});
     },
 
@@ -217,7 +214,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
                     var _self = this;
                     item.onclick = function() {
-                        _self.runConfig(this.$config, itmDebug.checked);
+                        _self.runConfig(this.$config, _self.shouldRunInDebugMode());
                         if (self.lstRunCfg)
                             lstRunCfg.select(this.$config);
                     }.bind(item);
@@ -273,16 +270,13 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         });
     },
 
-    disable : function(noButton){
-        if (self.winRunPanel) {
-            this.$lastWidth = winRunPanel.parentNode.width;
-            winRunPanel.hide();
-        }
-        if (!noButton)
-            this.button.setValue(false);
-        
-        splitterPanelLeft.hide();
-        
+    enable : function(){
+        this.nodes.each(function(item){
+            item.enable();
+        });
+    },
+    
+    disable : function(){
         this.nodes.each(function(item){
             item.disable();
         });
@@ -292,11 +286,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
-        this.nodesRest.each(function(item){
-            item.destroy(true, true);
-        });
         this.nodes = [];
-        this.nodesRest = [];
+        
+        panels.unregister(this);
     }
 });
 

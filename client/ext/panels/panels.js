@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var settings = require("core/settings");
 var markup = require("text!ext/panels/panels.xml");
 
 module.exports = ext.register("ext/panels/panels", {
@@ -21,79 +22,117 @@ module.exports = ext.register("ext/panels/panels", {
     nodes : [],
     panels : {},
     
-    showingAll : true,
+    currentPanel : null,
     
-    initPanel : function(panelExt){
-        if (panelExt.panel) {
-            return;
-        }
-        
-        ext.initExtension(panelExt);
-        this.$setEvents(panelExt);
-        
-        var set = this.$settings && this.$settings[panelExt.path];
-        if (set)
-            this.setPanelSettings(panelExt, set);
-        
-        panelExt.panel.setAttribute("draggable", "false");
-    },
-    
-    register : function(panelExt, menu){
+    register : function(panelExt, options){
         var _self = this;
-        if (!panelExt.alwayson) {
-            panelExt.mnuItem = (menu || mnuProjectBar).appendChild(new apf.item({
-                caption : panelExt.name,
-                type    : "check",
-                //checked : panelExt.visible || false,
-                checked : "{panelExt.visible}",
-                onclick : function(){
-                    _self.initPanel(panelExt);
-                    this.checked ? panelExt.enable() : panelExt.disable();
-                }
-            }));
+        
+        var beforePanel, diff = 10000;
+        for (var path in this.panels) {
+            var d = this.panels[path].$panelPosition - options.position;
+            if (d > 0 && d < diff) {
+                beforePanel = this.panels[path];
+                diff = d;
+            }
         }
         
-        if (false && this.$settings && this.$settings[panelExt.path]) {
-            this.setPanelSettings(panelExt, _self.$settings[panelExt.path]);
-        }
-        else if (panelExt.visible) {
-            if (panelExt.skin) {
-                setTimeout(function(){
-                    this.initPanel(panelExt);
-                });
+        panelExt.mnuItem = mnuProjectBar.insertBefore(new apf.item({
+            caption : panelExt.name,
+            type    : "radio",
+            value   : panelExt.path,
+            group   : this.group,
+            "onprop.selected" : function(){
+                _self.activate(panelExt, true);
             }
-            else {
-                this.initPanel(panelExt);
+        }), beforePanel && beforePanel.mnuItem);
+        
+        panelExt.button = navbar.insertBefore(new apf.button({
+            skin    : "mnubtn",
+            state   : "true",
+            //value   : "true",
+            "class" : options["class"],
+            caption : options.caption
+        }), beforePanel && beforePanel.button || navbar.firstChild);
+
+        //navbar.current = this;
+        panelExt.button.addEventListener("mousedown", function(e){
+            var value = this.value;
+            if (_self.currentPanel && (_self.currentPanel != panelExt || value)) {
+                _self.deactivate(_self.currentPanel == panelExt);
+                
+                if (value) {
+                    colLeft.hide();
+                    return;
+                }
             }
-        }
+
+            _self.activate(panelExt, true);
+        });
         
         this.panels[panelExt.path] = panelExt;
+        panelExt.$panelPosition = options.position;
+        panelExt.nodes.push(panelExt.button, panelExt.mnuItem);
+        
+        ide.addEventListener("init." + panelExt.path, function(e){
+            panelExt.panel.setAttribute("draggable", "false");
+        });
+        
+        if (!settings.model.queryNode("auto/panels/panel[@path='" 
+            + panelExt.path + "']")) {
+            settings.model.appendXml("<panel path='" 
+                + panelExt.path + "' width='" 
+                + panelExt.defaultWidth + "' />", "auto/panels");
+        }
+        
+        var active = settings.model.queryValue("auto/panels/@active");
+        if (panelExt["default"] && !active || active == panelExt.path)
+            _self.activate(panelExt);
     },
     
-    $setEvents : function(panelExt){
-        var _self = this;
-        panelExt.panel.addEventListener("show", function(){            
-            if (!_self.togglingAll && !_self.showingAll) 
-                _self.showAll();
-            else {
-                if (!this.parentNode.visible)
-                    this.parentNode.show();
-                panelExt.mnuItem.check();
-            }
-        });
-        panelExt.panel.addEventListener("hide", function(){
-            panelExt.mnuItem.uncheck();
-
-            if (!this.parentNode.selectSingleNode("node()[not(@visible='false')]"))
-                this.parentNode.hide();
-            
-            //Quick Fix
-            if (apf.isGecko)
-                apf.layout.forceResize(ide.vbMain.$ext);
-        });
-        //panelExt.panel.show();
+    activate : function(panelExt, noButton){
+        ext.initExtension(panelExt);
         
-        this.setPanelSettings(panelExt, this.$settings[panelExt.path]);
+        if (this.currentPanel && (this.currentPanel != this))
+            this.deactivate();
+        
+        var width = settings.model.queryValue("auto/panels/panel[@path='" 
+            + panelExt.path + "']/@width") || panelExt.defaultWidth;
+        
+        panelExt.panel.show();
+        colLeft.setWidth(width);
+        colLeft.show();
+        
+        if (!noButton)
+            panelExt.button.setValue(true);
+
+        splitterPanelLeft.show();
+        this.currentPanel = panelExt;
+        
+        settings.model.setQueryValue("auto/panels/@active", panelExt.path);
+        
+        ide.dispatchEvent("showpanel." + panelExt.path);
+    },
+    
+    deactivate : function(noButton){
+        if (!this.currentPanel)
+            return;
+        
+        this.currentPanel.panel.hide();
+        
+        if (!noButton)
+            this.currentPanel.button.setValue(false);
+
+        splitterPanelLeft.hide();
+        
+        //Quick Fix
+        if (apf.isGecko)
+            apf.layout.forceResize(ide.vbMain.$ext);
+            
+        settings.model.setQueryValue("auto/panels/@active", "");
+        
+        ide.dispatchEvent("hidepanel." + this.currentPanel.path);
+        
+        this.currentPanel = null;
     },
     
     unregister : function(panelExt){
@@ -101,42 +140,14 @@ module.exports = ext.register("ext/panels/panels", {
         delete this.panels[panelExt.path];
     },
 
-    setPanelSettings : function(panelExt, set){
-        if (!panelExt.panel) {
-            if (set.visible)
-                this.initPanel(panelExt);
-            return;
-        }
-        
-        var pset, panel = panelExt.panel, parent = panel.parentNode;
-        for (var prop in set) {
-            if (prop == "parent") {
-                if (panelExt.excludeParent)
-                    continue;
-                
-                pset = set.parent;
-                for (prop in pset) {
-                    if (parent[prop] != pset[prop])
-                        parent.setAttribute(prop, pset[prop]);
-                }
-            }
-            else {
-                if (panel[prop] != set[prop]) {
-                    if (prop == "width") {
-                        panelExt.$lastWidth = set[prop];
-                    }
-                    else if (prop == "visible") {
-                        //panelExt[set[prop] ? "enable" : "disable"]();
-                    }
-                    else if (prop == "height" || !panelExt.excludeParent)
-                        panel.setAttribute(prop, set[prop]);
-                }
-            }
-        }
-    },
-    
     init : function(amlNode){
+        var _self = this;
+        
         this.nodes.push(
+            this.group = apf.document.body.appendChild(new apf.group({
+                value : "[{req"+"uire('ext/settings/settings').model}::auto/panels/@active]"
+            })),
+            
             barMenu.appendChild(new apf.button({
                 submenu : "mnuWindows",
                 caption : "Windows",
@@ -146,6 +157,12 @@ module.exports = ext.register("ext/panels/panels", {
             mnuWindows
         );
         
+        colLeft.addEventListener("resize", function(){
+            if (_self.currentPanel)
+                settings.model.setQueryValue("auto/panels/panel[@path='" 
+                    + _self.currentPanel.path + "']/@width", colLeft.getWidth());
+        });
+        
         /**** Support for state preservation ****/
         
         var _self = this;
@@ -154,13 +171,7 @@ module.exports = ext.register("ext/panels/panels", {
             var strSettings = e.model.queryValue("auto/panel");
             if (strSettings) {
                 try {
-                    _self.$settings = JSON.parse(strSettings);
-                
-                    var panelExt;
-                    for (var path in _self.$settings) {
-                        if ((panelExt = _self.panels[path]) && panelExt.panel)
-                            _self.setPanelSettings(panelExt, _self.$settings[path]);
-                    }
+                    var obj = JSON.parse(strSettings);
                 }
                 catch (ex) {}
             }
@@ -229,42 +240,6 @@ module.exports = ext.register("ext/panels/panels", {
             item.destroy(true, true);
         });
         this.nodes = [];
-    },
-
-    toggleAll : function() {
-        this.togglingAll = true;
-        for (var key in this.panels) {
-            if (key != "ext/editors/editors") {
-                var panel = this.panels[key];
-            
-                if (panel.panel) {
-                    if (panel.hidden) {
-                        panel.enable();
-                        panel.hidden = false;
-                    } else if (panel.panel.visible) {
-                        panel.disable();
-                        panel.hidden = true;
-                    }
-                }
-            }
-        }
-        this.togglingAll = false;
-    },
-    
-    showAll : function() {
-        this.showingAll = true;
-        for (var key in this.panels) {
-            if (key != "ext/editors/editors") {
-                var panel = this.panels[key];
-            
-                if (panel.panel && panel.hidden) {
-                    // console.log("Showing " + key);
-                    panel.enable();
-                    panel.hidden = false;
-                }
-            }
-        }       
-        this.showingAll = false;
     }
 });
 

@@ -21,6 +21,9 @@ module.exports = ext.register("ext/settings/settings", {
     type    : ext.GENERAL,
     markup  : markup,
     skin    : skin,
+    
+    defaultWidth : 250,
+    
     commands : {
         "showsettings": {hint: "open the settings window"}
     },
@@ -58,25 +61,10 @@ module.exports = ext.register("ext/settings/settings", {
     },
 
     hook : function(){
-        panels.register(this);
-        
-        var btn = this.button = navbar.insertBefore(new apf.button({
-            skin    : "mnubtn",
-            state   : true,
-            "class" : "preferences",
-            caption : "Preferences"
-        }), navbar.lastChild.previousSibling);
-
-        btn.addEventListener("mousedown", function(e){
-            var value = this.value;
-            if (navbar.current && (navbar.current != _self || value)) {
-                navbar.current.disable(navbar.current == _self);
-                if (value)
-                    return;
-            }
-
-            panels.initPanel(_self);
-            _self.enable(true);
+        panels.register(this, {
+            position : 40,
+            caption: "Preferences",
+            "class": "preferences"
         });
         
         //Backwards compatible
@@ -87,6 +75,8 @@ module.exports = ext.register("ext/settings/settings", {
         this.panel = winSettings;
 
         colLeft.appendChild(winSettings);
+        
+        this.nodes.push(winSettings);
     },
 
     showsettings: function(e){
@@ -115,29 +105,16 @@ module.exports = ext.register("ext/settings/settings", {
         }
     },
 
-    enable : function(noButton){
-        winSettings.show();
-        winSettings.parentNode.setWidth(this.$lastWidth || 250);
-        
-        colLeft.show();
-        if (!noButton) {
-            this.button.setValue(true);
-            if(navbar.current && (navbar.current != this))
-                navbar.current.disable(false);
-        }
-        splitterPanelLeft.show();
-        navbar.current = this;
+    enable : function(){
+        this.nodes.each(function(item){
+            item.enable();
+        });
     },
-
-    disable : function(noButton){
-        if (self.winSettings) {
-            this.$lastWidth = winFilesViewer.parentNode.width;
-            winSettings.hide();
-        }
-        if (!noButton)
-            this.button.setValue(false);
-
-        splitterPanelLeft.hide();
+    
+    disable : function(){
+        this.nodes.each(function(item){
+            item.disable();
+        });
     },
 
     destroy : function(){
@@ -145,6 +122,8 @@ module.exports = ext.register("ext/settings/settings", {
             item.destroy(true, true);
         });
         this.nodes = [];
+        
+        panels.unregister(this);
     }
 });
 

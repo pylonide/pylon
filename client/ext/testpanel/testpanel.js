@@ -33,32 +33,18 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     type            : ext.GENERAL,
     markup          : markup,
     appliedFilter   : "all",
+    nodes           : [],
+    
+    defaultWidth    : 290,
 
     hook : function(){
-        panels.register(this);
-        
-        // fix to prevent Active Files button is placed above Project Files
-        var btn = this.button = navbar.insertBefore(new apf.button({
-            skin    : "mnubtn",
-            state   : "true",
-            "class" : "testing",
-            caption : "Test"
-        }), navbar.lastChild.previousSibling);
-
-        var _self = this;
-
-        btn.addEventListener("mousedown", function(e){
-            var value = this.value;
-            if (navbar.current && (navbar.current != _self || value)) {
-                navbar.current.disable(navbar.current == _self);
-                if (value) {
-                    return;
-                }
-            }
-
-            panels.initPanel(_self);
-            _self.enable(true);
+        panels.register(this, {
+            position : 30,
+            caption: "Test",
+            "class": "testing"
         });
+        
+        var _self = this;
 
         //ide.addEventListener("init.testrunner", function(){
             apf.document.body.appendChild(new apf.state({
@@ -73,19 +59,26 @@ module.exports = ext.register("ext/testpanel/testpanel", {
             //ide.removeEventListener("init.testrunner", arguments.callee);
         //});
         
+        ide.addEventListener("loadsettings", function(e){
+            if (!e.model.queryValue("auto/testpanel/@autorun"))
+                e.model.setQueryValue("auto/testpanel/@autorun", "none");
+        });
+        
         ide.addEventListener("afterfilesave", function(e) {
-            if (stRunning.active || !self.grpAutoRunTests)
+            var autoRun = settings.model.queryValue("auto/testpanel/@autorun");
+            
+            if (stRunning.active)
                 return;
             
-            if (grpAutoRunTests.value == "none")
+            if (autoRun == "none")
                 return;
             
-            if (grpAutoRunTests.value == "selection") {
+            if (autoRun == "selection") {
                 var sel = dgTestProject.getSelection();
                 if (sel.length)
                     _self.run(sel);
             }
-            else if (grpAutoRunTests.value == "pattern") {
+            else if (autoRun == "pattern") {
                 var list = (new Function('path', _self.getPattern()))(
                     e.node.getAttribute("path"));
                 
@@ -113,6 +106,8 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     init : function() {
         var _self  = this;
         this.panel = winTestPanel;
+        
+        this.nodes.push(winTestPanel);
         
         ide.dispatchEvent("init.testrunner");
 
@@ -440,48 +435,26 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         this.enable();
     },
 
-    enable : function(noButton){
-        if (self.winTestPanel) {
-            winTestPanel.show();
-            winTestPanel.parentNode.setWidth(this.$lastWidth || 300);
-        }
-        colLeft.show();
-        if (!noButton) {
-            this.button.setValue(true);
-            if(navbar.current && (navbar.current != this))
-                navbar.current.disable(false);
-        }
-        splitterPanelLeft.show();
-        navbar.current = this;
-        
-//        if (self.btnRun && !this.$lastPos) {
-//            this.$lastPos = [btnStop.parentNode, btnStop.nextSibling];
-//            btnRun.parentNode.removeChild(btnRun);
-//            btnStop.parentNode.removeChild(btnStop);
-//            divRun.parentNode.removeChild(divRun);
-//        }
+    enable : function(){
+        this.nodes.each(function(item){
+            item.enable();
+        });
     },
-
-    disable : function(noButton){
-        if (self.winTestPanel) {
-            this.$lastWidth = winTestPanel.parentNode.width;
-            winTestPanel.hide();
-        }
-        if (!noButton)
-            this.button.setValue(false);
-
-        splitterPanelLeft.hide();
-        
-//        if (self.btnRun && this.$lastPos) {
-//            this.$lastPos[0].insertBefore(divRun, this.$lastPos[1]);
-//            this.$lastPos[0].insertBefore(btnRun, this.$lastPos[1]);
-//            this.$lastPos[0].insertBefore(btnStop, this.$lastPos[1]);
-//            delete this.$lastPos;
-//        }
+    
+    disable : function(){
+        this.nodes.each(function(item){
+            item.disable();
+        });
     },
 
     destroy : function(){
         this.stop();
+        
+        this.nodes.each(function(item){
+            item.destroy(true, true);
+        });
+        this.nodes = [];
+        
         panels.unregister(this);
     }
 });

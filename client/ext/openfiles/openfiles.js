@@ -36,16 +36,18 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                     type : "radio",
                     selected : active == "openfiles",
                     caption : "Open Files",
-                    onclick : function(){
-                        _self.showOpenFiles();
+                    "onprop.selected" : function(e){
+                        if (e.value)
+                            _self.showOpenFiles();
                     }
                 }), mnuFilesSettings.firstChild),
                 mnuFilesSettings.insertBefore(new apf.item({
                     type : "radio",
                     selected : !active || active == "projectfiles",
                     caption : "Project Files",
-                    onclick : function(){
-                        _self.showProjectFiles();
+                    "onprop.selected" : function(e){
+                        if (e.value)
+                            _self.showProjectFiles();
                     }
                 }), mnuFilesSettings.firstChild)
             );

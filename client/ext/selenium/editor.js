@@ -175,16 +175,18 @@ module.exports = ext.register("ext/selenium/editor", {
         
         this.editor = mainUiRecorder;
         
-        [{n: "colname", v: true, w: "40%"},
-         {n: "colvalue", v: true, w: "61%"}, 
-         {n: "colelement", v: false, w: "33%"},
-         {n: "colstatus", v: false, w: "40%"}].forEach(function(col){
-            var model = settings.model;
-            var xpath = "editors/uirecorder/" + col.n;
-            if (!model.queryNode(xpath)) {
-                model.setQueryValue(xpath + "/@visible", col.v);
-                model.setQueryValue(xpath + "/@width", col.w);
-            }
+        ide.addEventListener("loadsettings", function(){
+            [{n: "colname", v: true, w: "40%"},
+             {n: "colvalue", v: true, w: "61%"}, 
+             {n: "colelement", v: false, w: "33%"},
+             {n: "colstatus", v: false, w: "40%"}].forEach(function(col){
+                var model = settings.model;
+                var xpath = "editors/uirecorder/" + col.n;
+                if (!model.queryNode(xpath)) {
+                    model.setQueryValue(xpath + "/@visible", col.v);
+                    model.setQueryValue(xpath + "/@width", col.w);
+                }
+            });
         });
         
         var _self = this;

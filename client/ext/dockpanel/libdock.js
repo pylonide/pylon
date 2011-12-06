@@ -113,9 +113,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     barParent.splitter.destroy(true, true);
                 }
             }
-            else {
+            /*else {
                 barParent.$dockData.sections.remove(btnPNode.$dockData);
-            }
+            }*/
         }
     }
     
@@ -291,7 +291,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 (bar.sections || [bar]).each(function(section){
                     (section.buttons || [section]).each(function(button){
                         var page = _self.lookup[button.uniqueId].node.$dockpage;
-                        page.parentNode.remove(page);
+                        page.parentNode.remove(page, null, true);
                     });
                 });
             });
@@ -305,7 +305,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             (bar.sections || [bar]).each(function(section){
                 (section.buttons || [section]).each(function(button){
                     var page = lookup[button.uniqueId].node.$dockpage;
-                    page.parentNode.remove(page);
+                    page.parentNode.remove(page, null, true);
                 });
             });
         });

@@ -10,7 +10,6 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
-var panels = require("ext/panels/panels");
 var dockpanel = require("ext/dockpanel/dockpanel");
 var settings = require("ext/settings/settings");
 
@@ -20,8 +19,6 @@ module.exports = ext.register("ext/editors/editors", {
     alone   : true,
     type    : ext.GENERAL,
     nodes   : [],
-    visible : true,
-    alwayson : true,
 
     fileExtensions  : {},
 
@@ -44,7 +41,8 @@ module.exports = ext.register("ext/editors/editors", {
             type     : "radio",
             caption  : oExtension.name,
             value    : oExtension.path,
-            disabled : "{!require('ext/editors/editors').isEditorAvailable(tabEditors.activepage, '" + oExtension.path + "')}",
+            disabled : "{!require('ext/editors/editors').isEditorAvailable(tabEditors.activepage, '" 
+                + oExtension.path + "')}",
             onclick  : function(){
                 require('ext/editors/editors').switchEditor(this.value);
             }
@@ -192,6 +190,9 @@ module.exports = ext.register("ext/editors/editors", {
      * the focus extension to get the destination coordinates and
      * dimensions of tabEditors.parentNode when the editor goes
      * out of focus mode
+     * 
+     * [Ruben] This seems like a huge hack, why can't this be measured?
+     *      - editors should not depend on dockpanel
      */
     setTabResizeValues : function(ext) {
         var ph;
@@ -499,9 +500,9 @@ module.exports = ext.register("ext/editors/editors", {
 
     /**** Init ****/
 
-    hook : function(){
-        panels.register(this);
-
+    init : function(){
+        var _self = this;
+        
         window.onpopstate = function(e){
             var page = "/workspace" + e.state;
             if (tabEditors.activepage != page && tabEditors.getPage(page))
@@ -522,10 +523,7 @@ module.exports = ext.register("ext/editors/editors", {
             caption : "Editor",
             submenu : "mnuEditors"
         }), mnuView.firstChild);
-    },
-
-    init : function(){
-        var _self = this;
+        
         ext.addType("Editor", function(oExtension){
             _self.register(oExtension);
           }, function(oExtension){
@@ -809,7 +807,6 @@ module.exports = ext.register("ext/editors/editors", {
     destroy : function(){
         this.hbox.destroy(true, true);
         //this.splitter.destroy(true, true);
-        panels.unregister(this);
     }
 });
 

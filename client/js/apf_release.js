@@ -18181,7 +18181,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/aml/element.js)SIZE(21902)TIME(Sun, 04 Dec 2011 12:32:00 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/aml/element.js)SIZE(21909)TIME(Tue, 06 Dec 2011 08:17:25 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18221,7 +18221,7 @@ apf.AmlElement = function(struct, tagName){
         for (prop in p)
             q[prop] = p[prop];
         
-        $init.call(this, tagName, nodeFunc, struct);
+        return $init.call(this, tagName, nodeFunc, struct);
     };
     
     this.$init(function(tagName, nodeFunc, struct){
@@ -33283,7 +33283,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(57973)TIME(Sun, 04 Dec 2011 13:28:53 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(58002)TIME(Mon, 05 Dec 2011 14:15:33 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34080,7 +34080,7 @@ apf.BaseTab = function(){
      * @param {mixed} nameOrId the name or child number of the page element to remove.
      * @return {Page} the removed page element.
      */
-    this.remove = function(nameOrId, force){
+    this.remove = function(nameOrId, force, noAnimation){
         var page = typeof nameOrId == "object" 
             ? nameOrId 
             : this.$findPage(nameOrId);
@@ -34097,7 +34097,7 @@ apf.BaseTab = function(){
             return;
 
         
-        if (this.$scale) {
+        if (this.$scale && !noAnimation) {
             this.$scaleinit(page, "remove", function(){
                 //page.removeNode();
                 page.destroy(true, true);
@@ -36350,7 +36350,7 @@ apf.config.$inheritProperties["render-delay"] = 1;
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/dragdrop.js)SIZE(56002)TIME(Sun, 27 Nov 2011 21:22:47 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/dragdrop.js)SIZE(56093)TIME(Mon, 05 Dec 2011 11:31:18 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36753,7 +36753,7 @@ apf.DragDrop = function(){
         return false;
     };
 
-    this.$dragDrop = function(xmlReceiver, xmlNodeList, rule, defaction, isParent, srcRule, event){
+    this.$dragDrop = function(xmlReceiver, xmlNodeList, rule, defaction, isParent, srcRule, event, forceCopy){
         // @todo apf3.0 action not known here yet... should be moved down?
         if (action == "tree-append" && isParent) 
             return false;
@@ -36784,7 +36784,9 @@ apf.DragDrop = function(){
           //@todo apf3.0 below should actually be compileNode with with_options
           ifcopy = rule && rule.copy;//.getAttribute("copy");
 
-        if (ifcopy) {
+        if (typeof forceCopy == "boolean")
+            ifcopy = forceCopy;
+        else if (ifcopy) {
             ifcopy = !apf.isFalse((rule.ccopy || rule.compile("copy"))(xmlNodeList[0], context));
         }
         else if (typeof this.dragcopy == "boolean" || typeof this.dropcopy == "boolean") { //@todo apf3.0 boolean here?
@@ -40895,7 +40897,7 @@ apf.__XFORMS__ = 1 << 17;
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/contenteditable/clipboard.js)SIZE(3349)TIME(Mon, 28 Nov 2011 22:00:18 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/contenteditable/clipboard.js)SIZE(3386)TIME(Mon, 05 Dec 2011 11:31:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40971,7 +40973,8 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
             return false;
         var action = candrop[1] && candrop[1].action 
           || (amlNode.$isTreeArch ? "tree-append" : "list-append");
-        amlNode.$dragDrop(selected, this.store, candrop && candrop[1], action)
+        amlNode.$dragDrop(selected, this.store, candrop && candrop[1], action, 
+            null, null, null, true)
         
         //amlNode.copy(nodes, selected, undefined, !this.copied);
     }
@@ -48260,7 +48263,7 @@ apf.CodeCompilation = function(code){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingrule.js)SIZE(8842)TIME(Sun, 27 Nov 2011 00:09:33 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingrule.js)SIZE(8843)TIME(Mon, 05 Dec 2011 11:27:13 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48339,7 +48342,7 @@ apf.BindingRule = function(struct, tagName){
     //1 = force no bind rule, 2 = force bind rule
     this.$attrExcludePropBind = apf.extend({
         value : 1,
-        match : 1
+        match : 1,
     }, this.$attrExcludePropBind);
 
     this.$booleanProperties["hasaml"] = true;
@@ -51057,7 +51060,7 @@ apf.aml.setElement("column", apf.BindingColumnRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingdndrule.js)SIZE(3737)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingdndrule.js)SIZE(3623)TIME(Mon, 05 Dec 2011 11:27:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51131,13 +51134,13 @@ apf.BindingDndRule = function(struct, tagName){
         target   : 1,
         parent   : 1,
         action   : 1,
-        dragcopy : 1
+        copy     : 1
     }, this.$attrExcludePropBind);
 
     this.$propHandlers["target"]   = 
     this.$propHandlers["parent"]   = 
     this.$propHandlers["action"]   = 
-    this.$propHandlers["dragcopy"] = function(value, prop){
+    this.$propHandlers["copy"]     = function(value, prop){
         delete this["c" + prop];
     }
     
@@ -55312,7 +55315,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53853)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/datagrid.js)SIZE(53921)TIME(Mon, 05 Dec 2011 19:05:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56233,6 +56236,8 @@ apf.datagrid = function(struct, tagName){
                     info.skin = h.skin;
                 if (h["class"])
                     info["class"] = h["class"];
+                if (h.fill)
+                    info.fill = h.fill;
 
                 oEditor = this.$editors[h.$uniqueId + ":" + editor] = new constr(info);
 
@@ -59625,7 +59630,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/item.js)SIZE(23457)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/item.js)SIZE(23457)TIME(Tue, 06 Dec 2011 06:05:03 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61127,7 +61132,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/menu.js)SIZE(19012)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/menu.js)SIZE(19155)TIME(Tue, 06 Dec 2011 06:05:54 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61502,9 +61507,11 @@ apf.menu = function(struct, tagName){
                 continue;
 
             if (nodes[i].value == value || !nodes[i].value && nodes[i].caption == value)
-                nodes[i].$handlePropSet("selected", true);
+                nodes[i].setProperty("selected", true, false, true);
+                //nodes[i].$handlePropSet("selected", true);
             else if (nodes[i].selected)
-                nodes[i].$handlePropSet("selected", false);
+                nodes[i].setProperty("selected", false, false, true);
+                //nodes[i].$handlePropSet("selected", false);
         }
     };
 
@@ -66612,7 +66619,7 @@ apf.aml.setElement("color",       apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/radiobutton.js)SIZE(17092)TIME(Sat, 03 Dec 2011 20:18:27 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/radiobutton.js)SIZE(17104)TIME(Tue, 06 Dec 2011 06:12:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67083,7 +67090,7 @@ apf.radiobutton = function(struct, tagName){
 
 apf.aml.setElement("radiobutton", apf.radiobutton);
 
-apf.$group = function(struct, tagName){
+apf.$group = apf.group = function(struct, tagName){
     this.$init(tagName || "group", apf.NODE_VISIBLE, struct);
     
     this.implement(

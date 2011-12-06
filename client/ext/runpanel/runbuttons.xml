@@ -13,7 +13,7 @@
     <a:menu id="mnuDebugSettings">
         <a:item id="itmDebug"
           type    = "check"
-          checked = "true"
+          checked = "[{require('ext/settings/settings').model}::auto/configurations/@debug]"
           caption = "Run in debug mode" />
     </a:menu>
 

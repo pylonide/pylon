@@ -20,13 +20,19 @@ module.exports = ext.register("ext/tree/tree", {
     alone            : true,
     type             : ext.GENERAL,
     markup           : markup,
-    visible          : true,
+    
+    defaultWidth     : 200,
+    
     deps             : [fs],
+    
     currentSettings  : [],
     expandedList     : {},
     loading          : false,
     changed          : false,
     animControl      : {},
+    nodes            : [],
+    
+    "default"        : true,
 
     //@todo deprecated?
     getSelectedPath: function() {
@@ -34,32 +40,10 @@ module.exports = ext.register("ext/tree/tree", {
     },
 
     hook : function(){
-        panels.register(this);
-
-        var btn = this.button = navbar.insertBefore(new apf.button({
-            skin    : "mnubtn",
-            state   : "true",
-            value   : "true",
-            "class" : "project_files",
-            caption : "Files"
-        }), navbar.firstChild);
-        navbar.current = this;
-
-        var _self = this;
-        btn.addEventListener("mousedown", function(e){
-            var value = this.value;
-            if (navbar.current && (navbar.current != _self || value)) {
-                navbar.current.disable(navbar.current == _self);
-                if (value)
-                    return;
-            }
-
-            panels.initPanel(_self);
-            _self.enable(true);
-        });
-        
-        ide.addEventListener("filecallback", function (e) {
-            _self.refresh();
+        panels.register(this, {
+            position : 10,
+            caption: "Files",
+            "class": "project_files"
         });
     },
 
@@ -67,6 +51,8 @@ module.exports = ext.register("ext/tree/tree", {
         var _self = this;
 
         this.panel = winFilesViewer;
+        
+        this.nodes.push(winFilesViewer);
         
         colLeft.addEventListener("hide", function(){
             splitterPanelLeft.hide();
@@ -92,7 +78,8 @@ module.exports = ext.register("ext/tree/tree", {
                 })
             }
         }));
-        davProject.setAttribute("showhidden", "[{require('ext/settings/settings').model}::auto/tree/@showhidden]");
+        davProject.setAttribute("showhidden",
+          "[{require('ext/settings/settings').model}::auto/tree/@showhidden]");
 
         mnuView.appendChild(new apf.divider());
 
@@ -212,6 +199,10 @@ module.exports = ext.register("ext/tree/tree", {
         ide.addEventListener("afteronline", function(e){
             //trFiles.enable();
             //mnuCtxTree.enable();
+        });
+        
+        ide.addEventListener("filecallback", function (e) {
+            _self.refresh();
         });
 
         /**** Support for state preservation ****/
@@ -428,39 +419,25 @@ module.exports = ext.register("ext/tree/tree", {
 
         }
     },
-
-    enable : function(noButton){
-        winFilesViewer.show();
-        winFilesViewer.parentNode.setWidth(this.$lastWidth || 200);
-        
-        colLeft.show();
-        if (!noButton) {
-            this.button.setValue(true);
-            if(navbar.current && (navbar.current != this))
-                navbar.current.disable(false);
-        }
-
-        splitterPanelLeft.show();
-        navbar.current = this;
+    
+    enable : function(){
+        this.nodes.each(function(item){
+            item.enable();
+        });
     },
-
-    disable : function(noButton){
-        if (self.winFilesViewer) {
-            this.$lastWidth = winFilesViewer.parentNode.width;
-            winFilesViewer.hide();
-        }
-        if (!noButton)
-            this.button.setValue(false);
-
-        splitterPanelLeft.hide();
+    
+    disable : function(){
+        this.nodes.each(function(item){
+            item.disable();
+        });
     },
 
     destroy : function(){
-        davProject.destroy(true, true);
-        mdlFiles.destroy(true, true);
-        trFiles.destroy(true, true);
-
         trFiles.removeEventListener("afterselect", this.$afterselect);
+        this.nodes.each(function(item){
+            item.destroy(true, true);
+        });
+        this.nodes = [];
 
         panels.unregister(this);
     }

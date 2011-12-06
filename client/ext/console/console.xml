@@ -87,7 +87,7 @@
                     value = "{tabConsole.visible}"
                     onprop.value="
                         try {
-                            require('ext/console/console')[event.value ? 'enable' : 'disable']();
+                            require('ext/console/console')[event.value ? 'show' : 'hide']();
                         }catch(e){}
                     " />
             </a:hbox>

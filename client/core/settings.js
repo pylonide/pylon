@@ -45,9 +45,27 @@ module.exports = {
             this.model.load(template);
         }
 
-        ide.dispatchEvent("loadsettings", {
-            model : this.model
-        });
+        if (window.onerror) {
+            try {
+                ide.dispatchEvent("loadsettings", {
+                    model : this.model
+                });
+            } catch(e) {
+                self["requ"+"ire"]("ext/filesystem/filesystem")    
+                  .saveFile("/workspace/.c9.brokensettings.xml", xml.xml || xml);
+                
+                this.model.load(template);
+                
+                ide.dispatchEvent("loadsettings", {
+                    model : this.model
+                });
+            }
+        }
+        else {
+            ide.dispatchEvent("loadsettings", {
+                model : this.model
+            });
+        }
         
         ide.addEventListener("$event.loadsettings", this.$loadsettings);
         

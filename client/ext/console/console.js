@@ -9,7 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var panels = require("ext/panels/panels");
 var editors = require("ext/editors/editors");
 var Parser = require("ext/console/parser");
 var Logger = require("ext/console/logger");
@@ -73,6 +72,8 @@ module.exports = ext.register("ext/console/console", {
     markup : markup,
     css    : css,
     
+    nodes : [],
+    
     autoOpen : true,
     commandHistoryIndex : 0,
 
@@ -112,7 +113,7 @@ module.exports = ext.register("ext/console/console", {
         if (apf.activeElement == txtConsoleInput) {
             if (window.ceEditor) {
                 ceEditor.focus();
-                this.disable();
+                this.hide();
             }
         }
         else {
@@ -298,7 +299,7 @@ module.exports = ext.register("ext/console/console", {
                 }
             }
             if (showConsole)    
-                this.enable();
+                this.show();
         }
     },
 
@@ -583,13 +584,9 @@ module.exports = ext.register("ext/console/console", {
 
     /**** Init ****/
 
-    hook : function(){
-        panels.register(this, mnuWindows);
-        panels.initPanel(this);
-    },
-
     init : function(amlNode){
-        var _self = this
+        var _self = this;
+        
         this.panel = tabConsole;
         this.$cwd  = "/workspace";
 
@@ -603,7 +600,7 @@ module.exports = ext.register("ext/console/console", {
             _self.showOutput();
             
             if (_self.autoOpen)
-                _self.enable();
+                _self.show();
         });
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
@@ -616,8 +613,6 @@ module.exports = ext.register("ext/console/console", {
                 Logger.log("'" + path + "' is not a file.");
         });
 
-        winDbgConsole.previousSibling.hide(); //que?
-
         function kdHandler(e){
             if (!e.ctrlKey && !e.metaKey && !e.altKey
               && !e.shiftKey && apf.isCharacter(e.keyCode))
@@ -626,10 +621,25 @@ module.exports = ext.register("ext/console/console", {
 
         txtOutput.addEventListener("keydown", kdHandler);
         txtConsole.addEventListener("keydown", kdHandler);
+        
+        this.nodes.push(
+            winDbgConsole,
+            
+            mnuProjectBar.appendChild(new apf.item({
+                caption : "Console",
+                type    : "check",
+                checked : "{winDbgConsole.height > 41}",
+                "onprop.checked" : function(e){
+                    if (e.value)
+                        _self.show();
+                    else
+                        _self.hide();
+                }
+            }))
+        );
     },
 
-    enable : function(fromParent){
-        this.mnuItem.check();
+    show : function(){
         tabConsole.show();
 
         if (winDbgConsole.height == 41)
@@ -641,8 +651,7 @@ module.exports = ext.register("ext/console/console", {
 
     },
 
-    disable : function(fromParent) {
-        this.mnuItem.uncheck();
+    hide : function() {
         tabConsole.hide();
 
         if (winDbgConsole.height != 41)
@@ -653,10 +662,24 @@ module.exports = ext.register("ext/console/console", {
         apf.layout.forceResize();
         apf.setStyleClass(btnCollapseConsole.$ext, '' , ['btn_console_openOpen']);
     },
+    
+    enable : function(){
+        this.nodes.each(function(item){
+            item.enable();
+        });
+    },
+    
+    disable : function(){
+        this.nodes.each(function(item){
+            item.disable();
+        });
+    },
 
     destroy : function(){
-        winDbgConsole.destroy(true, true);
-        panels.unregister(this);
+        this.nodes.each(function(item){
+            item.destroy(true, true);
+        });
+        this.nodes = [];
     }
 });
 
