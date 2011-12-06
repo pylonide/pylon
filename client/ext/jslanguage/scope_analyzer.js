@@ -90,6 +90,15 @@ handler.analyze = function(doc, ast) {
                     });
                 }
             },
+            'ForIn(Var(x), _, _)', function(b, node) {
+                if(!scope[b.x.value]) {
+                    markers.push({
+                        pos: node[0].getPos(),
+                        type: 'warning',
+                        message: 'Using undeclared variable as iterator variable.'
+                    });
+                }
+            },
             'Var(x)', function(b, node) {
                 node.setAnnotation("scope", scope);
                 if(scope[b.x.value]) {
