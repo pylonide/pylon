@@ -233,9 +233,8 @@ module.exports = ext.register("ext/code/code", {
     },
     
     setDocument : function(doc, actiontracker){
+	var _self = this;
         if (!doc.acesession) {
-            var _self = this;
-
             doc.isInited = doc.hasValue();
             doc.acedoc = doc.acedoc || new ProxyDocument(new Document(doc.getValue() || ""));
             doc.acesession = new EditSession(doc.acedoc);
@@ -243,9 +242,13 @@ module.exports = ext.register("ext/code/code", {
             
             doc.acesession.setUndoManager(actiontracker);
             
+            if (doc.isInited && doc.state)
+                 _self.setState(doc, doc.state);
+            
             doc.addEventListener("prop.value", function(e) {
                 doc.acesession.setValue(e.value || "");
-                ceEditor.$editor.moveCursorTo(0, 0);
+                if (doc.state)
+                    _self.setState(doc, doc.state);
                 doc.isInited = true;
             });
             
@@ -282,13 +285,6 @@ module.exports = ext.register("ext/code/code", {
                 require([theme], function() {});
             // pre load custom mime types
             _self.getCustomTypes(e.model);
-        });
-        
-        ide.addEventListener("afteropenfile", function(e) {
-            if(!e.editor)
-                return;
-
-            e.editor.setState && e.editor.setState(e.doc, e.doc.state);
         });
         
         // preload common language modes
