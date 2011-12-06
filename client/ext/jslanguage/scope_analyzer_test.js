@@ -69,6 +69,19 @@ module.exports = {
         worker.register("ext/jslanguage/parse");
         assert.equal(worker.handlers.length, 2);
         worker.switchFile("test.js", "javascript", "hello = false;");
+    },
+    "test undeclared iteration variable" : function(next) {
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("markers", function(markers) {
+            assert.equal(markers.length, 1);
+            assert.equal(markers[0].message, 'Using undeclared variable as iterator variable.');
+            next();
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/parse");
+        worker.switchFile("test.js", "javascript", "for(p in {}) { }");
     }
 };
 
