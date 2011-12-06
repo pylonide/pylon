@@ -36209,7 +36209,7 @@ apf.BaseTree = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/delayedrender.js)SIZE(4936)TIME(Sun, 04 Dec 2011 11:48:01 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/delayedrender.js)SIZE(5249)TIME(Tue, 06 Dec 2011 08:57:38 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36327,9 +36327,20 @@ apf.DelayedRender = function(){
     };
     
     var _self = this;
-    apf.window.vManager.check(this, "delayedrender", function(){
+    if (apf.window.vManager.check(this, "delayedrender", function(){
         _self.$render();
-    });
+    })) this.$render();
+    
+    /*var f;
+    this.addEventListener("prop.visible", f = function(){
+        if (arguments[0].value) {
+            
+            this.$render();
+            
+            
+            this.removeEventListener("prop.visible", f);
+        }
+    });*/
 };
 
 apf.GuiElement.propHandlers["render"] = function(value) {

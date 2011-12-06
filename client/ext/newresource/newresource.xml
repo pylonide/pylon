@@ -20,14 +20,14 @@
             overflow = "auto"
             right    = "12"
             top      = "12"
-            bottom   = "70"
+            bottom   = "55"
         />
       
         <a:vbox padding="10" anchors="0 0 0 0">
             <a:list id="lstFileTemplates"
               model     = "mdlFileTemplates" 
               flex      = "1" 
-              margin    = "10 10 0 10"
+              margin    = "10 10 10 10"
               caption   = "[@caption]" 
               icon      = "[@icon]" 
               each      = "item"

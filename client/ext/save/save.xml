@@ -6,7 +6,7 @@
       center    = "true"
       render    = "runtime"
       width     = "512"
-      skin      = "bk-window"
+      skin      = "bk-window2"
       draggable = "true"
       class     = "relative">
         <a:vbox padding="10" edge="15 20 10 20">
@@ -14,17 +14,14 @@
             <div>This file has unsaved changes. Would you like to save the file before closing?</div>
         </a:vbox>
 
-        <a:vbox>
-            <a:divider skin="hordivider" />
-            <a:hbox pack="end" padding="7" edge="2 10 12">
-                <a:button id="btnYesAll" caption="Yes to all" skin="btn-default-css3" />
-                <a:button id="btnNoAll" caption="No to all" skin="btn-default-css3"/>
-                <a:filler />
-                <a:button id="btnSaveYes" default="3" class="btn-green" caption="Yes" skin="btn-default-css3"/>
-                <a:button id="btnSaveNo" class="btn-red" caption="No" skin="btn-default-css3"/>
-                <a:button id="btnSaveCancel" skin="btn-default-css3">Cancel</a:button>
-            </a:hbox>
-        </a:vbox>
+        <a:hbox edge="6 10 10" pack="end" padding="8">
+            <a:button id="btnYesAll" caption="Yes to all" skin="btn-default-css3" />
+            <a:button id="btnNoAll" caption="No to all" skin="btn-default-css3"/>
+            <a:filler />
+            <a:button id="btnSaveYes" default="3" class="btn-green" caption="Yes" skin="btn-default-css3"/>
+            <a:button id="btnSaveNo" class="btn-red" caption="No" skin="btn-default-css3"/>
+            <a:button id="btnSaveCancel" skin="btn-default-css3">Cancel</a:button>
+        </a:hbox>
     </a:window>
 
     <a:script><![CDATA[
@@ -137,9 +134,9 @@
                   ">Show files in tree</a:checkbox>
             </a:hbox>
             <a:hbox
-              edge    = "17 0 10"
+              edge    = "23 0 10"
               pack    = "end"
-              padding = "10">
+              padding = "8">
                 <a:button
                   skin    = "btn-default-css3"
                   onclick = "winSaveAs.hide()">
