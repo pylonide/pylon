@@ -939,6 +939,8 @@ apf.datagrid = function(struct, tagName){
                     info.skin = h.skin;
                 if (h["class"])
                     info["class"] = h["class"];
+                if (h.fill)
+                    info.fill = h.fill;
 
                 oEditor = this.$editors[h.$uniqueId + ":" + editor] = new constr(info);
 

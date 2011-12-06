@@ -36,7 +36,7 @@ apf.AmlElement = function(struct, tagName){
         for (prop in p)
             q[prop] = p[prop];
         
-        $init.call(this, tagName, nodeFunc, struct);
+        return $init.call(this, tagName, nodeFunc, struct);
     };
     
     this.$init(function(tagName, nodeFunc, struct){

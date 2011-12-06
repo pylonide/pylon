@@ -802,7 +802,7 @@ apf.BaseTab = function(){
      * @param {mixed} nameOrId the name or child number of the page element to remove.
      * @return {Page} the removed page element.
      */
-    this.remove = function(nameOrId, force){
+    this.remove = function(nameOrId, force, noAnimation){
         var page = typeof nameOrId == "object" 
             ? nameOrId 
             : this.$findPage(nameOrId);
@@ -819,7 +819,7 @@ apf.BaseTab = function(){
             return;
 
         //#ifdef __ENABLE_TAB_SCALE
-        if (this.$scale) {
+        if (this.$scale && !noAnimation) {
             this.$scaleinit(page, "remove", function(){
                 //page.removeNode();
                 page.destroy(true, true);

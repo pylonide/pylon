@@ -472,7 +472,7 @@ apf.radiobutton = function(struct, tagName){
 
 apf.aml.setElement("radiobutton", apf.radiobutton);
 
-apf.$group = function(struct, tagName){
+apf.$group = apf.group = function(struct, tagName){
     this.$init(tagName || "group", apf.NODE_VISIBLE, struct);
     
     this.implement(
