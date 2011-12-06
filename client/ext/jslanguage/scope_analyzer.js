@@ -104,6 +104,7 @@ Scope.prototype.hint = function(name, v) {
 };
 
 handler.analyze = function(doc, ast) {
+    var handler = this;
     var markers = [];
     
     // Preclare variables (pre-declares, yo!)
@@ -175,7 +176,8 @@ handler.analyze = function(doc, ast) {
                 b.fargs.forEach(function(farg) {
                     farg.setAnnotation("scope", newScope);
                     var v = newScope.declare(farg[0].value, farg);
-                    localVariables.push(v);
+                    if (handler.isFeatureEnabled("unusedFunctionArgs"))
+                        localVariables.push(v);
                 });
                 scopeAnalyzer(newScope, b.body);
                 return node;
