@@ -3842,7 +3842,8 @@
         .divider-debugpanel {
             position      : relative;
             overflow      : hidden;
-            height        : 6px;
+            height        : 8px;
+            z-index       : 1;
         }
 
         .divider-debugpanel .container {
