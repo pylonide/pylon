@@ -171,6 +171,15 @@ module.exports = ext.register("ext/code/code", {
         sel.setSelectionRange(state.selection, false);
         ceEditor.$editor.renderer.scrollToY(state.scrolltop);
         ceEditor.$editor.renderer.scrollToX(state.scrollleft);
+        
+        // if newfile == 1 and there is text cached, restore it
+        var node = doc.getNode && doc.getNode();
+        if (node && parseInt(node.getAttribute("newfile") || 0, 10) === 1 && node.childNodes.length) {
+            // the text is cached within a CDATA block as first childNode of the <file>
+            if (doc.getNode().childNodes[0] instanceof CDATASection) {
+                aceDoc.setValue(doc.getNode().childNodes[0].nodeValue);
+            }
+        }
     },
 
     getSyntax : function(node) {

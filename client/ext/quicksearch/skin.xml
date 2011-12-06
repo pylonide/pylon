@@ -26,6 +26,36 @@
                 background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(232,232,232)),color-stop(1, rgb(227,227,227)));
                 background:-moz-linear-gradient(center bottom,rgb(232,232,232) 0%,rgb(227,227,227) 100%);
             }
+            
+            #divSearchCount {
+                position: absolute;
+                width: auto;
+                height: 19px;
+                right: 73px;
+                top: 2px;
+            }
+            
+            #divSearchCount .searchIter,
+            #divSearchCount .searchTotal {
+                color: #aaa;
+                font-size: 11px;
+                height: 19px;
+                line-height: 20px;
+                text-align: center;
+                vertical-align: middle;
+                display:inline;
+                float: left;
+            }
+            
+            #divSearchCount .searchIter {
+                margin: 0 1px 0 0;
+                padding: 0 0 0 7px;
+            }
+            
+            #divSearchCount .searchTotal {
+                margin: 0;
+                padding: 0 5px 0 2px;
+            }
         ]]></a:style>
 
         <a:presentation>

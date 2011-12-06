@@ -236,7 +236,7 @@ module.exports = ext.register("ext/tree/tree", {
             args[1].setAttribute("newname", filename);
 
             setTimeout(function () {
-                fs.beforeRename(args[1], null, args[0].getAttribute("path").replace(/[\/]+$/, "") + "/" + filename);
+                fs.beforeRename(args[1], null, args[0].getAttribute("path").replace(/[\/]+$/, "") + "/" + filename, true);
                 args[1].removeAttribute("newname");
             });
         });

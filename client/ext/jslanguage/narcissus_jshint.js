@@ -12,6 +12,8 @@ var parser = require("ace/narcissus/jsparse");
 
 var handler = module.exports = Object.create(baseLanguageHandler);
 
+var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./];
+
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
@@ -52,6 +54,9 @@ handler.analyze = function(doc) {
         lint.errors.forEach(function(warning) {
             if (!warning)
                 return;
+            for (var i = 0; i < disabledJSHintWarnings.length; i++)
+                if(disabledJSHintWarnings[i].test(warning.reason))
+                    return;
             markers.push({
                 pos: {
                     sl: warning.line-1,
