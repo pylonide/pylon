@@ -27,6 +27,7 @@ function Variable(declaration) {
     if(declaration)
         this.declarations.push(declaration);
     this.uses = [];
+    this.values = [];
 }
 
 Variable.prototype.addUse = function(node) {
@@ -35,6 +36,71 @@ Variable.prototype.addUse = function(node) {
 
 Variable.prototype.addDeclaration = function(node) {
     this.declarations.push(node);
+};
+
+Variable.prototype.addValue = function(value) {
+    var values = this.values;
+    for (var i = 0; i < values.length; i++) {
+        if(values[i].guid === v.guid) {
+            return;
+        }
+    }
+    values.push(value);
+};
+
+var scopeId = 0;
+
+/**
+ * Implements Javascript's scoping mechanism using a hashmap with parent
+ * pointers.
+ */
+function Scope(parent) {
+    this.id = scopeId++;
+    this.parent = parent;
+    this.vars = {};
+}
+
+/**
+ * Declare a variable in the current scope
+ */
+Scope.prototype.declare = function(name, resolveNode, initialValue) {
+    if(!this.vars[name]) 
+        this.vars[name] = new Variable(resolveNode);
+    else
+        this.vars[name].addDeclaration(resolveNode);
+    if(initialValue)
+        this.vars[name].addValue(initialValue);
+    return this.vars[name];
+};
+
+Scope.prototype.isDeclared = function(name) {
+    return !!this.get(name);
+};
+
+/**
+ * Get possible values of a variable
+ * @param name name of variable
+ * @return array of values
+ */
+Scope.prototype.get = function(name) {
+    if(this.vars[name])
+        return this.vars[name];
+    else if(this.parent)
+        return this.parent.get(name);
+};
+
+/**
+ * Hints at what the value of a variable may be 
+ * @param variable name
+ * @param val AST node of expression
+ */
+Scope.prototype.hint = function(name, v) {
+    var vr = this.get(name);
+    if(!vr) {
+        // Not properly declared variable, implicitly declare it in the current scope
+        vr = this.declare(name);
+    }
+    vr.addValue(v);
 };
 
 handler.analyze = function(doc, ast) {
@@ -46,26 +112,20 @@ handler.analyze = function(doc, ast) {
             // var bla;
             'VarDecl(x)', function(b, node) {
                 node.setAnnotation("scope", scope);
-                if(!scope.hasOwnProperty(b.x.value))
-                    scope[b.x.value] = new Variable(b.x);
-                else
-                    scope[b.x.value].addDeclaration(b.x);
+                scope.declare(b.x.value, b.x);
                 return node;
             },
             // var bla = 10;
-            'VarDeclInit(x, _)', function(b, node) {
+            'VarDeclInit(x, e)', function(b, node) {
                 node.setAnnotation("scope", scope);
-                if(!scope.hasOwnProperty(b.x.value))
-                    scope[b.x.value] = new Variable(b.x);
-                else
-                    scope[b.x.value].addDeclaration(b.x);
+                scope.declare(b.x.value, b.x, b.e);
                 return node;
             },
             // function bla(farg) { }
             'Function(x, _, _)', function(b, node) {
                 node.setAnnotation("scope", scope);
                 if(b.x.value) {
-                    scope[b.x.value] = new Variable(b.x);
+                    scope.declare(b.x.value, b.x, this);
                 }
                 return node;
             }
@@ -77,13 +137,13 @@ handler.analyze = function(doc, ast) {
         var localVariables = parentLocalVars || [];
         node.traverseTopDown(
             'VarDecl(x)', function(b) {
-                localVariables.push(scope[b.x.value]);
+                localVariables.push(scope.get(b.x.value));
             },
             'VarDeclInit(x, _)', function(b) {
-                localVariables.push(scope[b.x.value]);
+                localVariables.push(scope.get(b.x.value));
             },
             'Assign(Var(x), _)', function(b, node) {
-                if(!scope[b.x.value]) {
+                if(!scope.isDeclared(b.x.value)) {
                     markers.push({
                         pos: node[0].getPos(),
                         type: 'warning',
@@ -92,7 +152,7 @@ handler.analyze = function(doc, ast) {
                 }
             },
             'ForIn(Var(x), _, _)', function(b, node) {
-                if(!scope[b.x.value]) {
+                if(!scope.isDeclared(b.x.value)) {
                     markers.push({
                         pos: node[0].getPos(),
                         type: 'warning',
@@ -102,31 +162,31 @@ handler.analyze = function(doc, ast) {
             },
             'Var(x)', function(b, node) {
                 node.setAnnotation("scope", scope);
-                if(scope[b.x.value]) {
-                    scope[b.x.value].addUse(node);
+                if(scope.isDeclared(b.x.value)) {
+                    scope.get(b.x.value).addUse(node);
                 }
                 return node;
             },
             'Function(x, fargs, body)', function(b, node) {
                 node.setAnnotation("scope", scope);
 
-                var newScope = Object.create(scope);
-                newScope['this'] = new Variable();
+                var newScope = new Scope(scope);
+                newScope.declare("this");
                 b.fargs.forEach(function(farg) {
                     farg.setAnnotation("scope", newScope);
-                    newScope[farg[0].value] = new Variable(farg);
-                    localVariables.push(newScope[farg[0].value]);
+                    var v = newScope.declare(farg[0].value, farg);
+                    localVariables.push(v);
                 });
                 scopeAnalyzer(newScope, b.body);
                 return node;
             },
             'Catch(x, body)', function(b, node) {
-                var oldVar = scope[b.x.value];
+                var oldVar = scope.get(b.x.value);
                 // Temporarily override
-                scope[b.x.value] = new Variable(b.x);
+                scope.vars[b.x.value] = new Variable(b.x);
                 scopeAnalyzer(scope, b.body, localVariables);
                 // Put back
-                scope[b.x.value] = oldVar;
+                scope.vars[b.x.value] = oldVar;
                 return node;
             },
             'PropAccess(_, "lenght")', function(b, node) {
@@ -159,7 +219,7 @@ handler.analyze = function(doc, ast) {
             }
         }
     }
-    scopeAnalyzer({}, ast);
+    scopeAnalyzer(new Scope(), ast);
     return markers;
 };
 
@@ -232,25 +292,25 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
     var mainNode;
     currentNode.rewrite(
         'VarDeclInit(x, _)', function(b, node) {
-            v = node.getAnnotation("scope")[b.x.value];
+            v = node.getAnnotation("scope").get(b.x.value);
             mainNode = b.x;
         },
         'VarDecl(x)', function(b, node) {
-            v = node.getAnnotation("scope")[b.x.value];
+            v = node.getAnnotation("scope").get(b.x.value);
             mainNode = b.x;
         },
         'FArg(x)', function(b, node) {
-            v = node.getAnnotation("scope")[b.x.value];
+            v = node.getAnnotation("scope").get(b.x.value);
             mainNode = node;
         },
         'Function(x, _, _)', function(b, node) {
             if(!b.x.value)
                 return;
-            v = node.getAnnotation("scope")[b.x.value];
+            v = node.getAnnotation("scope").get(b.x.value);
             mainNode = b.x;
         },
         'Var(x)', function(b, node) {
-            v = node.getAnnotation("scope")[b.x.value];
+            v = node.getAnnotation("scope").get(b.x.value);
             mainNode = node;
         }
     );
