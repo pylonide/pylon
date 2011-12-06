@@ -78,7 +78,7 @@
                 />
                 <a:button
                   caption = "Done"
-                  margin = "0 0 0 30"
+                  margin = "0 0 0 10"
                   skin = "btn-default-css3"
                   onclick = "winExt.close()"
                 />
@@ -97,7 +97,7 @@
                 />
                 <a:button
                   caption = "Done"
-                  margin = "0 0 0 30"
+                  margin = "0 0 0 10"
                   skin = "btn-default-css3"
                   onclick = "winExt.close()"
                 />

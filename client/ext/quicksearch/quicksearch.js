@@ -203,8 +203,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             var range = sel.getRange();
             var value = doc.getTextRange(range);
 
-            if (!value && editor.ceEditor)
-                value = editor.ceEditor.getLastSearchOptions().needle;
+            //if (!value && editor.ceEditor)
+               // value = editor.ceEditor.getLastSearchOptions().needle;
 
             if (value)
                 txtQuickSearch.setValue(value);
