@@ -34551,17 +34551,19 @@ apf.BaseTab = function(){
         if (amlNode.localName != "page" || e.relatedNode != this || amlNode.nodeType != 1)
             return;
 
+        var pages = this.getPages();
+
         if (!e.$beforeNode) {
-            var lastChild, pg = this.getPages();
-            if (lastChild = pg[pg.length - 1])
+            var lastChild, pg = pages;
+            if (lastChild = pg[pg.length - 2])
                 lastChild.$last(true);
             amlNode.$last();
         }
     
-        var p = this.getPage(0); //@todo $beforeNode doesnt have to be a page
-        if (!p || e.$beforeNode == p) {
-            if (p)
-                p.$first(true);
+        var p2, p = pages[0]; //@todo $beforeNode doesnt have to be a page
+        if (amlNode == p) {
+            if (p2 = this.getPage(1))
+                p2.$first(true);
             amlNode.$first();
         }
 

@@ -1624,7 +1624,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         var _self   = this;
         var section = bar.insertBefore(new apf.vbox({
             padding : 0,
-            edge    : "0 0 3 0",
+            edge    : "0 0 3 1",
             "class" : "docksection",
             value   : ident,
             dock    : sectionOpt.draggable === false ? 0 : 1,
@@ -1762,32 +1762,36 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         if (options && options["id"])
             button.setAttribute('id', options["id"]);
         
-        if (options && (tmp = options.primary)) {
-            var span = button.$ext.getElementsByTagName("span");
-            
-            button.setAttribute("tooltip", options.menu.split("/").pop());
-            
-            span[2].style.background = 'url("' 
-                + tmp.backgroundImage + '") '
-                + tmp.defaultState.x + 'px '
-                + tmp.defaultState.y + 'px no-repeat';
-            
-            if (tmp = options.secondary) {
-                span[1].style.background = 'url("' 
-                    + tmp.backgroundImage + '") '
-                    + tmp.defaultState.x + 'px '
-                    + tmp.defaultState.y + 'px no-repeat'
-            }
-            
-            if (tmp = options.tertiary) {
-                span[0].style.background =
-                    tmp.backgroundColor + ' url("'
+        function _setBtnIco(_btn){
+            if (options && (tmp = options.primary)) {
+                var span = _btn.$ext.getElementsByTagName("span");
+                
+                _btn.setAttribute("tooltip", options.menu.split("/").pop());
+                
+                span[2].style.background = 'url("' 
                     + tmp.backgroundImage + '") '
                     + tmp.defaultState.x + 'px '
                     + tmp.defaultState.y + 'px no-repeat';
-                span[0].style.border = "1px solid #c7c7c7";
+                
+                if (tmp = options.secondary) {
+                    span[1].style.background = 'url("' 
+                        + tmp.backgroundImage + '") '
+                        + tmp.defaultState.x + 'px '
+                        + tmp.defaultState.y + 'px no-repeat'
+                }
+                
+                if (tmp = options.tertiary) {
+                    span[0].style.background =
+                        tmp.backgroundColor + ' url("'
+                        + tmp.backgroundImage + '") '
+                        + tmp.defaultState.x + 'px '
+                        + tmp.defaultState.y + 'px no-repeat';
+                    span[0].style.border = "1px solid #c7c7c7";
+                }
             }
-        }
+        };
+        
+        _setBtnIco(button);
         
         // When the page is shown, we can reset the notification count
         page.addEventListener("prop.visible", function(e) {
@@ -1819,7 +1823,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             btn.removeAttribute("id");
             apf.document.body.appendChild(btn);
             btn.setValue(true);
-        
+            _setBtnIco(btn);
+            
             var pos = apf.getAbsolutePosition(this.$ext);
             btn.setLeft(pos[0]);
             btn.setTop(pos[1]);

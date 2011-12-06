@@ -218,7 +218,7 @@
         .debug-panel {
             position         : relative;
             overflow         : hidden;
-            width            : 37px;
+            width            : 39px;
             border-left      : 1px solid #1e1e1e;
             background       : url(images/debug-panel_bg.png) 0 0;
         }
@@ -8030,14 +8030,24 @@
             border-top-left-radius: 4px;
             border-top-right-radius: 4px;*/
         }
-
+        
+        .docktab .btncontainer .btntab.firstbtn {
+            -webkit-border-top-left-radius : 4px;
+            -moz-border-radius-topleft     : 4px;
+            border-top-left-radius: 4px;
+        }
+        .docktab .btncontainer .btntab.lastbtn {
+            -webkit-border-top-right-radius : 4px;
+            -moz-border-radius-topright     : 4px;
+            border-top-right-radius: 4px;
+        }
+        
         .expandedpanel .docktab .btncontainer .btntab {
             padding-top: 2px;
+            -webkit-border-radius: 0;
+            -moz-border-radius: 0;
+            border-radius: 0;
         }
-
-        /*.docktab .btncontainer div.firstbtn {
-            margin-left: 0;
-        }*/
 
         .docktab .btncontainer .btntab .tab_icon {
             height   : 16px;
@@ -8179,8 +8189,21 @@
             border-right: 1px solid #8c8c8c;
             border-bottom: 1px solid #8c8c8c;*/
             overflow: hidden;
+            border-radius: 4px;
         }
-
+        .docktab .page > div {
+            border-radius: 0 0 4px 4px;
+        }
+        
+        .docktab .page .ace_gutter {
+            border-radius: 0 0 0 4px;
+        }
+        
+        .expandedpanel .docktab .page > div,
+        .expandedpanel .docktab .page .ace_gutter {
+            border-radius: 0;
+        }
+        
         .dockcol .docktab .page {
             top: 23px;
             right: 5px;
