@@ -233,7 +233,7 @@ module.exports = ext.register("ext/code/code", {
     },
     
     setDocument : function(doc, actiontracker){
-	var _self = this;
+        var _self = this;
         if (!doc.acesession) {
             doc.isInited = doc.hasValue();
             doc.acedoc = doc.acedoc || new ProxyDocument(new Document(doc.getValue() || ""));
