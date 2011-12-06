@@ -253,29 +253,29 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
             var scope = this.getAnnotation("scope");
             if (!scope)
                 return;
-            var v = scope[b.x.value];
+            var v = scope.get(b.x.value);
             highlightVariable(v);
             // Let's not enable renaming 'this' and only rename declared variables
             if(b.x.value !== "this" && v)
                 enableRefactorings.push("renameVariable");
         },
         'VarDeclInit(x, _)', function(b) {
-            highlightVariable(this.getAnnotation("scope")[b.x.value]);
+            highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
         'VarDecl(x)', function(b) {
-            highlightVariable(this.getAnnotation("scope")[b.x.value]);
+            highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
         'FArg(x)', function(b) {
-            highlightVariable(this.getAnnotation("scope")[b.x.value]);
+            highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
         'Function(x, _, _)', function(b) {
             // Only for named functions
             if(!b.x.value)
                 return;
-            highlightVariable(this.getAnnotation("scope")[b.x.value]);
+            highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         }
     );
