@@ -56,8 +56,13 @@ module.exports = (function () {
             }
         });
         
-        // yes, this is superhacky but the editor function in APF is crazy
+        /*
+         * This has been commented out because this functionality is still
+         * open for debate. We'll fix this in iteration 2.
+         *
+        // yes, this is superhacky but the editor function in APF is crazy        
         datagridHtml.addEventListener("dblclick", initializeEditor);
+        */
         
         // when collapsing or expanding the datagrid we want to resize
         dgLiveInspect.addEventListener("expand", resizeWindow);
@@ -114,11 +119,6 @@ module.exports = (function () {
             if (!inspector.isEditable(dgLiveInspect.selected)) {
                 return;
             }
-            
-            // regex validator to make sure we don't mess up
-            var validator = null;
-              
-
             
             // V8 debugger cannot change variables that are locally scoped, so we need at least 
             // one parent property.
