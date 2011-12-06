@@ -8048,6 +8048,12 @@
             -moz-border-radius: 0;
             border-radius: 0;
         }
+        
+        .dragging.docktab .btncontainer .btntab {
+            -webkit-border-radius: 0;
+            -moz-border-radius: 0;
+            border-radius: 0;
+        }
 
         .docktab .btncontainer .btntab .tab_icon {
             height   : 16px;
