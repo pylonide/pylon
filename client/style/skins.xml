@@ -218,7 +218,7 @@
         .debug-panel {
             position         : relative;
             overflow         : hidden;
-            width            : 39px;
+            width            : 38px;
             border-left      : 1px solid #1e1e1e;
             background       : url(images/debug-panel_bg.png) 0 0;
         }
