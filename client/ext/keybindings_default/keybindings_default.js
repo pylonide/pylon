@@ -18,7 +18,7 @@ var win = require("text!ext/keybindings_default/default_win.js");
 function parseKeyBindings(txt) {
     var json;
     txt.replace(/keys\.onLoad\(([\w\W\n\r]*)\);\n/gm, function(m, s){
-        json = s;
+        json = s.replace(/\);[\n\r\s]*\}$/, "");
     });
     return JSON.parse(json);
 }
