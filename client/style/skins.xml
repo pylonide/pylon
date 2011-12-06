@@ -269,6 +269,10 @@
         .docksection {
             background       : url(images/debug-panel_bg.png) 0 0;
         }
+        
+        .docksection div:nth-child(2) {
+            padding-top: 0;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -3838,7 +3842,7 @@
         .divider-debugpanel {
             position      : relative;
             overflow      : hidden;
-            height        : 4px;
+            height        : 6px;
         }
 
         .divider-debugpanel .container {
@@ -3854,7 +3858,6 @@
         .divider-debugpanel:hover {
             position      : relative;
             overflow      : hidden;
-            height        : 4px;
         }
 
         .divider-debugpanel:hover .container {
