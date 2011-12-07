@@ -44,9 +44,7 @@ module.exports = ext.register("ext/imgview/imgview", {
         imgEditor.setProperty("value", doc.session);
     },
 
-    hook : function() {
-
-    },
+    hook : function() {},
 
     init : function(amlPage) {
         amlPage.appendChild(imgEditor);

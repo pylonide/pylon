@@ -19,8 +19,7 @@ module.exports = ext.register("ext/richtext/richtext", {
         "application/xhtml+xml",
         "application/rtf"
     ],
-    deps    : [editors], 
-
+    deps    : [editors],
     nodes : [],
 
     init : function(amlPage){

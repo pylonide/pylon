@@ -34,13 +34,13 @@ module.exports = ext.register("ext/run/run", {
     init : function(amlNode){
         while(tbRun.childNodes.length) {
             var button = tbRun.firstChild;
-            
+
             ide.barTools.appendChild(button);
             if (button.nodeType == 1) {
                 this.nodes.push(button);
             }
         }
-        
+
         var _self = this;
         mdlRunConfigurations.addEventListener("afterload", function(e) {
             _self.$updateMenu();
@@ -78,10 +78,13 @@ module.exports = ext.register("ext/run/run", {
     addConfig : function() {
         var file = ide.getActivePageModel();
         var extension = "";
+        var path, name;
 
-        if (!file || (file.getAttribute("contenttype") || "").indexOf("application/javascript") != 0 && (file.getAttribute("contenttype") || "").indexOf("text/x-script.python") != 0) {
-            var path = "";
-            var name = "server";
+        if (!file
+            || (file.getAttribute("contenttype") || "").indexOf("application/javascript") != 0
+            && (file.getAttribute("contenttype") || "").indexOf("text/x-script.python") != 0) {
+            path = "";
+            name = "server";
         }
         else {
             path  = file.getAttribute("path").slice(ide.davPrefix.length + 1);
@@ -134,7 +137,7 @@ module.exports = ext.register("ext/run/run", {
                 menu.insertBefore(new apf.item({disabled:true, caption: "no run history"}), divider);
             else {
                 for (var i=0,l=configs.length; i<l; i++) {
-                    var item = new apf.item({
+                    item = new apf.item({
                         caption: configs[i].getAttribute("name")
                     });
                     item.$config = configs[i];
@@ -153,8 +156,8 @@ module.exports = ext.register("ext/run/run", {
     runConfig : function(config, debug) {
         var model = settings.model;
         var saveallbeforerun = model.queryValue("general/@saveallbeforerun");
-        if(saveallbeforerun) save.saveall();
-        
+        if (saveallbeforerun) save.saveall();
+
         if (debug === undefined)
             debug = config.parentNode.getAttribute("debug") == "1";
 
@@ -168,7 +171,7 @@ module.exports = ext.register("ext/run/run", {
 
     enable : function(){
         if (!this.disabled) return;
-        
+
         this.nodes.each(function(item){
             item.setProperty("disabled", item.$lastDisabled !== undefined
                 ? item.$lastDisabled
@@ -180,7 +183,7 @@ module.exports = ext.register("ext/run/run", {
 
     disable : function(){
         if (this.disabled) return;
-        
+
         this.nodes.each(function(item){
             if (!item.$lastDisabled)
                 item.$lastDisabled = item.disabled;

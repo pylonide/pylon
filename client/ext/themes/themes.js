@@ -26,7 +26,7 @@ module.exports = ext.register("ext/themes/themes", {
                     type    : "radio",
                     value   : themes[name]
                 }))
-            )
+            );
         }
     },
 
@@ -38,7 +38,7 @@ module.exports = ext.register("ext/themes/themes", {
 
     init : function(){
         var _self = this;
-        
+
         this.nodes.push(
             mnuView.appendChild(new apf.item({
                 caption : "Themes",
