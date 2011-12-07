@@ -9,7 +9,7 @@
       class   = "relative"
       width   = "395" 
       kbclose = "true">
-        <a:vbox edge="10" padding="5">
+        <a:vbox edge="15 10 20" padding="5">
             <a:hbox align="center">
                 <a:label width="75">Search</a:label>
                 <a:textbox id="txtFind" flex="1" focusselect="true"/>
@@ -19,12 +19,12 @@
                 <a:textbox id="txtReplace" flex="1" focusselect="true"/>
             </a:hbox>
             <a:table columns="150,150" edge="10 10 0 10">
-                <a:checkbox id="chkMatchCase" checked="false" label="Match Case" />
-                <a:checkbox id="chkWrapAround" checked="true" label="Wrap Around" />
-                <a:checkbox id="chkWholeWords" label="Whole Words" />
-                <a:checkbox id="chkSearchSelection" label="Search Selection" />
-                <a:checkbox id="chkRegEx" label="Regular Expressions" />
-                <a:checkbox id="chkSearchBackwards" label="Search Backwards" />
+                <a:checkbox id="chkMatchCase" checked="false" label="Match Case" skin="checkbox_grey" />
+                <a:checkbox id="chkWrapAround" checked="true" label="Wrap Around" skin="checkbox_grey" />
+                <a:checkbox id="chkWholeWords" label="Whole Words" skin="checkbox_grey" />
+                <a:checkbox id="chkSearchSelection" label="Search Selection" skin="checkbox_grey" />
+                <a:checkbox id="chkRegEx" label="Regular Expressions" skin="checkbox_grey" />
+                <a:checkbox id="chkSearchBackwards" label="Search Backwards" skin="checkbox_grey" />
             </a:table>
         </a:vbox>
         <a:hbox padding="10" pack="end" edge="6 10 10">

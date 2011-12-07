@@ -1325,7 +1325,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 //        if (!dockOpt.noTab) {
             childNodes = [
                 new apf.tab({
-                    anchors : dockOpt.noTab ? "1 -7 0 4" : "5 4 4 4", 
+                    anchors : dockOpt.noTab ? "1 -7 0 4" : "5 4 5 4", 
                     skin : dockOpt.noTab ? "dockbar" : "docktab",
                     buttons : "scale, close",
                     dock    : 1,
@@ -1632,7 +1632,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             childNodes : [
                 new apf.divider({
                     skin      : "divider-debugpanel",
-                    margin    : "3 4 -2 2",
+                    margin    : "3 4 -4 2",
                     dock      : 1,
                     visible   : sectionOpt.draggable === false ? false : true,
                     draggable : true

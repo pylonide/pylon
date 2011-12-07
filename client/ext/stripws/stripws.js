@@ -96,6 +96,7 @@ module.exports = ext.register("ext/stripws/stripws", {
             var heading = e.ext.getHeading("General");
             heading.appendChild(new apf.checkbox({
                 "class" : "underlined",
+                skin  : "checkbox_grey",
                 value : "[editors/code/@stripws]",
                 label : "On Save, Strip Whitespace"
             }))

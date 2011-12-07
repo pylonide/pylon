@@ -86,6 +86,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             heading.appendChild(new apf.checkbox({
                 "class" : "underlined first",
                 value : "[general/@saveallbeforerun]",
+                skin  : "checkbox_grey",
                 label : "Save All Files Before Running"
             }))
         });

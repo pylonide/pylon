@@ -358,6 +358,7 @@ module.exports = ext.register("ext/panels/panels", {
             heading.appendChild(new apf.checkbox({
                 "class" : "underlined",
                 value : "[general/@animateui]",
+                skin  : "checkbox_grey",
                 label : "Enable UI Animations"
             }))
         });

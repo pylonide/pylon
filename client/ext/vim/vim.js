@@ -149,6 +149,7 @@ module.exports = ext.register("ext/vim/vim", {
             var heading = e.ext.getHeading("Code Editor");
             heading.appendChild(new apf.checkbox({
                 "class" : "underlined",
+                skin  : "checkbox_grey",
                 value : "[editors/code/@vimmode]",
                 label : "Vim mode"
             }))
