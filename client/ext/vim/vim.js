@@ -94,13 +94,6 @@ var enableVim = function enableVim() {
         // Set Vim's own keyboard handle
         editor.setKeyboardHandler(handler);
 
-        // So, apparently 'prop.checked' can't be trusted, since it happens
-        // a million times. Since that will trigger execution of this very
-        // function, we can't put a fix that checks for an already enabled vim
-        // mode, because the editor might not be ready yet. This is a problem
-        // in our core and it has to be fixed. For now, we add extra checks in
-        // case we are already in insert mode, and not drive the user crazy by
-        // randomly switching to normal mode.
         if (util.currentMode !== "insert") {
             commands.stop.exec(editor);
         }
