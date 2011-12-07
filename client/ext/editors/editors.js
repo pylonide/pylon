@@ -85,8 +85,8 @@ module.exports = ext.register("ext/editors/editors", {
             new apf.bar({id:"tabPlaceholder", flex:1, skin:"basic"})
         );
 
-        var btn;
-        var tab = new apf.bar({
+        var bar = new apf.bar({
+            id       : "barTabEditors",
             skin     : "basic",
             style    : "padding : 0 0 33px 0;position:absolute;", //53px
             htmlNode : document.body,
@@ -126,7 +126,7 @@ module.exports = ext.register("ext/editors/editors", {
                             }
                         })
                     ]
-                }),
+                }),            
                 new apf.button({
                     top   : 8,
                     left  : 5,
@@ -149,6 +149,13 @@ module.exports = ext.register("ext/editors/editors", {
             ]
         });
 
+        tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
+            _self.setTabResizeValues(bar.$ext);
+        });
+        
+        this.tabEditorsWidth = tabEditors.$ext.offsetWidth;
+        this.tabEditorsHeight = tabEditors.$ext.offsetHeight;
+        
         tabEditors.$buttons.appendChild(btn.$ext);
         tabEditors.addEventListener("DOMNodeInserted",function(e){
             if (e.$isMoveWithinParent) {
@@ -168,7 +175,7 @@ module.exports = ext.register("ext/editors/editors", {
                 btn.$ext.style.top = "";
             }
         });
-
+        
         tabEditors.addEventListener("DOMNodeRemoved",function(e){
             if (e.relatedNode == this && this.getPages().length == 1) {
                 btn.$ext.style.position = "absolute";
@@ -176,14 +183,87 @@ module.exports = ext.register("ext/editors/editors", {
                 btn.$ext.style.top = "8px";
             }
         });
-
-        tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
-            _self.setTabResizeValues(tab.$ext);
-        });
-
+        
+        this.addTabEditors();
+        
         return vbox;
     },
 
+    addTabEditors : function() {
+        var _self = this;
+        var btn;
+        var tab = new apf.tab({
+            id      : "tabEditors",
+            skin    : "editor_tab",
+            style   : "height : 100%; position: absolute; top: 0px;",
+            buttons : "close,scale,order",
+            overactivetab  : true,
+            onfocus        : function(e){
+                _self.switchfocus(e);
+            },
+            onbeforeswitch : function(e){
+                _self.beforeswitch(e);
+            },
+            onafterswitch : function(e){
+                _self.afterswitch(e);
+            },
+            onclose : function(e){
+                if (!ide.onLine && !ide.offlineFileSystemSupport) //For now prevent tabs from being closed
+                    return false;
+
+                _self.close(e.page);
+            },
+            childNodes : [
+                btn = new apf.button({
+                    style : "display:inline-block;margin: 0 0 5px 13px;",
+                    right : 5,
+                    top   : 8,
+                    width : 30,
+                    height : 17,
+                    skin : "btn_icon_only",
+                    background : "plustabbtn.png|horizontal|3|30",
+                    onclick : function(){
+                        require("ext/newresource/newresource").newfile();
+                    }
+                })
+            ]
+        });
+        
+        barTabEditors.insertBefore(tab, barTabEditors.lastChild);
+
+        tab.$ext.style.width = tabEditors.$ext.offsetWidth + "px"; 
+        tab.$ext.style.left = tabEditors.$ext.offsetWidth + "px"; 
+        tab.$buttons.appendChild(btn.$ext);
+        tab.addEventListener("DOMNodeInserted",function(e){
+            if (e.$isMoveWithinParent) {
+                //record position in settings
+
+                var amlNode = e.currentTarget;
+                if (amlNode.localName != "page" || e.relatedNode != this || amlNode.nodeType != 1)
+                    return;
+
+                settings.save();
+            }
+
+            if (e.relatedNode == this && e.currentTarget.localName == "page") {
+                tabEditors.$buttons.appendChild(btn.$ext);
+                btn.$ext.style.position = "";
+                btn.$ext.style.right = "";
+                btn.$ext.style.top = "";
+            }
+        });
+        
+        tab.addEventListener("DOMNodeRemoved",function(e){
+            if (e.relatedNode == this && this.getPages().length == 1) {
+                btn.$ext.style.position = "absolute";
+                btn.$ext.style.right = "5px";
+                btn.$ext.style.top = "8px";
+            }
+        });
+        
+        return tab;
+    },
+    
     /**
      * This method has been abstracted so it can be used by
      * the focus extension to get the destination coordinates and
