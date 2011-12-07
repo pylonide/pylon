@@ -91,6 +91,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     
     launchQS : function()
     {
+         debugPanelCompact.show();
                     quickStartDialog.show();
                     this.overlay.style.display = "block";
                     this.arrangeQSImages();
@@ -145,6 +146,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     },
     
     closeStart : function() {
+         debugPanelCompact.hide();
         quickStartDialog.hide();
         this.overlay.style.display = "none";
         
