@@ -7,7 +7,4 @@
     
     <a:menu id="mnuView">
     </a:menu>
-    
-    <a:menu id="mnuHelp">
-    </a:menu>
 </a:application>

@@ -38,7 +38,6 @@ define(function(require, exports, module) {
             //this.tbMain       = tbMain;
             this.mnuFile        = mnuFile;
             this.mnuEdit        = mnuEdit;
-            this.mnuHelp        = mnuHelp;
             //this.barMenu      = barMenu;
             this.barTools       = barTools;
             this.sbMain         = sbMain;
