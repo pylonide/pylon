@@ -38,6 +38,10 @@ define(function(require, exports, module) {
             'VarDeclInit(x, _)', function(b) {
                 result = b.x.value;
             },
+            // var someVar;
+            'VarDecl(x)', function(b) {
+                result = b.x.value;
+            },
             // e.x
             'PropAccess(e, x)', function(b) {
                 result = getExpressionValue(b.e) + "." + b.x.value;
