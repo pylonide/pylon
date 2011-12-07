@@ -112,6 +112,7 @@ module.exports = ext.register("ext/editors/editors", {
                     },
                     childNodes : [
                         btn = new apf.button({
+                            id : "plus_tab_button",
                             style : "display:inline-block;margin: 0 0 5px 13px;",
                             right : 5,
                             top   : 8,
