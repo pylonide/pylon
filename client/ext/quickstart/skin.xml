@@ -65,7 +65,7 @@
                 width: 20px;
                 height: 20px;
                 position: absolute;
-                top: -5px;
+                top: -22px;
                 right: 0;
                 background: url(images/close.png) no-repeat 0 0;
             }
@@ -81,6 +81,10 @@
                 background: url(images/close.png) no-repeat 0 0;
             }
             
+            .quickstart p {
+            padding: 0;
+margin: 0;
+}
             .tgLink {
             background : #000;
                 color: #fff;
@@ -101,14 +105,17 @@
             .qstitle {
                 font-size: 20px;
                 padding-left: 30px;
+                padding-top: 5px;
+                padding-bottom: 5px;
             }
             
             .tgtext {
-                color: orange;
+                color: #ffc02a;
                 font-size: 16px;
 margin-top: 16px;
 padding-top: 5px;
 padding-left: 30px;
+padding-bottom: 8px;
             }
             
             .qsSupportText {
@@ -117,28 +124,30 @@ padding-left: 30px;
                 margin-top: 16px;
 padding-top: 5px;
 margin-bottom: 0px;
+padding-bottom: 12px;
             }
             
             .supportLink {
-                color: #6495ED;
+                color: #99c1dd;
             }
             
 
 .cbcontainer {
 color: white;
+margin-left: 12px;
 }
 
 .qsCBContainer { 
     width: 450px;
     margin: 0 auto;
-    height: 40px;
+    height: 50px;
     background: black;
 }
 .checkboxDiv    {
     width: 200px;
     border-right: 1px solid #666;
     float: left;
-padding: 10px 0 10px 10px;
+padding: 20px 0 10px 10px;
 }
 
 .buttonDiv {
