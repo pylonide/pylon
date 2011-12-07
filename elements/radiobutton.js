@@ -282,7 +282,7 @@ apf.radiobutton = function(struct, tagName){
      * Sets the selected state and related value
      */
     this.$check = function(visually){
-        this.$setStyleClass(this.$ext, this.$baseCSSname + "selected");
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Selected");
         this.selected = true;
         if (this.oInput)
             this.oInput.selected = true;
@@ -290,7 +290,7 @@ apf.radiobutton = function(struct, tagName){
     };
 
     this.$uncheck = function(){
-        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "selected"]);
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Selected"]);
         this.selected = false;
         if (this.oInput)
             this.oInput.selected = false;

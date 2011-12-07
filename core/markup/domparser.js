@@ -37,6 +37,9 @@
  */
 apf.DOMParser = function(){};
 
+/*
+    @todo the shouldWait variable should be tree based and checked recursively up
+*/
 apf.DOMParser.prototype = new (function(){
     this.caseInsensitive    = true;
     this.preserveWhiteSpace = false; //@todo apf3.0 whitespace issue

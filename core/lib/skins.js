@@ -46,7 +46,7 @@ apf.skins = {
          */
         var name      = (refNode ? refNode.getAttribute("id") : null)
             || xmlNode.getAttribute("id");
-        var base      = (refNode ? refNode.getAttribute("src").match(/\//) || path : "")
+        var base      = (refNode ? (refNode.getAttribute("src") || "").match(/\//) || path : "")
             ? (path || refNode.getAttribute("src")).replace(/\/[^\/]*$/, "") + "/"
             : ""; //@todo make this absolute?
 

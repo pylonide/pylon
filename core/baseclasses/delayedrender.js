@@ -113,12 +113,12 @@ apf.DelayedRender = function(){
         this.$ext.style.visibility = "";
     };
     
-    var _self = this;
+    /*var _self = this;
     if (apf.window.vManager.check(this, "delayedrender", function(){
         _self.$render();
-    })) this.$render();
+    })) this.$render();*/
     
-    /*var f;
+    var f;
     this.addEventListener("prop.visible", f = function(){
         if (arguments[0].value) {
             // #ifdef __WITH_DELAYEDRENDER
@@ -127,7 +127,7 @@ apf.DelayedRender = function(){
             
             this.removeEventListener("prop.visible", f);
         }
-    });*/
+    });
 };
 
 apf.GuiElement.propHandlers["render"] = function(value) {
