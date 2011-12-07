@@ -33,15 +33,7 @@ module.exports = ext.register("ext/watcher/watcher", {
             _self               = this;
             
         function sendWatchFile(path) {
-            if (!ide.socket) {
-                stServerConnected.addEventListener("activate", function () {
-                    sendWatchFile(path);
-                    stServerConnected.removeEventListener("activate", arguments.callee);
-                });
-                return;
-            }
-
-            ide.socket.send(JSON.stringify({
+            ide.send(JSON.stringify({
                 "command"     : "watcher",
                 "type"        : "watchFile",
                 "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
@@ -49,15 +41,7 @@ module.exports = ext.register("ext/watcher/watcher", {
         }
         
         function sendUnwatchFile(path) {
-            if (!ide.socket) {
-                stServerConnected.addEventListener("activate", function () {
-                    sendUnwatchFile(path);
-                    stServerConnected.removeEventListener("activate", arguments.callee);
-                });
-                return;
-            }
-
-            ide.socket.send(JSON.stringify({
+            ide.send(JSON.stringify({
                 "command"     : "watcher",
                 "type"        : "unwatchFile",
                 "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
@@ -230,7 +214,7 @@ module.exports = ext.register("ext/watcher/watcher", {
             if (_self.disabled) return;
             
             var node = e.xmlNode;
-            if (node && node.getAttribute("type") == "folder") {
+            if (node && (node.getAttribute("type") == "folder" || node.tagName == "folder")) {
                 var path = node.getAttribute("path");
                 
                 expandedPaths[path] = path;
@@ -242,7 +226,7 @@ module.exports = ext.register("ext/watcher/watcher", {
             if (_self.disabled) return;
 
             var node = e.xmlNode;
-            if (node && node.getAttribute("type") == "folder") {
+            if (node && (node.getAttribute("type") == "folder" || node.tagName == "folder")) {
                 var path = node.getAttribute("path");
                 
                 delete expandedPaths[path];

@@ -16,7 +16,6 @@ require.paths.unshift(__dirname + "/socket.io/lib");
 require.paths.unshift(__dirname + "/socket.io-client/lib");
 require.paths.unshift(__dirname + "/uglify-js");
 require.paths.unshift(__dirname + "/ace/lib");
-require.paths.unshift(__dirname + "/ace/support/pilot/lib");
 require.paths.unshift(__dirname + "/lib-v8debug/lib");
 require.paths.unshift(__dirname);
 

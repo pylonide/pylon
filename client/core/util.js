@@ -57,6 +57,7 @@ var SupportedIcons = {
     "text/x-script.ocaml": 'page_white_code',
     "text/x-script.clojure": 'page_white_code',
     "application/x-httpd-php": 'page_white_php',
+    "text/x-coldfusion": 'page_white_php',
     "text/x-script.ruby": "page_white_ruby",
     "text/x-script.coffeescript": 'page_white_cup',
     "text/cpp": 'page_white_cplusplus',
@@ -122,7 +123,9 @@ var contentTypes = {
 
     "clj": "text/x-script.clojure",
     "ml": "text/x-script.ocaml",
-    "mli": "text/x-script.ocaml"
+    "mli": "text/x-script.ocaml",
+    "cfm": "text/x-coldfusion",
+    "sql": "text/x-sql"
 };
     
 exports.getFileIcon = function(xmlNode) {

@@ -15,7 +15,8 @@ return keys.onLoad({
         },        
         "save" : {
             "quicksave": "Ctrl-S",
-            "saveas": "Ctrl-Shift-S"
+            "saveas": "Ctrl-Shift-S",
+            "reverttosaved": "Ctrl-Shift-Q"
         },
         "undo" : {
             "undo": "Ctrl-Z",
@@ -91,6 +92,10 @@ return keys.onLoad({
             "nexttab": "Ctrl-Tab",
             "previoustab": "Ctrl-Shift-Tab"
         },
+        "splitview" : {
+            "mergetableft": "Ctrl-Alt-[",
+            "mergetabright": "Ctrl-Alt-]"
+        },
         "code" : {
             "selectall": "Ctrl-A",
             "removeline": "Ctrl-D",
@@ -137,6 +142,10 @@ return keys.onLoad({
             "backspace": "Backspace",
             "outdent": "Shift-Tab",
             "indent": "Tab"
+        },
+        "language": {
+            "complete": "Ctrl-Space|Alt-Space",
+            "renameVar": "Ctrl-Alt-R"
         }
     }
 });

@@ -48,7 +48,7 @@ module.exports = ext.register("ext/newresource/newresource", {
                 }
             }), ide.mnuFile.firstChild),
             ide.mnuFile.insertBefore(new apf.item({
-                caption : "New Template...",
+                caption : "New From Template...",
                 onclick : function(){
                     _self.newfiletemplate();
                 }
@@ -70,16 +70,25 @@ module.exports = ext.register("ext/newresource/newresource", {
         if (!type) type = "";
 
         var node = apf.getXml("<file />");
-        
-        
-        var path = "/workspace/", sel = trFiles.selected;
-        if (sel)
-            path = sel.getAttribute("path").replace(/\/[^\/]*$/, "/");
-        
-        var name = "Untitled", count = 1;
-        while(tabEditors.getPage(path + name + count + type)) {
-            count++;
+        var path = "/workspace/";
+        var sel = trFiles.selected;
+
+        if (!sel) {
+            trFiles.select(trFiles.$model.queryNode('folder'));
+            sel = trFiles.selected
         }
+        if (!sel)
+            return;
+
+        path = sel.getAttribute("path");
+        if (trFiles.selected.getAttribute("type") == "file" || trFiles.selected.tagName == "file")
+            path = path.replace(/\/[^\/]*$/, "/");
+        else
+            path = path + "/";
+
+        var name = "Untitled", count = 1;
+        while (tabEditors.getPage(path + name + count + type))
+            count++;
         
         node.setAttribute("name", name + count + type);
         node.setAttribute("path", path + name + count + type);

@@ -30,6 +30,7 @@ define(function(require, exports, module) {
 
             this.workspaceDir   = window.cloud9config.workspaceDir.replace(/\/+$/, "");
             this.davPrefix      = window.cloud9config.davPrefix.replace(/\/+$/, "");
+            this.staticPrefix   = window.cloud9config.staticUrl;
             this.sessionId      = window.cloud9config.sessionId;
             this.workspaceId    = window.cloud9config.workspaceId;
             this.readonly       = window.cloud9config.readonly;
@@ -131,6 +132,19 @@ define(function(require, exports, module) {
                     workspaceId: ide.workspaceId
                 }));
             };
+            
+            ide.socketReconnect = function() {
+                // on a reconnect of the socket.io connection, the server may have
+                // lost our session. Now we do an HTTP request to fetch the current
+                // session ID and update the Cloud9 config with it. Also, re-attach
+                // with the backend.
+                apf.ajax("/reconnect", {
+                    callback: function(data, state, extra) {
+                        ide.sessionId = data;
+                        ide.socketConnect();
+                    }
+                });
+            };
 
             ide.socketDisconnect = function() {
                 clearTimeout(ide.$retryTimer);
@@ -184,7 +198,9 @@ define(function(require, exports, module) {
                 if (socketIoScriptEl) {
                     apf.ajax(socketIoScriptEl.src, {
                         callback: function(data, state, extra) {
-                            try{var status = parseInt(extra.http.status);}catch(ex){}
+                            try {
+                                var status = parseInt(extra.http.status, 10);
+                            } catch(ex) {}
                             apf.dispatchEvent("error", {
                                 message: "socket.io client lib not loaded",
                                 error: {
@@ -207,7 +223,7 @@ define(function(require, exports, module) {
             
             ide.socket.on("message",    ide.socketMessage);
             ide.socket.on("connect",    ide.socketConnect);
-            //ide.socket.on("reconnect",  ide.socketReconnect);
+            ide.socket.on("reconnect",  ide.socketReconnect);
             //ide.socket.on("reconnecting",  ide.socketReconnecting);
             ide.socket.on("disconnect", ide.socketDisconnect);
             var _oldsend = ide.socket.send;
@@ -216,6 +232,26 @@ define(function(require, exports, module) {
                 _oldsend.call(ide.socket, msg, function() {});
             };
         });
+        
+        ide.$msgQueue = [];
+        ide.addEventListener("socketConnect", function() {
+            while(ide.$msgQueue.length) {
+                var q = ide.$msgQueue;
+                ide.$msgQueue = [];
+                q.forEach(function(msg) {
+                    ide.socket.send(msg);
+                });
+            }
+        });
+        
+        ide.send = function(msg) {
+            if (!ide.socket || !ide.socket.socket.connected) {
+                ide.$msgQueue.push(msg);
+                return;
+            }
+            
+            ide.socket.send(msg);
+        };
         
         ide.getActivePageModel = function() {
             page = tabEditors.getPage();

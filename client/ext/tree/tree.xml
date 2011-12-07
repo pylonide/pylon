@@ -103,7 +103,8 @@
             <a:drag match="[folder|file]" />
             <a:drop match="[folder|file]" target="[folder]"
                 action="tree-append" copy="{event.ctrlKey}" />
-                
+            <a:drop match="[folder|file]" target="[file]"
+                action="insert-before" copy="{event.ctrlKey}" />    
         </a:tree>
         
         <a:scrollbar
@@ -140,6 +141,9 @@
                 apf.clipboard.pasteSelection(apf.activeElement);
             ">Paste</a:item>
             <a:divider />
+            <a:item match="[file|folder|project]" onclick="
+                require('ext/filesystem/filesystem').createFile();
+            ">New File</a:item>
             <a:item match="[file|folder|project]" onclick="
                 require('ext/filesystem/filesystem').createFolder();
             ">New Folder</a:item>

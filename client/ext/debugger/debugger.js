@@ -15,6 +15,7 @@ var fs = require("ext/filesystem/filesystem");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/debugger/debugger.xml");
 var inspector = require("ext/debugger/inspector");
+var settings = require("ext/settings/settings");
 
 module.exports = ext.register("ext/debugger/debugger", {
     name    : "Debug",
@@ -42,13 +43,25 @@ module.exports = ext.register("ext/debugger/debugger", {
         var _self = this;
         
         ide.addEventListener("consolecommand.debug", function(e) {
-            ide.socket.send(JSON.stringify({
+            ide.send(JSON.stringify({
                 command: "internal-isfile",
                 argv: e.data.argv,
                 cwd: e.data.cwd,
                 sender: "debugger"
             }));
             return false;
+        });
+        
+        ide.addEventListener("loadsettings", function (e) {
+            // restore the breakpoints from the IDE settings
+            var bpFromIde = e.model.data.selectSingleNode("//breakpoints");
+            // not there yet, create element
+            if (!bpFromIde) {
+                bpFromIde = e.model.data.ownerDocument.createElement("breakpoints");
+                e.model.data.appendChild(bpFromIde);
+            }           
+            // bind it to the Breakpoint model
+            mdlDbgBreakpoints.load(bpFromIde);
         });
         
         stDebugProcessRunning.addEventListener("activate", function() {
@@ -66,21 +79,6 @@ module.exports = ext.register("ext/debugger/debugger", {
             var path = node.getAttribute("path");
             
             node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
-        });
-        
-        mdlDbgStack.addEventListener("update", function() {
-            // select the first stack entry, if none is selected yet
-            var frames = mdlDbgStack.data.selectNodes("frame");
-            if (frames.length) {
-                // check if none of the debug panels is visible yet...
-                var vis = [dbgCallStack, dbInteractive, dbgVariable, dbgBreakpoints].filter(function(el) {
-                    return el.$ext && apf.getStyle(el.$ext, "display") != "none";
-                });
-                if (vis.length)
-                    return;
-                // no elements visible yet...
-                dock.layout.show(dbgCallStack);
-            }
         });
         
         var name = "ext/debugger/debugger"; //this.name
@@ -103,19 +101,19 @@ module.exports = ext.register("ext/debugger/debugger", {
         dock.register(name, "dbgCallStack", {
             menu : "Debugger/Call Stack",
             primary : {
-                backgroundImage: "/static/style/images/debugicons.png",
+                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
                 defaultState: { x: -6, y: -217 },
                 activeState: { x: -6, y: -217 }
             }
         }, function(type) {
-            ext.initExtension(_self);
+            ext.initExtension(_self);            
             return dbgCallStack;
         });
         
         dock.register(name, "dbInteractive", {
             menu : "Debugger/Interactive",
             primary : {
-                backgroundImage: "/static/style/images/debugicons.png",
+                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
                 defaultState: { x: -7, y: -310 },
                 activeState: { x: -7, y: -310 }
             }
@@ -127,19 +125,27 @@ module.exports = ext.register("ext/debugger/debugger", {
         dock.register(name, "dbgVariable", {
             menu : "Debugger/Variables",
             primary : {
-                backgroundImage: "/static/style/images/debugicons.png",
+                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
                 defaultState: { x: -6, y: -261 },
                 activeState: { x: -6, y: -261 }
             }
         }, function(type) {
             ext.initExtension(_self);
+            
+            // when visible -> make sure to refresh the grid
+            dbgVariable.addEventListener("prop.visible", function(e) {
+                if (e.value) {
+                    dgVars.reload();
+                }
+            });
+            
             return dbgVariable;
         });
         
         dock.register(name, "dbgBreakpoints", {
             menu : "Debugger/Breakpoints",
             primary : {
-                backgroundImage: "/static/style/images/debugicons.png",
+                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
                 defaultState: { x: -6, y: -360 },
                 activeState: { x: -6, y: -360 }
             }
@@ -177,8 +183,8 @@ module.exports = ext.register("ext/debugger/debugger", {
             _self.$syncTree();
         });
         mdlDbgSources.addEventListener("update", function(e) {
-            if (e.action != "add")
-                return;
+            if (e.action !== "add") return;
+            
             // TODO: optimize this!
             _self.$syncTree();
         });
@@ -225,10 +231,25 @@ module.exports = ext.register("ext/debugger/debugger", {
                 //console.log("v8 updated", e);
             });
         });
+        
+        // we're subsribing to the 'running active' prop
+        // this property indicates whether the debugger is actually running (when on a break this value is false)
+        stRunning.addEventListener("prop.active", function (e) {
+            // if we are really running (so not on a break or something)
+            if (e.value) {
+                // we clear out mdlDbgStack
+                mdlDbgStack.load("<frames></frames>");
+            }
+        });
     },
 
     showDebugFile : function(scriptId, row, column, text) {
         var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
+        
+        // check prerequisites
+        if (!ceEditor.$updateMarkerPrerequisite()) {
+            return;
+        }
 
         if (file) {
             editors.jump(file, row, column, text, null, true);

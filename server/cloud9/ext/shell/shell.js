@@ -68,7 +68,7 @@ sys.inherits(ShellPlugin, Plugin);
         });
     };
 
-    this.commandhints = function(message) {
+    this.commandhints = function(message) { 
         var commands = {},
             _self    = this;
 
@@ -106,6 +106,7 @@ sys.inherits(ShellPlugin, Plugin);
 
     this.pwd   =
     this.mkdir =
+    this.rm    =
     this.ls    = function(message) {
         var _self = this;
         this.spawnCommand(message.command, message.argv.slice(1), message.cwd, null, null, function(code, err, out) {
@@ -122,20 +123,32 @@ sys.inherits(ShellPlugin, Plugin);
         var to    = message.argv.pop(),
             path  = message.cwd || this.workspace.workspaceDir,
             _self = this;
-        if (to != "/") {
-            path = Path.normalize(path + "/" + to.replace(/^\//g, ""));
-            if (path.indexOf(this.workspace.workspaceDir) === -1)
-                return this.sendResult();
-            Fs.stat(path, function(err, stat) {
-                if (err) {
-                    return _self.sendResult(0, "error",
-                        err.toString().replace("Error: ENOENT, ", ""));
-                }
-                if (!stat.isDirectory())
-                    return _self.sendResult(0, "error", "Not a directory.");
-                _self.sendResult(0, message.command, {cwd: path});
+            
+        path = Path.normalize(path + "/" + to.replace(/^\//g, ""));
+        if (path.indexOf(this.workspace.workspaceDir) === -1)
+            return this.sendResult();
+        Fs.stat(path, function(err, stat) {
+            if (err) {
+                return _self.sendResult(0, "error",
+                    err.toString().replace("Error: ENOENT, ", ""));
+            }
+            if (!stat.isDirectory())
+                return _self.sendResult(0, "error", "Not a directory.");
+            _self.sendResult(0, message.command, {cwd: path});
+        });
+    };
+    
+    this.bash = function(message) {
+        var _self = this;
+        message.argv.unshift("-c");
+        this.spawnCommand("sh", message.argv, message.cwd, null, null, function(code, err, out) {
+            _self.sendResult(0, message.command, {
+                code: code,
+                argv: message.argv,
+                err: err,
+                out: out
             });
-        }
+        });
     };
 
     this.getListing = function(tail, path, dirmode, callback) {

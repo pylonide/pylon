@@ -12,8 +12,11 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var EditSession = require("ace/edit_session").EditSession;
 var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
+var useragent = require("ace/lib/useragent");
 var Document = require("ace/document").Document;
 var ProxyDocument = require("ext/code/proxydocument");
+var CommandManager = require("ace/commands/command_manager").CommandManager;
+var defaultCommands = require("ace/commands/default_commands").commands;
 var markup = require("text!ext/code/code.xml");
 var settings = require("ext/settings/settings");
 var markupSettings = require("text!ext/code/settings.xml");
@@ -65,7 +68,9 @@ var SupportedModes = {
     "application/x-latex": "latex",
     "text/x-lua": "lua",
     "text/x-script.powershell": "powershell",
-    "text/x-scala": "scala"
+    "text/x-scala": "scala",
+    "text/x-coldfusion": "coldfusion",
+    "text/x-sql": "sql"
 };
 
 var contentTypes = {
@@ -126,7 +131,9 @@ var contentTypes = {
     "pl": "text/x-script.perl",
     "pm": "text/x-script.perl-module",
     
-    "ps1": "text/x-script.powershell"
+    "ps1": "text/x-script.powershell",
+    "cfm": "text/x-coldfusion",
+    "sql": "text/x-sql"
 };
 
 module.exports = ext.register("ext/code/code", {
@@ -138,6 +145,7 @@ module.exports = ext.register("ext/code/code", {
     deps    : [editors],
     
     nodes : [],
+    commandManager: new CommandManager(useragent.isMac ? "mac" : "win", defaultCommands),
     
     getState : function(doc){
         doc = doc ? doc.acesession : this.getDocument();
@@ -163,6 +171,15 @@ module.exports = ext.register("ext/code/code", {
         sel.setSelectionRange(state.selection, false);
         ceEditor.$editor.renderer.scrollToY(state.scrolltop);
         ceEditor.$editor.renderer.scrollToX(state.scrollleft);
+        
+        // if newfile == 1 and there is text cached, restore it
+        var node = doc.getNode && doc.getNode();
+        if (node && parseInt(node.getAttribute("newfile") || 0, 10) === 1 && node.childNodes.length) {
+            // the text is cached within a CDATA block as first childNode of the <file>
+            if (doc.getNode().childNodes[0] instanceof CDATASection) {
+                aceDoc.setValue(doc.getNode().childNodes[0].nodeValue);
+            }
+        }
     },
 
     getSyntax : function(node) {
@@ -267,7 +284,8 @@ module.exports = ext.register("ext/code/code", {
         amlPage.appendChild(ceEditor);
         ceEditor.show();
 
-        this.ceEditor = ceEditor;
+        this.ceEditor = this.amlEditor = ceEditor;
+        ceEditor.$editor.commands = this.commandManager;
 
         var _self = this;
 
@@ -301,8 +319,6 @@ module.exports = ext.register("ext/code/code", {
                 checked : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
             }))
         );
-
-        
         
         mnuSyntax.onitemclick = function(e) {
             var file = ide.getActivePageModel();

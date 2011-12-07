@@ -14,9 +14,7 @@ exports.evaluate = function(expression, callback){
     var _self = this;
     var frame = (self.dgStack && dgStack.selected && dgStack.selected.getAttribute("ref")) || null;
     
-    dbg.evaluate(expression, frame, null, null, callback || function(xmlNode){
-        exports.showObject(xmlNode);
-    });
+    dbg.evaluate(expression, frame, null, null, callback || exports.showObject);
 };
 
 exports.checkChange = function(xmlNode){
@@ -72,7 +70,7 @@ exports.consoleTextHandler = function(e) {
                 className = body.className;
 
             if (className == "Function") {
-                var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/console/console\").showObject(null, ["
+                var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/debugger/inspector\").showObject(null, ["
                     + body.scriptId + ", " + body.line + ", " + body.position + ", "
                     + body.handle + ",\"" + (body.name || body.inferredName) + "\"], \""
                     + (expression || "").split(";").pop().replace(/"/g, "\\&quot;") + "\")'>";
@@ -81,7 +79,7 @@ exports.consoleTextHandler = function(e) {
                 Logger.log(name + "()", "log", pre, post, txtOutput);
             }
             else if (className == "Array") {
-                var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/console/console\").showObject(\""
+                var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/debugger/inspector\").showObject(\""
                     + apf.escapeXML(xmlNode.xml.replace(/"/g, "\\\"")) + "\", "
                     + ref + ", \"" + apf.escapeXML((expression || "").trim().split(/;|\n/).pop().trim().replace(/"/g, "\\\"")) + "\")'>";
                 var post = " }</a>";
@@ -94,7 +92,7 @@ exports.consoleTextHandler = function(e) {
                 for (var i = 0, l = body.properties.length; i < l; i++)
                     refs.push(props[i].ref);
 
-                var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/console/console\").showObject(\""
+                var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/debugger/inspector\").showObject(\""
                     + apf.escapeXML(xmlNode.xml.replace(/"/g, "\\\"")) + "\", "
                     + ref + ", \"" + apf.escapeXML((expression || "").trim().split(/;|\n/).pop().trim().replace(/"/g, "\\\"")) + "\")'>";
                 var post = " }</a>";
@@ -181,11 +179,19 @@ exports.calcName = function(xmlNode, useDisplay){
 
         if (!name)
             break;
+        
+        var xmlDecode = function (input) {
+            var e = document.createElement('div');
+            e.innerHTML = input;
+            return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+        }
+        
+        name = xmlDecode(name);
 
         path.unshift(!name.match(/^[a-z_\$][\w_\$]*$/i)
             ? (parseInt(name, 10) == name
                 ? "[" + name + "]"
-                : "[\"" + name.replace(/'/g, "\\'") + "\"]")
+                : "[\"" + name + "\"]")
             : name);
         loopNode = loopNode.parentNode;
         if (isMethod) {

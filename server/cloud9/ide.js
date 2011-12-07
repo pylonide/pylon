@@ -2,21 +2,19 @@
  * @copyright 2010, Ajax.org Services B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var jsDAV = require("jsdav"),
-    DavPermission = require("./dav/permission"),
-    Async = require("asyncjs"),
-    User = require("./user"),
-    fs = require("fs"),
-    sys = require("sys"),
-    Path = require("path"),
-    lang = require("pilot/lang"),
-    Url = require("url"),
-    template = require("./template"),
-    Workspace = require("cloud9/workspace"),
-    EventEmitter = require("events").EventEmitter,
-    util = require("./util");
+var jsDAV = require("jsdav");
+var DavPermission = require("./dav/permission");
+var Async = require("asyncjs");
+var User = require("./user");
+var fs = require("fs");
+var sys = require("sys");
+var Url = require("url");
+var template = require("./template");
+var Workspace = require("cloud9/workspace");
+var EventEmitter = require("events").EventEmitter;
+var util = require("./util");
 
-module.exports = Ide = function(options, httpServer, exts, socket) {
+var Ide = module.exports = function(options, httpServer, exts, socket) {
     EventEmitter.call(this);
 
     this.httpServer = httpServer;
@@ -28,10 +26,10 @@ module.exports = Ide = function(options, httpServer, exts, socket) {
     var requirejsConfig = options.requirejsConfig || {
         baseUrl: "/static/",
         paths: {
-            "pilot": staticUrl + "/support/ace/support/pilot/lib/pilot",
             "ace": staticUrl + "/support/ace/lib/ace",
             "debug": staticUrl + "/support/lib-v8debug/lib/v8debug",
-            "apf": staticUrl + "/support/apf"
+            "apf": staticUrl + "/support/apf",
+            "treehugger": staticUrl + "/support/treehugger/lib/treehugger"
         },
         waitSeconds: 30
     };
@@ -128,6 +126,9 @@ Ide.DEFAULT_PLUGINS = [
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",
     "ext/packagemgr/packagemgr"
+    "ext/vim/vim",
+    "ext/jslanguage/jslanguage",
+    "ext/autotest/autotest"
     //"ext/acebugs/acebugs"
 ];
 
@@ -136,13 +137,20 @@ Ide.DEFAULT_PLUGINS = [
     this.handle = function(req, res, next) {
         var path = Url.parse(req.url).pathname;
 
-        this.indexRe = this.indexRe || new RegExp("^" + lang.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
-        this.workspaceRe = this.workspaceRe || new RegExp("^" + lang.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
+        this.indexRe = this.indexRe || new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
+        this.reconnectRe = this.reconnectRe || new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "\\/reconnect$");
+        this.workspaceRe = this.workspaceRe || new RegExp("^" + util.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
 
         if (path.match(this.indexRe)) {
             if (req.method !== "GET")
                 return next();
             this.$serveIndex(req, res, next);
+        }
+        else if (path.match(this.reconnectRe)) {
+            if (req.method !== "GET")
+                return next();
+            res.writeHead(200);
+            res.end(req.sessionID);
         }
         else if (path.match(this.workspaceRe)) {
             if (!this.davInited) {
@@ -163,7 +171,7 @@ Ide.DEFAULT_PLUGINS = [
     };
 
     this.$serveIndex = function(req, res, next) {
-        var _self = this;
+        var plugin, _self = this;
         fs.readFile(__dirname + "/view/ide.tmpl.html", "utf8", function(err, index) {
             if (err)
                 return next(err);
@@ -171,13 +179,13 @@ Ide.DEFAULT_PLUGINS = [
             res.writeHead(200, {"Content-Type": "text/html"});
 
             var permissions = _self.getPermissions(req);
-            var plugins = lang.arrayToMap(_self.options.plugins);
+            var plugins = util.arrayToMap(_self.options.plugins);
 
-            var client_exclude = lang.arrayToMap(permissions.client_exclude.split("|"));
+            var client_exclude = util.arrayToMap(permissions.client_exclude.split("|"));
             for (plugin in client_exclude)
                 delete plugins[plugin];
 
-            var client_include = lang.arrayToMap((permissions.client_include || "").split("|"));
+            var client_include = util.arrayToMap((permissions.client_include || "").split("|"));
             for (plugin in client_include)
                 if (plugin)
                     plugins[plugin] = 1;
@@ -212,7 +220,7 @@ Ide.DEFAULT_PLUGINS = [
             }
             else {
                 settingsPlugin.loadSettings(user, function(err, settings) {
-                    replacements.settingsXml = err || !settings ? "defaults" : settings.replace("]]>", "]]&gt;");
+                    replacements.settingsXml = err || !settings ? "defaults" : settings.replace(/]]>/g, '&#093;&#093;&gt;');
                     index = template.fill(index, replacements);
                     res.end(index);
                 });
@@ -244,7 +252,7 @@ Ide.DEFAULT_PLUGINS = [
 
                 setTimeout(function() {
                     var now = new Date().getTime();
-                    if((now - user.last_message_time) > 10000) {
+                    if ((now - user.last_message_time) > 10000) {
                         console.log("User fully disconnected", username);
                         _self.removeUser(user);
                     }
