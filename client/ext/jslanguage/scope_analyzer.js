@@ -15,14 +15,16 @@
 define(function(require, exports, module) {
 
 var baseLanguageHandler = require('ext/language/base_handler');
-require('treehugger/traverse');
 var handler = module.exports = Object.create(baseLanguageHandler);
+require('treehugger/traverse');
 
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
 
-function Variable(declaration) {
+var scopeId = 0;
+
+var Variable = module.exports.Variable = function Variable(declaration) {
     this.declarations = [];
     if(declaration)
         this.declarations.push(declaration);
@@ -38,38 +40,24 @@ Variable.prototype.addDeclaration = function(node) {
     this.declarations.push(node);
 };
 
-Variable.prototype.addValue = function(value) {
-    var values = this.values;
-    for (var i = 0; i < values.length; i++) {
-        if(values[i].guid === v.guid) {
-            return;
-        }
-    }
-    values.push(value);
-};
-
-var scopeId = 0;
-
 /**
  * Implements Javascript's scoping mechanism using a hashmap with parent
  * pointers.
  */
-function Scope(parent) {
+var Scope = module.exports.Scope = function Scope(parent) {
     this.id = scopeId++;
     this.parent = parent;
     this.vars = {};
-}
+};
 
 /**
  * Declare a variable in the current scope
  */
-Scope.prototype.declare = function(name, resolveNode, initialValue) {
+Scope.prototype.declare = function(name, resolveNode) {
     if(!this.vars[name]) 
         this.vars[name] = new Variable(resolveNode);
     else
         this.vars[name].addDeclaration(resolveNode);
-    if(initialValue)
-        this.vars[name].addValue(initialValue);
     return this.vars[name];
 };
 
@@ -80,27 +68,13 @@ Scope.prototype.isDeclared = function(name) {
 /**
  * Get possible values of a variable
  * @param name name of variable
- * @return array of values
+ * @return Variable instance 
  */
 Scope.prototype.get = function(name) {
     if(this.vars[name])
         return this.vars[name];
     else if(this.parent)
         return this.parent.get(name);
-};
-
-/**
- * Hints at what the value of a variable may be 
- * @param variable name
- * @param val AST node of expression
- */
-Scope.prototype.hint = function(name, v) {
-    var vr = this.get(name);
-    if(!vr) {
-        // Not properly declared variable, implicitly declare it in the current scope
-        vr = this.declare(name);
-    }
-    vr.addValue(v);
 };
 
 handler.analyze = function(doc, ast) {
@@ -119,14 +93,13 @@ handler.analyze = function(doc, ast) {
             // var bla = 10;
             'VarDeclInit(x, e)', function(b, node) {
                 node.setAnnotation("scope", scope);
-                scope.declare(b.x.value, b.x, b.e);
-                return node;
+                scope.declare(b.x.value, b.x);
             },
             // function bla(farg) { }
             'Function(x, _, _)', function(b, node) {
                 node.setAnnotation("scope", scope);
                 if(b.x.value) {
-                    scope.declare(b.x.value, b.x, this);
+                    scope.declare(b.x.value, b.x);
                 }
                 return node;
             }
@@ -169,9 +142,8 @@ handler.analyze = function(doc, ast) {
                 return node;
             },
             'Function(x, fargs, body)', function(b, node) {
-                node.setAnnotation("scope", scope);
-
                 var newScope = new Scope(scope);
+                node.setAnnotation("localScope", newScope);
                 newScope.declare("this");
                 b.fargs.forEach(function(farg) {
                     farg.setAnnotation("scope", newScope);
@@ -221,7 +193,9 @@ handler.analyze = function(doc, ast) {
             }
         }
     }
-    scopeAnalyzer(new Scope(), ast);
+    var rootScope = new Scope();
+    scopeAnalyzer(rootScope, ast);
+    ast.setAnnotation("scope", rootScope);
     return markers;
 };
 
