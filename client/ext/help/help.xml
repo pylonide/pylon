@@ -1,0 +1,7 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:menu id="mnuHelp">
+        <a:item id="mnuGuidedTour" onclick="alert('bonanan');">Guided Tour</a:item>
+        <a:item id="mnuTwitter" onclick="require('ext/help/help').launchTwitter();">Twitter</a:item>
+        <a:divider />
+    </a:menu>
+</a:application>
