@@ -130,10 +130,10 @@
                 </a:button>
                 <a:filler />
                 <a:checkbox
-                  skin    = "db-checkbox"
-                  class   = "bluecheck"
+                  skin    = "checkbox_grey"
                   checked = "true"
                   width   = "120"
+                  margin  = "4 0 0"
                   onafterchange="
                     if(this.checked)
                         trSaveAs.$ext.className = trSaveAs.$ext.className.replace(/hidefiles/, '');

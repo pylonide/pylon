@@ -84,12 +84,13 @@
             <a:hbox edge="10 0 5">
                 <a:fieldset flex="1" caption="Options" margin="0 0 1">
                     <a:checkbox id="chkSFMatchCase" 
-                      height = "20"
-                      checked = "false" 
+                      checked = "false"
+                      skin="checkbox_grey"
+                      margin="0 0 2"
                       label   = "Match Case" />
                     <!--a:checkbox id="chkSFWholeWords" label="Whole Words" /-->
                     <a:checkbox id="chkSFRegEx" 
-                      height = "20"
+                      skin="checkbox_grey"
                       label  = "Regular Expressions" />
                 </a:fieldset>
                 <a:fieldset flex="1" caption="Scope" margin="0 0 1 5">
