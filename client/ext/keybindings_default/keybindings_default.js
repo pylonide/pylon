@@ -89,14 +89,14 @@ module.exports = ext.register("ext/keybindings_default/keybindings_default", {
         apf.importCssString(css || "");
         
         var _self = this;
-        this.nodes.push(
+        /*this.nodes.push(
             ide.mnuHelp.appendChild(new apf.item({
                 caption: "Default Keybindings",
                 onclick: function () {
                     _self.keybindings();
                 }
             }))
-        );
+        );*/
         
         this.hotitems.keybindings = [this.nodes[0]];
     },
