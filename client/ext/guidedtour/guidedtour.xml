@@ -14,7 +14,7 @@
       skin      = "bk-window"
       class   = "relative">
         <a:vbox edge="10" padding="5">
-            <a:text id="winTourDesc" height="75" class="tgDesc"/>
+            <a:text id="winTourDesc" height="100" class="tgDesc"/>
             <a:hbox padding="5" pack="end">
                 <a:button id="winTourButtonStart" default="2" class="btn-green" skin="btn-default-css3" onclick = "
                             require('ext/guidedtour/guidedtour').startTour();
