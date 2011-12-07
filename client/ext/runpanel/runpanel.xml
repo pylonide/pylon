@@ -6,7 +6,6 @@
       buttons  = "close" 
       skin     = "fm-window"
       flex     = "1" 
-      visible  = "true"
       modal    = "false">
         <a:bar skin="c9-header-bar" top="-30" right="28" height="30">
             <a:hbox id="barTestTools" height="23">

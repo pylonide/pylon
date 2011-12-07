@@ -57,13 +57,11 @@ module.exports = ext.register("ext/panels/panels", {
         //navbar.current = this;
         panelExt.button.addEventListener("mousedown", function(e){
             var value = this.value;
-            if (_self.currentPanel && (_self.currentPanel != panelExt || value)) {
-                _self.deactivate(_self.currentPanel == panelExt);
+            if (_self.currentPanel && (_self.currentPanel != panelExt || value) && value) {
+                _self.deactivate(_self.currentPanel == panelExt, true);
                 
-                if (value) {
-                    colLeft.hide();
+                if (value)
                     return;
-                }
             }
 
             _self.activate(panelExt, true);
@@ -86,11 +84,111 @@ module.exports = ext.register("ext/panels/panels", {
         
         var active = settings.model.queryValue("auto/panels/@active");
         if (panelExt["default"] && !active || active == panelExt.path)
-            _self.activate(panelExt);
+            _self.activate(panelExt, null, true);
     },
     
-    activate : function(panelExt, noButton){
+    animate : function(win, toWin, toWidth){
+        var tweens = [];
+        
+        navbar.$ext.style.zIndex = 10000;
+        
+        if (win) {
+            var left = win.getLeft();
+            var top  = win.getTop();
+            var width = win.getWidth();
+            var height = win.getHeight();
+            
+            var diff  = apf.getDiff(win.$ext);
+            var zIndex = win.$ext.style.zIndex;
+            win.$ext.style.position = "absolute";
+            win.$ext.style.zIndex = 1000;
+            win.$ext.style.left = left + "px";
+            win.$ext.style.top = top + "px";
+            win.$ext.style.width = (width - diff[0]) + "px";
+            win.$ext.style.height = (height - diff[1]) + "px";
+            
+            if (toWin) {
+                tweens.push(
+                    {oHtml: toWin.$ext, type: "fade", from: 0, to: 1},
+                    {oHtml: toWin.$ext, type: "width", from: width, to: toWidth},
+                    {oHtml: win.$ext, type: "width", from: width, to: toWidth},
+                    {oHtml: colLeft.$ext, type: "width", from: width, to: toWidth}
+                );
+            }
+            else {
+                tweens.push(
+                    {oHtml: win.$ext, type: "left", from: left, to: left - width},
+                    {oHtml: colLeft.$ext, type: "width", from: width, to: 0}
+                );
+            }
+        }
+        else {
+            toWin.show();
+            colLeft.show();
+
+            var left = toWin.getLeft();
+            var top  = toWin.getTop();
+            var height = toWin.getHeight();
+            var width = 0;
+            
+            tweens.push(
+                {oHtml: toWin.$ext, type: "left", from: left - toWidth, to: left},
+                {oHtml: colLeft.$ext, type: "width", from: width, to: toWidth}
+            );
+        }
+        
+        if (toWin) {
+            var diff2  = apf.getDiff(toWin.$ext);
+            var zIndex2 = toWin.$ext.style.zIndex;
+            toWin.$ext.style.position = "absolute";
+            toWin.$ext.style.zIndex = 2000;
+            toWin.$ext.style.left = left + "px";
+            toWin.$ext.style.top = top + "px";
+            toWin.$ext.style.width = (toWidth - diff2[0]) + "px";
+            toWin.$ext.style.height = (height - diff2[1]) + "px";
+            toWin.show();
+        }
+        
+        colLeft.$ext.style.width = width + "px";
+        //apf.setOpacity(toWin.$ext, 0);
+        
+        apf.tween.multi(document.body, {
+            steps : 8,
+            interval : apf.isChrome ? 0 : 5,
+            anim : apf.tween.EASEOUT,
+            tweens : tweens,
+            oneach: function(){
+                apf.layout.forceResize()
+            },
+            onfinish : function(){
+                if (toWin) {
+                    toWin.$ext.style.zIndex = zIndex2;
+                    toWin.$ext.style.position = 
+                    toWin.$ext.style.left = 
+                    toWin.$ext.style.top = 
+                    toWin.$ext.style.height =
+                    toWin.$ext.style.width = "";
+                }
+                if (win) {
+                    win.$ext.style.zIndex = zIndex;
+                    win.$ext.style.position = 
+                    win.$ext.style.left = 
+                    win.$ext.style.top = 
+                    win.$ext.style.height =
+                    win.$ext.style.width = "";
+                    win.hide();
+                    
+                    if (!toWin)
+                        colLeft.hide();
+                }
+            }
+        });
+    },
+    
+    activate : function(panelExt, noButton, noAnim){
         ext.initExtension(panelExt);
+        
+        var lastPanel = this.currentPanel;
         
         if (this.currentPanel && (this.currentPanel != this))
             this.deactivate();
@@ -98,8 +196,13 @@ module.exports = ext.register("ext/panels/panels", {
         var width = settings.model.queryValue("auto/panels/panel[@path='" 
             + panelExt.path + "']/@width") || panelExt.defaultWidth;
         
-        panelExt.panel.show();
-        colLeft.setWidth(width);
+        if (!noAnim)
+            this.animate(lastPanel && lastPanel.panel, panelExt.panel, width);
+        else {
+            panelExt.panel.show();
+            colLeft.setWidth(width);
+        }
+
         colLeft.show();
         
         if (!noButton)
@@ -113,11 +216,16 @@ module.exports = ext.register("ext/panels/panels", {
         ide.dispatchEvent("showpanel." + panelExt.path);
     },
     
-    deactivate : function(noButton){
+    deactivate : function(noButton, anim){
         if (!this.currentPanel)
             return;
-        
-        this.currentPanel.panel.hide();
+
+        if (anim) {
+            this.animate(this.currentPanel.panel);
+            //if (!this.animate) //@todo setting
+            //colLeft.hide();
+            //this.currentPanel.panel.hide();
+        }
         
         if (!noButton)
             this.currentPanel.button.setValue(false);

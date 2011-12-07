@@ -13,7 +13,6 @@
       skin     = "fm-window"
       title    = "Project Files"
       modal    = "false"
-      visible  = "true"
       buttons  = "close"
       optimize = "true">
         <a:button

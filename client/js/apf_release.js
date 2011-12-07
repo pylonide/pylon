@@ -33283,7 +33283,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(58002)TIME(Mon, 05 Dec 2011 14:15:33 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(58039)TIME(Tue, 06 Dec 2011 17:02:50 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34288,7 +34288,7 @@ apf.BaseTab = function(){
         if (typeof e["type"] == "unknown") //scope expired (prolly GC'ed)
             e = {type: "click"};
         if (bAnimating && e.type != "dblclick") return;
-        bAnimating = true;
+        var bAnimating = true;
 
         if (typeof dir == "undefined")
             dir = SCROLL_LEFT;
@@ -36211,7 +36211,7 @@ apf.BaseTree = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/delayedrender.js)SIZE(5249)TIME(Tue, 06 Dec 2011 08:57:38 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/delayedrender.js)SIZE(5249)TIME(Tue, 06 Dec 2011 17:06:30 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36328,12 +36328,12 @@ apf.DelayedRender = function(){
         this.$ext.style.visibility = "";
     };
     
-    var _self = this;
+    /*var _self = this;
     if (apf.window.vManager.check(this, "delayedrender", function(){
         _self.$render();
-    })) this.$render();
+    })) this.$render();*/
     
-    /*var f;
+    var f;
     this.addEventListener("prop.visible", f = function(){
         if (arguments[0].value) {
             
@@ -36342,7 +36342,7 @@ apf.DelayedRender = function(){
             
             this.removeEventListener("prop.visible", f);
         }
-    });*/
+    });
 };
 
 apf.GuiElement.propHandlers["render"] = function(value) {

@@ -92,7 +92,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             editors.showFile(root.getAttribute("path") + "/" + path, line, 0, text);
         });
         
-        ideConsole.enable();
+        ideConsole.show();
         if (!this.$panel) {
             this.$panel = tabConsole.add(this.pageTitle, this.pageID);
             //this.$panel.setAttribute("closebtn", "true");
@@ -179,7 +179,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         var _self = this;
         winSearchInFiles.hide();
         // show the console (also used by the debugger):
-        ideConsole.enable();
+        ideConsole.show();
         if (!this.$panel) {
             this.$panel = tabConsole.add(this.pageTitle, this.pageID);
             this.$panel.appendChild(trSFHbox);

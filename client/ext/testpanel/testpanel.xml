@@ -4,7 +4,6 @@
       skin     = "fm-window" 
       title    = "Test Panel" 
       modal    = "false" 
-      visible  = "true" 
       buttons  = "close" 
       optimize = "true">
         <a:bar skin="c9-header-bar" top="-30" right="28" height="30">
@@ -82,7 +81,6 @@
                   options   = "size"
                   model     = "mdlTests"
                   each      = "[repo|file|test|assert|error]"
-                  margin    = "4"
                   class     = "noscrollbar"
                   multiselect    = "true"
                   startcollapsed = "true"
