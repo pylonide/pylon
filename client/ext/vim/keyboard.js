@@ -1,6 +1,7 @@
-"use strict";
 
 define(function(require, exports, module) {
+
+"use strict";
 
 var StateHandler = require("ace/keyboard/state_handler").StateHandler;
 var cmds = require("ext/vim/commands");

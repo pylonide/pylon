@@ -17,8 +17,6 @@ define(function(require, exports, module) {
         };
 
         ide.start = function() {
-            var last = "";
-
             //Set references to global elements - aka extension points
             //this.tbMain       = tbMain;
             this.mnuFile        = mnuFile;
@@ -195,11 +193,12 @@ define(function(require, exports, module) {
                     }
                 )[0];
                 
+                var status;
                 if (socketIoScriptEl) {
                     apf.ajax(socketIoScriptEl.src, {
                         callback: function(data, state, extra) {
                             try {
-                                var status = parseInt(extra.http.status, 10);
+                                status = parseInt(extra.http.status, 10);
                             } catch(ex) {}
                             apf.dispatchEvent("error", {
                                 message: "socket.io client lib not loaded",
@@ -254,7 +253,7 @@ define(function(require, exports, module) {
         };
         
         ide.getActivePageModel = function() {
-            page = tabEditors.getPage();
+            var page = tabEditors.getPage();
             if (!page)
                 return null;
     
@@ -266,7 +265,6 @@ define(function(require, exports, module) {
                 return page.$model.data;
             });
         };
-
         module.exports = ide;
     }
 );
