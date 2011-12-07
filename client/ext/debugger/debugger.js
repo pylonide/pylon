@@ -86,16 +86,15 @@ module.exports = ext.register("ext/debugger/debugger", {
             width    : 300,
             sections : [
                 {
-                    height  : 30,
-                    width   : 150,
-                    noflex  : true,
-                    draggable: false,
-                    options : {
-                        resizable  : false,
-                        skin       : "dockwin_runbtns",
-                        noTab      : true,
-                        position   : 1
-                    },
+                    height     : 30,
+                    width      : 150,
+                    noflex     : true,
+                    draggable  : false,
+                    resizable  : false,
+                    skin       : "dockwin_runbtns",
+                    noTab      : true,
+                    position   : 1,
+                    
                     buttons : [{
                         id      : "btnRunCommands",
                         caption : "Run Commands", 
@@ -106,11 +105,15 @@ module.exports = ext.register("ext/debugger/debugger", {
                     }]
                 },
                 {
+                    width : 250,
+                    height : 300,
                     buttons : [
                         { caption: "Call Stack", ext : [name, "dbgCallStack"], hidden: true}
                     ]
                 },
                 {
+                    width : 250,
+                    height : 300,
                     buttons : [
                         { caption: "Interactive", ext : [name, "dbInteractive"], hidden: true},
                         { caption: "Variables", ext : [name, "dbgVariable"], hidden: true},

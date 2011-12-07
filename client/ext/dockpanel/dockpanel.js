@@ -251,7 +251,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         buttons.each(function(button){
             if (button.hidden && button.hidden != 2) {
                 _self.layout.show(button.uniqueId);
-                bars.pushUnique(_self.layout.findBar((button.uniqueId)));
+                bars.pushUnique(_self.layout.findBar(button.uniqueId));
             }
         });
         

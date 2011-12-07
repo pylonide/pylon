@@ -625,7 +625,7 @@ module.exports = ext.register("ext/console/console", {
         this.nodes.push(
             winDbgConsole,
             
-            mnuProjectBar.appendChild(new apf.item({
+            mnuWindows.appendChild(new apf.item({
                 caption : "Console",
                 type    : "check",
                 checked : "{winDbgConsole.height > 41}",

@@ -41,8 +41,9 @@ module.exports = ext.register("ext/panels/panels", {
             type    : "radio",
             value   : panelExt.path,
             group   : this.group,
-            "onprop.selected" : function(){
-                _self.activate(panelExt, true);
+            "onprop.selected" : function(e){
+                if (e.value)
+                    _self.activate(panelExt);
             }
         }), beforePanel && beforePanel.mnuItem);
         
@@ -242,6 +243,8 @@ module.exports = ext.register("ext/panels/panels", {
         settings.model.setQueryValue("auto/panels/@active", panelExt.path);
         
         ide.dispatchEvent("showpanel." + panelExt.path);
+        
+        panelExt.mnuItem.select();
     },
     
     deactivate : function(noButton, anim){

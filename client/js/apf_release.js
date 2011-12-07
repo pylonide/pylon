@@ -33286,7 +33286,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(58039)TIME(Tue, 06 Dec 2011 17:02:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(58119)TIME(Wed, 07 Dec 2011 11:56:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33613,13 +33613,16 @@ apf.BaseTab = function(){
         scalersz.call(this)
     }
     
+    this.anims = "add|remove";
+    
     this.$scaleinit = function(node, type, callback, force){
         var pg = this.getPages();
         var l  = pg.length;
         this.minwidth = this.$minBtnWidth * l + 10; //@todo padding + margin of button container
         this.$ext.style.minWidth = Math.max(0, this.minwidth - apf.getWidthDiff(this.$ext)) + "px";
         
-        if (force && !this.$ext.offsetWidth && !this.$ext.offsetHeight) {
+        if (force && !this.$ext.offsetWidth && !this.$ext.offsetHeight
+          || this.anims.indexOf(type) == -1) {
             if (type == "add")
                 node.dispatchEvent("afteropen");
             else if (type == "remove")
