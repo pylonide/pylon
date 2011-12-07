@@ -7,7 +7,7 @@
       id        = "winTourGuide"
       title     = "Guided Tour"
       center    = "true"
-      modal     = "false"
+      modal     = "true"
       buttons   = "close"
       kbclose   = "true"
       width     = "395"
@@ -29,10 +29,11 @@
         id        = "tourControlsDialog"
         title     = "Guided Tour Controls"
         center    = "true"
-        modal     = "false"
+        modal     = "true"
         buttons   = "close"
         kbclose   = "false"
         width     = "325"
+        skinset   = "transparentDialog"
         skin      = "bk-window"
         class     = "tgDialog">
         <a:vbox>

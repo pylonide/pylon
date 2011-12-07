@@ -48,11 +48,13 @@ border-right: 10px solid transparent;
 border-bottom: 10px solid #222;
             }
             .guidetool.left .gt-arrow {
+            right: -9px;
+top: 43%;
 width: 0px;
 height: 0px;
 border-top: 10px solid transparent;
 border-bottom: 10px solid transparent;
-border-right: 10px solid 222;
+border-left: 10px solid #222;
             }
             
             .guidetool.right .gt-arrow {
@@ -68,6 +70,10 @@ border-right: 10px solid #222;
             .wn_cp_content .btnIcon .lbl span {
                 width: 40px;
             }
+             
+             tgDialog, .guidetool {
+             z-index: 999999999999;
+             }
              
              .tgDialog > .bk-header {
                 padding-bottom: 10px;
