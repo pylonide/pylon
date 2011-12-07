@@ -146,11 +146,18 @@ module.exports = ext = {
         if (oExtension.inited)
             return;
 
+        var skin = oExtension.skin;
+        if (skin && typeof skin == "object") {
+            var data = oExtension.skin.data;
+            oExtension.skinNode = new apf.skin(apf.extend({}, oExtension.skin, {data: null}));
+            oExtension.skinNode.setProperty("src", data);
+            apf.document.body.appendChild(oExtension.skinNode);
+        }
+
         //Load markup
         var markup = oExtension.markup;
-        if (markup) {
+        if (markup) 
             apf.document.body.insertMarkup(markup);
-        }
 
         var deps = oExtension.deps;
         if (deps) {

@@ -24,7 +24,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
     hook : function(){
         var _self = this;
-        var model;
+        var model = this.model = new apf.model().load("<files />");
         
         ide.addEventListener("init.ext/tree/tree", function(){
             var active = settings.model.queryValue("auto/openfiles/@active");
@@ -51,8 +51,6 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                     }
                 }), mnuFilesSettings.firstChild)
             );
-            
-            model = _self.model = new apf.model().load("<files />");
             
             if (active == "openfiles")
                 _self.showOpenFiles();

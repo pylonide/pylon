@@ -7,7 +7,7 @@
 define(function(require, exports, module) {
     
 var ide = require("core/ide");
-var template = require("text!core/template.xml");
+var template = "<settings />";
 
 module.exports = {
     model : new apf.model(),

@@ -13288,7 +13288,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/skins.js)SIZE(12705)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/skins.js)SIZE(12336)TIME(Wed, 07 Dec 2011 05:23:29 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13338,7 +13338,7 @@ apf.skins = {
          */
         var name      = (refNode ? refNode.getAttribute("id") : null)
             || xmlNode.getAttribute("id");
-        var base      = (refNode ? refNode.getAttribute("src").match(/\//) || path : "")
+        var base      = (refNode ? (refNode.getAttribute("src") || "").match(/\//) || path : "")
             ? (path || refNode.getAttribute("src")).replace(/\/[^\/]*$/, "") + "/"
             : ""; //@todo make this absolute?
 
@@ -17136,7 +17136,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16786)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16874)TIME(Wed, 07 Dec 2011 05:09:12 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17177,6 +17177,9 @@ apf.Init.run("http");
  */
 apf.DOMParser = function(){};
 
+/*
+    @todo the shouldWait variable should be tree based and checked recursively up
+*/
 apf.DOMParser.prototype = new (function(){
     this.caseInsensitive    = true;
     this.preserveWhiteSpace = false; //@todo apf3.0 whitespace issue
@@ -68743,7 +68746,7 @@ apf.aml.setElement("services", apf.services);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/skin.js)SIZE(9963)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/skin.js)SIZE(9690)TIME(Wed, 07 Dec 2011 05:15:07 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional

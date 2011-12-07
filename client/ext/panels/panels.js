@@ -88,9 +88,22 @@ module.exports = ext.register("ext/panels/panels", {
     },
     
     animate : function(win, toWin, toWidth){
-        var tweens = [];
+        var tweens = [], _self = this;
+        
+        if (this.animateControl)
+            this.animateControl.stop();
+        
+        this.animating = true;
         
         navbar.$ext.style.zIndex = 10000;
+        
+        if (toWin) {
+            var toWinExt = toWin.$altExt || toWin.$ext;
+            
+            //Hack because of bug in hbox.js - apparently only run dialog has .$altExt
+            toWin.show();
+            toWin.hide();
+        }
         
         if (win) {
             var left = win.getLeft();
@@ -98,26 +111,27 @@ module.exports = ext.register("ext/panels/panels", {
             var width = win.getWidth();
             var height = win.getHeight();
             
-            var diff  = apf.getDiff(win.$ext);
-            var zIndex = win.$ext.style.zIndex;
-            win.$ext.style.position = "absolute";
-            win.$ext.style.zIndex = 1000;
-            win.$ext.style.left = left + "px";
-            win.$ext.style.top = top + "px";
-            win.$ext.style.width = (width - diff[0]) + "px";
-            win.$ext.style.height = (height - diff[1]) + "px";
+            var winExt = win.$altExt || win.$ext;
+            var diff  = apf.getDiff(winExt);
+            var zIndex = winExt.style.zIndex;
+            winExt.style.position = "absolute";
+            winExt.style.zIndex = 1000;
+            winExt.style.left = left + "px";
+            winExt.style.top = top + "px";
+            winExt.style.width = (width - diff[0]) + "px";
+            winExt.style.height = (height - diff[1]) + "px";
             
             if (toWin) {
                 tweens.push(
-                    {oHtml: toWin.$ext, type: "fade", from: 0, to: 1},
-                    {oHtml: toWin.$ext, type: "width", from: width, to: toWidth},
-                    {oHtml: win.$ext, type: "width", from: width, to: toWidth},
+                    {oHtml: toWinExt, type: "fade", from: 0, to: 1},
+                    {oHtml: toWinExt, type: "width", from: width, to: toWidth},
+                    {oHtml: winExt, type: "width", from: width, to: toWidth},
                     {oHtml: colLeft.$ext, type: "width", from: width, to: toWidth}
                 );
             }
             else {
                 tweens.push(
-                    {oHtml: win.$ext, type: "left", from: left, to: left - width},
+                    {oHtml: winExt, type: "left", from: left, to: left - width},
                     {oHtml: colLeft.$ext, type: "width", from: width, to: 0}
                 );
             }
@@ -132,29 +146,30 @@ module.exports = ext.register("ext/panels/panels", {
             var width = 0;
             
             tweens.push(
-                {oHtml: toWin.$ext, type: "left", from: left - toWidth, to: left},
+                {oHtml: toWinExt, type: "left", from: left - toWidth, to: left},
                 {oHtml: colLeft.$ext, type: "width", from: width, to: toWidth}
             );
         }
         
         if (toWin) {
-            var diff2  = apf.getDiff(toWin.$ext);
-            var zIndex2 = toWin.$ext.style.zIndex;
-            toWin.$ext.style.position = "absolute";
-            toWin.$ext.style.zIndex = 2000;
-            toWin.$ext.style.left = left + "px";
-            toWin.$ext.style.top = top + "px";
-            toWin.$ext.style.width = (toWidth - diff2[0]) + "px";
-            toWin.$ext.style.height = (height - diff2[1]) + "px";
+            var diff2  = apf.getDiff(toWinExt);
+            var zIndex2 = toWinExt.style.zIndex;
+            toWinExt.style.position = "absolute";
+            toWinExt.style.zIndex = 2000;
+            toWinExt.style.left = left + "px";
+            toWinExt.style.top = top + "px";
+            toWinExt.style.width = (toWidth - diff2[0]) + "px";
+            toWinExt.style.height = (height - diff2[1]) + "px";
             toWin.show();
         }
         
         colLeft.$ext.style.width = width + "px";
-        //apf.setOpacity(toWin.$ext, 0);
+        //apf.setOpacity(toWinExt, 0);
         
-        apf.tween.multi(document.body, {
+        var options = {
             steps : 8,
             interval : apf.isChrome ? 0 : 5,
+            control : this.animateControl = {},
             anim : apf.tween.EASEOUT,
             tweens : tweens,
             oneach: function(){
@@ -162,30 +177,40 @@ module.exports = ext.register("ext/panels/panels", {
             },
             onfinish : function(){
                 if (toWin) {
-                    toWin.$ext.style.zIndex = zIndex2;
-                    toWin.$ext.style.position = 
-                    toWin.$ext.style.left = 
-                    toWin.$ext.style.top = 
-                    toWin.$ext.style.height =
-                    toWin.$ext.style.width = "";
+                    toWinExt.style.zIndex = zIndex2;
+                    toWinExt.style.position = 
+                    toWinExt.style.left = 
+                    toWinExt.style.top = 
+                    toWinExt.style.height =
+                    toWinExt.style.width = "";
+                    apf.setOpacity(toWinExt, 1);
                 }
                 if (win) {
-                    win.$ext.style.zIndex = zIndex;
-                    win.$ext.style.position = 
-                    win.$ext.style.left = 
-                    win.$ext.style.top = 
-                    win.$ext.style.height =
-                    win.$ext.style.width = "";
+                    winExt.style.zIndex = zIndex;
+                    winExt.style.position = 
+                    winExt.style.left = 
+                    winExt.style.top = 
+                    winExt.style.height =
+                    winExt.style.width = "";
+                    apf.setOpacity(winExt, 1);
                     win.hide();
                     
                     if (!toWin)
                         colLeft.hide();
                 }
+                
+                _self.animating = false;
             }
-        });
+        };
+        options.onstop = options.onfinish;
+        
+        apf.tween.multi(document.body, options);
     },
     
     activate : function(panelExt, noButton, noAnim){
+        if (this.currentPanel == panelExt)
+            return;
+        
         ext.initExtension(panelExt);
         
         var lastPanel = this.currentPanel;
@@ -196,7 +221,7 @@ module.exports = ext.register("ext/panels/panels", {
         var width = settings.model.queryValue("auto/panels/panel[@path='" 
             + panelExt.path + "']/@width") || panelExt.defaultWidth;
         
-        if (!noAnim)
+        if (!noAnim && apf.isTrue(settings.model.queryValue('general/@animateui')))
             this.animate(lastPanel && lastPanel.panel, panelExt.panel, width);
         else {
             panelExt.panel.show();
@@ -221,10 +246,12 @@ module.exports = ext.register("ext/panels/panels", {
             return;
 
         if (anim) {
-            this.animate(this.currentPanel.panel);
-            //if (!this.animate) //@todo setting
-            //colLeft.hide();
-            //this.currentPanel.panel.hide();
+            if (apf.isTrue(settings.model.queryValue('general/@animateui')))
+                this.animate(this.currentPanel.panel);
+            else {
+                colLeft.hide();
+                this.currentPanel.panel.hide();
+            }
         }
         
         if (!noButton)
@@ -266,7 +293,7 @@ module.exports = ext.register("ext/panels/panels", {
         );
         
         colLeft.addEventListener("resize", function(){
-            if (_self.currentPanel)
+            if (_self.currentPanel && !_self.animating)
                 settings.model.setQueryValue("auto/panels/panel[@path='" 
                     + _self.currentPanel.path + "']/@width", colLeft.getWidth());
         });
@@ -276,13 +303,9 @@ module.exports = ext.register("ext/panels/panels", {
         var _self = this;
         this.$settings = {};
         ide.addEventListener("loadsettings", function(e){
-            var strSettings = e.model.queryValue("auto/panel");
-            if (strSettings) {
-                try {
-                    var obj = JSON.parse(strSettings);
-                }
-                catch (ex) {}
-            }
+            var animateNode = e.model.queryNode("general/@animateui");
+            if (!animateNode)
+                e.model.setQueryValue("general/@animateui", true);
         });
 
         var props = ["visible", "flex", "width", "height", "state"];
@@ -328,6 +351,15 @@ module.exports = ext.register("ext/panels/panels", {
                 xmlSettings.nodeValue = apf.serialize(_self.$settings);
                 return true;
             }
+        });
+        
+        ide.addEventListener("init.ext/settings/settings", function (e) {
+            var heading = e.ext.getHeading("General");
+            heading.appendChild(new apf.checkbox({
+                "class" : "underlined",
+                value : "[general/@animateui]",
+                label : "Animate the UI"
+            }))
         });
     },
     

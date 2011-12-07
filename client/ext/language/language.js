@@ -74,10 +74,9 @@ module.exports = ext.register("ext/language/language", {
         refactor.hook(this, worker);
         
         ide.addEventListener("init.ext/settings/settings", function (e) {
-            e.ext.addSection("language", _self.name, "language", function () {});
-            barSettings.insertMarkup(settings);
+            var heading = e.ext.getHeading("Language Support");
+            heading.insertMarkup(settings);
         });
-
 	},
 
     init : function() {

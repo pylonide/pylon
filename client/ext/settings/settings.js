@@ -20,7 +20,11 @@ module.exports = ext.register("ext/settings/settings", {
     alone   : true,
     type    : ext.GENERAL,
     markup  : markup,
-    skin    : skin,
+    skin    : {
+        id   : "prefs",
+        data : skin,
+        "media-path" : "/static/ext/settings/images/"
+    },
     
     defaultWidth : 250,
     
@@ -70,11 +74,29 @@ module.exports = ext.register("ext/settings/settings", {
         //Backwards compatible
         this.model = settings.model;
     },
+    
+    headings : {},
+    getHeading : function(name){
+        if (this.headings[name])
+            return this.headings[name];
+        
+        var heading = barSettings.appendChild(new apf.bar({
+            skin: "basic"
+        }));
+        heading.$int.innerHTML = '<div class="header"><span></span><div>' 
+            + name + '</div></div>';
+        
+        this.headings[name] = heading;
+        
+        return heading;
+    },
 
     init : function(amlNode){
         this.panel = winSettings;
 
         colLeft.appendChild(winSettings);
+        
+        this.getHeading("General");
         
         this.nodes.push(winSettings);
     },

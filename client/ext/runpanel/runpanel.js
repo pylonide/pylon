@@ -80,12 +80,23 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             if (e.action == "add" || e.action == "redo-remove" || e.action == "attribute")
                 _self.$updateMenu();
         });
+        
+        ide.addEventListener("init.ext/settings/settings", function(e){
+            var heading = e.ext.getHeading("General");
+            heading.appendChild(new apf.checkbox({
+                "class" : "underlined first",
+                value : "[general/@saveallbeforerun]",
+                label : "Save All Files Before Running"
+            }))
+        });
 
         ide.addEventListener("loadsettings", function(e){
             var runConfigs = e.model.queryNode("auto/configurations");
             if (!runConfigs) {
                 runConfigs = apf.createNodeFromXpath(e.model.data, "auto/configurations");
                 apf.xmldb.setAttribute(runConfigs, "debug", "true");
+                
+                e.model.setQueryValue("general/@saveallbeforerun", false);
             }
 
             mdlRunConfigurations.load(runConfigs);
@@ -128,7 +139,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
     init : function(amlNode){
         this.panel = winRunPanel;
-
+        
         colLeft.appendChild(winRunPanel);
         
         this.nodes.push(winRunPanel);
@@ -226,8 +237,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
     runConfig : function(config, debug) {
         var model = settings.model;
-        var saveallbeforerun = model.queryValue("general/@saveallbeforerun");
-        if (saveallbeforerun) save.saveall();
+        var saveallbeforerun = apf.isTrue(model.queryValue("general/@saveallbeforerun"));
+        if (saveallbeforerun) 
+            save.saveall();
         
         if (debug === undefined)
             debug = config.parentNode.getAttribute("debug") == "1";

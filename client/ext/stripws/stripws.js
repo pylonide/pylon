@@ -13,7 +13,6 @@ define(function (require, exports, module) {
 var ext = require("core/ext");
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
-var settings = require("text!ext/stripws/settings.xml");
 var extSettings = require("ext/settings/settings");
 
 var RE_WS = /[ \t\r\f\v]+\n/g;
@@ -94,7 +93,12 @@ module.exports = ext.register("ext/stripws/stripws", {
         });
 
         ide.addEventListener("init.ext/settings/settings", function (e) {
-            barSettings.insertMarkup(settings);
+            var heading = e.ext.getHeading("General");
+            heading.appendChild(new apf.checkbox({
+                "class" : "underlined",
+                value : "[editors/code/@stripws]",
+                label : "On Save, Strip Whitespace"
+            }))
         });
     },
 

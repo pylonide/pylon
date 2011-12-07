@@ -14,7 +14,6 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var handler = require("ext/vim/keyboard").handler;
-var settings = require("text!ext/vim/settings.xml");
 var extSettings = require("ext/settings/settings");
 var cmdModule = require("ext/vim/commands");
 var commands = cmdModule.commands;
@@ -147,7 +146,12 @@ module.exports = ext.register("ext/vim/vim", {
         });
 
         ide.addEventListener("init.ext/settings/settings", function (e) {
-            setTimeout(function() { barSettings.insertMarkup(settings); }, 0);
+            var heading = e.ext.getHeading("Code Editor");
+            heading.appendChild(new apf.checkbox({
+                "class" : "underlined",
+                value : "[editors/code/@vimmode]",
+                label : "Vim mode"
+            }))
         });
 
         extSettings.model.addEventListener("update", function(e) {

@@ -341,7 +341,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         var path = docNode.getAttribute('path');
         var node = trFiles.queryNode('//file[@path="' + path + '"]');
 
-        require("ext/tree/tree").enable();
+        //@todo UGLY HACK
+        require("ext/panels/panels").activate(require("ext/tree/tree"));
+        if (!trFiles.visible)
+            require("ext/openfiles/openfiles").showProjectFiles();
 
         if (node) {
             trFiles.expandAndSelect(node);

@@ -273,16 +273,38 @@ module.exports = ext.register("ext/code/code", {
 
     hook: function() {
         var _self      = this;
-        var commitFunc = this.onCommit.bind(this);
-        var name       = this.name;
         
         //Settings Support
         ide.addEventListener("init.ext/settings/settings", function(e) {
-            e.ext.addSection("code", name, "editors", commitFunc);
-            barSettings.insertMarkup(markupSettings);
+            var heading = e.ext.getHeading("Code Editor");
+            heading.insertMarkup(markupSettings);
         });
         
         ide.addEventListener("loadsettings", function(e) {
+            var model = e.model;
+            if (!model.queryNode("editors/code")) {
+                var node = apf.n("<code />")
+                  .attr("overwrite", "false")
+                  .attr("selectstyle", "line")
+                  .attr("activeline", "true")
+                  .attr("showinvisibles", "false")
+                  .attr("showprintmargin", "true")
+                  .attr("printmargincolumn", "80")
+                  .attr("softtabs", "true")
+                  .attr("tabsize", "4")
+                  .attr("scrollspeed", "2")
+                  .attr("fontsize", "12")
+                  .attr("wrapmode", "false")
+                  .attr("wraplimitmin", "")
+                  .attr("wraplimitmax", "")
+                  .attr("gutter", "true")
+                  .attr("highlightselectedword", "true")
+                  .attr("autohidehorscrollbar", "true").node();
+                
+                var editors = apf.createNodeFromXpath(model.data, "editors");
+                apf.xmldb.appendChild(editors, node);
+            }
+            
             // pre load theme
             var theme = e.model.queryValue("editors/code/@theme");
             if (theme) 
@@ -429,10 +451,6 @@ module.exports = ext.register("ext/code/code", {
         });
     },
 
-    onCommit: function() {
-        //console.log("commit func called!")
-        //todo
-    },
 
     enable : function() {
         this.nodes.each(function(item){
