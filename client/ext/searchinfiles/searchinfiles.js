@@ -169,9 +169,11 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         winSearchInFiles.hide();
         // show the console (also used by the debugger):
         ideConsole.show();
-        if (!this.$panel || this.$panel.$amlDestroyed) {
+        if (!this.$panel) {
             this.$panel = tabConsole.add(this.pageTitle, this.pageID);
+            this.$panel.setAttribute("closebtn", true);
             this.$panel.appendChild(trSFHbox);
+            tabConsole.set(_self.pageID);
             trSFHbox.show();
             trSFResult.setProperty("visible", true);
             this.$model = trSFResult.getModel();
@@ -179,6 +181,14 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             this.$model.addEventListener("afterload", function() {
                 tabConsole.set(_self.pageID);
             });
+            
+            this.$panel.addEventListener("afterclose", function(){
+                this.removeNode();
+                return false;
+            });
+        }
+        else {
+            tabConsole.appendChild(this.$panel);
         }
         // show the tab
         tabConsole.set(this.pageID);
