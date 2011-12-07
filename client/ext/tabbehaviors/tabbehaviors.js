@@ -9,7 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var save = require("ext/save/save");
 var panels = require("ext/panels/panels");
 

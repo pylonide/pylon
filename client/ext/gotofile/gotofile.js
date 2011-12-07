@@ -9,12 +9,9 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var fs = require("ext/filesystem/filesystem");
-var settings = require("ext/settings/settings");
-var tree = require("ext/tree/tree");
 var editors = require("ext/editors/editors");
 var markup = require("text!ext/gotofile/gotofile.xml");
-        
+
 module.exports = ext.register("ext/gotofile/gotofile", {
     name    : "Filter Tree",
     dev     : "Ajax.org",

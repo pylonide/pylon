@@ -4,10 +4,9 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
-var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var noderunner = require("ext/noderunner/noderunner");

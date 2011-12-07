@@ -4,12 +4,11 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var fs = require("ext/filesystem/filesystem");
 var markup = require("text!ext/newresource/newresource.xml");
 
