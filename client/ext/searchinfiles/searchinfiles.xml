@@ -98,8 +98,7 @@
                       height = "20"
                       skin   = "classic" 
                       value  = "projects" 
-                      label  = "Project"
-                      selected ="false" />
+                      label  = "Project" />
                     <a:radiobutton id="rbSFSelection"
                       group  = "grpSFScope" 
                       height = "20"
@@ -118,7 +117,7 @@
         </a:hbox>
     </a:window>
 
-    <a:hbox id="trSFHbox" anchors="0 0 0 0">
+    <a:hbox id="trSFHbox" anchors="0 0 0 0" visible="false" render="runtime">
         <a:tree id        = "trSFResult"
           skinset         = "searchinfiles"
           border          = "0"

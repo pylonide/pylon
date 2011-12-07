@@ -314,10 +314,8 @@ module.exports = ext.register("ext/code/code", {
         });
         
         ide.addEventListener("afteropenfile", function(e) {
-            if(!e.editor)
-                return;
-
-            e.editor.setState && e.editor.setState(e.doc, e.doc.state);
+            if (_self.setState)
+                _self.setState(e.doc, e.doc.state);
         });
         
         // preload common language modes

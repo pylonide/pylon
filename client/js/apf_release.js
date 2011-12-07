@@ -66635,7 +66635,7 @@ apf.aml.setElement("color",       apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/radiobutton.js)SIZE(17104)TIME(Tue, 06 Dec 2011 06:12:40 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/radiobutton.js)SIZE(17104)TIME(Wed, 07 Dec 2011 08:09:09 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66916,7 +66916,7 @@ apf.radiobutton = function(struct, tagName){
      * Sets the selected state and related value
      */
     this.$check = function(visually){
-        this.$setStyleClass(this.$ext, this.$baseCSSname + "selected");
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Selected");
         this.selected = true;
         if (this.oInput)
             this.oInput.selected = true;
@@ -66924,7 +66924,7 @@ apf.radiobutton = function(struct, tagName){
     };
 
     this.$uncheck = function(){
-        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "selected"]);
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Selected"]);
         this.selected = false;
         if (this.oInput)
             this.oInput.selected = false;

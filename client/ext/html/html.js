@@ -24,14 +24,19 @@ module.exports = ext.register("ext/html/html", {
     hook : function(){
         var _self = this;
         tabEditors.addEventListener("afterswitch", function(e){
-            var mime = e.nextPage.contentType;
+            if (e.nextPage) {
+            /*var ext = e.nextPage.id.split(".").pop();
 
-            if (mime == "text/html" || mime == "application/xhtml+xml"
-              || mime == "text/javascript" || mime == "text/plain"
-              || mime == "application/xml") {
+            if (ext == ".html" || ext == ".shtml"
+              || ext == ".js" || ext == ".txt"
+              || ext == ".xml") {*/
                 ext.initExtension(_self);
                 _self.page = e.nextPage;
                 _self.enable();
+            /*}
+            else {
+                _self.disable();
+            }*/
             }
             else {
                 _self.disable();

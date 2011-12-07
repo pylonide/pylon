@@ -39,7 +39,7 @@
                   icon="console_close_btn.png"
                   class="dim22-22"
                   top="3" right="3"
-                  onclick  = "require('ext/console/console').disable()"/>
+                  onclick  = "require('ext/console/console').hide()"/>
                 <a:page id="pgConsole" caption="Console" name="console">
                     <a:text id="txtConsole"
                       margin     = "3 0 0 0"

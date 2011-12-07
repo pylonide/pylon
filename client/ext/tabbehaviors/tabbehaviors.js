@@ -12,6 +12,8 @@ var ext = require("core/ext");
 var util = require("core/util");
 var save = require("ext/save/save");
 var panels = require("ext/panels/panels");
+var tree = require("ext/tree/tree");
+var openfiles = require("ext/openfiles/openfiles");
 
 module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     name       : "Tab Behaviors",
@@ -206,7 +208,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             pages.each(function(page){
                 //page.$at.undo(-1);
                 //_self.removeItem(page);
-                tabs.remove(page);
+                tabs.remove(page, null, true);
             });
         });
     },
@@ -230,7 +232,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             set.each(function(page){
                 //page.$at.undo(-1);
                 //_self.removeItem(page);
-                tabs.remove(page);
+                tabs.remove(page, null, true);
             });
         });
         
@@ -473,7 +475,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.more = mnuTabs.appendChild(new apf.item({
                 caption : "More...",
                 onclick : function() {
-                    require("ext/openfiles/openfiles").show();
+                    panels.activate(tree);
+                    openfiles.showOpenFiles(); //@todo HACK
                 }
             }));
         }

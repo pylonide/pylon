@@ -60,8 +60,11 @@ module.exports = ext.register("ext/panels/panels", {
             if (_self.currentPanel && (_self.currentPanel != panelExt || value) && value) {
                 _self.deactivate(_self.currentPanel == panelExt, true);
                 
-                if (value)
+                if (value) {
+                    if (!apf.isTrue(settings.model.queryValue('general/@animateui')))
+                        colLeft.hide();
                     return;
+                }
             }
 
             _self.activate(panelExt, true);
@@ -221,12 +224,12 @@ module.exports = ext.register("ext/panels/panels", {
         var width = settings.model.queryValue("auto/panels/panel[@path='" 
             + panelExt.path + "']/@width") || panelExt.defaultWidth;
         
-        if (!noAnim && apf.isTrue(settings.model.queryValue('general/@animateui')))
-            this.animate(lastPanel && lastPanel.panel, panelExt.panel, width);
-        else {
+        if (noAnim || !apf.isTrue(settings.model.queryValue('general/@animateui'))) {
             panelExt.panel.show();
             colLeft.setWidth(width);
         }
+        else if (!noAnim)
+            this.animate(lastPanel && lastPanel.panel, panelExt.panel, width);
 
         colLeft.show();
         
@@ -245,14 +248,11 @@ module.exports = ext.register("ext/panels/panels", {
         if (!this.currentPanel)
             return;
 
-        if (anim) {
-            if (apf.isTrue(settings.model.queryValue('general/@animateui')))
-                this.animate(this.currentPanel.panel);
-            else {
-                colLeft.hide();
-                this.currentPanel.panel.hide();
-            }
+        if (!apf.isTrue(settings.model.queryValue('general/@animateui'))) {
+            this.currentPanel.panel.hide();
         }
+        else if (anim)
+            this.animate(this.currentPanel.panel);
         
         if (!noButton)
             this.currentPanel.button.setValue(false);
@@ -358,7 +358,7 @@ module.exports = ext.register("ext/panels/panels", {
             heading.appendChild(new apf.checkbox({
                 "class" : "underlined",
                 value : "[general/@animateui]",
-                label : "Animate the UI"
+                label : "Enable UI Animations"
             }))
         });
     },
