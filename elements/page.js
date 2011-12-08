@@ -97,12 +97,44 @@ apf.page = function(struct, tagName){
     this.$supportedProperties.push("fake", "caption", "icon", "tooltip",
         "type", "buttons", "closebtn", "trans-in", "trans-out");
 
+    //#ifdef __ENABLE_TAB_CLOSEBTN
     /**
      * @attribute {Boolean} closebtn whether this page's button shows a close button inside it.
      */
     this.$propHandlers["closebtn"] = function(value){
-        this.closebtn = value;
+        //if (!this.$amlLoaded || !this.parentNode.$hasButtons)
+          //  return;
+        var _self = this;
+        
+        if (value) {
+            var btncontainer = this.parentNode.$getLayoutNode("button", "container", this.$button);
+            
+            this.parentNode.$getNewContext("btnclose");
+            var elBtnClose = this.parentNode.$getLayoutNode("btnclose");
+
+            if (elBtnClose) {
+               // if(elBtnClose.nodeType == 1) {
+                apf.setStyleClass(this.$button, "btnclose");
+                
+                elBtnClose.addEventListener("mousedown", function(){
+                    apf.cancelBubble(event, apf.lookup(_self.$uniqueId));
+                });
+                
+                elBtnClose.addEventListener("click", function(){
+                    var page = apf.lookup(_self.$uniqueId);
+                     page.parentNode.remove(page, event);
+                });
+
+                btncontainer.appendChild(elBtnClose);
+            }
+            //#ifdef __DEBUG
+            else {
+                apf.console.warn("Missing close button in tab skin");
+            }
+            //#endif
+        }
     };
+    //#endif
 
     /**
      * @attribute {String} caption the text displayed on the button of this element.
@@ -666,34 +698,11 @@ apf.page = function(struct, tagName){
             //    this.$lastClassValueBtn = cssClass;
             //}
 
-            //#ifdef __ENABLE_TAB_CLOSEBTN
-            var closebtn = this.getAttribute("closebtn");
-            if ((apf.isTrue(closebtn) || ((this.parentNode.buttons || "").indexOf("close") > -1 && !apf.isFalse(closebtn)))) {
-                var btncontainer = this.parentNode.$getLayoutNode("button", "container");
-
-                this.parentNode.$getNewContext("btnclose");
-                var elBtnClose = this.parentNode.$getLayoutNode("btnclose");
-                
-                if (elBtnClose) {
-                    apf.setStyleClass(elBtn, "btnclose");
-
-                    elBtnClose.setAttribute("onmousedown", 
-                        "apf.cancelBubble(event, apf.lookup(" + this.$uniqueId + "));");
-                    elBtnClose.setAttribute("onclick",
-                        'var page = apf.lookup(' + this.$uniqueId + ');\
-                         page.parentNode.remove(page, event);');
-                         
-                    btncontainer.appendChild(elBtnClose);
-                }
-                //#ifdef __DEBUG
-                else {
-                    apf.console.warn("Missing close button in tab skin");
-                }
-                //#endif
-            }
-            //#endif
-
             this.$button = apf.insertHtmlNode(elBtn, this.parentNode.$buttons);
+            
+            var closebtn = this.closebtn = this.getAttribute("closebtn");
+            if ((apf.isTrue(closebtn) || ((this.parentNode.buttons || "").indexOf("close") > -1 && !apf.isFalse(closebtn))))
+                this.$propHandlers["closebtn"].call(this, true);
             
             //#ifdef __ENABLE_TAB_SCALE
             if (this.parentNode.$scale) {
