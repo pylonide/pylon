@@ -54,11 +54,11 @@ var Scope = module.exports.Scope = function Scope(parent) {
  * Declare a variable in the current scope
  */
 Scope.prototype.declare = function(name, resolveNode) {
-    if(!this.vars[name]) 
-        this.vars[name] = new Variable(resolveNode);
+    if(!this.vars['_'+name]) 
+        this.vars['_'+name] = new Variable(resolveNode);
     else
-        this.vars[name].addDeclaration(resolveNode);
-    return this.vars[name];
+        this.vars['_'+name].addDeclaration(resolveNode);
+    return this.vars['_'+name];
 };
 
 Scope.prototype.isDeclared = function(name) {
@@ -71,8 +71,8 @@ Scope.prototype.isDeclared = function(name) {
  * @return Variable instance 
  */
 Scope.prototype.get = function(name) {
-    if(this.vars[name])
-        return this.vars[name];
+    if(this.vars['_'+name])
+        return this.vars['_'+name];
     else if(this.parent)
         return this.parent.get(name);
 };
