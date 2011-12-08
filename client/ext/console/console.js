@@ -11,7 +11,6 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var panels = require("ext/panels/panels");
 var editors = require("ext/editors/editors");
-var Parser = require("ext/console/parser");
 var Logger = require("ext/console/logger");
 var Trie = require("ext/console/trie");
 var Hints = require("ext/console/hints");
@@ -26,7 +25,6 @@ var cmdTries   = {};
 var cmdFetched = false;
 var cmdBuffer  = "";
 var lastSearch = null;
-var parser = new Parser();
 
 var KEY_TAB = 9;
 var KEY_CR = 13;
@@ -62,6 +60,12 @@ var cmdHistory = {
             this._index = 0;
 
         return this._history[this._index];
+    }
+};
+
+var Parser = {
+    parseLine: function(line) {
+        return line.split(" ");
     }
 };
 
@@ -164,7 +168,7 @@ module.exports = ext.register("ext/console/console", {
             cmdBuffer = line;
         }
 
-        parser.parseLine(line);
+        var parsedLine = Parser.parseLine(line);
 
         var code = e.keyCode;
         var hisLength = cmdHistory.length();
@@ -195,26 +199,22 @@ module.exports = ext.register("ext/console/console", {
             return Hints.hide();
         }
         else if (code != KEY_CR && code != KEY_TAB) {
-            return this.autoComplete(e, parser, 2);
+            return this.autoComplete(e, parsedLine, 2);
         }
 
         if (hintsVisible && Hints.selected())
             return Hints.click(Hints.selected());
 
-        if (parser.argv.length === 0) {
+        if (parsedLine.length === 0) {
             // no commmand line input
         }
-        else if (parser.argQL[0]) {
-            // first argument quoted -> error
-            this.write("Syntax error: first argument quoted.");
-        }
         else {
-            // `showConsole` is true if we want to expand the console after 
+            // `showConsole` is true if we want to expand the console after
             // executing a command.
-            var showConsole = true;    
+            var showConsole = true;
 
             if (code === KEY_TAB) {
-                this.autoComplete(e, parser, 1);
+                this.autoComplete(e, parsedLine, 1);
                 return false;
             }
 
@@ -223,15 +223,15 @@ module.exports = ext.register("ext/console/console", {
             e.currentTarget.setValue("");
             Hints.hide();
 
-            Logger.log(this.getPrompt() + " " + parser.argv.join(" "), "prompt");
+            Logger.log(this.getPrompt() + " " + parsedLine.join(" "), "prompt");
             tabConsole.set("console");
 
-            var cmd = parser.argv[0];
+            var cmd = parsedLine[0];
 
             // If there is a predefined (i.e. hardcoded) output for the current
             // command being executed in the CLI, show that.
             if (Output[cmd]) {
-                var rest = parser.argv.join(" ").replace(new RegExp("^" + cmd), "").trim();
+                var rest = parsedLine.join(" ").replace(new RegExp("^" + cmd), "").trim();
                 var msg = Output[cmd][rest];
 
                 if (Output[cmd][rest])
@@ -247,7 +247,7 @@ module.exports = ext.register("ext/console/console", {
                     txtConsole.clear();
                 }
                 else {
-                    var rest = parser.argv.join(" ").trim();
+                    var rest = parsedLine.join(" ").trim();
                     if (Output.general[rest]) {
                         this.write(Output.general[rest]);
                     }
@@ -255,7 +255,7 @@ module.exports = ext.register("ext/console/console", {
                         if (cmd.trim().charAt(0) == "!") {
                             var bandRE = /^\s*!/;
                             cmd = "bash";
-                            parser.argv[0] = parser.argv[0].replace(bandRE, "");
+                            parsedLine[0] = parsedLines[0].replace(bandRE, "");
                             line = line.replace(bandRE, "");
                         }
 
@@ -266,7 +266,7 @@ module.exports = ext.register("ext/console/console", {
 
                         var data = {
                             command: cmd,
-                            argv: parser.argv,
+                            argv: parsedLine,
                             line: line,
                             cwd: this.getCwd()
                         };
@@ -293,7 +293,7 @@ module.exports = ext.register("ext/console/console", {
                     }
                 }
             }
-            if (showConsole)    
+            if (showConsole)
                 this.enable();
         }
     },
@@ -308,7 +308,7 @@ module.exports = ext.register("ext/console/console", {
         if (message.type != "result")
             return;
 
-        switch (message.subtype) { 
+        switch (message.subtype) {
             case "commandhints":
                 var cmds = message.body;
                 this.initCommands();
@@ -415,7 +415,7 @@ module.exports = ext.register("ext/console/console", {
         }
     },
 
-    autoComplete: function(e, parser, mode) {
+    autoComplete: function(e, parserArgs, mode) {
         mode = mode || 2;
         if (mode === 1) {
             if (this.$busy) return;
@@ -454,12 +454,12 @@ module.exports = ext.register("ext/console/console", {
             // example.
             ide.send(JSON.stringify({
                 command: "commandhints",
-                argv: parser.argv,
+                argv: parserArgs,
                 cwd: this.getCwd()
             }));
         }
 
-        var base = parser.argv[0];
+        var base = parserArgs[0];
         if (typeof base != "string")
             return Hints.hide();
 
@@ -467,7 +467,7 @@ module.exports = ext.register("ext/console/console", {
         // provided, or when the cursor on the first argument
         var root;
         var list = [];
-        var len = parser.argv.length;
+        var len = parserArgs.length;
         if (len === 1 && cursorPos < base.length) {
             root = trieCommands.find(base);
             if (root)
@@ -478,11 +478,11 @@ module.exports = ext.register("ext/console/console", {
             var i = len - 1;
 
             for (; i >= 0; --i) {
-                idx = val.indexOf(parser.argv[i]);
+                idx = val.indexOf(parserArgs[i]);
                 if (idx === -1) //shouldn't happen, but yeah...
                     continue;
 
-                if (cursorPos >= idx || cursorPos <= idx + parser.argv[i].length) {
+                if (cursorPos >= idx || cursorPos <= idx + parserArgs[i].length) {
                     needle = i;
                     break;
                 }
@@ -491,11 +491,11 @@ module.exports = ext.register("ext/console/console", {
                 needle = 0;
 
             ++needle;
-            while (needle >= 0 && !(cmdTrie = cmdTries[parser.argv.slice(0, needle).join("-")]))
+            while (needle >= 0 && !(cmdTrie = cmdTries[parserArgs.slice(0, needle).join("-")]))
                 --needle
 
             if (cmdTrie) {
-                base = parser.argv[needle];
+                base = parserArgs[needle];
                 root = cmdTrie.trie.find(base);
                 if (root) {
                     list = root.getWords();
@@ -531,8 +531,8 @@ module.exports = ext.register("ext/console/console", {
                             //base = "";
                         }
                         // adjust the argv array to match the current cursor position:
-                        parser.argv = parser.argv.slice(0, needle);
-                        parser.argv.push(base);
+                        parserArgs = parserArgs.slice(0, needle);
+                        parserArgs.push(base);
                         // else: autocompletion is sent to the backend
                         //console.log("directory found: ", base, list, "mode:", mode);
                     }
@@ -541,7 +541,6 @@ module.exports = ext.register("ext/console/console", {
                     }
                 }
                 cmds = cmdTrie.commands;
-                //console.log("list: ", list, base, parser.argv);
             }
         }
 
@@ -561,7 +560,7 @@ module.exports = ext.register("ext/console/console", {
                     line   : val,
                     textbox: textbox.id,
                     cursor : cursorPos,
-                    argv   : parser.argv,
+                    argv   : parserArgs,
                     cwd    : this.getCwd()
                 }));
             }
