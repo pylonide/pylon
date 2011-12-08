@@ -226,7 +226,7 @@ module.exports = (function () {
         
         // if there is any modal window open, then don't show
         var windows = getNumericProperties(document.querySelectorAll(".winadv") || {}).filter(function (w) {
-            return w.style.display !== "none";
+            return w.style.display !== "none" && w.style.visibility !== "hidden";
         });
         if (windows.length) {
             return;
