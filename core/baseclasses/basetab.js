@@ -73,8 +73,8 @@ apf.BaseTab = function(){
                 this, page, null, null, callback, noEvent);
         }
         
-        if (callback && this.activepage == page)
-            return callback(this.getPage(page));
+        if (this.activepage == (page.name || page))
+            return callback && callback(this.getPage(page));
 
         this.$lastCallback = callback;
         this.setProperty("activepage", page);
@@ -332,13 +332,16 @@ apf.BaseTab = function(){
         scalersz.call(this)
     }
     
+    this.anims = "add|remove";
+    
     this.$scaleinit = function(node, type, callback, force){
         var pg = this.getPages();
         var l  = pg.length;
         this.minwidth = this.$minBtnWidth * l + 10; //@todo padding + margin of button container
         this.$ext.style.minWidth = Math.max(0, this.minwidth - apf.getWidthDiff(this.$ext)) + "px";
         
-        if (force && !this.$ext.offsetWidth && !this.$ext.offsetHeight) {
+        if (force && !this.$ext.offsetWidth && !this.$ext.offsetHeight
+          || this.anims.indexOf(type) == -1) {
             if (type == "add")
                 node.dispatchEvent("afteropen");
             else if (type == "remove")

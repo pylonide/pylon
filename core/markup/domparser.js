@@ -336,7 +336,7 @@ apf.DOMParser.prototype = new (function(){
                 o.tagName      = prefix ? prefix + ":" + nodeName : nodeName;
         
                 if (xmlNode) {
-                    if (id = xmlNode.getAttribute("id"))
+                    if ((id = xmlNode.getAttribute("id")) && !self[id])
                         o.$propHandlers["id"].call(o, o.id = id);
 
                     //attributes
