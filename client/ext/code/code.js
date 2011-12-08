@@ -13,6 +13,7 @@ var EditSession = require("ace/edit_session").EditSession;
 var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
 var useragent = require("ace/lib/useragent");
 var Document = require("ace/document").Document;
+var Range = require("ace/range").Range;
 var ProxyDocument = require("ext/code/proxydocument");
 var CommandManager = require("ace/commands/command_manager").CommandManager;
 var defaultCommands = require("ace/commands/default_commands").commands;
@@ -145,17 +146,26 @@ module.exports = ext.register("ext/code/code", {
 
     nodes : [],
     commandManager: new CommandManager(useragent.isMac ? "mac" : "win", defaultCommands),
-
-    getState : function(doc){
+    
+    getState : function(doc) {
         doc = doc ? doc.acesession : this.getDocument();
         if (!doc || typeof doc.getSelection != "function")
             return;
+        
+        var folds = doc.getAllFolds().map(function(fold) { 
+            return { 
+                start: fold.start,
+                end: fold.end,
+                placeholder: fold.placeholder
+            };
+        });
 
         var sel = doc.getSelection();
         return {
             scrolltop  : ceEditor.$editor.renderer.getScrollTop(),
             scrollleft : ceEditor.$editor.renderer.getScrollLeft(),
-            selection  : sel.getRange()
+            selection  : sel.getRange(),
+            folds      : folds
         };
     },
 
@@ -170,6 +180,13 @@ module.exports = ext.register("ext/code/code", {
         sel.setSelectionRange(state.selection, false);
         ceEditor.$editor.renderer.scrollToY(state.scrolltop);
         ceEditor.$editor.renderer.scrollToX(state.scrollleft);
+
+        if (state.folds) {
+            for (var i = 0, l=state.folds.length; i < l; i++) {
+                var fold = state.folds[i];
+                aceDoc.addFold(fold.placeholder, Range.fromPoints(fold.start, fold.end));
+            }
+        }
 
         // if newfile == 1 and there is text cached, restore it
         var node = doc.getNode && doc.getNode();
@@ -217,6 +234,7 @@ module.exports = ext.register("ext/code/code", {
     },
 
     setDocument : function(doc, actiontracker){
+        var _self = this;
         if (!doc.acesession) {
             doc.isInited = doc.hasValue();
             doc.acedoc = doc.acedoc || new ProxyDocument(new Document(doc.getValue() || ""));
@@ -225,9 +243,13 @@ module.exports = ext.register("ext/code/code", {
 
             doc.acesession.setUndoManager(actiontracker);
 
+            if (doc.isInited && doc.state)
+                 _self.setState(doc, doc.state);
+
             doc.addEventListener("prop.value", function(e) {
                 doc.acesession.setValue(e.value || "");
-                ceEditor.$editor.moveCursorTo(0, 0);
+                if (doc.state)
+                    _self.setState(doc, doc.state);
                 doc.isInited = true;
             });
 
@@ -259,13 +281,6 @@ module.exports = ext.register("ext/code/code", {
                 require([theme], function() {});
             // pre load custom mime types
             _self.getCustomTypes(e.model);
-        });
-
-        ide.addEventListener("afteropenfile", function(e) {
-            if(!e.editor)
-                return;
-
-            e.editor.setState && e.editor.setState(e.doc, e.doc.state);
         });
 
         // preload common language modes

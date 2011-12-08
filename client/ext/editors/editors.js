@@ -26,9 +26,9 @@ module.exports = ext.register("ext/editors/editors", {
     contentTypes  : {},
 
     register : function(oExtension){
-        var id = "rb" + oExtension.path.replace(/\//g, "_");
+        /*var id = "rb" + oExtension.path.replace(/\//g, "_");
 
-        /*oExtension.$rbEditor = barButtons.appendChild(new apf.radiobutton({
+        oExtension.$rbEditor = barButtons.appendChild(new apf.radiobutton({
             id        : id,
             label     : oExtension.name,
             value     : oExtension.path,
@@ -266,7 +266,6 @@ module.exports = ext.register("ext/editors/editors", {
 
     openEditor : function(doc, init, active) {
         var xmlNode  = doc.getNode();
-        var filename = xmlNode.getAttribute("name");
         var filepath = xmlNode.getAttribute("path");
 
         var page = tabEditors.getPage(filepath);
@@ -314,8 +313,6 @@ module.exports = ext.register("ext/editors/editors", {
 
         if (init)
             tabEditors.setAttribute("buttons", "close,scale,order");
-
-        var editorPage = tabEditors.getPage(tabEditors.activepage);
 
         doc.addEventListener("setnode", function(e) {
             fake.$model.load(e.node);
@@ -596,7 +593,6 @@ module.exports = ext.register("ext/editors/editors", {
         });
 
         ide.addEventListener("savesettings", function(e){
-            var changed = false;
             if (!e.model.data)
                 return;
             var pNode   = e.model.data.selectSingleNode("auto/files");
