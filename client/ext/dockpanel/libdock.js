@@ -99,7 +99,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             var barParent = btnPNode.parentNode;
             oldMenu.removeNode();//destroy(true, true);
             
-            //if (pNode.parentNode)
+            if (pNode.parentNode)
+                oldMenu.appendChild(pNode);
                 //pNode.removeNode();//destroy(true, true);
             
             btnPNode.removeNode();//destroy(true, true);
@@ -126,7 +127,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             bar = bars[i];
             if (bar.cache && bar.cache.childNodes.length == 1) {
                 bar.cache.destroy(true, true);
-                bars.remove(bar);
+                delete bar.cache;
+                //bars.remove(bar);
             }
         }
     }
@@ -218,6 +220,39 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         for (var i = 0; i < bars.length; i++) {
             addBarState.call(this, bars[i]);
         }
+    };
+    
+    /**
+     * Destroy full state
+     */
+    this.clearState = function(){
+        state && state.bars.each(function(b) {
+            var bar = b.cache;
+            if (!bar) return;
+            
+            if (bar.localName == "bar" && bar.dock) {
+                bar.hide();
+                if (bar.vbox)
+                    bar.vbox.hide();
+                var sections = bar.selectNodes("vbox");
+                for (var i = 0; i < sections.length; i++) {
+                    var buttons = sections[i].selectNodes("button");
+                    if (buttons && buttons.length && buttons[0]) {
+                        for (var j = 0; j < buttons.length; j++) {
+                            buttons[j].hideMenu();
+                            buttons[j].$dockpage.parentNode.remove(buttons[j].$dockpage);
+                        }
+                    }
+                }
+            }
+            else if (!bar.bar) {
+                return;
+            }
+            
+            bar.destroy(true, true);
+            if (bar.vbox)
+                bar.vbox.destroy(true, true);
+        });
     };
     
     /**
@@ -411,7 +446,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         if (state.hidden)
             return;
         
-        var bar = section.parentNode;
+        section.parentNode;
         this.$addButton(section, before, section.$menu, 
             this.$addPage(
                 this.$cbFindPage(state.ext), 
@@ -424,39 +459,72 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         );
     }
     
-    /**
-     * Destroy full state
-     */
-    this.clearState = function(){
-        var bar = this.$parentHBox.lastChild;
-        while (bar) {
-            if (bar.localName == "bar" && bar.dock) {
-                bar.hide();
-                if (bar.vbox)
-                    bar.vbox.hide();
-                var sections = bar.selectNodes("vbox");
-                for (var i = 0; i < sections.length; i++) {
-                    var buttons = sections[i].selectNodes("button");
-                    if (buttons && buttons.length && buttons[0]) {
-                        for (var j = 0; j < buttons.length; j++) {
-                            buttons[j].hideMenu();
-                            buttons[j].$dockpage.parentNode.remove(buttons[j].$dockpage);
-                        }
-                    }
-                }
+    function animate(bar, reverse, callback){
+        var _self = this;
+
+        if (this.animateControl)
+            this.animateControl.stop();
+        
+        this.animating = true;
+    
+        bar.show();
+        bar.vbox.show();
+ 
+        var from = bar.getWidth();
+        var to   = bar.vbox.getWidth() - apf.getWidthDiff(bar.vbox.$ext);
+
+        if (reverse)
+            bar.hide();
+        else
+            bar.vbox.setWidth(from);
+        
+        var tweens = [
+            (reverse
+                ? {oHtml: bar.vbox.$ext, type: "width", from: to, to: from}
+                : {oHtml: bar.vbox.$ext, type: "width", from: from, to: to})
+        ]
+        
+        var nodes = bar.vbox.getElementsByTagNameNS(apf.ns.aml, "tab");
+        nodes.each(function(tab){
+            tweens.push(reverse
+                ? {oHtml: tab.$ext, type: "fade", from: 1, to: 0}
+                : {oHtml: tab.$ext, type: "fade", from: 0, to: 1})
+            tab.setWidth(to);
+        });
+
+        var options = {
+            steps : 6,
+            interval : apf.isChrome ? 5 : 5,
+            control : this.animateControl = {},
+            anim : apf.tween.easeOutCubic,
+            tweens : tweens,
+            oneach: function(){
+                apf.layout.forceResize(bar.vbox.$ext)
+            },
+            onfinish : function(){
+                setTimeout(function(){ 
+                    //if (reverse) {
+                        nodes.each(function(tab){
+                            apf.setOpacity(tab.$ext, 1);
+                            tab.$ext.style.width = "";
+                        });
+                    //}
+                })
+                    bar.vbox.setWidth(to);
+                    callback && callback();
+                    _self.animating = false;
+                //});
             }
-            else if (!bar.bar) {
-                break;
-            }
-            
-            bar = bar.previousSibling;
-        }
-    };
+        };
+        options.onstop = options.onfinish;
+        
+        apf.tween.multi(document.body, options);
+    }
     
     /**
      * Expand a bar
      */
-    this.expandBar = function (bar){
+    this.expandBar = function (bar, showAnimation){
         if (this.$currentMenu)
             this.$currentMenu.hide();
         
@@ -480,7 +548,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         resizable  : false,
                         margin     : "0 0 0 0",
                         onclick    : function(){
-                            _self.collapseBar(bar);
+                            _self.collapseBar(bar, true);
                         }
                     })
                 ]
@@ -502,7 +570,6 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             
             bar.splitter.bar = 
             bar.vbox.bar     = bar;
-            //panelSplittersCount++;
         }
         else {
             pNode.insertBefore(bar.vbox, bar);
@@ -510,18 +577,12 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         }
         
         var vbox = bar.selectNodes("vbox");
-        //var countVis = 0;
         
         for (var i = 0; i < vbox.length; i++) {
             var button  = vbox[i].selectSingleNode("button"),
                 menu    = self[button.submenu],
                 childEl = menu && menu.firstChild;
             
-            //@todo why? currentMenu is already hidden
-            //menu && menu.hide();
-            
-            //@todo why would a button ever be not visible
-            // && button.visible 
             if (childEl) {
                 childEl.extId = button.$dockData.ext[0];
                 bar.vbox.appendChild(childEl);
@@ -529,62 +590,61 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     childEl.setAttribute("height", 34);
                 if (!childEl.flex && childEl.tagName != "bar" && !childEl.noflex)
                     childEl.setAttribute("flex", 1);
-                //countVis++;
             }
         }
-        
-        //if (countVis > 0 || bar.expanded) {
-            bar.hide();
-            if (bar.vbox) {
-                bar.vbox.show();
-                bar.vbox.expanded = true; 
-                bar.vbox.firstChild.$ext.onmousemove({});
-            }
-            bar.expanded = true;
-            bar.splitter.show();
-            bar.$dockData.expanded = true;
 
-            //Hack for button
-        /*}
-        else {
-            bar.vbox.hide();
-            bar.vbox.expanded = false;
-            bar.expanded = false;
-            bar.splitter.hide();
-        }*/
+        if (bar.vbox) {
+            bar.vbox.show();
+            bar.vbox.expanded = true; 
+            bar.vbox.firstChild.$ext.onmousemove({});
+        }
+        
+        if (showAnimation)
+            animate.call(this, bar);
+        
+        bar.hide();
+        bar.expanded = true;
+        bar.splitter.show();
+        bar.$dockData.expanded = true;
+        
         this.$cbChange();
     };
     
     /**
      * Collapse a bar
      */
-    this.collapseBar = function(bar){
+    this.collapseBar = function(bar, showAnimation){
         if (this.$currentMenu)
             this.$currentMenu.hide();
         
-        //var skip = 0;
-        var vboxes = bar.selectNodes("vbox");
-        var tabs = bar.vbox.selectNodes("tab");
-        for (var i = 0; i < vboxes.length; i++) {
-            //What is all this?
-            /*if (!vboxes[i].getAttribute("visible")) {
-                skip++;
-                continue;
-            }*/
-
-            var menu = self[vboxes[i].selectSingleNode("button").submenu];
-            menu.appendChild(tabs[i]); //-skip
-        }
-        
-        bar.show();
-        bar.vbox.hide();
-        bar.vbox.expanded = false;
         bar.$dockData.expanded = false;
         bar.expanded = false;
-        bar.splitter.hide();
-        
-        bar.parentNode.removeChild(bar.vbox);
-        bar.parentNode.removeChild(bar.splitter);
+
+        function done(){
+            var vboxes = bar.selectNodes("vbox");
+            var tabs = bar.vbox.selectNodes("tab");
+            for (var i = 0; i < vboxes.length; i++) {
+                //What is all this?
+                /*if (!vboxes[i].getAttribute("visible")) {
+                    skip++;
+                    continue;
+                }*/
+    
+                var menu = self[vboxes[i].selectSingleNode("button").submenu];
+                menu.appendChild(tabs[i]); //-skip
+            }
+            
+            bar.show();
+            bar.vbox.hide();
+            bar.parentNode.removeChild(bar.vbox);
+            bar.vbox.expanded = false;
+            bar.splitter.hide();
+        }
+
+        if (showAnimation)
+            animate.call(this, bar, true, done);
+        else
+            done();
         
         //Hack for button
         bar.firstChild.$ext.onmousemove({});
@@ -649,6 +709,11 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             }
             
             if (!e) return;
+            
+            if (e.button !== 0) {
+                document.onmouseup(null, true);
+                return;
+            }
             
             var indicatorTop = indicator.style.top;
             dragged.$ext.style.top = "-2000px";
@@ -1525,7 +1590,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         dock : 1,
                         skin : "dockheader",
                         onclick : function(){
-                            _self.expandBar(this.parentNode);
+                            _self.expandBar(this.parentNode, true);
                         }
                     }),
                 ]
