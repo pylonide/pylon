@@ -172,7 +172,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         doc.setUseSoftTabs(_self.softtabs);
         doc.setUseWrapMode(_self.wrapmode);
         doc.setWrapLimitRange(_self.wraplimitmin, _self.wraplimitmax);
-        doc.setFoldStyle(_self.folding ? "markbegin" : "manual");
+        if (doc.setFoldStyle)
+            doc.setFoldStyle(_self.folding ? "markbegin" : "manual");
 
         _self.$removeDocListeners && _self.$removeDocListeners();
         _self.$removeDocListeners = _self.$addDocListeners(doc);

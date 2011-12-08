@@ -595,6 +595,9 @@ var ID        = "id",
         if (info.control) {
             info.control.state = apf.tween.RUNNING;
             info.control.stop = function(){
+                if (info.control.state == apf.tween.STOPPED)
+                    return;
+                
                 info.control.state = apf.tween.STOPPING;
                 clearQueue(oHtml);
                 if (info.onstop)

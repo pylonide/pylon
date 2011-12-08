@@ -331,11 +331,12 @@ apf.item  = function(struct, tagName){
         if (this.type != "radio")
             return;
 
-        if (this.$group)
-            this.$group.setProperty("value", this.value);
 
-        if (apf.isTrue(value))
-            this.$check()
+        if (apf.isTrue(value)) {
+            if (this.$group)
+                this.$group.setProperty("value", this.value);
+            this.$check();
+        }
         else
             this.$uncheck();
     }
