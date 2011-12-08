@@ -3,6 +3,15 @@
 define(function(require, exports, module) {
 
 var util = require("ext/vim/maps/util");
+
+var keepScrollPosition = function(editor, fn) {
+    var scrollTopRow = editor.renderer.getScrollTopRow();
+    var initialRow = editor.getCursorPosition().row;
+    var diff = initialRow - scrollTopRow;
+    fn && fn.call(editor);
+    editor.renderer.scrollToRow(editor.getCursorPosition().row - diff);
+};
+
 module.exports = {
     "w": {
         nav: function(editor) {
@@ -129,7 +138,7 @@ module.exports = {
             }
         }
     },
-    "shift-6": {
+    "^": {
         nav: function(editor) {
             editor.navigateLineStart();
         },
@@ -137,7 +146,7 @@ module.exports = {
             editor.selection.selectLineStart();
         }
     },
-    "shift-4": {
+    "$": {
         nav: function(editor) {
             editor.navigateLineEnd();
         },
@@ -173,20 +182,21 @@ module.exports = {
     },
     "ctrl-d": {
         nav: function(editor, range, count, param) {
-            editor.selection.clearSelection(); // Why does it select in the first place?
-            editor.gotoPageDown();
+            editor.selection.clearSelection();
+            keepScrollPosition(editor, editor.gotoPageDown);
         },
         sel: function(editor, range, count, param) {
-            editor.selectPageDown();
+            keepScrollPosition(editor, editor.selectPageDown);
         }
     },
     "ctrl-u": {
         nav: function(editor, range, count, param) {
-            editor.selection.clearSelection(); // Why does it select in the first place?
-            editor.gotoPageUp();
+            editor.selection.clearSelection();
+            keepScrollPosition(editor, editor.gotoPageUp);
+
         },
         sel: function(editor, range, count, param) {
-            editor.selectPageUp();
+            keepScrollPosition(editor, editor.selectPageUp);
         }
     },
     "g": {
@@ -232,20 +242,26 @@ module.exports = {
     },
     "shift-o": {
         nav: function(editor, range, count, param) {
+            var row = editor.getCursorPosition().row;
             count = count || 1;
             var content = "";
             while (0 < count--)
                 content += "\n";
 
             if (content.length) {
-                editor.navigateUp();
-                editor.navigateLineEnd()
-                editor.insert(content);
+                if(row > 0) {
+                    editor.navigateUp();
+                    editor.navigateLineEnd()
+                    editor.insert(content);
+                } else {
+                    editor.session.insert({row: 0, column: 0}, content);
+                    editor.navigateUp();
+                }
                 util.insertMode(editor);
             }
         }
     },
-    "shift-5": {
+    "%": {
         nav: function(editor, range, count, param) {
             var cursor = editor.getCursorPosition();
             var match = editor.session.findMatchingBracket({
@@ -263,5 +279,7 @@ module.exports.backspace = module.exports.left = module.exports.h;
 module.exports.right = module.exports.l;
 module.exports.up = module.exports.k;
 module.exports.down = module.exports.j;
+module.exports.pagedown = module.exports["ctrl-d"];
+module.exports.pageup = module.exports["ctrl-u"];
 
 });

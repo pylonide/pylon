@@ -208,10 +208,9 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         return match !== null && match[0] == name;
     },
 
-    beforeRename : function(node, name, newPath) {
+    beforeRename : function(node, name, newPath, isCopyAction) {
         var path = node.getAttribute("path");
         var page = tabEditors.getPage(path);
-        var match;
 
         if (name)
             newPath = path.replace(/^(.*\/)[^\/]+$/, "$1" + name);
@@ -221,7 +220,9 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         node.setAttribute("oldpath", node.getAttribute("path"));
         node.setAttribute("path", newPath);
         apf.xmldb.setAttribute(node, "name", name);
-        if (page)
+        
+        // when this is a copy action, then we don't want this to happen
+        if (page && !isCopyAction)
             page.setAttribute("id", newPath);
 
         var childNodes = node.childNodes;

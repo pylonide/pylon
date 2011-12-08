@@ -1,3 +1,9 @@
+/**
+ * Cloud9 Language Foundation
+ *
+ * @copyright 2011, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
 define(function(require, exports, module) {
 
 var PlaceHolder = require("ace/placeholder").PlaceHolder;
@@ -67,7 +73,13 @@ module.exports = {
         // Temporarily disable these markers, to prevent weird slow-updating events whilst typing
         marker.disableMarkerType('occurrence_main');
         marker.disableMarkerType('occurrence_other');
-        var p = new PlaceHolder(ceEditor.$editor.session, data.length, data.pos, data.others, "language_rename_main", "language_rename_other");
+        var cursor = ceEditor.$editor.getCursorPosition();
+        var mainPos = data.pos;
+        var p = new PlaceHolder(ceEditor.$editor.session, data.length, mainPos, data.others, "language_rename_main", "language_rename_other");
+        if(cursor.row !== mainPos.row || cursor.column < mainPos.column || cursor.column > mainPos.column + data.length) {
+            // Cursor is not "inside" the main identifier, move it there
+            ceEditor.$editor.moveCursorTo(mainPos.row, mainPos.column);
+        }
         p.showOtherMarkers();
         p.on("cursorLeave", function() {
             p.detach();

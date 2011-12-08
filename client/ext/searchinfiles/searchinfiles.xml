@@ -46,6 +46,7 @@
                     <a:item value="lisp">Lisp files</a:item>
                     <a:item value="lua">Lua files</a:item>
                     <a:item value="make">Make files</a:item>
+                    <a:item value="markdown">Markdown files</a:item>
                     <a:item value="mason">Mason files</a:item>
                     <a:item value="objc">Obj-C files</a:item>
                     <a:item value="objcpp">Obj-C++ files</a:item>

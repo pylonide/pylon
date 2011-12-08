@@ -6,9 +6,9 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-"use strict";
-
 define(function(require, exports, module) {
+
+"use strict";
 
 var ide = require("core/ide");
 var ext = require("core/ext");
@@ -19,8 +19,10 @@ var extSettings = require("ext/settings/settings");
 var cmdModule = require("ext/vim/commands");
 var commands = cmdModule.commands;
 var cliCmds = require("ext/vim/cli");
+var util = require("ext/vim/maps/util");
 
-var enabled;
+var VIM_ENABLED = false;
+var OLD_HANDLER;
 
 var onConsoleCommand = function onConsoleCommand(e) {
     var cmd = e.data.command;
@@ -29,10 +31,16 @@ var onConsoleCommand = function onConsoleCommand(e) {
         if (cmd[0] === ":") {
             cmd = cmd.substr(1);
 
-            if (cliCmds[cmd])
+            if (cliCmds[cmd]) {
                 cliCmds[cmd](domEditor.$editor, e.data);
-            else
+            }
+            else if (cmd.match(/^\d+$/)) {
+                domEditor.$editor.gotoLine(parseInt(cmd, 10), 0);
+                domEditor.$editor.navigateLineStart();
+            }
+            else {
                 console.log("Vim command '" + cmd + "' not implemented.");
+            }
 
             domEditor.focus();
             e.returnValue = false;
@@ -43,6 +51,7 @@ var onConsoleCommand = function onConsoleCommand(e) {
             domEditor.$editor.find(cmd, cmdModule.searchStore.options);
             txtConsoleInput.blur();
             domEditor.focus();
+            e.returnValue = false;
         }
     }
 };
@@ -66,26 +75,42 @@ var removeCommands = function removeCommands(editor, commands) {
     });
 };
 
-var enableVim = function enableVim() {
-    if (editors.currentEditor) {
-        var editor = editors.currentEditor.ceEditor.$editor;
+var onCursorMove = function() {
+    cmdModule.onCursorMove();
+    onCursorMove.scheduled = false;
+};
 
+var enableVim = function enableVim() {
+    if (editors.currentEditor && editors.currentEditor.ceEditor) {
+        ext.initExtension(this);
+
+        var editor = editors.currentEditor.ceEditor.$editor;
         addCommands(editor, commands);
+        editor.renderer.container.addEventListener("click", onCursorMove, false);
+
+        if (!OLD_HANDLER)
+            OLD_HANDLER = editor.getKeyboardHandler();
+
+        // Set Vim's own keyboard handle
         editor.setKeyboardHandler(handler);
-        commands.stop.exec(editor);
+
+        if (util.currentMode !== "insert") {
+            commands.stop.exec(editor);
+        }
+        VIM_ENABLED = true;
     }
-    enabled = true;
 };
 
 var disableVim = function() {
-    if (editors.currentEditor) {
+    if (editors.currentEditor && editors.currentEditor.ceEditor) {
         var editor = editors.currentEditor.ceEditor.$editor;
 
         removeCommands(editor, commands);
-        editor.setKeyboardHandler(null);
+        editor.setKeyboardHandler(OLD_HANDLER);
         commands.start.exec(editor);
+        editor.renderer.container.removeEventListener("click", onCursorMove, false);
+        VIM_ENABLED = false;
     }
-    enabled = false;
 };
 
 var cliKeyDown = function(e) {
@@ -112,53 +137,44 @@ module.exports = ext.register("ext/vim/vim", {
         this.nodes.push(mnuView.appendChild(menuItem));
 
         var self = this;
-
-        // `prop.checked` gets executed many times.
-        // I filed the bug at https://github.com/ajaxorg/apf/issues/28
-        menuItem.addEventListener("prop.checked", function(e) {
-            self.toggle(e.value);
-        });
+        this.afterOpenFileFn = function() {
+            enableVim.call(self);
+        };
 
         ide.addEventListener("init.ext/settings/settings", function (e) {
             setTimeout(function() { barSettings.insertMarkup(settings); }, 0);
+        });
+
+        ide.addEventListener("code.ext:defaultbindingsrestored", function(e) {
+            if (VIM_ENABLED === true) {
+                enableVim.call(self);
+            }
         });
 
         extSettings.model.addEventListener("update", function(e) {
             var vimEnabled = e.currentTarget.queryValue("editors/code/@vimmode");
             self.toggle(vimEnabled === "true");
         });
-
-        txtConsoleInput.addEventListener("keydown", cliKeyDown);
     },
 
     toggle: function(show) {
-        if (this.inited === true) {
-            if (show && show == enabled)
-                return;
-
-            if (show)
-                this.enable();
-            else
-                this.disable();
-        }
-        else {
-            ext.initExtension(this);
-        }
+        if (show === true && VIM_ENABLED === false)
+            this.enable();
+        else if (show === false && VIM_ENABLED === true)
+            this.disable();
     },
 
     init : function() {
-        this.inited = true;
+        txtConsoleInput.addEventListener("keydown", cliKeyDown);
     },
 
     enable : function() {
         ide.addEventListener("consolecommand", onConsoleCommand);
-        ide.addEventListener('afteropenfile',  enableVim);
-        enableVim();
+        enableVim.call(this);
     },
 
     disable : function() {
         ide.removeEventListener("consolecommand", onConsoleCommand);
-        ide.removeEventListener('afteropenfile',  enableVim);
         disableVim();
     },
 

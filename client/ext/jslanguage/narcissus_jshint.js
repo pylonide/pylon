@@ -1,3 +1,9 @@
+/**
+ * Cloud9 Language Foundation
+ *
+ * @copyright 2011, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
 define(function(require, exports, module) {
 
 var baseLanguageHandler = require('ext/language/base_handler');
@@ -5,6 +11,8 @@ var lint = require("ace/worker/jshint").JSHINT;
 var parser = require("ace/narcissus/jsparse");
 
 var handler = module.exports = Object.create(baseLanguageHandler);
+
+var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./];
 
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
@@ -16,6 +24,8 @@ handler.analysisRequiresParsing = function() {
 
 handler.analyze = function(doc) {
     var value = doc.getValue();
+    value = value.replace(/^(#!.*\n)/, "//$1");
+
     var markers = [];
     try {
         parser.parse(value);
@@ -44,6 +54,9 @@ handler.analyze = function(doc) {
         lint.errors.forEach(function(warning) {
             if (!warning)
                 return;
+            for (var i = 0; i < disabledJSHintWarnings.length; i++)
+                if(disabledJSHintWarnings[i].test(warning.reason))
+                    return;
             markers.push({
                 pos: {
                     sl: warning.line-1,

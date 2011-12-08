@@ -55,9 +55,13 @@ module.exports = ext.register("ext/debugger/debugger", {
         ide.addEventListener("loadsettings", function (e) {
             // restore the breakpoints from the IDE settings
             var bpFromIde = e.model.data.selectSingleNode("//breakpoints");
-            if (bpFromIde) {
-                mdlDbgBreakpoints.load(bpFromIde);
-            }
+            // not there yet, create element
+            if (!bpFromIde) {
+                bpFromIde = e.model.data.ownerDocument.createElement("breakpoints");
+                e.model.data.appendChild(bpFromIde);
+            }           
+            // bind it to the Breakpoint model
+            mdlDbgBreakpoints.load(bpFromIde);
         });
         
         stDebugProcessRunning.addEventListener("activate", function() {
@@ -241,6 +245,11 @@ module.exports = ext.register("ext/debugger/debugger", {
 
     showDebugFile : function(scriptId, row, column, text) {
         var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
+        
+        // check prerequisites
+        if (!ceEditor.$updateMarkerPrerequisite()) {
+            return;
+        }
 
         if (file) {
             editors.jump(file, row, column, text, null, true);

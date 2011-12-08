@@ -26,9 +26,9 @@ module.exports = ext.register("ext/editors/editors", {
     contentTypes  : {},
 
     register : function(oExtension){
-        var id = "rb" + oExtension.path.replace(/\//g, "_");
+        /*var id = "rb" + oExtension.path.replace(/\//g, "_");
 
-        /*oExtension.$rbEditor = barButtons.appendChild(new apf.radiobutton({
+        oExtension.$rbEditor = barButtons.appendChild(new apf.radiobutton({
             id        : id,
             label     : oExtension.name,
             value     : oExtension.path,
@@ -266,7 +266,6 @@ module.exports = ext.register("ext/editors/editors", {
 
     openEditor : function(doc, init, active) {
         var xmlNode  = doc.getNode();
-        var filename = xmlNode.getAttribute("name");
         var filepath = xmlNode.getAttribute("path");
 
         var page = tabEditors.getPage(filepath);
@@ -315,8 +314,6 @@ module.exports = ext.register("ext/editors/editors", {
         if (init)
             tabEditors.setAttribute("buttons", "close,scale,order");
 
-        var editorPage = tabEditors.getPage(tabEditors.activepage);
-
         doc.addEventListener("setnode", function(e) {
             fake.$model.load(e.node);
             ide.dispatchEvent("afteropenfile", {doc: doc, node: e.node, editor: editor});
@@ -347,7 +344,7 @@ module.exports = ext.register("ext/editors/editors", {
         // okay don't know if you would want this, but this is the way the 'open file' dialog
         // handles it so let's do that
         setTimeout(function () {
-            if (ceEditor)
+            if (typeof ceEditor !== "undefined")
                 ceEditor.focus();
         }, 100);
 
@@ -531,8 +528,16 @@ module.exports = ext.register("ext/editors/editors", {
                 var parent_path = apf.getDirname(path).replace(/\/$/, "");
                 var expandEventListener = function(e) {
                     if (e.xmlNode && e.xmlNode.getAttribute("path") == parent_path) {
-                        if (doc.getNode().getAttribute("newfile") != 1)
+                        // if the file has been loaded from the tree
+                        if (doc.getNode().getAttribute("newfile") != 1) {
+                            // databind the node from the tree to the document
                             doc.setNode(e.xmlNode.selectSingleNode("node()[@path='" + path + "']"));
+                        }
+                        else {
+                            // if not? then keep it this way, but invoke setNode() anyway because
+                            // it triggers events
+                            doc.setNode(doc.getNode());
+                        }
                         trFiles.removeEventListener("expand", expandEventListener);
                     }
                 };
@@ -588,10 +593,11 @@ module.exports = ext.register("ext/editors/editors", {
         });
 
         ide.addEventListener("savesettings", function(e){
-            var changed = false,
-                pNode   = e.model.data.selectSingleNode("auto/files"),
-                state   = pNode && pNode.xml,
-                pages   = tabEditors.getPages();
+            if (!e.model.data)
+                return;
+            var pNode   = e.model.data.selectSingleNode("auto/files");
+            var state   = pNode && pNode.xml;
+            var pages   = tabEditors.getPages();
 
             if (pNode) {
                 pNode.parentNode.removeChild(pNode);
@@ -753,7 +759,7 @@ module.exports = ext.register("ext/editors/editors", {
                 });
         }
 
-        if (!hasData && !page)
+        if (!hasData)
             ide.dispatchEvent("openfile", {
                 doc: doc || ide.createDocument(fileEl)
             });

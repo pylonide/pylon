@@ -2,7 +2,7 @@
 
 define(function(require, exports, module) {
 module.exports = {
-    x: {
+    "x": {
         operator: {
             char: "d",
             count: 1
@@ -28,7 +28,7 @@ module.exports = {
             count: 1
         },
         motion: {
-            char: "shift-4",
+            char: "$",
             count: 1
         }
     },
@@ -38,7 +38,7 @@ module.exports = {
             count: 1
         },
         motion: {
-            char: "shift-4",
+            char: "$",
             count: 1
         }
     },
