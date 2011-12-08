@@ -7279,12 +7279,16 @@
     }
 
     .tab_console .btncontainer .btntab {
-        padding      : 4px 27px 2px 27px;
+        padding      : 4px 20px 2px 20px;
         position     : relative;
         margin-top:-1px;
         text-align: center;
     }
-
+    
+    .tab_console .btncontainer .btntab.btnclose {
+        padding      : 4px 15px 2px 15px;
+    }
+    
     .tab_console .btncontainer .btntab .tab_console_icon {
         height:16px;
         left:1px;
@@ -7326,10 +7330,14 @@
         background  : #1d1d1d url(images/console-tab-btn-curr.png) repeat-x 0 0;
         border-top  : 1px solid #4f4f4f;
         z-index     : 101;
-        padding     : 2px 27px 2px 27px;
+        padding     : 2px 20px 2px 20px;
         text-shadow : rgba(0, 0, 0, 1) 0px 1px 0px;
     }
-
+    
+    .tab_console .btncontainer div.curbtn.btnclose {
+        padding     : 2px 15px 2px 15px;
+    }
+    
     .tab_console .scale .btntab .tab_console_middle {
         display : block;
         overflow : hidden;
@@ -7403,11 +7411,11 @@
 ]]></a:style>
 <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
     .tab_console .btncontainer .btntab {
-        padding      : 5px 27px 1px 27px;
+        padding      : 5px 20px 1px 20px;
     }
 
     .tab_console .btncontainer div.curbtn {
-        padding      : 3px 27px 1px 27px;
+        padding      : 3px 20px 1px 20px;
     }
 ]]></a:style>
 
@@ -8795,37 +8803,51 @@
     <a:style><![CDATA[
         .btextbox {
             position : relative;
-        }
-
-        .btextbox {
+            -webkit-box-shadow: 0px 1px 0px #424242;
+            -moz-box-shadow: 0px 1px 0px #424242;
+            box-shadow: 0px 1px 0px #424242;
+            background-image: linear-gradient(bottom, rgb(92,92,92) 0%, rgb(105,105,105) 75%, rgb(92,92,92) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(92,92,92) 0%, rgb(105,105,105) 75%, rgb(92,92,92) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(92,92,92) 0%, rgb(105,105,105) 75%, rgb(92,92,92) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(92,92,92) 0%, rgb(105,105,105) 75%, rgb(92,92,92) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(92,92,92) 0%, rgb(105,105,105) 75%, rgb(92,92,92) 100%);
+            
             padding          : 1px;
-            background: #6F6F6E;
-            color: #333333;
+            color: #ffffff;
             margin: 0;
             outline: none;
             font-family: Tahoma, Arial;
             font-size: 12px;
             text-overflow: ellipsis;
-            border : 1px solid black;
-            border-color : #333 #999 #999 #333;
+            border : 1px solid #262626;
         }
 
         .btextbox INPUT {
             border           : 0;
             font-size        : 11px;
-            color            : #eee;
+            color            : #ffffff;
             font-family      : Arial;
             outline          : none;
             background-color : transparent;
             width: 100%;
         }
-
+        
+        .btextboxFocus {
+            background-color: #96a28f;
+            background-image: none;
+        }
+        
         .btextboxInitial INPUT {
             color : #777777;
         }
-
+        
+        .btextboxError {
+            background-color: #9f3636;
+            background-image: none;
+        }
+        
         .btextboxDisabled INPUT {
-            color : #EEE;
+            color : #fff;
         }
     ]]></a:style>
 
