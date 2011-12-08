@@ -85,25 +85,24 @@
                 <a:fieldset flex="1" caption="Options" margin="0 0 1">
                     <a:checkbox id="chkSFMatchCase" 
                       checked = "false"
-                      skin="checkbox_grey"
-                      margin="0 0 2"
+                      skin    = "checkbox_grey"
+                      margin  = "0 0 2"
                       label   = "Match Case" />
                     <!--a:checkbox id="chkSFWholeWords" label="Whole Words" /-->
                     <a:checkbox id="chkSFRegEx" 
-                      skin="checkbox_grey"
-                      label  = "Regular Expressions" />
+                      skin  = "checkbox_grey"
+                      label = "Regular Expressions" />
                 </a:fieldset>
                 <a:fieldset flex="1" caption="Scope" margin="0 0 1 5">
                     <a:radiobutton 
                       group  = "grpSFScope" 
-                      height = "20"
-                      skin   = "classic" 
+                      skin   = "radio_grey" 
                       value  = "projects" 
+                      margin = "0 0 2"
                       label  = "Project" />
                     <a:radiobutton id="rbSFSelection"
                       group  = "grpSFScope" 
-                      height = "20"
-                      skin   = "classic" 
+                      skin   = "radio_grey" 
                       value  = "selection" 
                       label  = "Selection"
                       selected = "true" />

@@ -2493,13 +2493,21 @@
             height     : 17px;
             background : url("images/checkbox_black.png") no-repeat 0 0;
         }
-
+        
+        .cbblack.cbcontainerOver .checkbox{
+            background-position : 0 -85px;
+        }
+        
         .cbblack.cbcontainerDown .checkbox{
             background-position : 0 -17px;
         }
 
         .cbblack.cbcontainerChecked .checkbox {
             background-position : 0 -34px;
+        }
+        
+        .cbblack.cbcontainerOver.cbcontainerChecked .checkbox{
+            background-position : 0 -102px;
         }
         
         .cbblack.cbcontainerChecked.cbcontainerDown .checkbox {
@@ -2537,7 +2545,7 @@
 
         .cbgrey.cbcontainer span {
             color : #333;
-            top   : 0;
+            top   : 1px;
         }
 
         .cbgrey.cbcontainer .checkbox {
@@ -2545,13 +2553,21 @@
             height     : 17px;
             background : url("images/checkbox_grey.png") no-repeat 0 0;
         }
-
+        
+        .cbgrey.cbcontainerOver .checkbox{
+            background-position : 0 -85px;
+        }
+        
         .cbgrey.cbcontainerDown .checkbox{
             background-position : 0 -17px;
         }
 
         .cbgrey.cbcontainerChecked .checkbox {
             background-position : 0 -34px;
+        }
+        
+        .cbgrey.cbcontainerOver.cbcontainerChecked .checkbox{
+            background-position : 0 -102px;
         }
         
         .cbgrey.cbcontainerChecked.cbcontainerDown .checkbox {
@@ -5819,7 +5835,7 @@
             background-position: 0 -36px;
         }
 
-        .rbclassicChecked .radio{
+        .rbclassicSelected .radio{
             background-position: 0 -24px;
         }
 
@@ -5904,6 +5920,179 @@
                 <div>
 
                 </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:radiobutton>
+
+<a:radiobutton name="radio_grey">
+    <a:style><![CDATA[
+        .rb_grey {
+            position : relative;
+            color    : #333;
+            cursor   : default;
+            padding: 2px 2px 2px 20px;
+            overflow: visible;
+        }
+
+        .rb_grey .radio {
+            width      : 16px;
+            height     : 17px;
+            position   : absolute;
+            background : url("images/radio-grey.png") no-repeat 0 0px;
+            overflow: hidden;
+            left: 2px;
+            top: 2px;
+        }
+
+        .rb_grey span {
+            top         : 1px;
+            overflow    : hidden;
+            position    : relative;
+            font-family: Tahoma, Arial;
+            font-size: 11px;
+            cursor: default;
+            padding: 1px 3px 2px 3px;
+            display: inline-block;
+            line-height: 13px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            color: #333;
+        }
+
+        .rb_greyFocus span {
+
+        }
+        
+        .rb_greyOver .radio{
+            background-position: 0 -119px;
+        }
+        
+        .rb_greyDown .radio{
+            background-position: 0 -17px;
+        }
+
+        .rb_greySelected .radio{
+            background-position: 0 -34px;
+        }
+        
+        .rb_greyOver.rb_greySelected .radio{
+            background-position: 0 -102px;
+        }
+        
+        .rb_greyChecked.rb_greyDown .radio{
+            background-position: 0 -51px;
+        }
+        
+        .rb_greyDisabled .radio{
+            background-position: 0 -68px;
+        }
+        
+        .rb_greyDisabled.rb_greySelected .radio{
+            background-position: 0 -85px;
+        }
+        
+        .rb_greyDisabled span{
+            color: #bebebe;
+        }
+
+        .rb_greyError span{
+            background-position: 0 -68px;
+            color: #fbfbfb;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main label="span">
+            <div class="rb_grey">
+                <div class="radio"> </div>
+                <span>-</span>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:radiobutton>
+
+<a:radiobutton name="radio_black">
+    <a:style><![CDATA[
+        .rb_black {
+            position : relative;
+            color    : #333;
+            cursor   : default;
+            padding: 2px 2px 2px 20px;
+            overflow: visible;
+        }
+
+        .rb_black .radio {
+            width      : 16px;
+            height     : 17px;
+            position   : absolute;
+            background : url("images/radio-grey.png") no-repeat 0 0px;
+            overflow: hidden;
+            left: 2px;
+            top: 2px;
+        }
+
+        .rb_black span {
+            top         : 1px;
+            overflow    : hidden;
+            position    : relative;
+            font-family: Tahoma, Arial;
+            font-size: 11px;
+            cursor: default;
+            padding: 1px 3px 2px 3px;
+            display: inline-block;
+            line-height: 13px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            color: #333;
+        }
+
+        .rb_blackFocus span {
+        }
+        
+        .rb_blackOver .radio{
+            background-position: 0 -119px;
+        }
+        
+        .rb_blackDown .radio{
+            background-position: 0 -17px;
+        }
+
+        .rb_blackSelected .radio{
+            background-position: 0 -34px;
+        }
+        
+        .rb_blackOver.rb_greySelected .radio{
+            background-position: 0 -102px;
+        }
+        
+        .rb_blackChecked.rb_greyDown .radio{
+            background-position: 0 -51px;
+        }
+        
+        .rb_blackDisabled .radio{
+            background-position: 0 -68px;
+        }
+        
+        .rb_blackDisabled.rb_greySelected .radio{
+            background-position: 0 -85px;
+        }
+        
+        .rb_blackDisabled span{
+            color: #bebebe;
+        }
+
+        .rb_blackError span{
+            background-position: 0 -68px;
+            color: #fbfbfb;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main label="span">
+            <div class="rb_black">
+                <div class="radio"> </div>
+                <span>-</span>
             </div>
         </a:main>
     </a:presentation>
@@ -7156,7 +7345,7 @@
         height              : 14px;
         display             : block;
         position            : absolute;
-        right               : 10px;
+        right               : 6px;
         top                 : 6px;
         /*cursor              : default;*/
         background-image    : url(images/console-tab-close-button.png);
@@ -8030,6 +8219,9 @@
             -webkit-border-radius: 0;
             -moz-border-radius: 0;
             border-radius: 0;
+            -webkit-box-shadow: 0 2px 10px 1px #6d6d6d;
+            -moz-box-shadow: 0 2px 10px 1px #6d6d6d;
+            box-shadow: 0 2px 10px 1px #6d6d6d;
         }
         
         .docktab .btncontainer{

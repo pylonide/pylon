@@ -628,7 +628,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     this.$startDrag = function (dragged, original){
         var last, state = 0, _self = this;
 
-        apf.setOpacity(dragged.$ext, 0.3);
+        apf.setOpacity(dragged.$ext, 0.2);
         
         apf.setStyleClass(dragged.$ext, 'dragging');
         
@@ -684,7 +684,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     state = 1;
                     apf.tween.single(dragged.$ext, {
                         type: "fade",
-                        from: 0.3,
+                        from: 0.2,
                         to  : 1,
                         steps : 20,
                         onfinish : function(){
@@ -708,7 +708,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 apf.tween.single(dragged.$ext, {
                     type: "fade",
                     from: 1,
-                    to  : 0.3,
+                    to  : 0.2,
                     steps : 20,
                     onfinish : function(){
                         state = 0;
@@ -779,30 +779,31 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         var div3 = indicator.childNodes[2];
                         div1.style.left = (diff[0] - (!lastBar.expanded ? 3 : 6)) + "px";
                         div1.style.width = (matchAml.$button.offsetWidth - 1) + "px";
-                        div1.style.height = "18px";
-                        div1.style.margin = "-21px 0 0 0px";
-                        div1.style.border = "3px solid rgba(92,92,92,0.5)";
+                        div1.style.height = !lastBar.expanded ? "16px" : "18px";
+                        div1.style.margin = "-19px 0 0 0px";
+                        div1.style.border = "3px solid #9eb897";
                         div1.style.borderWidth = "3px 3px 0 3px";
                         
-                        div2.style.left = (diff[0] + matchAml.$button.offsetWidth - 4) + "px";
+                        div2.style.left = (diff[0] + matchAml.$button.offsetWidth - (!lastBar.expanded ? 1 : 4)) + "px";
                         div2.style.right = "0px";
                         div3.style.borderBottom =
-                        div2.style.borderBottom = "3px solid rgba(92,92,92,0.5)";
+                        div2.style.borderBottom = "3px solid #9eb897";
                         
                         div3.style.left = "0px";
-                        div3.style.right = (width - diff[0] - 4) + "px";
+                        div3.style.right = (width - diff[0] - (!lastBar.expanded ? 8 : 5)) + "px";
                         
                         indicator.style.borderTop = "0px solid #5c5c5c";
-                        indicator.style.borderColor = "rgba(92,92,92,0.5)";
-                        indicator.style.top = (pos2[1] + (!lastBar.expanded ? 19 : 24)) + "px";
-                        height -= 26 + (!lastBar.expanded ? 1 : 0);
-                        width  -= 1;
+                        indicator.style.borderColor = "#9eb897";
+                        indicator.style.top = (pos2[1] + (!lastBar.expanded ? 16 : 20)) + "px";
+                        height -= 26 + (!lastBar.expanded ? -2 : -4);
+                        width  -= 2;
                     }
                     else {
+                        indicator.style.top  = (pos2[1] + (!lastBar.expanded ? -3 : 1)) + "px";
                         indicator.innerHTML = "<div style='position:absolute;'><div></div></div>";
-                        indicator.firstChild.style.height = !lastBar.expanded ? "22px" : "19px";
+                        indicator.firstChild.style.height = "19px";
                         indicator.firstChild.style.width = "5px";
-                        indicator.firstChild.style.background = "rgba(92,92,92,0.5)";
+                        indicator.firstChild.style.background = "#9eb897";
                         indicator.firstChild.style.top = "0px";
                         indicator.firstChild.firstChild.style.background = "#5c5c5c";
                         indicator.firstChild.firstChild.style.height = "100%";
@@ -818,7 +819,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                             indicator.firstChild.firstChild.style.marginLeft = "0px";
                         }
                         indicator.firstChild.style.left = left + "px";
-                        height -= 7;
+                        height -= (!lastBar.expanded ? 5 : 3);
                         width  -= 1;
                     }
                     break;
