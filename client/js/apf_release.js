@@ -56669,56 +56669,36 @@ apf.dbg = module.exports = function(struct, tagName){
         host.$attach(this, tab, function(err, dbgImpl) {
             _self.$host = host;
             _self.$debugger = dbgImpl;
+            dbgImpl.addEventListener("afterCompile", _self.$onAfterCompile.bind(_self));
+            
+            _self.$stAttached.activate();
+            _self.$stRunning.setProperty("active", dbgImpl.isRunning());
+            
+            dbgImpl.addEventListener("changeRunning", _self.$onChangeRunning.bind(_self));
+            dbgImpl.addEventListener("break", _self.$onBreak.bind(_self));
+            dbgImpl.addEventListener("detach", _self.$onDetach.bind(_self));
+            dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));
             
             _self.$loadSources(function() {
                 dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {
-                    var backtraceModel = new apf.model();
-                    backtraceModel.load("<frames></frames>");
-                    
-                    _self.$debugger.backtrace(backtraceModel, function() {
-                        var frame = backtraceModel.queryNode("frame[1]");
-                    
-                        if (!_self.$allowAttaching(frame)) {
-                            _self.$debugger.continueScript();
+                    _self.$debugger.backtrace(_self.$mdlStack, function() {
+                        var frame = _self.$mdlStack.queryNode("frame[1]");
+                        if (frame) {
+                            var scriptId = frame.getAttribute("scriptid");
+                            var scriptName = _self.$mdlSources.queryValue("file[@scriptid='" + scriptId + "']/@scriptname");
+                            
+                            if (scriptName) {
+                                var line = frame.getAttribute("line");
+                                var bp = _self.$mdlBreakpoints.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + line + "']");
+                            }
+                            if (!scriptName || !bp) {
+                               _self.$debugger.continueScript();
+                            }
                         }
-                        else {
-                            _self.$mdlStack.load(backtraceModel.data);
-                        }
-                        
-                        dbgImpl.addEventListener("afterCompile", _self.$onAfterCompile.bind(_self));
-                        
-                        _self.$stAttached.activate();
-                        _self.$stRunning.setProperty("active", dbgImpl.isRunning());
-                        
-                        dbgImpl.addEventListener("changeRunning", _self.$onChangeRunning.bind(_self));
-                        dbgImpl.addEventListener("break", _self.$onBreak.bind(_self));
-                        dbgImpl.addEventListener("detach", _self.$onDetach.bind(_self));
-                        dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));                        
                     });
                 });
             });
         });
-    };
-    
-    this.$allowAttaching = function (frame) {
-        var _self = this;
-        
-        if (frame) {
-            var scriptId = frame.getAttribute("scriptid");
-            var scriptName = _self.$mdlSources.queryValue("file[@scriptid='" + scriptId + "']/@scriptname");
-            
-            if (scriptName) {
-                var line = frame.getAttribute("line");
-                var bp = _self.$mdlBreakpoints.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + line + "']");
-            }
-            if (!scriptName || !bp) {
-               return false;
-            }
-            
-            return true;
-        }
-        
-        return false;
     };
     
     this.$onChangeRunning = function() {
@@ -59669,7 +59649,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/item.js)SIZE(23457)TIME(Tue, 06 Dec 2011 06:05:03 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/item.js)SIZE(23478)TIME(Thu, 08 Dec 2011 08:30:31 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60002,11 +59982,12 @@ apf.item  = function(struct, tagName){
         if (this.type != "radio")
             return;
 
-        if (this.$group)
-            this.$group.setProperty("value", this.value);
 
-        if (apf.isTrue(value))
-            this.$check()
+        if (apf.isTrue(value)) {
+            if (this.$group)
+                this.$group.setProperty("value", this.value);
+            this.$check();
+        }
         else
             this.$uncheck();
     }
@@ -64134,7 +64115,7 @@ apf.aml.setElement("event", apf.event);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/page.js)SIZE(26466)TIME(Sat, 03 Dec 2011 20:18:27 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/page.js)SIZE(26698)TIME(Thu, 08 Dec 2011 08:10:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64226,12 +64207,40 @@ apf.page = function(struct, tagName){
     this.$supportedProperties.push("fake", "caption", "icon", "tooltip",
         "type", "buttons", "closebtn", "trans-in", "trans-out");
 
+    
     /**
      * @attribute {Boolean} closebtn whether this page's button shows a close button inside it.
      */
     this.$propHandlers["closebtn"] = function(value){
-        this.closebtn = value;
+        //if (!this.$amlLoaded || !this.parentNode.$hasButtons)
+          //  return;
+        var _self = this;
+        
+        if (value) {
+            var btncontainer = this.parentNode.$getLayoutNode("button", "container", this.$button);
+            
+            this.parentNode.$getNewContext("btnclose");
+            var elBtnClose = this.parentNode.$getLayoutNode("btnclose");
+
+            if (elBtnClose) {
+               // if(elBtnClose.nodeType == 1) {
+                apf.setStyleClass(this.$button, "btnclose");
+                
+                elBtnClose.addEventListener("mousedown", function(){
+                    apf.cancelBubble(event, apf.lookup(_self.$uniqueId));
+                });
+                
+                elBtnClose.addEventListener("click", function(){
+                    var page = apf.lookup(_self.$uniqueId);
+                     page.parentNode.remove(page, event);
+                });
+
+                btncontainer.appendChild(elBtnClose);
+            }
+            
+        }
     };
+    
 
     /**
      * @attribute {String} caption the text displayed on the button of this element.
@@ -64795,30 +64804,11 @@ apf.page = function(struct, tagName){
             //    this.$lastClassValueBtn = cssClass;
             //}
 
-            
-            var closebtn = this.getAttribute("closebtn");
-            if ((apf.isTrue(closebtn) || ((this.parentNode.buttons || "").indexOf("close") > -1 && !apf.isFalse(closebtn)))) {
-                var btncontainer = this.parentNode.$getLayoutNode("button", "container");
-
-                this.parentNode.$getNewContext("btnclose");
-                var elBtnClose = this.parentNode.$getLayoutNode("btnclose");
-                
-                if (elBtnClose) {
-                    apf.setStyleClass(elBtn, "btnclose");
-
-                    elBtnClose.setAttribute("onmousedown", 
-                        "apf.cancelBubble(event, apf.lookup(" + this.$uniqueId + "));");
-                    elBtnClose.setAttribute("onclick",
-                        'var page = apf.lookup(' + this.$uniqueId + ');\
-                         page.parentNode.remove(page, event);');
-                         
-                    btncontainer.appendChild(elBtnClose);
-                }
-                
-            }
-            
-
             this.$button = apf.insertHtmlNode(elBtn, this.parentNode.$buttons);
+            
+            var closebtn = this.closebtn = this.getAttribute("closebtn");
+            if ((apf.isTrue(closebtn) || ((this.parentNode.buttons || "").indexOf("close") > -1 && !apf.isFalse(closebtn))))
+                this.$propHandlers["closebtn"].call(this, true);
             
             
             if (this.parentNode.$scale) {

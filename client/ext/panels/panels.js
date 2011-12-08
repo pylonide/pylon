@@ -240,11 +240,11 @@ module.exports = ext.register("ext/panels/panels", {
         splitterPanelLeft.show();
         this.currentPanel = panelExt;
         
-        settings.model.setQueryValue("auto/panels/@active", panelExt.path);
+        //settings.model.setQueryValue("auto/panels/@active", panelExt.path);
         
         ide.dispatchEvent("showpanel." + panelExt.path);
         
-        panelExt.mnuItem.select();
+        panelExt.mnuItem.select(); //Will set setting too
     },
     
     deactivate : function(noButton, anim){
@@ -296,9 +296,14 @@ module.exports = ext.register("ext/panels/panels", {
         );
         
         colLeft.addEventListener("resize", function(){
-            if (_self.currentPanel && !_self.animating)
-                settings.model.setQueryValue("auto/panels/panel[@path='" 
-                    + _self.currentPanel.path + "']/@width", colLeft.getWidth());
+            if (!_self.currentPanel || _self.animating)
+                return;
+            
+            var query = "auto/panels/panel[@path='" 
+                + _self.currentPanel.path + "']/@width";
+                
+            if (settings.model.queryValue(query) != colLeft.getWidth())
+                settings.model.setQueryValue(query, colLeft.getWidth());
         });
         
         /**** Support for state preservation ****/
