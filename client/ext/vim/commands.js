@@ -6,9 +6,9 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-"use strict";
-
 define(function(require, exports, module) {
+
+"use strict";
 
 var util = require("ext/vim/maps/util");
 var motions = require("ext/vim/maps/motions");
@@ -145,7 +145,7 @@ var actions = {
             if (defaultReg.isLine) {
                 var pos = editor.getCursorPosition();
                 var lines = defaultReg.text.split("\n");
-                editor.session.getDocument().insertLines(pos.row + 1, lines); 
+                editor.session.getDocument().insertLines(pos.row + 1, lines);
                 editor.moveCursorTo(pos.row + 1, 0);
             }
             else {
@@ -165,7 +165,7 @@ var actions = {
             if (defaultReg.isLine) {
                 var pos = editor.getCursorPosition();
                 var lines = defaultReg.text.split("\n");
-                editor.session.getDocument().insertLines(pos.row, lines); 
+                editor.session.getDocument().insertLines(pos.row, lines);
                 editor.moveCursorTo(pos.row, 0);
             }
             else {
@@ -247,7 +247,7 @@ var inputBuffer = exports.inputBuffer = {
     // Types
     operator: null,
     motion: null,
-    
+
     lastInsertCommands: [],
 
     push: function(editor, char, keyId) {
@@ -342,7 +342,7 @@ var inputBuffer = exports.inputBuffer = {
                 param: param
             };
         }
-        
+
         if (o && !editor.selection.isEmpty()) {
             if (operators[o.char].selFn) {
                 operators[o.char].selFn(editor, editor.getSelectionRange(), o.count, param);
@@ -482,7 +482,7 @@ var handleCursorMove = exports.onCursorMove = function() {
         handleCursorMove.running = true;
         var pos = editor.getCursorPosition();
         var lineLen = editor.session.getLine(pos.row).length;
-    
+
         if (lineLen && pos.column === lineLen)
             editor.navigateLeft();
         handleCursorMove.running = false;

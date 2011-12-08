@@ -38,6 +38,7 @@ Variable.prototype.addDeclaration = function(node) {
 };
 
 handler.analyze = function(doc, ast) {
+    var handler = this;
     var markers = [];
     
     // Preclare variables (pre-declares, yo!)
@@ -115,7 +116,8 @@ handler.analyze = function(doc, ast) {
                 b.fargs.forEach(function(farg) {
                     farg.setAnnotation("scope", newScope);
                     newScope[farg[0].value] = new Variable(farg);
-                    localVariables.push(newScope[farg[0].value]);
+                    if (handler.isFeatureEnabled("unusedFunctionArgs"))
+                        localVariables.push(newScope[farg[0].value]);
                 });
                 scopeAnalyzer(newScope, b.body);
                 return node;
