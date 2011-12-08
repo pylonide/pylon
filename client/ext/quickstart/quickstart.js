@@ -53,11 +53,9 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     nodes : [],
 
     init : function(amlNode){   
-   
           this.overlay.setAttribute("style",
           "z-index:9016;display:none;position:absolute;width:100%;height:100%;opacity:0.3;background:#000;");
          document.body.appendChild(this.overlay);
-
     },
     
     hook : function(){
@@ -72,25 +70,13 @@ module.exports = ext.register("ext/quickstart/quickstart", {
              }
                  
          }); 
-         
-        this.nodes.push(
-            ide.mnuFile.appendChild(new apf.item({
-                caption : "Quick Start",
-                onclick : function(){
-                    ext.initExtension(_self);
-                    require("ext/quickstart/quickstart").launchQS();
-                },
-                onclose : function(e){
-                        _self.close(e.page);
-                    }
-            }))
-        );
-        
 
     },
     
     launchQS : function()
     {
+        ext.initExtension(this);
+        
          debugPanelCompact.show();
                     quickStartDialog.show();
                     this.overlay.style.display = "block";

@@ -12,7 +12,7 @@
       kbclose   = "true"
       width     = "395"
       skin      = "bk-window"
-      class   = "relative">
+      class     = "relative">
         <a:vbox edge="10" padding="5">
             <a:text id="winTourDesc" height="100" class="tgDesc"/>
             <a:hbox padding="5" pack="end">

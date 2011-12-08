@@ -10,7 +10,6 @@
 
 define(function(require, exports, module)
 {
-
     var ext = require("core/ext");
     var ide = require("core/ide");
     var skin = require("text!ext/guidedtour/skin.xml");
@@ -324,21 +323,7 @@ define(function(require, exports, module)
 
         hook: function()
         {
-            var _self = this;
-            this.nodes.push(
-            ide.mnuFile.appendChild(new apf.item(
-            {
-                caption: "Take a Guided Tour",
-                onclick: function()
-                {
-                    ext.initExtension(_self);
-                    _self.launchGT();
-                },
-                onclose: function(e)
-                {
-                    _self.close(e.page);
-                }
-            })));
+
         },
 
         launchGT: function()

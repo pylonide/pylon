@@ -1,8 +1,56 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
+<a:application xmlns:a="http://ajax.org/2005/aml"> 
     <a:menu id="mnuHelp">
         <a:item id="mnuAbout" onclick="require('ext/help/help').showAbout();">About</a:item>
-        <a:item id="mnuGuidedTour" onclick="alert('bonanan');">Guided Tour</a:item>
+        <a:divider />
+        <a:item id="mnuQuickStart" onclick="require('ext/quickstart/quickstart').launchQS();">Quick Start</a:item>
+        <a:item id="mnuGuidedTour" onclick="require('ext/guidedtour/guidedtour').launchGT();">Take a Guided Tour</a:item>
+        <a:divider />
+        <a:item id="mnuKeybindings" onclick="require('ext/keybindings_default/keybindings_default').keybindings();">Keyboard Shortcuts</a:item>
+        <a:divider />
         <a:item id="mnuTwitter" onclick="require('ext/help/help').launchTwitter();">Twitter</a:item>
         <a:divider />
     </a:menu>
+<!--
+    <a:skin 
+      id         = "help"
+      src        = "{require('ext/help/help').skin}"
+      media-path = "/static/ext/help/images/" /> -->
+      
+    <a:window
+      id        = "aboutDialog"
+      icon      = ""
+      kbclose   = "true"
+      center    = "true"
+      width     = "512"
+      draggable = "false"
+      modal     = "false"
+      skin      = "bk-window"
+      class     = "relative aboutDialogBox">
+        <a:style><![CDATA[
+        .aboutDialogBox .bk-header, .aboutDialogBox .bg-bk-content, .aboutDialogBox .bk-win-footer {
+        display: none;
+        }
+         .aboutDialogBox {
+                         -webkit-box-shadow: 0;
+                -moz-box-shadow: 0;
+                box-shadow: 0;
+         }
+         
+   .aboutDialogBox    .image {
+ position:relative;
+}
+.aboutDialogBox .image .text {
+  position:absolute;
+  top:10px; /* in conjunction with left property, decides the text position */
+  left:10px;
+  width:300px; /* optional, though better have one */
+}
+        ]]></a:style>
+                <div class="image">
+        <img src="/static/ext/help/images/about_cloud.png" />
+  <div class="text">
+    <p>Blah.</p>
+  </div>
+</div>
+    </a:window>
 </a:application>
