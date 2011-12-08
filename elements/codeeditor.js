@@ -85,15 +85,15 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$booleanProperties["gutter"]                   = true;
     this.$booleanProperties["highlightselectedword"]    = true;
     this.$booleanProperties["autohidehorscrollbar"]     = true;
-    this.$booleanProperties["behaviors"]                = true;    
+    this.$booleanProperties["behaviors"]                = true;
+    this.$booleanProperties["folding"]                  = true;
     
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
         "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
         "theme", "gutter", "highlightselectedword", "autohidehorscrollbar",
-        "behaviors");
+        "behaviors", "folding");
 
-    var cacheId = 0;
     this.$getCacheKey = function(value) {
         if (typeof value == "string") {
             var key = this.xmlRoot
@@ -116,7 +116,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             delete this.$cache[key];                    
     };
     
-    this.addEventListener("unloadmodel", function(e) {
+    this.addEventListener("unloadmodel", function() {
         this.syncValue();
     });
     
@@ -172,6 +172,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         doc.setUseSoftTabs(_self.softtabs);
         doc.setUseWrapMode(_self.wrapmode);
         doc.setWrapLimitRange(_self.wraplimitmin, _self.wraplimitmax);
+        doc.setFoldStyle(_self.folding ? "markbegin" : "manual");
 
         _self.$removeDocListeners && _self.$removeDocListeners();
         _self.$removeDocListeners = _self.$addDocListeners(doc);
@@ -357,6 +358,10 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$propHandlers["tabsize"] = function(value, prop, initial) {
         this.$editor.getSession().setTabSize(parseInt(value, 10));
+    };
+
+    this.$propHandlers["folding"] = function(value, prop, initial) {
+        this.$editor.getSession().setFoldStyle(value ? "markbegin" : "manual");
     };
 
     this.$propHandlers["softtabs"] = function(value, prop, initial) {
@@ -654,6 +659,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.autohidehorscrollbar = !ed.renderer.getHScrollBarAlwaysVisible();
         if (this.behaviors === undefined)
             this.behaviors = !ed.getBehavioursEnabled();
+        if (this.folding === undefined)
+            this.folding = true;
     };
 
 // #ifdef __WITH_DATABINDING
