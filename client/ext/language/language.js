@@ -116,7 +116,10 @@ module.exports = ext.register("ext/language/language", {
     },
     
     setPath: function() {
-        var currentPath = tabEditors.getPage().getAttribute("id");
+        var page =  tabEditors.getPage();
+        if (!page)
+            return;
+        var currentPath = page.getAttribute("id");
         // Currently no code editor active
         if(!editors.currentEditor.ceEditor)
             return;

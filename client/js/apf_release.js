@@ -17136,7 +17136,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16874)TIME(Wed, 07 Dec 2011 05:09:12 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16889)TIME(Thu, 08 Dec 2011 07:35:04 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17451,7 +17451,7 @@ apf.DOMParser.prototype = new (function(){
                 o.tagName      = prefix ? prefix + ":" + nodeName : nodeName;
         
                 if (xmlNode) {
-                    if (id = xmlNode.getAttribute("id"))
+                    if ((id = xmlNode.getAttribute("id")) && !self[id])
                         o.$propHandlers["id"].call(o, o.id = id);
 
                     //attributes
@@ -33286,7 +33286,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(58119)TIME(Wed, 07 Dec 2011 11:56:53 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(58134)TIME(Thu, 08 Dec 2011 06:27:23 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33363,8 +33363,8 @@ apf.BaseTab = function(){
                 this, page, null, null, callback, noEvent);
         }
         
-        if (callback && this.activepage == page)
-            return callback(this.getPage(page));
+        if (this.activepage == (page.name || page))
+            return callback && callback(this.getPage(page));
 
         this.$lastCallback = callback;
         this.setProperty("activepage", page);
@@ -52489,7 +52489,7 @@ apf.aml.setElement("browser", apf.browser);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/button.js)SIZE(31034)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/button.js)SIZE(31035)TIME(Wed, 07 Dec 2011 22:41:19 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52997,7 +52997,7 @@ apf.button  = function(struct, tagName){
         if (strEvent && this.dispatchEvent(strEvent, {htmlEvent: e}) === false)
             return;
         
-        if(parentNode && parentNode.$button2 && parentNode.$button2.value && !this.submenu)
+        if (parentNode && parentNode.$button2 && parentNode.$button2.value && !this.submenu)
             return;
 
         this.$doBgSwitch(this.states[state]);
