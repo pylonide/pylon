@@ -181,9 +181,11 @@ module.exports = ext.register("ext/code/code", {
         ceEditor.$editor.renderer.scrollToY(state.scrolltop);
         ceEditor.$editor.renderer.scrollToX(state.scrollleft);
 
-        for (var i = 0; i < state.folds.length; i++) {
-            var fold = state.folds[i];
-            aceDoc.addFold(fold.placeholder, Range.fromPoints(fold.start, fold.end));
+        if (state.folds) {
+            for (var i = 0, l=state.folds.length; i < l; i++) {
+                var fold = state.folds[i];
+                aceDoc.addFold(fold.placeholder, Range.fromPoints(fold.start, fold.end));
+            }
         }
 
         // if newfile == 1 and there is text cached, restore it
