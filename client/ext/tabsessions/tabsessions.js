@@ -70,6 +70,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             });
     
             _self.nodes.push(
+                mnuTabs.appendChild(new apf.divider()),
                 mnuTabs.appendChild(new apf.item({
                     id      : "mnuFileLoadSession",
                     caption : "Restore Tab Session",
@@ -90,8 +91,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                     caption : "Delete Tab Session",
                     submenu : "mnuTabDeleteSessions",
                     disabled: !sessions.length
-                })),
-                mnuTabs.appendChild(new apf.divider())
+                }))
             );
         });
     },
@@ -156,6 +156,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         // check for unsaved files
         var pages = tabEditors.getPages();
         var page;
+        /*
         for (var i = 0, l = pages.length; i < l; i++) {
             page = pages[i];
             if (page.$doc.getNode().getAttribute("changed") == 1) {
@@ -173,7 +174,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                 }
             }
         }
-        
+        */
         var sessionfiles = settings.model.queryNode("auto/sessions/session[@name=\"" + name + "\"]/files");
         if (!sessionfiles)
             return; // or display error
@@ -182,7 +183,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         pages = tabEditors.getPages();
         pages.forEach(function(page) {
             tabbehaviors.removeItem(page);
-            page.removeNode();
+            tabEditors.remove(page, null, true);
         });
 
         // open session files

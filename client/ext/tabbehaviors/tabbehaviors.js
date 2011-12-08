@@ -447,10 +447,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.sep = null;
         }
         else if (!this.sep && (len || force)) {
-            if (len)
-                this.sep = mnuTabs.insertBefore(new apf.divider(), this.nodes[3].nextSibling);
-            else
-                this.sep = mnuTabs.appendChild(new apf.divider());
+            this.sep = mnuTabs.insertBefore(new apf.divider(), mnuTabs.childNodes[8]);
         }
 
         if (len < (force ? 19 : 20)) { // we already have 9 other menu items
