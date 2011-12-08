@@ -85,36 +85,56 @@ apf.dbg = module.exports = function(struct, tagName){
         host.$attach(this, tab, function(err, dbgImpl) {
             _self.$host = host;
             _self.$debugger = dbgImpl;
-            dbgImpl.addEventListener("afterCompile", _self.$onAfterCompile.bind(_self));
-            
-            _self.$stAttached.activate();
-            _self.$stRunning.setProperty("active", dbgImpl.isRunning());
-            
-            dbgImpl.addEventListener("changeRunning", _self.$onChangeRunning.bind(_self));
-            dbgImpl.addEventListener("break", _self.$onBreak.bind(_self));
-            dbgImpl.addEventListener("detach", _self.$onDetach.bind(_self));
-            dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));
             
             _self.$loadSources(function() {
                 dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {
-                    _self.$debugger.backtrace(_self.$mdlStack, function() {
-                        var frame = _self.$mdlStack.queryNode("frame[1]");
-                        if (frame) {
-                            var scriptId = frame.getAttribute("scriptid");
-                            var scriptName = _self.$mdlSources.queryValue("file[@scriptid='" + scriptId + "']/@scriptname");
-                            
-                            if (scriptName) {
-                                var line = frame.getAttribute("line");
-                                var bp = _self.$mdlBreakpoints.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + line + "']");
-                            }
-                            if (!scriptName || !bp) {
-                               _self.$debugger.continueScript();
-                            }
+                    var backtraceModel = new apf.model();
+                    backtraceModel.load("<frames></frames>");
+                    
+                    _self.$debugger.backtrace(backtraceModel, function() {
+                        var frame = backtraceModel.queryNode("frame[1]");
+                    
+                        if (!_self.$allowAttaching(frame)) {
+                            _self.$debugger.continueScript();
                         }
+                        else {
+                            _self.$mdlStack.load(backtraceModel.data);
+                        }
+                        
+                        dbgImpl.addEventListener("afterCompile", _self.$onAfterCompile.bind(_self));
+                        
+                        _self.$stAttached.activate();
+                        _self.$stRunning.setProperty("active", dbgImpl.isRunning());
+                        
+                        dbgImpl.addEventListener("changeRunning", _self.$onChangeRunning.bind(_self));
+                        dbgImpl.addEventListener("break", _self.$onBreak.bind(_self));
+                        dbgImpl.addEventListener("detach", _self.$onDetach.bind(_self));
+                        dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));                        
                     });
                 });
             });
         });
+    };
+    
+    this.$allowAttaching = function (frame) {
+        var _self = this;
+        
+        if (frame) {
+            var scriptId = frame.getAttribute("scriptid");
+            var scriptName = _self.$mdlSources.queryValue("file[@scriptid='" + scriptId + "']/@scriptname");
+            
+            if (scriptName) {
+                var line = frame.getAttribute("line");
+                var bp = _self.$mdlBreakpoints.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + line + "']");
+            }
+            if (!scriptName || !bp) {
+               return false;
+            }
+            
+            return true;
+        }
+        
+        return false;
     };
     
     this.$onChangeRunning = function() {
