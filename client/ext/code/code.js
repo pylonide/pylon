@@ -146,17 +146,11 @@ module.exports = ext.register("ext/code/code", {
 
     nodes : [],
     commandManager: new CommandManager(useragent.isMac ? "mac" : "win", defaultCommands),
-<<<<<<< HEAD
     
     getState : function(doc) {
-=======
-
-    getState : function(doc){
->>>>>>> master
         doc = doc ? doc.acesession : this.getDocument();
         if (!doc || typeof doc.getSelection != "function")
             return;
-<<<<<<< HEAD
         
         var folds = doc.getAllFolds().map(function(fold) { 
             return { 
@@ -165,10 +159,7 @@ module.exports = ext.register("ext/code/code", {
                 placeholder: fold.placeholder
             };
         });
-        
-=======
 
->>>>>>> master
         var sel = doc.getSelection();
         return {
             scrolltop  : ceEditor.$editor.renderer.getScrollTop(),
@@ -189,16 +180,12 @@ module.exports = ext.register("ext/code/code", {
         sel.setSelectionRange(state.selection, false);
         ceEditor.$editor.renderer.scrollToY(state.scrolltop);
         ceEditor.$editor.renderer.scrollToX(state.scrollleft);
-<<<<<<< HEAD
-        
+
         for (var i = 0; i < state.folds.length; i++) {
             var fold = state.folds[i];
             aceDoc.addFold(fold.placeholder, Range.fromPoints(fold.start, fold.end));
         }
-        
-=======
 
->>>>>>> master
         // if newfile == 1 and there is text cached, restore it
         var node = doc.getNode && doc.getNode();
         if (node && parseInt(node.getAttribute("newfile") || 0, 10) === 1 && node.childNodes.length) {
@@ -253,14 +240,10 @@ module.exports = ext.register("ext/code/code", {
             doc.acedoc = doc.acesession.getDocument();
 
             doc.acesession.setUndoManager(actiontracker);
-<<<<<<< HEAD
-            
+
             if (doc.isInited && doc.state)
                  _self.setState(doc, doc.state);
-            
-=======
 
->>>>>>> master
             doc.addEventListener("prop.value", function(e) {
                 doc.acesession.setValue(e.value || "");
                 if (doc.state)
