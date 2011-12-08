@@ -92,6 +92,7 @@ module.exports = ext.register("ext/help/help", {
     
     showAbout : function() {
         aboutDialog.show();
+        document.getElementById("c9Version").innerHTML = "Version " + window.cloud9config.version;
     },
     
     launchTwitter : function() {

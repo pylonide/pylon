@@ -2,13 +2,36 @@
     <a:menu id="mnuHelp">
         <a:item id="mnuAbout" onclick="require('ext/help/help').showAbout();">About</a:item>
         <a:divider />
+        <a:item id="mnuDocumentation" onclick="window.open('http://support.cloud9ide.com/forums')">Documentation</a:item>
         <a:item id="mnuQuickStart" onclick="require('ext/quickstart/quickstart').launchQS();">Quick Start</a:item>
         <a:item id="mnuGuidedTour" onclick="require('ext/guidedtour/guidedtour').launchGT();">Take a Guided Tour</a:item>
         <a:divider />
         <a:item id="mnuKeybindings" onclick="require('ext/keybindings_default/keybindings_default').keybindings();">Keyboard Shortcuts</a:item>
         <a:divider />
-        <a:item id="mnuTwitter" onclick="require('ext/help/help').launchTwitter();">Twitter</a:item>
+        <a:item submenu="mnuSupport">Support</a:item>
         <a:divider />
+        <a:item submenu="mnuLearning">Learning</a:item>
+        <a:divider />
+        <a:item submenu="mnuContact">Get in Touch</a:item>
+    </a:menu>
+  
+     <a:menu id="mnuSupport">
+        <a:item id="mnuFAQ" onclick="window.open('http://support.cloud9ide.com/forums/20346041-frequently-asked-questions')">FAQ</a:item>
+        <a:item id="mnuTroubleshooting" onclick="window.open('http://support.cloud9ide.com/forums/20329737-troubleshooting')">Troubleshooting Tips</a:item>
+        <a:divider />
+        <a:item id="mnuLogAnIssue" onclick="window.open('https://github.com/ajaxorg/cloud9/issues?milestone=1')">Report a bug</a:item>     
+    </a:menu>
+    
+  <a:menu id="mnuLearning">
+        <a:item id="mnuVimeo" onclick="window.open('http://vimeo.com/user5080429')">Vimeo</a:item>
+        <a:item id="mnuYouTube" onclick="window.open('http://www.youtube.com/user/Cloud9IDEChannel')">YouTube</a:item>
+    </a:menu>
+
+    <a:menu id="mnuContact">
+        <a:item id="mnuBlog" onclick="window.open('http://cloud9ide.posterous.com/')">Cloud9IDE Blog</a:item>
+        <a:item id="mnuTwitterSupport" onclick="window.open('https://twitter.com/#!/C9Support')">Twitter (Support)</a:item>
+        <a:item id="mnuTwitterGeneral" onclick="window.open('https://twitter.com/#!/cloud9ide')">Twitter (General)</a:item>
+        <a:item id="mnuFacebook" onclick="window.open('https://www.facebook.com/Cloud9IDE')">Facebook</a:item>     
     </a:menu>
 <!--
     <a:skin 
@@ -30,27 +53,96 @@
         .aboutDialogBox .bk-header, .aboutDialogBox .bg-bk-content, .aboutDialogBox .bk-win-footer {
         display: none;
         }
-         .aboutDialogBox {
-                         -webkit-box-shadow: 0;
-                -moz-box-shadow: 0;
-                box-shadow: 0;
-         }
-         
-   .aboutDialogBox    .image {
- position:relative;
+.aboutDialogBox {
+-webkit-box-shadow: 0 0px;
+-moz-box-shadow: 0 0px;
+box-shadow: 0 0px;
 }
-.aboutDialogBox .image .text {
-  position:absolute;
-  top:10px; /* in conjunction with left property, decides the text position */
-  left:10px;
-  width:300px; /* optional, though better have one */
+         
+   .aboutDialogBox .aboutImage {
+ position:relative;
+ color: white;
+}
+
+            .aboutImage .btn_icon_onlyEmpty {
+                background: no-repeat 4px 3px;
+                position: absolute;
+                top: 75px;
+                right: 75px;
+            }
+            
+            .aboutImage .btn_icon_onlyOver {
+                background-position: -14px 3px;
+            }
+            
+            .aboutImage .btn_icon_onlyDown {
+                background-position: -31px 3px;
+            }
+
+#c9Version {
+position: absolute;
+top: 103px;
+left: 206px;
+color: white;
+font-size: 12px;
+padding-left: 12px;
+}
+
+.c9Legal {
+position: absolute;
+top: 60px;
+left: 225px;
+display:none;
+}
+
+.c9Staff {
+position: absolute;
+top: 175px;
+left: 75px;
+color: #aaaaaa;
+font-size: 10px;
+width: 399px;
+}
+
+.c9StaffHeader {
+text-transform:uppercase;
+color: #dddddd;
+font-size: 10px;
+position: absolute;
+top: 140px;
+left: 170px;
+}
+
+.c9Copyright {
+position: absolute;
+bottom: 25px;
+left: 155px;
+font-size: 10px;
+color: #aaaaaa;
 }
         ]]></a:style>
-                <div class="image">
+                <div class="aboutImage">
         <img src="/static/ext/help/images/about_cloud.png" />
-  <div class="text">
-    <p>Blah.</p>
+        <a:button class="closeButton" skin="btn_icon_only" icon="close.png" onclick="aboutDialog.hide();"/>
+    <div id="c9Version">
+  Version 1.10.6
   </div>
-</div>
+     <!-- <div class="c9Legal">
+    <p><a href="http://www.bettercallsaul.com/">Click here for legal notices.</p>
+    </div> -->
+    <div class="c9StaffHeader">
+    <p>Cloud9 IDE is brought to you by:</p>
+  </div>
+    <div class="c9Staff">
+    <p>Ruben Daniels, Rik Arends, David van Ballegooijen, Chrissy Welsh, Lieke Arends,
+    Mike de Boer, Fabian Jakobs, Sergi Mansilla, Matt Pardee, Linh Nguyen, Zef Hemel,
+    Giannis Panagiotou, Bert Belder, Jan Jongboom, Daniela Gavidia, Detmar ter Huurne,
+    Garen Torikian, Tim Caswell, Erin Lockhart, Jos Uijterwaal, Esther Visser, Pippa</p>
+    </div>
+    <div class="c9Copyright">
+    <p>© 2010 — 2012 Cloud9 IDE Inc. All rights reserved</p>
+    </div>
+  </div>
+
     </a:window>
 </a:application>
