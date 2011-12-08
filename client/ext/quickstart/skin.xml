@@ -61,30 +61,29 @@
                 border-radius: 4px;
             }
             
-            .quickstart .header {
-                width: 20px;
-                height: 20px;
-                position: absolute;
-                top: -22px;
-                right: 0;
-                background: url(images/close.png) no-repeat 0 0;
+            .quickstart #quickStartHeader {
+            background: #000;
+            position: absolute;
+right: 0;
+top: -25px;
             }
             
-            .quickstart .header:hover {
-                background-position: -22px 0px;
-            }
-            .quickstart .header:active {
-                background-position: -44px 0px;
+            .quickstart .btn_icon_onlyEmpty {
+                background: no-repeat 4px 3px;
             }
             
-            .quickstart .buttons {
-                background: url(images/close.png) no-repeat 0 0;
+            .quickstart .btn_icon_onlyOver {
+                background-position: -14px 3px;
             }
             
+            .quickstart .btn_icon_onlyDown {
+                background-position: -31px 3px;
+            }
+
             .quickstart p {
             padding: 0;
-margin: 0;
-}
+        margin: 0;
+        }
             .tgLink {
             background : #000;
                 color: #fff;

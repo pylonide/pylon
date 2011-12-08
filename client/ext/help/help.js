@@ -11,6 +11,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var skin = require("text!ext/help/skin.xml");
 var markup = require("text!ext/help/help.xml");
 
 module.exports = ext.register("ext/help/help", {
@@ -18,9 +19,8 @@ module.exports = ext.register("ext/help/help", {
     dev    : "Cloud9 IDE, Inc.",
     alone  : true,
     type   : ext.GENERAL, 
-    markup : markup,
-    
     nodes : [],
+    markup : markup,
     panels : {},
     
     showingAll : true,
@@ -91,7 +91,7 @@ module.exports = ext.register("ext/help/help", {
     },
     
     showAbout : function() {
-        alert("Let's go to Twitter!");
+        aboutDialog.show();
     },
     
     launchTwitter : function() {

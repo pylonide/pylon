@@ -14,6 +14,10 @@
         skinset   = "quickstart"
         skin ="quickstart"
         draggable = "false">
+        <div id="quickStartHeader">
+        <a:button skin="btn_icon_only" icon="close.png" onclick="require('ext/quickstart/quickstart').closeStart();"/>
+        </div>
+
         <div id="quickStartTitle" class="qstitle">
             <p>Here are a few pointers to get you started!</p>
         </div>
