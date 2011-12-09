@@ -9,8 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var editors = require("ext/editors/editors");
-var settings = require("ext/settings/settings");
 var panels = require("ext/panels/panels");
 var markup = require("text!ext/openfiles/openfiles.xml");
 
@@ -23,9 +21,9 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
     hook : function(){
         panels.register(this);
-        
-        // fix to prevent Active Files button is placed above Project Files
-        el = (navbar.firstChild["class"] == "project_files") ? navbar.childNodes[1] : navbar.firstChild;
+
+        // Fix to prevent Active Files button is placed above Project Files
+        var el = (navbar.firstChild["class"] == "project_files") ? navbar.childNodes[1] : navbar.firstChild;
         var btn = this.button = navbar.insertBefore(new apf.button({
             skin    : "mnubtn",
             state   : "true",
@@ -106,13 +104,17 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         });
 
         ide.addEventListener("treechange", function(e) {
-            var path    = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                                .replace(/\[@name="workspace"\]/, "")
-                                .replace(/\//, ""),
-                parent  = trFiles.getModel().data.selectSingleNode(path),
-                nodes   = parent.childNodes,
-                files   = e.files,
-                removed = [];
+            var path = e.path
+                        .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
+                        .replace(/\[@name="workspace"\]/, "")
+                        .replace(/\//, "");
+            var parent = trFiles.getModel().data.selectSingleNode(path);
+            if (!parent)
+                return;
+
+            var nodes = parent.childNodes;
+            var files = e.files;
+            var removed = [];
 
             for (var i = 0; i < nodes.length; ++i) {
                 var node    = nodes[i],
@@ -130,25 +132,23 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             path = parent.getAttribute("path");
             for (var name in files) {
                 var file = files[name];
-
-                xmlNode = "<" + file.type +
+                var xmlNode = "<" + file.type +
                     " type='" + file.type + "'" +
                     " name='" + name + "'" +
                     " path='" + path + "/" + name + "'" +
                 "/>";
-                // console.log("CREATE", xmlNode, parent);
                 trFiles.add(xmlNode, parent);
             }
         });
     },
-    
+
     show : function(){
         if (navbar.current) {
             if (navbar.current == this)
                 return;
             navbar.current.disable();
         }
-        
+
         panels.initPanel(this);
         this.enable();
     },

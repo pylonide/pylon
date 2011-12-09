@@ -169,14 +169,16 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 var sections = bar.selectNodes("vbox");
                 for (var i = 0; i < sections.length; i++) {
                     var buttons = sections[i].selectNodes("button");
-                    var menu = self[buttons[0].submenu];
-                    
-                    for (var j = 0; j < buttons.length; j++) {
-                        //Store pages
-                        this.$cbStorePage(buttons[j].$dockpage);
+                    if (buttons && buttons.length && buttons[0]) {
+                        var menu = self[buttons[0].submenu];
+
+                        for (var j = 0; j < buttons.length; j++) {
+                            //Store pages
+                            this.$cbStorePage(buttons[j].$dockpage);
+                        }
+
+                        menu.destroy(true, true);
                     }
-                    
-                    menu.destroy(true, true);
                 }
             }
             else if (!bar.bar) {
@@ -1377,6 +1379,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         
         if (options && (tmp = options.primary)) {
             var span = button.$ext.getElementsByTagName("span");
+            
+            button.setAttribute("tooltip", options.menu.split("/").pop());
+            
             span[2].style.background = 'url("' 
                 + tmp.backgroundImage + '") '
                 + tmp.defaultState.x + 'px '

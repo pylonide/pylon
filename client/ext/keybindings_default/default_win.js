@@ -5,17 +5,17 @@
 
 define(function(require, exports, module) {
 
-var ide = require("core/ide");
 var keys = require("ext/keybindings/keybindings");
 
 return keys.onLoad({
     "ext" : {
         "console" : {
             "switchconsole": "Shift-Esc"
-        },        
+        },
         "save" : {
             "quicksave": "Ctrl-S",
-            "saveas": "Ctrl-Shift-S"
+            "saveas": "Ctrl-Shift-S",
+            "reverttosaved": "Ctrl-Shift-Q"
         },
         "undo" : {
             "undo": "Ctrl-Z",
@@ -91,6 +91,10 @@ return keys.onLoad({
             "nexttab": "Ctrl-Tab",
             "previoustab": "Ctrl-Shift-Tab"
         },
+        "splitview" : {
+            "mergetableft": "Ctrl-Alt-[",
+            "mergetabright": "Ctrl-Alt-]"
+        },
         "code" : {
             "selectall": "Ctrl-A",
             "removeline": "Ctrl-D",
@@ -137,6 +141,10 @@ return keys.onLoad({
             "backspace": "Backspace",
             "outdent": "Shift-Tab",
             "indent": "Tab"
+        },
+        "language": {
+            "complete": "Ctrl-Space|Alt-Space",
+            "renameVar": "Ctrl-Alt-R"
         }
     }
 });

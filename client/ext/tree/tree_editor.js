@@ -23,7 +23,7 @@ module.exports = ext.register("ext/editors/editors", {
     contentTypes  : {},
 
     register : function(oExtension){
-        var id = "rb" + oExtension.path.replace(/\//g, "_");
+        //var id = "rb" + oExtension.path.replace(/\//g, "_");
 
         /*oExtension.$rbEditor = barButtons.appendChild(new apf.radiobutton({
             id        : id,
@@ -182,7 +182,6 @@ module.exports = ext.register("ext/editors/editors", {
 
     openEditor : function(doc, init, active) {
         var xmlNode  = doc.getNode();
-        var filename = xmlNode.getAttribute("name");
         var filepath = xmlNode.getAttribute("path");
 
         var page = tabEditors.getPage(filepath);

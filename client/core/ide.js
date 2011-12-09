@@ -17,8 +17,6 @@ define(function(require, exports, module) {
         };
 
         ide.start = function() {
-            var last = "";
-
             //Set references to global elements - aka extension points
             //this.tbMain       = tbMain;
             this.mnuFile        = mnuFile;
@@ -132,6 +130,19 @@ define(function(require, exports, module) {
                     workspaceId: ide.workspaceId
                 }));
             };
+            
+            ide.socketReconnect = function() {
+                // on a reconnect of the socket.io connection, the server may have
+                // lost our session. Now we do an HTTP request to fetch the current
+                // session ID and update the Cloud9 config with it. Also, re-attach
+                // with the backend.
+                apf.ajax("/reconnect", {
+                    callback: function(data, state, extra) {
+                        ide.sessionId = data;
+                        ide.socketConnect();
+                    }
+                });
+            };
 
             ide.socketDisconnect = function() {
                 clearTimeout(ide.$retryTimer);
@@ -182,11 +193,12 @@ define(function(require, exports, module) {
                     }
                 )[0];
                 
+                var status;
                 if (socketIoScriptEl) {
                     apf.ajax(socketIoScriptEl.src, {
                         callback: function(data, state, extra) {
                             try {
-                                var status = parseInt(extra.http.status, 10);
+                                status = parseInt(extra.http.status, 10);
                             } catch(ex) {}
                             apf.dispatchEvent("error", {
                                 message: "socket.io client lib not loaded",
@@ -210,7 +222,7 @@ define(function(require, exports, module) {
             
             ide.socket.on("message",    ide.socketMessage);
             ide.socket.on("connect",    ide.socketConnect);
-            //ide.socket.on("reconnect",  ide.socketReconnect);
+            ide.socket.on("reconnect",  ide.socketReconnect);
             //ide.socket.on("reconnecting",  ide.socketReconnecting);
             ide.socket.on("disconnect", ide.socketDisconnect);
             var _oldsend = ide.socket.send;
@@ -241,7 +253,7 @@ define(function(require, exports, module) {
         };
         
         ide.getActivePageModel = function() {
-            page = tabEditors.getPage();
+            var page = tabEditors.getPage();
             if (!page)
                 return null;
     
@@ -253,7 +265,6 @@ define(function(require, exports, module) {
                 return page.$model.data;
             });
         };
-
         module.exports = ide;
     }
 );

@@ -12,8 +12,8 @@ Written in Javascript, for Javascripters.
 ## Features
 
   * High performance text editor with bundled syntax highlighting support for JS, HTML, CSS and mixed modes.
-  * Integrated debugger for [Node.JS] applications which can started, paused and stopped from within the IDE
-  * Integrated debugger for the Google Chrome browser which can started, paused and stopped from within the IDE
+  * Integrated debugger for [Node.JS] applications which can be started, paused and stopped from within the IDE
+  * Integrated debugger for the Google Chrome browser which can be started, paused and stopped from within the IDE
   * Local filesystem is exposed through [WebDAV](http://en.wikipedia.org/wiki/WebDAV) to the IDE, which makes it possible to connect to remote workspaces as well
   * Highly extensible through the plugin system
   * Bundled plugins: browser, clipboard, code (editor), console, debugger, docs, editors, filesystem, html, keybindings, newresource, noderunner, panels, refactor, richtext, save, searchreplace, settings, tree, undo
