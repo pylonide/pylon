@@ -51,7 +51,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         var _self = this;
         
         panels.register(this, {
-            position : 20,
+            position : 3000,
             caption: "Run",
             "class": "rundebug"
         });
@@ -59,8 +59,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         apf.document.body.insertMarkup(buttonsMarkup);
         
         this.nodes.push(
-            mnuRunCfg,
-            mnuDebugSettings
+            mnuRunCfg
         );
         
         while(tbRun.childNodes.length) {
@@ -73,12 +72,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         }
         
         mdlRunConfigurations.addEventListener("afterload", function(e) {
-            _self.$updateMenu();
-        });
-        mdlRunConfigurations.addEventListener("update", function(e) {
-            settings.save();
-            if (e.action == "add" || e.action == "redo-remove" || e.action == "attribute")
-                _self.$updateMenu();
+            _self.$populateMenu();
         });
         
         ide.addEventListener("init.ext/settings/settings", function(e){
@@ -99,15 +93,28 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 
                 e.model.setQueryValue("general/@saveallbeforerun", false);
             }
+            if (!e.model.queryNode("auto/configurations/@autohide"))
+                e.model.setQueryValue("auto/configurations/@autohide", true);
 
-            mdlRunConfigurations.load(runConfigs);
-            
             if (!runConfigs.selectSingleNode("config[@curfile]")) {
+                var setLast = false;
+                if (!e.model.queryNode("auto/configurations/config[@last='true']")) {
+                    var config = e.model.queryNode("auto/configurations/config")
+                    if (config)
+                        apf.xmldb.setAttribute(config, "last", "true");
+                    else
+                        setLast = true;
+                }
+                
                 var cfg = apf.n("<config />")
                     .attr("name", " (active file)")
-                    .attr("curfile", "1").node();
-                runConfigs.insertBefore(cfg, runConfigs.firstChild);
+                    .attr("curfile", "1");
+                if (setLast)
+                    cfg.attr("last", "true");
+                runConfigs.insertBefore(cfg.node(), runConfigs.firstChild);
             }
+            
+            mdlRunConfigurations.load(runConfigs);
         });
         
         var page = tabEditors.getPage();
@@ -127,11 +134,26 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         });
         
         stProcessRunning.addEventListener("deactivate", function(){
-            dock.hideSection("ext/debugger/debugger");
+            if (!_self.autoHidePanel())
+                return;
+                
+            var bar = dock.getBar("ext/debugger/debugger", "pgDebugNav");
+            dock.hideBar(bar);
+            
         });
         stProcessRunning.addEventListener("activate", function(){
-            if (_self.shouldRunInDebugMode())
-                dock.showSection("ext/debugger/debugger", true); 
+            if (!_self.shouldRunInDebugMode() || !_self.autoHidePanel())
+                return;
+            
+            var bar = dock.getBar("ext/debugger/debugger", "pgDebugNav");
+            dock.showBar(bar); 
+        });
+        ide.addEventListener("break", function(){
+            if (!_self.shouldRunInDebugMode() || !_self.autoHidePanel())
+                return;
+
+            var bar = dock.getBar("ext/debugger/debugger", "pgDebugNav");
+            doc.expandBar(bar);
         });
         
         this.hotitems["run"]  = [btnRun];
@@ -142,8 +164,14 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         this.panel = winRunPanel;
         
         colLeft.appendChild(winRunPanel);
-        
         this.nodes.push(winRunPanel);
+        
+        lstRunCfg.addEventListener("afterremove", function(e){
+            mnuRunCfg.childNodes.each(function(item){
+                if (item.node == e.args[0].xmlNode)
+                    item.destroy(true, true);
+            });
+        });
     },
 
     duplicate : function() {
@@ -158,19 +186,12 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     },
 
     addConfig : function() {
-        var file = ide.getActivePageModel();
+        var path, name, file = ide.getActivePageModel();
         var extension = "";
 
-        if (!file || (file.getAttribute("contenttype") || "").indexOf("application/javascript") != 0 
-          && (file.getAttribute("contenttype") || "").indexOf("text/x-script.python") != 0) {
-            var path = "";
-            var name = "server";
-        }
-        else {
-            path  = file.getAttribute("path").slice(ide.davPrefix.length + 1);
-            name  = file.getAttribute("name").replace(/\.(js|py)$/, 
-                function(full, ext){ extension = ext; return ""; });
-        }
+        path  = file.getAttribute("path").slice(ide.davPrefix.length + 1); //@todo inconsistent
+        name  = file.getAttribute("name").replace(/\.(js|py)$/, 
+            function(full, ext){ extension = ext; return ""; });
 
         var cfg = apf.n("<config />")
             .attr("path", path)
@@ -178,12 +199,17 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             .attr("extension", extension)
             .attr("args", "").node();
 
-        mdlRunConfigurations.appendXml(cfg);
+        var node = mdlRunConfigurations.appendXml(cfg);
+        this.$addMenuItem(node);
         lstRunCfg.select(cfg);
     },
 
     showRunConfigs : function() {
         panels.activate(this);
+    },
+    
+    autoHidePanel : function(){
+        return apf.isTrue(settings.model.queryValue("auto/configurations/@autohide"));
     },
     
     shouldRunInDebugMode : function(){
@@ -193,49 +219,49 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     run : function(debug) {
         this.runConfig(self.winRunPanel && winRunPanel.visible
             ? lstRunCfg.selected
-            : (this.$lastRun 
+            : (mdlRunConfigurations.queryNode("node()[@last='true']")
                 || mdlRunConfigurations.queryNode("config[@curfile]")), 
             this.shouldRunInDebugMode());
         ide.dispatchEvent("track_action", {type: debug ? "debug" : "run"});
     },
 
-    $updateMenu : function() {
-        var menus = [mnuRunCfg];
+    $populateMenu : function() {
+        var menu = mnuRunCfg;
 
-        for (var j=0; j<menus.length; j++) {
-            var menu = menus[j];
+        var item = menu.firstChild;
+        while (item && item.tagName !== "a:divider") {
+            menu.removeChild(item);
+            item = menu.firstChild;
+        }
+        var divider = item;
 
-            var item = menu.firstChild;
-            while(item && item.tagName !== "a:divider") {
-                menu.removeChild(item);
-                item = menu.firstChild;
-            }
-            var divider = item;
-
-            var configs = mdlRunConfigurations.queryNodes("config");
-            if (!configs.length)
-                menu.insertBefore(new apf.item({disabled:true, caption: "no run history"}), divider);
-            else {
-                for (var i=0,l=configs.length; i<l; i++) {
-                    var item = new apf.item({
-                        caption: configs[i].getAttribute("name"),
-                        type : "check",
-                        checked : (this.$lastRun 
-                            ? this.$lastRun == configs[i] 
-                            : configs[i].getAttribute("curfile")) ? true : false
-                    });
-                    item.$config = configs[i];
-
-                    var _self = this;
-                    item.onclick = function() {
-                        _self.runConfig(this.$config, _self.shouldRunInDebugMode());
-                        if (self.lstRunCfg)
-                            lstRunCfg.select(this.$config);
-                    }.bind(item);
-                    menu.insertBefore(item, menu.childNodes[menu.childNodes.length - 2]);
-                }
+        var configs = mdlRunConfigurations.queryNodes("config");
+        if (!configs.length)
+            menu.insertBefore(new apf.item({disabled:true, caption: "No run history"}), divider);
+        else {
+            for (var i =  0, l = configs.length; i < l; i++) {
+                this.$addMenuItem(configs[i], divider);
             }
         }
+    },
+    
+    $addMenuItem : function(cfg, divider){
+        var _self = this;
+        
+        if (!divider)
+            divider = mnuRunCfg.getElementsByTagNameNS(apf.ns.aml, "divider")[0];
+        
+        mnuRunCfg.insertBefore(new apf.item({
+            caption  : "[{this.node}::@name]",
+            node     : cfg,
+            type     : "radio",
+            selected : "[{this.node}::@last]",
+            onclick  : function() {
+                _self.runConfig(this.node, _self.shouldRunInDebugMode());
+                if (self.lstRunCfg)
+                    lstRunCfg.select(this.node);
+            }
+        }), divider)
     },
 
     runConfig : function(config, debug) {
@@ -247,8 +273,10 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         if (debug === undefined)
             debug = config.parentNode.getAttribute("debug") == "1";
 
-        this.$lastRun = config;
-        this.$updateMenu();
+        var lastNode = apf.queryNode(config, "../node()[@last]");
+        if (lastNode)
+            apf.xmldb.removeAttribute(lastNode, "last");
+        apf.xmldb.setAttribute(config, "last", "true");
 
         noderunner.run(config.getAttribute("path"), (config.getAttribute("args") || "").split(" "), debug);
     },
@@ -257,32 +285,6 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         noderunner.stop();
         
         //dock.hideSection(["ext/run/run", "ext/debugger/debugger"]);
-    },
-
-    enable : function(noButton){
-        ext.initExtension(this);
-        
-        if (self.winRunPanel) {
-            winRunPanel.show();
-            winRunPanel.parentNode.setWidth(this.$lastWidth || 400);
-        }
-        colLeft.show();
-        
-        if (!noButton) {
-            this.button.setValue(true);
-            if(navbar.current && (navbar.current != this))
-                navbar.current.disable(false);
-        }
-        
-        splitterPanelLeft.show();
-        navbar.current = this;
-        
-        if (this.$lastRun)
-            lstRunCfg.select(this.$lastRun);
-        
-        this.nodes.each(function(item){
-            item.enable();
-        });
     },
 
     enable : function(){

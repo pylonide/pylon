@@ -396,6 +396,12 @@ module.exports = ext.register("ext/editors/editors", {
             if (fake.changed !== val) {
                 fake.changed = val;
                 model.setQueryValue("@changed", (val ? "1" : "0"));
+                
+                var node = fake.$doc.getNode();
+                ide.dispatchEvent("updatefile", {
+                    changed : val ? 1 : 0,
+                    xmlNode : node
+                });
             }
         });
     },
@@ -551,6 +557,9 @@ module.exports = ext.register("ext/editors/editors", {
 
         this.$settings = {};
         ide.addEventListener("loadsettings", function(e){
+            if (!e.model.queryNode("auto/files"));
+                apf.createNodeFromXpath(e.model.data, "auto/files");
+            
             function checkExpand(path, doc) {
                 ide.addEventListener("init.ext/tree/tree", function(){
                     var parent_path = apf.getDirname(path).replace(/\/$/, "");
@@ -576,7 +585,6 @@ module.exports = ext.register("ext/editors/editors", {
 
             var model = e.model;
             ide.addEventListener("extload", function(){
-
                 // you can load a file from the hash tag, if that succeeded then return
                 var loadFileFromHash =  (_self.loadFileFromHash(window.location.hash, checkExpand));
                 if (loadFileFromHash) {

@@ -15,13 +15,14 @@
 
 define(function(require, exports, module) {
 
-var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbChange) {
+var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePage, cbFindOptions, cbChange, cbAnimate) {
     this.columnCounter  = 0;
     this.$parentHBox    = parentHBox;
     this.$cbFindPage    = cbFindPage;
     this.$cbStorePage   = cbStorePage;
     this.$cbChange      = cbChange;
     this.$cbFindOptions = cbFindOptions;
+    this.$cbAnimate     = cbAnimate;
     
     var indicator = this.indicator = document.body.appendChild(document.createElement("div"));
     indicator.style.position = "absolute";
@@ -487,9 +488,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         var nodes = bar.vbox.getElementsByTagNameNS(apf.ns.aml, "tab");
         nodes.each(function(tab){
             tweens.push(reverse
-                ? {oHtml: tab.$ext, type: "fade", from: 1, to: 0}
+                ? {oHtml: tab.$ext, type: "fade", from: 1, to: -1}
                 : {oHtml: tab.$ext, type: "fade", from: 0, to: 1})
-            tab.setWidth(to);
+            tab.$ext.style.width = to + "px";
         });
 
         var options = {
@@ -599,7 +600,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             bar.vbox.firstChild.$ext.onmousemove({});
         }
         
-        if (showAnimation)
+        if (false && showAnimation && this.$cbAnimate())
             animate.call(this, bar);
         
         bar.hide();
@@ -641,7 +642,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             bar.splitter.hide();
         }
 
-        if (showAnimation)
+        if (false && showAnimation && this.$cbAnimate())
             animate.call(this, bar, true, done);
         else
             done();

@@ -39,7 +39,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
 
     hook : function(){
         panels.register(this, {
-            position : 30,
+            position : 4000,
             caption: "Test",
             "class": "testing"
         });

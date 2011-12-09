@@ -27,7 +27,7 @@ module.exports = ext.register("ext/panels/panels", {
     register : function(panelExt, options){
         var _self = this;
         
-        var beforePanel, diff = 10000;
+        var beforePanel, diff = 1000000;
         for (var path in this.panels) {
             var d = this.panels[path].$panelPosition - options.position;
             if (d > 0 && d < diff) {

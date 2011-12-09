@@ -66,7 +66,7 @@ module.exports = ext.register("ext/settings/settings", {
 
     hook : function(){
         panels.register(this, {
-            position : 40,
+            position : 100000,
             caption: "Preferences",
             "class": "preferences"
         });

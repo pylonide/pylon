@@ -4003,6 +4003,11 @@
             position: relative;
             left: 4px;
             padding : 0 3px 0 3px;
+            display :none;
+        }
+        
+        .c9-divider-horCaption span{
+            display : block;
         }
     ]]></a:style>
 
@@ -4104,7 +4109,7 @@
             display             : none;
             background-color    : #1c1c1c;
             border              : 1px solid rgba(255, 255, 255, 0.1);
-            padding             : 0 0 4px 0;
+            padding             : 0 0 0 0;
 
             -moz-box-shadow    : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
             -webkit-box-shadow : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
@@ -8227,9 +8232,9 @@
             -webkit-border-radius: 0;
             -moz-border-radius: 0;
             border-radius: 0;
-            -webkit-box-shadow: 0 2px 10px 1px #6d6d6d;
+            /*-webkit-box-shadow: 0 2px 10px 1px #6d6d6d;
             -moz-box-shadow: 0 2px 10px 1px #6d6d6d;
-            box-shadow: 0 2px 10px 1px #6d6d6d;
+            box-shadow: 0 2px 10px 1px #6d6d6d;*/
         }
         
         .docktab .btncontainer{

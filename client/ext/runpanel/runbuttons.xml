@@ -2,20 +2,22 @@
 
     <a:menu id="mnuRunCfg">    
         <a:item disabled="true" caption="no run history" />
-        <a:divider></a:divider>
+        <a:divider />
         <a:item onclick="require('ext/runpanel/runpanel').showRunConfigs(false)">Configure...</a:item>
+        <a:divider />
+        <a:item id="itmDebug"
+          type    = "check"
+          checked = "[{require('ext/settings/settings').model}::auto/configurations/@debug]"
+          caption = "Run in debug mode" />
+        <a:item
+          type    = "check"
+          checked = "[{require('ext/settings/settings').model}::auto/configurations/@autohide]"
+          caption = "Auto hide and show debug bar" />
     </a:menu>
     
     <a:model id="mdlRunConfigurations">
         <configurations />
     </a:model>
-
-    <a:menu id="mnuDebugSettings">
-        <a:item id="itmDebug"
-          type    = "check"
-          checked = "[{require('ext/settings/settings').model}::auto/configurations/@debug]"
-          caption = "Run in debug mode" />
-    </a:menu>
 
     <a:bar id="tbRun">
         <a:divider skin="c9-divider" id="divRun" />

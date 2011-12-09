@@ -78,6 +78,10 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             //Change State Handler
             function(){
                 _self.saveSettings();
+            },
+            //Animate Settings
+            function(){
+                return apf.isTrue(settings.model.queryValue('general/@animateui'));
             }
         );
 

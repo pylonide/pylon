@@ -41,8 +41,8 @@ module.exports = ext.register("ext/tree/tree", {
 
     hook : function(){
         panels.register(this, {
-            position : 10,
-            caption: "Files",
+            position : 1000,
+            caption: "Project Files",
             "class": "project_files"
         });
     },

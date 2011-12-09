@@ -25159,7 +25159,7 @@ apf.config.$inheritProperties["validgroup"] = 1;
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/databinding.js)SIZE(58811)TIME(Sun, 20 Nov 2011 21:08:52 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/databinding.js)SIZE(58833)TIME(Fri, 09 Dec 2011 08:40:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -26293,7 +26293,7 @@ apf.DataBinding = function(){
             if (modelId == "#" || xpath == "#") {
                 var m = (rule.cvalue3 || (rule.cvalue3 = apf.lm.compile(rule.value, {
                     xpathmode: 5
-                })))(this.xmlRoot);
+                }))).call(this, this.xmlRoot);
                 
                 //@todo apf3 this needs to be fixed in live markup
                 if (typeof m != "string") {
@@ -26309,7 +26309,7 @@ apf.DataBinding = function(){
                         this.addEventListener("prop." + prop, function(e){
                             var m = (rule.cvalue3 || (rule.cvalue3 = apf.lm.compile(rule.value, {
                                 xpathmode: 5
-                            })))(this.xmlRoot);
+                            }))).call(this, this.xmlRoot);
                             
                             if (m.model) {
                                 this.removeEventListener("prop." + prop, arguments.callee);
@@ -33289,7 +33289,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(58134)TIME(Thu, 08 Dec 2011 19:14:20 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(58139)TIME(Fri, 09 Dec 2011 12:38:32 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33616,7 +33616,7 @@ apf.BaseTab = function(){
         scalersz.call(this)
     }
     
-    this.anims = "add|remove";
+    this.anims = "add|remove|sync";
     
     this.$scaleinit = function(node, type, callback, force){
         var pg = this.getPages();
@@ -34593,6 +34593,7 @@ apf.BaseTab = function(){
           && !amlNode.render || amlNode.$rendered) {
             this.set(amlNode);
         
+        }
             
             if (this.$scale && amlNode.visible && !e.$isMoveWithinParent) 
                 this.$scaleinit(amlNode, "add");
@@ -34601,7 +34602,6 @@ apf.BaseTab = function(){
             {
                 amlNode.dispatchEvent("afteropen");
             }
-        }
         
         
         this.setProperty("length", this.getPages().length);
@@ -59681,7 +59681,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/item.js)SIZE(23478)TIME(Thu, 08 Dec 2011 08:30:31 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/item.js)SIZE(23478)TIME(Fri, 09 Dec 2011 08:30:06 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62606,7 +62606,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/model.js)SIZE(42499)TIME(Sat, 03 Dec 2011 12:30:34 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/model.js)SIZE(42509)TIME(Fri, 09 Dec 2011 10:58:22 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63120,7 +63120,7 @@ apf.model = function(struct, tagName){
         
         if (!xmlNode) return;
 
-        apf.xmldb.appendChild(insertNode, xmlNode);
+        xmlNode = apf.xmldb.appendChild(insertNode, xmlNode);
         
         this.dispatchEvent("update", {xmlNode: xmlNode});
         return xmlNode;

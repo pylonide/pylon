@@ -9,10 +9,8 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var save = require("ext/save/save");
 var panels = require("ext/panels/panels");
-var tree = require("ext/tree/tree");
 var openfiles = require("ext/openfiles/openfiles");
 
 module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
@@ -343,10 +341,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         var path = docNode.getAttribute('path');
         var node = trFiles.queryNode('//file[@path="' + path + '"]');
 
-        //@todo UGLY HACK
         require("ext/panels/panels").activate(require("ext/tree/tree"));
-        if (!trFiles.visible)
-            require("ext/openfiles/openfiles").showProjectFiles();
 
         if (node) {
             trFiles.expandAndSelect(node);
@@ -475,8 +470,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.more = mnuTabs.appendChild(new apf.item({
                 caption : "More...",
                 onclick : function() {
-                    panels.activate(tree);
-                    openfiles.showOpenFiles(); //@todo HACK
+                    panels.activate(openfiles);
                 }
             }));
         }

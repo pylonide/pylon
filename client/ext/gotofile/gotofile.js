@@ -63,8 +63,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             }
             
             if (e.keyCode == 13){
-                var node = trFiles.xmlRoot.selectSingleNode("folder[1]");
-                mdlGoToFile.load("{davProject.report('" + node.getAttribute("path")
+                //var node = trFiles.xmlRoot.selectSingleNode("folder[1]");
+                mdlGoToFile.load("{davProject.report('" + ide.davPrefix //node.getAttribute("path")
                     + "', 'filesearch', {query: '" + txtGoToFile.value + "'})}");
                 ide.dispatchEvent("track_action", {type: "gotofile"});
             }

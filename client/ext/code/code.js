@@ -329,6 +329,10 @@ module.exports = ext.register("ext/code/code", {
         this.ceEditor = this.amlEditor = ceEditor;
         ceEditor.$editor.commands = this.commandManager;
 
+        ceEditor.addEventListener("break", function(e){
+            ide.dispatchEvent("break", e);
+        });
+
         var _self = this;
 
         this.nodes.push(

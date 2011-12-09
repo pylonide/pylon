@@ -9,10 +9,10 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var editors = require("ext/editors/editors");
+var panels = require("ext/panels/panels");
 var settings = require("ext/settings/settings");
-var treepanel = require("ext/tree/tree");
 var markup = require("text!ext/openfiles/openfiles.xml");
+var fs = require("ext/filesystem/filesystem");
 
 module.exports = ext.register("ext/openfiles/openfiles", {
     name            : "Active Files",
@@ -21,42 +21,18 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     type            : ext.GENERAL,
     markup          : markup,
     nodes           : [],
+    
+    defaultWidth    : 130,
 
     hook : function(){
-        var _self = this;
-        var model = this.model = new apf.model().load("<files />");
-        
-        ide.addEventListener("init.ext/tree/tree", function(){
-            var active = settings.model.queryValue("auto/openfiles/@active");
-
-            _self.nodes.push(
-                mnuFilesSettings.insertBefore(new apf.divider(), 
-                    mnuFilesSettings.firstChild),
-                mnuFilesSettings.insertBefore(new apf.item({
-                    type : "radio",
-                    selected : active == "openfiles",
-                    caption : "Open Files",
-                    "onprop.selected" : function(e){
-                        if (e.value)
-                            _self.showOpenFiles();
-                    }
-                }), mnuFilesSettings.firstChild),
-                mnuFilesSettings.insertBefore(new apf.item({
-                    type : "radio",
-                    selected : !active || active == "projectfiles",
-                    caption : "Project Files",
-                    "onprop.selected" : function(e){
-                        if (e.value)
-                            _self.showProjectFiles();
-                    }
-                }), mnuFilesSettings.firstChild)
-            );
-            
-            if (active == "openfiles")
-                _self.showOpenFiles();
+        panels.register(this, {
+            position : 2000,
+            caption: "Open Files",
+            "class": "open_files"
         });
         
-
+        var model = this.model = new apf.model().load("<files />");
+        
         ide.addEventListener("afteropenfile", function(e){
             var node = e.doc.getNode();
             if (node) {
@@ -71,36 +47,27 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         });
 
         ide.addEventListener("updatefile", function(e){
-            var node  = e.xmlNode;
-            var fNode = model.queryNode("//node()[@path='" + e.path + "']");
+            var node = e.xmlNode;
+            var path = e.path || node.getAttribute("path");
+
+            var fNode = model.queryNode("//node()[@path='" + path + "']");
             if (node && fNode) {
-                fNode.setAttribute("path", node.getAttribute("path"));
-                if (e.name)
-                    apf.xmldb.setAttribute(fNode, "name", apf.getFilename(e.name));
+                if (e.path)
+                    fNode.setAttribute("path", node.getAttribute("path"));
+                if (e.filename)
+                    apf.xmldb.setAttribute(fNode, "name", apf.getFilename(e.filename));
+                if (e.changed != undefined)
+                    apf.xmldb.setAttribute(fNode, "changed", e.changed);
             }
         });
     },
 
     init : function() {
-        var _self = this;
-
-        this.nodes.push(winFilesViewer.appendChild(lstOpenFiles));
+        this.panel = winOpenFiles;
+        this.nodes.push(winOpenFiles);
         
-        mnuFilesSettings.appendChild(new apf.item({
-            id      : "cbShowFiles",
-            caption : "Show Path",
-            type    : "check",
-            visible : "{lstOpenFiles.visible}",
-            checked : "[{require('ext/settings/settings').model}::auto/openfiles/@showpath]",
-            onclick : function(){
-                var sel = lstOpenFiles.getSelection();
-                lstOpenFiles.reload();
-                lstOpenFiles.selectList(sel);
-            }
-        }));
-
-        lstOpenFiles.setModel(this.model);
-
+        colLeft.appendChild(winOpenFiles);
+        
         lstOpenFiles.addEventListener("afterselect", this.$afterselect = function(e) {
             var node = this.selected;
             if (!node || this.selection.length > 1) //ide.onLine can be removed after update apf
@@ -120,7 +87,8 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         tabEditors.addEventListener("afterswitch", function(e){
             var page = e.nextPage;
             if (page) {
-                var node = _self.model.queryNode("//node()[@path='" + page.$model.data.getAttribute("path") + "']");
+                var node = settings.model.queryNode("auto/files/file[@path='" 
+                    + page.$model.data.getAttribute("path") + "']");
                 if (node)
                     lstOpenFiles.select(node);
             }
@@ -155,7 +123,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             for (var name in files) {
                 var file = files[name];
 
-                xmlNode = "<" + file.type +
+                var xmlNode = "<" + file.type +
                     " type='" + file.type + "'" +
                     " name='" + name + "'" +
                     " path='" + path + "/" + name + "'" +
@@ -164,29 +132,6 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                 trFiles.add(xmlNode, parent);
             }
         });
-    },
-    
-    showOpenFiles : function(){
-        ext.initExtension(this);
-        
-        trFiles.hide();
-        lstOpenFiles.show();
-        
-        winFilesViewer.setTitle("Open Files");
-        sbTrFiles.setAttribute("for", "lstOpenFiles");
-
-        settings.model.setQueryValue("auto/openfiles/@active", "openfiles");
-    },
-    
-    showProjectFiles : function(){
-        trFiles.show();
-        if (self.lstOpenFiles)
-            lstOpenFiles.hide();
-        
-        winFilesViewer.setTitle("Project Files");
-        sbTrFiles.setAttribute("for", "trFiles");
-        
-        settings.model.setQueryValue("auto/openfiles/@active", "projectfiles");
     },
     
     enable : function(){
@@ -206,6 +151,8 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             item.destroy(true, true);
         });
         this.nodes = [];
+        
+        panels.unregister(this);
     },
 });
 

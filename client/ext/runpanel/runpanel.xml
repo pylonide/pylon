@@ -17,7 +17,7 @@
                   caption  = "remove"
                   skin     = "c9-toolbarbutton"
                   onclick  = "lstRunCfg.remove()"
-                  disabled = "{!lstRunCfg.selected}"/>
+                  disabled = "{!lstRunCfg.selected || !![{lstRunCfg.selected}::@curfile]}"/>
                   
                 <!--a:divider skin="c9-divider-double" /-->
                 
@@ -44,6 +44,17 @@
           right="5"
           icon="panel_settings.png"
           submenu="mnuDebugSettings" />
+        
+        <a:menu id="mnuDebugSettings">
+            <a:item
+              type    = "check"
+              checked = "[{require('ext/settings/settings').model}::auto/configurations/@debug]"
+              caption = "Run in debug mode" />
+            <a:item
+              type    = "check"
+              checked = "[{require('ext/settings/settings').model}::auto/configurations/@autohide]"
+              caption = "Auto hide and show debug bar" />
+        </a:menu>
       
         <a:vbox anchors="0 0 0 0">
             <a:list id="lstRunCfg" 
@@ -71,28 +82,26 @@
                       
                     <a:label width="100" skin="black_label">File path</a:label>
                     <a:textbox skin = "black_textbox" id="txtRunCfgName" flex="1" value="[@path]" disabled="{!lstRunCfg.selected or [{lstRunCfg.selected}::@curfile]}"/>
-                    <!--a:button icon="folder.png" disabled="true" tooltip="Browse ..."></a:button>
+                    <!--a:button icon="folder.png" disabled="true" tooltip="Browse ..."></a:button-->
                     
-                    <a:divider />
-                    <a:hbox align="center" margin="5 10" padding="10">
-                        <a:model id="mdlRunnerSelector">
-                            <data>
-                                <element caption="JavaScript" value="js" />
-                                <element caption="Python" value="py" />
-                            </data>
-                        </a:model>
-                        <a:label width="130" textalign="right">Runner</a:label>
-                        <a:dropdown id="ddRunnerSelector"
-                            model="mdlRunnerSelector"
-                            flex="1"
-                            disabled="{!lstRunCfg.selected}"
-                            selected="{lstRunCfg.selected.attributes['extension'].value}">
-                            <a:each match="[element]">
-                                <a:caption match="[@caption]" />
-                                <a:value match="[@value]" />
-                            </a:each>
-                        </a:dropdown>
-                    </a:hbox-->
+                    <!--a:divider span="2" skin="c9-divider-hor" /-->
+                    <a:model id="mdlRunnerSelector">
+                        <data>
+                            <element caption="Node.js 0.4" value="js" />
+                            <!--element caption="Python" value="py" /-->
+                        </data>
+                    </a:model>
+                    <a:label width="100" skin="black_label">Runtime</a:label>
+                    <a:dropdown id="ddRunnerSelector"
+                        model     = "mdlRunnerSelector"
+                        skin      = "black_dropdown"
+                        flex      = "1"
+                        disabled  = "{!lstRunCfg.selected}"
+                        value     = "[{lstRunCfg.selected}::@value]"
+                        default   = "js"
+                        each      = "[element]"
+                        caption   = "[@caption]"
+                        eachvalue = "[@value]" />
                     
                     <a:label width="100" skin="black_label">Cmd Line Args</a:label>
                     <a:textbox skin = "black_textbox" id="txtRunCfgName" flex="1" value="[@args]" disabled="{!!!lstRunCfg.selected}"/>
