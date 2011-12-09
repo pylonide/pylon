@@ -455,7 +455,7 @@ var V8Debugger = module.exports = function(dbg, host) {
             var name = expression.trim();
             if (error) {
                 str.push("<item type='.error' name=\"", apf.escapeXML(name),
-                    "\" value='", error.message, "' />");
+                    "\" value=\"", apf.escapeXML(error.message), "\" />");
             }
             else {
                 str.push(
