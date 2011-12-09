@@ -6896,6 +6896,7 @@
         .dockcol .splitter.horizontal{
             height : 0px;
             margin : 0;
+            border-bottom: 1px solid #393A3B;
         }
         
         .dockcol .splitter.horizontal div{

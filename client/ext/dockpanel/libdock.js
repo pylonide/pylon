@@ -381,6 +381,16 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         });
     }
     
+    this.isExpandedFull = function(node){
+        var pNode = node.parentNode;
+        while (pNode && pNode.id != "hboxDockPanel") {
+            if(pNode.expanded)
+                return true;
+            pNode = pNode.parentNode;
+        }
+        return false;
+    }
+    
     this.isExpanded = function(uniqueId){
         var button = lookup[uniqueId].node;
         if (!button) {
@@ -765,6 +775,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             indicator.style.top  = pos[1] + "px";
             indicator.style.display = "block";
             indicator.style.backgroundColor = "";
+            indicator.style.borderColor = "#5C5C5C";
             indicator.style.marginLeft = "0";
             indicator.innerHTML = "";
             
@@ -781,6 +792,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 });
             }
             
+            var isDropExpanded = _self.isExpandedFull(info.aml);
             var width = aml.$ext.offsetWidth;
             var height = aml.$ext.offsetHeight;
             switch(info.position) {
@@ -823,10 +835,11 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 case "before_page":
                     var pNode = aml.parentNode;
                     var pos2 = apf.getAbsolutePosition(pNode.$ext);
-                    indicator.style.left = (pos2[0] + (!lastBar.expanded ? -3 : 0)) + "px";
-                    indicator.style.top  = (pos2[1] + (!lastBar.expanded ? -2 : 3)) + "px";
-                    width = pNode.$ext.offsetWidth + (!lastBar.expanded ? 6 : 0);
-                    height = pNode.$ext.offsetHeight + (!lastBar.expanded ? 11 : 0);
+                    indicator.style.left = (pos2[0] + (!isDropExpanded ? -3 : 0)) + "px";
+                    indicator.style.top  = (pos2[1] + (!isDropExpanded ? -2 : 3)) + "px";
+                    indicator.style.borderColor = "#9eb897";
+                    width = pNode.$ext.offsetWidth + (!isDropExpanded ? 6 : 0);
+                    height = pNode.$ext.offsetHeight + (!isDropExpanded ? 11 : 0);
                     indicator.style.borderWidth = "3px 3px 3px 3px";
                     
                     var compareAml = info.position == "before_page" 
@@ -842,29 +855,28 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         var div1 = indicator.firstChild;
                         var div2 = indicator.childNodes[1];
                         var div3 = indicator.childNodes[2];
-                        div1.style.left = (diff[0] - (!lastBar.expanded ? 3 : 6)) + "px";
+                        div1.style.left = (diff[0] - (!isDropExpanded ? 3 : 6)) + "px";
                         div1.style.width = (matchAml.$button.offsetWidth - 1) + "px";
-                        div1.style.height = !lastBar.expanded ? "16px" : "18px";
+                        div1.style.height = !isDropExpanded ? "16px" : "18px";
                         div1.style.margin = "-19px 0 0 0px";
                         div1.style.border = "3px solid #9eb897";
                         div1.style.borderWidth = "3px 3px 0 3px";
                         
-                        div2.style.left = (diff[0] + matchAml.$button.offsetWidth - (!lastBar.expanded ? 1 : 4)) + "px";
+                        div2.style.left = (diff[0] + matchAml.$button.offsetWidth - (!isDropExpanded ? 1 : 4)) + "px";
                         div2.style.right = "0px";
                         div3.style.borderBottom =
                         div2.style.borderBottom = "3px solid #9eb897";
                         
                         div3.style.left = "0px";
-                        div3.style.right = (width - diff[0] - (!lastBar.expanded ? 8 : 5)) + "px";
+                        div3.style.right = (width - diff[0] - (!isDropExpanded ? 8 : 5)) + "px";
                         
                         indicator.style.borderTop = "0px solid #5c5c5c";
-                        indicator.style.borderColor = "#9eb897";
-                        indicator.style.top = (pos2[1] + (!lastBar.expanded ? 16 : 20)) + "px";
-                        height -= 26 + (!lastBar.expanded ? -2 : -4);
+                        indicator.style.top = (pos2[1] + (!isDropExpanded ? 16 : 20)) + "px";
+                        height -= 26 + (!isDropExpanded ? -2 : -4);
                         width  -= 2;
                     }
                     else {
-                        indicator.style.top  = (pos2[1] + (!lastBar.expanded ? -3 : 1)) + "px";
+                        indicator.style.top  = (pos2[1] + (!isDropExpanded ? -3 : 1)) + "px";
                         indicator.innerHTML = "<div style='position:absolute;'><div></div></div>";
                         indicator.firstChild.style.height = "19px";
                         indicator.firstChild.style.width = "5px";
@@ -884,7 +896,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                             indicator.firstChild.firstChild.style.marginLeft = "0px";
                         }
                         indicator.firstChild.style.left = left + "px";
-                        height -= (!lastBar.expanded ? 5 : 3);
+                        height -= (!isDropExpanded ? 5 : 3);
                         width  -= 1;
                     }
                     break;
