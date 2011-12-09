@@ -14,9 +14,6 @@ var GridLayouts = {
                 "+--+--+--+\n" +
                 "|  |  |  |\n" +
                 "+--+--+--+", 
-                // hbox
-                //   --> splitter
-                //   --> splitter
         "struct": {
             "hbox": [
                 "splitter",
@@ -38,9 +35,6 @@ var GridLayouts = {
                 "+-----+\n" +
                 "|     |\n" +
                 "+-----+",
-                // vbox
-                //   --> splitter
-                //   --> splitter
         "struct": {
             "vbox": [
                 "splitter",
@@ -60,10 +54,6 @@ var GridLayouts = {
                 "|  +--+\n" +
                 "|  |  |\n" +
                 "+--+--+",
-                // --> hbox
-                //       --> splitter
-                //       --> vbox
-                //             --> splitter
         "struct": {
             "hbox": {
                 "splitter": 1,
@@ -85,10 +75,6 @@ var GridLayouts = {
                 "+--+  |\n" +
                 "|  |  |\n" +
                 "+--+--+",
-                // --> hbox
-                //       --> vbox
-                //             --> splitter
-                //       --> splitter
         "struct": {
             "hbox": {
                 "vbox": {
@@ -110,10 +96,6 @@ var GridLayouts = {
                 "+--+--+\n" +
                 "|     |\n" +
                 "+-----+",
-                // vbox
-                //   --> hbox
-                //         --> splitter
-                //   --> splitter
         "struct": {
             "vbox": {
                 "hbox": {
@@ -135,10 +117,6 @@ var GridLayouts = {
                 "+--+--+\n" +
                 "|  |  |\n" +
                 "+--+--+",
-                // vbox
-                //   --> splitter
-                //   --> hbox
-                //         --> splitter
         "struct": {
             "vbox": {
                 "splitter": 1,
@@ -190,10 +168,9 @@ exports.update = function(gridLayout, split) {
         insertEditorAt(grid.node, split.editors[i], [].concat(grid.insertPoints[i]));
     
     // hide splitters that we don't need to see anymore
-    if (!grid.splitters)
-        grid.splitters = grid.node.selectNodes("splitter");
-    for (i = grid.splitters.length - 1; i >= l - 1; --i)
-        grid.splitters[i].hide();
+    var splitters = grid.node.selectNodes("splitter");
+    for (i = splitters.length - 1; i >= l - 1; --i)
+        splitters[i].hide();
 };
 
 exports.show = function(gridLayout) {

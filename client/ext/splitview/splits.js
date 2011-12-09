@@ -25,7 +25,6 @@ exports.create = function(page, gridLayout, type) {
     
     Grids.init(gridLayout);
     
-    //var grid = createGrids(page)[layout];
     var editor = page.$editor.amlEditor;
     
     var split = {
@@ -68,6 +67,8 @@ exports.show = function(split) {
     console.log("pages",split.pages.map(function(page){return page.name;}));
     for (i = 0, l = split.pages.length; i < l; ++i)
         split.pages[i].$activateButton();
+    for (i = 0, l = split.editors.length; i < l; ++i)
+        split.editors[i].show();
     
     ActiveSplit = split;
     
@@ -77,6 +78,11 @@ exports.show = function(split) {
 exports.hide = function(split) {
     split = split || ActiveSplit;
     Grids.hide(split);
+    var i, l;
+    for (i = 0, l = split.pages.length; i < l; ++i)
+        split.pages[i].$deactivateButton();
+    for (i = 0, l = split.editors.length; i < l; ++i)
+        split.editors[i].hide();
     if (split === ActiveSplit)
         ActiveSplit = null;
 };
@@ -98,6 +104,14 @@ exports.update = function(split, gridLayout) {
         editor.removeAttribute("actiontracker");
         amlPage.appendChild(editor);
         editor.show();
+        
+        if (EditorClones[editor.tagName]) {
+            for (var clone, i = 0, l = EditorClones[editor.tagName].length; i < l; ++i) {
+                clone = EditorClones[editor.tagName][i];
+                clone.hide();
+                apf.document.body.appendChild(clone);
+            }
+        }
         
         removeEditorListeners(editor);
         removeEditorListeners(split.editors[0]);
@@ -126,7 +140,6 @@ exports.update = function(split, gridLayout) {
 
 exports.mutate = function(split, page) {
     split = split || ActiveSplit;
-    console.log("mutate called");
     var activePage = tabEditors.getPage();
     var pageIdx = split ? split.pages.indexOf(page) : -1;
     var _self = this;
@@ -145,15 +158,18 @@ exports.mutate = function(split, page) {
         editor.removeAttribute("model");
         editor.removeAttribute("actiontracker");
         removeEditorListeners(editor);
+        editor.hide();
+        apf.document.body.appendChild(editor);
         
         // use setTimout to circumvent the APF layout manager to go bonkers
-        setTimeout(function() {
+        //setTimeout(function() {
+            page.$deactivateButton();
             clearSplitViewStyles(page);
             editor.hide();
             if (tabEditors.getPage() !== split.pages[0])
                 tabEditors.set(split.pages[0]);
             _self.update(split);
-        });
+        //});
     }
     // Add an editor to the split view
     else if (!split || split.editors.length < 3) {
@@ -182,6 +198,7 @@ exports.mutate = function(split, page) {
             editorToUse = page.$editor.amlEditor;
         
         split.pages.push(page);
+        page.$activateButton();
         split.editors.push(editorToUse);
         //console.log("setting model of ", editorToUse.id, "to", page.$model.data.xml);
         editorToUse.setAttribute("model", page.$model);
@@ -190,10 +207,12 @@ exports.mutate = function(split, page) {
         addEditorListeners.call(_self, editorToUse);
         
         // use setTimout to circumvent the APF layout manager to go bonkers
-        setTimeout(function() {
+        //setTimeout(function() {
             _self.show(split);
-        });
+        //});
     }
+    
+    return true;
 };
 
 exports.get = function(amlNode) {

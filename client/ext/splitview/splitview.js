@@ -145,7 +145,6 @@ module.exports = ext.register("ext/splitview/splitview", {
         var shiftKey = e.htmlEvent.shiftKey;
         var split = Splits.get(page);
         split = split.length ? split[0] : null
-
         if (split && !shiftKey) {
             var activePage = tabEditors.getPage();
             var ret = null;
@@ -163,9 +162,6 @@ module.exports = ext.register("ext/splitview/splitview", {
                 tabEditors.set(split.pages[0]);
                 ret = false;
             }
-            
-            if (!shiftKey)
-                return true;
             
             return ret;
         }
@@ -244,10 +240,6 @@ module.exports = ext.register("ext/splitview/splitview", {
             oldSplit = oldSplit.length ? oldSplit[0] : null;
             console.log("got old split?",oldSplit);
             if (oldSplit && !split) {
-                // the next page is NOT a split view
-                //for (var i = 0, l = oldSplit.pages.length; i < l; ++i)
-                //    oldSplit.pages[i].$deactivateButton();
-
                 Splits.hide(oldSplit);
 
                 var nextPage = next.fake ? next.relPage : next;
