@@ -99,6 +99,7 @@ module.exports = ext.register("ext/newresource/newresource", {
         if (value)
             doc.cachedValue = value;
         ide.dispatchEvent("openfile", {doc: doc, type: "newfile"});
+        ide.dispatchEvent("track_action", {type: "template", template: type});
     },
     
     newfiletemplate : function(){

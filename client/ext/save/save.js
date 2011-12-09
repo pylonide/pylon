@@ -273,6 +273,7 @@ module.exports = ext.register("ext/save/save", {
 
             panel.setAttribute("caption", "Saved file " + path);
             ide.dispatchEvent("afterfilesave", {node: node, doc: doc, value: value});
+            ide.dispatchEvent("track_action", {type: "save as filetype", fileType: node.getAttribute("name").split(".").pop()});
 
             apf.xmldb.removeAttribute(node, "saving");
             apf.xmldb.removeAttribute(node, "new");
