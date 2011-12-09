@@ -553,7 +553,7 @@ apf.model = function(struct, tagName){
         
         if (!xmlNode) return;
 
-        apf.xmldb.appendChild(insertNode, xmlNode);
+        xmlNode = apf.xmldb.appendChild(insertNode, xmlNode);
         
         this.dispatchEvent("update", {xmlNode: xmlNode});
         return xmlNode;

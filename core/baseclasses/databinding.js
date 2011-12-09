@@ -1193,7 +1193,7 @@ apf.DataBinding = function(){
             if (modelId == "#" || xpath == "#") {
                 var m = (rule.cvalue3 || (rule.cvalue3 = apf.lm.compile(rule.value, {
                     xpathmode: 5
-                })))(this.xmlRoot);
+                }))).call(this, this.xmlRoot);
                 
                 //@todo apf3 this needs to be fixed in live markup
                 if (typeof m != "string") {
@@ -1209,7 +1209,7 @@ apf.DataBinding = function(){
                         this.addEventListener("prop." + prop, function(e){
                             var m = (rule.cvalue3 || (rule.cvalue3 = apf.lm.compile(rule.value, {
                                 xpathmode: 5
-                            })))(this.xmlRoot);
+                            }))).call(this, this.xmlRoot);
                             
                             if (m.model) {
                                 this.removeEventListener("prop." + prop, arguments.callee);

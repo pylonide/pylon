@@ -332,7 +332,7 @@ apf.BaseTab = function(){
         scalersz.call(this)
     }
     
-    this.anims = "add|remove";
+    this.anims = "add|remove|sync";
     
     this.$scaleinit = function(node, type, callback, force){
         var pg = this.getPages();
@@ -1308,15 +1308,15 @@ apf.BaseTab = function(){
         else if (!this.activepage && !this.$activepage 
           && !amlNode.render || amlNode.$rendered) {
             this.set(amlNode);
+        }
         
-            //#ifdef __ENABLE_TAB_SCALE
-            if (this.$scale && amlNode.visible && !e.$isMoveWithinParent) 
-                this.$scaleinit(amlNode, "add");
-            else 
-            //#endif
-            {
-                amlNode.dispatchEvent("afteropen");
-            }
+        //#ifdef __ENABLE_TAB_SCALE
+        if (this.$scale && amlNode.visible && !e.$isMoveWithinParent) 
+            this.$scaleinit(amlNode, "add");
+        else 
+        //#endif
+        {
+            amlNode.dispatchEvent("afteropen");
         }
         
         //#ifdef __WITH_PROPERTY_BINDING
