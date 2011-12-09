@@ -4,11 +4,10 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
- 
+
+
 define(function(require, exports, module) {
 
-var ide = require("core/ide");
 var ext = require("core/ext");
 var markup = require("text!ext/imgview/imgview.xml");
 var editors = require("ext/editors/editors");
@@ -45,9 +44,7 @@ module.exports = ext.register("ext/imgview/imgview", {
         imgEditor.setProperty("value", doc.session);
     },
 
-    hook : function() {
-
-    },
+    hook : function() {},
 
     init : function(amlPage) {
         amlPage.appendChild(imgEditor);

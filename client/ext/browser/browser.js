@@ -6,7 +6,7 @@
  */
 
 define(function(require, exports, module) {
-    
+
 var ide = require("core/ide");
 var ext = require("core/ext");
 var markup = require("text!ext/browser/browser.xml");
@@ -25,8 +25,7 @@ module.exports = ext.register("ext/browser/browser", {
 
     nodes : [],
 
-    init : function(amlPage){
-	var dav_url = location.href.replace(location.hash, '');
+    init : function(amlPage) {
         this.brView = amlPage.appendChild(new apf.vbox({
             anchors    : "0 0 0 0",
             childNodes : [new apf.browser({

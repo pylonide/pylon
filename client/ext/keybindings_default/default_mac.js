@@ -4,7 +4,6 @@
  */
 define(function(require, exports, module) {
 
-var ide = require("core/ide");
 var keys = require("ext/keybindings/keybindings");
 
 return keys.onLoad({
