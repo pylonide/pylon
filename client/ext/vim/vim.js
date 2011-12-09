@@ -98,6 +98,8 @@ var enableVim = function enableVim() {
             commands.stop.exec(editor);
         }
         VIM_ENABLED = true;
+        
+        ide.dispatchEvent("track_action", {type: "vim", action: "enable"})
     }
 };
 
@@ -110,6 +112,8 @@ var disableVim = function() {
         commands.start.exec(editor);
         editor.renderer.container.removeEventListener("click", onCursorMove, false);
         VIM_ENABLED = false;
+        
+        ide.dispatchEvent("track_action", {type: "vim", action: "disable"})
     }
 };
 
