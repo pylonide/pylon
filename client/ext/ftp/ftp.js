@@ -10,7 +10,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var ideConsole = require("ext/console/console");
 var markup = require("text!ext/ftp/ftp.xml");
 var css = require("text!ext/ftp/ftp.css");
@@ -68,11 +67,11 @@ module.exports = ext.register("ext/ftp/ftp", {
 
     write: function(lines) {
         var self = this;
-        if (typeof lines == "string")
-            aLines = lines.split("\n");
+        if (typeof lines === "string")
+            lines = lines.split("\n");
 
         lines.forEach(function(line) {
-            self.log(line, "log")
+            self.log(line, "log");
         });
     },
 

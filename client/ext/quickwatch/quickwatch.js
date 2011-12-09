@@ -4,10 +4,9 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
-var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var noderunner = require("ext/noderunner/noderunner");
@@ -46,7 +45,7 @@ module.exports = ext.register("ext/quickwatch/quickwatch", {
                 }
             }
         });
-        
+
         var restricted = [38, 40, 36, 35];
         dgWatch.addEventListener("keydown", function(e) {
             if (e.keyCode == 38) {
@@ -61,10 +60,10 @@ module.exports = ext.register("ext/quickwatch/quickwatch", {
 
     toggleDialog: function(force, exec) {
         ext.initExtension(this);
-        
+
         if (!winQuickWatch.visible || force == 1) {
             var editor = editors.currentEditor;
-    
+
             var range;
             var sel   = editor.getSelection();
             var doc   = editor.getDocument();
