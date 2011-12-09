@@ -219,7 +219,10 @@
             position         : relative;
             overflow         : hidden;
             width            : 38px;
-            border-left      : 1px solid #1e1e1e;
+            border-left      : 1px solid #38393b;
+            -webkit-box-shadow: -1px 0px 0px 0px #1e1e1e;
+            -moz-box-shadow: -1px 0px 0px 0px #1e1e1e;
+            box-shadow: -1px 0px 0px 0px #1e1e1e; 
             background       : url(images/debug-panel_bg.png) 0 0;
         }
 
@@ -236,7 +239,7 @@
             left        : 0;
             right       : 0;
             bottom      : 0;
-            border-left : 1px solid #38393b;
+            /*border-left : 1px solid #38393b;*/
         }
     ]]></a:style>
 
@@ -6901,6 +6904,7 @@
         .dockcol .splitter.horizontal{
             height : 0px;
             margin : 0;
+            border-bottom: 1px solid #393A3B;
         }
         
         .dockcol .splitter.horizontal div{
@@ -6914,7 +6918,7 @@
         
         .splitter-editor-right.panelsplitter {
             border-left: 1px solid #1E1E1E;
-            border-right: 1px solid #333333;
+            border-right: 1px solid #38393B;
         }
     ]]></a:style>
     <a:presentation>
