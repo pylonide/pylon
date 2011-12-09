@@ -9,7 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
- 
 var code = require("ext/code/code");
 var search = require("ace/search");
 var editors = require("ext/editors/editors");
@@ -47,17 +46,17 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 }
             }))
         );
-        
-        this.hotitems["search"] = [this.nodes[1]];
-        this.hotitems["searchreplace"] = [this.nodes[2]];
-        
+
+        this.hotitems.search = [this.nodes[1]];
+        this.hotitems.searchreplace = [this.nodes[2]];
+
         code.commandManager.addCommand({
             name: "replace",
-            exec: function(editor) { 
+            exec: function(editor) {
                 _self.setEditor(editor, editor.getSelection()).toggleDialog(true, true);
             }
         });
-        
+
     },
 
     init : function(amlNode){
@@ -79,26 +78,27 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
 
     toggleDialog: function(isReplace, forceShow) {
         ext.initExtension(this);
-        
+
         if (!winSearchReplace.visible || forceShow || this.$lastState != isReplace) {
             this.setupDialog(isReplace);
 
+            var value;
             var editor = editors.currentEditor;
             if (editor) {
                 if (editor.ceEditor)
-                    var value = editor.ceEditor.getLastSearchOptions().needle;
+                    value = editor.ceEditor.getLastSearchOptions().needle;
 
                 if (!value) {
                     var sel   = editor.getSelection();
                     var doc   = editor.getDocument();
                     var range = sel.getRange();
-                    var value = doc.getTextRange(range);
+                    value = doc.getTextRange(range);
                 }
                 if (value)
                     this.txtFind.setValue(value);
 
                 winSearchReplace.setAttribute("title", isReplace
-                        ? "Search & Replace" : "Search");            
+                        ? "Search & Replace" : "Search");
                 winSearchReplace.show();
             }
         }
@@ -123,7 +123,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
 
     setupDialog: function(isReplace) {
         this.$lastState = isReplace;
-        
+
         // hide all 'replace' features
         this.barReplace.setProperty("visible", isReplace);
         this.btnReplace.setProperty("visible", isReplace);
@@ -187,7 +187,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         if (!this.barReplace.visible)
             return;
         var options = this.getOptions();
-        options.needle = this.txtFind.getValue()
+        options.needle = this.txtFind.getValue();
         options.scope = search.Search.SELECTION;
         this.$editor.replace(this.txtReplace.getValue() || "", options);
         //this.$editor.find(this.$crtSearch, options);
@@ -202,7 +202,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             return;
         this.$crtSearch = null;
         var options = this.getOptions();
-        options.needle = this.txtFind.getValue()
+        options.needle = this.txtFind.getValue();
         this.$editor.replaceAll(this.txtReplace.getValue() || "", options);
         ide.dispatchEvent("track_action", {type: "replace"});
     },
