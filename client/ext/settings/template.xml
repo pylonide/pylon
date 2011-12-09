@@ -24,6 +24,7 @@
           wraplimitmax=""
           gutter="true"
           highlightselectedword="true"
-          autohidehorscrollbar="true" />
+          autohidehorscrollbar="true"
+          minimap="false"/>
     </editors>
 </settings>
