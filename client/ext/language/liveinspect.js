@@ -40,8 +40,13 @@ module.exports = (function () {
         // bind mous events to all open editors
         ide.addEventListener("afteropenfile", function (e) {
             if (e.editor && e.editor.ceEditor) {
-                e.editor.ceEditor.$editor.addEventListener("mousemove", onEditorMouseMove);
-                e.editor.ceEditor.$editor.addEventListener("mousedown", onEditorClick);
+                var editor = e.editor.ceEditor;
+                
+                editor.$editor.addEventListener("mousemove", onEditorMouseMove);
+                
+                // when you click, or change the cursor position, then hide the window
+                editor.$editor.addEventListener("mousedown", onEditorClick);
+                editor.getSession().getSelection().addEventListener("changeCursor", onEditorClick);
             }
         });
         
@@ -56,13 +61,11 @@ module.exports = (function () {
             }
         });
         
-        /*
-         * This has been commented out because this functionality is still
-         * open for debate. We'll fix this in iteration 2.
-         *
+        // we should track mouse movement over the whole window
+        document.addEventListener("mousemove", onDocumentMouseMove)
+        
         // yes, this is superhacky but the editor function in APF is crazy        
         datagridHtml.addEventListener("dblclick", initializeEditor);
-        */
         
         // when collapsing or expanding the datagrid we want to resize
         dgLiveInspect.addEventListener("expand", resizeWindow);
@@ -115,14 +118,21 @@ module.exports = (function () {
           && target.parentNode.parentNode.childNodes[1] === target.parentNode /* [1] index */
           && !target.parentNode.hid /* and no header */) {
               
+            // bug in APF? When having only 1 item the 'selected' property isnt set properly
+            var selected = dgLiveInspect.selected;
+            if (!selected && dgLiveInspect.getModel().data.childNodes.length === 1) {
+                // because you just doubleclicked an item, well just grab the only one
+                selected = dgLiveInspect.getModel().data.childNodes[0]; 
+            }
+              
             // check whether we are able to edit this item
-            if (!inspector.isEditable(dgLiveInspect.selected)) {
+            if (!inspector.isEditable(selected)) {
                 return;
             }
             
             // V8 debugger cannot change variables that are locally scoped, so we need at least 
             // one parent property.
-            if (inspector.calcName(dgLiveInspect.selected, true).indexOf('.') === -1) {
+            if (inspector.calcName(selected, true).indexOf('.') === -1) {
                 return;
             }
             
@@ -141,8 +151,8 @@ module.exports = (function () {
                 edit.removeEventListener("blur", onBlur);
                 
                 // test for correct value
-                if (!inspector.validateNewValue(dgLiveInspect.selected, this.value)) {
-                    alert("invalid value for type " + dgLiveInspect.selected.getAttribute("type"));
+                if (!inspector.validateNewValue(selected, this.value)) {
+                    alert("invalid value for type " + selected.getAttribute("type"));
                     return false;
                 }
                 
@@ -153,7 +163,7 @@ module.exports = (function () {
                 target.style.display = originalDisplay;
                 target.innerText = this.value;
                 
-                inspector.setNewValue(dgLiveInspect.selected, this.value, function (res) { });
+                inspector.setNewValue(selected, this.value, function (res) { });
             };
             
             // when blurring, update
@@ -174,6 +184,9 @@ module.exports = (function () {
             target.style.display = "none";
             // and append textbox
             target.parentNode.appendChild(edit);
+            
+            // focus
+            edit.focus();
         }
     };
     
@@ -193,7 +206,9 @@ module.exports = (function () {
      * onMouseMove handler that is being used to show / hide the inline quick watch
      */
     var onEditorMouseMove = function (ev) {
-        if (activeTimeout) clearTimeout(activeTimeout);
+        if (activeTimeout) {
+            clearTimeout(activeTimeout);   
+        }
         
         if (!stRunning.active && stDebugProcessRunning.active) {
             activeTimeout = setTimeout(function () {
@@ -209,6 +224,46 @@ module.exports = (function () {
     };
     
     /**
+     * onDocumentMove handler to clear the timeout
+     */
+    var onDocumentMouseMove = function (ev) {
+        if (!activeTimeout) {
+            return;   
+        }
+        
+        // see whether we hover over the editor
+        if (ceEditor) {
+            // calculate position
+            var ele = ceEditor.$ext;
+            var position = apf.getAbsolutePosition(ele, document.body);
+            var left = position[0];
+            var top = position[1];
+            
+            // x boundaries
+            if (ev.pageX >= left && ev.pageX <= (left + ele.offsetWidth)) {
+                // y boundaries
+                if (ev.pageY >= top && ev.pageY <= (top + ele.offsetHeight)) {
+                    // we are in the editor, so return; this will be handled
+                    return;
+                }
+            }
+        }
+                
+        // not in the editor?
+        if (winLiveInspect.visible) {
+            // if we are visible, then give the user 400 ms to get back into the window
+            // otherwise hide it
+            activeTimeout = setTimeout(function () {
+                winLiveInspect.hide();
+            }, 400);
+        }
+        else {
+            // if not visible? then just clear the timeout
+            clearTimeout(activeTimeout);
+        }
+    };
+    
+    /**
      * When clicking in the editor window, hide live inspect
      */
     var onEditorClick = function (ev) {
@@ -220,7 +275,7 @@ module.exports = (function () {
      */
     var liveWatch = function (expr) {
         // already visible, and same expression?
-        if (winLiveInspect.visible === 1 && expr === currentExpression) {
+        if (winLiveInspect.visible && expr === currentExpression) {
             return;
         }
         
