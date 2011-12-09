@@ -27,96 +27,64 @@ define(function(require, exports, module) {
     
     /*** privates ***/
     
-    // variable declaration
-    var expVarDeclInit = function (d) {
-        return d[0].value;
-    };
-    
-    // variable calling
-    var expVar = function (d) {
-        return d[0].value;
-    };
-    
-    // property access
-    var expPropAccess = function (d) {        
-        // find all numeric keys
-        // map them thru getValue
-        // join em with a little dot
-        return getNumericProperties(d)
-            .map(function (m) { return getExpressionValue(m); })
-            .join(".");
-    };
-    
-    // method call
-    var expCall = function (d) {
-        var method = getExpressionValue(d[0]);
-        var args = getNumericProperties(d[1])
-                    .map(function (k) { return getExpressionValue(k); })
-                    .join(", ");
-                    
-        return method + "(" + args + ")";
-    };
-    
-    // numeric f.e. used in index [1]
-    var expNum = function (d) {
-        return d[0].value;
-    };
-    
-    // index calling
-    var expIndex = function (d) {
-        return getExpressionValue(d[0]) + "[" + getExpressionValue(d[1]) + "]";
-    };
-    
-    // new X()
-    var expNew = function (d) {
-        return "new "
-                + getExpressionValue(d[0])
-                + "("
-                + getNumericProperties(d[1]).map(function (arg) { return arg.value; }).join(", ")
-                + ")";
-    };
-    
-    // equation
-    var expOp = function (d) {        
-        return getExpressionValue(d[1]) + " " + getExpressionValue(d[0]) + " " + getExpressionValue(d[2]);
-    };
-    
-    // function parameter
-    var expFarg = function (d) {
-        return d[0].value;
-    };
-    
-    var getNumericProperties = function (obj) {
-        return Object.keys(obj).filter(function (k) { return !isNaN(k); }).map(function (k) { return obj[k]; });
-    };
-    
     // get a string value of any expression
     var getExpressionValue = function(d) {
         if (d.value) return d.value;
         
-        switch (d.cons) {
-            case "VarDeclInit":
-                return expVarDeclInit(d);
-            case "PropAccess":
-                return expPropAccess(d);
-            case "Var":
-                return expVar(d);
-            case "Call":
-                return expCall(d);
-            case "Num":
-                return expNum(d);
-            case "Index":
-                return expIndex(d);
-            case "New":
-                return expNew(d);
-            case "FArg":
-                return expFarg(d);
-            case "Op":
-                return expOp(d);
-            default:
-                return "";
-        }
+        var result;
+        
+        d.rewrite(
+            // var someVar = ...
+            'VarDeclInit(x, _)', function(b) {
+                result = b.x.value;
+            },
+            // var someVar;
+            'VarDecl(x)', function(b) {
+                result = b.x.value;
+            },
+            // e.x
+            'PropAccess(e, x)', function(b) {
+                result = getExpressionValue(b.e) + "." + b.x.value;
+            },
+            // x
+            'Var(x)', function(b) {
+                result = b.x.value;
+            },
+            // e(arg, ...)
+            'Call(e, args)', function(b) {
+                var method = getExpressionValue(b.e);
+                var args = b.args.toArray().map(getExpressionValue).join(", ");
+                result = method + "(" + args + ")";
+            },
+            // 10
+            'Num(n)', function(b) {
+                result = b.n.value;
+            },
+            // e[idx]
+            'Index(e, idx)', function(b) {
+                result = getExpressionValue(b.e) + "[" + getExpressionValue(b.idx) + "]";
+            },
+            // new SomeThing(arg, ...)
+            'New(e, args)', function(b) {
+                var method = getExpressionValue(b.e);
+                var args = b.args.toArray().map(getExpressionValue).join(", ");
+                result = "new " + method + "(" + args + ")";
+            },
+            // x (function argument)
+            'FArg(x)', function(b) {
+                result = b.x.value;
+            },
+            // 10 + 4
+            'Op(op, e1, e2)', function(b) {
+                result = getExpressionValue(b.e1) + " " + b.op.value + " " + getExpressionValue(b.e2);
+            },
+            // if nuthin' else matches
+            function() {
+                if(!result)
+                    result = "";
+            }
+        );
+        return result;
     };
-
 
 });
