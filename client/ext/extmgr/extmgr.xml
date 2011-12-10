@@ -6,6 +6,7 @@
       center    = "true"
       resizable = "true"
       buttons   = "close"
+      modal     = "false"
       skin      = "bk-window"
       width     = "660"
       height    = "400"
