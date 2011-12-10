@@ -31,6 +31,10 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         ide.addEventListener("socketDisconnect", this.onDisconnect.bind(this));
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
+        dbg.addEventListener("break", function(e){
+            ide.dispatchEvent("break", e);
+        });
+
         dbgNode.addEventListener("onsocketfind", function() {
             return ide.socket;
         });

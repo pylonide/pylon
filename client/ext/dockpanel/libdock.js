@@ -147,7 +147,10 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
      * Retrieve the current state of the layout as a JSON object
      * 
      */
-    this.getState = function(){
+    this.getState = function(raw){
+        if (raw)
+            return state;
+        
         var copy = {}
         copy.bars = state.bars.slice(0);
 

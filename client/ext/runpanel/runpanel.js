@@ -137,7 +137,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             if (!_self.autoHidePanel())
                 return;
                 
-            var bar = dock.getBar("ext/debugger/debugger", "pgDebugNav");
+            var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
             dock.hideBar(bar);
             
         });
@@ -145,15 +145,15 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             if (!_self.shouldRunInDebugMode() || !_self.autoHidePanel())
                 return;
             
-            var bar = dock.getBar("ext/debugger/debugger", "pgDebugNav");
+            var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
             dock.showBar(bar); 
         });
         ide.addEventListener("break", function(){
             if (!_self.shouldRunInDebugMode() || !_self.autoHidePanel())
                 return;
 
-            var bar = dock.getBar("ext/debugger/debugger", "pgDebugNav");
-            doc.expandBar(bar);
+            var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
+            dock.expandBar(bar);
         });
         
         this.hotitems["run"]  = [btnRun];
