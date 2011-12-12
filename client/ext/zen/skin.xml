@@ -12,6 +12,7 @@
                 user-select        : none;
                 line-height        : 17px;
                 opacity : 0.01;
+                z-index: 2;
             }
             
             .zenbutton.full {
