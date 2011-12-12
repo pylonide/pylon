@@ -68,7 +68,7 @@ exports.show = function(split) {
 
 exports.hide = function(split) {
     split = split || ActiveSplit;
-    Grids.hide(split);
+    Grids.hide(split.gridLayout);
     var i, l;
     for (i = 0, l = split.pages.length; i < l; ++i)
         split.pages[i].$deactivateButton();
@@ -137,7 +137,7 @@ exports.update = function(split, gridLayout) {
     return this;
 };
 
-exports.mutate = function(split, page, noShow) {
+exports.mutate = function(split, page) {
     split = split || split === null ? ActiveSplit : null;
     var activePage = tabEditors.getPage();
     var pageIdx = split ? split.pages.indexOf(page) : -1;
@@ -164,8 +164,7 @@ exports.mutate = function(split, page, noShow) {
         if (tabEditors.getPage() !== split.pages[0])
             tabEditors.set(split.pages[0]);
 
-        if (!noShow)
-            this.update(split);
+        this.update(split);
     }
     // Add an editor to the split view
     else if (!split || split.editors.length < 3) {
@@ -196,15 +195,13 @@ exports.mutate = function(split, page, noShow) {
             editorToUse = page.$editor.amlEditor;
         
         split.pages.push(page);
-        //page.$activateButton();
         split.editors.push(editorToUse);
         //console.log("setting model of ", editorToUse.id, "to", page.$model.data.xml);
         editorToUse.setAttribute("model", page.$model);
         editorToUse.setAttribute("actiontracker", page.$at);
         consolidateEditorSession(page, editorToUse);
 
-        if (!noShow)
-            this.show(split);
+        this.show(split);
     }
     
     return true;
@@ -284,7 +281,6 @@ function createEditorClones(editor) {
 
     EditorClones[id] = [];
     
-    var editor;
     for (var i = 0; i < 2; ++i) {
         editor = editor.cloneNode(true);
         editor.removeAttribute("id");
@@ -333,9 +329,13 @@ function onEditorFocus(editor) {
 
 function consolidateEditorSession(page, editor) {
     var session = SplitView.getEditorSession(page);
-    if (!session && page.$editor.setDocument)
+    if (!session && page.$editor.setDocument) {
+        var defEditor = page.$editor.amlEditor;
+        var oldVal = defEditor.value;
         page.$editor.setDocument(page.$doc, page.$at);
-    session = SplitView.getEditorSession(page)
+        session = SplitView.getEditorSession(page);
+        defEditor.setProperty("value", oldVal);
+    }
     if (editor.value !== session)
         editor.setProperty("value", session);
 }

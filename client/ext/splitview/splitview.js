@@ -280,7 +280,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         }
         
         mnuCloneView.setAttribute("checked", false);
-        mnuSplitAlign.setAttribute("checked", true);
+        mnuSplitAlign.setAttribute("checked", false);
 
         // all this must exist
         if (!doc || !at || !split) {
@@ -341,6 +341,8 @@ module.exports = ext.register("ext/splitview/splitview", {
             return;
         
         Splits.update(split[0], gridLayout);
+        mnuSplitAlign.setAttribute("checked", gridLayout == "3rows");
+        this.save();
     },
     
     /**
@@ -428,6 +430,7 @@ module.exports = ext.register("ext/splitview/splitview", {
                 return page.id;
             }).join(","));
             splitEl.setAttribute("active", Splits.isActive(splits[i]) ? "true" : "false");
+            splitEl.setAttribute("layout", splits[i].gridLayout);
             node.appendChild(splitEl);
         }
         apf.xmldb.applyChanges("synchronize", node);
@@ -444,12 +447,13 @@ module.exports = ext.register("ext/splitview/splitview", {
         
         var tabs = tabEditors;
         var activePage = tabs.getPage();
-        var i, l, j, l2, ids, active, page, pages, pageSet;
+        var i, l, j, l2, ids, active, page, pages, pageSet, gridLayout;
         for (var i = 0, l = nodes.length; i < l; ++i) {
             ids = nodes[i].getAttribute("pages").split(",");
             
             pages = [];
             pageSet = false;
+            gridLayout = nodes[i].getAttribute("layout") || null;
             for (j = 0, l2 = ids.length; j < l2; ++j) {
                 if (ids[j].indexOf("_clone") > -1) {
                     page = tabs.getPage(ids[j].replace("_clone", ""));
@@ -472,26 +476,19 @@ module.exports = ext.register("ext/splitview/splitview", {
                     }
                 }
             }
+            if (gridLayout)
+                Splits.update(null, gridLayout);
 
             if (apf.isTrue(nodes[i].getAttribute("active")))
                 active = Splits.getActive();
         }
         
-        setTimeout(function(){
-            if (active) {
-                // waaaah dirty hack!! we show the page OTHER than the the one of 
-                // the first page of the split view. I do this to somehow keep
-                // the editor sessions in sync.
-                var idx = tabs.childNodes.indexOf(active.pages[0]);
-                if (idx <= 1)
-                    idx = tabs.childNodes.length - 1;
-                tabs.set(idx);
-                tabs.set(active.pages[0]);
-                Splits.update(active);
-            }
-            else
-                tabs.set(activePage);
-        });
+        if (active) {
+            tabs.set(active.pages[0]);
+            Splits.update(active);
+        }
+        else
+            tabs.set(activePage);
     },
     
     enable : function(){

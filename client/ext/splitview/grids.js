@@ -168,7 +168,7 @@ exports.update = function(gridLayout, split) {
         insertEditorAt(grid.node, split.editors[i], [].concat(grid.insertPoints[i]));
     
     // hide splitters that we don't need to see anymore
-    var splitters = grid.node.selectNodes("splitter");
+    var splitters = grid.splitters || grid.node.selectNodes("splitter");
     for (i = splitters.length - 1; i >= l - 1; --i)
         splitters[i].hide();
 };
@@ -192,7 +192,7 @@ exports.show = function(gridLayout) {
 
 exports.hide = function(gridLayout) {
     gridLayout = gridLayout || defaultGrid;
-    var grid = GridNames[gridLayout];
+    var grid = GridLayouts[gridLayout];
     if (!grid || !grid.node)
         return;
 
@@ -254,9 +254,8 @@ function createGridNodes(name) {
     createNodes(blueprint.struct, splitters);
     if (!blueprint.node)
         blueprint.node = blueprint.struct.node;
-    //@todo fix the splitter enumeration
-    //if (!blueprint.splitters)
-    //    blueprint.splitters = splitters;
+    if (!blueprint.splitters)
+        blueprint.splitters = splitters;
 }
 
 function insertEditorAt(parent, editor, insertPoint) {
