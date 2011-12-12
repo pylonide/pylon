@@ -54,9 +54,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         this.btnFind.onclick = this.execFind.bind(this);
 
         var _self = this;
-        winSearchInFiles.onclose = function() {
-            ceEditor.focus();
-        };
+        winSearchInFiles.onclose = this.onHide;
         winSearchInFiles.onshow = function() {
             // get selected node in tree and set it as selection
             var name = _self.getSelectedTreeNode().getAttribute("name");
@@ -133,8 +131,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
 
     onHide : function() {
         var editor = editors.currentEditor;
-        if (editor && editor.ceEditor)
-            editor.ceEditor.focus();
+        if (editor && editor.amlEditor)
+            editor.amlEditor.focus();
     },
 
     searchinfiles: function() {

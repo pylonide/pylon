@@ -120,12 +120,12 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         if (!editorPage) return;
 
         var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        if (!editor || !editor.amlEditor)
             return;
 
         if (!force && !winGotoLine.visible || force > 0) {
-            var ace = editor.ceEditor.$editor;
-            var aceHtml = editor.ceEditor.$ext;
+            var ace = editor.amlEditor.$editor;
+            var aceHtml = editor.amlEditor.$ext;
             var cursor = ace.getCursorPosition();
 
             //Set the current line
@@ -136,7 +136,8 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             var epos = apf.getAbsolutePosition(aceHtml);
             var maxTop = aceHtml.offsetHeight - 100;
 
-            editor.ceEditor.parentNode.appendChild(winGotoLine);
+            //editor.amlEditor.parentNode.appendChild(winGotoLine);
+            editor.amlEditor.parentNode.insertBefore(winGotoLine, editor.amlEditor);
             winGotoLine.setAttribute("top", Math.min(maxTop, pos.pageY - epos[1]));
             winGotoLine.setAttribute("left", -60);
 
@@ -166,7 +167,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                 control  : (this.control = {}),
                 onfinish : function(){
                     winGotoLine.hide();
-                    editor.ceEditor.focus();
+                    editor.amlEditor.focus();
                 }
             });
         }
@@ -175,12 +176,12 @@ module.exports = ext.register("ext/gotoline/gotoline", {
     },
 
     execGotoLine: function(line) {
-        var editor = require('ext/editors/editors').currentEditor;
-        if (!editor || !editor.ceEditor)
+        var editor = editors.currentEditor;
+        if (!editor || !editor.amlEditor)
             return;
 
-        var ceEditor = editor.ceEditor;
-        var ace      = ceEditor.$editor;
+        var amlEditor = editor.amlEditor;
+        var ace       = amlEditor.$editor;
 
         winGotoLine.hide();
 
@@ -200,7 +201,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             apf.xmldb.appendChild(gotoline, lineEl, gotoline.firstChild);
 
         ace.gotoLine(line);
-        ceEditor.focus();
+        amlEditor.focus();
     },
 
     enable : function(){

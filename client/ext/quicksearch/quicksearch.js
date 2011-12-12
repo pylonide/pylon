@@ -91,10 +91,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             if (!apf.isChildOf(winQuickSearch, e.toElement))
                 _self.toggleDialog(-1);
         });
-
-        var editor = editors.currentEditor;
-        if (editor && editor.ceEditor)
-            editor.ceEditor.parentNode.appendChild(winQuickSearch);
     },
 
     navigateList : function(type){
@@ -190,8 +186,10 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         if (!editorPage) return;
 
         var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        if (!editor || !editor.amlEditor)
             return;
+            
+        editor.amlEditor.parentNode.appendChild(winQuickSearch);
 
         var _self = this;
 
@@ -203,8 +201,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             var range = sel.getRange();
             var value = doc.getTextRange(range);
 
-            if (!value && editor.ceEditor)
-                value = editor.ceEditor.getLastSearchOptions().needle;
+            if (!value && editor.amlEditor)
+                value = editor.amlEditor.getLastSearchOptions().needle;
 
             if (value)
                 txtQuickSearch.setValue(value);
@@ -243,7 +241,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                 control  : (this.control = {}),
                 onfinish : function(){
                     winQuickSearch.hide();
-                    editor.ceEditor.focus();
+                    editor.amlEditor.focus();
                 }
             });
         }
@@ -292,7 +290,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
         if (close) {
             winQuickSearch.hide();
-            editors.currentEditor.ceEditor.focus();
+            editors.currentEditor.amlEditor.focus();
         }
 
         this.updateCounter();
@@ -327,11 +325,11 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
     $getAce: function() {
         var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        if (!editor || !editor.amlEditor)
             return;
 
-        var ceEditor = editor.ceEditor;
-        return ceEditor.$editor;
+        var amlEditor = editor.amlEditor;
+        return amlEditor.$editor;
     },
 
     enable : function(){

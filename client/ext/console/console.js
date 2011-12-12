@@ -107,8 +107,8 @@ module.exports = ext.register("ext/console/console", {
 
     switchconsole : function() {
         if (apf.activeElement == txtConsoleInput) {
-            if (window.ceEditor) {
-                ceEditor.focus();
+            if (editors.currentEditor.amlEditor) {
+                editors.currentEditor.amlEditor.focus();
                 this.disable();
             }
         }

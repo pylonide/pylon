@@ -26,7 +26,7 @@ module.exports = ext.register("ext/acebugs/acebugs", {
     init: function(amlNode) {
         var currEditor = editors.currentEditor;
         if (currEditor) {
-            this.editorSession = currEditor.ceEditor.getSession();
+            this.editorSession = currEditor.amlEditor.getSession();
 
             this.editorSession.on("changeAnnotation", function(e) {
                 _self.updateAnnotations();
@@ -58,7 +58,7 @@ module.exports = ext.register("ext/acebugs/acebugs", {
         tabEditors.addEventListener("afterswitch", function(e){
             var ce = editors.currentEditor;
             if (ce) {
-                _self.editorSession = ce.ceEditor.getSession();
+                _self.editorSession = ce.amlEditor.getSession();
                 _self.editorSession.on("changeAnnotation", function(e) {
                     _self.updateAnnotations();
                 });
@@ -92,15 +92,15 @@ module.exports = ext.register("ext/acebugs/acebugs", {
         if (!ce || typeof mdlAceAnnotations === "undefined")
             return;
 
-        this.ceEditor = ce.ceEditor;
-        var editorSession = this.ceEditor.getSession();
+        this.amlEditor = ce.amlEditor;
+        var editorSession = this.amlEditor.getSession();
         dock.resetNotificationCount("aceAnnotations");
         this.annotationWorker.postMessage(editorSession.getAnnotations());
     },
 
     goToAnnotation : function() {
-        line_num = dgAceAnnotations.selected.getAttribute("line");
-        this.ceEditor.$editor.gotoLine(line_num);
+        var line_num = dgAceAnnotations.selected.getAttribute("line");
+        this.amlEditor.$editor.gotoLine(line_num);
     },
 
     enable: function() {

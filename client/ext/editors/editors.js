@@ -344,8 +344,8 @@ module.exports = ext.register("ext/editors/editors", {
         // okay don't know if you would want this, but this is the way the 'open file' dialog
         // handles it so let's do that
         setTimeout(function () {
-            if (typeof ceEditor !== "undefined")
-                ceEditor.focus();
+            if (typeof editor.amlEditor !== "undefined")
+                editor.amlEditor.focus();
         }, 100);
 
         settings.save();
@@ -734,13 +734,14 @@ module.exports = ext.register("ext/editors/editors", {
         var hasData = page && (tabEditors.getPage(path) || { }).$doc ? true : false;
 
         if (row !== undefined) {
+            var editor = _self.currentEditor.amlEditor;
             var jumpTo = function(){
                 setTimeout(function() {
                     // TODO move this to the editor
-                    ceEditor.$editor.gotoLine(row, column);
+                    editor.$editor.gotoLine(row, column);
                     if (text)
-                        ceEditor.$editor.find(text);
-                    ceEditor.focus();
+                        editor.$editor.find(text);
+                    editor.focus();
                 }, 100);
             };
 

@@ -162,7 +162,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         var shiftKey = e.htmlEvent.shiftKey;
         var ret = null;
         var split = Splits.get(activePage);
-        split = split.length ? split[0] : null
+        split = split.length ? split[0] : null;
 
         if (split && !shiftKey) {
             for (var i = 0, l = split.pages.length; i < l; ++i) {
@@ -310,8 +310,6 @@ module.exports = ext.register("ext/splitview/splitview", {
             mnuCloneView.setAttribute("checked", true);
             
             if (!page.acesession) {
-                var _self = this;
-    
                 page.acesession = new EditSession(doc.acedoc);
                 page.acesession.setUndoManager(at);
                 
@@ -450,7 +448,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         var tabs = tabEditors;
         var activePage = tabs.getPage();
         var i, l, j, l2, ids, active, page, pages, pageSet, gridLayout;
-        for (var i = 0, l = nodes.length; i < l; ++i) {
+        for (i = 0, l = nodes.length; i < l; ++i) {
             ids = nodes[i].getAttribute("pages").split(",");
             
             pages = [];

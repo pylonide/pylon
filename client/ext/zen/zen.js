@@ -92,8 +92,8 @@ module.exports = ext.register("ext/zen/zen", {
         this.setupHandleListeners();
 
         var editor = editors.currentEditor;
-        if (editor && editor.ceEditor)
-            editor.ceEditor.parentNode.appendChild(btnZenFullscreen);
+        if (editor && editor.amlEditor)
+            editor.amlEditor.parentNode.appendChild(btnZenFullscreen);
             
         vbMain.parentNode.appendChild(new apf.vbox({
             anchors: "0 0 0 0",
@@ -288,7 +288,7 @@ module.exports = ext.register("ext/zen/zen", {
                 }, 0.5);
 
                 setTimeout(function() {
-                    ceEditor.focus();
+                    editors.currentEditor.amlEditor.focus();
                     apf.layout.forceResize(tabEditors.parentNode.$ext);
                 }, 100);
             });
@@ -341,7 +341,7 @@ module.exports = ext.register("ext/zen/zen", {
             apf.layout.forceResize();
 
             setTimeout(function() {
-                ceEditor.focus();
+                editors.currentEditor.amlEditor.focus();
             }, 100);
         }
     },
@@ -392,7 +392,7 @@ module.exports = ext.register("ext/zen/zen", {
                 apf.layout.forceResize(tabEditors.parentNode.$ext);
 
                 setTimeout(function() {
-                    ceEditor.focus();
+                    editors.currentEditor.amlEditor.focus();
                     apf.layout.forceResize(tabEditors.parentNode.$ext);
                 }, 100);
             });
@@ -412,7 +412,7 @@ module.exports = ext.register("ext/zen/zen", {
             vbZen.hide();
             apf.layout.forceResize();
             setTimeout(function() {
-                ceEditor.focus();
+                editors.currentEditor.amlEditor.focus();
             }, 100);
         }
 

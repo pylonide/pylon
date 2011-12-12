@@ -247,7 +247,7 @@ module.exports = ext.register("ext/debugger/debugger", {
         var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
         
         // check prerequisites
-        if (!ceEditor.$updateMarkerPrerequisite()) {
+        if (!editors.currentEditor.amlEditor.$updateMarkerPrerequisite()) {
             return;
         }
 

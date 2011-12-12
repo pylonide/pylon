@@ -162,8 +162,8 @@ module.exports = ext.register("ext/code/code", {
 
         var sel = doc.getSelection();
         return {
-            scrolltop  : ceEditor.$editor.renderer.getScrollTop(),
-            scrollleft : ceEditor.$editor.renderer.getScrollLeft(),
+            scrolltop  : this.amlEditor.$editor.renderer.getScrollTop(),
+            scrollleft : this.amlEditor.$editor.renderer.getScrollLeft(),
             selection  : sel.getRange(),
             folds      : folds
         };
@@ -178,8 +178,8 @@ module.exports = ext.register("ext/code/code", {
 
         //are those 3 lines set the values in per document base or are global for editor
         sel.setSelectionRange(state.selection, false);
-        ceEditor.$editor.renderer.scrollToY(state.scrolltop);
-        ceEditor.$editor.renderer.scrollToX(state.scrollleft);
+        this.amlEditor.$editor.renderer.scrollToY(state.scrolltop);
+        this.amlEditor.$editor.renderer.scrollToX(state.scrollleft);
 
         if (state.folds) {
             for (var i = 0, l=state.folds.length; i < l; i++) {
@@ -222,15 +222,15 @@ module.exports = ext.register("ext/code/code", {
     },
 
     getSelection : function(){
-        if (typeof ceEditor == "undefined")
+        if (typeof this.amlEditor == "undefined")
             return null;
-        return ceEditor.getSelection();
+        return this.amlEditor.getSelection();
     },
 
     getDocument : function(){
-        if (typeof ceEditor == "undefined")
+        if (typeof this.amlEditor == "undefined")
             return null;
-        return ceEditor.getSession();
+        return this.amlEditor.getSession();
     },
 
     setDocument : function(doc, actiontracker){
@@ -260,7 +260,7 @@ module.exports = ext.register("ext/code/code", {
                     return doc.acesession.getValue();
             });
         }
-        ceEditor.setProperty("value", doc.acesession);
+        this.amlEditor.setProperty("value", doc.acesession);
     },
 
     hook: function() {
@@ -288,11 +288,11 @@ module.exports = ext.register("ext/code/code", {
     },
 
     init: function(amlPage) {
-        amlPage.appendChild(ceEditor);
-        ceEditor.show();
-
         this.ceEditor = this.amlEditor = ceEditor;
-        ceEditor.$editor.commands = this.commandManager;
+        amlPage.appendChild(this.amlEditor);
+        this.amlEditor.show();
+
+        this.amlEditor.$editor.commands = this.commandManager;
 
         var _self = this;
 
@@ -361,16 +361,16 @@ module.exports = ext.register("ext/code/code", {
         };
 
         ide.addEventListener("keybindingschange", function(e) {
-            if (typeof ceEditor == "undefined")
+            if (typeof _self.amlEditor == "undefined")
                 return;
 
             var bindings = e.keybindings.code;
-            ceEditor.$editor.setKeyboardHandler(new HashHandler(bindings));
+            _self.amlEditor.$editor.setKeyboardHandler(new HashHandler(bindings));
             // In case the `keybindingschange` event gets fired after other
             // plugins that change keybindings have already changed them (i.e.
             // the vim plugin), we fire an event so these plugins can react to it.
             ide.dispatchEvent("code.ext:defaultbindingsrestored", {
-                bindings: ceEditor.$editor.getKeyboardHandler()
+                bindings: _self.amlEditor.$editor.getKeyboardHandler()
             });
         });
     },
@@ -442,8 +442,8 @@ module.exports = ext.register("ext/code/code", {
             item.destroy(true, true);
         });
 
-        if (self.ceEditor) {
-            ceEditor.destroy(true, true);
+        if (this.amlEditor) {
+            this.amlEditor.destroy(true, true);
             mnuSyntax.destroy(true, true);
         }
 

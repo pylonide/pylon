@@ -8,7 +8,10 @@
 
 define(function(require, exports, module) {
 
+var ide = require("core/ide");
 var Grids = require("ext/splitview/grids");
+var Editors = require("ext/editors/editors");
+var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
 var Splits = [];
 var EditorClones = {};
 var ActiveClass = "splitview_active";
@@ -17,6 +20,29 @@ var SplitView, ActiveSplit;
 
 exports.init = function(splitView) {
     SplitView = splitView;
+    
+    ide.addEventListener("keybindingschange", function(e) {
+        var bindings = e.keybindings;
+        
+        // make sure this function is executed AFTER all other editors changed 
+        // their keybindings
+        setTimeout(function() {
+            for (var id in EditorClones) {
+                if (!EditorClones.hasOwnProperty(id) || !EditorClones[id].length)
+                    continue;
+    
+                EditorClones[id].forEach(function(editor) {
+                    if (!editor.$editor || id.indexOf("codeeditor") == -1)
+                        return;
+                    
+                    var config = previousEditor 
+                        ? previousEditor.$editor.getKeyboardHandler() 
+                        : new HashHandler(bindings.code)
+                    editor.$editor.setKeyboardHandler(config);
+                });
+            }
+        });
+    });
     return this;
 };
 
@@ -76,7 +102,10 @@ exports.hide = function(split) {
         split.editors[i].hide();
     if (split === ActiveSplit)
         ActiveSplit = null;
-        
+    
+    if (previousEditor)
+        Editors.currentEditor.amlEditor = previousEditor;
+
     return this;
 };
 
@@ -264,8 +293,11 @@ function sortEditorsAndPages(split) {
 
 function createEditorClones(editor) {
     var id = editor.tagName;
-    
-    if (!EditorClones.cloneEditor) {
+    var isCodeEditor = id.indexOf("codeeditor") > -1;
+
+    if (!EditorClones.cloneEditor && isCodeEditor) {
+        if (!previousEditor)
+            previousEditor = editor;
         EditorClones.cloneEditor = editor.cloneNode(true);
         EditorClones.cloneEditor.removeAttribute("id");
         EditorClones.cloneEditor.setAttribute("visible", "false");
@@ -288,6 +320,11 @@ function createEditorClones(editor) {
         EditorClones[id].push(editor);
         apf.document.body.appendChild(editor);
         addEditorListeners.call(this, editor);
+        if (isCodeEditor) {
+            editor.$editor.commands = previousEditor.$editor.commands;
+            if (previousEditor.$editor.getKeyboardHandler())
+                editor.$editor.setKeyboardHandler(previousEditor.$editor.getKeyboardHandler());
+        }
     }
     
     return EditorClones[id];
@@ -313,8 +350,16 @@ function removeEditorListeners(editor) {
     delete editor.$splitListener;
 }
 
+var previousEditor;
+
 function onEditorFocus(editor) {
     var splits = exports.get(editor);
+    
+    if (Editors.currentEditor.name.indexOf("Code Editor") > -1) {
+        if (!previousEditor)
+            previousEditor = Editors.currentEditor.amlEditor;
+        Editors.currentEditor.amlEditor = editor;
+    }
 
     splits.forEach(function(split) {
         var activePage = split.pages[split.editors.indexOf(editor)];

@@ -17,10 +17,10 @@ var matchChar = function(buffer, hashId, key, symbolicName, keyId) {
 
     if (matched) {
         if (keyId) {
-            keyId = String.fromCharCode(parseInt(keyId.replace("U+", "0x")));
+            keyId = String.fromCharCode(parseInt(keyId.replace("U+", "0x"), 10));
         }
 
-        var editor = editors.currentEditor.ceEditor.$editor;
+        var editor = editors.currentEditor.amlEditor.$editor;
         editor.commands.addCommand({
             name: "builder",
             exec: function(editor) {

@@ -26,7 +26,7 @@ var OLD_HANDLER;
 
 var onConsoleCommand = function onConsoleCommand(e) {
     var cmd = e.data.command;
-    var domEditor = editors.currentEditor.ceEditor;
+    var domEditor = editors.currentEditor.amlEditor;
     if (cmd && typeof cmd === "string") {
         if (cmd[0] === ":") {
             cmd = cmd.substr(1);
@@ -81,10 +81,10 @@ var onCursorMove = function() {
 };
 
 var enableVim = function enableVim() {
-    if (editors.currentEditor && editors.currentEditor.ceEditor) {
+    if (editors.currentEditor && editors.currentEditor.amlEditor) {
         ext.initExtension(this);
 
-        var editor = editors.currentEditor.ceEditor.$editor;
+        var editor = editors.currentEditor.amlEditor.$editor;
         addCommands(editor, commands);
         editor.renderer.container.addEventListener("click", onCursorMove, false);
 
@@ -102,8 +102,8 @@ var enableVim = function enableVim() {
 };
 
 var disableVim = function() {
-    if (editors.currentEditor && editors.currentEditor.ceEditor) {
-        var editor = editors.currentEditor.ceEditor.$editor;
+    if (editors.currentEditor && editors.currentEditor.amlEditor) {
+        var editor = editors.currentEditor.amlEditor.$editor;
 
         removeCommands(editor, commands);
         editor.setKeyboardHandler(OLD_HANDLER);
@@ -116,7 +116,7 @@ var disableVim = function() {
 var cliKeyDown = function(e) {
     if (e.keyCode === 27) { // ESC is pressed in the CLI
         txtConsoleInput.blur();
-        editors.currentEditor.ceEditor.focus();
+        editors.currentEditor.amlEditor.focus();
     }
 };
 

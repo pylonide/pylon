@@ -3,7 +3,7 @@
    <a:bar name="bar">
         <a:style><![CDATA[
             .barQuickSearch{
-                position : relative;
+                position : absolute;
 
                 -webkit-border-top-left-radius: 0px;
                 -webkit-border-top-right-radius: 0px;

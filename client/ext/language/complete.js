@@ -69,7 +69,7 @@ module.exports = {
     showCompletionBox: function(matches, prefix) {
         var _self = this;
         this.editor = editors.currentEditor;
-        var ace = this.editor.ceEditor.$editor;
+        var ace = this.editor.amlEditor.$editor;
         this.selectedIdx = 0;
         this.scrollIdx = 0;
         this.matchEls = [];
@@ -77,7 +77,7 @@ module.exports = {
         this.matches = matches;
         this.completionElement = txtCompleter.$ext;
         this.cursorConfig = ace.renderer.$cursorLayer.config;
-        var style = dom.computedStyle(this.editor.ceEditor.$ext);
+        var style = dom.computedStyle(this.editor.amlEditor.$ext);
         this.completionElement.style.fontSize = style.fontSize;
         //this.completionElement.style.maxHeight = 10 * this.cursorConfig.lineHeight;
         
@@ -116,7 +116,7 @@ module.exports = {
     },
 
     closeCompletionBox : function(event, doNotHide) {
-        var ace = editors.currentEditor.ceEditor.$editor;
+        var ace = editors.currentEditor.amlEditor.$editor;
         if (!doNotHide)
             barCompleterCont.$ext.style.display = "none";
         document.removeEventListener("click", this.closeCompletionBox);
@@ -137,7 +137,7 @@ module.exports = {
                 matchEl.innerHTML += '<span class="meta">' + match.meta + '</score>';
             }
             matchEl.addEventListener("click", function() {
-                var editor = editors.currentEditor.ceEditor.$editor;
+                var editor = editors.currentEditor.amlEditor.$editor;
                 replaceText(editor, _self.prefix, match.replaceText);
                 editor.focus();
             });
@@ -154,7 +154,7 @@ module.exports = {
         else if(keyCode === 9 && e.shiftKey) // Shift-Tab
             keyCode = 38; // Down
         
-        var keyBinding = editors.currentEditor.ceEditor.$editor.keyBinding;
+        var keyBinding = editors.currentEditor.amlEditor.$editor.keyBinding;
 
         switch(keyCode) {
             case 0: break;
@@ -180,7 +180,7 @@ module.exports = {
                 e.preventDefault();
                 break;
             case 13: // Enter
-                var editor = editors.currentEditor.ceEditor.$editor;
+                var editor = editors.currentEditor.amlEditor.$editor;
                 replaceText(editor, this.prefix, this.matches[this.selectedIdx].replaceText);
                 this.closeCompletionBox();
                 e.preventDefault();
@@ -224,7 +224,7 @@ module.exports = {
     },
 
     invoke: function(forceBox) {
-        var editor = editors.currentEditor.ceEditor.$editor;
+        var editor = editors.currentEditor.amlEditor.$editor;
         this.forceBox = forceBox;
         // This is required to ensure the updated document text has been sent to the worker before the 'complete' message
         var worker = this.worker;
@@ -234,7 +234,7 @@ module.exports = {
     },
     
     onComplete: function(event) {
-        var editor = editors.currentEditor.ceEditor.$editor;
+        var editor = editors.currentEditor.amlEditor.$editor;
         var pos = editor.getCursorPosition();
         var line = editor.getSession().getLine(pos.row);
         var identifier = retrievePreceedingIdentifier(line, pos.column);

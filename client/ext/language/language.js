@@ -56,11 +56,11 @@ module.exports = ext.register("ext/language/language", {
 		ide.addEventListener("afteropenfile", function(event){
             if (!event.node)
                 return;
-            if (!editors.currentEditor || !editors.currentEditor.ceEditor) // No editor, for some reason
+            if (!editors.currentEditor || !editors.currentEditor.amlEditor) // No editor, for some reason
                 return;
             ext.initExtension(_self);
             var path = event.node.getAttribute("path");
-            worker.call("switchFile", [path, editors.currentEditor.ceEditor.syntax, event.doc.getValue()]);
+            worker.call("switchFile", [path, editors.currentEditor.amlEditor.syntax, event.doc.getValue()]);
             event.doc.addEventListener("close", function() {
                 worker.emit("documentClose", {data: path});
             });
@@ -84,9 +84,9 @@ module.exports = ext.register("ext/language/language", {
         var _self = this;
         var worker = this.worker;
         apf.importCssString(css);
-        if (!editors.currentEditor || !editors.currentEditor.ceEditor)
+        if (!editors.currentEditor || !editors.currentEditor.amlEditor)
             return;
-        this.editor = editors.currentEditor.ceEditor.$editor;
+        this.editor = editors.currentEditor.amlEditor.$editor;
         this.$onCursorChange = this.onCursorChangeDefer.bind(this);
         this.editor.selection.on("changeCursor", this.$onCursorChange);
         var oldSelection = this.editor.selection;
@@ -119,9 +119,9 @@ module.exports = ext.register("ext/language/language", {
     setPath: function() {
         var currentPath = tabEditors.getPage().getAttribute("id");
         // Currently no code editor active
-        if(!editors.currentEditor.ceEditor)
+        if(!editors.currentEditor.amlEditor)
             return;
-        this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition()]);
+        this.worker.call("switchFile", [currentPath, editors.currentEditor.amlEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition()]);
     },
     
     setJSHint: function() {
