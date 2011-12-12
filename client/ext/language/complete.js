@@ -157,8 +157,7 @@ module.exports = {
             keyCode = 38; // Down
         
         var keyBinding = editors.currentEditor.ceEditor.$editor.keyBinding;
-        console.log(e);
-
+        
         switch(keyCode) {
             case 0: break;
             case 32: // Space
@@ -215,10 +214,14 @@ module.exports = {
                 e.preventDefault();
                 break;
             default:
-                setTimeout(function() {
-                    _self.closeCompletionBox(null, true);
-                    _self.invoke(true);
-                });
+                var ch = String.fromCharCode(parseInt(e.keyIdentifier.replace("U+", ""), 16));
+                if(ch.match(/[^A-Za-z0-9_\$]/))
+                    this.closeCompletionBox();
+                else
+                    setTimeout(function() {
+                        _self.closeCompletionBox(null, true);
+                        _self.invoke(true);
+                    });
         }
     },
     
