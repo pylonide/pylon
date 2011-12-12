@@ -12,8 +12,19 @@
             }
             
             .bar-liveinspect .datagridFocus .records .selected, .datagridFocus .records .selected span {
-                background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #49494f),color-stop(1, #646469));
-                background: -moz-linear-gradient(center bottom,#49494f 0%,#646469 100%);                
+                background-image: linear-gradient(bottom, #494949 0%, #646469 100%);
+                background-image: -o-linear-gradient(bottom, #494949 0%, #646469 100%);
+                background-image: -moz-linear-gradient(bottom, #494949 0%, #646469 100%);
+                background-image: -webkit-linear-gradient(bottom, #494949 0%, #646469 100%);
+                background-image: -ms-linear-gradient(bottom, #494949 0%, #646469 100%);
+                
+                background-image: -webkit-gradient(
+                    linear,
+                	left bottom,
+                	left top,
+                	color-stop(0, #494949),
+                	color-stop(1, #646469)
+                );
             }
             
             .bar-liveinspect .datagridFocus .records .selected span u {
