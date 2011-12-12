@@ -29,6 +29,8 @@ completer.fetchText = function(path) {
 completer.complete = function(doc, fullAst, pos, currentNode) {
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
+    if(line[pos.column-1] === '.') // No snippet completion after "."
+        return;
 
     var snippets = snippetCache[this.language];
     

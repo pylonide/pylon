@@ -129,10 +129,11 @@ module.exports = {
     populateCompletionBox: function (matches) {
         var _self = this;
         _self.completionElement.innerHTML = "";
+        var cursorConfig = ceEditor.$editor.renderer.$cursorLayer.config;
         matches.forEach(function(match, idx) {
             var matchEl = dom.createElement("div");
             matchEl.className = idx === _self.selectedIdx ? "cc_complete_option_selected" : "cc_complete_option";
-            matchEl.innerHTML = "<u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length);
+            matchEl.innerHTML = "<span class='main'><u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length) + '</span>';
             if(match.meta) {
                 matchEl.innerHTML += '<span class="meta">' + match.meta + '</score>';
             }
@@ -141,6 +142,7 @@ module.exports = {
                 replaceText(editor, _self.prefix, match.replaceText);
                 editor.focus();
             });
+            matchEl.style.height = cursorConfig.lineHeight + "px";
             _self.completionElement.appendChild(matchEl);
             _self.matchEls.push(matchEl);
         });
@@ -155,6 +157,7 @@ module.exports = {
             keyCode = 38; // Down
         
         var keyBinding = editors.currentEditor.ceEditor.$editor.keyBinding;
+        console.log(e);
 
         switch(keyCode) {
             case 0: break;

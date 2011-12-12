@@ -77,6 +77,22 @@ Scope.prototype.get = function(name) {
         return this.parent.get(name);
 };
 
+Scope.prototype.getVariableNames = function() {
+    var names = [];
+    for(var p in this.vars) {
+        if(this.vars.hasOwnProperty(p)) {
+            names.push(p.slice(1));
+        }
+    }
+    if(this.parent) {
+        var namesFromParent = this.parent.getVariableNames();
+        for (var i = 0; i < namesFromParent.length; i++) {
+            names.push(namesFromParent[i]);
+        }
+    }
+    return names;
+};
+
 handler.analyze = function(doc, ast) {
     var handler = this;
     var markers = [];
@@ -109,6 +125,7 @@ handler.analyze = function(doc, ast) {
     function scopeAnalyzer(scope, node, parentLocalVars) {
         preDeclareHoisted(scope, node);
         var localVariables = parentLocalVars || [];
+        node.setAnnotation("scope", scope);
         node.traverseTopDown(
             'VarDecl(x)', function(b) {
                 localVariables.push(scope.get(b.x.value));
@@ -176,6 +193,9 @@ handler.analyze = function(doc, ast) {
                     type: 'warning',
                     message: "Missing radix argument."
                 });
+            },
+            'Block(_)', function() {
+                this.setAnnotation("scope", scope);
             }
         );
         if(!parentLocalVars) {
@@ -195,7 +215,6 @@ handler.analyze = function(doc, ast) {
     }
     var rootScope = new Scope();
     scopeAnalyzer(rootScope, ast);
-    ast.setAnnotation("scope", rootScope);
     return markers;
 };
 

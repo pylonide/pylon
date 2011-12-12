@@ -295,7 +295,8 @@ oop.inherits(LanguageWorker, Mirror);
             var handler = this.handlers[i];
             if (handler.handlesLanguage(this.$language) && handler.completionRequiresParsing()) {
                 ast = this.parse();
-                currentNode = ast.findNode({line: pos.row, col: pos.column});
+                if(ast)
+                    currentNode = ast.findNode({line: pos.row, col: pos.column});
                 break;
             }
         }
