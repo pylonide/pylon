@@ -142,7 +142,7 @@ var defaultGrid = exports.DEFAULT_GRID = "3cols";
  */
 exports.init = function(gridLayout) {
     gridLayout = gridLayout || defaultGrid;
-    console.log("init called", gridLayout);
+    //console.log("init called", gridLayout);
     createGridNodes(gridLayout);
     return gridLayout;
 };
@@ -154,14 +154,14 @@ exports.get = function(name) {
 exports.update = function(gridLayout, split) {
     var grid = GridLayouts[gridLayout];
     
-    console.log("update: ", split.pages[0].$pHtmlNode, grid.node, grid.node.parentNode, grid.node.$pHtmlNode);
+    //console.log("update: ", split.pages[0].$pHtmlNode, grid.node, grid.node.parentNode, grid.node.$pHtmlNode);
     grid.node.show();
     // attach the grid layout to the first page of the splitview...
     var page = split.pages[0];
     var amlPage = page.fake ? page.relPage : page;
     amlPage.appendChild(grid.node);
     
-    console.log(split.editors.map(function(editor){return editor.$ext;}), grid.insertPoints);
+    //console.log(split.editors.map(function(editor){return editor.$ext;}), grid.insertPoints);
     var i = 0;
     var l = split.editors.length;
     for (; i < l; ++i)
@@ -224,8 +224,8 @@ function createNodes(struct, splitters, parent) {
         }
         
         var node = parent.appendChild(new apf[nodeName](options));
-        if (nodeName == "splitter"){console.log("GOT SPLITTER");
-            splitters.push(node);}
+        if (nodeName == "splitter")
+            splitters.push(node);
         // if we just appended the main node to the document, set it as the grid's
         // main node
         if (parent === apf.document.body)
@@ -275,7 +275,7 @@ function insertEditorAt(parent, editor, insertPoint) {
             for (var i = 0, l = parent.childNodes.length; i < l; ++i) {
                 if (parent.childNodes[i].tagName.indexOf(insertPoint[0]) == -1)
                     continue;
-                console.log("setting parent to...",parent.childNodes[i]);
+                //console.log("setting parent to...",parent.childNodes[i]);
                 parent = parent.childNodes[i];
                 break;
             }
