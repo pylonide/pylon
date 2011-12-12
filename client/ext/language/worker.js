@@ -323,6 +323,10 @@ oop.inherits(LanguageWorker, Mirror);
                 return 1;
             else if (a.score > b.score)
                 return -1;
+            else if(a.name < b.name)
+                return -1;
+            else if(a.name > b.name)
+                return 1;
             else
                 return 0;
         });
