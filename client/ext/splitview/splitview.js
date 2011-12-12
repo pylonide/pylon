@@ -116,21 +116,23 @@ module.exports = ext.register("ext/splitview/splitview", {
         var tabs    = tabEditors;
         var pages   = tabs.getPages();
         var curr    = tabs.getPage();
-        var currIdx = pages.indexOf(curr);
+        var split   = Splits.getActive();
+        if (split && split.pages.indexOf(curr) > -1)
+            curr = split.pages[bRight ? split.pages.length - 1 : 0];
         if (!curr || pages.length == 1)
             return;
-            
+        
+        var currIdx = pages.indexOf(curr);
         var idx = currIdx + (bRight ? 1 : -1);
-        if (idx < 0)
-            idx = pages.length - 1;
-        if (idx > pages.length -1)
-            idx = 0;
+        if (idx < 0 || idx > pages.length - 1)
+            return;
 
         // enable split view ONLY for code editors for now...
         if (pages[idx].$editor.name.indexOf("Code Editor") == -1)
             return;
         // pass in null to mutate the active split view
         Splits.mutate(null, pages[idx]);
+        Splits.update();
         this.save();
         return false;
     },
