@@ -143,7 +143,11 @@ module.exports = (function () {
             var edit = document.createElement("input");
             edit.type = "text";
             edit.value = target.innerText;
-            edit.style.width = "100%";
+            edit.style.width = "98%";
+            edit.style.outline = "0";
+            edit.style.border = "solid 1px gray";
+            edit.style.height = "13px";
+            edit.style["margin-top"] = "1px";
             
             // update variable
             var onBlur = function () {
