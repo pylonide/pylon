@@ -16,7 +16,8 @@ define(function(require, exports, module)
     var markup = require("text!ext/guidedtour/guidedtour.xml");
     var console = require("ext/console/console");
     var zen = require("ext/zen/zen");
-
+    var dockpanel = require("ext/dockpanel/dockpanel");
+    
     var save;
     var madeNewFile = false;
     var wentToZen = false;
@@ -210,7 +211,7 @@ define(function(require, exports, module)
             before: function()
             {
 
-                },
+            },
             el: undefined,
             div: "expandedDbg",
             desc: "Next, when you start debugging, you'll instantly get a new debugging toolbar.",
@@ -219,8 +220,8 @@ define(function(require, exports, module)
         }, {
             before: function()
             {
-
-                },
+                dbgCallStack.show();
+            },
             el: undefined,
             div: "DIV[2]",
             node: "/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[4]/a:hbox[1]/vbox[1]/tab[1]",
@@ -298,7 +299,7 @@ define(function(require, exports, module)
     module.exports = ext.register("ext/guidedtour/guidedtour", {
         name: "Guided Tour",
         dev: "Cloud9 IDE, Inc.",
-        alone: true,
+        alone: false,
         type: ext.GENERAL,
         markup: markup,
         tour: jsonTourIde,
