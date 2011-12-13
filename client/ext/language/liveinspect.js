@@ -18,6 +18,15 @@ module.exports = (function () {
         // get respective HTML elements
         windowHtml = winLiveInspect.$ext;
         datagridHtml = dgLiveInspect.$ext;
+        winLiveInspect.addEventListener("prop.visible", function(e) {
+            // don't track when hiding the window
+            if (!e.value)
+                return;
+            ide.dispatchEvent("track_action", {
+                type: "live inspect code",
+                expression: currentExpression || "no expression available yet."
+            });
+        });
     };
     
     var hook = function(_ext, worker) {

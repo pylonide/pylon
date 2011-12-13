@@ -39,11 +39,16 @@ module.exports = ext.register("ext/settings/settings", {
     },
 
     saveToFile : function() {
+        var data = this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || "";
         ide.send(JSON.stringify({
             command: "settings",
             action: "set",
-            settings: this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || ""
+            settings: data
         }));
+        ide.dispatchEvent("track_action", {
+            type: "save settings",
+            settings: data
+        });
     },
 
     saveSettingsPanel: function() {
