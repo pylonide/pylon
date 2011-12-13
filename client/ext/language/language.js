@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 var ext = require("core/ext");
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
+var noderunner = require("ext/noderunner/noderunner");
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
 
 var complete = require('ext/language/complete');
@@ -28,7 +29,7 @@ module.exports = ext.register("ext/language/language", {
     name    : "Javascript Outline",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
-    deps    : [editors],
+    deps    : [editors, noderunner],
     nodes   : [],
     alone   : true,
     markup  : markup,
