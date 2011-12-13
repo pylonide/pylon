@@ -358,6 +358,13 @@ module.exports = ext.register("ext/code/code", {
 
                     if (!customType)
                         _self.setCustomType(fileExt ? fileExt : file, mime);
+                    ide.dispatchEvent("track_action", {
+                        type: "syntax highlighting",
+                        fileType: fileExt,
+                        fileName: fileName,
+                        mime: mime,
+                        customType: customType
+                    });
                 }
             }
         };
