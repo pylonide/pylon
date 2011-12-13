@@ -23,7 +23,10 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
     markup     : markup,
     css         : css,
     nodes      : [],
-    
+    commands   : {
+        "savetabsession": {hint: "save the current tab state as a new session", msg: "Save tab session."},
+    },
+    hotitems   : [],
     init : function(amlNode){
         apf.importCssString((this.css || ""));
         
@@ -73,13 +76,13 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                 mnuTabs.appendChild(new apf.divider()),
                 mnuTabs.appendChild(new apf.item({
                     id      : "mnuFileLoadSession",
-                    caption : "Restore Tab Session",
+                    caption : "Load Tab Session",
                     submenu : "mnuTabLoadSessions",
                     disabled: !sessions.length
                 })),
     
                 mnuTabs.appendChild(new apf.item({
-                    caption : "Save Open Files as Tab Session",
+                    caption : "Save Tab Session",
                     onclick : function(){
                         winSaveSessionAs.show();
                     },
@@ -93,6 +96,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                     disabled: !sessions.length
                 }))
             );
+            _self.hotitems["savetabsession"] = [_self.nodes[4]];
         });
     },
     
@@ -152,47 +156,26 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         winSaveSessionAs.hide();
     },
     
-    loadSession : function(name, ignoreChanges) {
-        // check for unsaved files
-        var pages = tabEditors.getPages();
-        var page;
-        /*
-        for (var i = 0, l = pages.length; i < l; i++) {
-            page = pages[i];
-            if (page.$doc.getNode().getAttribute("changed") == 1) {
-                if (!ignoreChanges) {
-                    var _self = this;
-                    return util.confirm("Unsaved changes", "Unsaved changes",
-                        "Your unsaved changes will be lost. Are you sure you want to continue?",
-                        function() {
-                            return _self.loadSession(name, true);
-                        }
-                    );
-                }
-                else {
-                    page.$doc.getNode().setAttribute("changed", 0);
-                }
-            }
-        }
-        */
+    loadSession : function(name) {
+        var _self = this;
+        tabbehaviors.closealltabs(function() {
+            _self.openSessionFiles(name);
+        });
+    },
+    
+    openSessionFiles : function(name) {
+        var active = settings.model.queryValue("auto/sessions/session[@name=\"" + name + "\"]/files/@active");
+        var nodes  = settings.model.queryNodes("auto/sessions/session[@name=\"" + name + "\"]/files/file");
+        
         var sessionfiles = settings.model.queryNode("auto/sessions/session[@name=\"" + name + "\"]/files");
         if (!sessionfiles)
             return; // or display error
             
-        // close open tabs
-        pages = tabEditors.getPages();
-        pages.forEach(function(page) {
-            tabbehaviors.removeItem(page);
-            tabEditors.remove(page, null, true);
-        });
-
-        // open session files
-        var active = settings.model.queryValue("auto/sessions/session[@name=\"" + name + "\"]/files/@active");
-        var nodes  = settings.model.queryNodes("auto/sessions/session[@name=\"" + name + "\"]/files/file");
-        
         for (var doc, i = 0, l = nodes.length; i < l; i++) {
             var node = nodes[i];
+            node.removeAttribute("changed");
             doc = ide.createDocument(node);
+            doc.parentNode = {};
             
             var state = node.getAttribute("state");
             if (state) {

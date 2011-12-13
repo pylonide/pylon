@@ -92,6 +92,9 @@ return keys.onLoad({
             "nexttab": "Ctrl-Tab",
             "previoustab": "Ctrl-Shift-Tab"
         },
+        "tabsessions" : {
+            "savetabsession": "Ctrl-Alt-S",
+        },
         "splitview" : {
             "mergetableft": "Ctrl-Alt-[",
             "mergetabright": "Ctrl-Alt-]"

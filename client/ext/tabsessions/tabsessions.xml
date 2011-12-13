@@ -2,13 +2,13 @@
     <a:window
       id        = "winSaveSessionAs"
       center    = "true"
-      height    = "350"
+      height    = "300"
       icon      = ""
       buttons   = "close"
       kbclose   = "true"
       resizable = "true"
       title     = "Save Session As"
-      width     = "480"
+      width     = "300"
       onshow    = "txtSaveSessionAs.clear()">
         <a:vbox
           anchors   = "10 10 0 10"
@@ -16,23 +16,25 @@
             <a:hbox
               align     = "center"
               padding   = "5">
-                <a:label flex="1" class="lbl_saveas">Save as:</a:label>
+                <a:label width="83" class="lbl_saveas">Session name:</a:label>
                 <a:textbox
                   id           = "txtSaveSessionAs"
-                  flex         = "7"
+                  flex         = "1"
                   focusselect  = "true"/>
             </a:hbox>
-            <div class="dgLikeContaier">
-                <div class="heading">Existing Sessions</div>
+            <div class="dgLikeContaier" style="height: 160px;">
+                <div class="heading">Saved sessions</div>
                 <a:hbox
                   anchors  = "20 0 0 0"
                   overflow = "hidden">
                     <a:list
-                      id            = "trSaveSessionAs"
-                      class         = "trDgLike"
+                      id            = "lstSaveSessionAs"
+                      class         = "trDgLike emptyLeft"
+                      style         = "border: none; overflow: hidden"
                       flex          = "1"
                       model         = "{require('ext/settings/settings').model}"
-                      onclick = "txtSaveSessionAs.setValue(this.selected.getAttribute('name'))">
+                      onclick = "txtSaveSessionAs.setValue(this.selected.getAttribute('name'))"
+                      empty-message = "No sessions">
                         <a:each match="[auto/sessions/session]">
                            <a:caption match="[@name]" />
                            <a:icon
@@ -41,7 +43,7 @@
                     </a:list>
                     
                     <a:scrollbar
-                        for      = "trSaveSessionAs"
+                        for      = "lstSaveSessionAs"
                         margin   = "2"
                         skin     = "sbios"
                         width    = "7"
@@ -51,7 +53,7 @@
             </div>
 
             <a:hbox
-              edge    = "4 0 0"
+              edge    = "10 0 0"
               pack    = "end"
               padding = "5">
                 <a:button

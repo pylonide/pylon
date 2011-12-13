@@ -24,7 +24,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     $tabAccessCycle : 2,
     sep        : null,
     more       : null,
-    menuOffset : 5,
+    menuOffset : 3,
     commands   : {
         "closetab": {hint: "close the tab that is currently active", msg: "Closing active tab."},
         "closealltabs": {hint: "close all opened tabs", msg: "Closing all tabs."},
@@ -53,18 +53,6 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         var _self = this;
         
         this.nodes.push(
-            mnuTabs.appendChild(new apf.item({
-                caption : "Reveal in File Tree",
-                onclick : function() {
-                    _self.revealtab();
-                }
-            })),
-            mnuTabs.appendChild(new apf.item({
-                caption : "Close Tab",
-                onclick : function() {
-                    _self.closetab();
-                }
-            })),
             mnuTabs.appendChild(new apf.item({
                 caption : "Close All Tabs",
                 onclick : this.closealltabs.bind(this)
@@ -104,15 +92,14 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 ]
             }))
         );
-        this.hotitems["revealtab"]     = [this.nodes[0]];
-        this.hotitems["closetab"]      = [this.nodes[1]];
-        this.hotitems["closealltabs"]  = [this.nodes[2]];
-        this.hotitems["closeallbutme"] = [this.nodes[3]];
+        this.hotitems["revealtab"]     = [mnuContextTabs.childNodes[0]];
+        this.hotitems["closetab"]      = [mnuContextTabs.childNodes[1]];
+        this.hotitems["closealltabs"]  = [this.nodes[0], mnuContextTabs.childNodes[2]];
+        this.hotitems["closeallbutme"] = [this.nodes[1], mnuContextTabs.childNodes[3]];
 
         tabEditors.setAttribute("contextmenu", "mnuContextTabs");
 
         tabEditors.addEventListener("close", function(e) {
-            _self.removeItem(e.page);
             if (!e || !e.htmlEvent)
                 return;
             var page = e.page;
@@ -144,6 +131,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         
         tabEditors.addEventListener("DOMNodeRemoved", function(e) {
             var page = e.currentTarget;
+            _self.removeItem(page);
+
             if (page.localName != "page" || e.relatedNode != this || page.nodeType != 1)
                 return;
             
@@ -182,6 +171,13 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 cycleKeyPressed = false;
             }
         });
+        
+        tabEditors.addEventListener("aftersavedialogcancel", function(e) {
+            for (i = 0, l = _self.changedPages.length; i < l; i++) {
+                page = _self.changedPages[i];
+                page.removeEventListener("aftersavedialogclosed", arguments.callee);
+            }
+        });
     },
 
     closetab: function(page) {
@@ -192,7 +188,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             tabEditors.remove(page);
         return false;
     },
-
+/*
     closealltabs: function() {
         var tabs  = tabEditors,
             pages = tabs.getPages(),
@@ -210,7 +206,76 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             });
         });
     },
-
+*/
+    closealltabs: function(callback) {
+        this.closeallbutme(1, callback);
+    },
+    
+    // ignore is the page that shouldn't be closed, null to close all tabs
+    closeallbutme: function(ignore, callback) {
+        ignore = ignore || tabEditors.getPage();
+        this.changedPages = [];
+        this.unchangedPages = [];
+        
+        var page;
+        var pages = tabEditors.getPages();
+        
+        var _self = this;
+        for (var i = 0, l = pages.length; i < l; i++) {
+            page = pages[i];
+            
+            if (ignore && page == ignore)
+                continue;
+            
+            if (page.$doc.getNode().getAttribute("changed") == "1") {
+                page.noAnim = true; // turn off animation on closing tab
+                this.changedPages.push(page);
+                
+                page.addEventListener("aftersavedialogclosed", function(e) {
+                    var curPage = _self.changedPages[0];
+                    if (_self.changedPages.length && curPage.caption != e.currentTarget.caption)
+                        return
+                    _self.changedPages.shift();
+                    this.removeEventListener("aftersavedialogclosed", arguments.callee);
+                    if (_self.changedPages.length == 0) {
+                        _self.closeUnchangedPages(function() {
+                            if (callback)
+                                callback();
+                        });
+                    }
+                    else {
+                        tabEditors.remove(_self.changedPages[0], null, true);
+                    }
+                });
+            }
+            else {
+                this.unchangedPages.push(page);
+            }
+        }
+        
+        if (this.changedPages.length) {
+            tabEditors.remove(this.changedPages[0], null, true);
+        }
+        else {
+            this.closeUnchangedPages(function() {
+                if (callback)
+                    callback();
+            });
+        }
+    },
+    
+    closeUnchangedPages : function(callback) {
+        var page;
+        for (var i = 0, l = this.unchangedPages.length; i < l; i++) {
+            page = this.unchangedPages[i];
+            tabEditors.remove(page, null, true);
+        }
+        
+        if (callback)
+            callback();
+    },
+    
+    /*
     closeallbutme: function(page) {
         page = page || tabEditors.getPage();
         var tabs  = tabEditors,
@@ -236,7 +301,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         
         return false;
     },
-    
+    */
     nexttab : function(){
         var n = this.accessed.length - this.$tabAccessCycle++;
         if (n < 0) {
@@ -447,7 +512,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.sep = null;
         }
         else if (!this.sep && (len || force)) {
-            this.sep = mnuTabs.insertBefore(new apf.divider(), mnuTabs.childNodes[8]);
+            this.sep = mnuTabs.insertBefore(new apf.divider(), mnuTabs.childNodes[6]);
         }
 
         if (len < (force ? 19 : 20)) { // we already have 9 other menu items
