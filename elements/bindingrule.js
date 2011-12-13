@@ -75,7 +75,7 @@ apf.BindingRule = function(struct, tagName){
     //1 = force no bind rule, 2 = force bind rule
     this.$attrExcludePropBind = apf.extend({
         value : 1,
-        match : 1,
+        match : 1
     }, this.$attrExcludePropBind);
 
     this.$booleanProperties["hasaml"] = true;
