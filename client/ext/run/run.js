@@ -115,7 +115,9 @@ module.exports = ext.register("ext/run/run", {
         }
         else {
             this.runConfig(config, debug);
-            ide.dispatchEvent("track_action", {type: debug ? "debug" : "run"});
+            // track it!
+            config.type = debug ? "debug" : "run";
+            ide.dispatchEvent("track_action", config);
         }
     },
 
@@ -167,6 +169,7 @@ module.exports = ext.register("ext/run/run", {
 
     stop : function() {
         noderunner.stop();
+        ide.dispatchEvent("track_events", {type: "stop"});
     },
 
     enable : function(){
