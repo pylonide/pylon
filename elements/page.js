@@ -116,13 +116,13 @@ apf.page = function(struct, tagName){
                // if(elBtnClose.nodeType == 1) {
                 apf.setStyleClass(this.$button, "btnclose");
                 
-                elBtnClose.addEventListener("mousedown", function(){
-                    apf.cancelBubble(event, apf.lookup(_self.$uniqueId));
+                elBtnClose.addEventListener("mousedown", function(e){
+                    apf.cancelBubble(e, apf.lookup(_self.$uniqueId));
                 });
                 
-                elBtnClose.addEventListener("click", function(){
+                elBtnClose.addEventListener("click", function(e){
                     var page = apf.lookup(_self.$uniqueId);
-                     page.parentNode.remove(page, event);
+                     page.parentNode.remove(page, e);
                 });
 
                 btncontainer.appendChild(elBtnClose);

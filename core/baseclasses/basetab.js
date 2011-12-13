@@ -385,6 +385,22 @@ apf.BaseTab = function(){
             }
             //oneach   : function(){alert(1);}
         };
+        
+        function btnMoHandler(e){
+            var pos = apf.getAbsolutePosition(this);
+            if (e.clientX <= pos[0] || e.clientY <= pos[1] 
+              || e.clientX >= pos[0] + this.offsetWidth 
+              || e.clientY >= pos[1] + this.offsetHeight) {
+                apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
+                if (_self.$control.state == apf.tween.STOPPED) {
+                    delete _self.$waitForMouseOut;
+                    _self.$scaleinit(null, "sync");
+                }
+                else if (_self.$waitForMouseOut)
+                    _self.$waitForMouseOut = 2;
+            }
+        }
+        
         this.$control.type = type;
         
         if (type == "add") {
@@ -400,8 +416,8 @@ apf.BaseTab = function(){
         }
         else if (type == "remove") {
             anim.onfinish = function(){
-            	if (node.dispatchEvent("afterclose") !== false)
-                	callback();
+                if (node.dispatchEvent("afterclose") !== false)
+                    callback();
                     
                 html.style.marginLeft = 0;
                 apf.setOpacity(html, 1);
@@ -461,27 +477,8 @@ apf.BaseTab = function(){
             }
             
             this.$waitForMouseOut = true;
-            if (!isLast) {
-                if (!btnMoHandler) {
-                    var _self = this;
-                    function btnMoHandler(e){
-                        var pos = apf.getAbsolutePosition(this);
-                        if (e.clientX <= pos[0] || e.clientY <= pos[1] 
-                          || e.clientX >= pos[0] + this.offsetWidth 
-                          || e.clientY >= pos[1] + this.offsetHeight) {
-                            apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
-                            if (_self.$control.state == apf.tween.STOPPED) {
-                                delete _self.$waitForMouseOut;
-                                _self.$scaleinit(null, "sync");
-                            }
-                            else if (_self.$waitForMouseOut)
-                                _self.$waitForMouseOut = 2;
-                        }
-                    }
-                }
-                
+            if (!isLast)
                 apf.addListener(_self.$buttons, "mouseout", btnMoHandler);
-            }
         }
         
         if (anim.tweens.length)
