@@ -2052,7 +2052,7 @@
           overflow-x: scroll;
           overflow-y: hidden;
           height: 100%;
-          width: 70px !important;
+          width: 60px !important;
           -moz-user-select: -moz-none;
           -khtml-user-select: none;
           -webkit-user-select: none;

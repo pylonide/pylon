@@ -1,0 +1,42 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <a:bar name="bar-liveinspect">
+        <a:style><![CDATA[
+            .bar-liveinspect {
+                z-index: 9015;
+                border                : 1px solid rgba(0,0,0,0.31);
+                padding               : 5px 4px 4px;
+                -webkit-box-shadow: rgba(0, 0, 0, 0.308594) 0px 0px 4px 1px;
+                -moz-box-shadow: rgba(0, 0, 0, 0.308594) 0px 0px 4px 1px;
+                box-shadow: rgba(0, 0, 0, 0.308594) 0px 0px 4px 1px;
+            }
+            
+            .bar-liveinspect .datagridFocus .records .selected, .datagridFocus .records .selected span {
+                background-image: linear-gradient(bottom, #494949 0%, #646469 100%);
+                background-image: -o-linear-gradient(bottom, #494949 0%, #646469 100%);
+                background-image: -moz-linear-gradient(bottom, #494949 0%, #646469 100%);
+                background-image: -webkit-linear-gradient(bottom, #494949 0%, #646469 100%);
+                background-image: -ms-linear-gradient(bottom, #494949 0%, #646469 100%);
+                
+                background-image: -webkit-gradient(
+                    linear,
+                	left bottom,
+                	left top,
+                	color-stop(0, #494949),
+                	color-stop(1, #646469)
+                );
+            }
+            
+            .bar-liveinspect .datagridFocus .records .selected span u {
+                border-left: 1px solid #808080;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main container=".">
+                <div class="bar bar-liveinspect">
+                    
+                </div>            
+            </a:main>
+        </a:presentation>
+    </a:bar>
+</a:skin>
