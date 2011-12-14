@@ -11,8 +11,9 @@
           caption = "Run in debug mode" />
         <a:item
           type    = "check"
+          onclick = "require('ext/runpanel/runpanel').checkAutoHide()"
           checked = "[{require('ext/settings/settings').model}::auto/configurations/@autohide]"
-          caption = "Auto hide and show debug bar" />
+          caption = "Auto show/hide debug tools" />
     </a:menu>
     
     <a:model id="mdlRunConfigurations">

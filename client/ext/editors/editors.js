@@ -10,7 +10,6 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
-var dockpanel = require("ext/dockpanel/dockpanel");
 var settings = require("ext/settings/settings");
 
 module.exports = ext.register("ext/editors/editors", {
@@ -200,7 +199,7 @@ module.exports = ext.register("ext/editors/editors", {
         ext.style.left = (pos[0] - 2) + "px";
         ext.style.top = pos[1] + "px";
         var d = apf.getDiff(ext);
-        ext.style.width = (ph.offsetWidth + 2 + (apf.isGecko && dockpanel.visible ? 2 : 0) - d[0]) + "px";
+        ext.style.width = (ph.offsetWidth + 2 + (hboxDockPanel.getWidth() && apf.isGecko ? 2 : 0) - d[0]) + "px";
         ext.style.height = (ph.offsetHeight - d[1]) + "px";
     },
 

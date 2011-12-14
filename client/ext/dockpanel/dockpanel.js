@@ -99,6 +99,8 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 catch (ex) {}
             }
             
+            ide.dispatchEvent("dockpanel.load.settings", {state: state});
+            
             _self.layout.loadState(state);
             _self.loaded = true;
         });
@@ -134,9 +136,11 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         
         var _self = this;;
         this.$timer = setTimeout(function(){
+            var state = _self.layout.getState();
+            
             settings.model.setQueryValue(
                 "auto/dockpanel/text()",
-                JSON.stringify(_self.layout.getState())
+                JSON.stringify(state)
             );
         });
     },
@@ -172,8 +176,8 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 var page = getPage();
 
                 var uId = _self.getButtons(name, type)[0].uniqueId;
-                layout.show(uId);
-                if (!layout.isExpanded(uId))
+                layout.show(uId, true);
+                if (layout.isExpanded(uId) < 0)
                     layout.showMenu(uId);
                 
                 page.parentNode.set(page);
@@ -220,8 +224,8 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         return bar.sections.slice(-1);
     }, //properties.forceShow ??
     
-    getButtons : function(name, type){
-        var state = this.layout.getState(true);
+    getButtons : function(name, type, state){
+        var state = state || this.layout.getState(true);
         var list  = [];
         
         state.bars.each(function(bar){
@@ -237,8 +241,8 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         return list;
     },
     
-    getBars : function(name, type){
-        var state = this.layout.getState(true);
+    getBars : function(name, type, state){
+        var state = state || this.layout.getState(true);
         var list  = [];
         
         state.bars.each(function(bar){
@@ -258,35 +262,47 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         return list;
     },
     
-    hideSection: function(name){
+    hideSection: function(name, collapse){
         var buttons = this.getButtons(name);
+        var bars = [];
         var _self = this;
         
         buttons.each(function(button){
-            if (!button.hidden)
+            if (button.hidden < 0)
+                bars.pushUnique(_self.layout.findBar(button.uniqueId));
+            if (button.hidden == -1)
                 _self.layout.hide(button.uniqueId);
         });
+        
+        if (collapse) {
+            bars.each(function(bar){
+                if (bar.expanded == 1)
+                    _self.layout.collapseBar(bar.uniqueId);
+            });
+        }
     },
     
-    showSection: function(name, expanded){
+    showSection: function(name, expand){
         var buttons = this.getButtons(name);
         var _self = this;
         var bars = [];
         
         buttons.each(function(button){
-            if (button.hidden && button.hidden != 2) {
+            if (button.hidden && button.hidden == 1) {
                 _self.layout.show(button.uniqueId);
                 bars.pushUnique(_self.layout.findBar(button.uniqueId));
             }
         });
         
         bars.each(function(bar){
-            if (expanded)
-                _self.layout.expandBar(bar);
+            if (expand && bar.expanded < 0) {
+                _self.layout.expandBar(bar.uniqueId);
 
-            apf.getArrayFromNodelist(bar.vbox.selectNodes("tab")).each(function(tab){
-                tab.set(tab.getPage(0));
-            });
+                _self.layout.findTabs(bar.uniqueId, true)
+                    .each(function(tab){
+                        tab.set(tab.getPage(0));
+                    });
+            }
         });
     },
     

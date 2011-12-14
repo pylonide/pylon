@@ -74,7 +74,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 if (hasVisibleChildren(l2))
                     return true;
             }
-            else if (list[i].hidden != true)
+            else if (list[i].hidden < 0)
                 return true;
         }
         return false;
@@ -105,11 +105,11 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 //pNode.removeNode();//destroy(true, true);
             
             btnPNode.removeNode();//destroy(true, true);
-            lookup[btnPNode.$dockData.uniqueId].node = undefined;
+            //lookup[btnPNode.$dockData.uniqueId].node = undefined;
             
             if (!barParent.selectNodes("vbox").length) {
                 barParent.removeNode();//destroy(true, true);
-                lookup[barParent.$dockData.uniqueId].node = undefined;
+                //lookup[barParent.$dockData.uniqueId].node = undefined;
                 
                 if (barParent.vbox) {
                     barParent.vbox.removeNode();//destroy(true, true);
@@ -245,6 +245,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         for (var j = 0; j < buttons.length; j++) {
                             buttons[j].hideMenu();
                             buttons[j].$dockpage.parentNode.remove(buttons[j].$dockpage);
+                            buttons[j].$dockData.hidden = -1;
                         }
                     }
                 }
@@ -323,7 +324,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         }
     }*/
     
-    this.show = function(uniqueId){
+    this.show = function(uniqueId, byUser){
         var item  = lookup[uniqueId].data;
         var _self = this;
         var before;
@@ -336,7 +337,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 if (!hasVisibleChildren(bar.sections)) {
                     section.buttons.each(function(button){
                         if (button.hidden != 2)
-                            button.hidden = false;
+                            button.hidden = byUser ? -2 : -1;
                     });
                     
                     before = findNextKnownNode(state.bars, state.bars.indexOf(bar) + 1);
@@ -345,7 +346,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 else {
                     section.buttons.each(function(button){
                         if (button.hidden != 2)
-                            button.hidden = false;
+                            button.hidden = byUser ? -2 : -1;
                     });
                     
                     before = findNextKnownNode(bar.sections, bar.sections.indexOf(section) + 1);
@@ -353,8 +354,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 }
             }
             else {
-                if (item.hidden) {
-                    item.hidden = false;
+                if (item.hidden > 0) {
+                    item.hidden = byUser ? -2 : -1;
                     before = findNextKnownNode(section.buttons, section.buttons.indexOf(item) + 1);
                     addButtonState.call(this, item, before, lookup[section.uniqueId].node);
                 }
@@ -364,22 +365,25 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             (item.bars || [item]).each(function(bar){
                 (bar.sections || [bar]).each(function(section){
                     (section.buttons || [section]).each(function(button){
-                        var page = _self.lookup[button.uniqueId].node.$dockpage;
-                        page.parentNode.remove(page, null, true);
+                        //@todo
                     });
                 });
             });
         }
     }
     
-    this.hide = function(uniqueId){
+    this.hide = function(uniqueId, byUser){
         var item  = lookup[uniqueId].data;
 
         (item.bars || [item]).each(function(bar){
             (bar.sections || [bar]).each(function(section){
                 (section.buttons || [section]).each(function(button){
-                    var page = lookup[button.uniqueId].node.$dockpage;
-                    page.parentNode.remove(page, null, true);
+                    var button = lookup[button.uniqueId].node;
+                    if (button.$dockData.hidden < 0) {
+                        var page = button.$dockpage;
+                        page.parentNode.remove(page, null, true);
+                        button.$dockData.hidden = byUser ? 2 : 1;
+                    }
                 });
             });
         });
@@ -403,7 +407,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         }
         
         var bar = findParentState(findParentState(lookup[uniqueId].data));
-        return lookup[bar.uniqueId].data.expanded
+        return lookup[bar.uniqueId].data.expanded;
     }
     
     this.showMenu = function(uniqueId){
@@ -416,9 +420,26 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         button.showMenu();
     }
     
-    this.findBar = function(uniqueId){
+    this.findBar = function(uniqueId, el){
         var button = lookup[uniqueId].node;
-        return button && button.parentNode.parentNode;
+        var node = button && button.parentNode.parentNode;
+        
+        return el ? node : node.$dockData;
+    }
+    
+    this.findTabs = function(uniqueId, el){
+        var bar = lookup[uniqueId].node;
+        var nodes = bar.vbox.selectNodes("tab");
+        
+        if (el)
+            return apf.getArrayFromNodelist(nodes);
+        
+        var list = [];
+        for (var i = 0; i < nodes.length; i++) {
+            list.push(nodes[i].$dockData);
+        }
+        
+        return list;
     }
     
     function addBarState(state, beforeBar){
@@ -436,8 +457,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 : null, bar);
         }
         
-        if (state.expanded)
-            this.expandBar(bar);
+        if (state.expanded > 0)
+            this.expandBar(bar, state.expanded == 2, true);
     }
     
     function addSectionState(state, beforeState, bar){
@@ -457,7 +478,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     }
     
     function addButtonState(state, before, section){
-        if (state.hidden)
+        if (state.hidden > 0)
             return;
         
         section.parentNode;
@@ -538,7 +559,10 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     /**
      * Expand a bar
      */
-    this.expandBar = function (bar, showAnimation){
+    this.expandBar = function (bar, byUser, showAnimation){
+        if (typeof bar == "number")
+            bar = lookup[bar].node;
+        
         if (this.$currentMenu)
             this.$currentMenu.hide();
         
@@ -562,7 +586,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         resizable  : false,
                         margin     : "0 0 0 0",
                         onclick    : function(){
-                            _self.collapseBar(bar, true);
+                            _self.collapseBar(bar, true, true);
                         }
                     })
                 ]
@@ -619,7 +643,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         bar.hide();
         bar.expanded = true;
         bar.splitter.show();
-        bar.$dockData.expanded = true;
+        bar.$dockData.expanded = byUser ? 2 : 1;
         
         this.$cbChange();
     };
@@ -627,12 +651,18 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     /**
      * Collapse a bar
      */
-    this.collapseBar = function(bar, showAnimation){
+    this.collapseBar = function(bar, byUser, showAnimation){
+        if (typeof bar == "number")
+            bar = lookup[bar].node;
+        
+        bar.$dockData.expanded = byUser ? -2 : -1;
+        bar.expanded = false;
+
+        if (!hasVisibleChildren(bar.$dockData))
+            return;
+
         if (this.$currentMenu)
             this.$currentMenu.hide();
-        
-        bar.$dockData.expanded = false;
-        bar.expanded = false;
 
         function done(){
             var vboxes = bar.selectNodes("vbox");
@@ -1599,6 +1629,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         else {
             var bar   = this.$parentHBox.insertBefore(new apf.bar({
                 skin : "debug-panel",
+                margin : "0 0 0 1",
                 dock : 1,
                 onDOMNodeRemovedFromDocument : function(){
                     _self.columnCounter--;
@@ -1608,7 +1639,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         dock : 1,
                         skin : "dockheader",
                         onclick : function(){
-                            _self.expandBar(this.parentNode, true);
+                            _self.expandBar(this.parentNode, true, true);
                         }
                     }),
                 ]
@@ -1728,7 +1759,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 button.removeNode();//.destroy(true, true);
                 this.removeNode();
 
-                button.$dockData.hidden = true;
+                button.$dockData.hidden = 2;
 
                 tableCleanup(pNode, btnPNode, pNode.parentNode.localName == "menu" 
                     ? pNode.parentNode 
@@ -1913,7 +1944,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 skin    : "dockButton",
                 submenu : submenu.id,
                 dock    : drag ? 1 : "",
-                visible : options && options.hidden ? !options.hidden : true, 
+                visible : options && (options.hidden < 0) || true, 
                 "class" : options["class"] || "",
                 draggable : drag,
                 onmousedown  : function(){

@@ -33,7 +33,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         this.nodes.push(
             mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
-                caption : "Go to Line",
+                caption : "Go to Line...",
                 onclick : function(){
                     _self.gotoline(1);
                 }

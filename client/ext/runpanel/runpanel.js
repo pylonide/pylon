@@ -62,7 +62,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             mnuRunCfg
         );
         
-        while(tbRun.childNodes.length) {
+        while (tbRun.childNodes.length) {
             var button = tbRun.firstChild;
             
             ide.barTools.appendChild(button);
@@ -136,28 +136,56 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         stProcessRunning.addEventListener("deactivate", function(){
             if (!_self.autoHidePanel())
                 return;
-                
-            var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
-            dock.hideBar(bar);
             
+            dock.hideSection("ext/debugger/debugger", true);
+            
+            /*var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
+            if (!bar.extended)
+                dock.hideBar(bar);*/
         });
-        stProcessRunning.addEventListener("activate", function(){
+        /*stProcessRunning.addEventListener("activate", function(){
             if (!_self.shouldRunInDebugMode() || !_self.autoHidePanel())
                 return;
             
             var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
-            dock.showBar(bar); 
-        });
+            if (!bar.extended)
+                dock.showBar(bar); 
+        });*/
         ide.addEventListener("break", function(){
             if (!_self.shouldRunInDebugMode() || !_self.autoHidePanel())
                 return;
-
-            var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
-            dock.expandBar(bar);
+            
+            dock.showSection("ext/debugger/debugger", true);
+            
+            //var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
+            //dock.expandBar(bar);
+        });
+        ide.addEventListener("dockpanel.load.settings", function(e){
+            var state = e.state;
+            
+            if (_self.autoHidePanel()) {
+                var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav", state)[0];
+                bar.sections.each(function(section){
+                    section.buttons.each(function(button){
+                        if (!button.hidden || button.hidden == -1)
+                            button.hidden = 1;
+                    });
+                });
+            }
         });
         
         this.hotitems["run"]  = [btnRun];
         this.hotitems["stop"] = [btnStop];
+    },
+    
+    checkAutoHide : function(){
+        var value = settings.model.queryValue("auto/configurations/@autohide");
+        var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
+
+        if (value && bar.cache && bar.cache.visible)
+            dock.hideSection("ext/debugger/debugger");
+        else if (!value && bar.cache && !bar.cache.visible)
+            dock.showSection("ext/debugger/debugger");
     },
 
     init : function(amlNode){
