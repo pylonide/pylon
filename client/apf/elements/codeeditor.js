@@ -364,6 +364,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
 
     this.$propHandlers["folding"] = function(value, prop, initial) {
+        this.$editor.setShowFoldWidgets(value);
         this.$editor.getSession().setFoldStyle(value ? "markbegin" : "manual");
     };
 
