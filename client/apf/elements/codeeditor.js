@@ -591,7 +591,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         this.$ext   = this.$getExternal();
         this.$input = this.$getLayoutNode("main", "content", this.$ext);
 
-        this.addEventListener("resize", function(e){
+        this.addEventListener("resize", function(e) {
             this.$editor.resize();
         });
 
@@ -605,9 +605,12 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         });
 
         ed.addEventListener("gutterclick", function(e) {
-            _self.dispatchEvent("gutterclick", e);
-            if (_self.$debugger) {
+            if (_self.$debugger && e.clientX - ed.container.getBoundingClientRect().left < 20) {
                 _self.$toggleBreakpoint(e.getDocumentPosition().row);
+                e.stop();
+            }
+            else {
+                _self.dispatchEvent("gutterclick", e);
             }
         });
 
