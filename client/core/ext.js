@@ -5,7 +5,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 define(function(require, exports, module) {
-    
+
 var ide = require("core/ide");
 var util = require("core/util");
 
@@ -21,7 +21,7 @@ module.exports = ext = {
                 if (!oExtension.hook)
                     ext.initExtension(oExtension);
             },
-            unregister : function(oExtension){}
+            unregister : function(oExtension) {}
         }
     },
     extensions    : [],
@@ -32,7 +32,7 @@ module.exports = ext = {
     },
 
     currentLayoutMode : null,
-    
+
     addType : function(defName, regHandler, unregHandler){
         this[defName.toUpperCase()] = ++this.defLength;
         this.extHandlers[this.defLength] = {
@@ -66,7 +66,7 @@ module.exports = ext = {
         }
 
         oExtension.registered = true;
-        oExtension.path       = path;
+        oExtension.path = path;
 
         this.extHandlers[oExtension.type].register(oExtension);
 
@@ -123,8 +123,8 @@ module.exports = ext = {
         //Check deps to clean up
         var deps = oExtension.deps;
         if (deps) {
-            for (var dep, i = 0, l = deps.length; i < l; i++) {
-                dep = deps[i];
+            for (var dep, ii = 0, ll = deps.length; ii < ll; ii++) {
+                dep = deps[ii];
                 if (dep.registered && dep.type == this.GENERAL && !oExtension.alone)
                     this.unregister(dep, true);
             }
@@ -138,7 +138,7 @@ module.exports = ext = {
             oExtension.destroy();
             delete oExtension.inited;
         }
-        
+
         return true;
     },
 
@@ -170,8 +170,9 @@ module.exports = ext = {
         }
 
         if (this.currentKeybindings) {
-            var name        = oExtension.path.substr(oExtension.path.lastIndexOf("/") + 1),
-                keyBindings = this.currentKeybindings[name];
+            var name = oExtension.path.substr(oExtension.path.lastIndexOf("/") + 1);
+            var keyBindings = this.currentKeybindings[name];
+
             if (keyBindings)
                 oExtension.currentKeybindings = keyBindings;
         }
@@ -188,11 +189,16 @@ module.exports = ext = {
     },
 
     execCommand: function(cmd, data) {
-        cmd = (cmd || "").trim();
+        if (cmd)
+            cmd = cmd.trim();
+        else
+            cmd = "";
+
         var oCmd = this.commandsLut[cmd];
         if (!oCmd || !oCmd.ext) {
             return;
         }
+
         var oExt = require(oCmd.ext);
         if (oExt && typeof oExt[cmd] === "function") {
             require(["ext/console/console"], function(consoleExt) {
@@ -201,25 +207,6 @@ module.exports = ext = {
             });
             return oExt[cmd](data);
         }
-    },
-
-    setLayoutMode : function(mode){
-        return;
-        
-        if (this.currentLayoutMode)
-            this.currentLayoutMode.disable();
-
-        var module = this.extLut[mode];
-        if (!module) {
-            this.currentLayoutMode = null;
-            return false;
-        }
-
-        if (!module.inited)
-            this.initExtension(module);
-
-        module.enable();
-        this.currentLayoutMode = module;
     }
 };
 

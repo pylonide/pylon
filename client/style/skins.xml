@@ -2695,11 +2695,12 @@
           overflow-x: scroll;
           overflow-y: hidden;
           height: 100%;
-	      -moz-user-select: -moz-none;
-	      -khtml-user-select: none;
-	      -webkit-user-select: none;
-	      -o-user-select: none;
-	      user-select: none;
+          width: 60px !important;
+          -moz-user-select: -moz-none;
+          -khtml-user-select: none;
+          -webkit-user-select: none;
+          -o-user-select: none;
+          user-select: none;
         }
 
         .ace_editor .ace_sb {
@@ -5900,7 +5901,7 @@
             background: -moz-linear-gradient(center bottom,rgb(105,107,109) 0%,rgb(92,93,96) 100%);
         }
 
-        .rbcontainerChecked {
+        .rbcontainerSelected {
             color:#000000;
             text-shadow: none;
             border-top : 0;

@@ -7,7 +7,6 @@
 
 define(function(require, exports, module) {
 
-var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 
@@ -20,8 +19,7 @@ module.exports = ext.register("ext/richtext/richtext", {
         "application/xhtml+xml",
         "application/rtf"
     ],
-    deps    : [editors], 
-
+    deps    : [editors],
     nodes : [],
 
     init : function(amlPage){

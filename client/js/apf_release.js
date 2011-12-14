@@ -13288,7 +13288,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/skins.js)SIZE(12336)TIME(Thu, 08 Dec 2011 19:14:20 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/skins.js)SIZE(12336)TIME(Wed, 14 Dec 2011 09:47:00 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13876,7 +13876,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/tween.js)SIZE(35554)TIME(Thu, 08 Dec 2011 21:28:07 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/tween.js)SIZE(35554)TIME(Wed, 14 Dec 2011 09:47:00 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17139,7 +17139,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16889)TIME(Thu, 08 Dec 2011 19:14:20 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16889)TIME(Wed, 14 Dec 2011 09:47:00 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22507,7 +22507,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/anchoring.js)SIZE(18882)TIME(Thu, 08 Dec 2011 19:43:13 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/anchoring.js)SIZE(18882)TIME(Wed, 14 Dec 2011 09:47:00 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25159,7 +25159,7 @@ apf.config.$inheritProperties["validgroup"] = 1;
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/databinding.js)SIZE(58833)TIME(Fri, 09 Dec 2011 08:40:40 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/databinding.js)SIZE(58833)TIME(Wed, 14 Dec 2011 09:47:00 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33289,7 +33289,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(58139)TIME(Fri, 09 Dec 2011 12:38:32 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(57837)TIME(Wed, 14 Dec 2011 09:47:05 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33669,6 +33669,22 @@ apf.BaseTab = function(){
             }
             //oneach   : function(){alert(1);}
         };
+        
+        function btnMoHandler(e){
+            var pos = apf.getAbsolutePosition(this);
+            if (e.clientX <= pos[0] || e.clientY <= pos[1] 
+              || e.clientX >= pos[0] + this.offsetWidth 
+              || e.clientY >= pos[1] + this.offsetHeight) {
+                apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
+                if (_self.$control.state == apf.tween.STOPPED) {
+                    delete _self.$waitForMouseOut;
+                    _self.$scaleinit(null, "sync");
+                }
+                else if (_self.$waitForMouseOut)
+                    _self.$waitForMouseOut = 2;
+            }
+        }
+        
         this.$control.type = type;
         
         if (type == "add") {
@@ -33684,8 +33700,8 @@ apf.BaseTab = function(){
         }
         else if (type == "remove") {
             anim.onfinish = function(){
-            	if (node.dispatchEvent("afterclose") !== false)
-                	callback();
+                if (node.dispatchEvent("afterclose") !== false)
+                    callback();
                     
                 html.style.marginLeft = 0;
                 apf.setOpacity(html, 1);
@@ -33745,27 +33761,8 @@ apf.BaseTab = function(){
             }
             
             this.$waitForMouseOut = true;
-            if (!isLast) {
-                if (!btnMoHandler) {
-                    var _self = this;
-                    function btnMoHandler(e){
-                        var pos = apf.getAbsolutePosition(this);
-                        if (e.clientX <= pos[0] || e.clientY <= pos[1] 
-                          || e.clientX >= pos[0] + this.offsetWidth 
-                          || e.clientY >= pos[1] + this.offsetHeight) {
-                            apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
-                            if (_self.$control.state == apf.tween.STOPPED) {
-                                delete _self.$waitForMouseOut;
-                                _self.$scaleinit(null, "sync");
-                            }
-                            else if (_self.$waitForMouseOut)
-                                _self.$waitForMouseOut = 2;
-                        }
-                    }
-                }
-                
+            if (!isLast)
                 apf.addListener(_self.$buttons, "mouseout", btnMoHandler);
-            }
         }
         
         if (anim.tweens.length)
@@ -34592,16 +34589,16 @@ apf.BaseTab = function(){
         else if (!this.activepage && !this.$activepage 
           && !amlNode.render || amlNode.$rendered) {
             this.set(amlNode);
-        
         }
-            
-            if (this.$scale && amlNode.visible && !e.$isMoveWithinParent) 
-                this.$scaleinit(amlNode, "add");
-            else 
-            
-            {
-                amlNode.dispatchEvent("afteropen");
-            }
+        
+        
+        if (this.$scale && amlNode.visible && !e.$isMoveWithinParent) 
+            this.$scaleinit(amlNode, "add");
+        else 
+        
+        {
+            amlNode.dispatchEvent("afteropen");
+        }
         
         
         this.setProperty("length", this.getPages().length);
@@ -36220,7 +36217,7 @@ apf.BaseTree = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/delayedrender.js)SIZE(5249)TIME(Thu, 08 Dec 2011 19:14:20 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/delayedrender.js)SIZE(5249)TIME(Wed, 14 Dec 2011 09:47:00 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48285,7 +48282,7 @@ apf.CodeCompilation = function(code){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingrule.js)SIZE(8843)TIME(Mon, 05 Dec 2011 11:27:13 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingrule.js)SIZE(8842)TIME(Wed, 14 Dec 2011 09:47:05 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48364,7 +48361,7 @@ apf.BindingRule = function(struct, tagName){
     //1 = force no bind rule, 2 = force bind rule
     this.$attrExcludePropBind = apf.extend({
         value : 1,
-        match : 1,
+        match : 1
     }, this.$attrExcludePropBind);
 
     this.$booleanProperties["hasaml"] = true;
@@ -52492,7 +52489,7 @@ apf.aml.setElement("browser", apf.browser);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/button.js)SIZE(31035)TIME(Thu, 08 Dec 2011 19:14:20 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/button.js)SIZE(31035)TIME(Wed, 14 Dec 2011 09:47:00 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53756,7 +53753,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/codeeditor.js)SIZE(22799)TIME(Thu, 08 Dec 2011 19:15:45 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/codeeditor.js)SIZE(22799)TIME(Wed, 14 Dec 2011 09:47:00 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56592,7 +56589,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/debugger.js)SIZE(11902)TIME(Thu, 08 Dec 2011 19:14:20 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/debugger.js)SIZE(11902)TIME(Wed, 14 Dec 2011 09:47:00 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59681,7 +59678,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/item.js)SIZE(23478)TIME(Fri, 09 Dec 2011 08:30:06 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/item.js)SIZE(23478)TIME(Wed, 14 Dec 2011 09:47:00 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62606,7 +62603,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/model.js)SIZE(42509)TIME(Fri, 09 Dec 2011 10:58:22 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/model.js)SIZE(42509)TIME(Wed, 14 Dec 2011 09:47:00 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64147,7 +64144,7 @@ apf.aml.setElement("event", apf.event);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/page.js)SIZE(26698)TIME(Thu, 08 Dec 2011 19:14:20 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/page.js)SIZE(26692)TIME(Wed, 14 Dec 2011 09:47:05 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64258,13 +64255,13 @@ apf.page = function(struct, tagName){
                // if(elBtnClose.nodeType == 1) {
                 apf.setStyleClass(this.$button, "btnclose");
                 
-                elBtnClose.addEventListener("mousedown", function(){
-                    apf.cancelBubble(event, apf.lookup(_self.$uniqueId));
+                elBtnClose.addEventListener("mousedown", function(e){
+                    apf.cancelBubble(e, apf.lookup(_self.$uniqueId));
                 });
                 
-                elBtnClose.addEventListener("click", function(){
+                elBtnClose.addEventListener("click", function(e){
                     var page = apf.lookup(_self.$uniqueId);
-                     page.parentNode.remove(page, event);
+                     page.parentNode.remove(page, e);
                 });
 
                 btncontainer.appendChild(elBtnClose);
@@ -66680,7 +66677,7 @@ apf.aml.setElement("color",       apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/radiobutton.js)SIZE(17104)TIME(Thu, 08 Dec 2011 19:14:20 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/radiobutton.js)SIZE(17104)TIME(Wed, 14 Dec 2011 09:47:00 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68791,7 +68788,7 @@ apf.aml.setElement("services", apf.services);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/skin.js)SIZE(9690)TIME(Thu, 08 Dec 2011 19:14:20 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/skin.js)SIZE(9690)TIME(Wed, 14 Dec 2011 09:47:00 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -76073,7 +76070,7 @@ var ChromeDebugHost = module.exports = function(hostname, port, o3obj, ws) {
 });
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/dbg/v8debugger.js)SIZE(18510)TIME(Wed, 23 Nov 2011 04:52:53 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/dbg/v8debugger.js)SIZE(18527)TIME(Wed, 14 Dec 2011 09:47:00 GMT)*/
 
 
 if (apf.hasRequireJS) define("apf/elements/dbg/v8debugger",
@@ -76532,7 +76529,7 @@ var V8Debugger = module.exports = function(dbg, host) {
             var name = expression.trim();
             if (error) {
                 str.push("<item type='.error' name=\"", apf.escapeXML(name),
-                    "\" value='", error.message, "' />");
+                    "\" value=\"", apf.escapeXML(error.message), "\" />");
             }
             else {
                 str.push(

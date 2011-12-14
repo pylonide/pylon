@@ -4,13 +4,21 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
 var code = require("ext/code/code");
 var markup = require("text!ext/html/html.xml");
+
+var mimeTypes = [
+    "text/html",
+    "application/xhtml+xml",
+    "text/javascript",
+    "text/plain",
+    "application/xml"
+];
 
 module.exports = ext.register("ext/html/html", {
     name    : "HTML Editor",
@@ -47,9 +55,11 @@ module.exports = ext.register("ext/html/html", {
     init : function() {
         //Append the button bar to the main toolbar
         var nodes = barHtmlMode.childNodes;
-        for (var node, i = nodes.length - 1; i >= 0; i--) {
+        var node;
+        for (var i = nodes.length - 1; i >= 0; i--) {
             node = ide.barTools.appendChild(nodes[0]);
-            if (node.nodeType != 1) continue;
+            if (node.nodeType != 1)
+                continue;
             this.nodes.push(node);
         }
 

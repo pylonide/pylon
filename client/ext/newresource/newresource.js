@@ -4,12 +4,11 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var fs = require("ext/filesystem/filesystem");
 var markup = require("text!ext/newresource/newresource.xml");
 
@@ -61,35 +60,39 @@ module.exports = ext.register("ext/newresource/newresource", {
             }), ide.mnuFile.firstChild)
         );
 
-        this.hotitems["newfile"] = [this.nodes[3]];
-        this.hotitems["newfiletemplate"] = [this.nodes[2]];
-        this.hotitems["newfolder"] = [this.nodes[1]];
+        this.hotitems.newfile = [this.nodes[3]];
+        this.hotitems.newfiletemplate = [this.nodes[2]];
+        this.hotitems.newfolder = [this.nodes[1]];
     },
 
     newfile: function(type, value, path) {
         if (!type) type = "";
 
         var node = apf.getXml("<file />");
-        var path = "/workspace/";
-        var sel = trFiles.selected;
-
-        if (!sel) {
-            trFiles.select(trFiles.$model.queryNode('folder'));
-            sel = trFiles.selected
+        
+        if (!path && self.trFiles) {
+            var sel = trFiles.selected;
+    
+            if (!sel) {
+                trFiles.select(trFiles.$model.queryNode('folder'));
+                sel = trFiles.selected;
+            }
+    
+            if (sel) {
+                path = sel.getAttribute("path");
+                if (trFiles.selected.getAttribute("type") == "file" || trFiles.selected.tagName == "file")
+                    path = path.replace(/\/[^\/]*$/, "/");
+                else
+                    path = path + "/";
+            }
         }
-        if (!sel)
-            return;
-
-        path = sel.getAttribute("path");
-        if (trFiles.selected.getAttribute("type") == "file" || trFiles.selected.tagName == "file")
-            path = path.replace(/\/[^\/]*$/, "/");
-        else
-            path = path + "/";
+        if (!path)
+            path = "/workspace/";
 
         var name = "Untitled", count = 1;
         while (tabEditors.getPage(path + name + count + type))
             count++;
-        
+
         node.setAttribute("name", name + count + type);
         node.setAttribute("path", path + name + count + type);
         node.setAttribute("changed", "1");
@@ -98,9 +101,14 @@ module.exports = ext.register("ext/newresource/newresource", {
         var doc = ide.createDocument(node);
         if (value)
             doc.cachedValue = value;
-        ide.dispatchEvent("openfile", {doc: doc, type: "newfile"});
+
+        ide.dispatchEvent("openfile", {
+            doc: doc,
+            type: "newfile"
+        });
+        ide.dispatchEvent("track_action", {type: "template", template: type});
     },
-    
+
     newfiletemplate : function(){
         winNewFileTemplate.show();
     },
@@ -112,16 +120,16 @@ module.exports = ext.register("ext/newresource/newresource", {
 
     enable : function(){
         if (!this.disabled) return;
-        
+
         this.nodes.each(function(item){
             item.enable();
         });
         this.disabled = false;
     },
-    
+
     disable : function(){
         if (this.disabled) return;
-        
+
         this.nodes.each(function(item){
             item.disable();
         });
@@ -133,7 +141,7 @@ module.exports = ext.register("ext/newresource/newresource", {
             item.destroy(true, true);
         });
         this.nodes = [];
-        
+
         mnuNew.destroy(true, true);
 
         tabEditors.removeEventListener("close", this.$close);

@@ -14,6 +14,7 @@ var WorkerClient = require("ace/worker/worker_client").WorkerClient;
 var complete = require('ext/language/complete');
 var marker = require('ext/language/marker');
 var refactor = require('ext/language/refactor');
+var liveInspect = require('ext/language/liveinspect');
 
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
@@ -72,6 +73,7 @@ module.exports = ext.register("ext/language/language", {
         marker.hook(this, worker);
         complete.hook(this, worker);
         refactor.hook(this, worker);
+        liveInspect.hook(this, worker);
         
         ide.addEventListener("init.ext/settings/settings", function (e) {
             var heading = e.ext.getHeading("Language Support");
@@ -112,6 +114,10 @@ module.exports = ext.register("ext/language/language", {
             };
             worker.emit("change", e);
             marker.onChange(_self.editor.session, e);
+        });
+        
+        ide.addEventListener("liveinspect", function (e) {
+            worker.emit("inspect", { data: { row: e.row, col: e.col } });
         });
     },
     

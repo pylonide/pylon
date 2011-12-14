@@ -22,9 +22,9 @@ module.exports = ext.register("ext/editors/editors", {
     fileExtensions  : {},
 
     register : function(oExtension){
-        //var id = "rb" + oExtension.path.replace(/\//g, "_");
+        /*var id = "rb" + oExtension.path.replace(/\//g, "_");
 
-        /*oExtension.$rbEditor = barButtons.appendChild(new apf.radiobutton({
+        oExtension.$rbEditor = barButtons.appendChild(new apf.radiobutton({
             id        : id,
             label     : oExtension.name,
             value     : oExtension.path,
@@ -331,8 +331,6 @@ module.exports = ext.register("ext/editors/editors", {
 
         if (init)
             tabEditors.setAttribute("buttons", "close,scale,order");
-
-        var editorPage = tabEditors.getPage(tabEditors.activepage);
 
         doc.addEventListener("setnode", function(e) {
             fake.$model.load(e.node);

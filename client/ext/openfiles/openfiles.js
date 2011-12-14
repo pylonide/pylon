@@ -95,9 +95,10 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         });
 
         ide.addEventListener("treechange", function(e) {
-            var path    = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                                .replace(/\[@name="workspace"\]/, "")
-                                .replace(/\//, "");
+            var path = e.path
+                        .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
+                        .replace(/\[@name="workspace"\]/, "")
+                        .replace(/\//, "");
             var parent = trFiles.getModel().data.selectSingleNode(path);
             if (!parent)
                 return;
@@ -128,7 +129,6 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                     " name='" + name + "'" +
                     " path='" + path + "/" + name + "'" +
                 "/>";
-                // console.log("CREATE", xmlNode, parent);
                 trFiles.add(xmlNode, parent);
             }
         });

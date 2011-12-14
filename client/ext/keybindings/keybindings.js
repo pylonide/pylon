@@ -1,52 +1,31 @@
 /**
  * Keybindings Manager for the Cloud9 IDE
  *
- * @copyright 2010, Ajax.org B.V.
+ * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
-var settings = require("text!ext/keybindings/settings.xml");
-
-//var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
-//var default_mac = require("ace/keyboard/keybinding/default_mac").bindings;
-//editor.setKeyboardHandler(new HashHandler(default_mac));
 
 module.exports = ext.register("ext/keybindings/keybindings", {
-    name   : "Keybindings Manager",
-    dev    : "Ajax.org",
-    alone  : true,
-    type   : ext.GENERAL,
+    name: "Keybindings Manager",
+    dev: "Ajax.org",
+    alone: true,
+    type: ext.GENERAL,
     current: null,
+    nodes: [],
 
-    nodes : [],
-
-    init : function(amlNode){
-        //Settings Support
-        /*ide.addEventListener("init.ext/settings/settings", function(e){
-            e.ext.addSection("code", "", "general", function(){});
-            barSettings.insertMarkup(settings);
-            ddKeyBind.setValue("default_" + (apf.isMac ? "mac" : "win"));
-            ddKeyBind.addEventListener("afterchange", function(e){
-                require(["ext/keybindings_default/" + this.value]);
-                ide.addEventListener("$event.keybindingschange", function(callback){
-                    if (_self.current)
-                        callback({keybindings: _self.current});
-                });
-            });
-        });*/
-
-        // fetch the default keybindings:
+    init : function(amlNode) {
+        // Fetch the default keybindings:
         var _self = this;
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("loadsettings", function(e) {
             var value = e.model.queryValue("general/keybindings/@preset") 
                 || "default_" + (apf.isMac ? "mac" : "win");
                 
             require(["ext/keybindings_default/" + value]);
-            ide.addEventListener("$event.keybindingschange", function(callback){
+            ide.addEventListener("$event.keybindingschange", function(callback) {
                 if (_self.current)
                     callback({keybindings: _self.current});
             });
@@ -85,8 +64,8 @@ module.exports = ext.register("ext/keybindings/keybindings", {
         }
     },
 
-    onLoad : function(def) {
-        // update keybindings for extensions:
+    onLoad: function(def) {
+        // update keybindings for extensions
         def = def.ext;
         
         // parse keybindings definition
@@ -99,8 +78,7 @@ module.exports = ext.register("ext/keybindings/keybindings", {
             oExt     = ext.extLut[i];
             this.update(oExt);
         }
-
-        ide.dispatchEvent("keybindingschange", {keybindings: def});
+        ide.dispatchEvent("keybindingschange", { keybindings: def });
         return def;
     },
 
@@ -124,5 +102,4 @@ module.exports = ext.register("ext/keybindings/keybindings", {
     }
 });
 
-    }
-);
+});
