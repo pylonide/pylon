@@ -235,23 +235,30 @@ module.exports = (function () {
             return;   
         }
         
-        // see whether we hover over the editor
-        if (ceEditor) {
-            // calculate position
-            var ele = ceEditor.$ext;
-            var position = apf.getAbsolutePosition(ele, document.body);
-            var left = position[0];
-            var top = position[1];
-            
-            // x boundaries
-            if (ev.pageX >= left && ev.pageX <= (left + ele.offsetWidth)) {
-                // y boundaries
-                if (ev.pageY >= top && ev.pageY <= (top + ele.offsetHeight)) {
-                    // we are in the editor, so return; this will be handled
-                    return;
-                }
-            }
-        }
+        // see whether we hover over the editor or the quickwatch window
+        var mouseMoveAllowed = false;
+        
+        var eles = [ ceEditor, winLiveInspect ];
+        // only the visible ones
+        eles.filter(function (ele) { return ele.visible; })
+            .map(function (ele) { return ele.$ext; }) // then get the HTML counterpart
+            .forEach(function (ele) {
+                // then detect real position
+                var position = apf.getAbsolutePosition(ele, document.body);
+                var left = position[0];
+                var top = position[1];
+                
+                // x boundaries
+                if (ev.pageX >= left && ev.pageX <= (left + ele.offsetWidth)) {
+                    // y boundaries
+                    if (ev.pageY >= top && ev.pageY <= (top + ele.offsetHeight)) {
+                        // we are in the editor, so return; this will be handled
+                        mouseMoveAllowed = true;
+                    }
+                }            
+            });
+        
+        if (mouseMoveAllowed) return;
                 
         // not in the editor?
         if (winLiveInspect.visible) {
