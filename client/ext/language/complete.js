@@ -133,10 +133,15 @@ module.exports = {
         matches.forEach(function(match, idx) {
             var matchEl = dom.createElement("div");
             matchEl.className = idx === _self.selectedIdx ? "cc_complete_option_selected" : "cc_complete_option";
-            matchEl.innerHTML = "<span class='main'><u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length) + '</span>';
+            var html = "";
+            if(match.icon)
+                html = "<img src='/static/ext/language/img/" + match.icon + ".png'/>";
+            html += "<span class='main'><u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length);
             if(match.meta) {
-                matchEl.innerHTML += '<span class="meta">' + match.meta + '</score>';
+                html += '<span class="meta">' + match.meta + '</span>';
             }
+            html += '</span>';
+            matchEl.innerHTML = html;
             matchEl.addEventListener("click", function() {
                 var editor = editors.currentEditor.ceEditor.$editor;
                 replaceText(editor, _self.prefix, match.replaceText);
