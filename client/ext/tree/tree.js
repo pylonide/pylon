@@ -191,7 +191,7 @@ module.exports = ext.register("ext/tree/tree", {
         
         ide.addEventListener("loadsettings", function(e) {
             var model = e.model;
-            davProject.realWebdav.setAttribute("showhidden", model.queryValue('auto/tree/@showhidden'));
+            (davProject.realWebdav || davProject).setAttribute("showhidden", model.queryValue('auto/tree/@showhidden'));
         });
 
         mnuView.appendChild(new apf.divider());
