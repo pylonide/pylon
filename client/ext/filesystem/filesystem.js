@@ -60,8 +60,10 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         }
 
         var node = tree.selected;
-        if (!node)
+        if (!node && tree.xmlRoot)
             node = tree.xmlRoot.selectSingleNode("folder");
+        if (!node)
+            return;
         if (node.getAttribute("type") != "folder" && node.tagName != "folder")
             node = node.parentNode;
 

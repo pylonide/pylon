@@ -7,6 +7,9 @@
  
 define(function(require, exports, module) {
 
+require("apf/elements/debugger");
+require("apf/elements/debughost");
+
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");

@@ -9,11 +9,13 @@ define(function(require, exports, module) {
 var ext = require("core/ext");
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
+var noderunner = require("ext/noderunner/noderunner");
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
 
 var complete = require('ext/language/complete');
 var marker = require('ext/language/marker');
 var refactor = require('ext/language/refactor');
+var liveInspect = require('ext/language/liveinspect');
 
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
@@ -27,7 +29,7 @@ module.exports = ext.register("ext/language/language", {
     name    : "Javascript Outline",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
-    deps    : [editors],
+    deps    : [editors, noderunner],
     nodes   : [],
     alone   : true,
     markup  : markup,
@@ -72,12 +74,12 @@ module.exports = ext.register("ext/language/language", {
         marker.hook(this, worker);
         complete.hook(this, worker);
         refactor.hook(this, worker);
+        liveInspect.hook(this, worker);
         
         ide.addEventListener("init.ext/settings/settings", function (e) {
             e.ext.addSection("language", _self.name, "language", function () {});
             barSettings.insertMarkup(settings);
         });
-
 	},
 
     init : function() {
@@ -114,13 +116,17 @@ module.exports = ext.register("ext/language/language", {
             worker.emit("change", e);
             marker.onChange(_self.editor.session, e);
         });
+        
+        ide.addEventListener("liveinspect", function (e) {
+            worker.emit("inspect", { data: { row: e.row, col: e.col } });
+        });
     },
     
     setPath: function() {
-        var currentPath = tabEditors.getPage().getAttribute("id");
         // Currently no code editor active
-        if(!editors.currentEditor.amlEditor)
+        if(!editors.currentEditor.amlEditor || !tabEditors.getPage())
             return;
+        var currentPath = tabEditors.getPage().getAttribute("id");
         this.worker.call("switchFile", [currentPath, editors.currentEditor.amlEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition()]);
     },
     

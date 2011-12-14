@@ -261,7 +261,8 @@ module.exports = ext.register("ext/console/console", {
 
                         ide.dispatchEvent("track_action", {
                             type: "console",
-                            cmd: cmd
+                            cmd: cmd,
+                            argv: parser.argv
                         });
 
                         var data = {
