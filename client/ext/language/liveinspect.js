@@ -21,6 +21,9 @@ module.exports = (function () {
     };
     
     var hook = function(_ext, worker) {
+        if (typeof stRunning === "undefined")
+            return;
+
         ext.initExtension(this);
         
         // listen to the worker's response
