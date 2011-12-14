@@ -1,0 +1,71 @@
+<html>
+  <head>
+  <style type="text/css">
+    body { font-family: sans-serif; }
+    code { font-weight: bold;  }
+  </style>
+  <script type="text/javascript" src="../../oni-apollo.js"></script>
+  <script type="text/sjs">/*1*/
+/* 2*/  function throwErrorAsync() {
+/* 3*/    hold(0);
+/* 4*/    throwError();
+/* 5*/  }
+/* 6*/
+/* 7*/  function throwError() {
+/* 8*/    throw new Error('foo'); /* line 8 is the line where we throw! */
+/* 9*/  }
+/*10*/
+/*11*/  spawn (function() {
+/*12*/    while(1) { 
+/*13*/      require('apollo:dom').waitforEvent('button2', 'click');
+/*14*/      spawn throwError();
+/*15*/    }
+/*16*/  })();
+/*17*/ 
+/*18*/  while (1) {
+/*19*/    require('apollo:dom').waitforEvent('button3', 'click');
+/*20*/    throwError();
+/*21*/  }
+/*22*/
+</script>
+  </head>
+  <body>
+    <h1>Oni Apollo Exception/Linenumber Reporting</h1> 
+    <p>
+      Apollo amends exceptions (i.e. objects of type 'Error') thrown in SJS with a few members:
+    </p>
+    <ul>
+    <li><code>fileName</code>: Name of the SJS module (or 'inline_scriptN') where the exception originates</li>
+    <li><code>lineNumber</code>: Linenumber in the SJS module/script where the exception was first thrown</li>
+    <li><code>toString</code>: Will be set to a function that generates an error message augmented with the fileName/lineNumber information</li>
+    </ul>
+    <p>
+      When an exception isn't caught and feeds through to the
+      browser's native error console, we want to get the native
+      console to show an error message that contains references to the
+      SJS source code and linenumber where the exception
+      originates. In theory this should work automatically, because we
+      override the <code>toString</code> method. In practice some
+      browsers' consoles (IE, Chrome) ignore
+      user-supplied <code>toString</code> methods, so Apollo needs to
+      jump through some hoops. For most cases this works, as you can
+      verify for various scenarios below.
+    </p>
+    <p>
+      All of these scenarios should give correctly amended errors in your browser's console, like e.g.: <i>"Error: foo (in inline_script1:8)"</i> (meaning the exception was thrown in inline script 1 at line 8).
+    </p>
+    <p>
+     Currently the only scenario that isn't working is scenario 1 (calling
+      SJS from JS, and SJS throwing a synchronous exception) on IE and
+      Chrome. (This is not too bad, because you can inspect
+      the exception's call stack to at least get the location of the JS
+      that made the SJS call.)
+    </p>
+    <button onclick='throwError()'>1: throwError
+    JS->SJS->uncaught</button> (Not working correctly on IE and Chrome, see comment above)<br/>
+    <button onclick='try { throwError()} catch(e) { if (e.message !="foo") throw "Oops, message augmented:"+e.message; throw new Error(e.message + " (in "+e.file+":"+e.line+")");}'>2: throwError JS->SJS->catch/rethrow JS</button> (Should work on all browsers)<br/>
+    <button onclick='throwErrorAsync()'>3: throwError JS -> async SJS -> uncaught</button> (Should work on all browsers)<br/>
+    <button id="button2">4: spawned throwError SJS -> uncaught</button> (Should work on all browsers)<br/>
+    <button id="button3">5: throwError SJS -> uncaught</button> (Should work on all browsers)<br/>
+  </body>
+</html>

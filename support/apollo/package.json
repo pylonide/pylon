@@ -1,0 +1,15 @@
+{
+  "name": "apollo",
+  "description": "StratifiedJS Framework",
+  "author": "Alexander Fritze <alex@onilabs.com>",
+  "version" : "999.0.0-unstable",
+  "homepage": "http://onilabs.com/apollo",
+  "repository":   {
+    "type": "git",
+    "url": "git://github.com/onilabs/apollo.git"
+  },
+  "keywords": ["stratifiedjs", "async", "language"],
+  "main": "oni-apollo-node",
+  "bin": { "apollo": "apollo", "rocket": "rocket" },
+  "engines": { "node": ">=0.4.1" }
+}

@@ -1,0 +1,15 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link href="modules.css" rel="stylesheet" type="text/css" media="screen,projection" />
+    <script src="../oni-apollo.js"></script>
+    <script type="text/sjs">
+      var browser = require('./module-browser');
+      document.body.innerHTML = "";
+      browser.run("../modules/")
+    </script>
+  </head>
+  <body>
+    <div style="text-align:center;font-family:sans-serif">Loading...</div>
+  </body>
+</html>

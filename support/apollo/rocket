@@ -1,0 +1,4 @@
+#!/bin/bash
+
+APOLLO_BIN=`dirname $0`
+exec $APOLLO_BIN/apollo "apollo:../rocket-modules/main.sjs" "$@"

@@ -1,0 +1,1362 @@
+/*
+ * C1 Stratified JavaScript parser 
+ *
+ * Part of Oni Apollo
+ * http://onilabs.com/apollo
+ *
+ * (c) 2011 Oni Labs, http://onilabs.com
+ *
+ * This file is licensed under the terms of the GPL v2, see
+ * http://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
+
+/*
+
+ *** OVERVIEW ***
+
+ This parser needs to be preprocessed with CPP (the C preprocessor)
+ and a 'kernel' file to yield a full compiler. There are currently
+ three kernels, each implementing a different compiler:
+ 
+  kernel-js.js.in    : plain JS compiler (just for sanity checking)
+  kernel-jsmin.js.in : JS/SJS minifier/stringifier
+  kernel-sjs.js.in   : SJS compiler (targetting apollo vm)
+
+ Which kernel file is included is determined by preprocessor flags;
+ see below.
+
+ For each JS construct, the parser makes a macro call, e.g. GEN_WHILE
+ for a 'while' statement. The actual macro implementations are in the
+ kernel files - see the full list of macros that kernel files need to
+ implement below.
+
+ This somewhat weird arrangement is so that we can build different
+ compilers from the same parser source, but we don't have to build a
+ generic AST. A generic AST (like e.g. Narcissus produces it) needs to
+ be retraversed to do something useful with it, whereas with the macro
+ approach we can perform syntax-directed translation tasks at the same
+ time as parsing the source. We could use function calls instead of
+ macros, but macros lead to smaller source and faster compilers.
+
+ Most of the macros are expected to return a "parse value" for the
+ given construct (this can be a syntax tree node, a string, nothing,
+ or whatever). The parser feeds the parse values of expressions to the
+ enclosing expression. The ultimate result of the compilation is
+ whatever END_SCRIPT() returns. E.g. the following program:
+
+  1 + 2
+
+ would generate something like the following sequence of macro calls:
+
+  BEGIN_SCRIPT(context)
+  GEN_LITERAL("number", "1", ctx) // remember return value as 'A'
+  GEN_LITERAL("number", "2", ctx) // remember return value as 'B'
+  GEN_INFIX_OP(A, '+', B, ctx) // remember return value as 'C'
+  GEN_EXP_STMT(C, ctx) // remember return value as 'D'
+  ADD_SCRIPT_STMT(D, ctx)
+  END_SCRIPT(ctx) // return value is the result of compilation
+
+ The best way to understand how the macros fit together is to look at
+ kernel-js.js.in.
+
+ * INTERNALS
+
+ As a parsing technique, we first tokenize the stream using two big
+ context-sensitve regular expressions (TOKENIZER_SA and
+ TOKENIZER_OP). The tokenizer switches between these two, depending on
+ whether we're in a 'statement/argument' position, or in an 'operator'
+ position - this is required because in JavaScript certain constructs
+ have different meanings in different contexts. E.g. a '/' can be the
+ start of a regular expression (in a "statement/argument" position) or
+ a division operator (in an "operator position").
+
+ Next, we use the "Pratt parsing technique"
+ (http://en.wikipedia.org/wiki/Pratt_parser). This is a version of
+ recursive descent parsing where we encode operator precedence
+ information directly into semantic tokens (see 'SemanticToken' class,
+ below). A good introduction to Pratt parsing for JS is at
+ http://javascript.crockford.com/tdop/tdop.html. What Douglas
+ Crockford calls 'lbp', 'nud', and 'led', we call 'excbp', 'expsf' and
+ 'excf', respectively.
+
+
+ *** PREPROCESSOR FLAGS ***
+
+(These flags are also valid in kernel files)
+
+one of these required:
+   #define C1_KERNEL_JS
+   #define C1_KERNEL_SJS
+   #define C1_KERNEL_JSMIN  : compiles with the given kernel (and sets #define SJS appropriately)
+
+general:
+   #define DEBUG_C1 : c1 debugging
+   #define VERBOSE_COMPILE_ERRORS : extra detail on compile errors (only interesting when debugging c1)
+   #define ECMA_GETTERS_SETTERS : allow ecma-style getters/setters
+   #define SJS : parse core SJS statements (set below)
+   #define MULTILINE_STRINGS : allow strings to include newlines; map to '\n' (set below)
+   #define SJS_USING: parse SJS's "using" keyword
+   #define SJS___JS: parse SJS's "__js" keyword
+   #define SJS_DESTRUCTURE: allow destructuring assignments (see http://wiki.ecmascript.org/doku.php?id=harmony:destructuring)
+
+for C1_KERNEL_JSMIN:
+   #define STRINGIFY  : encodes minified js/sjs as a string.
+
+for C1_KERNEL_SJS:  OBSOLETE! VERBOSE EXCEPTIONS ARE ALWAYS USED NOW, NOT
+                    PREDICATED ON THIS FLAG ANYMORE
+   #define VERBOSE_EXCEPTIONS: add lineNumber/fileName info to VM nodes.
+   
+*/
+//#define DEBUG_C1
+#ifdef DEBUG_C1
+#define LOG(x) dump(x);
+#else
+#define LOG(x)
+#endif
+
+/*
+
+ *** MACROS TO BE IMPLEMENTED BY KERNEL FILES ***
+
+Misc:
+=====
+
+HANDLE_NEWLINES(n, pctx)
+  Note: only called for newlines outside of ml-strings!
+  
+Contexts:
+=========
+
+BEGIN_SCRIPT(pctx)
+ADD_SCRIPT_STMT(stmt, pctx)
+END_SCRIPT(pctx)
+
+BEGIN_FBODY(pctx)
+ADD_FBODY_STMT(stmt, pctx)
+END_FBODY(pctx)
+
+BEGIN_BLOCK(pctx)
+ADD_BLOCK_STMT(stmt, pctx)
+END_BLOCK(pctx)
+
+BEGIN_CASE_CLAUSE(cexp, pctx)
+ADD_CASE_CLAUSE_STMT(stmt, pctx)
+END_CASE_CLAUSE(pctx)
+
+Statements:
+===========
+
+GEN_EMPTY_STMT(pctx)
+GEN_EXP_STMT(exp, pctx)
+GEN_LBL_STMT(lbl, stmt, pctx)
+GEN_FUN_DECL(fname, pars, body, pctx)
+GEN_VAR_DECL(decls, pctx)
+  decls = array of decl
+  decl = [name, optional initializer]
+GEN_IF(test, consequent, alternative, pctx)
+GEN_DO_WHILE(body, test, pctx)
+GEN_WHILE(test, body, pctx)
+GEN_FOR(init_exp, decls, test_exp, inc_exp, body, pctx)
+GEN_FOR_IN(lhs_exp, decl, obj_exp, body, pctx)
+GEN_CONTINUE(lbl, pctx)
+GEN_BREAK(lbl, pctx)
+GEN_RETURN(exp, pctx)
+GEN_WITH(exp, body, pctx)
+GEN_SWITCH(exp, clauses, pctx)
+GEN_THROW(exp, pctx)
+GEN_TRY(block, crf, pctx)
+    crf is [ [catch_id,catch_block,catchall?]|null, null, finally_block|null ]
+    (ammended for SJS, see below)
+
+Expressions:
+============
+
+GEN_INFIX_OP(left, id, right, pctx)
+  id: + - * / % << >> >>> < > <= >= == != === !== & ^ | && || ,
+      instanceof in
+GEN_ASSIGN_OP(left, id, right, pctx)
+  id: = *= /= %= += -= <<= >>= >>>= &= ^= |=
+GEN_PREFIX_OP(id, right, pctx)
+  id: ++ -- delete void typeof + - ~ ! (for SJS also: 'spawn')
+GEN_POSTFIX_OP(left, id, pctx)
+  id: ++ --
+GEN_LITERAL(type, value, pctx)
+GEN_IDENTIFIER(value, pctx)
+GEN_OBJ_LIT(props, pctx)
+  props : array of ["prop", string|id, val]
+          if ECMA_GETTERS_SETTERS is defined, also:
+                   ["get", string|id, function_body]
+                   ["set", string|id, id, function_body]
+          if SJS_DESTRUCTURE is defined, also: (destructure pattern)
+                   ["pat", string|id, line]
+GEN_ARR_LIT(elements, pctx)
+GEN_ELISION(pctx)
+GEN_DOT_ACCESSOR(l, name, pctx)
+GEN_NEW(exp, args, pctx)
+GEN_IDX_ACCESSOR(l, idxexp, pctx)
+GEN_FUN_CALL(l, args, pctx)
+GEN_FUN_EXP(fname, pars, body, pctx)
+GEN_CONDITIONAL(test, consequent, alternative, pctx)
+GEN_GROUP(e, pctx)
+GEN_THIS(pctx)
+GEN_TRUE(pctx)
+GEN_FALSE(pctx)
+GEN_NULL(pctx)
+
+Stratified constructs:
+======================
+
+GEN_PREFIX_OP(id, right, pctx) takes another operator: 'spawn'
+
+GEN_WAITFOR_ANDOR(op, blocks, crf, pctx)
+  op: 'and' | 'or'
+  crf: see GEN_TRY
+BEGIN_SUSPEND_BLOCK(pctx)
+END_SUSPEND_BLOCK(pctx)
+GEN_SUSPEND(has_var, decls, block, crf, pctx)
+GEN_COLLAPSE(pctx)
+  crf: see GEN_TRY
+GEN_TRY(block, crf, pctx) 
+    crf is [ [catch_id,catch_block,catchall?]|null, retract_block|null, finally_block|null ]
+    (instead of the non-SJS version above)
+
+if #define SJS_USING is set:
+
+GEN_USING(isvar, vname, exp, body, pctx)
+
+if #defined SJS___JS is set:
+BEGIN___JS_BLOCK(pctx)
+END___JS_BLOCK(pctx)
+GEN___JS(body, pctx)
+
+*/
+
+#if defined(C1_KERNEL_JS)
+#include "kernel-js.js.in"
+#elif defined(C1_KERNEL_SJS)
+#define SJS 1
+#define MULTILINE_STRINGS 1
+#define SJS_USING 1
+#define SJS___JS 1
+#define SJS_DESTRUCTURE 1
+#include "kernel-sjs.js.in"
+#elif defined(C1_KERNEL_JSMIN)
+#define SJS 1
+#define MULTILINE_STRINGS 1
+#define SJS_USING 1
+#define SJS___JS 1
+#define SJS_DESTRUCTURE 1
+#include "kernel-jsmin.js.in"
+#else
+#error "no kernel defined"
+#endif
+
+//----------------------------------------------------------------------
+// Helpers
+
+function Hash() {}
+Hash.prototype = {
+  lookup: function(key) { return this["$"+key]; },
+  put: function(key, val) { this["$"+key] = val; },
+  del: function(key) { delete this["$"+key]; }
+};
+
+//----------------------------------------------------------------------
+// Tokenizer
+
+// PAT_NBWS == \s+ without \n
+#define PAT_NBWS [ \f\r\t\v\u00A0\u2028\u2029]+
+//#define PAT_NBWS \\s+
+// we ignore '//'-style comments as well as hashbangs (XXX not quite right)
+#define PAT_NBCOMMENT \/\/.*|#!.*
+#define PAT_NBIGNORE (?:PAT_NBWS|PAT_NBCOMMENT)*
+
+// whitespace/comments with newlines
+#define PAT_NEWLINE \n
+// doesn't work on IE: #define PAT_COMMENT \/\*[^]*?\*\/
+#define PAT_COMMENT \/\*(?:.|\n|\r)*?\*\/
+#define PAT_NEWLINES (?:PAT_NEWLINE|PAT_COMMENT)+
+
+#define PAT_NUMLIT (?:0[xX][\da-fA-F]+)|(?:(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?)
+
+#define PAT_REGEXLIT \/(?:\\.|\[(?:\\.|[^\n\]])*\]|[^\/\n])+\/[gimy]*
+
+#define PAT_OPERATOR4 >>>=
+#define PAT_OPERATOR3 ===|!==|>>>|<<=|>>=
+#define PAT_OPERATOR2 ==|!=|>>|<<|<=|>=|--|\+\+|\|\||&&|[-*\/%+&^|]=
+#define PAT_OPERATOR1 [;,?:|^&=<>+\-*\/%!~.\[\]{}()]
+// XXX unicode
+#define PAT_IDENTIFIER [$_\w]+
+// symbols that can appear in an 'statement/argument position':
+#define PAT_ARGSYMBOL PAT_OPERATOR2|PAT_OPERATOR1|PAT_IDENTIFIER
+// symbols that can appear in an 'operator position':
+#define PAT_SYMBOL PAT_OPERATOR4|PAT_OPERATOR3|PAT_ARGSYMBOL
+
+#define PAT_STRLIT_SGL '(?:\\.|[^\'\n])*'
+#define PAT_STRLIT_DBL "(?:\\.|[^\"\n])*"
+#define PAT_STRLIT PAT_STRLIT_SGL|PAT_STRLIT_DBL
+
+#ifdef MULTILINE_STRINGS
+#define PAT_ML_STRLIT_SGL '(?:\\.|[^\'])*'
+#define PAT_ML_STRLIT_DBL "(?:\\.|[^\"])*"
+#define PAT_ML_STRLIT PAT_ML_STRLIT_SGL|PAT_ML_STRLIT_DBL
+#endif
+
+#define PAT_INVALID \S+
+
+// tokenizer for tokens in a statement/argument position:
+#ifdef MULTILINE_STRINGS
+var TOKENIZER_SA = /PAT_NBIGNORE(?:(PAT_NEWLINES)|(PAT_NUMLIT)|(PAT_REGEXLIT)|(PAT_ARGSYMBOL)|(PAT_STRLIT)|(PAT_ML_STRLIT)|(PAT_INVALID))/g;
+#else
+var TOKENIZER_SA = /PAT_NBIGNORE(?:(PAT_NEWLINES)|(PAT_NUMLIT)|(PAT_REGEXLIT)|(PAT_ARGSYMBOL)|(PAT_STRLIT)|(PAT_INVALID))/g;
+#endif
+
+#define SA_NEWLINES_MATCH 1
+#define SA_NUMLIT_MATCH 2
+#define SA_REGEXLIT_MATCH 3
+#define SA_ARGSYMBOL_MATCH 4
+#define SA_STRLIT_MATCH 5
+#ifdef MULTILINE_STRINGS
+#define SA_ML_STRLIT_MATCH 6
+#define SA_INVALID_MATCH 7
+#else
+#define SA_INVALID_MATCH 6
+#endif
+
+// tokenizer for tokens in an operator position::
+var TOKENIZER_OP = /PAT_NBIGNORE(?:(PAT_NEWLINES)|(PAT_SYMBOL))/g;
+
+#define OP_NEWLINES_MATCH 1
+#define OP_SYMBOL_MATCH 2
+
+//----------------------------------------------------------------------
+// Syntax Table
+
+function SemanticToken() {}
+SemanticToken.prototype = {
+  //----------------------------------------------------------------------
+  // parser 'api'
+
+  // expression starter function
+#ifdef VERBOSE_COMPILE_ERRORS
+  exsf: function(pctx, st) { throw "Unexpected token " + this + " (exsf missing)"; },
+#else
+  exsf: function(pctx, st) { throw "Unexpected " + this; },
+#endif
+  // expression continuation binding power
+  excbp: 0,
+
+  // expression continuation
+#ifdef VERBOSE_COMPILE_ERRORS
+  excf: function(left, pctx, st) { throw "Unexpected token " + this + " (excf missing)"; },
+#else
+  excf: function(left, pctx, st) { throw "Unexpected " + this; },
+#endif
+  // statement function
+  stmtf: null,
+
+  // tokenizer for next token:
+  tokenizer: TOKENIZER_SA,
+  
+  //----------------------------------------------------------------------
+  // helpers
+  
+  toString: function() { return "'"+this.id+"'"; },
+
+  //----------------------------------------------------------------------
+  // semantic token construction 'api'
+  
+  exs: function(f) {
+    this.exsf = f;
+    return this;
+  },
+  exc: function(bp, f) {
+    this.excbp = bp;
+    if (f) this.excf = f;
+    return this;
+  },
+  stmt: function(f) {
+    this.stmtf = f;
+    return this;
+  },
+
+  // encode infix operation
+  ifx: function(bp, right_assoc) {
+    this.excbp = bp;
+    if (right_assoc) bp -= .5;
+    this.excf = function(left, pctx, st) {
+      var right = parseExp(pctx, bp, st);
+      GEN_INFIX_OP(left, this.id, right, pctx)
+    };
+    return this;
+  },
+  // encode assignment operation
+  asg: function(bp, right_assoc) {
+    this.excbp = bp;
+    if (right_assoc) bp -= .5;
+    this.excf = function(left, pctx, st) {
+      var right = parseExp(pctx, bp, st);
+      GEN_ASSIGN_OP(left, this.id, right, pctx)
+    };
+    return this;
+  },
+  // encode prefix operation
+  pre: function(bp) {
+    return this.exs(function(pctx, st) {
+      var right = parseExp(pctx, bp, st);
+      GEN_PREFIX_OP(this.id, right, pctx)
+    });
+  },
+  // encode postfix operation
+  pst: function(bp) {
+    return this.exc(bp, function(left, pctx, st) {
+      GEN_POSTFIX_OP(left, this.id, pctx)
+    });
+  }  
+};
+
+//-----
+function Literal(type, value) {
+  this.id = type;
+  this.value = value;
+}
+Literal.prototype = new SemanticToken();
+Literal.prototype.tokenizer = TOKENIZER_OP;
+#ifdef VERBOSE_COMPILE_ERRORS
+Literal.prototype.toString = function() { return this.id + "('" + this.value + "')"; };
+#else
+Literal.prototype.toString = function() { return "literal '"+this.value+"'"; };
+#endif
+Literal.prototype.exsf = function(pctx, st) {
+  GEN_LITERAL(this.id, this.value, pctx)
+};
+
+//-----
+function Identifier(value) {
+  this.value = value;
+}
+Identifier.prototype = new Literal("<id>");
+Identifier.prototype.exsf = function(pctx, st) {
+  GEN_IDENTIFIER(this.value, pctx)
+};
+#ifndef VERBOSE_COMPILE_ERRORS
+Identifier.prototype.toString = function() { return "identifier '"+this.value+"'";};
+#endif
+
+//-----
+// base syntax table
+var ST = new Hash();
+function S(id, tokenizer) {
+  var t = new SemanticToken();
+  t.id = id;
+  if (tokenizer)
+    t.tokenizer = tokenizer;
+  ST.put(id, t);
+  return t;
+}
+
+/*
+BP: Binding Power
+P: Precedence
+A: Associates (L: left, R: right)
+
+BP  P  A    Operator      Operand Types                  Operation Performed
+270  1 L     []           MemberExp Expression        
+       L     .            MemberExp Identifier        
+       R     new          MemberExp Arguments        
+260  2 L     ( )          CallExpression Arguments       Function Call
+  (    L     []           CallExpression Expression        )
+  (    L     .            CallExpression Identifier        )
+250  3 n/a   ++           LeftHandSideExp                PostfixIncrement
+       n/a   --           LeftHandSideExp                PostfixDecrement
+240  4 R     delete       UnaryExp                       Call Delete Method
+       R     void         UnaryExp                       Eval and Return undefined
+       R     typeof       UnaryExp                       Return Type of an Object
+  (    R     ++           UnaryExp                       PrefixIncrement )
+  (    R     --           UnaryExp                       PrefixDecrement )
+       R     +            UnaryExp                       UnaryPlus
+       R     -            UnaryExp                       UnaryMinus
+       R     ~            UnaryExp                       BitwiseNot
+       R     !            UnaryExp                       LogicalNot
+230  5 L     *            MultExp UnaryExp               Multiplication
+       L     /            MultExp UnaryExp               Division
+       L     %            MultExp UnaryExp               Remainder
+220  6 L     +            AddExp MultExp                 Addition
+       L     -            AddExp MultExp                 Subtraction
+210  7 L     <<           ShiftExp AddExp                BitwiseLeftShift
+       L     >>           ShiftExp AddExp                SignedRightShift
+       L     >>>          ShiftExp AddExp                UnsignedRightShift
+200  8 L     <            RelExp ShiftExp                LessThanComparison
+       L     >            RelExp ShiftExp                GreaterThanComparison
+       L     <=           RelExp ShiftExp                LessThanOrEqualComparison
+       L     >=           RelExp ShiftExp                GreaterThanOrEqualComparison
+       L     instanceof   RelExp ShiftExp                Call HasInstance Method
+       L     in           RelExp ShiftExp                Call HasProperty Method
+190 9  L     ==           EqualExp RelExp                IsEqual
+       L     !=           EqualExp RelExp                IsNotEqual
+       L     ===          EqualExp RelExp                IsStrictlyEqual
+       L     !==          EqualExp RelExp                IsStrictlyNotEqual
+180 10 L     &            BitwiseAndExp EqualExp         BitwiseAnd
+170 11 L     ^            BitwiseXorExp EqualExp         Bitwise Xor
+160 12 L     |            BitwiseOrExp EqualExp          BitwiseOr
+150 13 L     &&           LogicalAndExp BitwiseOrExp     LogicalAnd
+140 14 L     ||           LogicalOrExp LogicalAndExp     LogicalOr
+130 15 R     ? :          LogicalOrExp AssignExp AssignExp   ConditionalExpression
+120 16 R      =           LeftHandSideExp AssignExp      AssignmentExpression
+       R     *=           LeftHandSideExp AssignExp      AssignmentWithMultiplication
+       R     /=           LeftHandSideExp AssignExp      AssignmentWithDivision
+       R     %=           LeftHandSideExp AssignExp      AssignmentWithRemainder
+       R     +=           LeftHandSideExp AssignExp      AssignmentWithAddition
+       R     -=           LeftHandSideExp AssignExp      AssignmentWithSubtraction
+       R     <<=          LeftHandSideExp AssignExp      AssignmentWithBitwiseLeftShift
+       R     >>=          LeftHandSideExp AssignExp      AssignmentWithSignedRightShift
+       R     >>>=         LeftHandSideExp AssignExp      AssignmentWithUnsignedRightShift
+       R     &=           LeftHandSideExp AssignExp      AssignmentWithBitwiseAnd
+       R     ^=           LeftHandSideExp AssignExp      AssignmentWithBitwiseOr
+       R     |=           LeftHandSideExp AssignExp      AssignmentWithLogicalNot
+*115         spawn        SpawnExp                       StratifiedJS 'spawn'
+110 17 L     ,            Expression AssignExp           SequentialEvaluation
+
+expressions up to BP 100
+
+*/
+
+#define BP_ASSIGN 120
+#define BP_COMMA 110
+
+S("[").
+  // array literal
+  exs(function(pctx, st) {
+    var elements = [];
+    while (pctx.token.id != "]") {
+      if (elements.length) scan(pctx, ",");
+      if (pctx.token.id == ",") {
+        elements.push((function(pctx) { GEN_ELISION(pctx) })(pctx));
+      }
+      else if (pctx.token.id == "]")
+        break; // allows trailing ','
+      else
+        elements.push(parseExp(pctx, BP_COMMA));
+    }
+    scan(pctx, "]");
+    GEN_ARR_LIT(elements, pctx)
+  }).
+  // indexed property access
+  exc(270, function(l, pctx, st) {
+    var idxexp = parseExp(pctx);
+    scan(pctx, "]");
+
+    GEN_IDX_ACCESSOR(l, idxexp, pctx)
+  });
+
+S(".").exc(270, function(l, pctx, st) {
+  if (pctx.token.id != "<id>")
+    throw "Expected an identifier, found '"+pctx.token+"' instead";
+  var name = pctx.token.value;
+  scan(pctx);
+  GEN_DOT_ACCESSOR(l, name, pctx)
+});
+
+S("new").exs(function(pctx, st) {
+  var exp = parseExp(pctx, 0, "(");
+  var args = [];
+  if (pctx.token.id == "(") {
+    scan(pctx); // swallow '('
+    while (pctx.token.id != ")") {
+      if (args.length) scan(pctx, ",");
+      args.push(parseExp(pctx, BP_COMMA));
+    }
+    scan(pctx, ")");
+  }
+  GEN_NEW(exp, args, pctx)
+});
+
+S("(").
+  // grouping
+  exs(function (pctx, st) {
+    var e = parseExp(pctx);
+    scan(pctx, ")");
+    GEN_GROUP(e, pctx)
+  }).
+  // function call
+  exc(260, function(l, pctx, st) {
+    var args = [];
+    while (pctx.token.id != ")") {
+      if (args.length) scan(pctx, ",");
+      args.push(parseExp(pctx, BP_COMMA)); // only parse up to comma
+    }
+    scan(pctx, ")");
+    GEN_FUN_CALL(l, args, pctx)
+  });
+
+S("++").pre(240).pst(250).asi_restricted = true;
+S("--").pre(240).pst(250).asi_restricted = true;
+
+S("delete").pre(240);
+S("void").pre(240);
+S("typeof").pre(240);
+S("+").pre(240).ifx(220);
+S("-").pre(240).ifx(220);
+S("~").pre(240);  
+S("!").pre(240);  
+
+S("*").ifx(230);
+S("/").ifx(230);
+S("%").ifx(230);
+
+// +,-: see above
+
+S("<<").ifx(210);
+S(">>").ifx(210);
+S(">>>").ifx(210);
+
+S("<").ifx(200);
+S(">").ifx(200);
+S("<=").ifx(200);
+S(">=").ifx(200);
+S("instanceof").ifx(200);
+
+S("in").ifx(200);
+
+S("==").ifx(190);
+S("!=").ifx(190);
+S("===").ifx(190);
+S("!==").ifx(190);
+
+S("&").ifx(180);
+S("^").ifx(170);
+S("|").ifx(160);
+S("&&").ifx(150);
+S("||").ifx(140);
+
+S("?").exc(130, function(test, pctx, st) {
+  var consequent = parseExp(pctx, BP_COMMA);
+  scan(pctx, ":");
+  var alternative = parseExp(pctx, BP_COMMA);
+  GEN_CONDITIONAL(test, consequent, alternative, pctx)
+});
+
+S("=").asg(BP_ASSIGN, true);
+S("*=").asg(120, true);
+S("/=").asg(120, true);
+S("%=").asg(120, true);
+S("+=").asg(120, true);
+S("-=").asg(120, true);
+S("<<=").asg(120, true);
+S(">>=").asg(120, true);
+S(">>>=").asg(120, true);
+S("&=").asg(120, true);
+S("^=").asg(120, true);
+S("|=").asg(120, true);
+
+#ifdef SJS
+S("spawn").pre(115);
+#endif
+
+S(",").ifx(BP_COMMA, true);
+
+// helper to check that token is a valid property name:
+function validatePropertyName(token) {
+  var id = token.id;
+  if (id != "<id>" && id != "<string>" && id != "<number>")
+    throw "Invalid object literal syntax; property name expected, but saw "+token;
+}
+
+function parseBlock(pctx) {
+  BEGIN_BLOCK(pctx)
+  while (pctx.token.id != "}") {
+    var stmt = parseStmt(pctx);
+    ADD_BLOCK_STMT(stmt, pctx)
+  }
+  scan(pctx, "}");
+  END_BLOCK(pctx)
+}
+
+S("{").
+  // object literal:
+  exs(function(pctx, st) {
+    var props = [];
+    while (pctx.token.id != "}") {
+      if (props.length) scan(pctx, ",");
+      var prop = pctx.token;
+      if (prop.id == "}")
+        break; // allows trailing ','
+      validatePropertyName(prop);
+      scan(pctx);
+      if (pctx.token.id == ":") {
+        // 'normal' property
+        scan(pctx);
+        var exp = parseExp(pctx, BP_COMMA); // only parse up to comma
+        props.push(["prop",prop.value,exp]);
+      }
+#ifdef ECMA_GETTERS_SETTERS
+      else if (prop.value == "get") {
+        // property getter
+        prop = pctx.token;
+        validatePropertyName(prop);
+        scan(pctx);
+        scan(pctx, "(");
+        scan(pctx, ")");
+        var body = parseFunctionBody(pctx);
+        props.push(["get", prop.value, body]);
+      }
+      else if (prop.value == "set") {
+        // property setter
+        prop = pctx.token;
+        validatePropertyName(prop);
+        scan(pctx);
+        var pars = [];
+        var body = parseFunctionInner(pctx, pars);
+        if (pars.length != 1)
+          throw "Exactly one parameter expected in property setter definition";
+        props.push(["set", prop.value, pars[0], body]);
+      }
+#endif // ECMA_GETTERS_SETTERS
+#ifdef SJS_DESTRUCTURE
+      else if (pctx.token.id == "}" || pctx.token.id == ",") {
+        props.push(["pat", prop.value, pctx.line]);
+      }
+#endif // SJS_DESTRUCTURE
+      else
+        throw "Unexpected token '"+pctx.token+"'";
+    }
+    scan(pctx, "}", TOKENIZER_OP); // note the special tokenizer case here
+    GEN_OBJ_LIT(props, pctx)
+  }).
+  // block:
+  stmt(parseBlock);
+
+// deliminators
+S(";").stmt(function(pctx) { GEN_EMPTY_STMT(pctx) });
+S(")", TOKENIZER_OP);
+S("]", TOKENIZER_OP);
+S("}"); // note the special tokenizer case for object literals, above
+S(":");
+
+S("<eof>").
+  exs(function(pctx, st) { throw "Unexpected end of input (exs)"; }).
+  stmt(function(pctx) { throw "Unexpected end of input (stmt)"; });
+
+// statements/misc
+
+// helper to parse a function body:
+function parseFunctionBody(pctx) {
+  BEGIN_FBODY(pctx)
+  scan(pctx, "{");
+  while (pctx.token.id != "}") {
+    var stmt = parseStmt(pctx);
+    ADD_FBODY_STMT(stmt, pctx)
+  }
+  scan(pctx, "}");
+  END_FBODY(pctx)
+}
+
+// inner function parsing helper: scans everything from '(' onwards;
+// returns pars in inout var, and body as rv
+function parseFunctionInner(pctx, pars) {
+  var par = scan(pctx, "(");
+  while (pctx.token.id != ")") {
+    if (pars.length)
+      par = scan(pctx, ",");
+    if (par.id != "<id>")
+      throw "Expected parameter name; found '"+par+"'";
+    scan(pctx); // consume par
+    pars.push(par.value);
+  }
+  scan(pctx, ")");
+  return parseFunctionBody(pctx);
+}
+
+S("function").
+  // expression function form ('function expression')
+  exs(function(pctx, st) {
+    var fname = "";
+    if (pctx.token.id == "<id>") {
+      fname = pctx.token.value;
+      scan(pctx);
+    }
+    var pars = [];
+    var body = parseFunctionInner(pctx, pars);
+    GEN_FUN_EXP(fname, pars, body, pctx)
+  }).
+  // statement function form ('function declaration')
+  stmt(function(pctx) {
+    if (pctx.token.id != "<id>") throw "Malformed function declaration";
+    var fname = pctx.token.value;
+    scan(pctx);
+    var pars = [];
+    var body = parseFunctionInner(pctx, pars);
+    GEN_FUN_DECL(fname, pars, body, pctx)
+  });
+
+S("this", TOKENIZER_OP).exs(function(pctx, st) { GEN_THIS(pctx) });
+S("true", TOKENIZER_OP).exs(function(pctx, st) { GEN_TRUE(pctx) });
+S("false", TOKENIZER_OP).exs(function(pctx, st) { GEN_FALSE(pctx) });
+S("null", TOKENIZER_OP).exs(function(pctx, st) { GEN_NULL(pctx) });
+
+#ifdef SJS
+S("collapse", TOKENIZER_OP).exs(function(pctx, st) { GEN_COLLAPSE(pctx) });
+#endif
+
+function isStmtTermination(token) {
+  return token.id == ";" || token.id == "}" || token.id == "<eof>";
+}
+
+function parseStmtTermination(pctx) {
+  if (pctx.token.id != "}" && pctx.token.id != "<eof>" && !pctx.newline)
+    scan(pctx, ";");
+}
+
+function parseVarDecls(pctx, st) {
+  var decls = [];
+  do {
+    if (decls.length) scan(pctx, ",");
+    var id = pctx.token.value;
+    scan(pctx, "<id>");
+    if (pctx.token.id == "=") {
+      scan(pctx);
+      var initialiser = parseExp(pctx, BP_COMMA, st);
+      decls.push([id, initialiser]);
+    }
+    else
+      decls.push([id]);
+  } while (pctx.token.id == ",");
+  return decls;
+}
+    
+S("var").stmt(function(pctx) {
+  var decls = parseVarDecls(pctx);
+  parseStmtTermination(pctx);
+  GEN_VAR_DECL(decls, pctx)
+});
+
+S("else");
+
+S("if").stmt(function(pctx) {
+  scan(pctx, "(");
+  var test = parseExp(pctx);
+  scan(pctx, ")");
+  var consequent = parseStmt(pctx);
+  var alternative = null;
+  if (pctx.token.id == "else") {
+    scan(pctx);
+    alternative = parseStmt(pctx);
+  }
+  GEN_IF(test, consequent, alternative, pctx)
+});
+
+S("while").stmt(function(pctx) {
+  scan(pctx, "(");
+  var test = parseExp(pctx);
+  scan(pctx, ")");
+  var body = parseStmt(pctx);
+  GEN_WHILE(test, body, pctx)
+});
+
+S("do").stmt(function(pctx) {
+  var body = parseStmt(pctx);
+  scan(pctx, "while");
+  scan(pctx, "(");
+  var test = parseExp(pctx);
+  scan(pctx, ")");
+  parseStmtTermination(pctx);
+  GEN_DO_WHILE(body, test, pctx)
+});
+
+S("for").stmt(function(pctx) {
+  scan(pctx, "(");
+  var start_exp = null;
+  var decls = null;
+  if (pctx.token.id == "var") {
+    scan(pctx); // consume 'var'
+    decls = parseVarDecls(pctx, "in");
+  }
+  else {
+    if (pctx.token.id != ";")
+      start_exp = parseExp(pctx, 0, "in");
+  }
+
+  if (pctx.token.id == ";") {
+    scan(pctx);
+    var test_exp = null;
+    if (pctx.token.id != ";")
+      test_exp = parseExp(pctx);
+    scan(pctx, ";");
+    var inc_exp = null;
+    if (pctx.token.id != ")")
+      inc_exp = parseExp(pctx);
+    scan(pctx, ")");
+    var body = parseStmt(pctx);
+    GEN_FOR(start_exp, decls, test_exp, inc_exp, body, pctx)
+  }
+  else if (pctx.token.id == "in") {
+    scan(pctx);
+    //XXX check that start_exp is a valid LHS
+    if (decls && decls.length > 1)
+      throw "More that one variable declaration in for-in loop";
+    var obj_exp = parseExp(pctx);
+    scan(pctx, ")");
+    var body = parseStmt(pctx);
+    var decl = decls ? decls[0] : null;
+    GEN_FOR_IN(start_exp, decl, obj_exp, body, pctx)
+  }
+  else
+    throw "Unexpected token '"+pctx.token+"' in for-statement";
+});
+
+S("continue").stmt(function(pctx) {
+  var label = null;
+  if (pctx.token.id == "<id>" && !pctx.newline) {
+    label = pctx.token.value;
+    scan(pctx);
+  }
+  parseStmtTermination(pctx);
+  GEN_CONTINUE(label, pctx)
+});
+
+S("break").stmt(function(pctx) {
+  var label = null;
+  if (pctx.token.id == "<id>" && !pctx.newline) {
+    label = pctx.token.value;
+    scan(pctx);
+  }
+  parseStmtTermination(pctx);
+  GEN_BREAK(label, pctx)
+});
+
+S("return").stmt(function(pctx) {
+  var exp = null;
+  if (!isStmtTermination(pctx.token) && !pctx.newline)
+    exp = parseExp(pctx);
+  parseStmtTermination(pctx);
+  GEN_RETURN(exp, pctx)
+});
+
+S("with").stmt(function(pctx) {
+  scan(pctx, "(");
+  var exp = parseExp(pctx);
+  scan(pctx, ")");
+  var body = parseStmt(pctx);
+  GEN_WITH(exp, body, pctx)
+});
+
+S("case");
+S("default");
+
+S("switch").stmt(function(pctx) {
+  scan(pctx, "(");
+  var exp = parseExp(pctx);
+  scan(pctx, ")");
+  scan(pctx, "{");
+  var clauses = [];
+  while (pctx.token.id != "}") {
+    var clause_exp = null;
+    if (pctx.token.id == "case") {
+      scan(pctx);
+      clause_exp = parseExp(pctx);
+    }
+    else if (pctx.token.id == "default") {
+      scan(pctx);
+    }
+    else
+      throw "Invalid token '"+pctx.token+"' in switch statement";
+    scan(pctx, ":");
+    BEGIN_CASE_CLAUSE(clause_exp, pctx)
+    while (pctx.token.id != "case" && pctx.token.id != "default" && pctx.token.id != "}") {
+      var stmt = parseStmt(pctx);
+      ADD_CASE_CLAUSE_STMT(stmt, pctx)
+    }
+    clauses.push((function(pctx) { END_CASE_CLAUSE(pctx) })(pctx));
+  }
+  scan(pctx, "}");
+  GEN_SWITCH(exp, clauses, pctx)
+});
+
+S("throw").stmt(function(pctx) {
+  if (pctx.newline) throw "Illegal newline after throw";
+  var exp = parseExp(pctx);
+  parseStmtTermination(pctx);
+  GEN_THROW(exp, pctx);
+});
+
+S("catch");
+S("finally");
+
+// parse catch-retract-finally
+// returns [ [catch_id,catch_block,catchall?]|null,
+//           retract|null,
+//           finally|null ]
+function parseCRF(pctx) {
+  var rv = [];
+  var a = null;
+  if (pctx.token.id == "catch"
+#ifdef SJS
+      // XXX catchall should only work for try, not for waitfor!
+      || pctx.token.value == "catchall" // XXX maybe use a real syntax token
+#endif
+     ) {
+    var all = pctx.token.value == "catchall";
+    a = [];
+    scan(pctx);
+    a.push(scan(pctx, "(").value);
+    scan(pctx, "<id>");
+    scan(pctx, ")");
+    scan(pctx, "{");
+    a.push(parseBlock(pctx));
+#ifdef SJS
+    a.push(all);
+#endif
+  }
+  rv.push(a);
+#ifdef SJS
+  if (pctx.token.value == "retract") { // XXX maybe use a real syntax token
+    scan(pctx);
+    scan(pctx, "{");
+    rv.push(parseBlock(pctx));
+  }
+  else
+    rv.push(null);
+#else
+  // retract is SJS-only
+  rv.push(null);
+#endif
+  if (pctx.token.id == "finally") {
+    scan(pctx);
+    scan(pctx, "{");
+    rv.push(parseBlock(pctx));
+  }
+  else
+    rv.push(null);
+  return rv;
+}
+
+#ifdef SJS
+S("try").stmt(function(pctx) {
+  scan(pctx, "{");
+  var block = parseBlock(pctx);
+  var op = pctx.token.value; // XXX maybe use proper syntax token
+  if (op != "and" && op != "or") {
+    // conventional 'try'
+    var crf = parseCRF(pctx);
+    if (!crf[0] && !crf[1] && !crf[2])
+      throw "Missing 'catch', 'finally' or 'retract' after 'try'";
+    GEN_TRY(block, crf, pctx)
+  }
+  else {
+    var blocks = [block];
+    do {
+      scan(pctx);
+      scan(pctx, "{");
+      blocks.push(parseBlock(pctx));
+    } while (pctx.token.value == op);
+    var crf = parseCRF(pctx);
+    GEN_WAITFOR_ANDOR(op, blocks, crf, pctx)
+  }
+});
+#else
+S("try").stmt(function(pctx) {
+  scan(pctx, "{");
+  var block = parseBlock(pctx);
+  var crf = parseCRF(pctx);
+  if (!crf[0] && !crf[2])
+    throw "Missing 'catch' or 'finally' after 'try'";
+  GEN_TRY(block, crf, pctx)
+});
+#endif
+
+#ifdef SJS
+S("waitfor").stmt(function(pctx) {
+  if (pctx.token.id == "{") {
+    // DEPRECATED and/or forms
+    scan(pctx, "{");
+    var blocks = [parseBlock(pctx)];
+    var op = pctx.token.value; // XXX maybe use syntax token
+    if (op != "and" && op != "or") throw "Missing 'and' or 'or' after 'waitfor' block";
+    do {
+      scan(pctx);
+      scan(pctx, "{");
+      blocks.push(parseBlock(pctx));
+    } while (pctx.token.value == op);
+    var crf = parseCRF(pctx);
+    GEN_WAITFOR_ANDOR(op, blocks, crf, pctx)
+  }
+  else {
+    // suspend form
+    scan(pctx, "(");
+    var has_var = (pctx.token.id == "var");
+    if (has_var) scan(pctx);
+    var decls = [];
+    if (pctx.token.id == ")") {
+      if (has_var) throw "Missing variables in waitfor(var)";
+    }
+    else
+      decls = parseVarDecls(pctx);
+    scan(pctx, ")");
+    scan(pctx, "{");
+    BEGIN_SUSPEND_BLOCK(pctx)
+    var block = parseBlock(pctx);
+    var crf = parseCRF(pctx);
+    END_SUSPEND_BLOCK(pctx)
+    GEN_SUSPEND(has_var, decls, block, crf, pctx)
+  }    
+});
+
+#endif // SJS
+
+#ifdef SJS_USING
+S("using").stmt(function(pctx) {
+  var has_var;
+  scan(pctx, "(");
+  if (has_var = (pctx.token.id == "var"))
+    scan(pctx);
+  var lhs, exp;
+  var e1 = parseExp(pctx, BP_ASSIGN); // parse expression up to '=' at most
+  if (pctx.token.id == "=") {
+    lhs = e1; // need to check in kernel that lhs is a variable!
+    scan(pctx);
+    exp = parseExp(pctx);
+  }
+  else {
+    if (has_var)
+      throw "Syntax error in 'using' expression";
+    exp = e1;
+  }
+  scan(pctx, ")");
+  var body = parseStmt(pctx);
+  GEN_USING(has_var, lhs, exp, body, pctx)
+});
+#endif // SJS_USING
+
+#ifdef SJS___JS
+S("__js").stmt(function(pctx) {
+  BEGIN___JS_BLOCK(pctx)
+  var body = parseStmt(pctx);
+  END___JS_BLOCK(pctx)
+  GEN___JS(body, pctx)
+});
+#endif // SJS___JS
+
+
+// reserved keywords:
+S("abstract");
+S("boolean");
+S("byte");
+S("char");
+S("class");
+S("const");
+S("debugger");
+S("double");
+S("enum");
+S("export");
+S("extends");
+S("final");
+S("float");
+S("goto");
+S("implements");
+S("import");
+S("int");
+S("interface");
+S("long");
+S("native");
+S("package");
+S("private");
+S("protected");
+S("public");
+S("short");
+S("static");
+S("super");
+S("synchronized");
+S("throws");
+S("transient");
+S("volatile");
+
+//----------------------------------------------------------------------
+// Parser
+
+function makeParserContext(src, settings) {
+  var ctx = {
+    src       : src,
+    line      : 1,
+    lastIndex : 0,
+    token     : null
+  };
+
+  if (settings)
+    for (var a in settings)
+      ctx[a] = settings[a];
+
+  return ctx;
+}
+
+// main entry point into parsing api
+function compile(src, settings) {
+  // XXX The regexps of our lexer currently assume that there is never
+  // a '//' comment on the last line of the source text. This will
+  // currently match as separate /'s, since we're not checking for
+  // '$'.  We could amend our regexps and amend the check for EOF
+  // below in the scan function, or we can ensure there's always a
+  // '\n' at the end. Doing the latter for now, since I suspect it
+  // wins performance-wise:
+
+  var pctx = makeParserContext(src+"\n", settings);
+  try {
+    return parseScript(pctx);
+  }
+  catch (e) {
+    var mes = e.mes || e;
+    var line = e.line || pctx.line;
+    throw new Error("SJS syntax error "+(pctx.filename?"in "+pctx.filename+",": "at") +" line " + line + ": " + mes);
+  }
+}
+exports.compile = compile;
+
+function parseScript(pctx) {
+  BEGIN_SCRIPT(pctx)
+  scan(pctx);
+  while (pctx.token.id != "<eof>") {
+    var stmt = parseStmt(pctx);
+    ADD_SCRIPT_STMT(stmt, pctx);
+  }
+  END_SCRIPT(pctx)
+}
+
+function parseStmt(pctx) {
+  var t = pctx.token;
+  scan(pctx);
+  if (t.stmtf) {
+    // a specialized statement construct
+    return t.stmtf(pctx);
+  }
+  else if (t.id == "<id>" && pctx.token.id == ":") {
+    // a labelled statement
+    scan(pctx); // consume ':'
+    // XXX should maybe code this in non-recursive style:
+    var stmt = parseStmt(pctx);
+    GEN_LBL_STMT(t.value, stmt, pctx)
+  }
+  else {
+    // an expression statement
+    var exp = parseExp(pctx, 0, null, t);
+    parseStmtTermination(pctx);
+    GEN_EXP_STMT(exp, pctx)
+  }
+}
+
+// bp: binding power of enclosing exp, st: optional 'stop' token, t: optional next token
+function parseExp(pctx, bp, st, t) {
+  bp = bp || 0;
+  if (!t) {
+    t = pctx.token;
+    scan(pctx);
+  }
+  var left = t.exsf(pctx, st);
+  while (bp < pctx.token.excbp && pctx.token.id != st) {
+    t = pctx.token;
+    // automatic semicolon insertion:
+    if (pctx.newline && (!t.excf || t.asi_restricted))
+      return left;
+    scan(pctx);
+    left = t.excf(left, pctx, st);
+  }
+  return left;
+}
+
+function scan(pctx, id, tokenizer) {
+  if (!tokenizer) {
+    if (pctx.token)
+      tokenizer = pctx.token.tokenizer;
+    else
+      tokenizer = TOKENIZER_SA;
+  }
+  
+  if (id && (!pctx.token || pctx.token.id != id))
+    throw "Unexpected " + pctx.token;
+  pctx.token = null;
+  pctx.newline = 0;
+  while (!pctx.token) {
+    tokenizer.lastIndex = pctx.lastIndex;
+    var matches = tokenizer.exec(pctx.src);
+    if (!matches) {
+      pctx.token = ST.lookup("<eof>");
+      break;
+    }
+    pctx.lastIndex = tokenizer.lastIndex;
+
+    if (tokenizer == TOKENIZER_SA) {
+      if (matches[SA_ARGSYMBOL_MATCH]) {
+        pctx.token = ST.lookup(matches[SA_ARGSYMBOL_MATCH]);
+        if (!pctx.token) {
+          pctx.token = new Identifier(matches[SA_ARGSYMBOL_MATCH]);
+        }
+      }
+      else if (matches[SA_NEWLINES_MATCH]) {
+        var m = matches[SA_NEWLINES_MATCH].match(/\n/g);
+        if (m) {
+          pctx.line += m.length;
+          pctx.newline += m.length;
+          HANDLE_NEWLINES(m.length, pctx)
+        }
+        // go round loop again
+      }
+      else if (matches[SA_STRLIT_MATCH])
+        pctx.token = new Literal("<string>", matches[SA_STRLIT_MATCH]);
+#ifdef MULTILINE_STRINGS
+      else if (matches[SA_ML_STRLIT_MATCH]) {
+        var val = matches[SA_ML_STRLIT_MATCH];
+        var m = val.match(/\n/g);
+        pctx.line += m.length;
+        pctx.newline += m.length;
+        val = val.replace(/\\\n/g, "").replace(/\n/g, "\\n");
+        pctx.token = new Literal("<string>", val);
+      }
+#endif
+      else if (matches[SA_NUMLIT_MATCH])
+        pctx.token = new Literal("<number>", matches[SA_NUMLIT_MATCH]);
+      else if (matches[SA_REGEXLIT_MATCH])
+        pctx.token = new Literal("<regex>", matches[SA_REGEXLIT_MATCH]);
+      else if (matches[SA_INVALID_MATCH])
+        throw "Unexpected characters: '"+matches[SA_INVALID_MATCH]+"'";
+      else
+        throw "Internal scanner error";
+      //print("sa:"+pctx.token);
+    }
+    else if (tokenizer == TOKENIZER_OP) { // tokenizer == TOKENIZER_OP
+      if (matches[OP_SYMBOL_MATCH]) {
+        pctx.token = ST.lookup(matches[OP_SYMBOL_MATCH]);
+        if (!pctx.token) {
+          pctx.token = new Identifier(matches[OP_SYMBOL_MATCH]);
+        }
+      }
+      else if (matches[OP_NEWLINES_MATCH]) {
+        var m = matches[OP_NEWLINES_MATCH].match(/\n/g);
+        if (m) {
+          pctx.line += m.length;
+          pctx.newline += m.length;
+          HANDLE_NEWLINES(m.length, pctx)
+        }
+        // go round loop again
+      }
+      else {
+        // We might be in an SA position after an omitted
+        // newline. switch tokenizers and try again. The SA tokenizer will
+        // bail if it can't match a token either.
+        tokenizer = TOKENIZER_SA;
+        // go round loop again
+      }
+      //print("op:"+pctx.token);
+    }
+    else
+      throw "Internal scanner error: no tokenizer";
+  }
+  return pctx.token;
+}
+

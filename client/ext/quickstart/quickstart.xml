@@ -10,7 +10,8 @@
         modal = "false"
         buttons = ""
         kbclose   = ""
-        width     = "450"
+        width     = "500"
+        height    = "210"
         skinset   = "quickstart"
         skin ="quickstart"
         draggable = "false">
@@ -35,7 +36,8 @@
         <div class="qsCBContainer">
             <div class="checkboxDiv">
                  <a:checkbox id="quickStartCheckbox" 
-                    checked="false"
+                 skin    = "db-checkbox"
+                    checked="true"
                   value   = "[{require('ext/settings/settings').model}::auto/help/@show]"
                   onafterchange="
                     if(this.checked)

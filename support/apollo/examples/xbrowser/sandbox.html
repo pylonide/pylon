@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <script src="../../oni-apollo.js"></script> 
+  <script type="text/sjs">
+
+var c= require('apollo:debug').console({target:"container", 
+                                        collapsed:false});
+var cmd = document.location.getParameter ? 
+  document.location.getParameter('cmd') :
+  require('apollo:http').parseURL(document.location).queryKey.cmd;
+if (cmd) c.exec(decodeURIComponent(cmd));
+
+c.focus();
+
+  </script>
+  </head>
+  <body style="background:#fbfbfb;">
+    <span style="font-family:sans-serif;" id="version">Oni Apollo Sandbox</span>
+      <div style="-webkit-box-shadow:rgba(0,0,0,0.1) 0px 4px 4px;height:80%;width:90%;position:absolute;top:10%;left:5%" id="container"></div>
+  </body>
+</html>
