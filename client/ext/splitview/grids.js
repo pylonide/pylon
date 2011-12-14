@@ -256,6 +256,18 @@ function createGridNodes(name) {
         blueprint.node = blueprint.struct.node;
     if (!blueprint.splitters)
         blueprint.splitters = splitters;
+
+    if (!blueprint.node.$resizeListener) {
+        var timeout, lastEvent;
+        blueprint.node.addEventListener("resize", blueprint.node.$resizeListener = function(e) {
+            lastEvent = e;
+            if (timeout)
+                return;
+            if (exports.onresize)
+                exports.onresize(lastEvent, this);
+            timeout = setTimeout(function(){ timeout = null; }, 100);
+        });
+    }
 }
 
 function insertEditorAt(parent, editor, insertPoint) {

@@ -7,6 +7,7 @@
 
 define(function(require, exports, module) {
 
+var ide = require("core/ide");
 var ext = require("core/ext");
 var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
@@ -200,6 +201,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             var doc   = editor.getDocument();
             var range = sel.getRange();
             var value = doc.getTextRange(range);
+            var corrected = ide.dispatchEvent("ext.quicksearch.correctpos");
 
             if (!value && editor.amlEditor)
                 value = editor.amlEditor.getLastSearchOptions().needle;
@@ -211,13 +213,18 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             winQuickSearch.show();
             txtQuickSearch.focus();
             txtQuickSearch.select();
+            
+            if (corrected) {
+                if (typeof corrected.right != "undefined")
+                    winQuickSearch.$ext.style.right = corrected.right + "px";
+            }
 
             //Animate
             apf.tween.single(winQuickSearch, {
                 type     : "top",
                 anim     : apf.tween.easeInOutCubic,
                 from     : -27,
-                to       : 2,
+                to       : (corrected && typeof corrected.top != "undefined") ? corrected.top : 2,
                 steps    : 8,
                 interval : 10,
                 control  : (this.control = {}),

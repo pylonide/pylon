@@ -7,6 +7,7 @@
 
 define(function(require, exports, module) {
 
+var ide = require("core/ide");
 var ext = require("core/ext");
 var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
@@ -135,6 +136,9 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             var pos = ace.renderer.textToScreenCoordinates(cursor.row, cursor.column);
             var epos = apf.getAbsolutePosition(aceHtml);
             var maxTop = aceHtml.offsetHeight - 100;
+            var corrected = ide.dispatchEvent("ext.gotoline.correctpos", {
+                pos: pos
+            });
 
             //editor.amlEditor.parentNode.appendChild(winGotoLine);
             editor.amlEditor.parentNode.insertBefore(winGotoLine, editor.amlEditor);
@@ -143,13 +147,18 @@ module.exports = ext.register("ext/gotoline/gotoline", {
 
             winGotoLine.show();
             txtLineNr.focus();
+            
+            if (corrected) {
+                if (typeof corrected.top != "undefined")
+                    winGotoLine.$ext.style.top = corrected.top + "px";
+            }
 
             //Animate
             apf.tween.single(winGotoLine, {
                 type     : "left",
                 anim     : apf.tween.easeInOutCubic,
                 from     : -60,
-                to       : 0,
+                to       : (corrected && typeof corrected.left != "undefined") ? corrected.left : 0,
                 steps    : 8,
                 interval : 10,
                 control  : (this.control = {})

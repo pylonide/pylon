@@ -43,6 +43,40 @@ exports.init = function(splitView) {
             }
         });
     });
+    
+    ide.addEventListener("ext.quicksearch.correctpos", function(e) {
+        e.returnValue = correctQuickSearchDialog();
+    });
+    
+    ide.addEventListener("ext.gotoline.correctpos", function(e) {
+        e.returnValue = correctGotoLineDialog(e);
+    });
+    
+    Grids.onresize = function(e, node) {
+        var correct;
+        if (searchWindow && searchWindow.visible) {
+            correct = correctQuickSearchDialog();
+            if (!correct)
+                return;
+            if (typeof correct.top != "undefined")
+                searchWindow.$ext.style.top = correct.top + "px";
+            if (typeof correct.right != "undefined")
+                searchWindow.$ext.style.right = correct.right + "px";
+        }
+        if (gotoLineWindow && gotoLineWindow.visible) {
+            var ace = Editors.currentEditor.amlEditor.$editor;
+            var cursor = ace.getCursorPosition();
+            var pos = ace.renderer.textToScreenCoordinates(cursor.row, cursor.column);
+            correct = correctGotoLineDialog({ pos:pos });
+            if (!correct)
+                return;
+            if (typeof correct.top != "undefined")
+                gotoLineWindow.$ext.style.top = correct.top + "px";
+            if (typeof correct.left != "undefined")
+                gotoLineWindow.$ext.style.left = correct.left + "px";
+        }
+    };
+    
     return this;
 };
 
@@ -390,6 +424,70 @@ function clearSplitViewStyles(splitOrPage) {
     pages.forEach(function(page) {
         apf.setStyleClass(page.$button, null, [ActiveClass, InactiveClass]);
     });
+}
+
+var searchWindow, gotoLineWindow, searchPos;
+
+function correctQuickSearchDialog() {
+    var editor = Editors.currentEditor.amlEditor;
+    var pos = !ActiveSplit ? -1 : ActiveSplit.editors.indexOf(editor);
+    if (pos == -1)
+        return;
+
+    var parent = editor.parentNode;
+    var editorPos = apf.getAbsolutePosition(editor.$ext, parent.$ext);
+    var editorDims = {
+        width: editor.$ext.offsetWidth,
+        height: editor.$ext.offsetHeight
+    }
+    var parentDims = {
+        width: parent.$ext.offsetWidth,
+        height: parent.$ext.offsetHeight
+    };
+
+    if (!searchWindow && self["winQuickSearch"]) {
+        searchWindow = self["winQuickSearch"];
+        searchPos = apf.getStyle(searchWindow.$ext, "right");
+        if (searchPos == "auto")
+            searchPos = "30px";
+    }
+    if (searchWindow) {
+        var right = parentDims.width - editorPos[0] - editorDims.width + 30;
+        var top =  editorPos[1];
+        //console.log("editorPos", editorPos,"editorDims",JSON.stringify(editorDims),"parentDims",JSON.stringify(parentDims),"right",right,"top",top);
+        return {
+            right: Math.max(right, 30),
+            top: Math.max(top, 0)
+        };
+    }
+}
+
+function correctGotoLineDialog(e) {
+    var editor = Editors.currentEditor.amlEditor;
+    var pos = !ActiveSplit ? -1 : ActiveSplit.editors.indexOf(editor);
+    if (pos == -1)
+        return;
+        
+    var parent = editor.parentNode;
+    var editorPos = apf.getAbsolutePosition(editor.$ext, parent.$ext);
+    var editorDims = {
+        width: editor.$ext.offsetWidth,
+        height: editor.$ext.offsetHeight
+    }
+
+    if (!gotoLineWindow && self["winGotoLine"])
+        gotoLineWindow = self["winGotoLine"];
+
+    if (gotoLineWindow) {
+        var pos = e.pos;
+        var maxTop = editorPos[1] + editorDims.height - 100;
+        var left = editorPos[0];
+        var top = Math.min(maxTop, pos.pageY - 70);
+        return {
+            top: top,
+            left: Math.max(left, 0)
+        };
+    }
 }
 
 });
