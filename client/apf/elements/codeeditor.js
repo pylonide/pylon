@@ -36,9 +36,14 @@
  * @since       0.1
  */
 
-define("apf/elements/codeeditor",
-    ["module", "ace/editor", "ace/edit_session", "ace/virtual_renderer", "ace/undomanager", "ace/range", "ace/lib/fixoldbrowsers"],
-    function(module, Editor, EditSession, VirtualRenderer, UndoManager, Range) {
+define(function(require, exports, module) {
+
+var Editor = require("ace/editor");
+var EditSession = require("ace/edit_session");
+var VirtualRenderer = require("ace/virtual_renderer");
+var UndoManager = require("ace/undomanager");
+var Range = require("ace/range");
+require("ace/lib/fixoldbrowsers");
 
 Editor = Editor.Editor;
 EditSession = EditSession.EditSession;
@@ -602,7 +607,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         ed.addEventListener("gutterclick", function(e) {
             _self.dispatchEvent("gutterclick", e);
             if (_self.$debugger) {
-                _self.$toggleBreakpoint(e.row);
+                _self.$toggleBreakpoint(e.getDocumentPosition().row);
             }
         });
 
