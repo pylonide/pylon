@@ -1,0 +1,101 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+  <style>
+    body { padding:  0; margin: 0; font-family: "Monaco PT", monospace; font-size: 13px; line-height: 20px;}
+    .test {
+      padding: 0px 10px 0px 10px;
+      white-space:pre;
+    }
+    .test-success { background: #EBEBC7; color: #57561D;}
+    .test-failure { background: #FF964F; color: #990700;}
+    .test-error   { background: #ED4; color: #990700;}
+    .test-skip    { background: #a1d1f5; color: black;}
+    select {margin: 10px; }
+    #bar .progress { background: #4b5;}
+    #bar .failed { background: #e54;}
+    #bar { background:#DDD; }
+    #bar * { height:10px; }
+    #status { padding:0 10px; background:#ddd; font-family:sans-serif;}
+  </style>
+  <script type="text/javascript" src="../oni-apollo.js"></script>
+  <script type="text/sjs">
+
+var http = require("apollo:http");
+var coll = require("apollo:collection");
+var suite_dir = http.canonicalizeURL("suites/", document.location);
+var suites = [];
+coll.map(http.get(suite_dir + "testsuite-index.txt").split('\n'),
+         function(suite_desc) {
+           suite_desc = suite_desc.split(" ");
+           if (suite_desc[1] && suite_desc[1].indexOf("xbrowser") !== -1)
+             suites.push(suite_desc[0]);
+         });
+
+var BrowserRunner = require("./runners/browser").BrowserRunner;
+var runner = new BrowserRunner({verbose:true});
+function runSuite(src) {
+  runner.reset();
+  location.hash = src;
+  if (src=="All") {
+    for (var i = 0, suite; suite = suites[i]; ++i) {
+      loadSuite(suite);
+    }
+  } else {
+    loadSuite(src);
+  }
+  runner.run();
+  runner.report();
+};
+
+function loadSuite(src) {
+  src = suite_dir + src;
+  runner.load(src);
+}
+
+var hash = location.hash.split("#")[1];
+var currentSuite = hash || suites[0];
+
+function addOption(suite) {
+  var el = document.createElement("option");
+  el.textContent = suite;
+  el.innerText = suite;
+  if (suite == currentSuite) el.setAttribute("selected", "selected");
+  el.setAttribute("value", suite);
+  select.appendChild(el);
+}
+
+var select = document.getElementById("select");
+for (var i = 0, suite; suite = suites[i]; ++i) {
+  addOption(suite);
+}
+addOption("All");
+// this is just to get select to resize on IE:
+var pn = select.parentNode;
+pn.removeChild(select);
+pn.appendChild(select);
+
+while (true) {
+  waitfor {
+    runSuite(currentSuite);
+    hold();
+  }
+  or {
+    require('apollo:dom').waitforEvent("select", "change");
+    currentSuite = document.getElementById("select").value;
+  }
+}
+
+</script>
+  </head>
+  <body>
+    <table><tr><td>
+    <select xonchange="runSuite(this.value)" id="select">
+    </select>
+    </td><td style="width:100%">
+    <div id="bar"></div>
+    </td></tr></table>
+    <div id="status" class="note"></div>
+    <div id="output"></div>
+  </body>
+</html>

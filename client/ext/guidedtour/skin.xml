@@ -81,10 +81,11 @@ border-right: 10px solid #222;
                 
              .tgDesc {
              background-color: transparent;
+             font-size: 13px;
              }
              
              .tgDesc a {
-             color: blue;
+             color: #20800a;
 text-decoration: none;
 }
 

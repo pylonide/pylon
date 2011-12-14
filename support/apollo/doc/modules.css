@@ -1,0 +1,189 @@
+.mb-top, .mb-top table {
+    font: 13px sans-serif;
+    color: #444;
+    line-height: 1.8em;
+}
+
+.mb-warning {
+    padding: 5px;
+    color: #000;
+    background-color: #f0da79;
+}
+
+.mb-top h1 {
+    color: #222;
+    font-size: 24px;
+    font-weight: normal;
+}
+
+.mb-top h2 {
+    color: #222;
+    font-size: 20px;
+    font-weight: normal;
+    margin: 0 0 10px 0;
+}
+
+.mb-top h3 { 
+    font-weight: normal;
+    font-size: 17px;
+    margin:17px 0 15px 0;
+}
+
+.mb-top h4 { 
+    font-weight: normal;
+    font-size: 17px;
+    margin-bottom: 5px;
+}
+
+.mb-top p {
+    margin: 3px 0px 5px;
+}
+
+.mb-panes {
+    min-width: 840px;
+}
+
+.mb-index {
+    width: 190px;
+    min-height: 400px;
+    padding-right: 20px;
+}
+
+.mb-main {
+    padding-top: 15px;
+    border-top: 1px solid #ddd;
+    width:600px;
+    float:left;
+    margin-right:10px;
+    min-height: 400px;
+}
+
+.mb-error {
+    width: 790px;
+    background-color: #ffeeee; 
+    border:4px solid red; 
+    margin:20px; 
+    padding: 20px;
+}
+
+.mb-index ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0px 20px;
+}
+
+.mb-banner {
+  margin: 0px 20px;
+}
+
+.mb-index ul li ul{
+  padding-left: 10px;
+  margin: 0;
+}
+
+.mb-index a {
+    text-decoration:none;
+    display: block;
+}
+
+.mb-index li li:hover, .mb-index h3:hover {
+    text-decoration:underline;
+    cursor: pointer;
+}
+
+.mb-top a {
+    color: #333;
+}
+
+.mb-main > h2 > a {
+    text-decoration:none;
+}
+
+.mb-main > h2 > a:hover {
+    text-decoration:underline;
+}
+
+.mb-banner > a {
+    text-decoration: none;
+}
+
+.mb-banner > a:hover {
+    text-decoration: underline;
+}
+
+.mb-banner {
+    min-height:115px;
+    padding-bottom: 6px;
+}
+
+.mb-banner h1 {
+    margin: 0 0 7px 0;
+}
+
+div.mb-summary { 
+    margin-bottom: 40px;
+}
+
+span.mb-arglist {
+    color: #555;
+}
+
+span.mb-rv {
+    float: right;
+}
+
+span.mb-type {
+    color: #777;
+    margin-left: 20px;
+}
+
+span.mb-defval {
+    color: #777;
+}
+
+span.mb-optarg {
+    color: #888;
+}
+
+.mb-top table {
+    width: 100%;
+    margin-bottom: 40px;
+    border-collapse: collapse;
+}
+
+.mb-top table p {
+    margin: 0;
+}
+
+.mb-top td {
+    border-top: 1px solid #ddd;
+    padding: 10px 0 8px 0;
+    vertical-align: top;
+}
+
+td.mb-td-symbol {
+    width: 30%;
+}
+
+.mb-top tr:nth-child(odd) {background: #fbfbfb; }
+
+.mb-top code {
+  white-space: pre;
+  border: 1px solid #eaeaea; background: #fdfdfd; 
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+.mb-top pre code {
+    border :none;
+    padding: 0px;
+}
+
+.mb-top pre {
+  line-height: 1.3em;
+  border: 1px solid #eaeaea; background: #fdfdfd; 
+  display: block;
+  white-space: pre;
+  padding: 10px 10px 10px 15px;
+  margin: 15px 0 15px 0;
+}

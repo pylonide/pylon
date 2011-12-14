@@ -1,0 +1,387 @@
+/*
+ * C1 JS/SJS->minified/stringified compiler kernel  
+ *
+ * Part of Oni Apollo
+ * http://onilabs.com/apollo
+ *
+ * (c) 2011 Oni Labs, http://onilabs.com
+ *
+ * This file is licensed under the terms of the GPL v2, see
+ * http://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
+
+// #define "STRINGIFY" for stringification
+
+//----------------------------------------------------------------------
+// helpers:
+
+function push_scope(pctx) {
+  pctx.scopes.push({stmts:[]});
+  top_scope(pctx).stmts.push(flush_newlines(pctx));
+}
+function pop_scope(pctx) {
+  return pctx.scopes.pop();
+}
+function top_scope(pctx) {
+  return pctx.scopes[pctx.scopes.length-1];
+}
+
+//----------------------------------------------------------------------
+// misc:
+
+// XXX our newline handling is really quite hackish :-(
+
+#define HANDLE_NEWLINES(n, pctx) add_newlines(n,pctx);
+
+function add_newlines(n,pctx) {
+  if (!pctx.keeplines) return;
+  if (pctx.nls == undefined) pctx.nls = "";
+#ifdef STRINGIFY
+  while (n--) pctx.nls += "\\n";
+#else
+  while (n--) pctx.nls += "\n";
+#endif
+}
+
+function flush_newlines(pctx) {
+  if (!pctx.nls) return "";
+  var rv = pctx.nls;
+  pctx.nls = "";
+  return rv;
+}
+  
+//----------------------------------------------------------------------
+// contexts:
+
+#define BEGIN_SCRIPT(pctx)                        \
+  if (pctx.scopes !== undefined)                  \
+    throw "Internal parser error: Nested script"; \
+  pctx.scopes = [];                               \
+  push_scope(pctx);
+
+#define ADD_SCRIPT_STMT(stmt, pctx)             \
+  top_scope(pctx).stmts.push(stmt+flush_newlines(pctx));
+
+#ifdef STRINGIFY
+#define END_SCRIPT(pctx)                        \
+  return '"'+pop_scope(pctx).stmts.join("")+'"';
+#else
+#define END_SCRIPT(pctx)                        \
+  return pop_scope(pctx).stmts.join("");
+#endif
+
+#define BEGIN_FBODY(pctx)                       \
+  push_scope(pctx);
+
+#define ADD_FBODY_STMT(stmt, pctx)              \
+  top_scope(pctx).stmts.push(stmt+flush_newlines(pctx));
+
+function gen_block(code) {
+  if (code.length && code[code.length-1]==";")
+    code = code.substr(0,code.length-1);
+  return "{"+code+"}";
+}
+
+#define END_FBODY(pctx)                           \
+  return gen_block(pop_scope(pctx).stmts.join(""));
+
+#define BEGIN_BLOCK(pctx)                       \
+  push_scope(pctx);
+
+#define ADD_BLOCK_STMT(stmt, pctx)              \
+  top_scope(pctx).stmts.push(stmt+flush_newlines(pctx));
+
+#define END_BLOCK(pctx)                           \
+  return gen_block(pop_scope(pctx).stmts.join(""));
+
+
+#define BEGIN_CASE_CLAUSE(cexp, pctx)          \
+  push_scope(pctx);                            \
+  top_scope(pctx).exp = cexp;
+
+#define ADD_CASE_CLAUSE_STMT(stmt, pctx)        \
+  top_scope(pctx).stmts.push(stmt+flush_newlines(pctx));
+
+#define END_CASE_CLAUSE(pctx)                     \
+  var scope = pop_scope(pctx);                    \
+  var rv;                                         \
+  if (scope.exp)                                  \
+    rv = "case "+scope.exp+":";                   \
+  else                                            \
+    rv = "default:";                              \
+  return rv + scope.stmts.join("");
+
+//----------------------------------------------------------------------
+// statements:
+#define GEN_EMPTY_STMT(pctx) return ";";
+
+#define GEN_EXP_STMT(exp, pctx) return exp +";";
+
+#define GEN_LBL_STMT(lbl, stmt, pctx) return lbl+": "+stmt;
+
+#define GEN_FUN_DECL(fname, pars, body, pctx)           \
+  return "function "+fname+"("+pars.join(",")+")"+body;
+
+#define GEN_VAR_DECL(decls, pctx)                \
+  var rv = "var ";                               \
+  for (var i=0; i<decls.length; ++i) {           \
+    if (i) rv += ",";                            \
+    rv += decls[i][0];                           \
+    if (decls[i].length == 2)                    \
+      rv += "="+decls[i][1];                     \
+  }                                              \
+  return rv+";";
+
+#define GEN_IF(test, consequent, alternative, pctx)   \
+  var rv = "if("+test+")"+consequent;                 \
+  if (alternative !== null){                          \
+    if( alternative[0] != "{")                        \
+      rv += "else "+alternative;                      \
+    else                                              \
+      rv += "else"+alternative;                       \
+  }                                                   \
+  return rv;
+
+#define GEN_DO_WHILE(body, test, pctx)          \
+  return "do "+body+"while("+test+");";
+
+#define GEN_WHILE(test, body, pctx)             \
+  return "while("+test+")"+body;
+
+#define GEN_FOR(init_exp, decls, test_exp, inc_exp, body, pctx)         \
+  var rv = "for(";                                                      \
+  if (init_exp) {                                                       \
+    rv += init_exp + ";";                                               \
+  }                                                                     \
+  else if (decls) {                                                     \
+  var d = (function(decls, pctx) {                                      \
+      GEN_VAR_DECL(decls, pctx) })(decls, pctx);                        \
+  rv += d;                                                              \
+  }                                                                     \
+  else                                                                  \
+    rv += ";";                                                          \
+  if (test_exp) rv += test_exp;                                         \
+  rv += ";";                                                            \
+  if (inc_exp) rv += inc_exp;                                           \
+  rv += ")";                                                            \
+  rv += body;                                                           \
+  return rv;
+
+#define GEN_FOR_IN(lhs_exp, decl, obj_exp, body, pctx)  \
+  var rv = "for(";                                      \
+  if (lhs_exp) {                                        \
+    rv += lhs_exp;                                      \
+  }                                                     \
+  else {                                                \
+  rv += "var "+decl[0];                                 \
+  if (decl.length > 1)                                  \
+    rv += "=" +decl[1];                                 \
+  }                                                     \
+  rv += " in " + obj_exp + ")";                         \
+  rv += body;                                           \
+  return rv;
+
+#define GEN_CONTINUE(lbl, pctx)                 \
+  var rv = "continue";                          \
+  if (lbl !== null)                             \
+    rv += " "+lbl;                              \
+  return rv+";"
+
+#define GEN_BREAK(lbl, pctx)                    \
+  var rv = "break";                             \
+  if (lbl !== null)                             \
+    rv += " "+lbl;                              \
+  return rv+";"
+
+#define GEN_RETURN(exp, pctx)                   \
+  var rv = "return";                            \
+  if (exp != null)                              \
+    rv += " "+exp;                              \
+  return rv+";";
+
+#define GEN_WITH(exp, body, pctx)               \
+  return "with("+exp+")"+body;
+
+#define GEN_SWITCH(exp, clauses, pctx)          \
+  return "switch("+exp+")"+gen_block(clauses.join(""));
+
+#define GEN_THROW(exp, pctx) return "throw "+exp+";";
+
+function gen_crf(crf) {
+  var rv = "";
+  if (crf[0])
+    rv += (crf[0][2] ? "catchall(" : "catch(")+crf[0][0]+")"+crf[0][1];
+  if (crf[1])
+    rv += "retract"+crf[1];
+  if (crf[2])
+    rv += "finally"+crf[2];
+  return rv;
+}
+
+#define GEN_TRY(block, crf, pctx)               \
+  return "try"+block+gen_crf(crf);                                    
+
+//----------------------------------------------------------------------
+// expressions:
+
+#define GEN_INFIX_OP(left, id, right, pctx)  \
+  return gen_infix_op(left, id, right, pctx);
+
+function gen_infix_op(left, id, right, pctx) {
+  if (id == "instanceof" || id == "in" ||
+      (id[0] == left[left.length-1]) || // e.g. left= "a--", id="-"
+      (id[id.length-1] == right[0])) // e.g. id="+", right="++a"
+    return left+" "+id+" "+right;
+  else
+    return left+id+right;
+}
+
+#define GEN_ASSIGN_OP(left, id, right, pctx)     \
+  return left+id+right;
+
+#define GEN_PREFIX_OP(id, right, pctx)          \
+  return gen_prefix_op(id, right, pctx);
+
+function gen_prefix_op(id, right, pctx) {
+  if (id.length > 2 || // one of [delete,void,typeof,spawn]
+      id[0]==right[0] && (id[0] == "+" || id[0] == "-")) // cases like "- --i"
+    return id + " " + right;
+  else
+    return id+right;
+}
+
+#define GEN_POSTFIX_OP(left, id, pctx)          \
+  return left + id + " ";
+
+#ifdef STRINGIFY
+#define GEN_LITERAL(type, value, pctx)                                  \
+  if (type == "<string>")                                               \
+    value = value.replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/"/g,'\\"'); \
+  else if (type == "<regex>")                                           \
+    value = value.replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/"/g,'\\"'); \
+  return value;
+#else
+#define GEN_LITERAL(type, value, pctx) return value;
+#endif
+
+#define GEN_IDENTIFIER(value, pctx) return value;
+
+#ifdef STRINGIFY
+#define GEN_OBJ_LIT(props, pctx)                                    \
+  var rv = "{";                                                     \
+  for (var i=0; i<props.length; ++i) {                              \
+    if (i!=0) rv += ",";                                            \
+    if (props[i][0] == "prop") {                                    \
+      var v = props[i][1].replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/"/g,'\\"'); \
+      rv += v +":"+props[i][2];                           \
+    }                                                               \
+    else if (props[i][0] == "pat")                                  \
+      rv += props[i][1];                                            \
+    else if (props[i][0] == "get")                                  \
+      rv += "get " + props[i][1]+"()"+props[i][2];                  \
+    else if (props[i][0] == "set")                                  \
+      rv += "set " + props[i][1]+"("+props[i][2]+")"+props[i][3];   \
+  }                                                                 \
+  rv += "}";                                                        \
+  return rv;
+#else
+#define GEN_OBJ_LIT(props, pctx)                                    \
+  var rv = "{";                                                     \
+  for (var i=0; i<props.length; ++i) {                              \
+    if (i!=0) rv += ",";                                            \
+    if (props[i][0] == "prop") {                                    \
+      rv += props[i][1] +":"+props[i][2];                           \
+    }                                                               \
+    else if (props[i][0] == "pat")                                  \
+      rv += props[i][1];                                            \
+    else if (props[i][0] == "get")                                  \
+      rv += "get " + props[i][1]+"()"+props[i][2];                  \
+    else if (props[i][0] == "set")                                  \
+      rv += "set " + props[i][1]+"("+props[i][2]+")"+props[i][3];   \
+  }                                                                 \
+  rv += "}";                                                        \
+  return rv;
+#endif
+
+#define GEN_ARR_LIT(elements, pctx) return "["+elements.join(",")+"]";
+
+#define GEN_ELISION(pctx) return " ";
+
+#define GEN_DOT_ACCESSOR(l, name, pctx) return l+"."+name;
+
+#define GEN_NEW(exp, args, pctx)                \
+  return "new "+exp+"("+args.join(",")+")";
+
+#define GEN_IDX_ACCESSOR(l, idxexp, pctx) return l+"["+idxexp+"]";
+
+#define GEN_FUN_CALL(l, args, pctx) return l+"("+args.join(",")+")";
+
+#define GEN_FUN_EXP(fname, pars, body, pctx)              \
+  if (fname.length)                                       \
+    return "function "+fname+"("+pars.join(",")+")"+body; \
+  else                                                    \
+    return "function("+pars.join(",")+")"+body;
+
+#define GEN_CONDITIONAL(test, consequent, alternative, pctx) \
+  return test+"?"+consequent+":"+alternative;
+
+#define GEN_GROUP(e, pctx) return "("+e+")";
+
+#define GEN_THIS(pctx) return "this";
+
+#define GEN_TRUE(pctx) return "true";
+
+#define GEN_FALSE(pctx) return "false";
+
+#define GEN_NULL(pctx) return "null";
+
+
+// Stratified constructs:
+
+#define GEN_WAITFOR_ANDOR(op, blocks, crf, pctx)  \
+  var rv = "waitfor";                             \
+  for (var i=0; i<blocks.length; ++i){            \
+    if (i) rv += op;                              \
+    rv += blocks[i];                              \
+  }                                               \
+  rv += gen_crf(crf);                             \
+  return rv;
+
+#define BEGIN_SUSPEND_BLOCK(pctx) /*nothing*/
+#define END_SUSPEND_BLOCK(pctx) /*nothing*/
+#define GEN_SUSPEND(has_var, decls, block, crf, pctx)  \
+  var rv = "waitfor(";                                 \
+  if (has_var) rv += "var ";                           \
+  for (var i=0; i<decls.length; ++i) {                 \
+    if (i) rv += ",";                                  \
+    rv += decls[i][0];                                 \
+    if (decls[i].length == 2)                          \
+      rv += "="+decls[i][1];                           \
+  }                                                    \
+  rv += ")" + block;                                   \
+  rv += gen_crf(crf);                                  \
+  return rv;
+
+#define GEN_COLLAPSE(pctx) return "collapse";
+
+#ifdef SJS_USING
+#define GEN_USING(has_var, lhs, exp, body, pctx)  \
+  var rv = "using(";                              \
+  if (has_var) rv += "var ";                      \
+  if (lhs) rv += lhs + "=";                       \
+  rv += exp + ")";                                \
+  return rv + body;
+#endif // SJS_USING
+
+#ifdef SJS___JS
+#define GEN___JS(body, pctx) return body;
+#endif

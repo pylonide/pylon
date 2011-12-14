@@ -1,0 +1,33 @@
+Oni Apollo: Multi-Platform StratifiedJS Implementation
+======================================================
+
+(c) 2010-2011 Oni Labs, http://onilabs.com
+
+The Oni Apollo distribution is made available as open-source.
+
+For exact licensing terms, please see individual files. Unless otherwise
+stated, licensing is as follows:
+
+- The modules contained in the Apollo Standard Module Library
+  (modules/*) are licensed under the MIT License.
+
+- The Apollo bootstraping code (src/bootstrap/*) is licensed under the
+  MIT License.
+
+- The Apollo system module code (src/sys/*) is licensed under the MIT License.
+
+- The Apollo compiler and virtual machine code (src/c1/* and
+  src/vm1/*) is licensed under the GPL v2.
+
+- The client-side cross-browser StratifiedJS runtime (oni-apollo.js)
+  is licensed under the MIT License.
+
+- The server-side Node.JS-based StratifiedJS runtime
+  (oni-apollo-node.js) is licensed under the GPL v2.
+
+- The Oni Rocket Web Application Server modules (src/rocket-modules/*)
+  are licensed under the GPL v2.
+
+
+
+Alternative licensing available; for enquiries please contact alex@onilabs.com

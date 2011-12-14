@@ -1,0 +1,78 @@
+<html>
+  <head>
+    <script src="../../../oni-apollo.js"></script>
+    <script type="text/sjs">
+
+      var dom = require('apollo:dom');
+
+      //----------------------------------------------------------------------
+      // main program logic:
+
+      while (1) { 
+        var digits = showPrompt();
+        spawn doCalculation(digits);
+      }
+
+      function showPrompt() {
+        var div = createDiv("Calculate Pi to <input type='text' value='10000'/> "+
+                            "digits. <button>Start</button>");
+        dom.waitforEvent(div.lastChild, 'click');
+        var digits = div.querySelector('input').value;
+        document.body.removeChild(div);
+        return digits;
+      }
+
+      function doCalculation(digits) {
+        var div = createDiv("Calculating Pi to "+digits+
+                            " digits. <button>Cancel</button>");
+        waitfor {
+          // note how we use calcPi like a normal function here, even though 
+          // in the background it fires off a worker.
+          div.innerHTML = "The first "+digits+" digits of Pi are: "+ trim(calcPi(digits));
+        }
+        or {
+          dom.waitforEvent(div.lastChild, 'click');
+          document.body.removeChild(div);
+        }
+      }
+
+      //----------------------------------------------------------------------
+      // Glue between worker and StratifiedJS:
+      
+      // make a blocking function out of our pi worker:
+      function calcPi(digits) {
+        waitfor (var rv) {
+          var worker = new Worker('worker_pi.js');
+          worker.postMessage(digits);
+          worker.addEventListener('message', resume, false);
+        }
+        finally {
+          worker.removeEventListener('message', resume, false);
+          worker.terminate();
+        }
+        return rv.data;
+      }
+
+      //----------------------------------------------------------------------
+      // helpers
+
+      function createDiv(content) {
+        var div = document.createElement('div');
+        div.innerHTML = content;
+        document.body.appendChild(div);
+        return div;
+      }
+
+      function trim(s) {
+        if (s.length > 100)
+          s = s.substr(0, 20) + " <" +(s.length-60)+ " digits omitted> " +s.substr(-40);
+        return s;              
+      }
+      
+    </script>
+  </head>
+  <body style="font-family:sans-serif">
+    <h2>Orchestrate web workers with StratifiedJS</h2>
+    <h3>Please 'View Source' for the code</h3>
+  </body>
+</html>

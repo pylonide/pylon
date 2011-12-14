@@ -1,0 +1,64 @@
+@lib     Oni Apollo 'unstable' Standard Module Library
+@summary A collection of modules for client and server-side stratified programming.
+@desc
+    ### The Oni Apollo Standard Module Library
+
+    This Library is the standard collection of modules
+    that comes with [Oni Apollo](http://onilabs.com/apollo).
+
+    The Library is still under heavy development. Some of the more
+    stable and fundamental modules include:
+
+    * [collection::]: Functional tools for iterating and processing collections.
+    * [http::]: Functions for performing HTTP requests and working with URLs.  
+    * [cutil::]: Functions and constructs for concurrent stratified programming.
+
+
+    ### Loading Standard Library Modules
+
+    You can load modules from the Library by using the builtin `apollo:` scheme, e.g.:
+
+        var http = require('apollo:http');
+
+    By default, the `apollo:` scheme resolves to
+
+        http:// [Path where 'oni-apollo.js' was loaded from] /modules/
+
+    on the client-side, and to 
+
+        file:// [Path to 'apollo' executable] /modules/
+
+    on the server.
+
+    If you want to serve the Library from a different location, you can set
+    up a *hub redirect*; e.g. to mirror the Library on your own server:
+
+        require.hubs.unshift(["apollo:",
+                              "http://mydomain.com/apollo-mirror/"]);
+
+        // all modules addresses as 'apollo:' will now be loaded from
+        // the location above.
+    
+
+@module base64
+@module collection
+@module common
+@module cutil
+@module debug
+@module docutil
+@module dom
+@module freebase
+@module google
+@module http
+@module jquery-binding
+@module lastfm
+@module logging
+@module node-child-process
+@module node-events
+@module node-fs
+@module node-http
+@module node-repl
+@module node-stream
+@module twitter
+@module ui
+@module yql

@@ -11,7 +11,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var skin = require("text!ext/help/skin.xml");
 var markup = require("text!ext/help/help.xml");
 
 module.exports = ext.register("ext/help/help", {

@@ -23,15 +23,14 @@
     </a:menu>
     
   <a:menu id="mnuLearning">
-        <a:item id="mnuVimeo" onclick="window.open('http://vimeo.com/user5080429')">Vimeo</a:item>
-        <a:item id="mnuYouTube" onclick="window.open('http://www.youtube.com/user/Cloud9IDEChannel')">YouTube</a:item>
+        <a:item id="mnuVimeo" onclick="window.open('http://vimeo.com/user5080429')">Vimeo Channel for Cloud9 IDE</a:item>
     </a:menu>
 
     <a:menu id="mnuContact">
-        <a:item id="mnuBlog" onclick="window.open('http://cloud9ide.posterous.com/')">Cloud9IDE Blog</a:item>
-        <a:item id="mnuTwitterSupport" onclick="window.open('https://twitter.com/#!/C9Support')">Twitter (Support)</a:item>
-        <a:item id="mnuTwitterGeneral" onclick="window.open('https://twitter.com/#!/cloud9ide')">Twitter (General)</a:item>
-        <a:item id="mnuFacebook" onclick="window.open('https://www.facebook.com/Cloud9IDE')">Facebook</a:item>     
+        <a:item id="mnuBlog" onclick="window.open('http://cloud9ide.posterous.com/')">Blog for Cloud9</a:item>
+        <a:item id="mnuTwitterSupport" onclick="window.open('https://twitter.com/#!/C9Support')">Twitter (for Cloud9 IDE support)</a:item>
+        <a:item id="mnuTwitterGeneral" onclick="window.open('https://twitter.com/#!/cloud9ide')">Twitter (for general Cloud9 tweets)</a:item>
+        <a:item id="mnuFacebook" onclick="window.open('https://www.facebook.com/Cloud9IDE')">Facebook for Cloud9</a:item>     
     </a:menu>
 <!--
     <a:skin 

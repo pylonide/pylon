@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+  <head>
+    <meta name="apple-mobile-web-app-capable" content="yes"/> 
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="viewport" content="initial-scale = 1.0,maximum-scale = 1.0,width=device-width"/>
+    <script src="../../oni-apollo.js" type="text/javascript"></script>
+    <script type="text/sjs">
+    
+var flickr_api_key = "f466505f8da02b23cc0eb8a7b1d27afa";
+
+var logging = require('apollo:logging');
+require("apollo:jquery-binding").install();
+var r = require("apollo:common").supplant;
+var yql = require("apollo:yql");
+var more = $("#more");
+
+//----------------------------------------------------------------------
+// load list of cities from wikipedia:
+
+var cities;
+waitfor {
+  var rv = yql.query(
+    "select title from html " +
+    "where url='http://en.wikipedia.org/wiki/List_of_cities_proper_by_population' " +
+    "and xpath='//table/tr/td[2]/a'");
+  logging.debug("yql cities results: ", null, rv);
+  cities = rv.results.a;
+}
+or {
+  $("#more h2").html("Just show Chicago");
+  more.$click();
+  throw "user can't wait!";
+}
+catch(e) {
+  // Either the user cancelled (throwing a "user can't wait" exception)
+  // or there was an error with the request.
+  // We'll just populate the list of cities with one city and continue:
+  var cities = [{
+    title: "Chicago"
+  }];
+}
+
+//----------------------------------------------------------------------
+// helper functions:
+
+var per_page = 13;
+
+function loadPhotos(city, page) {
+  var q = "select * from flickr.photos.search(@begin, @amount) " +
+    "where text=@city and sort='relevance' and extras='url_m' and api_key='" + flickr_api_key + "'";
+  var rv = yql.query(q, {begin: page * per_page, amount: per_page, city:city});
+  logging.debug("yql results for city {city}:", {city:city}, rv);
+  var photos = rv.results ? rv.results.photo: [];
+  for (var i = 0, photo; photo = photos[i]; ++i) {
+    more.before(r("
+            <div class='blob'>
+              <a target='_blank' href='http://www.flickr.com/photos/{owner}/{id}' 
+                class='img' style='background-image:url({url_m})'/>
+                <h3>{title}</h3>
+              </a>
+            </div>
+            ", photo));
+  }
+}
+
+function showCity(city) {
+  var page = 0;
+  $("#city h2").text(city);
+  $("#results .blob:not(#more):not(#city)").remove();
+  
+  while (true) {
+    waitfor {
+      loadPhotos(city, page);
+    }
+    or {
+      $("#more h2").text("Cancel lookup").addClass("working");
+      more.$click();
+      --page;
+    }
+    
+    $("#more h2").html("Load more &#8230;").removeClass("working");
+    waitfor {
+      more.$click();
+    }
+    or {
+      while (true) {
+        $(window).$scroll();
+        var frombottom = $(document).height() - $(window).height()
+          - $(document).scrollTop();
+        if (frombottom < 100) break;
+      }
+    }
+    ++page;
+  }
+}
+
+function animateImages() {
+  while (true) {
+    var imgs = $(".img");
+    var img = imgs.get(Math.floor(Math.random() * imgs.length));
+    var p = [20, 20, 50, 80, 80][Math.floor(Math.random() * 5)];
+    $(img).css({
+      backgroundPosition: p + "% " + 50 + "%"
+    });
+    hold(3000);
+  }
+}
+
+//----------------------------------------------------------------------
+// main program loop:
+
+while (true) {
+  var cityindex = Math.floor(Math.random() * cities.length);
+  waitfor {
+    showCity(cities[cityindex].title);
+  }
+  or {
+    animateImages();
+  }
+  or {
+    $("#nextcity").$click();
+  }
+}
+
+    </script>
+    <link rel="stylesheet" type="text/css" href="flickrcities.css"/>
+    <title>Flickr Cities</title>
+  </head>
+  <body>
+    <a href="http://onilabs.com/blog/flickrcities-tutorial" style="position:absolute;top:3px;right:8px;color:#aaa">Read the Oni Apollo tutorial</a>
+    <h1>Flickr <span style='font-weight:normal'>Cities</span></h1>
+    <div id="nextcity">
+      <button>Next city</button>
+    </div>
+    <div id="results" class="clearfix">
+      <div id="city" class="blob textblob">
+        <div><h2>Loading cities &#8230;</h2></div>
+      </div>
+      <div id="more" class="blob textblob">
+        <div><h2></h2></div>
+      </div>
+    </div>
+  </body>
+</html>

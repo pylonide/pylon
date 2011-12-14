@@ -90,7 +90,12 @@ top: -25px;
                 padding: 0 5px 0 5px;
              font-family: Tahoma, Arial;
              margin-bottom: -16px;
+             text-decoration: none;
             }
+            
+            .tgLink:hover {
+                text-decoration: underline;
+                }
             
             .qstitle, .tgtext, .qsSupportText {
                 background : #000;
@@ -137,7 +142,7 @@ margin-left: 12px;
 }
 
 .qsCBContainer { 
-    width: 450px;
+    width: 500px;
     margin: 0 auto;
     height: 50px;
     background: black;
