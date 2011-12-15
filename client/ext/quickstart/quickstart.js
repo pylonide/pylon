@@ -62,13 +62,11 @@ module.exports = ext.register("ext/quickstart/quickstart", {
         var _self = this;
 
         ide.addEventListener("loadsettings", function(e) {
-        var showQS = require("ext/settings/settings").model.queryValue("auto/help/@show");
-             if (showQS == "true")
-             {
+            var showQS = require("ext/settings/settings").model.queryValue("auto/help/@show");
+            if (showQS == "true") {
                  ext.initExtension(_self);
-                 require("ext/quickstart/quickstart").launchQS();
+                 _self.launchQS();
              }
-                 
          }); 
 
     },
@@ -77,7 +75,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     {
         ext.initExtension(this);
         
-         debugPanelCompact.show();
+         //debugPanelCompact.show();
                     quickStartDialog.show();
                     this.overlay.style.display = "block";
                     this.arrangeQSImages();
@@ -132,7 +130,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     },
     
     closeStart : function() {
-         debugPanelCompact.hide();
+        //debugPanelCompact.hide();
         quickStartDialog.hide();
         this.overlay.style.display = "none";
         

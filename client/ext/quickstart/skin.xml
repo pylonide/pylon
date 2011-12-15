@@ -52,114 +52,120 @@
         </a:presentation>
     </a:window>
     
-    <a:window name="quickstart">
+    <a:window name="win-quickstart">
         <a:style><![CDATA[
-            .quickstart {
+            .win-quickstart {
                 position : relative;
                 overflow : visible;
                 z-index  : 999999;
                 border-radius: 4px;
             }
             
-            .quickstart #quickStartHeader {
-            background: #000;
-            position: absolute;
-right: 0;
-top: -25px;
+            .win-quickstart .header {
+                background: #000;
+                position: relative;
+                border-bottom: 1px solid #7d7d7d;
+                font-size: 24px;
+                font-weight: normal;
+                padding: 15px 20px 10px;
+                color: #ffffff;
             }
             
-            .quickstart .btn_icon_onlyEmpty {
-                background: no-repeat 4px 3px;
+            .win-quickstart .buttons {
+                position: absolute;
+                right: 0;
+                top: -23px;
+                padding: 4px;
+                background-color: #000000;
+                
             }
             
-            .quickstart .btn_icon_onlyOver {
-                background-position: -14px 3px;
+            .win-quickstart .buttons .close {
+                width: 13px;
+                height: 13px;
+                background: url(images/close.png) no-repeat 0 0;
             }
             
-            .quickstart .btn_icon_onlyDown {
-                background-position: -31px 3px;
+            .win-quickstart .buttons .close.hover {
+                background-position: -18px 0;
             }
-
-            .quickstart p {
-            padding: 0;
-        margin: 0;
-        }
+            
+            .win-quickstart .buttons .close.down {
+                background-position: -35px 0;
+            }
+            
+            .win-quickstart .content {
+                
+            }
+            
+            .win-quickstart p {
+                padding: 0;
+                margin: 0;
+            }
             .tgLink {
-            background : #000;
+                background : #000;
                 color: #fff;
                 padding: 0 5px 0 5px;
-             font-family: Tahoma, Arial;
-             margin-bottom: -16px;
-             text-decoration: none;
+                font-family: Tahoma, Arial;
+                margin-bottom: -16px;
+                text-decoration: none;
             }
             
             .tgLink:hover {
                 text-decoration: underline;
-                }
-            
-            .qstitle, .tgtext, .qsSupportText {
-                background : #000;
-                color: #fff;
-                padding: 0 5px 0 5px;
-                             border-bottom: 2px solid #666;
-             font-family: Tahoma, Arial;
-             margin-bottom: -16px;
             }
-
-            .qstitle {
-                font-size: 20px;
-                padding-left: 30px;
-                padding-top: 5px;
-                padding-bottom: 5px;
+            
+            .win-quickstart .container {
+                padding: 10px 20px;
+                background : #000;
+                margin-top: 2px;
+                border-bottom: 1px solid #7d7d7d;
             }
             
             .tgtext {
                 color: #ffc02a;
                 font-size: 16px;
-margin-top: 16px;
-padding-top: 5px;
-padding-left: 30px;
-padding-bottom: 8px;
             }
             
-            .qsSupportText {
+            .win-quickstart .qsSupportText {
                 font-size: 12px;
-                padding-left: 25px;
-                margin-top: 16px;
-padding-top: 5px;
-margin-bottom: 0px;
-padding-bottom: 12px;
+                color: #eeeeee;
+                padding: 18px 20px;
             }
             
             .supportLink {
-                color: #99c1dd;
+                color: #b1dfff;
+                text-decoration: none;
             }
             
+            .supportLink:hover {
+                text-decoration: underline;
+            }
+            
+            .cbcontainer {
+                color: white;
+                margin-left: 12px;
+            }
+            
+            .qsCBContainer { 
+            }
+            .checkboxDiv    {
+                width: 243px;
+                padding: 17px 20px 15px 5px;
+                border-bottom: 1px solid #7d7d7d;
+                background: black;
+            }
 
-.cbcontainer {
-color: white;
-margin-left: 12px;
-}
-
-.qsCBContainer { 
-    width: 500px;
-    margin: 0 auto;
-    height: 50px;
-    background: black;
-}
-.checkboxDiv    {
-    width: 200px;
-    border-right: 1px solid #666;
-    float: left;
-padding: 20px 0 10px 10px;
-}
-
-.buttonDiv {
-width: 197px;
-margin-left: 240px;
-padding-top: 10px;
-}
-
+            .buttonDiv {
+                width: 255px;
+                padding: 15px 0;
+                border-bottom: 1px solid #7d7d7d;
+                background: black;
+            }
+            
+            .btnclosetour {
+                margin: 0 auto;
+            }
         ]]></a:style>
 
     
@@ -170,13 +176,18 @@ padding-top: 10px;
               minwidth         = "60"
               container        = "div[2]"
               drag             = "div[2]"
-              title            = "div[1]/div[1]/text()">
-                <div class="quickstart">
-                    <div class="header" onclick="require('ext/quickstart/quickstart').closeStart();">
+              title            = "div[1]/text()"
+              buttons          = "div[1]/div">
+                <div class="win-quickstart">
+                    <div class="header">
+                        <div class="buttons"> </div>
                     </div>
                     <div class="content"> </div>
                 </div>      
             </a:main>
+            <a:button>
+                <div> </div>
+            </a:button>
         </a:presentation>
     </a:window>
 </a:skin>

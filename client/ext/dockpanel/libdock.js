@@ -620,7 +620,6 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 width     : bar.$dockData && bar.$dockData.width || 260,
                 splitters : true,
                 vdock     : 1,
-                id        : "expandedDbg",
                 "class"   : "dockcol unselectable expandedpanel",
                 childNodes : [
                     new apf.button({

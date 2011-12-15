@@ -293,7 +293,7 @@ module.exports = ext.register("ext/panels/panels", {
                 caption : "Windows",
                 skin    : "c9-menu-btn",
                 margin  : "1 0 0 0"
-            }), barMenu.lastChild),
+            })),
             mnuWindows
         );
         
