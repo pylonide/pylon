@@ -213,11 +213,8 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         var menuitems = mnuTabLoadSessions.childNodes.concat(mnuTabDeleteSessions.childNodes);
         for (var i = 0, l = menuitems.length; i < l; i++) {
             item = menuitems[i];
-            if (item.value == name) {
-                setTimeout(function() {
-                    mnuTabLoadSessions.removeChild(item);
-                });
-            }
+            if (item.value == name)
+                mnuTabLoadSessions.removeChild(item);
         }
         
         if (menuitems.length == 2) {
