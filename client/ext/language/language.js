@@ -70,6 +70,7 @@ module.exports = ext.register("ext/language/language", {
             event.doc.addEventListener("close", function() {
                 worker.emit("documentClose", {data: path});
             });
+            
             // This is necessary to know which file was opened last, for some reason the afteropenfile events happen out of sequence
             deferred.cancel().schedule(100);
             var editor = editors.currentEditor.ceEditor.$editor;
