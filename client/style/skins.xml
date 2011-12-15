@@ -2206,6 +2206,7 @@
             border-radius         : 6px;
             
             cursor: default;
+            text-align: center;
         }
         
         .btn-default-css3.btn-default-css3Over .caption {

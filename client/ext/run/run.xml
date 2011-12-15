@@ -4,7 +4,7 @@
         <configurations />
     </a:model>
 
-    <a:menu id="mnuRunCfg">	
+    <a:menu id="mnuRunCfg">    
         <a:item disabled="true" caption="no run history" />
         <a:divider></a:divider>
         <a:item onclick="require('ext/run/run').showRunConfigs(false)">Run Configurations ...</a:item>
@@ -155,7 +155,7 @@
         
     <a:bar id="tbRun">
         <a:divider skin="c9-divider" />
-        <a:splitbutton
+        <!--a:splitbutton
           id       = "btnRun"
           icon     = "run.png"
           caption  = "run"
@@ -167,7 +167,7 @@
           caption  = "stop"
           skin     = "c9-toolbarbutton"
           onclick  = "require('ext/run/run').stop()"
-          disabled = "{!stProcessRunning.active and 1}" />
+          disabled = "{!stProcessRunning.active and 1}" /-->
     </a:bar>
 
 </a:application>
