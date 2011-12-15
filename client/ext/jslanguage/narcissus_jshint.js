@@ -32,17 +32,19 @@ handler.analyze = function(doc) {
     }
     catch (e) {
         var chunks = e.message.split(":");
-        var message = chunks.pop().trim();
-        var lineNumber = parseInt(chunks.pop().trim(), 10) - 1;
-        markers = [{
-            pos: {
-                sl: lineNumber,
-                el: lineNumber
-            },
-            message: message,
-            type: "error"
-        }];
-        return markers;
+        if(chunks.length > 1) {
+            var message = chunks.pop().trim();
+            var lineNumber = parseInt(chunks.pop().trim(), 10) - 1;
+            markers = [{
+                pos: {
+                    sl: lineNumber,
+                    el: lineNumber
+                },
+                message: message,
+                type: "error"
+            }];
+            return markers;
+        }
     }
     finally {}
     if (this.isFeatureEnabled("jshint")) {

@@ -9,8 +9,14 @@ define(function(require, exports, module) {
 var editors = require("ext/editors/editors");
 var dom = require("ace/lib/dom");
 
-var oldCommandKey;
+var lang = require("ace/lib/lang");
 var ID_REGEX = /[a-zA-Z_0-9\$]/;
+
+var oldCommandKey;
+
+var deferredInvoke = lang.deferredCall(function() {
+    module.exports.invoke(true);
+});
 
 function retrievePreceedingIdentifier(text, pos) {
     var buf = [];
@@ -64,6 +70,7 @@ module.exports = {
         worker.on("complete", function(event) {
             _self.onComplete(event);
         });
+        this.$onChange = this.onChange.bind(this);
     },
     
     showCompletionBox: function(matches, prefix) {
@@ -84,8 +91,10 @@ module.exports = {
         barCompleterCont.setAttribute('visible', true);
 
         // Monkey patch
-        oldCommandKey = ace.keyBinding.onCommandKey;
-        ace.keyBinding.onCommandKey = this.onKeyPress.bind(this);
+        if(!oldCommandKey) {
+            oldCommandKey = ace.keyBinding.onCommandKey;
+            ace.keyBinding.onCommandKey = this.onKeyPress.bind(this);
+        }
         
         this.populateCompletionBox(matches);
         document.addEventListener("click", this.closeCompletionBox);
@@ -95,15 +104,17 @@ module.exports = {
         apf.popup.setContent("completionBox", barCompleterCont.$ext);
         var completionBoxHeight = 5 + Math.min(10 * this.cursorConfig.lineHeight, this.matches.length * (this.cursorConfig.lineHeight+1));
         var cursorLayer = ace.renderer.$cursorLayer;
-        var cursorLocation = cursorLayer.getPixelPosition(true);
+        /*var cursorLocation = cursorLayer.getPixelPosition(true);
         var distanceFromBottom = ace.container.offsetHeight - cursorLocation.top;
         if (distanceFromBottom < completionBoxHeight) {
             ace.centerSelection();
-        }
+        }*/
+        
         setTimeout(function() {
             apf.popup.show("completionBox", {
                 x        : (prefix.length * -_self.cursorConfig.characterWidth) - 11,
                 y        : _self.cursorConfig.lineHeight,
+                height   : completionBoxHeight,
                 animate  : false,
                 ref      : cursorLayer.cursor,
                 callback : function() {
@@ -122,7 +133,10 @@ module.exports = {
         document.removeEventListener("click", this.closeCompletionBox);
         ace.container.removeEventListener("DOMMouseScroll", this.closeCompletionBox);
         ace.container.removeEventListener("mousewheel", this.closeCompletionBox);
-        ace.keyBinding.onCommandKey = oldCommandKey;
+        
+        if(oldCommandKey)
+            ace.keyBinding.onCommandKey = oldCommandKey;
+        oldCommandKey = null;
     },
         
 
@@ -176,7 +190,7 @@ module.exports = {
                 oldCommandKey.apply(keyBinding, arguments);
                 setTimeout(function() {
                     _self.closeCompletionBox(null, true);
-                    _self.invoke(true);
+                    deferredInvoke();
                 }, 100);
                 e.preventDefault();
                 break;
@@ -220,12 +234,12 @@ module.exports = {
                 break;
             default:
                 var ch = String.fromCharCode(parseInt(e.keyIdentifier.replace("U+", ""), 16));
-                if(ch.match(/[^A-Za-z0-9_\$]/))
+                if(ch.match(/[^A-Za-z0-9_\$\.]/))
                     this.closeCompletionBox();
                 else
                     setTimeout(function() {
                         _self.closeCompletionBox(null, true);
-                        _self.invoke(true);
+                        deferredInvoke();
                     });
         }
     },
@@ -233,10 +247,20 @@ module.exports = {
     setWorker: function(worker) {
         this.worker = worker;
     },
+    
+    deferredInvoke: function() {
+        deferredInvoke.cancel().schedule(200);
+    },
+    
+    onChange: function() {
+        // Changed WHILE completing, trigger another complete
+        this.deferredInvoke();
+    },
 
     invoke: function(forceBox) {
         var editor = editors.currentEditor.ceEditor.$editor;
         this.forceBox = forceBox;
+        editor.addEventListener("change", this.$onChange);
         // This is required to ensure the updated document text has been sent to the worker before the 'complete' message
         var worker = this.worker;
         setTimeout(function() {
@@ -249,6 +273,8 @@ module.exports = {
         var pos = editor.getCursorPosition();
         var line = editor.getSession().getLine(pos.row);
         var identifier = retrievePreceedingIdentifier(line, pos.column);
+        
+        editor.removeEventListener("change", this.$onChange);
     
         var matches = event.data;
         

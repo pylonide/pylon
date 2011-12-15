@@ -20,9 +20,11 @@ var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
 var css = require("text!ext/language/language.css");
 var lang = require("ace/lib/lang");
+var keyhandler = require("ext/language/keyhandler");
 
 var settings = require("text!ext/language/settings.xml");
 var extSettings = require("ext/settings/settings");
+
 
 module.exports = ext.register("ext/language/language", {
     name    : "Javascript Outline",
@@ -42,6 +44,8 @@ module.exports = ext.register("ext/language/language", {
     },
 
     hotitems: {},
+    
+    defaultKeyHandler: null,
 
     hook : function() {
 		var _self = this;
@@ -67,6 +71,11 @@ module.exports = ext.register("ext/language/language", {
             });
             // This is necessary to know which file was opened last, for some reason the afteropenfile events happen out of sequence
             deferred.cancel().schedule(100);
+            var editor = editors.currentEditor.ceEditor.$editor;
+            //if(editors.currentEditor.ceEditor.syntax === 'javascript' && !_self.defaultKeyHandler) {
+            //} else if(_self.defaultKeyHandler) {
+                //editor.keyBinding.onCommandKey = _self.defaultKeyHandler;
+//            }
 	    });
         
         // Language features
@@ -93,6 +102,9 @@ module.exports = ext.register("ext/language/language", {
         var oldSelection = this.editor.selection;
         this.setPath();
         
+        var defaultKeyHandler = this.editor.keyBinding.onCommandKey.bind(this.editor.keyBinding);
+        this.editor.keyBinding.onCommandKey = keyhandler.composeHandlers(keyhandler.typeAlongComplete, defaultKeyHandler);
+    
         this.setJSHint();
         this.setInstanceHighlight();
         this.setUnusedFunctionArgs();
@@ -119,6 +131,8 @@ module.exports = ext.register("ext/language/language", {
         ide.addEventListener("liveinspect", function (e) {
             worker.emit("inspect", { data: { row: e.row, col: e.col } });
         });
+        
+        
     },
     
     setPath: function() {
