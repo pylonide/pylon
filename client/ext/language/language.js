@@ -97,6 +97,7 @@ module.exports = ext.register("ext/language/language", {
         this.setJSHint();
         this.setInstanceHighlight();
         this.setUnusedFunctionArgs();
+        this.setUndeclaredVars();
         
         this.editor.on("changeSession", function(event) {
             // Time out a litle, to let the page path be updated
@@ -148,11 +149,19 @@ module.exports = ext.register("ext/language/language", {
         this.worker.emit("cursormove", {data: cursorPos});
     },
     
-    setUnusedFunctionArgs: function(yeah) {
+    setUnusedFunctionArgs: function() {
         if(extSettings.model.queryValue("language/@unusedFunctionArgs") != "false")
             this.worker.call("enableFeature", ["unusedFunctionArgs"]);
         else
             this.worker.call("disableFeature", ["unusedFunctionArgs"]);
+        this.setPath();
+    },
+    
+    setUndeclaredVars: function() {
+        if(extSettings.model.queryValue("language/@undeclaredVars") != "false")
+            this.worker.call("enableFeature", ["undeclaredVars"]);
+        else
+            this.worker.call("disableFeature", ["undeclaredVars"]);
         this.setPath();
     },
     

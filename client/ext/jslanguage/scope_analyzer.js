@@ -373,7 +373,7 @@ handler.analyze = function(doc, ast) {
                     node.setAnnotation("scope", scope);
                     if(scope[b.x.value]) {
                         scope[b.x.value].addUse(node);
-                    } else if(handler.isFeatureEnabled("undeclaredVariables") && !GLOBALS[b.x.value]) {
+                    } else if(handler.isFeatureEnabled("undeclaredVars") && !GLOBALS[b.x.value]) {
                         markers.push({
                             pos: this.getPos(),
                             type: 'warning',
