@@ -126,8 +126,6 @@ Ide.DEFAULT_PLUGINS = [
     "ext/offline/offline",
     "ext/stripws/stripws",
     "ext/testpanel/testpanel",
-    "ext/selenium/selenium",
-    "ext/selenium/editor",
     "ext/nodeunit/nodeunit", 
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",
