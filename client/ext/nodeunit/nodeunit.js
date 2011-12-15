@@ -193,58 +193,70 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
             }
             
             function parseMessage(message){
-                var nodes = fileNode.selectNodes("test");
-                if (!nodes.length)
-                    stack.push(message.data);
-                else {
-                    var data;
-                    if (stack.length) {
-                        data = stack.join("") + message.data;
-                        stack = [];
+                var data;
+                if (stack.length) {
+                    data = stack.join("") + message.data;
+                    stack = [];
+                }
+                else
+                    data = message.data;
+
+                //Parse
+
+                //Remove summary
+                data = data.replace(/\s*Summary\:\s+Total number of tests[\s\S]*$/, "");
+                data = data.substr(1);
+                var parts = data.match(/\[(\d+)m[\s\S]*?(?:$|(?=\[[1-9]\d*m))/g);
+                if (!parts)
+                    return;
+
+                var match;
+                for (var i = 0; i < parts.length; i++) {
+                    var part = parts[i];
+                    //FAIL
+                    if (part.substr(0, 3) == "[31") {
+                        match = part.match(/^\[31m\[(\d+)\/(\d+)\]\s+(.*?)\s+FAIL.*([\S\s]*?)(?=\[\d+m|$)/);
+                        if(!match)
+                            continue;
+                        
+                        var testNode = fileNode.selectSingleNode("test[@name=" + escapeXpathString(match[3]) + "]");
+                        if(!testNode) {
+                            var doc  = fileNode.ownerDocument;
+                            testNode = doc.createElement("test");
+                            testNode.setAttribute("name", match[3]);
+                            apf.xmldb.appendChild(fileNode, testNode);
+                        }
+                        fileNode.addNode();
+                        testpanel.setError(testNode, "Test Failed");
+                        testpanel.setLog(fileNode, "completed test " + match[2] + " of " + match[1]);
+                        
+                        var errorNode = testNode.ownerDocument
+                            .createElement("error");
+                        errorNode.setAttribute("name", match[4]);
+                        apf.xmldb.appendChild(testNode, errorNode);
+                        
+                        if (match[2] == match[1])
+                            completed();
                     }
-                    else
-                        data = message.data;
+                    //PASS
+                    //[32m[4/1] test basic addition OK[0m
+                    else if (part.substr(0, 3) == "[32") {
+                        match = part.match(/^\[32m\[(\d+)\/(\d+)\]\s+(.*?)\sOK[\s\S]{4,6}/);
+                        if(!match)
+                            continue;
 
-                    //Parse
-
-                    //Remove summary
-                    data = data.replace(/\s*Summary\:\s+Total number of tests[\s\S]*$/, "");
-                    data = data.substr(1);
-                    var parts = data.match(/\[(\d+)m[\s\S]*?(?:$|(?=\[[1-9]\d*m))/g);
-                    if (!parts)
-                        return;
-
-                    var match;
-                    for (var i = 0; i < parts.length; i++) {
-                        var part = parts[i];
-                        //FAIL
-                        if (part.substr(0, 3) == "[31") {
-                            match = part.match(/^\[31m\[(\d+)\/(\d+)\]\s+(.*?)\s+FAIL.*([\S\s]*?)(?=\[\d+m|$)/);
-                            
-                            var testNode = fileNode.selectSingleNode("test[@name=" + escapeXpathString(match[3]) + "]");
-                            testpanel.setError(testNode, "Test Failed");
-                            testpanel.setLog(fileNode, "completed test " + match[2] + " of " + match[1]);
-                            
-                            var errorNode = testNode.ownerDocument
-                                .createElement("error");
-                            errorNode.setAttribute("name", match[4]);
-                            apf.xmldb.appendChild(testNode, errorNode);
-                            
-                            if (match[2] == match[1])
-                                completed();
+                        var testNode = fileNode.selectSingleNode("test[@name=" + escapeXpathString(match[3]) + "]");
+                        if(!testNode) {
+                            var doc  = fileNode.ownerDocument;
+                            testNode = doc.createElement("test");
+                            testNode.setAttribute("name", match[3]);
+                            apf.xmldb.appendChild(fileNode, testNode);
                         }
-                        //PASS
-                        //[32m[4/1] test basic addition OK[0m
-                        else if (part.substr(0, 3) == "[32") {
-                            match = part.match(/^\[32m\[(\d+)\/(\d+)\]\s+(.*?)\sOK[\s\S]{4,6}/);
-                            
-                            var testNode = fileNode.selectSingleNode("test[@name=" + escapeXpathString(match[3]) + "]");
-                            testpanel.setPass(testNode);
-                            testpanel.setLog(fileNode, "completed test " + match[2] + " of " + match[1]);
-                            
-                            if (match[2] == match[1])
-                                completed();
-                        }
+                        testpanel.setPass(testNode);
+                        testpanel.setLog(fileNode, "completed test " + match[2] + " of " + match[1]);
+                        
+                        if (match[2] == match[1])
+                            completed();
                     }
                 }
             }
