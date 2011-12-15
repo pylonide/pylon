@@ -64,38 +64,28 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
                 name = name.substr(0, 22) + "...";
             rbSFSelection.setAttribute("label", "Selection ( " + name + " )");
         };
-        trSFResult.addEventListener("afterselect", function(e) {
-            var path,
-                root = trFiles.xmlRoot.selectSingleNode("folder[1]"),
-                node = trSFResult.selected,
-                line = 0,
-                text = "";
-            if (node.tagName == "d:maxreached" || node.tagName == "d:querydetail")
-                return;
-            if (node.tagName == "d:excerpt") {
-                path = node.parentNode.getAttribute("path");
-                line = node.getAttribute("line");
-                text = node.parentNode.getAttribute("query");
-            }
-            else {
-                path = node.getAttribute("path");
-                text = node.getAttribute("query");
-            }
-            editors.showFile(root.getAttribute("path") + "/" + path, line, 0, text);
-        });
-
-        ideConsole.enable();
-        if (!this.$panel) {
-            this.$panel = tabConsole.add(this.pageTitle, this.pageID);
-            this.$panel.appendChild(trSFHbox);
-            tabConsole.set(this.pageID);
-            trSFResult.setProperty("visible", true);
-            this.$model = trSFResult.getModel();
-            // make sure the tab is shown when results come in
-            this.$model.addEventListener("afterload", function() {
-                tabConsole.set(_self.pageID);
+        trSFHbox.addEventListener("afterrender", function(){
+            trSFResult.addEventListener("afterselect", function(e) {
+                var path,
+                    root = trFiles.xmlRoot.selectSingleNode("folder[1]"),
+                    node = trSFResult.selected,
+                    line = 0,
+                    text = "";
+                if (node.tagName == "d:maxreached" || node.tagName == "d:querydetail")
+                    return;
+                if (node.tagName == "d:excerpt") {
+                    path = node.parentNode.getAttribute("path");
+                    line = node.getAttribute("line");
+                    text = node.parentNode.getAttribute("query");
+                }
+                else {
+                    path = node.getAttribute("path");
+                    text = node.getAttribute("query");
+                }
+                editors.showFile(root.getAttribute("path") + "/" + path, line, 0, text);
             });
-        }
+        });
+        //ideConsole.show();
     },
 
     getSelectedTreeNode: function() {
@@ -170,16 +160,27 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         var _self = this;
         winSearchInFiles.hide();
         // show the console (also used by the debugger):
-        ideConsole.enable();
+        ideConsole.show();
         if (!this.$panel) {
             this.$panel = tabConsole.add(this.pageTitle, this.pageID);
+            this.$panel.setAttribute("closebtn", true);
             this.$panel.appendChild(trSFHbox);
+            tabConsole.set(_self.pageID);
+            trSFHbox.show();
             trSFResult.setProperty("visible", true);
             this.$model = trSFResult.getModel();
             // make sure the tab is shown when results come in
             this.$model.addEventListener("afterload", function() {
                 tabConsole.set(_self.pageID);
             });
+            
+            this.$panel.addEventListener("afterclose", function(){
+                this.removeNode();
+                return false;
+            });
+        }
+        else {
+            tabConsole.appendChild(this.$panel);
         }
         // show the tab
         tabConsole.set(this.pageID);

@@ -196,7 +196,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         var _self = this;
 
         if (!force && !winQuickSearch.visible || force > 0) {
-            this.position = 0;
+            this.position = -1;
 
             var sel   = editor.getSelection();
             var doc   = editor.getDocument();
@@ -204,7 +204,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             var value = doc.getTextRange(range);
 
             if (!value && editor.ceEditor)
-                value = editor.ceEditor.getLastSearchOptions().needle;
+               value = editor.ceEditor.getLastSearchOptions().needle;
 
             if (value)
                 txtQuickSearch.setValue(value);

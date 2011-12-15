@@ -4,7 +4,9 @@
       buttons   = "close" 
       modal     = "false" 
       center    = "true"
-      width     = "500" 
+      width     = "500"
+      skin      = "bk-window"
+      class     = "nofooter"
       height    = "350"
       resizable = "true"
       kbclose   = "true">

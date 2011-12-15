@@ -19,7 +19,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     offline : false,
     type    : ext.GENERAL,
     markup  : markup,
-    offline : 0,
+    offline : false,
     commands : {
         "gotofile": {hint: "search for a filename and jump to it"}
     },
@@ -60,8 +60,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             }
 
             if (e.keyCode == 13){
-                var node = trFiles.xmlRoot.selectSingleNode("folder[1]");
-                mdlGoToFile.load("{davProject.report('" + node.getAttribute("path")
+                //var node = trFiles.xmlRoot.selectSingleNode("folder[1]");
+                mdlGoToFile.load("{davProject.report('" + ide.davPrefix //node.getAttribute("path")
                     + "', 'filesearch', {query: '" + txtGoToFile.value + "'})}");
                 ide.dispatchEvent("track_action", {type: "gotofile"});
             }
@@ -73,24 +73,27 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 }
             }
         });
-
-        var restricted = [38, 40, 36, 35];
+        
         dgGoToFile.addEventListener("keydown", function(e) {
-            if (e.keyCode == 38) {
+            if (e.keyCode == 38 && !e.shiftKey) {
                 if (this.selected == this.getFirstTraverseNode())
                     txtGoToFile.focus();
             }
-            else if (restricted.indexOf(e.keyCode) == -1) {
+            else if (apf.isCharacter(e.keyCode)) {
                 txtGoToFile.focus();
             }
         }, true);
 
         dgGoToFile.addEventListener("afterchoose", function(e) {
             winGoToFile.hide();
-            var path = ide.davPrefix.replace(/[\/]+$/, "") + "/"
-                + apf.getTextNode(e.xmlNode).nodeValue.replace(/^[\/]+/, "");
-            editors.showFile(path, 0, 0);
-            ide.dispatchEvent("track_action", {type: "fileopen"});
+            
+            var nodes = dgGoToFile.getSelection();
+            for (var i = 0; i < nodes.length; i++) {
+                var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
+                    + apf.getTextNode(nodes[i]).nodeValue.replace(/^[\/]+/, "");
+                editors.showFile(path, 0, 0);
+                ide.dispatchEvent("track_action", {type: "fileopen"});
+            }
         });
 
         this.nodes.push(winGoToFile);

@@ -12,7 +12,6 @@ require("apf/elements/debughost");
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var markup = require("text!ext/noderunner/noderunner.xml");
 
 module.exports = ext.register("ext/noderunner/noderunner", {
@@ -34,6 +33,10 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     init : function(amlNode){
         ide.addEventListener("socketDisconnect", this.onDisconnect.bind(this));
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
+
+        dbg.addEventListener("break", function(e){
+            ide.dispatchEvent("break", e);
+        });
 
         dbgNode.addEventListener("onsocketfind", function() {
             return ide.socket;
