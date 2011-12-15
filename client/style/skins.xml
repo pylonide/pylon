@@ -218,7 +218,7 @@
         .debug-panel {
             position         : relative;
             overflow         : hidden;
-            width            : 38px;
+            width            : 39px;
             border-left      : 1px solid #1e1e1e;
             /*-webkit-box-shadow: -1px 0px 0px 0px #1e1e1e;
             -moz-box-shadow: -1px 0px 0px 0px #1e1e1e;
