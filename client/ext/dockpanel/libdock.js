@@ -1640,7 +1640,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         else {
             var bar   = this.$parentHBox.insertBefore(new apf.bar({
                 skin : "debug-panel",
-                margin : "0 0 0 1",
+                margin : "0 0 0 0",
                 dock : 1,
                 onDOMNodeRemovedFromDocument : function(){
                     _self.columnCounter--;
