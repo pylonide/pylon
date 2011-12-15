@@ -1023,12 +1023,12 @@
 
         .dockButtonOver {
             background-image    : url(images/dock_button_sprite.png);
-            background-position : 2px -47px;
+            background-position : 3px -47px;
         }
 
         .dockButtonDown {
             background-image    : url(images/dock_button_sprite.png);
-            background-position : 2px 4px;
+            background-position : 3px 5px;
         }
 
         .dockButtonDown .dockButton-footer {
@@ -1089,7 +1089,7 @@
         }
 
         .dockButton .dock_icon_image.dii_primary {
-            left   : 4px;
+            left   : 5px;
             top    : 5px;
             width  : 31px;
             height : 31px;
@@ -8481,7 +8481,7 @@
         
         .dockcol .docktab .page {
             top: 23px;
-            right: 5px;
+            right: 3px;
             left: 3px;
             bottom: 5px;
         }
