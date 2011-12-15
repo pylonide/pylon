@@ -493,6 +493,8 @@ apf.Interactive = function(){
         }
         //#endif
         
+        var iMarginLeft;
+        
         //#ifdef __WITH_OUTLINE
         if (resizeOutline) {
             oOutline.className     = "resize";
@@ -511,15 +513,7 @@ apf.Interactive = function(){
         //#endif
         {
             if (ext.style.right) {
-                iStyleRight = ext.style.right.slice(0, -2);
-                if (iStyleRight) {
-                    myPos[0] = myPos[0] + parseInt(iStyleRight);
-                    ext.style.left  = myPos[0] + "px";
-                }
-
-                else {
-                    ext.style.left  = myPos[0] + "px";
-                }
+                ext.style.left  = myPos[0] + "px";
 
                 //console.log(myPos[0]);
                 //ext.style.right = "";
@@ -572,7 +566,7 @@ apf.Interactive = function(){
 
             if (_self.setProperty)
                 updateProperties();
-
+                
             document.body.style.cursor = lastCursor || "";
             lastCursor = null;
             

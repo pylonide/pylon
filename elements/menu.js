@@ -270,9 +270,6 @@ apf.menu = function(struct, tagName){
         }
 
         function afterRender(){
-            //@todo consider renaming this to onshow and onhide
-            this.dispatchEvent("display", {opener: opener});
-
             if (x === null) {
                 apf.popup.show(this.$uniqueId, {
                     x            : 0, 
@@ -317,6 +314,9 @@ apf.menu = function(struct, tagName){
                 lastFocus.$focus();
     
             this.xmlReference = xmlNode;
+
+            //@todo consider renaming this to onshow and onhide
+            this.dispatchEvent("display", {opener: opener});
         }
         
         this.visible = false;

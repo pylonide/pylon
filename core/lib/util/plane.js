@@ -100,7 +100,7 @@ apf.plane = {
                 var coverType = options && options.customCover ? "custom" : "default",
                     plane;
                 
-                if(coverType == "custom" || this.lastCoverType != coverType)
+                if (coverType == "custom" || this.lastCoverType != coverType)
                     this.plane = createCover();
                 
                 plane = this.plane;

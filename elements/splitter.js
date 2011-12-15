@@ -321,6 +321,8 @@ apf.splitter = function(struct, tagName){
                 _self.type == "vertical" ? "w-resize" : "n-resize",
                 [_self.type == "vertical" ? "n-resize" : "w-resize"]);
             
+            _self.dispatchEvent("dragstart");
+            
             //@todo convert to proper way
             document.onmouseup = function(e){
                 if(!e) e = event;
@@ -359,6 +361,8 @@ apf.splitter = function(struct, tagName){
                     _self.$ext.style.position = "";
                 }
                 
+                _self.dispatchEvent("dragdrop");
+                
                 document.onmouseup   = 
                 document.onmousemove = null;
                 
@@ -387,6 +391,8 @@ apf.splitter = function(struct, tagName){
                 apf.stopEvent(e);
                 //e.returnValue  = false;
                 //e.cancelBubble = true;
+                
+                _self.dispatchEvent("dragmove");
             };
         }
         

@@ -342,6 +342,8 @@ apf.BaseTab = function(){
         
         if (force && !this.$ext.offsetWidth && !this.$ext.offsetHeight
           || this.anims.indexOf(type) == -1) {
+            scalersz.call(this);
+              
             if (type == "add")
                 node.dispatchEvent("afteropen");
             else if (type == "remove")
@@ -1261,7 +1263,7 @@ apf.BaseTab = function(){
             
             delete this.nextTabInLine;
         }
-        
+
         //#ifdef __WITH_PROPERTY_BINDING
         this.setProperty("length", this.getPages().length - 1);
         //#endif
