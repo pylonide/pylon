@@ -7,6 +7,7 @@
 define(function(require, exports, module) {
 
 var editors = require("ext/editors/editors");
+var completionUtil = require("ext/codecomplete/complete_util");
 
 function composeHandlers(mainHandler, fallbackHandler) {
     return function onKeyPress() {
@@ -29,7 +30,7 @@ function typeAlongComplete(e, hashKey, keyCode) {
         var editor = editors.currentEditor.amlEditor.$editor;
         var pos = editor.getCursorPosition();
         var line = editor.session.getDocument().getLine(pos.row);
-        if(!inCompletableCodeContext(line, pos.column))
+        if(!preceededByIdentifier(line, pos.column, ch))
             return false;
         setTimeout(function() {
             ext.closeCompletionBox(null, true);
@@ -75,7 +76,14 @@ function inCompletableCodeContext(line, column) {
     return !inMode;
 }
 
+function preceededByIdentifier(line, column, postfix) {
+    var id = completionUtil.retrievePreceedingIdentifier(line, column);
+    if(postfix) id += postfix;
+    return !(id[0] >= '0' && id[0] <= '9') && inCompletableCodeContext(line, column);
+}
+
 exports.typeAlongComplete = typeAlongComplete;
 exports.composeHandlers = composeHandlers;
 exports.inCompletableCodeContext = inCompletableCodeContext;
+exports.preceededByIdentifier = preceededByIdentifier;
 });

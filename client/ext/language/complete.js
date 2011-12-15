@@ -8,11 +8,12 @@ define(function(require, exports, module) {
 
 var editors = require("ext/editors/editors");
 var dom = require("ace/lib/dom");
+var keyhandler = require("ext/language/keyhandler");
 
 var lang = require("ace/lib/lang");
 var ID_REGEX = /[a-zA-Z_0-9\$]/;
 
-var oldCommandKey;
+var oldCommandKey, oldOnTextInput;
 
 var deferredInvoke = lang.deferredCall(function() {
     module.exports.invoke(true);
@@ -94,6 +95,8 @@ module.exports = {
         if(!oldCommandKey) {
             oldCommandKey = ace.keyBinding.onCommandKey;
             ace.keyBinding.onCommandKey = this.onKeyPress.bind(this);
+            oldOnTextInput = ace.keyBinding.onTextInput;
+            ace.keyBinding.onTextInput = this.onTextInput.bind(this);
         }
         
         this.populateCompletionBox(matches);
@@ -134,9 +137,11 @@ module.exports = {
         ace.container.removeEventListener("DOMMouseScroll", this.closeCompletionBox);
         ace.container.removeEventListener("mousewheel", this.closeCompletionBox);
         
-        if(oldCommandKey)
+        if(oldCommandKey) {
             ace.keyBinding.onCommandKey = oldCommandKey;
-        oldCommandKey = null;
+            ace.keyBinding.onTextInput = oldOnTextInput;
+        }
+        oldCommandKey = oldOnTextInput = null;
     },
         
 
@@ -165,6 +170,19 @@ module.exports = {
             _self.completionElement.appendChild(matchEl);
             _self.matchEls.push(matchEl);
         });
+    },
+    
+    onTextInput : function(text, pasted) {
+        var keyBinding = editors.currentEditor.ceEditor.$editor.keyBinding;
+        oldOnTextInput.apply(keyBinding, arguments);
+        if(!pasted) {
+            if(text.match(/[^A-Za-z0-9_\$\.]/))
+                this.closeCompletionBox();
+            else {
+                this.closeCompletionBox(null, true);
+                deferredInvoke();
+            }
+        }
     },
 
     onKeyPress : function(e, hashKey, keyCode) {
@@ -232,15 +250,6 @@ module.exports = {
                 e.stopPropagation();
                 e.preventDefault();
                 break;
-            default:
-                var ch = String.fromCharCode(parseInt(e.keyIdentifier.replace("U+", ""), 16));
-                if(ch.match(/[^A-Za-z0-9_\$\.]/))
-                    this.closeCompletionBox();
-                else
-                    setTimeout(function() {
-                        _self.closeCompletionBox(null, true);
-                        deferredInvoke();
-                    });
         }
     },
     
@@ -249,12 +258,19 @@ module.exports = {
     },
     
     deferredInvoke: function() {
+        var editor = editors.currentEditor.ceEditor.$editor;
+        var pos = editor.getCursorPosition();
+        editor.getSession().getDocument().getLine(pos.row);
         deferredInvoke.cancel().schedule(200);
     },
     
     onChange: function() {
-        // Changed WHILE completing, trigger another complete
-        this.deferredInvoke();
+        // Changed WHILE completing, trigger another complete, but only if preceeded by identifier
+        var editor = editors.currentEditor.ceEditor.$editor;
+        var pos = editor.getCursorPosition();
+        var line = editor.getSession().getLine(pos.row);
+        if(keyhandler.preceededByIdentifier(line, pos.column))
+            this.deferredInvoke();
     },
 
     invoke: function(forceBox) {

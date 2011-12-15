@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 var ext = require("core/ext");
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
+var noderunner = require("ext/noderunner/noderunner");
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
 
 var complete = require('ext/language/complete');
@@ -30,7 +31,7 @@ module.exports = ext.register("ext/language/language", {
     name    : "Javascript Outline",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
-    deps    : [editors],
+    deps    : [editors, noderunner],
     nodes   : [],
     alone   : true,
     markup  : markup,
@@ -108,6 +109,7 @@ module.exports = ext.register("ext/language/language", {
         this.setJSHint();
         this.setInstanceHighlight();
         this.setUnusedFunctionArgs();
+        this.setUndeclaredVars();
         
         this.editor.on("changeSession", function(event) {
             // Time out a litle, to let the page path be updated
@@ -136,10 +138,10 @@ module.exports = ext.register("ext/language/language", {
     },
     
     setPath: function() {
-        var currentPath = tabEditors.getPage().getAttribute("id");
         // Currently no code editor active
-        if(!editors.currentEditor.ceEditor)
+        if(!editors.currentEditor.ceEditor || !tabEditors.getPage())
             return;
+        var currentPath = tabEditors.getPage().getAttribute("id");
         this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition()]);
     },
     
@@ -161,11 +163,19 @@ module.exports = ext.register("ext/language/language", {
         this.worker.emit("cursormove", {data: cursorPos});
     },
     
-    setUnusedFunctionArgs: function(yeah) {
+    setUnusedFunctionArgs: function() {
         if(extSettings.model.queryValue("language/@unusedFunctionArgs") != "false")
             this.worker.call("enableFeature", ["unusedFunctionArgs"]);
         else
             this.worker.call("disableFeature", ["unusedFunctionArgs"]);
+        this.setPath();
+    },
+    
+    setUndeclaredVars: function() {
+        if(extSettings.model.queryValue("language/@undeclaredVars") != "false")
+            this.worker.call("enableFeature", ["undeclaredVars"]);
+        else
+            this.worker.call("disableFeature", ["undeclaredVars"]);
         this.setPath();
     },
     
