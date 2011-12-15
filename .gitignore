@@ -2,3 +2,4 @@
 .settings/org.eclipse.core.resources.prefs
 .settings/org.eclipse.core.runtime.prefs
 .*.gz
+elements/.DS_Store
