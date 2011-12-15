@@ -5464,7 +5464,7 @@ apf.Init.run("nameserver");
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/util/plane.js)SIZE(8623)TIME(Mon, 21 Nov 2011 18:35:14 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/util/plane.js)SIZE(8624)TIME(Wed, 14 Dec 2011 22:27:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5568,7 +5568,7 @@ apf.plane = {
                 var coverType = options && options.customCover ? "custom" : "default",
                     plane;
                 
-                if(coverType == "custom" || this.lastCoverType != coverType)
+                if (coverType == "custom" || this.lastCoverType != coverType)
                     this.plane = createCover();
                 
                 plane = this.plane;
@@ -9589,7 +9589,7 @@ apf.xmlDiff = function (doc1, doc2){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/util/zmanager.js)SIZE(2524)TIME(Wed, 02 Nov 2011 22:58:50 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/lib/util/zmanager.js)SIZE(2538)TIME(Wed, 14 Dec 2011 22:11:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9661,7 +9661,7 @@ apf.zmanager = function(){
     }
     
     this.clear = function(main, companion){
-        if (companion.$storedZ == main.style.zIndex + 1) {
+        if (companion.style.zIndex == parseInt(main.style.zIndex) + 1) {
             companion.style.zIndex = companion.$storedZ;
             companion.$storedZ = undefined;
         }
@@ -33289,7 +33289,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(57837)TIME(Wed, 14 Dec 2011 09:47:05 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(57877)TIME(Wed, 14 Dec 2011 20:22:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33626,6 +33626,8 @@ apf.BaseTab = function(){
         
         if (force && !this.$ext.offsetWidth && !this.$ext.offsetHeight
           || this.anims.indexOf(type) == -1) {
+            scalersz.call(this);
+              
             if (type == "add")
                 node.dispatchEvent("afteropen");
             else if (type == "remove")
@@ -34545,7 +34547,7 @@ apf.BaseTab = function(){
             
             delete this.nextTabInLine;
         }
-        
+
         
         this.setProperty("length", this.getPages().length - 1);
         
@@ -37957,7 +37959,7 @@ apf.Focussable = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/interactive.js)SIZE(30752)TIME(Mon, 07 Nov 2011 22:59:00 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/core/baseclasses/interactive.js)SIZE(30523)TIME(Wed, 14 Dec 2011 23:41:46 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38434,6 +38436,8 @@ apf.Interactive = function(){
         }
         
         
+        var iMarginLeft;
+        
         
         if (resizeOutline) {
             oOutline.className     = "resize";
@@ -38452,15 +38456,7 @@ apf.Interactive = function(){
         
         {
             if (ext.style.right) {
-                iStyleRight = ext.style.right.slice(0, -2);
-                if (iStyleRight) {
-                    myPos[0] = myPos[0] + parseInt(iStyleRight);
-                    ext.style.left  = myPos[0] + "px";
-                }
-
-                else {
-                    ext.style.left  = myPos[0] + "px";
-                }
+                ext.style.left  = myPos[0] + "px";
 
                 //console.log(myPos[0]);
                 //ext.style.right = "";
@@ -38513,7 +38509,7 @@ apf.Interactive = function(){
 
             if (_self.setProperty)
                 updateProperties();
-
+                
             document.body.style.cursor = lastCursor || "";
             lastCursor = null;
             
@@ -48282,7 +48278,7 @@ apf.CodeCompilation = function(code){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingrule.js)SIZE(8842)TIME(Wed, 14 Dec 2011 09:47:05 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/bindingrule.js)SIZE(8842)TIME(Wed, 14 Dec 2011 11:05:17 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61181,7 +61177,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/menu.js)SIZE(19155)TIME(Tue, 06 Dec 2011 06:05:54 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/menu.js)SIZE(19155)TIME(Wed, 14 Dec 2011 23:54:23 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61455,9 +61451,6 @@ apf.menu = function(struct, tagName){
         }
 
         function afterRender(){
-            //@todo consider renaming this to onshow and onhide
-            this.dispatchEvent("display", {opener: opener});
-
             if (x === null) {
                 apf.popup.show(this.$uniqueId, {
                     x            : 0, 
@@ -61502,6 +61495,9 @@ apf.menu = function(struct, tagName){
                 lastFocus.$focus();
     
             this.xmlReference = xmlNode;
+
+            //@todo consider renaming this to onshow and onhide
+            this.dispatchEvent("display", {opener: opener});
         }
         
         this.visible = false;
@@ -70706,7 +70702,7 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/splitter.js)SIZE(16396)TIME(Sat, 03 Dec 2011 22:38:45 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/splitter.js)SIZE(16587)TIME(Thu, 15 Dec 2011 00:06:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71031,6 +71027,8 @@ apf.splitter = function(struct, tagName){
                 _self.type == "vertical" ? "w-resize" : "n-resize",
                 [_self.type == "vertical" ? "n-resize" : "w-resize"]);
             
+            _self.dispatchEvent("dragstart");
+            
             //@todo convert to proper way
             document.onmouseup = function(e){
                 if(!e) e = event;
@@ -71069,6 +71067,8 @@ apf.splitter = function(struct, tagName){
                     _self.$ext.style.position = "";
                 }
                 
+                _self.dispatchEvent("dragdrop");
+                
                 document.onmouseup   = 
                 document.onmousemove = null;
                 
@@ -71097,6 +71097,8 @@ apf.splitter = function(struct, tagName){
                 apf.stopEvent(e);
                 //e.returnValue  = false;
                 //e.cancelBubble = true;
+                
+                _self.dispatchEvent("dragmove");
             };
         }
         

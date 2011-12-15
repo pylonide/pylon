@@ -137,7 +137,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             if (!_self.autoHidePanel())
                 return;
             
-            dock.hideSection("ext/debugger/debugger", true);
+            var name = "ext/debugger/debugger";
+            dock.hideSection(name, false);
             
             /*var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
             if (!bar.extended)
@@ -155,23 +156,40 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             if (!_self.shouldRunInDebugMode() || !_self.autoHidePanel())
                 return;
             
-            dock.showSection("ext/debugger/debugger", true);
+            var name = "ext/debugger/debugger";
+            dock.showSection(name, false);
+            
+            var uId = dock.getButtons(name, "pgDebugNav")[0].uniqueId;
+            if (dock.layout.isExpanded(uId) < 0)
+                dock.layout.showMenu(uId);
             
             //var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
             //dock.expandBar(bar);
         });
-        ide.addEventListener("dockpanel.load.settings", function(e){
-            var state = e.state;
-            
-            if (_self.autoHidePanel()) {
-                var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav", state)[0];
-                bar.sections.each(function(section){
-                    section.buttons.each(function(button){
-                        if (!button.hidden || button.hidden == -1)
-                            button.hidden = 1;
-                    });
+//        ide.addEventListener("dockpanel.load.settings", function(e){
+//            var state = e.state;
+//            
+//            if (_self.autoHidePanel() && !stProcessRunning.active) {
+//                var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav", state)[0];
+//                bar.sections.each(function(section){
+//                    section.buttons.each(function(button){
+//                        if (!button.hidden || button.hidden == -1)
+//                            button.hidden = 1;
+//                    });
+//                });
+//            }
+//        });
+        
+        // When we are not in debug mode and we close a page it goes back to be
+        // automatically opened when the debug process starts
+        ide.addEventListener("init.ext/debugger/debugger", function(){
+            tabDebug.getPages().concat(tabDebugButtons.getPages()).each(function(page){
+                page.addEventListener("afterclose", function(e){
+                    if (_self.autoHidePanel() && !stProcessRunning.active) {
+                        this.$dockbutton.$dockData.hidden = 1;
+                    }
                 });
-            }
+            });
         });
         
         this.hotitems["run"]  = [btnRun];
@@ -179,13 +197,13 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     },
     
     checkAutoHide : function(){
-        var value = settings.model.queryValue("auto/configurations/@autohide");
+        /*var value = settings.model.queryValue("auto/configurations/@autohide");
         var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
 
         if (value && bar.cache && bar.cache.visible)
             dock.hideSection("ext/debugger/debugger");
         else if (!value && bar.cache && !bar.cache.visible)
-            dock.showSection("ext/debugger/debugger");
+            dock.showSection("ext/debugger/debugger");*/
     },
 
     init : function(amlNode){

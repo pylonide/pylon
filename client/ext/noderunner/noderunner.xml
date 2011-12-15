@@ -23,7 +23,7 @@
       
     <a:state id="stDebugProcessRunning" active="false" />
     
-    <a:window id="winTab" 
+    <!--a:window id="winTab" 
       title     = "Choose a Tab"
       icon      = "chromium_16.png"
       zindex    = "10" 
@@ -54,6 +54,6 @@
           onclick="winTab.close();dbg.attach(dbgChrome, {lstTabs.selected})">
             OK
         </a:button>
-    </a:window>
+    </a:window-->
 
 </a:application>

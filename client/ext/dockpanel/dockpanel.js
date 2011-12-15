@@ -295,14 +295,14 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         });
         
         bars.each(function(bar){
-            if (expand && bar.expanded < 0) {
+            if (expand && bar.expanded < 0)
                 _self.layout.expandBar(bar.uniqueId);
-
+            
+            if (bar.expanded > 0)
                 _self.layout.findTabs(bar.uniqueId, true)
                     .each(function(tab){
                         tab.set(tab.getPage(0));
                     });
-            }
         });
     },
     

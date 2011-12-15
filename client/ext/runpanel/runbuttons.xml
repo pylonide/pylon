@@ -35,7 +35,6 @@
           icon     = "stop.png"
           caption  = "stop"
           width    = "52"
-          margin   = "0 30 0 0"
           tooltip  = "Stop"
           skin     = "c9-toolbarbutton"
           onclick  = "require('ext/runpanel/runpanel').stop()"
