@@ -173,7 +173,8 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             
         for (var doc, i = 0, l = nodes.length; i < l; i++) {
             var node = nodes[i];
-            node.removeAttribute("changed");
+            if (node.getAttribute("newfile") != "1")
+                node.removeAttribute("changed");
             doc = ide.createDocument(node);
             doc.parentNode = {};
             
@@ -213,7 +214,9 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         for (var i = 0, l = menuitems.length; i < l; i++) {
             item = menuitems[i];
             if (item.value == name) {
-                mnuTabLoadSessions.removeChild(item);
+                setTimeout(function() {
+                    mnuTabLoadSessions.removeChild(item);
+                });
             }
         }
         

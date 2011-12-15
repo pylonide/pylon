@@ -208,6 +208,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 */
     closealltabs: function(callback) {
+        callback = typeof callback == "function" ? callback : null;
         this.closeallbutme(1, callback);
     },
     
