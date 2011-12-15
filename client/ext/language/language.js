@@ -38,15 +38,14 @@ module.exports = ext.register("ext/language/language", {
     skin    : skin,
     worker  : null,
     enabled : true,
-    
     commands : {
         "complete": {hint: "code complete"},
         "renameVar": {hint: "Rename variable"}
     },
-
     hotitems: {},
     
     defaultKeyHandler: null,
+    enableContinuousCompletion: false,
 
     hook : function() {
 		var _self = this;
@@ -73,16 +72,11 @@ module.exports = ext.register("ext/language/language", {
             
             // This is necessary to know which file was opened last, for some reason the afteropenfile events happen out of sequence
             deferred.cancel().schedule(100);
-            var editor = editors.currentEditor.ceEditor.$editor;
-            //if(editors.currentEditor.ceEditor.syntax === 'javascript' && !_self.defaultKeyHandler) {
-            //} else if(_self.defaultKeyHandler) {
-                //editor.keyBinding.onCommandKey = _self.defaultKeyHandler;
-//            }
 	    });
         
         // Language features
         marker.hook(this, worker);
-        complete.hook(this, worker);
+        complete.hook(8, worker);
         refactor.hook(this, worker);
         liveInspect.hook(this, worker);
         
@@ -104,15 +98,19 @@ module.exports = ext.register("ext/language/language", {
         var oldSelection = this.editor.selection;
         this.setPath();
         
-        var defaultKeyHandler = this.editor.keyBinding.onCommandKey.bind(this.editor.keyBinding);
-        this.editor.keyBinding.onCommandKey = keyhandler.composeHandlers(keyhandler.typeAlongComplete, defaultKeyHandler);
+        if(this.enableContinuousCompletion) {
+            var defaultKeyHandler = this.editor.keyBinding.onCommandKey.bind(this.editor.keyBinding);
+            this.editor.keyBinding.onCommandKey = keyhandler.composeHandlers(keyhandler.typeAlongComplete, defaultKeyHandler);
+            var defaultOnTextInput = this.editor.keyBinding.onTextInput.bind(this.editor.keyBinding);
+            this.editor.keyBinding.onTextInput = keyhandler.composeHandlers(keyhandler.typeAlongCompleteTextInput, defaultOnTextInput);
+        }
     
         this.setJSHint();
         this.setInstanceHighlight();
         this.setUnusedFunctionArgs();
         this.setUndeclaredVars();
         
-        this.editor.on("changeSession", function(event) {
+        this.editor.on("changeSession", function() {
             // Time out a litle, to let the page path be updated
             setTimeout(function() {
                 _self.setPath();
@@ -184,6 +182,7 @@ module.exports = ext.register("ext/language/language", {
      * Method attached to key combo for complete
      */
     complete: function() {
+        console.log("Completing!");
         complete.invoke();
     },
     

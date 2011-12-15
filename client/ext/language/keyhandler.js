@@ -17,25 +17,30 @@ function composeHandlers(mainHandler, fallbackHandler) {
     };
 }
 
-function typeAlongComplete(e, hashKey, keyCode) {
+function typeAlongComplete(e) {
     if(e.metaKey || e.altKey || e.ctrlKey)
         return false;
     if(editors.currentEditor.amlEditor.syntax !== "javascript")
         return false;
     var ch = String.fromCharCode(parseInt(e.keyIdentifier.replace("U+", ""), 16));
-    var ext = require("ext/language/complete");
-    
-    
-    if(ch.match(/[A-Za-z0-9_\$\.]/) || ch === ".") {
+    return handleChar(ch);
+}
+
+function typeAlongCompleteTextInput(text, pasted) {
+    if(!pasted)
+        handleChar(text);
+}
+
+function handleChar(ch) {
+    if(ch.match(/[A-Za-z0-9_\$\.]/)) {
+        var ext = require("ext/language/complete");
         var editor = editors.currentEditor.amlEditor.$editor;
         var pos = editor.getCursorPosition();
         var line = editor.session.getDocument().getLine(pos.row);
+        ext.closeCompletionBox(null, true);
         if(!preceededByIdentifier(line, pos.column, ch))
             return false;
-        setTimeout(function() {
-            ext.closeCompletionBox(null, true);
-            ext.deferredInvoke();
-        });
+        ext.deferredInvoke();
         return true;
     }
 }
@@ -79,10 +84,11 @@ function inCompletableCodeContext(line, column) {
 function preceededByIdentifier(line, column, postfix) {
     var id = completionUtil.retrievePreceedingIdentifier(line, column);
     if(postfix) id += postfix;
-    return !(id[0] >= '0' && id[0] <= '9') && inCompletableCodeContext(line, column);
+    return id !== "" && !(id[0] >= '0' && id[0] <= '9') && inCompletableCodeContext(line, column);
 }
 
 exports.typeAlongComplete = typeAlongComplete;
+exports.typeAlongCompleteTextInput = typeAlongCompleteTextInput;
 exports.composeHandlers = composeHandlers;
 exports.inCompletableCodeContext = inCompletableCodeContext;
 exports.preceededByIdentifier = preceededByIdentifier;

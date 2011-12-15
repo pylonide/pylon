@@ -16,7 +16,11 @@ var ID_REGEX = /[a-zA-Z_0-9\$]/;
 var oldCommandKey, oldOnTextInput;
 
 var deferredInvoke = lang.deferredCall(function() {
-    module.exports.invoke(true);
+    var editor = editors.currentEditor.ceEditor.$editor;
+    var pos = editor.getCursorPosition();
+    var line = editor.getSession().getDocument().getLine(pos.row);
+    if(keyhandler.preceededByIdentifier(line, pos.column) || line[pos.column - 1] === '.')
+        module.exports.invoke(true);
 });
 
 function retrievePreceedingIdentifier(text, pos) {
@@ -258,19 +262,11 @@ module.exports = {
     },
     
     deferredInvoke: function() {
-        var editor = editors.currentEditor.ceEditor.$editor;
-        var pos = editor.getCursorPosition();
-        editor.getSession().getDocument().getLine(pos.row);
         deferredInvoke.cancel().schedule(200);
     },
     
     onChange: function() {
-        // Changed WHILE completing, trigger another complete, but only if preceeded by identifier
-        var editor = editors.currentEditor.ceEditor.$editor;
-        var pos = editor.getCursorPosition();
-        var line = editor.getSession().getLine(pos.row);
-        if(keyhandler.preceededByIdentifier(line, pos.column))
-            this.deferredInvoke();
+        this.deferredInvoke();
     },
 
     invoke: function(forceBox) {
