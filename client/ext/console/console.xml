@@ -26,13 +26,14 @@
                         winDbgConsole.$ext.style.zIndex = 1;
                     }
                   "/>
-                <a:button id="btnConsoleClear" skin="btn_icon_only" icon="console_clear.png" top="4" right="32"
+                <a:button id="btnConsoleClear" skin="btn_icon_only" icon="console_clear.png" top="4" right="56"
                   onclick  = "
                     if (tabConsole.activepagenr == 0)
                         txtConsole.clear();
                     else if (tabConsole.activepagenr == 1)    
                         txtOutput.clear();
                   "/>
+                <a:button id="btnConsoleSettings" skin="btn_icon_only" icon="console_settings.png" top="4" right="32" />
                 <a:divider skin="divider_console" top="2" right="26"></a:divider>
                 <a:button 
                   skin="btn_icon_only"
