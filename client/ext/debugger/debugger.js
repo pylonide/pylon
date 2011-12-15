@@ -242,7 +242,7 @@ module.exports = ext.register("ext/debugger/debugger", {
                     .showDebugFile(e.selected.getAttribute("scriptid"));
             });
         });
-
+        
         ide.addEventListener("afterfilesave", function(e) {
             var node = e.node;
             var doc = e.doc;
