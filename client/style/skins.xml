@@ -2700,11 +2700,9 @@
         }
 
         .ace_gutter {
-          position: absolute;
           overflow-x: scroll;
           overflow-y: hidden;
           height: 100%;
-          width: 60px !important;
           -moz-user-select: -moz-none;
           -khtml-user-select: none;
           -webkit-user-select: none;

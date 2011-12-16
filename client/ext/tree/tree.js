@@ -78,8 +78,11 @@ module.exports = ext.register("ext/tree/tree", {
                 })
             }
         }));
-        davProject.setAttribute("showhidden",
-          "[{require('ext/settings/settings').model}::auto/tree/@showhidden]");
+        
+        ide.addEventListener("loadsettings", function(e) {
+            var model = e.model;
+            (davProject.realWebdav || davProject).setAttribute("showhidden", model.queryValue('auto/tree/@showhidden'));
+        });
 
         mnuView.appendChild(new apf.divider());
 
