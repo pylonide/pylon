@@ -7,6 +7,8 @@
 
 define(function(require, exports, module) {
 
+require("apf/elements/codeeditor");
+
 var ide = require("core/ide");
 var ext = require("core/ext");
 var EditSession = require("ace/edit_session").EditSession;

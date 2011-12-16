@@ -18,6 +18,15 @@ module.exports = (function () {
         // get respective HTML elements
         windowHtml = winLiveInspect.$ext;
         datagridHtml = dgLiveInspect.$ext;
+        winLiveInspect.addEventListener("prop.visible", function(e) {
+            // don't track when hiding the window
+            if (!e.value)
+                return;
+            ide.dispatchEvent("track_action", {
+                type: "live inspect code",
+                expression: currentExpression || "no expression available yet."
+            });
+        });
         
         ide.addEventListener("language.worker", function(e){
             // listen to the worker's response
@@ -48,15 +57,17 @@ module.exports = (function () {
             }
         });
         
-        // listen to changes that affect the debugger, so we can toggle the visibility based on this
-        stRunning.addEventListener("prop.active", checkDebuggerActive);
-        stDebugProcessRunning.addEventListener("prop.active", checkDebuggerActive);
-        
-        // when hovering over the inspector window we should ignore all further listeners
-        datagridHtml.addEventListener("mouseover", function () {
-            if (activeTimeout) {
-                clearTimeout(activeTimeout);
-            }
+        ide.addEventListener("init.ext/debugger/debugger", function(){
+            // listen to changes that affect the debugger, so we can toggle the visibility based on this
+            stRunning.addEventListener("prop.active", checkDebuggerActive);
+            stDebugProcessRunning.addEventListener("prop.active", checkDebuggerActive);
+            
+            // when hovering over the inspector window we should ignore all further listeners
+            datagridHtml.addEventListener("mouseover", function () {
+                if (activeTimeout) {
+                    clearTimeout(activeTimeout);
+                }
+            });
         });
         
         // we should track mouse movement over the whole window
@@ -233,23 +244,30 @@ module.exports = (function () {
             return;   
         }
         
-        // see whether we hover over the editor
-        if (ceEditor) {
-            // calculate position
-            var ele = ceEditor.$ext;
-            var position = apf.getAbsolutePosition(ele, document.body);
-            var left = position[0];
-            var top = position[1];
-            
-            // x boundaries
-            if (ev.pageX >= left && ev.pageX <= (left + ele.offsetWidth)) {
-                // y boundaries
-                if (ev.pageY >= top && ev.pageY <= (top + ele.offsetHeight)) {
-                    // we are in the editor, so return; this will be handled
-                    return;
-                }
-            }
-        }
+        // see whether we hover over the editor or the quickwatch window
+        var mouseMoveAllowed = false;
+        
+        var eles = [ ceEditor, winLiveInspect ];
+        // only the visible ones
+        eles.filter(function (ele) { return ele.visible; })
+            .map(function (ele) { return ele.$ext; }) // then get the HTML counterpart
+            .forEach(function (ele) {
+                // then detect real position
+                var position = apf.getAbsolutePosition(ele, document.body);
+                var left = position[0];
+                var top = position[1];
+                
+                // x boundaries
+                if (ev.pageX >= left && ev.pageX <= (left + ele.offsetWidth)) {
+                    // y boundaries
+                    if (ev.pageY >= top && ev.pageY <= (top + ele.offsetHeight)) {
+                        // we are in the editor, so return; this will be handled
+                        mouseMoveAllowed = true;
+                    }
+                }            
+            });
+        
+        if (mouseMoveAllowed) return;
                 
         // not in the editor?
         if (winLiveInspect.visible) {
