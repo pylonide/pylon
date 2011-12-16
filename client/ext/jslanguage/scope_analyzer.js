@@ -383,7 +383,7 @@ handler.analyze = function(doc, ast) {
                 },
                 'Function(x, fargs, body)', function(b, node) {
                     node.setAnnotation("scope", scope);
-    
+
                     var newScope = Object.create(scope);
                     newScope['this'] = new Variable();
                     b.fargs.forEach(function(farg) {
@@ -418,37 +418,9 @@ handler.analyze = function(doc, ast) {
                         message: "Missing radix argument."
                     });
                 }
-            },
-            'Var(x)', function(b, node) {
-                node.setAnnotation("scope", scope);
-                if(scope[b.x.value]) {
-                    scope[b.x.value].addUse(node);
-                }
-                return node;
-            },
-            'Function(x, fargs, body)', function(b, node) {
-                var newScope = Object.create(scope);
-                newScope['this'] = new Variable();
-                b.fargs.forEach(function(farg) {
-                    farg.setAnnotation("scope", newScope);
-                    newScope[farg[0].value] = new Variable(farg);
-                    if (handler.isFeatureEnabled("unusedFunctionArgs"))
-                        localVariables.push(newScope[farg[0].value]);
-                });
-                scopeAnalyzer(newScope, b.body);
-                return node;
-            },
-            'Catch(x, body)', function(b, node) {
-                var oldVar = scope[b.x.value];
-                // Temporarily override
-                scope[b.x.value] = new Variable(b.x);
-                scopeAnalyzer(scope, b.body, localVariables);
-                // Put back
-                scope[b.x.value] = oldVar;
-                return node;
-            }
-        );
-
+            );
+        }
+        analyze(scope, node);
         if(!parentLocalVars) {
             for (var i = 0; i < localVariables.length; i++) {
                 if (localVariables[i].uses.length === 0) {
