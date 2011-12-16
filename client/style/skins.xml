@@ -218,7 +218,7 @@
         .debug-panel {
             position         : relative;
             overflow         : hidden;
-            width            : 38px;
+            width            : 39px;
             border-left      : 1px solid #1e1e1e;
             /*-webkit-box-shadow: -1px 0px 0px 0px #1e1e1e;
             -moz-box-shadow: -1px 0px 0px 0px #1e1e1e;
@@ -2700,11 +2700,9 @@
         }
 
         .ace_gutter {
-          position: absolute;
           overflow-x: scroll;
           overflow-y: hidden;
           height: 100%;
-          width: 60px !important;
           -moz-user-select: -moz-none;
           -khtml-user-select: none;
           -webkit-user-select: none;

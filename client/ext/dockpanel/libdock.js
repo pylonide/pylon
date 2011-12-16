@@ -1514,7 +1514,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     width - pos[0] 
                     //: menu.$ext.offsetWidth;
 
-                menu.$ext.style.right = (dist + 6) + "px";
+                menu.$ext.style.right = (dist + 5) + "px";
                 menu.$ext.style.left = "";
 
                 var x;

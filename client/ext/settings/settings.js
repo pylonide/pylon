@@ -55,7 +55,7 @@ module.exports = ext.register("ext/settings/settings", {
         if (ide.dispatchEvent("savesettings", {
             model : this.model
         }) !== false || changed)
-            this.saveToFile();
+            settings.save();
     },
 
     addSection : function(tagName, name, xpath, cbCommit){
