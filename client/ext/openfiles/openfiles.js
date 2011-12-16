@@ -96,7 +96,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
         tabEditors.addEventListener("afterswitch", function(e){
             var page = e.nextPage;
-            if (page) {
+            if (page && page.$model.data) {
                 var node = _self.model.queryNode("//node()[@path='" + page.$model.data.getAttribute("path") + "']");
                 if (node)
                     lstOpenFiles.select(node);
