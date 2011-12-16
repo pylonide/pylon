@@ -97,6 +97,7 @@ var contentTypes = {
     "html": "text/html",
     "xhtml": "application/xhtml+xml",
     "coffee": "text/x-script.coffeescript",
+    "*Cakefile": "text/x-script.coffeescript",
     "py": "text/x-script.python",
 
     "ru": "text/x-script.ruby",
