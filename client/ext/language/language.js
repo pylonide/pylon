@@ -73,7 +73,11 @@ module.exports = ext.register("ext/language/language", {
         marker.hook(this, worker);
         complete.hook(this, worker);
         refactor.hook(this, worker);
-        liveInspect.hook(this, worker);
+        
+        ide.dispatchEvent("language.worker", {worker: worker});
+        ide.addEventListener("$event.language.worker", function(callback){
+            callback({worker: worker});
+        });
         
         ide.addEventListener("init.ext/settings/settings", function (e) {
             var heading = e.ext.getHeading("Language Support");

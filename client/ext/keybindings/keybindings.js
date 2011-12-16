@@ -25,10 +25,6 @@ module.exports = ext.register("ext/keybindings/keybindings", {
                 || "default_" + (apf.isMac ? "mac" : "win");
                 
             require(["ext/keybindings_default/" + value]);
-            ide.addEventListener("$event.keybindingschange", function(callback) {
-                if (_self.current)
-                    callback({keybindings: _self.current});
-            });
         });
     },
     
@@ -65,6 +61,8 @@ module.exports = ext.register("ext/keybindings/keybindings", {
     },
 
     onLoad: function(def) {
+        var _self = this;
+        
         // update keybindings for extensions
         def = def.ext;
         
@@ -78,7 +76,21 @@ module.exports = ext.register("ext/keybindings/keybindings", {
             oExt     = ext.extLut[i];
             this.update(oExt);
         }
-        ide.dispatchEvent("keybindingschange", { keybindings: def });
+        
+        if (!this.eventsInited) {
+            ide.dispatchEvent("keybindingschange", { keybindings: def });
+            ide.addEventListener("$event.keybindingschange", function(callback) {
+                if (_self.current)
+                    callback({keybindings: _self.current});
+            });
+            
+            ide.addEventListener("init.ext", function(e){
+                _self.update(e.ext);
+            });
+            
+            this.eventsInited = true;
+        }
+        
         return def;
     },
 

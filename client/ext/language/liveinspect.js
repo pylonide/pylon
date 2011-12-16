@@ -18,23 +18,21 @@ module.exports = (function () {
         // get respective HTML elements
         windowHtml = winLiveInspect.$ext;
         datagridHtml = dgLiveInspect.$ext;
-    };
-    
-    var hook = function(_ext, worker) {
-        ext.initExtension(this);
         
-        // listen to the worker's response
-        worker.on("inspect", function(event) {
-            if (!event || !event.data) {
-                winLiveInspect.hide();
-                return;
-            }
-            
-            // create an expression that the debugger understands
-            var expression = event.data;
-            if (expression) {
-                liveWatch(expression);
-            }
+        ide.addEventListener("language.worker", function(e){
+            // listen to the worker's response
+            e.worker.on("inspect", function(event) {
+                if (!event || !event.data) {
+                    winLiveInspect.hide();
+                    return;
+                }
+                
+                // create an expression that the debugger understands
+                var expression = event.data;
+                if (expression) {
+                    liveWatch(expression);
+                }
+            });
         });
         
         // bind mous events to all open editors
@@ -324,16 +322,18 @@ module.exports = (function () {
     };
     
     // public interfaces
-    return {
+    return ext.register("ext/language/liveinspect", {
         init    : init,
-        hook    : hook,
         name    : "Live inspect",
         dev     : "Ajax.org",
         type    : ext.GENERAL,
         alone   : true,
         markup  : markup,
-        skin    : skin
-    };
+        skin    : {
+            id   : "inlinedg",
+            data : skin
+        }
+    });
 } ());
 
 });
