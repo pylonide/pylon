@@ -34,6 +34,7 @@
                       flex          = "1"
                       model         = "{require('ext/settings/settings').model}"
                       onclick = "txtSaveSessionAs.setValue(this.selected.getAttribute('name'))"
+                      onafterchoose = "require('ext/tabsessions/tabsessions').saveSession(this.selected.getAttribute('name'))"
                       empty-message = "No sessions">
                         <a:each match="[auto/sessions/session]">
                            <a:caption match="[@name]" />
