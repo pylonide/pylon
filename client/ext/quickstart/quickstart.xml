@@ -1,8 +1,4 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:skin id="quickstart"
-      src        = "{require('ext/quickstart/quickstart').skin}"
-      media-path = "/static/ext/quickstart/images/" />
-    
+<a:application xmlns:a="http://ajax.org/2005/aml">    
     <a:window
         id = "quickStartDialog"
         title     = "Here are a few pointers to get you started!"
@@ -30,14 +26,9 @@
             <div class="checkboxDiv">
                  <a:checkbox id="quickStartCheckbox" 
                    skin    = "checkbox_black"
-                   checked = "true"
+                   checked = "[{require('ext/settings/settings').model}::auto/help/@show]"
                    value   = "[{require('ext/settings/settings').model}::auto/help/@show]"
-                   onafterchange="
-                     if(this.checked)
-                        trSaveAs.$ext.className = trSaveAs.$ext.className.replace(/showQS/, '');
-                     else
-                        apf.setStyleClass(trSaveAs.$ext, 'showQS');
-                   ">Show this quick start on startup</a:checkbox>
+                 >Show this quick start on startup</a:checkbox>
             </div>
             <div class="buttonDiv">
                 <a:button 

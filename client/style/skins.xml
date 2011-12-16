@@ -8599,7 +8599,15 @@
 
         .textFocus{
         }
-
+        
+        .text.modal_text {
+            font-family: Arial;
+            font-size: 12px;
+            background-color: transparent;
+            color: #202020;
+            line-height: 18px;
+        }
+        
         .console_text {
             font-family : menlo,courier new,fixed,swiss,sans-serif;
             background: none;

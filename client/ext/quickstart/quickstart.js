@@ -48,49 +48,49 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     alone    : true,
     type     : ext.GENERAL,
     markup   : markup,
-    skin     : skin,
-    overlay : document.createElement("div"),
+    skin    : {
+        id   : "quickstart",
+        data : skin,
+        "media-path" : "/static/ext/quickstart/images/"
+    },
     nodes : [],
 
     init : function(amlNode){   
-          this.overlay.setAttribute("style",
-          "z-index:9016;display:none;position:absolute;width:100%;height:100%;opacity:0.3;background:#000;");
-         document.body.appendChild(this.overlay);
+        this.overlay = document.createElement("div");
+        this.overlay.setAttribute("style",
+            "z-index:9016;display:none;position:fixed;left: 0px;top: 0px;width:100%;height:100%;opacity:0.3;background:#000;");
+        document.body.appendChild(this.overlay);
     },
     
     hook : function(){
         var _self = this;
-
+                
         ide.addEventListener("loadsettings", function(e) {
             var showQS = require("ext/settings/settings").model.queryValue("auto/help/@show");
             if (showQS == "true") {
-                 ext.initExtension(_self);
                  _self.launchQS();
              }
-         }); 
-
+         });
     },
     
-    launchQS : function()
-    {
+    launchQS : function() {
         ext.initExtension(this);
         
          //debugPanelCompact.show();
-                    quickStartDialog.show();
-                    this.overlay.style.display = "block";
-                    this.arrangeQSImages();
+        quickStartDialog.show();
+        this.overlay.style.display = "block";
+        this.arrangeQSImages();
     },
     
     /**
     * Arrange the images pointing out the locations
     */
-    arrangeQSImages : function()
-    {
-        for (var i = 0; i < jsonQuickStart.identifiers.length; i++)
-        {
-            var divToId = require("ext/guidedtour/guidedtour").getElementPosition(jsonQuickStart.identifiers[i].el);
-            var position = jsonQuickStart.identifiers[i].pos;
-            var imgDiv = apf.document.getElementById(jsonQuickStart.identifiers[i].name);
+    arrangeQSImages : function() {
+        var divToId, position, imgDiv;
+        for (var i = 0; i < jsonQuickStart.identifiers.length; i++) {
+            divToId = require("ext/guidedtour/guidedtour").getElementPosition(jsonQuickStart.identifiers[i].el);
+            position = jsonQuickStart.identifiers[i].pos;
+            imgDiv = apf.document.getElementById(jsonQuickStart.identifiers[i].name);
             
             imgDiv.setAttribute("bottom", "");
             imgDiv.setAttribute("top", "");
@@ -103,25 +103,20 @@ module.exports = ext.register("ext/quickstart/quickstart", {
         }
     },
     
-    setPositions : function(position, posArray, div)
-    {
-        if (position == "top")
-        {
+    setPositions : function(position, posArray, div) {
+        if (position == "top") {
              div.setAttribute("bottom", (window.innerHeight - posArray[1]) + 100);
              div.setAttribute("left", (posArray[0] + (posArray[2]/2)) - (div.getWidth()/2));
         }
-        else if (position == "right")
-        {
+        else if (position == "right"){
             div.setAttribute("left", posArray[0] + posArray[2] + 25);
             div.setAttribute("top", (posArray[1] + (posArray[3]/2)) - (div.getHeight()/2));            
         }
-        else if (position == "bottom")
-        {
+        else if (position == "bottom"){
             div.setAttribute("top", posArray[3]);
             div.setAttribute("right", (posArray[0] + (posArray[2]/2)) - (div.getWidth()/2));
         }
-        else if (position == "left")
-        {
+        else if (position == "left"){
             div.setAttribute("top", 125);
             div.setAttribute("right", 25);
         }  
@@ -134,10 +129,9 @@ module.exports = ext.register("ext/quickstart/quickstart", {
         quickStartDialog.hide();
         this.overlay.style.display = "none";
         
-        for (var i = 0; i < jsonQuickStart.identifiers.length; i++)
-        {
-            var imgDiv = apf.document.getElementById(jsonQuickStart.identifiers[i].name);
-            
+        var imgDiv;
+        for (var i = 0; i < jsonQuickStart.identifiers.length; i++) {
+            imgDiv = apf.document.getElementById(jsonQuickStart.identifiers[i].name);
             imgDiv.hide();
         }
     },
