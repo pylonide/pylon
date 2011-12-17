@@ -313,7 +313,8 @@ module.exports = ext.register("ext/panels/panels", {
         ide.addEventListener("loadsettings", function(e){
             var animateNode = e.model.queryNode("general/@animateui");
             if (!animateNode)
-                e.model.setQueryValue("general/@animateui", true);
+                e.model.setQueryValue("general/@animateui", 
+                    apf.isGecko ? false : true);
         });
 
         var props = ["visible", "flex", "width", "height", "state"];
