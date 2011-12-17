@@ -216,7 +216,7 @@ apf.vbox = function(struct, tagName){
                 var el = !apf.hasFlexibleBox && this.$vbox ? this.$ext : this.$int;
                 el.style.textAlign = "";
                 
-                var nodes = this.childNodes;
+                var node, nodes = this.childNodes;
                 for (var i = 0, l = nodes.length; i < l; i++) {
                     if ((node = nodes[i]).nodeFunc != apf.NODE_VISIBLE || !node.$amlLoaded) //|| node.visible === false 
                         continue;
@@ -249,7 +249,7 @@ apf.vbox = function(struct, tagName){
                 var isLast = isLastVisibleChild(this);
                 if (!isLast) {
                     if (!this.nextSibling.$splitter && !this.nextSibling.nosplitter
-                      && (!isFirstVisibleChild(this) || !this.nosplitter)) {
+                      && !isFirstVisibleChild(this) && !this.nosplitter) {
                         this.parentNode.insertBefore(
                             this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
                             this.nextSibling);
@@ -703,7 +703,12 @@ apf.vbox = function(struct, tagName){
     });
 
     this.addEventListener("DOMNodeInserted", function(e){
-        if (e.currentTarget == this || e.currentTarget.nodeType != 1)
+        if (e.currentTarget == this) {
+            this.$ext.style.display = apf.CSSPREFIX2 + "-box"; //Webkit issue
+            return;
+        }
+        
+        if (e.currentTarget.nodeType != 1)
             return;
 
         if (e.relatedNode == this && !e.$isMoveWithinParent) {
