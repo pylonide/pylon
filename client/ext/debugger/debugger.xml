@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:tab id="tabDebugButtons" skin="dockbar" visible="false">
-        <a:page id="pgDebugNav" render="runtime" nosplitter="true">
+        <a:page id="pgDebugNav" render="runtime">
             <a:hbox padding="3" edge="4 3 5">
                 <div class="expand-panel-bg"></div>
                 <a:button id="btnResume" tooltip="Resume"
@@ -45,10 +45,10 @@
               selected   = "{dbg.activeframe}">
                 <a:actions />
                 <a:each match="[frame]">
-                    <a:column caption="Function" value="[@name]" width="100%" icon2="debugger/stckframe_obj.gif" />
-                    <a:column caption="Script" value="[@script]" width="50" />
-                    <a:column caption="Ln" value="[@line]" width="25"/>
-                    <a:column caption="Col" value="[@column]" width="25"/>
+                    <a:column caption="Function" value="[@name]" width="60%" icon2="debugger/stckframe_obj.gif" />
+                    <a:column caption="Script" value="[@script]" width="40%" />
+                    <a:column caption="Ln" value="[@line]" width="30"/>
+                    <a:column caption="Col" value="[@column]" width="30"/>
                 </a:each>
             </a:datagrid>
         </a:page>

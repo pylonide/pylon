@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var settings = require("core/settings");
 var editors = require("ext/editors/editors");
 var Parser = require("ext/console/parser");
 var Logger = require("ext/console/logger");
@@ -72,6 +73,8 @@ module.exports = ext.register("ext/console/console", {
     markup : markup,
     css    : css,
     
+    height : 200,
+    hidden : true,
     nodes : [],
     
     autoOpen : true,
@@ -106,7 +109,7 @@ module.exports = ext.register("ext/console/console", {
     },
 
     clear : function() {
-        this.inited && txtOutput.clear();
+        self.txtOutput && txtOutput.clear();
     },
 
     switchconsole : function() {
@@ -600,7 +603,8 @@ module.exports = ext.register("ext/console/console", {
             _self.clear();
             _self.showOutput();
             
-            if (_self.autoOpen)
+            if (_self.autoOpen 
+              && apf.isTrue(settings.model.queryValue("auto/console/@autoshow")))
                 _self.show();
         });
 
@@ -613,23 +617,42 @@ module.exports = ext.register("ext/console/console", {
             else
                 Logger.log("'" + path + "' is not a file.");
         });
-
+        
         function kdHandler(e){
             if (!e.ctrlKey && !e.metaKey && !e.altKey
               && !e.shiftKey && apf.isCharacter(e.keyCode))
-                txtConsoleInput.focus()
+                txtConsoleInput.focus();
         }
 
-        txtOutput.addEventListener("keydown", kdHandler);
-        txtConsole.addEventListener("keydown", kdHandler);
+        tabConsole.addEventListener("afterrender", function(){
+            txtOutput.addEventListener("keydown", kdHandler);
+            txtConsole.addEventListener("keydown", kdHandler);
+            
+            var activePage = settings.model.queryValue("auto/console/@active");
+            if (activePage && !this.getPage(activePage))
+                activePage = null;
+            if (!activePage)
+                activePage = this.getPages()[0].name;
+
+            this.set(activePage);
+        });
+        
+        tabConsole.addEventListener("afterswitch", function(e){
+            settings.model.setQueryValue("auto/console/@active", e.nextPage.name)
+        });
+        
+        winDbgConsole.previousSibling.addEventListener("dragdrop", function(e){
+            settings.model.setQueryValue("auto/console/@height", 
+                _self.height = winDbgConsole.height)
+        });
         
         this.nodes.push(
             winDbgConsole,
             
             mnuWindows.appendChild(new apf.item({
+                id : "chkConsoleExpanded",
                 caption : "Console",
                 type    : "check",
-                checked : "{winDbgConsole.height > 41}",
                 "onprop.checked" : function(e){
                     if (e.value)
                         _self.show();
@@ -638,30 +661,145 @@ module.exports = ext.register("ext/console/console", {
                 }
             }))
         );
+        
+        ide.addEventListener("loadsettings", function(e){
+            if (!e.model.queryNode("auto/console/@autoshow"))
+                e.model.setQueryValue("auto/console/@autoshow", true);
+            
+            _self.height = e.model.queryValue("auto/console/@height") || _self.height;
+            
+            if (apf.isTrue(e.model.queryValue("auto/console/@maximized"))) {
+                _self.show(true);
+                _self.maximize();
+            }
+            else {
+                if (apf.isTrue(e.model.queryValue("auto/console/@expanded")))
+                    _self.show(true);
+                else
+                    _self.hide(true);
+            }
+        });
+    },
+    
+    maximize : function(){
+        if (this.maximized)
+            return;
+        this.maximized = true;
+        
+        apf.document.body.appendChild(winDbgConsole);
+        winDbgConsole.setAttribute('anchors', '0 0 0 0');
+        //this.lastHeight = winDbgConsole.height;
+        this.lastZIndex = winDbgConsole.$ext.style.zIndex;
+        winDbgConsole.removeAttribute('height');
+        winDbgConsole.$ext.style.zIndex = 100000;
+        
+        settings.model.setQueryValue("auto/console/@maximized", true);
+        btnConsoleMax.setValue(true);
+    },
+    
+    restore : function(){
+        if (!this.maximized)
+            return;
+        this.maximized = false;
+        
+        mainRow.appendChild(winDbgConsole);
+        winDbgConsole.removeAttribute('anchors');
+        winDbgConsole.setAttribute('height', this.height);
+        winDbgConsole.$ext.style.zIndex = this.lastZIndex;
+        
+        settings.model.setQueryValue("auto/console/@maximized", false);
+        btnConsoleMax.setValue(false);
     },
 
-    show : function(){
+    show : function(immediate){
+        if (!this.hidden)
+            return;
+        
+        this.hidden = false;
+        
+        if (this.$control)
+            this.$control.stop();
+        
         tabConsole.show();
-
-        if (winDbgConsole.height == 41)
-            winDbgConsole.setAttribute("height", this.height || 200);
-        winDbgConsole.previousSibling.show();
-
-        apf.layout.forceResize();
         apf.setStyleClass(btnCollapseConsole.$ext, "btn_console_openOpen");
-
+        
+        var _self = this;
+        function finish() {
+            winDbgConsole.height = _self.height + 1;
+            winDbgConsole.setAttribute("height", _self.height);
+            winDbgConsole.previousSibling.show();
+    
+            apf.layout.forceResize();
+            
+            settings.model.setQueryValue("auto/console/@expanded", true);
+            chkConsoleExpanded.check();
+        }
+        
+        if (!immediate && apf.isTrue(settings.model.queryValue("general/@animateui"))) {
+            apf.tween.single(winDbgConsole.$ext, {
+                control : this.$control = {},
+                type  : "height",
+                anim  : apf.tween.easeOutQuint,
+                from  : 65,
+                to    : this.height,
+                steps : 8,
+                interval : 5,
+                onfinish : finish,
+                oneach : function(){
+                    apf.layout.forceResize();
+                }
+            });
+        }
+        else {
+            finish();
+        }
     },
 
-    hide : function() {
-        tabConsole.hide();
+    hide : function(immediate) {
+        if (this.hidden)
+            return;
+            
+        this.hidden = true;
+        
+        if (this.$control)
+            this.$control.stop();
 
-        if (winDbgConsole.height != 41)
-            this.height = winDbgConsole.height;
-        winDbgConsole.setAttribute("height", 41);
-        winDbgConsole.previousSibling.hide();
-
-        apf.layout.forceResize();
+        if (winDbgConsole.parentNode != mainRow)
+            this.restore();
+        
         apf.setStyleClass(btnCollapseConsole.$ext, '' , ['btn_console_openOpen']);
+
+        function finish(){
+            tabConsole.hide();
+            
+            winDbgConsole.height = 42;
+            winDbgConsole.setAttribute("height", 41);
+            winDbgConsole.previousSibling.hide();
+    
+            apf.layout.forceResize();
+            
+            settings.model.setQueryValue("auto/console/@expanded", false);
+            chkConsoleExpanded.uncheck();
+        }
+        
+        if (!immediate && apf.isTrue(settings.model.queryValue("general/@animateui"))) {
+            apf.tween.single(winDbgConsole.$ext, {
+                control : this.$control = {},
+                type  : "height",
+                anim  : apf.tween.easeInOutCubic,
+                from  : this.height,
+                to    : 65,
+                steps : 5,
+                interval : 5,
+                onfinish : finish,
+                oneach : function(){
+                    apf.layout.forceResize();
+                }
+            });
+        }
+        else {
+            finish();
+        }
     },
     
     enable : function(){

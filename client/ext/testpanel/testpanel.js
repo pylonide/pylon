@@ -271,25 +271,6 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         
         mnuRunSettings.hide();
         
-        if (!this.statusColumn) {
-            colTestProject.setAttribute("width", "60%");
-            
-            this.statusColumn = new apf.BindingColumnRule({
-                caption : "Status", 
-                width   : "41%", 
-                value   : "{if ([@status] === '0')\n\
-                    <span style='color:red'>\\[[@status-message]\\]</span>\n\
-                else if ([@status] == '1')\n\
-                    <span style='color:green'>\\[PASS{[@status-message] and \" [@status-message]\"}\\]</span>\n\
-                else if ([@status] == '-1')\n\
-                    <span>\\[{[@status-message].uCaseFirst()}\\]</span>\n\
-                else\n\
-                    '';}"
-            })
-            dgTestProject.appendChild(this.statusColumn);
-        }
-        
-        
         var finish = function(){
             stTestRun.deactivate();
         }

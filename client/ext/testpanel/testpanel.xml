@@ -87,11 +87,21 @@
                   contextmenu    = "mnuTestContext"
                   empty-message  = "No tests yet"
                   onbeforeremove = "return require('core/util').removeInteractive(this)">
-                    <a:column id="colTestProject" caption="Name" width="101%" tree="1" icon="{require('ext/testpanel/testpanel').getIcon(localName(), [@status], [@type])}"><?lm
+                    <a:column id="colTestProject" caption="Name" width="60%" tree="1" icon="{require('ext/testpanel/testpanel').getIcon(localName(), [@status], [@type])}"><?lm
                         if (localName() == "error")
                             <span style='color:red'>[@name]</span>
                         else
                             [@name]
+                    ?></a:column>
+                    <a:column caption="Status" width="41%"><?lm
+                        if ([@status] === '0')
+                            <span style='color:red'>\[[@status-message]\]</span>
+                        else if ([@status] == '1')
+                            <span style='color:green'>\[PASS{[@status-message] and " [@status-message]"}\]</span>
+                        else if ([@status] == '-1')
+                            <span>\[{[@status-message].uCaseFirst()}\]</span>
+                        else
+                            '';
                     ?></a:column>
                     
                     <a:insert match="[file]" get="{return require('ext/testpanel/testpanel').parseFile(xmlNode)}" />
@@ -106,9 +116,9 @@
                     id       = "sbTestProject"
                     margin   = "2"
                     skin     = "sbios"
-                    top      = "24"
-                    right    = "4"
-                    bottom   = "4"
+                    top      = "20"
+                    right    = "0"
+                    bottom   = "0"
                     width    = "7"
                     showonscroll = "true"
                 />
