@@ -63,6 +63,8 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     },
 
     init : function() {
+        var _self = this;
+        
         this.panel = winOpenFiles;
         this.nodes.push(winOpenFiles);
         
@@ -70,7 +72,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         
         lstOpenFiles.addEventListener("afterselect", this.$afterselect = function(e) {
             var node = this.selected;
-            if (!node || this.selection.length > 1) //ide.onLine can be removed after update apf
+            if (!node || this.selection.length > 1)
                 return;
 
             ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
@@ -87,9 +89,9 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         tabEditors.addEventListener("afterswitch", function(e){
             var page = e.nextPage;
             if (page) {
-                var node = settings.model.queryNode("auto/files/file[@path='" 
+                var node = _self.model.queryNode("file[@path='" 
                     + page.$model.data.getAttribute("path") + "']");
-                if (node)
+                if (node && !lstOpenFiles.isSelected(node))
                     lstOpenFiles.select(node);
             }
         });
