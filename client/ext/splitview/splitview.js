@@ -473,14 +473,7 @@ module.exports = ext.register("ext/splitview/splitview", {
                 active = Splits.getActive();
         }
         
-        if (active) {
-            tabs.set(active.pages[0]);
-            Splits.update(active);
-            mnuSplitAlign.setAttribute("checked", active.gridLayout == "3rows");
-            mnuCloneView.setAttribute("checked", !!active.clone);
-        }
-        else
-            tabs.set(activePage);
+        tabs.set(activePage);
     },
     
     enable : function(){
