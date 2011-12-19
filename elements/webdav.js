@@ -124,7 +124,7 @@ apf.webdav = function(struct, tagName){
      *                                    should be passed
      */
     this.$booleanProperties["showhidden"]  = true;
-    this.$supportedProperties.push("showhidden");
+    this.$supportedProperties.push("showhidden", "force-host");
 
     this.$propHandlers["showhidden"]  = function(value) {
         this.$showHidden = value;
@@ -202,6 +202,10 @@ apf.webdav = function(struct, tagName){
                 oHeaders = {};
             oHeaders["Content-type"] = "text/xml; charset=utf-8";
         }
+        
+        var fHost = this["force-host"];
+        if (fHost && sPath.indexOf(fHost) === -1)
+            sPath = fHost.replace(/[\/]+$/, "") + "/" + sPath.replace(/^[\/]+/, "");
 
         var _self = this;
         return this.get(sPath || this.$server, {
@@ -676,7 +680,7 @@ apf.webdav = function(struct, tagName){
             bLock && unregisterLock.call(this, sFrom);
             var iStatus = parseInt(extra.status);
             if (iStatus == 400 || iStatus == 403 || iStatus == 409 || iStatus == 412
-              || iStatus == 423 || iStatus == 424 || iStatus == 502 || iStatus == 500) {
+              || iStatus == 423 || iStatus == 424 || iStatus == 501 || iStatus == 502 || iStatus == 500) {
                 var oError = WebDAVError.call(this, "Unable to move file '" + sFrom
                              + "' to '" + sTo + "'. Server says: "
                              + apf.webdav.STATUS_CODES[String(iStatus)]);
@@ -1048,10 +1052,34 @@ apf.webdav = function(struct, tagName){
             aOut = [];
         if (aResp.length) //we got a valid result set, so assume that any possible AUTH has succeeded
             this.$regVar("authenticated", true);
-        // start from 1 (one), because the first element contains PROP info on the path
-        var start = (extra.headers && typeof extra.headers.Depth != "undefined" && extra.headers.Depth == 0) ? 0 : 1;
-        for (var i = start, j = aResp.length; i < j; i++)
-            aOut.push(parseItem.call(this, aResp[i]));
+            
+        var sPath;
+        for (var sa = [], data, i = 0, j = aResp.length; i < j; i++) {
+            // Exclude requesting URL if it matches node's HREF (same node)
+            sPath = decodeURIComponent($xmlns(aResp[i], "href", apf.webdav.NS.D)[0].firstChild.nodeValue);
+            if (sPath === extra.url)
+                continue;
+                
+            parseItem.call(this, aResp[i], data = {});
+            if (data.data) 
+                sa.push({
+                    toString: function(){
+                        return this.v;
+                    },
+                    data : data.data,
+                    v    : (data.data.type == "file" ? 1 : 0) + "" + data.data.name.toLowerCase()
+                });
+        }
+        
+        sa.sort();
+        
+        for (var i = 0, l = sa.length; i < l; i++) {
+            aOut.push(sa[i].data.xml);
+        }
+        
+//        var start = (extra.headers && typeof extra.headers.Depth != "undefined" && extra.headers.Depth == 0) ? 0 : 1;
+//        for (var i = start, j = aResp.length; i < j; i++)
+//            aOut.push(parseItem.call(this, aResp[i]));
 
         callback && callback.call(this, "<files>" + aOut.join("") + "</files>", state, extra);
     }
@@ -1064,7 +1092,7 @@ apf.webdav = function(struct, tagName){
      * @type  {String}
      * @private
      */
-    function parseItem(oNode) {
+    function parseItem(oNode, extra) {
         var NS      = apf.webdav.NS,
             sPath   = decodeURIComponent($xmlns(oNode, "href", NS.D)[0].firstChild
                       .nodeValue.replace(/[\\\/]+$/, "")),
@@ -1094,6 +1122,9 @@ apf.webdav = function(struct, tagName){
             lockable    : ($xmlns(oNode, "locktype", NS.D).length > 0),
             executable  : (aExec.length > 0 && aExec[0].firstChild.nodeValue == "T")
         });
+        
+        if (extra)
+            extra.data = oItem;
         
         return oItem.xml = "<" + sType + " path='" + sPath + "'  type='" + sType
             + "' size='" + oItem.size + "' name='" + oItem.name + "' contenttype='"

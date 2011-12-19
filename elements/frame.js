@@ -134,12 +134,12 @@ apf.frame    = function(struct, tagName){
         // not implement now.
     };
     
-        // #ifdef __WITH_UIRECORDER
+        // #ifdef __ENABLE_UIRECORDER_HOOK
     this.$getActiveElements = function() {
         // init $activeElements
         if (!this.$activeElements) {
             this.$activeElements = {
-                $caption       : this.oCaption
+                oCaption       : this.oCaption
             }
         }
 

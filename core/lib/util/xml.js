@@ -56,6 +56,9 @@ apf.isChildOf = function(pNode, childnode, orItself){
  * @returns {String}     The escaped string
  */
 apf.escapeXML = function(str) {
+    // gigo
+    if (typeof str !== "string") return str;
+    
     return ((str || "")
         .replace(/&/g, "&amp;")
         .replace(/"/g, "&quot;")
@@ -278,7 +281,8 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
             nodeValue = nodeValue.replace(/&/g, "&amp;");
 
         var oldValue      = xmlNode.nodeValue;
-        xmlNode.nodeValue = apf.isNot(nodeValue) ? "" : nodeValue;
+        xmlNode.nodeValue = nodeValue == undefined || nodeValue == null 
+                              || nodeValue == NaN ? "" : String(nodeValue);
 
         if (undoObj) {
             undoObj.name = xmlNode.nodeName;

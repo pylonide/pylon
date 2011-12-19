@@ -92,9 +92,9 @@ apf.visibilitymanager = function(){
     }
     
     this.permanent = function(amlNode, show, hide){
-        var state = amlNode.$ext.offsetHeight || amlNode.$ext.offsetWidth;
+        var state = amlNode.$ext && (amlNode.$ext.offsetHeight || amlNode.$ext.offsetWidth);
         function check(e){
-            var newState = amlNode.$ext.offsetHeight || amlNode.$ext.offsetWidth;
+            var newState = amlNode.$ext && (amlNode.$ext.offsetHeight || amlNode.$ext.offsetWidth);
             if (newState == state)
                 return;
             

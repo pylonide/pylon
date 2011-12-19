@@ -271,11 +271,12 @@ apf.xmldb = new (function(){
                     if (!model)
                         return;
                     
-                    var xpath = model.$propBinds[sUId[1]][sUId[2]].listen; //root
-                    var node  = xpath
-                        ? apf.queryNode(model.data, xpath)
-                        : xmlNode;
-
+                    if(model.$propBinds[sUId[1]][sUId[2]]) {
+                        var xpath = model.$propBinds[sUId[1]][sUId[2]].listen; //root
+                        var node  = xpath
+                            ? apf.queryNode(model.data, xpath)
+                            : xmlNode;
+                    }
                     if (node)
                         amlNode.$execProperty(sUId[2], node, args[3]);
                 }
@@ -500,8 +501,12 @@ apf.xmldb = new (function(){
             oldNode = oldNode.selectSingleNode(xpath);
 
         // @todo: only do this once! - should store on the undo object
-        if (oldNode.ownerDocument.importNode && newNode.ownerDocument != oldNode.ownerDocument)
+        if (oldNode.ownerDocument.importNode && newNode.ownerDocument != oldNode.ownerDocument) {
+            var oldNodeS = xmlNode;
             newNode = oldNode.ownerDocument.importNode(newNode, true); //Safari issue not auto importing nodes
+            if (oldNodeS.parentNode)
+                oldNodeS.parentNode.removeChild(oldNodeS);
+        }
 
         // #ifdef __WITH_RDB
         this.applyRDB(["replaceNode", oldNode, this.cleanXml(newNode.xml), xpath], undoObj || {xmlNode: oldNode});
@@ -577,22 +582,19 @@ apf.xmldb = new (function(){
      */
     this.appendChild =
     apf.appendChild  = function(pNode, xmlNode, beforeNode, unique, xpath, undoObj){
-        if (pNode == xmlNode.parentNode)
+        if (pNode == xmlNode.parentNode) //Shouldn't this be the same document?
             return apf.xmldb.moveNode(pNode, xmlNode, beforeNode, null, xpath, undoObj);
         
         if (unique && pNode.selectSingleNode(xmlNode.tagName))
             return false;
         
-        if (undoObj && !undoObj.$filled) {
-            undoObj.$filled = true;
-            this.cleanNode(xmlNode);
-        }
-        else
-            this.cleanNode(xmlNode);
-
         // @todo: only do this once! - should store on the undo object
-        if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument)
+        if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument) {
+            var oldNode = xmlNode;
             xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
+            if (oldNode.parentNode)
+                oldNode.parentNode.removeChild(oldNode);
+        }
 
         // #ifdef __WITH_RDB
         this.applyRDB(["appendChild", pNode, this.cleanXml(xmlNode.xml), beforeNode, unique, xpath], undoObj || {xmlNode: pNode});
@@ -612,6 +614,13 @@ apf.xmldb = new (function(){
         }
         else if (xmlNode.parentNode)
             this.removeNode(xmlNode);
+        
+        if (undoObj && !undoObj.$filled) {
+            undoObj.$filled = true;
+            this.cleanNode(xmlNode);
+        }
+        else
+            this.cleanNode(xmlNode);
 
         pNode.insertBefore(xmlNode, beforeNode);
 
@@ -655,8 +664,12 @@ apf.xmldb = new (function(){
         }*/
 
         // @todo: only do this once! - should store on the undo object
-        if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument)
+        if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument) {
+            var oldNode = xmlNode;
             xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
+            if (oldNode.parentNode)
+                oldNode.parentNode.removeChild(oldNode);
+        }
 
         // #ifdef __WITH_RDB
         this.applyRDB(["moveNode", pNode, xmlNode, beforeNode, xpath], undoObj || {xmlNode: pNode}); //note: important that transport of rdb is async

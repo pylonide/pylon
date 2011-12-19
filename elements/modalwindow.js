@@ -323,9 +323,10 @@ apf.AmlWindow = function(struct, tagName){
         if (value) {
             if (this.visible)
                 apf.plane.show(this.$ext, false, null, null, {
-                    color   : "black", 
-                    opacity : 0.5,
-                    protect : this.$uniqueId
+                    color       : "black", 
+                    opacity     : this.cover && this.cover.getAttribute("opacity") || 0.5,
+                    protect     : this.$uniqueId,
+                    customCover : this.cover || ""
                 });
         }
         else { 
@@ -400,9 +401,10 @@ apf.AmlWindow = function(struct, tagName){
             
             if (this.modal){
                 apf.plane.show(this.$ext, false, null, null, {
-                    color   : "black", 
-                    opacity : 0.5,
-                    protect : this.$uniqueId
+                    color       : "black", 
+                    opacity     : this.cover && this.cover.getAttribute("opacity") || 0.5,
+                    protect     : this.$uniqueId,
+                    customCover : this.cover || ""
                 });
             }
 
@@ -565,6 +567,7 @@ apf.AmlWindow = function(struct, tagName){
         this.oIcon    = this.$getLayoutNode("main", "icon",  this.$ext);
         this.oDrag    = this.$getLayoutNode("main", "drag",  this.$ext);
         this.$buttons = this.$getLayoutNode("main", "buttons",  this.$ext);
+        this.cover    = this.$getLayoutNode("cover");
 
         if (this.popout)
             this.$ext.style.position = "absolute";
@@ -700,6 +703,21 @@ apf.AmlWindow = function(struct, tagName){
             });
         }
     };
+    
+    // #ifdef __ENABLE_UIRECORDER_HOOK
+    this.$getActiveElements = function() {
+        // init $activeElements
+        if (!this.$activeElements) {
+            this.$activeElements = {
+                oTitle   : this.oTitle,
+                oIcon    : this.oIcon,
+                oDrag    : this.oDrag
+            }
+        }
+
+        return this.$activeElements;
+    }
+    //#endif
 
     //#ifdef __WITH_SKIN_CHANGE
     this.addEventListener("$skinchange", function(){
@@ -726,28 +744,6 @@ apf.AmlWindow = function(struct, tagName){
             this.$ext.onmousemove = null;
         }
     };
-    
-    // #ifdef __WITH_UIRECORDER
-    this.$getActiveElements = function() {
-        // init $activeElements
-        if (!this.$activeElements) {
-            this.$activeElements = {
-                $title       : this.oTitle,
-                $icon        : this.oIcon
-                // $drag        : this.oDrag,
-            }
-            
-            // set buttons
-            if (this.$buttons && this.$buttons.children && this.$buttons.children.length) {
-                for (var bi = 0, bl = this.$buttons.children.length; bi < bl; bi++) {
-                    this.$activeElements["$" + this.$buttons.children[bi].className.trim().split(" ")[0] + "Btn"] = this.$buttons.children[bi];
-                }
-            }
-        }
-
-        return this.$activeElements;
-    }
-    //#endif
 }).call(apf.modalwindow.prototype = new apf.Presentation());
 
 apf.AmlWindow.prototype = apf.toolwindow.prototype = apf.modalwindow.prototype;

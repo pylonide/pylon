@@ -68,6 +68,9 @@ apf.item  = function(struct, tagName){
         "match" : 1
     }, this.$attrExcludePropBind);
 
+    this.$booleanProperties["checked"] = true;
+    this.$booleanProperties["selected"] = true;
+
     this.$supportedProperties.push("submenu", "value", "match", "group", "icon",
                                    "checked", "selected", "disabled", "caption", 
                                    "type");
@@ -178,14 +181,14 @@ apf.item  = function(struct, tagName){
         var group = typeof value == "string"
             ? 
             //#ifdef __WITH_NAMESERVER
-            apf.nameserver.get("radiogroup", value)
+            apf.nameserver.get("group", value)
             /* #else
             {}
             #endif */
             : value;
         if (!group) {
             //#ifdef __WITH_NAMESERVER
-            group = apf.nameserver.register("radiogroup", value, 
+            group = apf.nameserver.register("group", value, 
                 new apf.$group());
             group.setAttribute("id", value);
             group.dispatchEvent("DOMNodeInsertedIntoDocument");
@@ -212,13 +215,15 @@ apf.item  = function(struct, tagName){
         if (this.$hotkey)
             apf.setNodeValue(this.$hotkey, apf.isMac ? apf.hotkeys.toMacNotation(value) : value);
 
-        if (this.$lastHotkey)
-            apf.hotkeys.remove(this.$lastHotkey);
+        if (this.$lastHotkey) {
+            apf.hotkeys.remove(this.$lastHotkey[0], this.$lastHotkey[1]);
+            delete this.$lastHotkey[0];
+        }
 
         if (value) {
-            this.$lastHotkey = value;
+            this.$lastHotkey = [value];
             var _self = this;
-            apf.hotkeys.register(value, function(){
+            apf.hotkeys.register(value, this.$lastHotkey[1] = function(){
                 if (_self.disabled || !_self.visible)
                     return;
                 
@@ -326,11 +331,12 @@ apf.item  = function(struct, tagName){
         if (this.type != "radio")
             return;
 
-        if (this.$group)
-            this.$group.setProperty("value", this.value);
 
-        if (apf.isTrue(value))
-            this.$check()
+        if (apf.isTrue(value)) {
+            if (this.$group)
+                this.$group.setProperty("value", this.value);
+            this.$check();
+        }
         else
             this.$uncheck();
     }
@@ -492,7 +498,7 @@ apf.item  = function(struct, tagName){
             menu.display(pos[0] + this.$ext.offsetWidth - 3,
                 pos[1] + 3, true, this,
                 this.parentNode.xmlReference, this.parentNode.$uniqueId);
-            menu.setAttribute("zindex", (this.parentNode.zindex || 1) + 1);
+            menu.setAttribute("zindex", (this.parentNode.zindex || this.parentNode.$ext.style.zIndex || 1) + 1);
         }
         else {
             if (menu.visible && !force) {

@@ -73,8 +73,8 @@ apf.BaseTab = function(){
                 this, page, null, null, callback, noEvent);
         }
         
-        if (callback && this.activepage == page)
-            return callback(this.getPage(page));
+        if (this.activepage == (page.name || page))
+            return callback && callback(this.getPage(page));
 
         this.$lastCallback = callback;
         this.setProperty("activepage", page);
@@ -131,7 +131,7 @@ apf.BaseTab = function(){
      */
     this.$propHandlers["activepage"]   = function(next, prop, force, callback, noEvent){
         if (!this.inited || apf.isNot(next) || next == -1) return;
-        
+
         if (!callback) {
             callback = this.$lastCallback;
             delete this.$lastCallback;
@@ -306,6 +306,7 @@ apf.BaseTab = function(){
         //this.buttons = value;
         this.$scale = value.indexOf("scale") > -1;
         this.$scroll = !this.$scale;
+        this.$order = value.indexOf("order") > -1;
         
         //#ifdef __ENABLE_TAB_SCALE
         //@todo skin change
@@ -331,12 +332,25 @@ apf.BaseTab = function(){
         scalersz.call(this)
     }
     
-    var btnMoHandler;
-    this.$scaleinit = function(node, type, callback){
+    this.anims = "add|remove|sync";
+    
+    this.$scaleinit = function(node, type, callback, force){
         var pg = this.getPages();
         var l  = pg.length;
         this.minwidth = this.$minBtnWidth * l + 10; //@todo padding + margin of button container
         this.$ext.style.minWidth = Math.max(0, this.minwidth - apf.getWidthDiff(this.$ext)) + "px";
+        
+        if (force && !this.$ext.offsetWidth && !this.$ext.offsetHeight
+          || this.anims.indexOf(type) == -1) {
+            scalersz.call(this);
+              
+            if (type == "add")
+                node.dispatchEvent("afteropen");
+            else if (type == "remove")
+                node.dispatchEvent("afterclose");
+            
+            return false;
+        }
         
         if (!apf.window.vManager.check(this, "tabscale", visCheck))
             return;
@@ -373,6 +387,22 @@ apf.BaseTab = function(){
             }
             //oneach   : function(){alert(1);}
         };
+        
+        function btnMoHandler(e){
+            var pos = apf.getAbsolutePosition(this);
+            if (e.clientX <= pos[0] || e.clientY <= pos[1] 
+              || e.clientX >= pos[0] + this.offsetWidth 
+              || e.clientY >= pos[1] + this.offsetHeight) {
+                apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
+                if (_self.$control.state == apf.tween.STOPPED) {
+                    delete _self.$waitForMouseOut;
+                    _self.$scaleinit(null, "sync");
+                }
+                else if (_self.$waitForMouseOut)
+                    _self.$waitForMouseOut = 2;
+            }
+        }
+        
         this.$control.type = type;
         
         if (type == "add") {
@@ -388,8 +418,8 @@ apf.BaseTab = function(){
         }
         else if (type == "remove") {
             anim.onfinish = function(){
-            	if (node.dispatchEvent("afterclose") !== false)
-                	callback();
+                if (node.dispatchEvent("afterclose") !== false)
+                    callback();
                     
                 html.style.marginLeft = 0;
                 apf.setOpacity(html, 1);
@@ -413,7 +443,7 @@ apf.BaseTab = function(){
                 from  : html.offsetWidth - apf.getWidthDiff(html),
                 to    : 0
             });
-            var over = apf.getWidthDiff(html) + this.$btnMargin;
+            var over = apf.getWidthDiff(html) + (this.$btnMargin || 0);
             if (over)
                 anim.tweens.push({
                     oHtml : html,
@@ -433,7 +463,11 @@ apf.BaseTab = function(){
                 this.$buildScaleAnim(anim, pg, node);
             
             //Set activetab if the current one is lost
-            if (this.$activepage == node) {
+            if (this.nextTabInLine) {
+                this.set(this.nextTabInLine);
+                delete this.nextTabInLine;
+            }
+            else if (this.$activepage == node) {
                 var ln = node.nextSibling;
                 while (ln && (!ln.$first || !ln.visible))
                     ln = ln.nextSibling;
@@ -445,27 +479,8 @@ apf.BaseTab = function(){
             }
             
             this.$waitForMouseOut = true;
-            if (!isLast) {
-                if (!btnMoHandler) {
-                    var _self = this;
-                    function btnMoHandler(e){
-                        var pos = apf.getAbsolutePosition(this);
-                        if (e.clientX <= pos[0] || e.clientY <= pos[1] 
-                          || e.clientX >= pos[0] + this.offsetWidth 
-                          || e.clientY >= pos[1] + this.offsetHeight) {
-                            apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
-                            if (_self.$control.state == apf.tween.STOPPED) {
-                                delete _self.$waitForMouseOut;
-                                _self.$scaleinit(null, "sync");
-                            }
-                            else if (_self.$waitForMouseOut)
-                                _self.$waitForMouseOut = 2;
-                        }
-                    }
-                }
-                
+            if (!isLast)
                 apf.addListener(_self.$buttons, "mouseout", btnMoHandler);
-            }
         }
         
         if (anim.tweens.length)
@@ -492,7 +507,7 @@ apf.BaseTab = function(){
                 oHtml : html, 
                 type  : "width", 
                 from  : html.offsetWidth - wd,
-                to    : s - wd - this.$btnMargin
+                to    : s - wd - (this.$btnMargin || 0)
             });
         }
         html = pg[l - 1].$button, wd = apf.getWidthDiff(html);
@@ -501,7 +516,7 @@ apf.BaseTab = function(){
             type  : "width", 
             from  : html.offsetWidth - wd, // - (add ? 3 : 0)
             to    : Math.max(this.$minBtnWidth, 
-                Math.min(cw, this.$maxBtnWidth)) - this.$btnMargin - wd
+                Math.min(cw, this.$maxBtnWidth)) - (this.$btnMargin || 0) - wd
         });
     }
     
@@ -513,8 +528,13 @@ apf.BaseTab = function(){
             return;
         }
         
+        var page = this.getPage();
+
+        if (!page)
+            return;
+
         if (this.$btnMargin == undefined)
-            this.$btnMargin = apf.getMargin(this.getPage().$button)[0];
+            this.$btnMargin = apf.getMargin(page.$button)[0];
 
         var pg = this.getPages();
         if (excl)
@@ -632,7 +652,7 @@ apf.BaseTab = function(){
         if (preventNext !== false && pageOut)
             this.$createAnim(pageOut, animOut, true, pageIn);
 
-        setTimeout(function(){
+        $setTimeout(function(){
             _self.$transInfo.start();
         });
     }
@@ -784,7 +804,7 @@ apf.BaseTab = function(){
      * @param {mixed} nameOrId the name or child number of the page element to remove.
      * @return {Page} the removed page element.
      */
-    this.remove = function(nameOrId, force){
+    this.remove = function(nameOrId, force, noAnimation){
         var page = typeof nameOrId == "object" 
             ? nameOrId 
             : this.$findPage(nameOrId);
@@ -801,11 +821,11 @@ apf.BaseTab = function(){
             return;
 
         //#ifdef __ENABLE_TAB_SCALE
-        if (this.$scale) {
+        if (this.$scale && !noAnimation) {
             this.$scaleinit(page, "remove", function(){
                 //page.removeNode();
                 page.destroy(true, true);
-            });
+            }, true);
         }
         else 
         // #endif
@@ -992,7 +1012,7 @@ apf.BaseTab = function(){
         if (typeof e["type"] == "unknown") //scope expired (prolly GC'ed)
             e = {type: "click"};
         if (bAnimating && e.type != "dblclick") return;
-        bAnimating = true;
+        var bAnimating = true;
 
         if (typeof dir == "undefined")
             dir = SCROLL_LEFT;
@@ -1199,20 +1219,23 @@ apf.BaseTab = function(){
           || amlNode.localName != "page")
             return;
         
-        if (this.activepage && this.activepage != -1) {
-            var ln = amlNode.nextSibling;
-            while (ln && (!ln.$first || !ln.visible))
-                ln = ln.nextSibling;
-            var rn = amlNode.previousSibling;
-            while (rn && (!rn.$last || !rn.visible))
-                rn = rn.previousSibling;
-    
-            if (this.firstChild == amlNode && ln)
-                ln && ln.$first();
-            if (this.lastChild == amlNode && rn)
-                rn && rn.$last();
-    
-            if (this.$activepage == amlNode) {
+        if ((this.activepage || this.activepage == 0) && this.activepage != -1) {
+            if (this.nextTabInLine)
+                this.set(this.nextTabInLine);
+            
+            if (!this.nextTabInLine && this.$activepage == amlNode) {
+                var ln = amlNode.nextSibling;
+                while (ln && (!ln.$first || !ln.visible))
+                    ln = ln.nextSibling;
+                var rn = amlNode.previousSibling;
+                while (rn && (!rn.$last || !rn.visible))
+                    rn = rn.previousSibling;
+        
+                if (this.firstChild == amlNode && ln)
+                    ln && ln.$first();
+                if (this.lastChild == amlNode && rn)
+                    rn && rn.$last();
+                
                 if (ln || rn)
                     this.set(ln || rn);
                 else {
@@ -1237,10 +1260,12 @@ apf.BaseTab = function(){
                     this.$scaleinit();
                 //#endif
             }
+            
+            delete this.nextTabInLine;
         }
-        
+
         //#ifdef __WITH_PROPERTY_BINDING
-        this.setProperty("length", this.childNodes.length);
+        this.setProperty("length", this.getPages().length - 1);
         //#endif
     });
 
@@ -1250,17 +1275,19 @@ apf.BaseTab = function(){
         if (amlNode.localName != "page" || e.relatedNode != this || amlNode.nodeType != 1)
             return;
 
+        var pages = this.getPages();
+
         if (!e.$beforeNode) {
-            var lastChild, pg = this.getPages();
-            if (lastChild = pg[pg.length - 1])
+            var lastChild, pg = pages;
+            if (lastChild = pg[pg.length - 2])
                 lastChild.$last(true);
             amlNode.$last();
         }
     
-        var p = this.getPage(0); //@todo $beforeNode doesnt have to be a page
-        if (!p || e.$beforeNode == p) {
-            if (p)
-                p.$first(true);
+        var p2, p = pages[0]; //@todo $beforeNode doesnt have to be a page
+        if (amlNode == p) {
+            if (p2 = this.getPage(1))
+                p2.$first(true);
             amlNode.$first();
         }
 
@@ -1277,11 +1304,13 @@ apf.BaseTab = function(){
                 this.setProperty("activepagenr", info.position);
             }
         }
-        else if (!this.activepage && !this.$activepage)
+        else if (!this.activepage && !this.$activepage 
+          && !amlNode.render || amlNode.$rendered) {
             this.set(amlNode);
+        }
         
         //#ifdef __ENABLE_TAB_SCALE
-        if (this.$scale && amlNode.visible) 
+        if (this.$scale && amlNode.visible && !e.$isMoveWithinParent) 
             this.$scaleinit(amlNode, "add");
         else 
         //#endif
@@ -1290,7 +1319,7 @@ apf.BaseTab = function(){
         }
         
         //#ifdef __WITH_PROPERTY_BINDING
-        this.setProperty("length", this.childNodes.length);
+        this.setProperty("length", this.getPages().length);
         //#endif
     });
 
@@ -1532,7 +1561,7 @@ apf.BaseTab = function(){
         }
 
         //#ifdef __WITH_PROPERTY_BINDING
-        this.setProperty("length", j);
+        this.setProperty("length", this.getPages().length);
         //#endif
 
         this.ready = true;

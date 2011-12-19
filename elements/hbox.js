@@ -216,7 +216,7 @@ apf.vbox = function(struct, tagName){
                 var el = !apf.hasFlexibleBox && this.$vbox ? this.$ext : this.$int;
                 el.style.textAlign = "";
                 
-                var nodes = this.childNodes;
+                var node, nodes = this.childNodes;
                 for (var i = 0, l = nodes.length; i < l; i++) {
                     if ((node = nodes[i]).nodeFunc != apf.NODE_VISIBLE || !node.$amlLoaded) //|| node.visible === false 
                         continue;
@@ -248,7 +248,8 @@ apf.vbox = function(struct, tagName){
             else {
                 var isLast = isLastVisibleChild(this);
                 if (!isLast) {
-                    if (!this.nextSibling.$splitter && !this.nextSibling.nosplitter) {
+                    if (!this.nextSibling.$splitter && !this.nextSibling.nosplitter
+                      && !isFirstVisibleChild(this) && !this.nosplitter) {
                         this.parentNode.insertBefore(
                             this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
                             this.nextSibling);
@@ -265,10 +266,10 @@ apf.vbox = function(struct, tagName){
         //#endif
         
         //@todo this can be more optimized by calcing if it WAS the last vis child.
-        //if (isLastVisibleChild(this)) {
+        if (this.parentNode.$propHandlers["padding"]) {// && isLastVisibleChild(this)) {
             this.parentNode.$propHandlers["padding"]
                 .call(this.parentNode, this.parentNode.padding);
-        //}
+        }
         
         apf.layout.forceResize(this.parentNode.$int);
         
@@ -442,9 +443,20 @@ apf.vbox = function(struct, tagName){
         }
     }
     
+    function isFirstVisibleChild(amlNode){
+        var firstChild = amlNode.parentNode.firstChild;
+        while (firstChild && (firstChild.nodeFunc != apf.NODE_VISIBLE 
+          || firstChild.visible === false 
+          || firstChild.visible == 2 && apf.isFalse(firstChild.getAttribute("visible")))) {
+            firstChild = firstChild.nextSibling;
+        }
+        
+        return firstChild && firstChild == amlNode;
+    }
+    
     function isLastVisibleChild(amlNode){
         var lastChild = amlNode.parentNode.lastChild;
-        while(lastChild && (lastChild.nodeFunc != apf.NODE_VISIBLE 
+        while (lastChild && (lastChild.nodeFunc != apf.NODE_VISIBLE 
           || lastChild.visible === false 
           || lastChild.visible == 2 && apf.isFalse(lastChild.getAttribute("visible")))) {
             lastChild = lastChild.previousSibling;
@@ -580,7 +592,8 @@ apf.vbox = function(struct, tagName){
             }
             //#ifdef __LAYOUT_ENABLE_SPLITTERS
             else if (this.splitters && !amlNode.$splitter && amlNode.visible !== false && !amlNode.nosplitter) {
-                if (amlNode.$ext.nextSibling != (amlNode.nextSibling && (amlNode.nextSibling.$altExt || amlNode.nextSibling.$ext))) {
+                if (amlNode.$ext.nextSibling != (amlNode.nextSibling 
+                  && (amlNode.nextSibling.$altExt || amlNode.nextSibling.$ext))) {
                     var _self = this;
                     setTimeout(function(){
                         _self.insertBefore(
@@ -604,6 +617,9 @@ apf.vbox = function(struct, tagName){
     }
     
     this.unregister = function(amlNode){
+        if(!amlNode.$propHandlers)
+            return;
+        
         amlNode.$propHandlers["left"]   = 
         amlNode.$propHandlers["top"]    = 
         amlNode.$propHandlers["right"]  = 
@@ -687,7 +703,13 @@ apf.vbox = function(struct, tagName){
     });
 
     this.addEventListener("DOMNodeInserted", function(e){
-        if (e.currentTarget == this || e.currentTarget.nodeType != 1)
+        if (e.currentTarget == this) {
+            if (this.visible)
+                this.$ext.style.display = apf.CSSPREFIX2 + "-box"; //Webkit issue
+            return;
+        }
+        
+        if (e.currentTarget.nodeType != 1)
             return;
 
         if (e.relatedNode == this && !e.$isMoveWithinParent) {
@@ -734,6 +756,8 @@ apf.vbox = function(struct, tagName){
     this.$draw = function(){
         var doc = this.$pHtmlNode.ownerDocument;
         this.$ext = this.$pHtmlNode.appendChild(doc.createElement("div"));
+        if (this.getAttribute("style"))
+            this.$ext.setAttribute("style", this.getAttribute("style"));
         this.$ext.className = this.localName;
 
         this.$vbox    = this.localName == "vbox";

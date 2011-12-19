@@ -37,6 +37,9 @@
  */
 apf.DOMParser = function(){};
 
+/*
+    @todo the shouldWait variable should be tree based and checked recursively up
+*/
 apf.DOMParser.prototype = new (function(){
     this.caseInsensitive    = true;
     this.preserveWhiteSpace = false; //@todo apf3.0 whitespace issue
@@ -146,7 +149,8 @@ apf.DOMParser.prototype = new (function(){
 
         //First pass - Node creation
         var nodes, nodelist = {}, prios = [], _self = this;
-        (function recur(amlNode, nodes){
+        var recur;
+        (recur = function(amlNode, nodes){
             var cL, newNode, node, nNodes,
                 cNodes = amlNode.childNodes,
                 i      = 0,
@@ -246,7 +250,7 @@ apf.DOMParser.prototype = new (function(){
             //Second pass - Document Insert signalling
             prios.sort();
             for (i = 0, l = prios.length; i < l; i++) {
-                nodes = nodelist[prios[i]];
+                var nodes = nodelist[prios[i]];
                 for (j = 0, l2 = nodes.length; j < l2; j++) {
                     if (!(node = nodes[j]).parentNode || node.$amlLoaded) //@todo generalize this using compareDocumentPosition
                         continue;
@@ -332,7 +336,7 @@ apf.DOMParser.prototype = new (function(){
                 o.tagName      = prefix ? prefix + ":" + nodeName : nodeName;
         
                 if (xmlNode) {
-                    if (id = xmlNode.getAttribute("id"))
+                    if ((id = xmlNode.getAttribute("id")) && !self[id])
                         o.$propHandlers["id"].call(o, o.id = id);
 
                     //attributes

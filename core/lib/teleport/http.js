@@ -274,6 +274,14 @@ apf.http = function(){
             //#endif
         }
         //#endif
+        
+        //#ifdef __ENABLE_UIRECORDER_HOOK
+        if (apf.uirecorder && apf.uirecorder.captureDetails) {
+            if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
+                apf.uirecorder.capture.trackHttpCall(this, url, options); 
+            }
+        }
+        //#endif
 
         var binary = apf.hasXhrBinary && options.binary;
         var async = options.async = (options.async || binary 
@@ -353,7 +361,7 @@ apf.http = function(){
                     if (!_self.queue[id] || http.readyState != 4)
                         return;
                     if (async && arguments.callee.caller)
-                        setTimeout(function(){_self.receive(id)});
+                        $setTimeout(function(){_self.receive(id)});
                     else
                         _self.receive(id);
                 }
@@ -709,10 +717,10 @@ apf.http = function(){
         clearInterval(qItem.timer);
         //#endif
 
-        if (self.navigator && navigator.onLine === false 
-          && (location.protocol != "file:"
+        /*if (self.navigator && navigator.onLine === false &&
+          (location.protocol != "file:"
           || qItem.url.indexOf("http://") > -1))
-            return false;
+            return false;*/
 
         // Test if HTTP object is ready
         if (qItem.async) {

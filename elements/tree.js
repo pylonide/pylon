@@ -245,12 +245,12 @@ apf.tree = function(struct, tagName){
             if (ocAction != "ondblclick") {
                 elIcon.setAttribute(ocAction, 
                   "var o = apf.lookup(" + this.$uniqueId + ");" +
-                   (ocAction == "onmousedown" ? "o.select(this, event.ctrlKey, event.shiftKey, event.button);" : "") +
+                   (ocAction == "onmousedown" ? "o.select(this, apf.getCtrlKey(event), event.shiftKey, event.button);" : "") +
                    (true ? "o.slideToggle(this, null, null, true);" : ""));
             }
             if (ocAction != "onmousedown") {
                 elIcon.setAttribute("onmousedown", 
-                  "apf.lookup(" + this.$uniqueId + ").select(this, event.ctrlKey, event.shiftKey, event.button);");
+                  "apf.lookup(" + this.$uniqueId + ").select(this, apf.getCtrlKey(event), event.shiftKey, event.button);");
             }
             
             elIcon.setAttribute("ondblclick", 
@@ -274,10 +274,12 @@ apf.tree = function(struct, tagName){
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  this.hasPassedDown = true;\
-                 if (!o.renaming && o.hasFocus() && isSelected == 1) \
+                 if (event.button == 2) \
+                    o.stopRename();\
+                 else if (!o.renaming && o.hasFocus() && isSelected == 1) \
                     this.dorename = true;\
-                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
-                     o.select(this, event.ctrlKey, event.shiftKey, event.button);\
+                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !apf.getCtrlKey(event))\
+                     o.select(this, apf.getCtrlKey(event), event.shiftKey, event.button);\
                  apf.cancelBubble(event, o);';
             
             elSelect.setAttribute("onmouseout", 'this.hasPassedDown = false;' + (elSelect.getAttribute("onmouseout") || ""));
@@ -291,12 +293,12 @@ apf.tree = function(struct, tagName){
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  if (o.hasFeature(apf.__DRAGDROP__))\
-                     o.select(this, event.ctrlKey, event.shiftKey, event.button);');
+                     o.select(this, apf.getCtrlKey(event), event.shiftKey, event.button);');
         }
         else 
         //#endif 
         {
-            strMouseDown = "o.select(this, event.ctrlKey, event.shiftKey, event.button);\
+            strMouseDown = "o.select(this, apf.getCtrlKey(event), event.shiftKey, event.button);\
                             apf.cancelBubble(event, o);";
         }
         
@@ -415,7 +417,7 @@ apf.tree = function(struct, tagName){
     
     this.$draw = function(){
         this.$drawBase();
-    };
+    };    
 }).call(apf.tree.prototype = new apf.BaseTree());
 
 apf.aml.setElement("tree", apf.tree);

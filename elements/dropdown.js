@@ -242,7 +242,7 @@ apf.dropdown = function(struct, tagName){
 
     this.addEventListener("afterselect", function(e){
         if (!e) e = event;
-        
+
         this.slideUp();
         if (!this.isOpen)
             this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Over"]);
@@ -439,7 +439,7 @@ apf.dropdown = function(struct, tagName){
         this.oSlider = null;
     };
 
-    // #ifdef __WITH_UIRECORDER
+    // #ifdef __ENABLE_UIRECORDER_HOOK
     this.$getActiveElements = function() {
         // init $activeElements
         if (!this.$activeElements) {

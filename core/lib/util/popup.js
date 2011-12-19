@@ -89,7 +89,8 @@ apf.popup = {
             resizable    : false,
             allowTogether: false,
             autoCorrect  : true,
-            noleft       : false
+            noleft       : false,
+            setZindex    : true
         }, options);
         
         if ((!options.allowTogether 
@@ -109,7 +110,8 @@ apf.popup = {
             moveUp = false,
             fixed  = false;
 
-        apf.window.zManager.set("popup", o.content);
+        if (options.setZindex)
+            apf.window.zManager.set("popup", o.content);
         
         if ((dp = o.content.style.display) && dp.indexOf("none") > -1)
             o.content.style.display = "";

@@ -118,14 +118,15 @@ apf.BindingRule = function(struct, tagName){
         
         //Reload parent to propagate change
         //@todo trigger should be maintained on node itself to prevent dual reload
-        apf.queue.add("reload" + node.$uniqueId, function(){
-            node.reload();
-        });
+        if ("expanded|collapsed".indexOf(this.localName) == -1)
+            apf.queue.add("reload" + node.$uniqueId, function(){
+                node.reload();
+            });
 
         //If this node is added, add to set
         if (e.currentTarget == this) {
             (node.$bindings[this.localName] 
-                || (node.$bindings[this.localName] = [])).push(this);
+                || (node.$bindings[this.localName] = [])).pushUnique(this);
         }
         //@todo apf3.0 test if proc instr and cdata needs to be serialized
         //Else just update the binding value
@@ -175,10 +176,11 @@ apf.BindingRule = function(struct, tagName){
         else return;
 
         //Reload parent to propagate change
-        apf.queue.add("reload" + node.$uniqueId, function(){
-            if(!node.$amlDestroyed)
-                node.reload();
-        });
+        if ("expanded|collapsed".indexOf(this.localName) == -1)
+            apf.queue.add("reload" + node.$uniqueId, function(){
+                if(!node.$amlDestroyed)
+                    node.reload();
+            });
 
         //Recompile ruleset
         if (node.$bindings.$isCompiled)

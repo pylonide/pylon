@@ -144,7 +144,12 @@ apf.$x = apf.$loader
         "core/lib/storage/cookie.js",
 
         "core/lib/vector.js",
-        "core/markup/aml/node.js"
+        "core/markup/aml/node.js",
+        
+        "core/lib/uirecorder/capture.js",
+        "core/lib/uirecorder/playback.js",
+        "core/lib/uirecorder/ui.js",
+        "core/lib/uirecorder/selenium.js"
     )
     .wait()
     .script(
@@ -434,9 +439,9 @@ apf.$x = apf.$loader
         if (apf.$required.length)
             apf.$x.script.apply(apf.$x, apf.$required).wait(start);
         else {
-            if (window.require && typeof require.def == "function") {
+            if (typeof requirejs !== "undefined") {
                 require([
-                    "pilot/fixoldbrowsers",
+                    "ace/lib/fixoldbrowsers",
                     "apf/elements/codeeditor",
                     "apf/elements/debugger",
                     "apf/elements/debughost"

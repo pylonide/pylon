@@ -36,7 +36,7 @@ apf.AmlElement = function(struct, tagName){
         for (prop in p)
             q[prop] = p[prop];
         
-        $init.call(this, tagName, nodeFunc, struct);
+        return $init.call(this, tagName, nodeFunc, struct);
     };
     
     this.$init(function(tagName, nodeFunc, struct){
@@ -552,7 +552,7 @@ apf.AmlElement = function(struct, tagName){
     });
     
     this.$handlePropSet = function(prop, value, force){
-        if (value && this.$booleanProperties[prop])
+        if (this.$booleanProperties[prop])
             value = apf.isTrue(value);
 
         //#ifdef __DEBUG
@@ -621,8 +621,10 @@ apf.AmlElement = function(struct, tagName){
         for (i = 0, l = attr.length; i < l; i++) {
             attr[i].dispatchEvent("DOMNodeInsertedIntoDocument");
         }
-
-        this.$amlLoaded = true;
     }, true);
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        this.$amlLoaded = true;
+    });
 }).call(apf.AmlElement.prototype = new apf.AmlNode());
 // #endif

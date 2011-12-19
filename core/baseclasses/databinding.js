@@ -464,7 +464,6 @@ apf.DataBinding = function(){
                 forceNoCache = options.force,
                 noClearMsg   = options.noClearMsg;
         }
-        
         if (cacheId && cacheId == this.cacheId && !forceNoCache)
             return;
 
@@ -520,9 +519,10 @@ apf.DataBinding = function(){
                       + "until smartbinding rules are loaded or set manually.");
             }
             //#endif
-
+            
             return this.$loadqueue = [xmlNode, cacheId];
         }
+        this.$loadqueue = null;
 
         // If no xmlNode is given we clear the control, disable it and return
         if (this.dataParent && this.dataParent.xpath)
@@ -799,8 +799,11 @@ apf.DataBinding = function(){
      * @private
      */
     this.$hasLoadStatus = function(xmlNode, state, unique){
+        if (!xmlNode)
+            return false;
         var ostatus = xmlNode.getAttribute("a_loaded");
-        if (!ostatus) return false;
+        if (!ostatus)
+            return false;
     
         var group  = this.loadgroup || "default";
         var re     = new RegExp("\\|" + (state || "\\w+") + ":" + group + ":" + (unique ? this.$uniqueId : "\\d+") + "\\|");
@@ -821,6 +824,10 @@ apf.DataBinding = function(){
     this.insert = function(xmlNode, options){
         if (typeof xmlNode == "string") {
             if (xmlNode.charAt(0) == "<") {
+                
+                if (options.whitespace === false)
+                    xmlNode = xmlNode.replace(/>[\s\n\r]*</g, "><");
+                
                 xmlNode = apf.getXmlDom(xmlNode).documentElement;
             }
             else {
@@ -1186,7 +1193,7 @@ apf.DataBinding = function(){
             if (modelId == "#" || xpath == "#") {
                 var m = (rule.cvalue3 || (rule.cvalue3 = apf.lm.compile(rule.value, {
                     xpathmode: 5
-                })))(this.xmlRoot);
+                }))).call(this, this.xmlRoot);
                 
                 //@todo apf3 this needs to be fixed in live markup
                 if (typeof m != "string") {
@@ -1202,12 +1209,12 @@ apf.DataBinding = function(){
                         this.addEventListener("prop." + prop, function(e){
                             var m = (rule.cvalue3 || (rule.cvalue3 = apf.lm.compile(rule.value, {
                                 xpathmode: 5
-                            })))(this.xmlRoot);
+                            }))).call(this, this.xmlRoot);
                             
                             if (m.model) {
                                 this.removeEventListener("prop." + prop, arguments.callee);
                                 var _self = this;
-                                setTimeout(function(){
+                                $setTimeout(function(){
                                     _self.$clearDynamicProperty(prop);
                                     _self.$setDynamicProperty(prop, expression);
                                 }, 10);

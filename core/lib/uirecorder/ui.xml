@@ -1,0 +1,95 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:bar skin="menu" id="winUiRecorder" draggable="true" zindex="199999" right="20" bottom="20" width="390" height="29" resizable="false">
+        <a:vbox anchors="0 0 0 0" padding="3">
+            <a:bar id="barUiRecorder" skin="basic" style="background-color:#333;padding:2px;">
+                <a:hbox align="center" padding="5">
+                    <a:divider skin="c9-divider-double" />
+                    <a:button id="btnUiRecordStart" skin="c9-toolbarbutton" onclick="apf.uirecorder.ui.start()">Record</a:button>
+                    <a:button id="btnUiRecordStop" skin="c9-toolbarbutton" disabled="true" onclick="apf.uirecorder.ui.stop()">Stop</a:button>
+                    <a:splitbutton
+                      id       = "btnUiRecordRun"
+                      icon     = "run.png"
+                      caption  = "run"
+                      disabled = "{!dgUiRecorder.length or apf.uirecorder.capture.isRecording}"
+                      onclick  = "apf.uirecorder.ui.write()"
+                      submenu  = "mnuUiRecordRunOptions" />
+                    <a:button id="btnUiRecordRemove" skin="c9-toolbarbutton" disabled="{!dgUiRecorder.selected or !btnUiRecordMore.expanded}" onclick="dgUiRecorder.remove()">Remove</a:button>
+                    <a:button id="btnUiRecordAddAssert" skin="c9-toolbarbutton" disabled="{!btnUiRecordMore.expanded or 'action|assert'.indexOf(dgUiRecorder.selected and dgUiRecorder.selected.localName) == -1}" onclick="apf.uirecorder.ui.startAddAssert()">Add Assertion</a:button>
+                    <a:button id="btnUiRecordMore" skin="c9-toolbarbutton" onclick="
+                        this.setProperty('expanded', !this.expanded);
+                        if (this.expanded) {
+                            winUiRecorder.setAttribute('height', this.lastHeight || 300);
+                            winUiRecorder.setAttribute('resizable', true);
+                            dgUiRecorder.show();
+                        }
+                        else {
+                            this.lastHeight = winUiRecorder.height;
+                            winUiRecorder.setAttribute('height', 29);
+                            winUiRecorder.setAttribute('resizable', false);
+                            dgUiRecorder.hide();
+                        }
+                    " caption="{this.expanded ? 'Less' : 'More'}" />
+                </a:hbox>
+            </a:bar>
+            <a:datagrid 
+              id   = "dgUiRecorder"
+              flex = "1"
+              margin = "0 2 2 2"
+              visible = "false"
+              options = "size"
+              each = "[action|assert|test]"
+              multiselect = "true"
+              startcollapsed = "false"
+              onmouseover = "apf.uirecorder.ui.highlightElement(event)"
+              onmouseout  = "apf.uirecorder.ui.hideHighlightElements(event)">
+                <a:column caption="Name" width="40%" value="[@name]" tree="1" check2="1" editor="textbox" skin="tbsimple" />
+                <a:column caption="Value" width="60%" value="[@value]" editor="textbox" />
+                <a:column caption="Element" width="50"><?lm
+                    
+                ?></a:column>
+                
+                <a:css match="[test]" value="testhead" />
+                
+                <a:drag match="[action|assert|test]" />
+                <a:drop 
+                  match  = "[action]" 
+                  target = "[action]" 
+                  action = "insert-before" />
+                <a:drop 
+                  match  = "[action]" 
+                  target = "[test]" 
+                  action = "tree-append" />
+                <a:drop 
+                  match  = "[test]" 
+                  target = "[test]" 
+                  action = "insert-before" />
+                <a:drop 
+                  match  = "[assert]" 
+                  target = "[action]" 
+                  action = "tree-append" />
+                <a:drop 
+                  match  = "[assert]" 
+                  target = "[assert]" 
+                  action = "insert-before" />
+            </a:datagrid>
+        </a:vbox>
+        
+        <a:menu id="mnuUiRecordRunOptions">
+            <a:item type="radio" selected="true">This window</a:item>
+            <a:item type="radio">Local Selenium</a:item>
+            <a:item type="radio">SauceLabs Selenium</a:item>
+        </a:menu>
+    </a:bar>
+    
+    <!--a:menu id="mnuUiProps" width="200" height="300">
+        <a:datagrid 
+          id   = "dgUiProps"
+          anchors = "2 2 2 2"
+          each = "[prop]">
+            <a:column caption="Name" width="40%" value="[@name]" />
+            <a:column caption="Value" width="60%" value="[@value]" />
+            
+            <a:model />
+        </a:datagrid>
+    </a:menu-->
+</a:application>

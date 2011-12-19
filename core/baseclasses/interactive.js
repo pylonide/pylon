@@ -136,9 +136,9 @@ apf.Interactive = function(){
 
     this.$propHandlers["resizable"] = function(value){
         if (apf.isFalse(value))
-            this.resizable = value = false;
+            this.resizable = false;
         else if (apf.isTrue(value))
-            this.resizable = value = true;
+            this.resizable = "true";
         
         this.$ext.style.cursor = "";
         
@@ -493,6 +493,8 @@ apf.Interactive = function(){
         }
         //#endif
         
+        var iMarginLeft;
+        
         //#ifdef __WITH_OUTLINE
         if (resizeOutline) {
             oOutline.className     = "resize";
@@ -511,15 +513,7 @@ apf.Interactive = function(){
         //#endif
         {
             if (ext.style.right) {
-                iStyleRight = ext.style.right.slice(0, -2);
-                if (iStyleRight) {
-                    myPos[0] = myPos[0] + parseInt(iStyleRight);
-                    ext.style.left  = myPos[0] + "px";
-                }
-
-                else {
-                    ext.style.left  = myPos[0] + "px";
-                }
+                ext.style.left  = myPos[0] + "px";
 
                 //console.log(myPos[0]);
                 //ext.style.right = "";
@@ -533,7 +527,7 @@ apf.Interactive = function(){
         if (!options || !options.nocursor) {
             if (lastCursor === null)
                 lastCursor = document.body.style.cursor;//apf.getStyle(document.body, "cursor");
-            document.body.style.cursor = resizeType + "-resize";
+            document.body.style.cursor = getCssCursor(resizeType) + "-resize";
         }
         
         document.onmousemove = resizeMove;
@@ -572,7 +566,7 @@ apf.Interactive = function(){
 
             if (_self.setProperty)
                 updateProperties();
-
+                
             document.body.style.cursor = lastCursor || "";
             lastCursor = null;
             
@@ -629,7 +623,7 @@ apf.Interactive = function(){
                 if (!_self.top)
                     htmlNode.style.top = "";
             }
-        
+
             if ((left || left === 0) && (!hasRight || hasLeft)) 
                 _self.setProperty("left", left, 0, _self.editable);
             if ((top || top === 0) && (!hasBottom || hasTop)) 
@@ -666,7 +660,7 @@ apf.Interactive = function(){
                 clientX: e.clientX,
                 clientY: e.clientY
             }
-            timer = setTimeout(function(){
+            timer = $setTimeout(function(){
                 doResize(z);
             }, 10);
             return;
@@ -760,23 +754,20 @@ apf.Interactive = function(){
         var cursor  = "", 
             tcursor = "";
         posAbs = "absolute|fixed".indexOf(apf.getStyle(_self.$ext, "position")) > -1;
-
-        if (_self.resizable == true || _self.resizable == "vertical") {
-            if (y < rszborder + marginBox[0])
+        if (_self.resizable == "true" || _self.resizable == "vertical" || _self.resizable.indexOf('top') > -1 || _self.resizable.indexOf('bottom') > -1) {
+            if (y < rszborder + marginBox[0] && _self.resizable.indexOf('bottom') == -1)
                 cursor = posAbs ? "n" : "";
-            else if (y > this.offsetHeight - rszborder) //marginBox[0] - marginBox[2] - 
+            else if (y > this.offsetHeight - (rszcorner || rszborder) && _self.resizable.indexOf('top') == -1) //marginBox[0] - marginBox[2] - 
                 cursor = "s";
-            else if (y > this.offsetHeight - rszcorner) //marginBox[0] - marginBox[2] - 
-                tcursor = "s";
         }
         
-        if (_self.resizable == true || _self.resizable == "horizontal") {
-            if (x < (cursor ? rszcorner : rszborder) + marginBox[0])
+        if (_self.resizable == "true" || _self.resizable == "horizontal" || _self.resizable.indexOf('left') > -1 || _self.resizable.indexOf('right') > -1) {
+            if (x < (cursor ? rszcorner : rszborder) + marginBox[0] && _self.resizable.indexOf('right') == -1)
                 cursor += tcursor + (posAbs ? "w" : "");
-            else if (x > this.offsetWidth - (cursor || tcursor ? rszcorner : rszborder)) //marginBox[1] - marginBox[3] - 
+            else if (x > this.offsetWidth - (cursor || tcursor ? rszcorner : rszborder) && _self.resizable.indexOf('left') == -1) //marginBox[1] - marginBox[3] - 
                 cursor += tcursor + "e";
         }
-        
+
         return cursor;
     }
     
@@ -798,10 +789,27 @@ apf.Interactive = function(){
             originalCursor = apf.getStyle(this, "cursor");
 
         var cursor = getResizeType.call(_self.$ext, x, y);
+        
         this.style.cursor = cursor 
-            ? cursor + "-resize" 
+            ? getCssCursor(cursor) + "-resize" 
             : originalCursor || "default";
     };
+    
+    function getCssCursor(cursor){
+        var cssCursor = cursor;
+        if (apf.isWebkit) {
+            if (cursor == "se" || cursor == "nw")
+                cssCursor = "nwse";
+            else if (cursor == "sw" || cursor == "ne")
+                cssCursor = "nesw";
+            else if (cursor == "s" || cursor == "n")
+                cssCursor = "ns";
+            else if (cursor == "e" || cursor == "w")
+                cssCursor = "ew";
+        }
+        
+        return cssCursor;
+    }
 
     var oOutline;
     //#ifdef __WITH_OUTLINE

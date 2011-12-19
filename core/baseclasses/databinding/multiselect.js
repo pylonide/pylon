@@ -182,6 +182,39 @@ apf.MultiselectBinding = function(){
     //#endif
 
     /**
+     * Optimizes load time when the xml format is very simple.
+     */
+    this.$propHandlers["simpledata"] = function(value){
+        if (value) {
+            this.getTraverseNodes = function(xmlNode){
+                return (xmlNode || this.xmlRoot).childNodes;
+            };
+        
+            this.getFirstTraverseNode = function(xmlNode){
+                return (xmlNode || this.xmlRoot).childNodes[0];
+            };
+        
+            this.getLastTraverseNode = function(xmlNode){
+                var nodes = (xmlNode || this.xmlRoot).childNodes;
+                return nodes[nodes.length - 1];
+            };
+        
+            this.getTraverseParent = function(xmlNode){
+                if (!xmlNode.parentNode || xmlNode == this.xmlRoot) 
+                    return false;
+                    
+                return xmlNode.parentNode;
+            };
+        }
+        else {
+            delete this.getTraverseNodes;
+            delete this.getFirstTraverseNode;
+            delete this.getLastTraverseNode;
+            delete this.getTraverseParent;
+        }
+    }
+
+    /**
      * Retrieves a nodelist containing the {@link term.datanode data nodes} which
      * are rendered by this element (see each nodes, see
      * {@link baseclass.multiselectbinding.binding.each}).
@@ -315,8 +348,9 @@ apf.MultiselectBinding = function(){
         var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.xmlRoot);
         while (nodes[i] && nodes[i] != xmlNode)
             i++;
-
-        return nodes[i + (up ? -1 * count : count)];
+        
+        var ind = i + (up ? -1 * count : count);
+        return nodes[ind < 0 ? 0 : ind];
     };
 
     /**
@@ -442,7 +476,7 @@ apf.MultiselectBinding = function(){
             return this.clear(null, null, true); //@todo apf3.0 this should clear and set a listener
 
         //Traverse through XMLTree
-        var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot);
+        var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot, null, 0, "load");
 
         //Build HTML
         this.$fill(nodes);
@@ -486,7 +520,9 @@ apf.MultiselectBinding = function(){
             else
             //#endif
             //@todo apf3.0 optimize to not set selection when .selection or .selected is set on initial load
-            if (this.autoselect) {
+            if (this["default"])
+                this.select(this["default"]);
+            else if (this.autoselect) {
                 if (!this.selected) {
                     if (this.renderRoot)
                         this.select(XMLRoot, null, null, null, true);
@@ -523,14 +559,14 @@ apf.MultiselectBinding = function(){
 
     var actionFeature = {
         "insert"      : 127,//11111110
-        "replacenode" : 127,//11110110
-        "attribute"   : 255,//11110111
+        "replacenode" : 127,//11111110
+        "attribute"   : 255,//11111111
         "add"         : 251,//11110111
-        "remove"      : 46, //01011100
+        "remove"      : 110, //01011110
         "redo-remove" : 79, //10011110
         "synchronize" : 127,//11111110
-        "move-away"   : 233,//11010011
-        "move"        : 77  //10011011
+        "move-away"   : 297,//11010111
+        "move"        : 141  //10011111
     };
 
     /**
@@ -566,9 +602,13 @@ apf.MultiselectBinding = function(){
             listenNode = this.xmlRoot;
 
         if (action == "redo-remove") {
+            var loc = [xmlNode.parentNode, xmlNode.nextSibling];
             lastParent.appendChild(xmlNode); //ahum, i'm not proud of this one
             var eachNode = this.isTraverseNode(xmlNode);
-            lastParent.removeChild(xmlNode);
+            if (loc[0])
+                loc[0].insertBefore(xmlNode, loc[1]);
+            else
+                lastParent.removeChild(xmlNode);
             
             if (!eachNode)
                 xmlNode = lastParent;
@@ -708,7 +748,7 @@ apf.MultiselectBinding = function(){
                 return;
             
             if (this.$hasLoadStatus(xmlNode) && this.$removeLoading)
-                this.$removeLoading(htmlNode);
+                this.$removeLoading(xmlNode);
 
             if (this.$container.firstChild && !apf.xmldb.getNode(this.$container.firstChild)) {
                 //Appearantly the content was cleared
@@ -857,8 +897,11 @@ apf.MultiselectBinding = function(){
             clearTimeout(this.$selectTimer.timer);
             // Determine next selection
             if (action == "remove" && apf.isChildOf(xmlNode, this.selected, true)
-              || xmlNode == this.$selectTimer.nextNode)
+              || xmlNode == this.$selectTimer.nextNode) {
                 this.$selectTimer.nextNode = this.getDefaultNext(xmlNode, this.$isTreeArch);
+                if (this.$selectTimer.nextNode == this.xmlRoot && !this.renderRoot)
+                    this.$selectTimer.nextNode = null;
+            }
 
             //@todo Fix this by putting it after xmlUpdate when its using a timer
             var _self = this;
@@ -873,6 +916,8 @@ apf.MultiselectBinding = function(){
         if (actionFeature[action] & 64) {
             if (!length)
                 length = this.xmlRoot.selectNodes(this.each).length;
+            if (action == "remove")
+                length--;
             if (length != this.length)
                 this.setProperty("length", length);
         }
@@ -929,6 +974,7 @@ apf.MultiselectBinding = function(){
         //#ifdef __WITH_CACHE
         var cId, cItem;
         if (this.$isTreeArch && this.caching 
+          && (!this.$bindings || !this.$bindings.each || !this.$bindings.each.filter)
           && (cItem = this.cache[(cId = xmlNode.getAttribute(apf.xmldb.xmlIdTag))])) {
             if (this.$subTreeCacheContext || this.$needsDepth) {
                 //@todo
@@ -1019,8 +1065,8 @@ apf.MultiselectBinding = function(){
                 ? value.replace(/^\[|\]$/g, "")
                 : value;
             
-            if (value.indexOf("::") > -1) {
-                var model = value.split("::"); //@todo could be optimized
+            if (value.match(/^\w+::/)) {
+                var model = value.split("::"); //@todo this is all very bad
                 if (!apf.xPathAxis[model[0]]) {
                     this.setProperty("model", model[0]);
                     this.each = model[1];

@@ -550,10 +550,12 @@ apf.DataAction = function(){
         }
 
         //Use Action Tracker
-        this.$executeAction(atAction, args, atName, xmlNode);
+        var result = this.$executeAction(atAction, args, atName, xmlNode);
         
         if (shouldLoad)
             this.load(xmlNode.selectSingleNode(xpath));
+        
+        return result;
     };
     
     /**

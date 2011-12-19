@@ -69,8 +69,12 @@ apf.Cache = function(){
             var nodes = this.getTraverseNodes();
 
             //Information needs to be passed to the followers... even when cached...
-            if (nodes.length && this.autoselect)
-                this.select(nodes[0], null, null, null, true);
+            if (nodes.length) {
+                if (this["default"])
+                    this.select(this["default"]);
+                else if (this.autoselect)
+                    this.select(nodes[0], null, null, null, true);
+            }
             else if (this.clearSelection)
                 this.clearSelection(); //@todo apf3.0 was setProperty("selected", null
 

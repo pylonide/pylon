@@ -109,6 +109,7 @@ apf.actiontracker = function(struct, tagName){
 
 (function(){
     this.$lastExecStackItem = null;
+    this.$paused = false;
 
     this.realtime   = true;
     this.undolength = 0;
@@ -277,8 +278,10 @@ apf.actiontracker = function(struct, tagName){
         if (options.action && !options.transaction)
             apf.actiontracker.actions[options.action](UndoObj, false, this);
 
-        //Add action to stack
-        UndoObj.id = this.$undostack.push(UndoObj) - 1;
+        if (!this.$paused) {
+            //Add action to stack
+            UndoObj.id = this.$undostack.push(UndoObj) - 1;
+        }
 
         this.setProperty("undolength", this.$undostack.length);
 
@@ -315,6 +318,18 @@ apf.actiontracker = function(struct, tagName){
 
         //return stack id of action
         return UndoObj;
+    };
+    
+    this.pauseTracking = function() {
+        this.$paused = true;
+    };
+    
+    this.resumeTracking = function() {
+        this.$paused = false;
+    };
+    
+    this.isTracking = function() {
+        return !this.$paused;
     };
 
     //deprecated??
@@ -545,7 +560,7 @@ apf.actiontracker = function(struct, tagName){
         this.begin(dataNode);
         func();
         this.commit(dataNode);
-    }
+    };
 
     var domCharMod = function(e){
         if (e.$didtrans || !e.currentTarget.$amlLoaded)
@@ -628,6 +643,7 @@ apf.actiontracker = function(struct, tagName){
      */
     this.reset = function(){
         this.$undostack.length = this.$redostack.length = 0;
+        this.$paused = false;
 
         this.setProperty("undolength", 0);
         this.setProperty("redolength", 0);
@@ -803,8 +819,8 @@ apf.actiontracker = function(struct, tagName){
                     + (extra.url ? "Url:" + extra.url + "\n\n" : "")
                     + extra.message));
 
-                if ((UndoObj && UndoObj.xmlActionNode || extra.amlNode || apf)
-                  .dispatchEvent("error", apf.extend({
+                //(UndoObj && UndoObj.xmlActionNode || extra.amlNode || apf)
+                if (this.dispatchEvent("error", apf.extend({
                     error   : oError,
                     state   : state,
                     bubbles : true

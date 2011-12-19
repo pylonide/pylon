@@ -57,7 +57,7 @@ apf.flashplayer = function(struct, tagName){
         //#endif
         apf.StandardBinding
     );
-
+    
     /**** Public methods ****/
     
     //#ifdef __WITH_CONVENIENCE_API
@@ -65,47 +65,81 @@ apf.flashplayer = function(struct, tagName){
     /**
      * @ref global#setValue
      */
-    this.setValue = function(value){
-        this.setProperty("value", value, false, true);
+    this.setSrc = function(value){
+        this.setProperty("src", value, false, true);
     };
     
     //#endif
     
     /**** Properties and attributes ****/
     
-    this.$supportedProperties.push("value");
-    this.$propHandlers["value"] = function(value){
-        this.setSource(value);
+    this.$supportedProperties.push("value", "allowfullscreen", "flashvars");
+    this.$propHandlers["src"] = function(value){
+        //this.$ext.getElementsByTagName("param")[2].setAttribute("value", value);
+        this.$ext.getElementsByTagName("object")[0].setAttribute("data", value);
+//        this.$ext.getElementsByTagName("embed")[0].setAttribute("src", value);
     };
+    this.$propHandlers["allowfullscreen"] = function(value){
+        this.$ext.getElementsByTagName("param")[1].setAttribute("value", value);
+//        this.$ext.getElementsByTagName("embed")[0].setAttribute("allowFullScreen", value);
+    }
+    this.$propHandlers["flashvars"] = function(value){
+        this.$ext.getElementsByTagName("param")[3].setAttribute("value", value);
+//        this.$ext.getElementsByTagName("embed")[0].setAttribute("flashvars", value);
+    }
+    this.$propHandlers["bgcolor"] = function(value){
+        this.$ext.getElementsByTagName("param")[4].setAttribute("value", value);
+//        this.$ext.getElementsByTagName("embed")[0].setAttribute("bgcolor", value);
+    }
+    this.$propHandlers["wmode"] = function(value){
+        this.$ext.getElementsByTagName("param")[5].setAttribute("value", value);
+//        this.$ext.getElementsByTagName("embed")[0].setAttribute("wmode", value);
+    }
     
     /**** Init ****/
     
     this.$draw = function(){
         //Build Main Skin
         this.$ext = this.$pHtmlNode.appendChild(document.createElement("div"));
+        if (this.getAttribute("style"))
+            this.$ext.setAttribute("style", this.getAttribute("style"));
         this.$ext.onclick = function(){this.host.dispatchEvent("click");}
         
         var src = this.getAttribute("src") || "";
         this.$ext.insertAdjacentHTML("beforeend",
-            '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" \
-              codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" \
+            '<object \
               width="100%" \
               height="100%" \
-              align="middle">\
-                <param name="allowScriptAccess" value="sameDomain" />\
+              data="' + src + '" \
+              type="application/x-shockwave-flash">\
+                <param name="allowfullscreen" value="true">\
+                <param name="allowscriptaccess" value="always">\
+                <param name="quality" value="high">\
+                <param name="flashvars" value="">\
+                <param name="bgcolor" value="#000000">\
+                <param name="cachebusting" value="false">\
+            </object>')
+            /*                <param name="allowScriptAccess" value="always" />\
                 <param name="allowFullScreen" value="false" />\
                 <param name="movie" value="' + src + '" />\
+                <param name="FlashVars" value="false" />\
+                <param name="bgcolor" value="#ffffff" />\
+                <param name="wmode" value="high" />\
                 <param name="play" value="true" />\
                 <param name="menu" value="false" />\
                 <param name="quality" value="high" />\
-                <param name="wmode" value="transparent" />\
-                <param name="bgcolor" value="#ffffff" />\
-                <embed src="' + src + '" play="true" menu="false" \
-                  quality="high" wmode="transparent" bgcolor="#ffffff" width="100%" \
-                  height="100%" align="middle" allowScriptAccess="sameDomain" \
+'<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" \
+              codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" \
+              width="100%" \
+              height="100%" \
+              data="' + src + '" \
+              type="application/x-shockwave-flash" \
+              align="middle">\
+              <embed src="' + src + '" play="true" menu="false" \
+                  quality="high" bgcolor="#ffffff" width="100%" \
+                  height="100%" align="middle" allowScriptAccess="always" \
                   allowFullScreen="false" type="application/x-shockwave-flash" \
-                  pluginspage="http://www.macromedia.com/go/getflashplayer" />\
-            </object>')
+                  pluginspage="http://www.macromedia.com/go/getflashplayer" />\*/
     };
     
     this.$loadAml = function(x){

@@ -134,10 +134,11 @@ apf.model = function(struct, tagName){
         session    : 1
     }, this.$attrExcludePropBind);
 
-    this.$booleanProperties["autoinit"] = true;
-    this.$booleanProperties.enablereset  = true;
+    this.$booleanProperties["whitespace"] = true;
+    this.$booleanProperties["autoinit"]   = true;
+    this.$booleanProperties.enablereset   = true;
     this.$supportedProperties = ["submission", "src", "session", "autoinit", 
-        "enablereset", "remote"];
+        "enablereset", "remote", "whitespace"];
     
     this.$propHandlers["src"] = 
     this.$propHandlers["get"] = function(value, prop){
@@ -307,7 +308,8 @@ apf.model = function(struct, tagName){
         
         if (xmlNode) {
             delete this.$listeners[amlNode.$uniqueId];
-            amlNode.load(xmlNode);
+            if (amlNode.xmlRoot != xmlNode)
+                amlNode.load(xmlNode);
         }
         else 
             this.$waitForXml(amlNode);
@@ -546,15 +548,12 @@ apf.model = function(struct, tagName){
         
         if (typeof xmlNode == "string")
             xmlNode = apf.getXml(xmlNode);
-        else {
-            xmlNode = !xmlNode.nodeType //Check if a model was passed
-                ? xmlNode.getXml()
-                : apf.xmldb.getCleanCopy(xmlNode);
-        }
+        else if (xmlNode.nodeFunc)
+            xmlNode = xmlNode.getXml();
         
         if (!xmlNode) return;
 
-        apf.xmldb.appendChild(insertNode, xmlNode);
+        xmlNode = apf.xmldb.appendChild(insertNode, xmlNode);
         
         this.dispatchEvent("update", {xmlNode: xmlNode});
         return xmlNode;
@@ -639,6 +638,9 @@ apf.model = function(struct, tagName){
                         if (!apf.supportNamespaces)
                             strXml = strXml.replace(/xmlns=\"[^"]*\"/g, "");
                     }
+                    
+                    if (this.whitespace === false)
+                        strXml = strXml.replace(/>[\s\n\r]*</g, "><");
                     
                     return this.load(apf.getXmlDom(strXml).documentElement);
                 }
@@ -931,7 +933,7 @@ apf.model = function(struct, tagName){
         
         if (action == "replacenode" && xmlNode == this.data.ownerDocument.documentElement) {
             var _self = this;
-            setTimeout(function(){
+            $setTimeout(function(){
                 _self.load(xmlNode);
             });
             return;
@@ -942,7 +944,7 @@ apf.model = function(struct, tagName){
             this.$at = UndoObj.at;
         //#endif
 
-        //#ifdef __WITH_UIRECORDER
+        //#ifdef __ENABLE_UIRECORDER_HOOK
         if (apf.uirecorder && apf.uirecorder.captureDetails) {
             if (apf.uirecorder.isLoaded && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {// only capture events when recording
                 if (this.ownerDocument && this.$aml) {
@@ -1042,6 +1044,9 @@ apf.model = function(struct, tagName){
             if (typeof options.clearContents == "undefined" && extra.userdata) 
                 options.clearContents = apf.isTrue(extra.userdata[1]); //@todo is this still used?
 
+            if (options.whitespace == undefined)
+                options.whitespace = _self.whitespace;
+
             //Call insert function
             (options.amlNode || _self).insert(data, options);
 
@@ -1071,6 +1076,10 @@ apf.model = function(struct, tagName){
                     xmlNode = xmlNode.substr(xmlNode.indexOf(">")+1);
                 if (!apf.supportNamespaces)
                     xmlNode = xmlNode.replace(/xmlns\=\"[^"]*\"/g, "");
+                
+                if (this.whitespace === false)
+                    xmlNode = xmlNode.replace(/>[\s\n\r]*</g, "><");
+                
                 xmlNode = apf.getXmlDom(xmlNode).documentElement;
             }
             //#ifdef __WITH_JSON2XML

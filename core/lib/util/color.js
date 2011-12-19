@@ -140,10 +140,11 @@ apf.color = {
     fixHex: function (hex) {
         var len = 6 - hex.length;
         if (len > 0) {
+            var ch = hex.charAt(hex.length - 1);
             var o = [], i = 0;
-            for (; i < len; i++)
-                o.push("0");
             o.push(hex);
+            for (; i < len; i++)
+                o.push(ch);
             hex = o.join("");
         }
         return hex;

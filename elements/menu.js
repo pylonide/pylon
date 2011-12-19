@@ -94,7 +94,7 @@ apf.menu = function(struct, tagName){
 
     /**** Properties and Attributes ****/
     
-    this.zindex    = 10000000;
+    //this.zindex    = 10000000;
     this.visible   = false;
     this.matchhide = false;
 
@@ -112,7 +112,7 @@ apf.menu = function(struct, tagName){
             this.$ext.style.display = "none";
 
             var lastFocus = apf.menu.lastFocus;
-
+            var opener    = this.opener;
             //@todo test this with a list being the opener of the menu
             if (lastFocus != this.opener && this.opener && this.opener.$blur)
                 this.opener.$blur();
@@ -197,6 +197,8 @@ apf.menu = function(struct, tagName){
                 apf.setStyleClass(this.$selected.$ext, "", ["hover"]);
                 this.$selected = null;
             }
+            
+            this.dispatchEvent("hide", {opener: opener});
         }
     };
 
@@ -252,7 +254,7 @@ apf.menu = function(struct, tagName){
                     else
                         node.disable();
     
-                    if (!node.nextSibling && c == 0)
+                    if (!node.nextSibling && c == 0 && last)
                         last.hide();
                 }
             }
@@ -268,9 +270,6 @@ apf.menu = function(struct, tagName){
         }
 
         function afterRender(){
-            //@todo consider renaming this to onshow and onhide
-            this.dispatchEvent("display", {opener: opener});
-
             if (x === null) {
                 apf.popup.show(this.$uniqueId, {
                     x            : 0, 
@@ -280,7 +279,8 @@ apf.menu = function(struct, tagName){
                     ref          : (this.ref || opener).$ext,
                     allowTogether: openMenuId,
                     autohide     : !this.pinned,
-                    noleft       : this.left !== undefined
+                    noleft       : this.left !== undefined,
+                    setZindex    : this.zindex ? false : true
                 });
             }
             else {
@@ -292,7 +292,8 @@ apf.menu = function(struct, tagName){
                     steps        : 10,
                     //ref          : this.$ext.offsetParent,
                     allowTogether: openMenuId,
-                    autohide     : !this.pinned
+                    autohide     : !this.pinned,
+                    setZindex    : this.zindex ? false : true
                     //autoCorrect  : false
                 });
             }
@@ -313,6 +314,9 @@ apf.menu = function(struct, tagName){
                 lastFocus.$focus();
     
             this.xmlReference = xmlNode;
+
+            //@todo consider renaming this to onshow and onhide
+            this.dispatchEvent("display", {opener: opener});
         }
         
         this.visible = false;
@@ -367,9 +371,11 @@ apf.menu = function(struct, tagName){
                 continue;
 
             if (nodes[i].value == value || !nodes[i].value && nodes[i].caption == value)
-                nodes[i].$handlePropSet("selected", true);
+                nodes[i].setProperty("selected", true, false, true);
+                //nodes[i].$handlePropSet("selected", true);
             else if (nodes[i].selected)
-                nodes[i].$handlePropSet("selected", false);
+                nodes[i].setProperty("selected", false, false, true);
+                //nodes[i].$handlePropSet("selected", false);
         }
     };
 

@@ -204,7 +204,7 @@ apf.Anchoring = function(){
     };
     
     function visibleHandler(e){
-        if (!(this.$rule_header || this.$rule_v || this.$rule_h))
+        if (!(this.$rule_header || this.$rule_v || this.$rule_h) || !this.parentNode)
             return;
 
         if (e.value) {

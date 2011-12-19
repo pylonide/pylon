@@ -340,6 +340,9 @@ apf.slider = function(struct, tagName){
         if (this.$dragging && !force && !this.realtime)
             return;
 
+        if (typeof value !== "undefined" && value != this.$value)
+            this.dispatchEvent("valuechange");
+
         this.$value = value;
         var value = Math.max(this.min, Math.min(this.max, value)) || 0;
 
@@ -506,25 +509,25 @@ apf.slider = function(struct, tagName){
                 //LEFT
                 if (this.$dir != "horizontal")
                     return;
-                this.change(this.value - (ctrlKey ? 0.01 : 0.1));
+                this.change(this.value - this.step);
                 break;
             case 38:
                 //UP
                 if (this.$dir != "vertical")
                     return;
-                this.change(this.value + (ctrlKey ? 0.01 : 0.1));
+                this.change(this.value + this.step);
                 break;
             case 39:
                 //RIGHT
                 if (this.$dir != "horizontal")
                     return;
-                this.change(this.value + (ctrlKey ? 0.01 : 0.1));
+                this.change(this.value + this.step);
                 break;
             case 40:
                 //DOWN
                 if (this.$dir != "vertical")
                     return;
-                this.change(this.value - (ctrlKey ? 0.01 : 0.1));
+                this.change(this.value - this.step);
                 break;
             case 13:
                 //ENTER
@@ -801,6 +804,8 @@ apf.slider = function(struct, tagName){
 
             document.onmouseup = function(e){
                 var o = this.dragNode;
+                if (o)
+                    _self.dispatchEvent("mouseup");
                 this.dragNode = null;
 
                 o.onmouseout();
@@ -907,13 +912,13 @@ apf.slider = function(struct, tagName){
         //#endif
     };
     
-    // #ifdef __WITH_UIRECORDER
+    // #ifdef __ENABLE_UIRECORDER_HOOK
     this.$getActiveElements = function() {
         // init $activeElements
         if (!this.$activeElements) {
             this.$activeElements = {
-                $knob       : this.oKnob,
-                $slider     : this.oSlider
+                oKnob       : this.oKnob,
+                oSlider     : this.oSlider
             }
         }
 

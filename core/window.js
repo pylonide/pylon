@@ -398,7 +398,7 @@ apf.window = function(){
                 return false;
         }
 
-        (apf.activeElement = this.document.activeElement = amlNode).focus(true, e);
+        (apf.activeElement = this.document.activeElement = this.document.documentElement.$lastFocussed = amlNode).focus(true, e);
 
         this.$settingFocus = null;
 
@@ -935,8 +935,9 @@ apf.window = function(){
         });
     });
 
-    var ta = {"INPUT":1, "TEXTAREA":1, "SELECT":1};
+    var ta = {"INPUT":1, "TEXTAREA":1, "SELECT":1, "EMBED":1, "OBJECT":1};
     apf.addListener(document, "mousedown", this.$mousedown = function(e){
+
         if (!e) e = event;
         var p,
             amlNode   = apf.findHost(e.srcElement || e.target);
@@ -945,7 +946,6 @@ apf.window = function(){
               || (amlNode && amlNode.hasFeature(apf.__LIVEEDIT__))
               // #endif
             ;*/
-
         // #ifdef __WITH_POPUP
         if (apf.popup.last && (!amlNode || apf.popup.last != amlNode.$uniqueId) 
           && apf.popup.cache[apf.popup.last] 
@@ -1028,7 +1028,7 @@ apf.window = function(){
 
         var canSelect = !((!apf.document
           && (!apf.isParsingPartial || amlNode)
-          || apf.dragMode) && !ta[e.target.tagName]);
+          || apf.dragMode) && !ta[e.target && e.target.tagName]);
 
         if (canSelect && amlNode) {
             if (!e.target && e.srcElement)
