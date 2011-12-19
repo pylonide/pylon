@@ -97,10 +97,10 @@ module.exports = ext.register("ext/splitview/splitview", {
         
         tabEditors.addEventListener("tabselectmouseup", function(e) {
             var page = this.$activepage;
-            var split = Splits.get(page);
+            var splits = Splits.get(page);
             
-            if (split && split.length)
-                Splits.update(split[0]);
+            if (splits.length)
+                Splits.update(splits[0]);
         });
         
         ide.addEventListener("loadsettings", function(e) {

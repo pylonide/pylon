@@ -211,7 +211,7 @@ function createNodes(struct, splitters, parent) {
         if ("vbox|hbox".indexOf(nodeName) > -1) {
             if (parent === apf.document.body) {
                 options.visible = false;
-                options.anchors = "0 0 0 0";
+                options.anchors = "2 0 0 0";
             }
             else {
                 options.flex = 1;
