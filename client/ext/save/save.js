@@ -224,6 +224,10 @@ module.exports = ext.register("ext/save/save", {
         if (!page)
             return;
 
+        var corrected = ide.dispatchEvent("correctactivepage", {page: page});
+        if (corrected)
+            page = corrected;
+        
         var doc  = page.$doc;
         var node = doc.getNode();
 

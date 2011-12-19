@@ -80,6 +80,17 @@ module.exports = ext.register("ext/splitview/splitview", {
             _self.onCycleTab(e);
         });
         
+        ide.addEventListener("correctactivepage", function(e) {
+            var split = Splits.getActive();
+            var editor = Editors.currentEditor && Editors.currentEditor.amlEditor;
+            if (!split || !editor)
+                return;
+            var idx = split.editors.indexOf(editor);
+            if (idx == -1)
+                return;
+            e.returnValue = split.pages[idx];
+        });
+        
         tabEditors.addEventListener("tabselectclick", function(e) {
             return _self.onTabClick(e);
         });
