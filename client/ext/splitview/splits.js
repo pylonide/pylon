@@ -86,7 +86,7 @@ exports.create = function(page, gridLayout) {
     var editor = page.$editor.amlEditor;
     editor.setAttribute("model", page.$model);
     editor.setAttribute("actiontracker", page.$at);
-    consolidateEditorSession(page, editor);
+    SplitView.consolidateEditorSession(page, editor);
     
     var split = {
         editors: [editor],
@@ -103,7 +103,7 @@ exports.show = function(split) {
         return this;
 
     this.update(split);
-    if (ActiveSplit)
+    if (ActiveSplit && ActiveSplit.gridLayout != split.gridLayout)
         this.hide(ActiveSplit);
     Grids.show(split.gridLayout);
     
@@ -116,10 +116,11 @@ exports.show = function(split) {
             aSplit.pages[i].$deactivateButton();
     });
     //console.log("pages",split.pages.map(function(page){return page.name;}));
-    for (i = 0, l = split.pages.length; i < l; ++i)
+    for (i = 0, l = split.pages.length; i < l; ++i) {
         split.pages[i].$activateButton();
-    for (i = 0, l = split.editors.length; i < l; ++i)
         split.editors[i].show();
+        SplitView.consolidateEditorSession(split.pages[i], split.editors[i]);
+    }
     
     ActiveSplit = split;
     
@@ -145,6 +146,8 @@ exports.hide = function(split) {
 
 exports.update = function(split, gridLayout) {
     split = split || ActiveSplit;
+    if (!split)
+        return;
     gridLayout = Grids.init(gridLayout || split.gridLayout);
 
     var page = split.pages[0];
@@ -260,9 +263,7 @@ exports.mutate = function(split, page) {
         split.pages.push(page);
         split.editors.push(editorToUse);
         //console.log("setting model of ", editorToUse.id, "to", page.$model.data.xml);
-        editorToUse.setAttribute("model", page.$model);
-        editorToUse.setAttribute("actiontracker", page.$at);
-        consolidateEditorSession(page, editorToUse);
+        SplitView.consolidateEditorSession(page, editorToUse);
 
         this.show(split);
     }
@@ -406,21 +407,8 @@ function onEditorFocus(editor) {
     });
 }
 
-function consolidateEditorSession(page, editor) {
-    var session = SplitView.getEditorSession(page);
-    if (!session && page.$editor.setDocument) {
-        var defEditor = page.$editor.amlEditor;
-        var oldVal = defEditor.value;
-        page.$editor.setDocument(page.$doc, page.$at);
-        session = SplitView.getEditorSession(page);
-        defEditor.setProperty("value", oldVal);
-    }
-    if (editor.value !== session)
-        editor.setProperty("value", session);
-}
-
 function clearSplitViewStyles(splitOrPage) {
-    var pages = (typeof splitOrPage.tagName != "undefined") ? [splitOrPage] : split.pages;
+    var pages = (typeof splitOrPage.tagName != "undefined") ? [splitOrPage] : splitOrPage.pages;
     pages.forEach(function(page) {
         apf.setStyleClass(page.$button, null, [ActiveClass, InactiveClass]);
     });

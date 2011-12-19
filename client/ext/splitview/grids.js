@@ -179,14 +179,10 @@ exports.show = function(gridLayout) {
         if (!grid.node)
             return;
 
-        if (name == gridLayout) {
+        if (name == gridLayout)
             grid.node.show();
-        }
-        else {
-            grid.node.hide();
-            if (grid.node.parentNode != apf.document.body)
-                apf.document.body.appendChild(grid.node);
-        }
+        else
+            grid.node.removeNode();
     });
 };
 
@@ -196,8 +192,7 @@ exports.hide = function(gridLayout) {
     if (!grid || !grid.node)
         return;
 
-    grid.node.hide();
-    apf.document.body.appendChild(grid.node);
+    grid.node.removeNode();
 };
 
 function createNodes(struct, splitters, parent) {

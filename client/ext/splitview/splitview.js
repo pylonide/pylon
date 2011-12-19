@@ -97,10 +97,9 @@ module.exports = ext.register("ext/splitview/splitview", {
         
         tabEditors.addEventListener("tabselectmouseup", function(e) {
             var page = this.$activepage;
-            var splits = Splits.get(page);
-            
-            if (splits.length)
-                Splits.update(splits[0]);
+            var split = Splits.get(page)[0];
+            if (split)
+                Splits.update(split);
         });
         
         ide.addEventListener("loadsettings", function(e) {
@@ -172,8 +171,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         var activePage = tabEditors.getPage();
         var shiftKey = e.htmlEvent.shiftKey;
         var ret = null;
-        var split = Splits.get(activePage);
-        split = split.length ? split[0] : null;
+        var split = Splits.get(activePage)[0];
 
         if (split && !shiftKey) {
             for (var i = 0, l = split.pages.length; i < l; ++i) {
@@ -215,71 +213,41 @@ module.exports = ext.register("ext/splitview/splitview", {
      * @param {AmlEvent} e
      */
     onCycleTab: function(e) {
-        var idx = e.index;
-        var dir = e.dir;
-        var pages = e.pages;
-        
-        var split = Splits.get(pages[idx]);
-        //console.log("cycletab split?", split, pages[idx], e);
-        if (!split.length)
+        var pages  = e.pages;
+        var split = Splits.getActive();
+        if (!split)
             return;
-        split = split[0];
+        if (split.pages.length == pages.length)
+            return false;
         
-        var start = split.pages.indexOf(pages[idx]);
+        var maxIdx = pages.length - 1;
+        var bRight = e.dir == "right";
+        var idx = pages.indexOf(split.pages[bRight ? split.pages.length - 1 : 0]) + (bRight ? 1 : -1);
+        idx = idx < 0 ? maxIdx : idx > maxIdx ? 0 : idx;
+        if (split.pages.indexOf(pages[idx]) > -1)
+            return false;
         
-        function correct(val) {
-            if (val < 0)
-                return pages.length - 1;
-            if (val > pages.length -1)
-                return 0;
-            return val;
-        }
-        
-        //console.log("tab is cycling...", dir);
-        var count = 0;
-        var max = pages.length + 2;
-        if (dir == "right") {
-            if (start === 0)
-                return;
-            while (split.pages[++start] === pages[++idx]) {
-                if (++count > max)
-                    return;
-                idx = correct(idx);
-            }
-        }
-        else {
-            if (start === split.pages.length - 1)
-                return;
-            while (split.pages[--start] === pages[--idx]) {
-                if (++count > max)
-                    return;
-                idx = correct(idx);
-            }
-        }
-        e.returnValue = correct(idx);
+        // check if the next tab is inside a split as well:
+        split = Splits.get(pages[idx])[0];
+        if (split)
+            e.returnValue = pages.indexOf(split.pages[0]);
+        else
+            e.returnValue = idx;
     },
     
     updateSplitView: function(previous, next) {
+        var editor;
         var doc = next.$doc;
         var at  = next.$at;
         // check if this is a valid clone session
-        var split = Splits.get(next);
-        split = split.length ? split[0] : null;
-        //console.log("got split?",split);
+        var split = Splits.get(next)[0];
         
         // hide the previous split view
         if (previous && previous.$model) {
-            var oldSplit = Splits.get(previous);
-            oldSplit = oldSplit.length ? oldSplit[0] : null;
+            var oldSplit = Splits.get(previous)[0];
             //console.log("got old split?",oldSplit);
-            if (oldSplit && !split) {
+            if (oldSplit && (!split || oldSplit.gridLayout != split.gridLayout))
                 Splits.hide(oldSplit);
-
-                // make sure that the editor of the next page is in it's expected
-                // position
-                var nextPage = next.fake ? next.relPage : next;
-                nextPage.appendChild(next.$editor.amlEditor);
-            }
         }
         
         // enable split view ONLY for code editors for now...
@@ -297,27 +265,26 @@ module.exports = ext.register("ext/splitview/splitview", {
 
         // all this must exist
         if (!doc || !at || !split) {
-            next.$editor.amlEditor && next.$editor.amlEditor.show();
+            // if it doesn't, make sure the editor is visible and correctly displayed
+            editor = next.$editor.amlEditor;
+            if (!editor)
+                return;
+            this.consolidateEditorSession(next, editor);
+            var nextPage = next.fake ? next.relPage : next;
+            if (editor.parentNode != nextPage)
+                nextPage.appendChild(editor);
+            editor.show();
             return;
         }
         
         Splits.show(split);
         mnuSplitAlign.setAttribute("checked", split.gridLayout == "3rows");
         
-        var _self = this;
-        split.pages.forEach(function(page, idx) {
-            var editor = split.editors[idx];
-            if (!editor)
-                return;
-            var session = _self.getEditorSession(page);
-            //console.log("switch: ", session);
-            if (editor.value !== session)
-                editor.setProperty("value", session);
-        });
-        
         if (split.clone) {
+            var _self = this;
             var page = split.clone;
-            var editor = page.$editor;
+            editor = page.$editor;
+            
             mnuCloneView.setAttribute("checked", true);
             
             if (!page.acesession) {
@@ -335,11 +302,6 @@ module.exports = ext.register("ext/splitview/splitview", {
             }
             editor.amlEditor.setProperty("value", page.acesession);
         }
-        else {
-            // TODO: please test switching of tabs between normal tabs and split
-            // views right after uncommenting the line below:
-            //consolidateEditorSession(next, split.editors[split.pages.indexOf(next)]);
-        }
         
         apf.layout.forceResize();
         
@@ -347,11 +309,11 @@ module.exports = ext.register("ext/splitview/splitview", {
     },
     
     changeLayout: function(page, gridLayout) {
-        var split = Splits.get(page);
-        if (!split.length || split.gridLayout == gridLayout)
+        var split = Splits.get(page)[0];
+        if (!split || split.gridLayout == gridLayout)
             return;
         
-        Splits.update(split[0], gridLayout);
+        Splits.update(split, gridLayout);
         mnuSplitAlign.setAttribute("checked", gridLayout == "3rows");
         this.save();
     },
@@ -421,7 +383,24 @@ module.exports = ext.register("ext/splitview/splitview", {
     
     getEditorSession: function(page) {
         var doc = page.$doc;
+        if (!doc)
+            return null;
         return doc.acesession || doc.session || null;
+    },
+    
+    consolidateEditorSession: function(page, editor) {
+        var session = this.getEditorSession(page);
+        if (!session && page.$editor.setDocument) {
+            var defEditor = page.$editor.amlEditor;
+            var oldVal = defEditor.value;
+            page.$editor.setDocument(page.$doc, page.$at);
+            session = this.getEditorSession(page);
+            defEditor.setProperty("value", oldVal);
+        }
+        editor.setAttribute("model", page.$model);
+        editor.setAttribute("actiontracker", page.$at);
+        if (editor.value !== session)
+            editor.setProperty("value", session);
     },
     
     save: function() {
