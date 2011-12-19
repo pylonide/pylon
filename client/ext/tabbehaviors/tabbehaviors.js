@@ -188,24 +188,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             tabEditors.remove(page);
         return false;
     },
-/*
-    closealltabs: function() {
-        var tabs  = tabEditors,
-            pages = tabs.getPages(),
-            _self = this;
 
-        save.saveAllInteractive(pages, function(all){
-            if (all == -100) //Cancel
-                return;
-
-            pages.each(function(page){
-                //page.$at.undo(-1);
-                _self.removeItem(page);
-                tabs.remove(page, true);
-            });
-        });
-    },
-*/
     closealltabs: function(callback) {
         callback = typeof callback == "function" ? callback : null;
         this.closeallbutme(1, callback);
@@ -274,7 +257,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         if (callback)
             callback();
     },
-    
+
     nexttab : function(){
         var n = this.accessed.length - this.$tabAccessCycle++;
         if (n < 0) {
