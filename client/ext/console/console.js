@@ -691,7 +691,7 @@ module.exports = ext.register("ext/console/console", {
         //this.lastHeight = winDbgConsole.height;
         this.lastZIndex = winDbgConsole.$ext.style.zIndex;
         winDbgConsole.removeAttribute('height');
-        winDbgConsole.$ext.style.zIndex = 100000;
+        winDbgConsole.$ext.style.zIndex = 900000;
         
         settings.model.setQueryValue("auto/console/@maximized", true);
         btnConsoleMax.setValue(true);
