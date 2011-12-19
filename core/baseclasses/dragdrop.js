@@ -426,8 +426,11 @@ apf.DragDrop = function(){
           },
           //@todo apf3.0 below should actually be compileNode with with_options
           ifcopy = rule && rule.copy;//.getAttribute("copy");
-
-        if (ifcopy) {
+		
+        if (typeof forceCopy == "boolean")
+            ifcopy = forceCopy;
+        else if (ifcopy) {
+            context.event = event || {};
             ifcopy = !apf.isFalse((rule.ccopy || rule.compile("copy"))(xmlNodeList[0], context));
         }
         else if (typeof this.dragcopy == "boolean" || typeof this.dropcopy == "boolean") { //@todo apf3.0 boolean here?
