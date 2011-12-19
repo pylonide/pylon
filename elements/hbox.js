@@ -704,7 +704,8 @@ apf.vbox = function(struct, tagName){
 
     this.addEventListener("DOMNodeInserted", function(e){
         if (e.currentTarget == this) {
-            this.$ext.style.display = apf.CSSPREFIX2 + "-box"; //Webkit issue
+            if (this.visible)
+                this.$ext.style.display = apf.CSSPREFIX2 + "-box"; //Webkit issue
             return;
         }
         
