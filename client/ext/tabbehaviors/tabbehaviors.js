@@ -171,7 +171,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 cycleKeyPressed = false;
             }
         });
-        
+
         tabEditors.addEventListener("aftersavedialogcancel", function(e) {
             for (i = 0, l = _self.changedPages.length; i < l; i++) {
                 page = _self.changedPages[i];
@@ -193,27 +193,27 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         callback = typeof callback == "function" ? callback : null;
         this.closeallbutme(1, callback);
     },
-    
+
     // ignore is the page that shouldn't be closed, null to close all tabs
     closeallbutme: function(ignore, callback) {
         ignore = ignore || tabEditors.getPage();
         this.changedPages = [];
         this.unchangedPages = [];
-        
+
         var page;
         var pages = tabEditors.getPages();
-        
+
         var _self = this;
         for (var i = 0, l = pages.length; i < l; i++) {
             page = pages[i];
-            
+
             if (ignore && page == ignore)
                 continue;
-            
+
             if (page.$doc.getNode().getAttribute("changed") == "1") {
                 page.noAnim = true; // turn off animation on closing tab
                 this.changedPages.push(page);
-                
+
                 page.addEventListener("aftersavedialogclosed", function(e) {
                     var curPage = _self.changedPages[0];
                     if (_self.changedPages.length && curPage.caption != e.currentTarget.caption)
@@ -235,7 +235,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 this.unchangedPages.push(page);
             }
         }
-        
+
         if (this.changedPages.length) {
             tabEditors.remove(this.changedPages[0], null, true);
         }
@@ -246,14 +246,14 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             });
         }
     },
-    
+
     closeUnchangedPages : function(callback) {
         var page;
         for (var i = 0, l = this.unchangedPages.length; i < l; i++) {
             page = this.unchangedPages[i];
             tabEditors.remove(page, null, true);
         }
-        
+
         if (callback)
             callback();
     },
