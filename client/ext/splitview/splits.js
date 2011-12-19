@@ -87,7 +87,7 @@ exports.create = function(page, gridLayout) {
     var editor = page.$editor.amlEditor;
     editor.setAttribute("model", page.$model);
     editor.setAttribute("actiontracker", page.$at);
-    SplitView.consolidateEditorSession(page, editor);
+    exports.consolidateEditorSession(page, editor);
     
     var split = {
         editors: [editor],
@@ -104,8 +104,8 @@ exports.show = function(split) {
         return this;
 
     this.update(split);
-    if (ActiveSplit && ActiveSplit.gridLayout != split.gridLayout)
-        this.hide(ActiveSplit);
+    if (ActiveSplit)
+        this.hide(ActiveSplit, ActiveSplit.gridLayout == split.gridLayout);
     Grids.show(split.gridLayout);
     
     var i, l;
@@ -120,7 +120,7 @@ exports.show = function(split) {
     for (i = 0, l = split.pages.length; i < l; ++i) {
         split.pages[i].$activateButton();
         split.editors[i].show();
-        SplitView.consolidateEditorSession(split.pages[i], split.editors[i]);
+        exports.consolidateEditorSession(split.pages[i], split.editors[i]);
     }
     
     ActiveSplit = split;
@@ -128,9 +128,10 @@ exports.show = function(split) {
     return this;
 };
 
-exports.hide = function(split) {
+exports.hide = function(split, notGrid) {
     split = split || ActiveSplit;
-    Grids.hide(split.gridLayout);
+    if (!notGrid)
+        Grids.hide(split.gridLayout);
     var i, l;
     for (i = 0, l = split.pages.length; i < l; ++i)
         split.pages[i].$deactivateButton();
@@ -160,11 +161,6 @@ exports.update = function(split, gridLayout) {
     //  split.editors.length,page.name,split.pages.map(function(page){return page.name}));
     if (split.pages.length === 1) {
         var editor = page.$editor.amlEditor;
-        editor.removeAttribute("model");
-        editor.removeAttribute("actiontracker");
-        amlPage.appendChild(editor);
-        editor.show();
-        
         if (EditorClones[editor.tagName]) {
             for (var clone, i = 0, l = EditorClones[editor.tagName].length; i < l; ++i) {
                 clone = EditorClones[editor.tagName][i];
@@ -172,11 +168,13 @@ exports.update = function(split, gridLayout) {
                 apf.document.body.appendChild(clone);
             }
         }
+
+        editor.removeAttribute("model");
+        editor.removeAttribute("actiontracker");
+        amlPage.appendChild(editor);
+        editor.show();
         
-        removeEditorListeners(editor);
-        removeEditorListeners(split.editors[0]);
         clearSplitViewStyles(page);
-        
         Grids.hide(split.gridLayout);
         
         if (ActiveSplit === split)
@@ -194,6 +192,8 @@ exports.update = function(split, gridLayout) {
     sortEditorsAndPages(split);
     //console.log("split editors:", split.editors.length, split.editors.map(function(e) { return e.id; }));
     Grids.update(gridLayout, split);
+    // make sure visual styles are OK
+    setSplitViewStyles(split);
     
     // make sure the buttons of the pages in the active split are highlighted
     if (split === ActiveSplit) {
@@ -207,8 +207,8 @@ exports.update = function(split, gridLayout) {
 exports.mutate = function(split, page) {
     split = split || split === null ? ActiveSplit : null;
     var activePage = tabEditors.getPage();
-    var pageIdx = split ? split.pages.indexOf(page) : -1;
-            
+    var pageIdx = split ? exports.indexOf(split, page) : -1;
+
     // Remove an editor from the split view
     if (pageIdx > -1) {
         if (split.clone && split.clone === page)
@@ -221,7 +221,7 @@ exports.mutate = function(split, page) {
         split.editors.splice(editorIdx, 1);
         editor.removeAttribute("model");
         editor.removeAttribute("actiontracker");
-        removeEditorListeners(editor);
+        //removeEditorListeners(editor);
         editor.hide();
         apf.document.body.appendChild(editor);
         
@@ -252,21 +252,20 @@ exports.mutate = function(split, page) {
         }
         else {
             for (var i = 0, l = clones.length; i < l; ++i) {
-                if (split.editors.indexOf(clones[i]) == -1) {
+                if (exports.indexOf(split, clones[i]) == -1) {
                     editorToUse = clones[i];
                     break;
                 }
             }
         }
-        if (!editorToUse && split.editors.indexOf(page.$editor.amlEditor) === -1)
+        if (!editorToUse && exports.indexOf(split, page.$editor.amlEditor) == -1)
             editorToUse = page.$editor.amlEditor;
         
         split.pages.push(page);
         split.editors.push(editorToUse);
         //console.log("setting model of ", editorToUse.id, "to", page.$model.data.xml);
-        SplitView.consolidateEditorSession(page, editorToUse);
+        exports.consolidateEditorSession(page, editorToUse);
 
-        setSplitViewStyles(split);
         this.show(split);
     }
     
@@ -277,16 +276,14 @@ exports.get = function(amlNode) {
     if (!amlNode)
         return [].concat(Splits);
     
-    var nodeName = amlNode.tagName;
     var split;
     var i = 0;
     var l = Splits.length;
     var splits = [];
-    var splitVar = nodeName.indexOf("page") > -1 ? "pages" : "editors";
 
     for (; i < l; ++i) {
         split = Splits[i];
-        if (!split || split[splitVar].indexOf(amlNode) === -1)
+        if (!split || exports.indexOf(split, amlNode) === -1)
             continue;
         splits.push(split);
     }
@@ -306,6 +303,19 @@ exports.getActive = function() {
     return ActiveSplit || null;
 };
 
+/*
+ * Implemented this function, because Array.indexOf() compares objects with '=='
+ * instead of '==='!
+ */
+exports.indexOf = function(split, obj) {
+    var coll = split[obj.tagName.indexOf("page") > -1 ? "pages" : "editors"];
+    for (var i = 0, l = coll.length; i < l; ++i) {
+        if (coll[i] === obj)
+            return i;
+    }
+    return -1;
+}
+
 function sortEditorsAndPages(split) {
     // lstOpenFiles.$model.data.selectNodes("//file")
     var pages = tabEditors.getPages();
@@ -315,7 +325,7 @@ function sortEditorsAndPages(split) {
     //console.log("before sort: ", [].concat(split.pages).map(function(p) { return p.name; }), 
     //  [].concat(split.editors).map(function(e) { return e.id; }));
     for (var i = 0, c = 0, l = pages.length, l2 = split.pages.length; i < l && c < l2; ++i) {
-        if ((index = split.pages.indexOf(pages[i])) > -1) {
+        if ((index = exports.indexOf(split, pages[i])) > -1) {
             //console.log("pushing page at index " + i + " which is in the split at " 
             //  + index + ", names " + pages[i].name + ", " + split.pages[index].name);
             p.push(split.pages[index]);
@@ -343,8 +353,14 @@ function createEditorClones(editor) {
         addEditorListeners.call(this, EditorClones.cloneEditor);
     }
     
-    if (EditorClones[id] && EditorClones[id].length)
+    if (EditorClones[id] && EditorClones[id].length) {
+        for (var clone, i = 0, l = EditorClones[id].length; i < l; ++i) {
+            clone = EditorClones[id][i];
+            clone.hide();
+            apf.document.body.appendChild(clone);
+        }
         return EditorClones[id];
+    }
 
     addEditorListeners.call(this, editor);
 
@@ -367,6 +383,29 @@ function createEditorClones(editor) {
     return EditorClones[id];
 }
 
+
+exports.getEditorSession = function(page) {
+    var doc = page.$doc;
+    if (!doc)
+        return null;
+    return doc.acesession || doc.session || null;
+};
+
+exports.consolidateEditorSession = function(page, editor) {
+    var session = exports.getEditorSession(page);
+    if (!session && page.$editor.setDocument) {
+        var defEditor = page.$editor.amlEditor;
+        var oldVal = defEditor.value;
+        page.$editor.setDocument(page.$doc, page.$at);
+        session = exports.getEditorSession(page);
+        defEditor.setProperty("value", oldVal);
+    }
+    editor.setAttribute("model", page.$model);
+    editor.setAttribute("actiontracker", page.$at);
+    if (editor.value !== session)
+        editor.setProperty("value", session);
+};
+
 /**
  * Add listeners to the editor element, to keep track of the editor's focus.
  * Each time the focus changes, the tab title color will highlight.
@@ -375,7 +414,6 @@ function addEditorListeners(editor) {
     if (editor.$splitListener)
         return;
     editor.addEventListener("focus", editor.$splitListener = function(e) {
-        //console.log("got focus?", editor.id);
         onEditorFocus(editor);
     });
 }
@@ -383,6 +421,7 @@ function addEditorListeners(editor) {
 function removeEditorListeners(editor) {
     if (!editor.$splitListener)
         return;
+    console.log("removing event listeners!!");
     editor.removeEventListener("focus", editor.$splitListener);
     delete editor.$splitListener;
 }
@@ -391,7 +430,6 @@ var previousEditor;
 
 function onEditorFocus(editor) {
     var splits = exports.get(editor);
-    
     if (Editors.currentEditor.name.indexOf("Code Editor") > -1) {
         if (!previousEditor)
             previousEditor = Editors.currentEditor.amlEditor;
@@ -399,7 +437,7 @@ function onEditorFocus(editor) {
     }
 
     splits.forEach(function(split) {
-        var activePage = split.pages[split.editors.indexOf(editor)];
+        var activePage = split.pages[exports.indexOf(split, editor)];
         split.pages.forEach(function(page) {
             if (page === activePage)
                 apf.setStyleClass(page.$button, ActiveClass, [InactiveClass]);
@@ -432,7 +470,7 @@ var searchWindow, gotoLineWindow, searchPos;
 
 function correctQuickSearchDialog() {
     var editor = Editors.currentEditor.amlEditor;
-    var pos = !ActiveSplit ? -1 : ActiveSplit.editors.indexOf(editor);
+    var pos = !ActiveSplit ? -1 : exports.indexOf(ActiveSplit, editor);
     if (pos == -1)
         return;
 
@@ -466,7 +504,7 @@ function correctQuickSearchDialog() {
 
 function correctGotoLineDialog(e) {
     var editor = Editors.currentEditor.amlEditor;
-    var pos = !ActiveSplit ? -1 : ActiveSplit.editors.indexOf(editor);
+    var pos = !ActiveSplit ? -1 : exports.indexOf(ActiveSplit, editor);
     if (pos == -1)
         return;
         

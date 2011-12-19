@@ -85,7 +85,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             var editor = Editors.currentEditor && Editors.currentEditor.amlEditor;
             if (!split || !editor)
                 return;
-            var idx = split.editors.indexOf(editor);
+            var idx = Splits.indexOf(split, editor);
             if (idx == -1)
                 return;
             e.returnValue = split.pages[idx];
@@ -127,7 +127,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         var pages   = tabs.getPages();
         var curr    = tabs.getPage();
         var split   = Splits.getActive();
-        if (split && split.pages.indexOf(curr) > -1)
+        if (split && Splits.indexOf(split, curr) > -1)
             curr = split.pages[bRight ? split.pages.length - 1 : 0];
         if (!curr || pages.length == 1)
             return;
@@ -224,7 +224,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         var bRight = e.dir == "right";
         var idx = pages.indexOf(split.pages[bRight ? split.pages.length - 1 : 0]) + (bRight ? 1 : -1);
         idx = idx < 0 ? maxIdx : idx > maxIdx ? 0 : idx;
-        if (split.pages.indexOf(pages[idx]) > -1)
+        if (Splits.indexOf(split, pages[idx]) > -1)
             return false;
         
         // check if the next tab is inside a split as well:
@@ -269,7 +269,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             editor = next.$editor.amlEditor;
             if (!editor)
                 return;
-            this.consolidateEditorSession(next, editor);
+            Splits.consolidateEditorSession(next, editor);
             var nextPage = next.fake ? next.relPage : next;
             if (editor.parentNode != nextPage)
                 nextPage.appendChild(editor);
@@ -325,7 +325,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         var split = this.getCloneView(page);
         var doc  = page.$doc;
         
-        if (split || !doc || !this.getEditorSession(page))
+        if (split || !doc || !Splits.getEditorSession(page))
             return;
         
         var fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", page.$model.data.getAttribute("path") 
@@ -379,28 +379,6 @@ module.exports = ext.register("ext/splitview/splitview", {
                 return splits[i];
         }
         return null;
-    },
-    
-    getEditorSession: function(page) {
-        var doc = page.$doc;
-        if (!doc)
-            return null;
-        return doc.acesession || doc.session || null;
-    },
-    
-    consolidateEditorSession: function(page, editor) {
-        var session = this.getEditorSession(page);
-        if (!session && page.$editor.setDocument) {
-            var defEditor = page.$editor.amlEditor;
-            var oldVal = defEditor.value;
-            page.$editor.setDocument(page.$doc, page.$at);
-            session = this.getEditorSession(page);
-            defEditor.setProperty("value", oldVal);
-        }
-        editor.setAttribute("model", page.$model);
-        editor.setAttribute("actiontracker", page.$at);
-        if (editor.value !== session)
-            editor.setProperty("value", session);
     },
     
     save: function() {
