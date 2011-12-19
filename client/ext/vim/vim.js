@@ -98,6 +98,8 @@ var enableVim = function enableVim() {
             commands.stop.exec(editor);
         }
         VIM_ENABLED = true;
+        
+        ide.dispatchEvent("track_action", {type: "vim", action: "enable"})
     }
 };
 
@@ -110,6 +112,8 @@ var disableVim = function() {
         commands.start.exec(editor);
         editor.renderer.container.removeEventListener("click", onCursorMove, false);
         VIM_ENABLED = false;
+        
+        ide.dispatchEvent("track_action", {type: "vim", action: "disable"})
     }
 };
 
@@ -134,7 +138,10 @@ module.exports = ext.register("ext/vim/vim", {
             type: "check",
             checked : "[{require('ext/settings/settings').model}::editors/code/@vimmode]"
         });
-        this.nodes.push(mnuView.appendChild(menuItem));
+        // In order to behave like a code extension (i.e. hiding when we are not
+        // in a code editor) we import it into the code plugin nodes instead of
+        // ours.
+        require("ext/code/code").nodes.push(mnuView.appendChild(menuItem));
 
         var self = this;
         this.afterOpenFileFn = function() {

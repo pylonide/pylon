@@ -42,8 +42,9 @@ module.exports = ext.register("ext/save/save", {
             var at = e.page.$at;
             if (!at.undo_ptr)
                 at.undo_ptr = at.$undostack[0];
-            if (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
-              || !at.undo_ptr && e.page.$doc.getNode().getAttribute("changed") == 1
+            var node = e.page.$doc.getNode();
+            if (node && at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
+              || !at.undo_ptr && node.getAttribute("changed") == 1
               && e.page.$doc.getValue()) {
                 ext.initExtension(_self);
 
@@ -282,6 +283,11 @@ module.exports = ext.register("ext/save/save", {
 
             panel.setAttribute("caption", "Saved file " + path);
             ide.dispatchEvent("afterfilesave", {node: node, doc: doc, value: value});
+            ide.dispatchEvent("track_action", {
+                type: "save as filetype", 
+                fileType: node.getAttribute("name").split(".").pop(), 
+                success: state != apf.SUCCESS ? "false" : "true"
+            });
 
             apf.xmldb.removeAttribute(node, "saving");
             apf.xmldb.removeAttribute(node, "new");

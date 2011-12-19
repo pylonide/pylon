@@ -60,8 +60,10 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         }
 
         var node = tree.selected;
-        if (!node)
+        if (!node && tree.xmlRoot)
             node = tree.xmlRoot.selectSingleNode("folder");
+        if (!node)
+            return;
         if (node.getAttribute("type") != "folder" && node.tagName != "folder")
             node = node.parentNode;
 
@@ -92,7 +94,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
                         tree.slideOpen(null, node, true, function(data, flag, extra){
                             var folder;
-                            // empty data means it didn't trigger <insert> binding, 
+                            // empty data means it didn't trigger <insert> binding,
                             // therefore the node was expanded already
                             if (!data)
                                 tree.add(apf.getXml(strXml), node);
@@ -220,7 +222,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         node.setAttribute("oldpath", node.getAttribute("path"));
         node.setAttribute("path", newPath);
         apf.xmldb.setAttribute(node, "name", name);
-        
+
         // when this is a copy action, then we don't want this to happen
         if (page && !isCopyAction)
             page.setAttribute("id", newPath);
@@ -232,10 +234,10 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             var childNode = childNodes[i];
             if(!childNode || childNode.nodeType != 1)
                 continue;
-            
+
             // The 'name' variable is redeclared here for some fucked up reason.
             // The problem is that we are reusing that variable below. If the author
-            // of this would be so kind to fix this code as soon as he sees this 
+            // of this would be so kind to fix this code as soon as he sees this
             // comment, I would be eternally grateful. Sergi.
             var name = childNode.getAttribute("name");
 
@@ -324,11 +326,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         });
 
         var _self = this;
-        /*ide.addEventListener("afteronline", function(){
-            console.log("ONLINE, INITIAL DATA IN");
-            ide.removeEventListener("afteronline", arguments.callee);
-        });*/
-        _self.model.load("<data><folder type='folder' name='" + ide.projectName 
+        _self.model.load("<data><folder type='folder' name='" + ide.projectName
             + "' path='" + ide.davPrefix + "' root='1'/></data>");
 
         var dav_url = location.href.replace(location.pathname + location.hash, "") + ide.davPrefix;
@@ -339,15 +337,6 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 ide.dispatchEvent("authrequired");
             }
         });
-        var url = "{davProject.getroot()}";
-
-        /*this.webdav.$undoFlag = false;
-        this.webdav.addEventListener("error", function(event) {
-            return util.alert("Webdav Exception", event.error.type || "", event.error.message, function() {
-                trFiles.getActionTracker().undo();
-                _self.webdav.$undoFlag = true;
-            });
-        });*/
 
         function openHandler(e) {
             ide.send(JSON.stringify({

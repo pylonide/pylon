@@ -49,7 +49,10 @@ handler.analyze = function(doc) {
         lint(value, {
             undef: false,
             onevar: false,
-            passfail: false
+            passfail: false,
+            devel: true,
+            browser: true,
+            node: true
         });
         lint.errors.forEach(function(warning) {
             if (!warning)

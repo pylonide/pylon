@@ -9,8 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
-var editors = require("ext/editors/editors");
 var settings = require("ext/settings/settings");
 
 module.exports = ext.register("ext/themes/themes", {
@@ -29,7 +27,7 @@ module.exports = ext.register("ext/themes/themes", {
                     type    : "radio",
                     value   : themes[name]
                 }))
-            )
+            );
         }
     },
 
@@ -37,11 +35,12 @@ module.exports = ext.register("ext/themes/themes", {
         //Save theme settings
         settings.model.setQueryValue("editors/code/@theme", path);
         settings.save();
+        ide.dispatchEvent("track_action", {type: "theme change", theme: path});
     },
 
     init : function(){
         var _self = this;
-        
+
         this.nodes.push(
             mnuView.appendChild(new apf.item({
                 caption : "Themes",
