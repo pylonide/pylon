@@ -7,7 +7,6 @@
     
 }
 
-.editor_tab .btnsesssioncontainer div.curbtn.splitview_active .tab_left,
-.editor_tab .btnsesssioncontainer div.curbtn.splitview_inactive .tab_left {
+.editor_tab .btnsesssioncontainer div.curbtn.splitview_nplus1 .tab_left {
     background-position: 0 -234px;
 }

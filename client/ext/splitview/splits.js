@@ -16,6 +16,7 @@ var Splits = [];
 var EditorClones = {};
 var ActiveClass = "splitview_active";
 var InactiveClass = "splitview_inactive";
+var NPlusOneClass = "splitview_nplus1";
 var SplitView, ActiveSplit;
 
 exports.init = function(splitView) {
@@ -265,6 +266,7 @@ exports.mutate = function(split, page) {
         //console.log("setting model of ", editorToUse.id, "to", page.$model.data.xml);
         SplitView.consolidateEditorSession(page, editorToUse);
 
+        setSplitViewStyles(split);
         this.show(split);
     }
     
@@ -410,8 +412,20 @@ function onEditorFocus(editor) {
 function clearSplitViewStyles(splitOrPage) {
     var pages = (typeof splitOrPage.tagName != "undefined") ? [splitOrPage] : splitOrPage.pages;
     pages.forEach(function(page) {
-        apf.setStyleClass(page.$button, null, [ActiveClass, InactiveClass]);
+        apf.setStyleClass(page.$button, null, [ActiveClass, InactiveClass, NPlusOneClass]);
     });
+}
+
+function setSplitViewStyles(splitOrPage) {
+    var pages = (typeof splitOrPage.tagName != "undefined") ? [null, splitOrPage] : splitOrPage.pages;
+    for (var i = 0, l = pages.length; i < l; ++i) {
+        if (!pages[i])
+            continue;
+        if (i == 0)
+            apf.setStyleClass(pages[i].$button, null, [NPlusOneClass]);
+        else
+            apf.setStyleClass(pages[i].$button, NPlusOneClass, []);
+    }
 }
 
 var searchWindow, gotoLineWindow, searchPos;
