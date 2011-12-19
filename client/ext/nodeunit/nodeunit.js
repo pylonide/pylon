@@ -220,13 +220,13 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                             continue;
                         
                         var testNode = fileNode.selectSingleNode("test[@name=" + escapeXpathString(match[3]) + "]");
-                        if(!testNode) {
+                        if (!testNode) {
                             var doc  = fileNode.ownerDocument;
                             testNode = doc.createElement("test");
                             testNode.setAttribute("name", match[3]);
                             apf.xmldb.appendChild(fileNode, testNode);
                         }
-                        fileNode.addNode();
+                        //fileNode.addNode();
                         testpanel.setError(testNode, "Test Failed");
                         testpanel.setLog(fileNode, "completed test " + match[2] + " of " + match[1]);
                         
