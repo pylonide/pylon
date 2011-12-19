@@ -8471,7 +8471,7 @@
             border-right: 1px solid #8c8c8c;
             border-bottom: 1px solid #8c8c8c;*/
             overflow: hidden;
-            border-radius: 4px;
+            border-radius: 0 0 4px 4px;
         }
         .docktab .page > div {
             border-radius: 0 0 4px 4px;

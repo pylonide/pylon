@@ -150,7 +150,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         while (bar) {
             if (bar.localName == "bar" && bar.visible)
                 break;
-            if (bar.localName == "vbox" && bar.bar.visibel) {
+            if (bar.localName == "vbox" && bar.visible) {
                 bar = bar.bar;
                 break;
             }
@@ -164,7 +164,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         while (bar) {
             if (bar.localName == "bar" && bar.visible)
                 break;
-            if (bar.localName == "vbox" && bar.bar.visibel) {
+            if (bar.localName == "vbox" && bar.visible) {
                 bar = bar.bar;
                 break;
             }
@@ -814,6 +814,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             
             if (lastInfo && lastInfo.position == info.position && lastInfo.aml == aml) {
                 indicator.style.top = indicatorTop;
+                //indicator.style.display = "block";
                 return;
             }
             
@@ -1117,7 +1118,16 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             return {};
         
         var aml = apf.findHost(el);
-        if (!aml) return {};
+        if (!aml) 
+            return {};
+
+        if (aml.localName == "codeeditor") {
+            while (aml && !aml.$dockData) {
+                aml = aml.bar || aml.parentNode;
+            }
+        }
+        if (!aml)
+            return {};
 
         if (!aml.dock || aml.localName == "page" || aml.localName == "tab") {
             var node = aml;
@@ -1175,7 +1185,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 || original.localName == "button" && original.parentNode.childNodes.length == 2
                   && (original.parentNode.parentNode == aml
                     || original.parentNode.parentnode == findPreviousBar(aml))
-                || original.localName == "page" && original.parentNode.length == 1
+                || original.localName == "page" && original.parentNode.getPages().length == 1
                   && (original.$dockbutton.parentNode.parentNode == (aml.bar || aml)
                     || original.$dockbutton.parentNode.parentNode == findPreviousBar(aml))
                 );
@@ -1204,7 +1214,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 || original.localName == "button" && original.parentNode.childNodes.length == 2
                   && (original.parentNode.parentNode == aml
                     || original.parentNode.parentnode == findNextBar(aml))
-                || original.localName == "page" && original.parentNode.length == 1
+                || original.localName == "page" && original.parentNode.getPages().length == 1
                   && (original.$dockbutton.parentNode.parentNode == (aml.bar || aml)
                     || original.$dockbutton.parentNode.parentNode == findNextBar(aml))
                 );
@@ -1238,10 +1248,10 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 position = "after_page";
             }
     
-            var pos2 = apf.getAbsolutePosition(aml.parentNode.$ext);
-            var t = e.clientY - pos2[1];
-            if (t > 18)
-                return {};
+            //var pos2 = apf.getAbsolutePosition(aml.parentNode.$ext);
+            //var t = e.clientY - pos2[1];
+            //if (t > 18)
+                //return {};
         }
         else {
             if (aml.localName == "bar" || aml.skin == "dockheader") {
@@ -1753,42 +1763,60 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         var beforeDrag;        
         
         if (!page.$addedDockEvent) {  
-            page.addEventListener("beforedrag", beforeDrag = function (e){ //change this to beforedrag and recompile apf
-                /*var origMenu = self[this.$dockbutton.submenu];
-                var menu = origMenu.cloneNode(false);
-                menu.removeAttribute("id");
-                apf.document.body.appendChild(menu);*/
-                
+            page.addEventListener("beforedrag", beforeDrag = function(e){ //change this to beforedrag and recompile apf
                 this.$ext.style.zIndex = "";
+
+                var originalTab = this.parentNode;
+                var oneTab = originalTab.length == 1;
+                var pHtmlNode = (oneTab ? this.parentNode : this).$ext;
+                
+                if (oneTab) {
+                    originalTab.$buttons.style.opacity = 0;
+                    this.$ext.style.opacity = 0;
+                    //pHtmlNode.style.background = "#434343";
+                    //pHtmlNode.style.border = "3px solid #373737";
+                }
+                else {
+                    pHtmlNode.style.background = "#fafcfe";
+                }
 
                 var tab = this.parentNode.cloneNode(false);
                 tab.removeAttribute("id");
                 tab.removeAttribute("activepage");
                 tab.setAttribute("buttons", "close"); //@todo bug in scale that doesnt resize 
                 tab.removeAttribute("anchors");
+                
                 apf.document.body.appendChild(tab);
-                tab.setWidth(this.parentNode.$ext.offsetWidth);
-                tab.setHeight(this.parentNode.$ext.offsetHeight);
+                
+                tab.setWidth(this.parentNode.$ext.offsetWidth - 6);
+                tab.setHeight(this.parentNode.$ext.offsetHeight - 6);
 
-                var page = this.cloneNode(true);
-                page.removeAttribute("id");
-                page.removeAttribute("render");
-                tab.appendChild(page);
-
-                /*if (origMenu.$ext.offsetHeight) {
-                    var pos = apf.getAbsolutePosition(origMenu.$ext);
-                    tab.setLeft(pos[0]);
-                    tab.setTop(pos[1]);
+                var dragPage = this.cloneNode(false);
+                dragPage.removeAttribute("id");
+                dragPage.removeAttribute("render");
+                tab.appendChild(dragPage);
+                
+                var nodes = this.childNodes;
+                for (var i = nodes.length - 1; i >= 0; i--) {
+                    dragPage.insertBefore(nodes[i], dragPage.firstChild);
                 }
-                else {*/
-                    var pos = apf.getAbsolutePosition(this.parentNode.$ext);
-                    tab.setLeft(pos[0] - 1);
-                    tab.setTop(pos[1] - 2);
-                //}
+
+                var pos = apf.getAbsolutePosition(this.parentNode.$ext);
+                tab.setLeft(pos[0] - 1 + 3);
+                tab.setTop(pos[1] - 2 + 3);
 
                 tab.$ext.style.border = "1px solid #333";
-                //menu.$ext.style.margin = "0 0 0 0"
                 tab.addEventListener("afterdrag", function(e){
+                    originalTab.$buttons.style.opacity = "";
+                    page.$ext.style.opacity = "";
+                    pHtmlNode.style.background = "";
+                    pHtmlNode.style.border = "";
+                    
+                    var nodes = dragPage.childNodes;
+                    for (var i = nodes.length - 1; i >= 0; i--) {
+                        page.appendChild(nodes[i], page.firstChild);
+                    }
+                    
                     tab.id = tab.name = ""; //@todo fix this bug in apf
                     tab.destroy(true, true);
                     _self.$stopDrag(e.htmlEvent);
