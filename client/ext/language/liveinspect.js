@@ -18,9 +18,21 @@ module.exports = (function () {
         // get respective HTML elements
         windowHtml = winLiveInspect.$ext;
         datagridHtml = dgLiveInspect.$ext;
+        winLiveInspect.addEventListener("prop.visible", function(e) {
+            // don't track when hiding the window
+            if (!e.value)
+                return;
+            ide.dispatchEvent("track_action", {
+                type: "live inspect code",
+                expression: currentExpression || "no expression available yet."
+            });
+        });
     };
     
     var hook = function(_ext, worker) {
+        if (typeof stRunning === "undefined")
+            return;
+
         ext.initExtension(this);
         
         // listen to the worker's response
@@ -55,17 +67,17 @@ module.exports = (function () {
         stDebugProcessRunning.addEventListener("prop.active", checkDebuggerActive);
         
         // when hovering over the inspector window we should ignore all further listeners
-        datagridHtml.addEventListener("mouseover", function () {
+        apf.addListener(datagridHtml, "mouseover", function() {
             if (activeTimeout) {
                 clearTimeout(activeTimeout);
             }
         });
         
         // we should track mouse movement over the whole window
-        document.addEventListener("mousemove", onDocumentMouseMove)
+        apf.addListener(document, "mousemove", onDocumentMouseMove);
         
-        // yes, this is superhacky but the editor function in APF is crazy        
-        datagridHtml.addEventListener("dblclick", initializeEditor);
+        // yes, this is superhacky but the editor function in APF is crazy
+        apf.addListener(datagridHtml, "dblclick", initializeEditor);
         
         // when collapsing or expanding the datagrid we want to resize
         dgLiveInspect.addEventListener("expand", resizeWindow);
@@ -171,10 +183,10 @@ module.exports = (function () {
             };
             
             // when blurring, update
-            edit.addEventListener("blur", onBlur);
+            apf.addListener(edit, "blur", onBlur);
             
             // on keydown, same same
-            edit.addEventListener("keydown", function (ev) {
+            apf.addListener(edit, "keydown", function(ev) {
                 if (ev.keyCode === 27 || ev.keyCode === 13) { // tab or enter
                     return onBlur.call(this);
                 }
@@ -235,23 +247,30 @@ module.exports = (function () {
             return;   
         }
         
-        // see whether we hover over the editor
-        if (ceEditor) {
-            // calculate position
-            var ele = ceEditor.$ext;
-            var position = apf.getAbsolutePosition(ele, document.body);
-            var left = position[0];
-            var top = position[1];
-            
-            // x boundaries
-            if (ev.pageX >= left && ev.pageX <= (left + ele.offsetWidth)) {
-                // y boundaries
-                if (ev.pageY >= top && ev.pageY <= (top + ele.offsetHeight)) {
-                    // we are in the editor, so return; this will be handled
-                    return;
-                }
-            }
-        }
+        // see whether we hover over the editor or the quickwatch window
+        var mouseMoveAllowed = false;
+        
+        var eles = [ ceEditor, winLiveInspect ];
+        // only the visible ones
+        eles.filter(function (ele) { return ele.visible; })
+            .map(function (ele) { return ele.$ext; }) // then get the HTML counterpart
+            .forEach(function (ele) {
+                // then detect real position
+                var position = apf.getAbsolutePosition(ele, document.body);
+                var left = position[0];
+                var top = position[1];
+                
+                // x boundaries
+                if (ev.pageX >= left && ev.pageX <= (left + ele.offsetWidth)) {
+                    // y boundaries
+                    if (ev.pageY >= top && ev.pageY <= (top + ele.offsetHeight)) {
+                        // we are in the editor, so return; this will be handled
+                        mouseMoveAllowed = true;
+                    }
+                }            
+            });
+        
+        if (mouseMoveAllowed) return;
                 
         // not in the editor?
         if (winLiveInspect.visible) {
