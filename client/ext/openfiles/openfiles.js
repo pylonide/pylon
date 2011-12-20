@@ -104,16 +104,11 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         });
 
         ide.addEventListener("treechange", function(e) {
-<<<<<<< HEAD
-            var path = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                .replace(/\[@name="workspace"\]/, "")
-                .replace(/\//, "");
-=======
+
             var path = e.path
                         .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
                         .replace(/\[@name="workspace"\]/, "")
                         .replace(/\//, "");
->>>>>>> master
             var parent = trFiles.getModel().data.selectSingleNode(path);
             if (!parent)
                 return;
@@ -137,23 +132,15 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             });
 
             path = parent.getAttribute("path");
-<<<<<<< HEAD
-            for (var filename in files) {
-                var file = files[filename];
 
-=======
             for (var name in files) {
                 var file = files[name];
->>>>>>> master
                 var xmlNode = "<" + file.type +
                     " type='" + file.type + "'" +
                     " name='" + filename + "'" +
                     " path='" + path + "/" + filename + "'" +
                 "/>";
-<<<<<<< HEAD
 
-=======
->>>>>>> master
                 trFiles.add(xmlNode, parent);
             }
         });
