@@ -173,6 +173,14 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         return bar != start ? bar : null;
     }
     
+    function findNextElement(start, type){
+        var el = start.nextSibling;
+        while (el && !el.visible && (!type || el.localName != type)) {
+            el = el.nextSibling;
+        }
+        return el;
+    }
+    
     /**
      * Retrieve the current state of the layout as a JSON object
      * 
@@ -409,6 +417,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 (section.buttons || [section]).each(function(button){
                     var button = lookup[button.uniqueId].node;
                     if (button.$dockData.hidden < 0) {
+                        button.setValue(false);
                         var page = button.$dockpage;
                         page.parentNode.remove(page, null, true);
                         button.$dockData.hidden = byUser ? 2 : 1;
@@ -447,6 +456,10 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         }
         
         button.showMenu();
+        
+        var tab = button.$dockpage.parentNode;
+        if (!tab.activepage)
+            tab.set(tab.getPage(0));
     }
     
     this.findBar = function(uniqueId, el){
@@ -670,6 +683,12 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             bar.vbox.firstChild.$ext.onmousemove({});
         }
         
+        this.findTabs(bar.$dockData.uniqueId, true)
+            .each(function(tab){
+                if (!tab.activepage)
+                    tab.set(tab.getPage(0));
+            });
+        
         if (false && showAnimation && this.$cbAnimate())
             animate.call(this, bar);
         
@@ -771,6 +790,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         var leftEdge  = apf.getAbsolutePosition(lastBar.$ext)[0];
         var indicator = this.indicator;
         
+        lastInfo = null;
+        
         //Fix, actually bug is in interactive
         apf.addListener(document, "mouseup", function(e){
             apf.removeListener(document, "mousemove", whiledrag);
@@ -866,29 +887,39 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             switch (info.position) {
                 case "before_button":
                 case "after_button":
-                    indicator.innerHTML = "<div style='position:absolute'></div>";
-                    indicator.style.borderWidth = "8px 1px 3px 1px";
+                    indicator.innerHTML = "<div></div><div style='position:absolute'></div>";
+                    indicator.style.border = "1px solid " + borderColor2;
                     
                     var pos2 = apf.getAbsolutePosition(aml.parentNode.$ext);
-                    indicator.style.left = pos2[0] + "px";
+                    indicator.style.left = (pos2[0] - 1) + "px";
                     indicator.style.top  = pos2[1] + "px";
-                    width = aml.parentNode.$ext.offsetWidth;
-                    height = aml.parentNode.$ext.offsetHeight;
+                    width = aml.parentNode.$ext.offsetWidth + 1;
+                    height = aml.parentNode.$ext.offsetHeight + 1;
                     
-                    var div = indicator.firstChild;
-                    if (aml == getOriginal("button", original)) { //@todo Checks needs to include different representations
-                        div.style.top = (pos[1] - pos2[1] - 2) + "px";
+                    var divHead = indicator.firstChild;
+                    divHead.style.height = "7px";
+                    divHead.style.backgroundColor = borderColor;
+                    
+                    var div = indicator.childNodes[1];
+                    var oBtn = getOriginal("button", original);
+                    var isSameElement = aml == oBtn || 
+                        findNextElement(aml, "button") == oBtn && info.position == "after_button";
+                    if (isSameElement) { //@todo Checks needs to include different representations
+                        if (aml != oBtn)
+                            pos = apf.getAbsolutePosition(oBtn.$ext);
+                        div.style.top = (pos[1] - pos2[1] + 4) + "px";
                         div.style.left = "2px";
                         div.style.right = "3px";
-                        div.style.height = (aml.$ext.offsetHeight - 9) + "px";
+                        div.style.height = (oBtn.$ext.offsetHeight - 9) + "px";
                         div.style.border = "2px solid " + borderColor;
-                        div.style.webkitBorderRadius = "6px";
+                        div.style.webkitBorderRadius = "4px";
                     }
                     else {
                         div.style.top = (pos[1] - pos2[1]
                             + (info.position == "before_button" ? 0 : aml.$ext.offsetHeight) 
-                            - 8) + "px";
-                        div.style.width = "100%";
+                            ) + "px";
+                        div.style.width = "34px";
+                        div.style.margin = "0 2px 0 1px";
                         div.style.borderBottom = "3px solid " + borderColor;
                     }
                     
@@ -2188,7 +2219,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             else if (options.active) {
                 //Set proper event to delay rendering
                 apf.window.vManager.check(page.parentNode, "page", function(){
-                    page.parentNode.set(page);
+                    if (!page.parentNode.activepage)
+                        page.parentNode.set(page);
                 });
             }
         }
