@@ -5,14 +5,13 @@
 
 define(function(require, exports, module) {
 
-var ide = require("core/ide");
 var keys = require("ext/keybindings/keybindings");
 
 return keys.onLoad({
     "ext" : {
         "console" : {
             "switchconsole": "Shift-Esc"
-        },        
+        },
         "save" : {
             "quicksave": "Ctrl-S",
             "saveas": "Ctrl-Shift-S",
@@ -91,6 +90,9 @@ return keys.onLoad({
             "revealtab": "Ctrl-Shift-L",
             "nexttab": "Ctrl-Tab",
             "previoustab": "Ctrl-Shift-Tab"
+        },
+        "tabsessions" : {
+            "savetabsession": "Ctrl-Alt-S",
         },
         "splitview" : {
             "mergetableft": "Ctrl-Alt-[",

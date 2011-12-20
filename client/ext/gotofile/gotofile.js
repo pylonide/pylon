@@ -9,12 +9,9 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var fs = require("ext/filesystem/filesystem");
-var settings = require("ext/settings/settings");
-var tree = require("ext/tree/tree");
 var editors = require("ext/editors/editors");
 var markup = require("text!ext/gotofile/gotofile.xml");
-        
+
 module.exports = ext.register("ext/gotofile/gotofile", {
     name    : "Filter Tree",
     dev     : "Ajax.org",
@@ -40,7 +37,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                     _self.toggleDialog(true);
                 }
             }), mnuFile.firstChild),
-            
+
             ide.barTools.appendChild(new apf.button({
                 id      : "btnOpen",
                 icon    : "open.png",
@@ -52,7 +49,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 }
             }))
         );
-        
+
         this.hotitems["gotofile"] = [this.nodes[0]];
     },
 
@@ -61,7 +58,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             if (txtGoToFile.value == "") {
                 return;
             }
-            
+
             if (e.keyCode == 13){
                 var node = trFiles.xmlRoot.selectSingleNode("folder[1]");
                 mdlGoToFile.load("{davProject.report('" + node.getAttribute("path")
@@ -76,7 +73,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 }
             }
         });
-        
+
         var restricted = [38, 40, 36, 35];
         dgGoToFile.addEventListener("keydown", function(e) {
             if (e.keyCode == 38) {
@@ -90,23 +87,23 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 
         dgGoToFile.addEventListener("afterchoose", function(e) {
             winGoToFile.hide();
-            var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
+            var path = ide.davPrefix.replace(/[\/]+$/, "") + "/"
                 + apf.getTextNode(e.xmlNode).nodeValue.replace(/^[\/]+/, "");
             editors.showFile(path, 0, 0);
             ide.dispatchEvent("track_action", {type: "fileopen"});
         });
-        
+
         this.nodes.push(winGoToFile);
     },
-    
+
     gotofile : function(){
         this.toggleDialog(true);
         return false;
     },
-    
+
     toggleDialog: function(forceShow) {
         ext.initExtension(this);
-        
+
         if (!winGoToFile.visible || forceShow)
             winGoToFile.show();
         else

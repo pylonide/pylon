@@ -79,8 +79,8 @@
           contextmenu="mnuCtxTree" multiselect="false" reselectable="true" 
           onbeforemove="this.disable();" autoselect="false"
           onbeforeremove="return remove()" disabled="{{!stServerConnected.active}}"
-          flex="1" anchors="0 0 0 0" onmouseover="require('ext/tree/tree').onTreeOver()"
-          onmouseout="require('ext/tree/tree').onTreeOut()"
+          flex="1" anchors="0 0 0 0" onmouseover="var tree = require('ext/tree/tree');if (tree) tree.onTreeOver()"
+          onmouseout="var tree = require('ext/tree/tree');if (tree) tree.onTreeOut()"
         >
             <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
                 <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
@@ -103,7 +103,8 @@
             <a:drag match="[folder|file]" />
             <a:drop match="[folder|file]" target="[folder]"
                 action="tree-append" copy="{event.ctrlKey}" />
-                
+            <a:drop match="[folder|file]" target="[file]"
+                action="insert-before" copy="{event.ctrlKey}" />    
         </a:tree>
         
         <a:scrollbar

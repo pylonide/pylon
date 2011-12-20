@@ -28,7 +28,6 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
         paths: {
             "ace": staticUrl + "/support/ace/lib/ace",
             "debug": staticUrl + "/support/lib-v8debug/lib/v8debug",
-            "apf": staticUrl + "/support/apf",
             "treehugger": staticUrl + "/support/treehugger/lib/treehugger"
         },
         waitSeconds: 30

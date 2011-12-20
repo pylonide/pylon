@@ -23,11 +23,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         panels.register(this);
 
         // Fix to prevent Active Files button is placed above Project Files
-        var el = navbar.firstChild;
-        if (navbar.firstChild["class"] === "project_files") {
-            el = navbar.childNodes[1];
-        }
-
+        var el = (navbar.firstChild["class"] == "project_files") ? navbar.childNodes[1] : navbar.firstChild;
         var btn = this.button = navbar.insertBefore(new apf.button({
             skin    : "mnubtn",
             state   : "true",
@@ -100,7 +96,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
         tabEditors.addEventListener("afterswitch", function(e){
             var page = e.nextPage;
-            if (page) {
+            if (page && page.$model.data) {
                 var node = _self.model.queryNode("//node()[@path='" + page.$model.data.getAttribute("path") + "']");
                 if (node)
                     lstOpenFiles.select(node);
@@ -108,9 +104,16 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         });
 
         ide.addEventListener("treechange", function(e) {
+<<<<<<< HEAD
             var path = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
                 .replace(/\[@name="workspace"\]/, "")
                 .replace(/\//, "");
+=======
+            var path = e.path
+                        .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
+                        .replace(/\[@name="workspace"\]/, "")
+                        .replace(/\//, "");
+>>>>>>> master
             var parent = trFiles.getModel().data.selectSingleNode(path);
             if (!parent)
                 return;
@@ -134,15 +137,23 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             });
 
             path = parent.getAttribute("path");
+<<<<<<< HEAD
             for (var filename in files) {
                 var file = files[filename];
 
+=======
+            for (var name in files) {
+                var file = files[name];
+>>>>>>> master
                 var xmlNode = "<" + file.type +
                     " type='" + file.type + "'" +
                     " name='" + filename + "'" +
                     " path='" + path + "/" + filename + "'" +
                 "/>";
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
                 trFiles.add(xmlNode, parent);
             }
         });

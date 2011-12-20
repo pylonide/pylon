@@ -6,9 +6,9 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-"use strict";
-
 define(function(require, exports, module) {
+
+"use strict";
 
 var ide = require("core/ide");
 var ext = require("core/ext");
@@ -21,7 +21,8 @@ var commands = cmdModule.commands;
 var cliCmds = require("ext/vim/cli");
 var util = require("ext/vim/maps/util");
 
-var enabled;
+var VIM_ENABLED = false;
+var OLD_HANDLER;
 
 var onConsoleCommand = function onConsoleCommand(e) {
     var cmd = e.data.command;
@@ -81,24 +82,24 @@ var onCursorMove = function() {
 
 var enableVim = function enableVim() {
     if (editors.currentEditor && editors.currentEditor.ceEditor) {
+        ext.initExtension(this);
+
         var editor = editors.currentEditor.ceEditor.$editor;
-
         addCommands(editor, commands);
-        if (!enabled)
-            ceEditor.$editor.renderer.container.addEventListener("click", onCursorMove, false);
+        editor.renderer.container.addEventListener("click", onCursorMove, false);
 
+        if (!OLD_HANDLER)
+            OLD_HANDLER = editor.getKeyboardHandler();
+
+        // Set Vim's own keyboard handle
         editor.setKeyboardHandler(handler);
-        // So, apparently 'prop.checked' can't be trusted, since it happens
-        // a million times. Since that will trigger execution of this very
-        // function, we can't put a fix that checks for an already enabled vim
-        // mode, because the editor might not be ready yet. This is a problem
-        // in our core and it has to be fixed. For now, we add extra checks in
-        // case we are already in insert mode, and not drive the user crazy by
-        // randomly switching to normal mode.
+
         if (util.currentMode !== "insert") {
             commands.stop.exec(editor);
         }
-        enabled = true;
+        VIM_ENABLED = true;
+        
+        ide.dispatchEvent("track_action", {type: "vim", action: "enable"})
     }
 };
 
@@ -107,12 +108,13 @@ var disableVim = function() {
         var editor = editors.currentEditor.ceEditor.$editor;
 
         removeCommands(editor, commands);
-        editor.setKeyboardHandler(null);
+        editor.setKeyboardHandler(OLD_HANDLER);
         commands.start.exec(editor);
-        ceEditor.$editor.renderer.container.removeEventListener("click", onCursorMove, false);
-        enabled = false;
+        editor.renderer.container.removeEventListener("click", onCursorMove, false);
+        VIM_ENABLED = false;
+        
+        ide.dispatchEvent("track_action", {type: "vim", action: "disable"})
     }
-
 };
 
 var cliKeyDown = function(e) {
@@ -136,18 +138,24 @@ module.exports = ext.register("ext/vim/vim", {
             type: "check",
             checked : "[{require('ext/settings/settings').model}::editors/code/@vimmode]"
         });
-        this.nodes.push(mnuView.appendChild(menuItem));
+        // In order to behave like a code extension (i.e. hiding when we are not
+        // in a code editor) we import it into the code plugin nodes instead of
+        // ours.
+        require("ext/code/code").nodes.push(mnuView.appendChild(menuItem));
 
         var self = this;
-
-        // `prop.checked` gets executed many times.
-        // I filed the bug at https://github.com/ajaxorg/apf/issues/28
-        menuItem.addEventListener("prop.checked", function(e) {
-            self.toggle(e.value);
-        });
+        this.afterOpenFileFn = function() {
+            enableVim.call(self);
+        };
 
         ide.addEventListener("init.ext/settings/settings", function (e) {
             setTimeout(function() { barSettings.insertMarkup(settings); }, 0);
+        });
+
+        ide.addEventListener("code.ext:defaultbindingsrestored", function(e) {
+            if (VIM_ENABLED === true) {
+                enableVim.call(self);
+            }
         });
 
         extSettings.model.addEventListener("update", function(e) {
@@ -157,34 +165,23 @@ module.exports = ext.register("ext/vim/vim", {
     },
 
     toggle: function(show) {
-        if (this.inited === true) {
-            if (show && show == enabled)
-                return;
-
-            if (show)
-                this.enable();
-            else
-                this.disable();
-        }
-        else {
-            ext.initExtension(this);
-        }
+        if (show === true && VIM_ENABLED === false)
+            this.enable();
+        else if (show === false && VIM_ENABLED === true)
+            this.disable();
     },
 
     init : function() {
         txtConsoleInput.addEventListener("keydown", cliKeyDown);
-        this.inited = true;
     },
 
     enable : function() {
         ide.addEventListener("consolecommand", onConsoleCommand);
-        ide.addEventListener("afteropenfile",  enableVim);
-        enableVim();
+        enableVim.call(this);
     },
 
     disable : function() {
         ide.removeEventListener("consolecommand", onConsoleCommand);
-        ide.removeEventListener("afteropenfile",  enableVim);
         disableVim();
     },
 

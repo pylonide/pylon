@@ -109,7 +109,7 @@ var Offline = module.exports = function(namespace, detectUrl){
         
         this.http.get(apf.getNoCacheUrl(this.detectUrl), {
             callback: function(data, state, extra){
-                if (state != apf.SUCCESS || !window.navigator.onLine){
+                if (state != apf.SUCCESS){
                     _self.goOffline(callback); //retry here??
                 }
                 else {

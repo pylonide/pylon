@@ -390,6 +390,8 @@ module.exports = ext.register("ext/zen/zen", {
                 document.body.appendChild(tabEditors.parentNode.$ext);
                 editors.enableTabResizeEvent();
                 apf.layout.forceResize(tabEditors.parentNode.$ext);
+                
+                tabEditors.parentNode.$ext.style.position = "absolute";
 
                 setTimeout(function() {
                     ceEditor.focus();
@@ -410,6 +412,9 @@ module.exports = ext.register("ext/zen/zen", {
             this.animateZen.style.display = "none";
             vbZen.$ext.style.opacity = "0";
             vbZen.hide();
+            
+            tabEditors.parentNode.$ext.style.position = "absolute";
+            
             apf.layout.forceResize();
             setTimeout(function() {
                 ceEditor.focus();

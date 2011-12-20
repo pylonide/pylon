@@ -7,9 +7,7 @@
 
 define(function(require, exports, module) {
 
-var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var themes = require("ext/themes/themes");
 
 module.exports = ext.register("ext/themes_default/themes_default", {

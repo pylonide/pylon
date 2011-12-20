@@ -4,7 +4,6 @@
  */
 define(function(require, exports, module) {
 
-var ide = require("core/ide");
 var keys = require("ext/keybindings/keybindings");
 
 return keys.onLoad({
@@ -90,6 +89,9 @@ return keys.onLoad({
             "revealtab": "Command-Shift-L",
             "nexttab": "Command-Tab|Option-Tab",
             "previoustab": "Command-Shift-Tab|Option-Shift-Tab"
+        },
+        "tabsessions" : {
+            "savetabsession": "Command-Alt-S",
         },
         "splitview" : {
             "mergetableft": "Command-Option-[",
