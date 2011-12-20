@@ -4673,6 +4673,10 @@
             font-weight : normal;
         }
 
+        .list.emptyLeft .empty {
+            text-align: left;
+        }
+        
         .shortlist{
             border : 0;
             overflow-y : auto;
