@@ -190,7 +190,7 @@ oop.inherits(LanguageWorker, Mirror);
             return;
         }
         var pos = event.data;
-        var hintMessage = this.checkForMarker(pos) || "";
+        var hintMessage = ""; // this.checkForMarker(pos) || "";
         // Not going to parse for this, only if already parsed successfully
         var aggregateActions = {markers: [], hint: null, enableRefactorings: []};
         if (this.cachedAst) {

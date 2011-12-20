@@ -111,13 +111,8 @@ module.exports = {
         ace.container.addEventListener("mousewheel", this.closeCompletionBox);
         
         apf.popup.setContent("completionBox", barCompleterCont.$ext);
-        var completionBoxHeight = 5 + Math.min(10 * this.cursorConfig.lineHeight, this.matches.length * (this.cursorConfig.lineHeight+1));
+        var completionBoxHeight = 5 + Math.min(10 * this.cursorConfig.lineHeight, matches.length * (this.cursorConfig.lineHeight+1));
         var cursorLayer = ace.renderer.$cursorLayer;
-        /*var cursorLocation = cursorLayer.getPixelPosition(true);
-        var distanceFromBottom = ace.container.offsetHeight - cursorLocation.top;
-        if (distanceFromBottom < completionBoxHeight) {
-            ace.centerSelection();
-        }*/
         
         setTimeout(function() {
             apf.popup.show("completionBox", {
@@ -273,6 +268,7 @@ module.exports = {
 
     invoke: function(forceBox) {
         var editor = editors.currentEditor.ceEditor.$editor;
+        var _self = this;
         this.forceBox = forceBox;
         editor.addEventListener("change", this.$onChange);
         // This is required to ensure the updated document text has been sent to the worker before the 'complete' message
@@ -280,6 +276,11 @@ module.exports = {
         setTimeout(function() {
             worker.emit("complete", {data: editor.getCursorPosition()});
         });
+        if(forceBox)
+            this.hideTimer = setTimeout(function() {
+                // Completion takes or crashed
+                _self.closeCompletionBox();
+            }, 4000);
     },
     
     onComplete: function(event) {
@@ -289,8 +290,17 @@ module.exports = {
         var identifier = retrievePreceedingIdentifier(line, pos.column);
         
         editor.removeEventListener("change", this.$onChange);
+        clearTimeout(this.hideTimer);
     
         var matches = event.data;
+        
+        // Remove out-of-date matches
+        for (var i = 0; i < matches.length; i++) {
+            if(matches[i].name.indexOf(identifier) !== 0) {
+                matches.splice(i, 1);
+                i--;
+            }
+        }        
         
         if (matches.length === 1 && !this.forceBox) {
             replaceText(editor, identifier, matches[0].replaceText);

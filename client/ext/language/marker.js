@@ -27,14 +27,10 @@ module.exports = {
         var message = event.data.message;
         var pos = event.data.pos;
         var cursorPos = ceEditor.$editor.getCursorPosition();
-        console.log(message);
-        if(cursorPos.column === pos.column && cursorPos.row === pos.row && message) {
-            console.log("Showing");
-            tooltip.show(message);
-        } else {
-            console.log("Hiding");
+        if(cursorPos.column === pos.column && cursorPos.row === pos.row && message)
+            tooltip.show(cursorPos.row, cursorPos.column, message);
+        else
             tooltip.hide();
-        }
     },
     
     removeMarkers: function(session) {
@@ -62,6 +58,9 @@ module.exports = {
             // Certain annotations can temporarily be disabled
             if (_self.disabledMarkerTypes[anno.type])
                 return;
+            // Multi-line markers are not supported, and typically are a result from a bad error recover, ignore
+            if(anno.pos.el && anno.pos.sl !== anno.pos.el)
+                return;
             // Using anchors here, to automaticaly move markers as text around the marker is updated
             var anchor = new Anchor(mySession.getDocument(), anno.pos.sl, anno.pos.sc || 0);
             mySession.markerAnchors.push(anchor);
@@ -70,7 +69,7 @@ module.exports = {
             var rowDiff = anno.pos.el - anno.pos.sl;
             var gutterAnno = {
                 guttertext: anno.message,
-                type: anno.type === 'error' ? 'error' : 'warning',
+                type: anno.type === 'error' ? 'error' : anno.type === 'info' ? 'info' : 'warning',
                 text: anno.message
                 // row will be filled in updateFloat()
             };

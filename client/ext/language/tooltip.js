@@ -6,38 +6,48 @@ var tooltipEl = dom.createElement("div");
 tooltipEl.className = "language_tooltip";
 
 module.exports = {
-    show: function(html) {
+    show: function(row, column, html) {
+        var editor = ceEditor.$editor;
         if(!this.isVisible) {
-            var editor = ceEditor.$editor;
-            editor.renderer.scroller.appendChild(tooltipEl);
-            editor.selection.on("changeCursor", this.hide);
-            tooltipEl.innerHTML = html;
             this.isVisible = true;
-            var cursorLayer = editor.renderer.$cursorLayer;
-            var cursorConfig = cursorLayer.config;
-            var cursorPixelPos = cursorLayer.pixelPos;
-            var onTop = true;
+            
+            editor.renderer.scroller.appendChild(tooltipEl);
+            //editor.selection.on("changeCursor", this.hide);
+            editor.session.on("changeScrollTop", this.hide);
+            editor.session.on("changeScrollLeft", this.hide);
+        }
+        tooltipEl.innerHTML = html;
+        setTimeout(function() {
+            var offset = editor.renderer.scroller.getBoundingClientRect();
+            var position = editor.renderer.textToScreenCoordinates(row, column);
+            var cursorConfig = editor.renderer.$cursorLayer.config;
             var labelWidth = dom.getInnerWidth(tooltipEl);
             var labelHeight = dom.getInnerHeight(tooltipEl);
-            if(onTop && cursorPixelPos.top < labelHeight)
+            position.pageX -= offset.left;
+            position.pageY -= offset.top;
+            var onTop = true;
+            if(onTop && position.pageY < labelHeight)
                 onTop = false;
-            else if(!onTop && cursorPixelPos.top > labelHeight - cursorConfig.lineHeight - 20)
+            else if(!onTop && position.pageY > labelHeight - cursorConfig.lineHeight - 20)
                 onTop = true;
             var shiftLeft = Math.round(labelWidth / 2) - 3;
-            tooltipEl.style.left = Math.max(cursorPixelPos.left - shiftLeft, 0) + "px";
+            tooltipEl.style.left = Math.max(position.pageX - shiftLeft, 0) + "px";
             if(onTop)
-                tooltipEl.style.top = (cursorPixelPos.top - labelHeight + 3) + "px";
+                tooltipEl.style.top = (position.pageY - labelHeight + 3) + "px";
             else
-                tooltipEl.style.top = (cursorPixelPos.top + cursorConfig.lineHeight + 2) + "px";
-        }
+                tooltipEl.style.top = (position.pageY + cursorConfig.lineHeight + 2) + "px";
+        });
     },
     
     hide: function() {
-        if(this.isVisible) {
+        var tooltip = module.exports;
+        if(tooltip.isVisible) {
             var editor = ceEditor.$editor;
             editor.renderer.scroller.removeChild(tooltipEl);
-            editor.selection.removeEventListener("changeCursor", this.updatePosition);
-            this.isVisible = false;
+            //editor.selection.removeListener("changeCursor", this.hide);
+            editor.session.removeListener("changeScrollTop", this.hide);
+            editor.session.removeListener("changeScrollLeft", this.hide);
+            tooltip.isVisible = false;
         }
     }
 };
