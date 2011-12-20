@@ -87,3 +87,13 @@
     background-color: #444;
     border: solid 1px #888;
 }
+
+.language_tooltip {
+    display: inline-block;
+    position: absolute;
+    border: 1px solid black;
+    background-color: yellow;
+    color: black;
+    padding: 4px;
+    z-index: 300;
+}

@@ -8,6 +8,7 @@ define(function(require, exports, module) {
 
 var Range = require("ace/range").Range;
 var Anchor = require('ace/anchor').Anchor;
+var tooltip = require('ext/language/tooltip');
 
 module.exports = {
     disabledMarkerTypes: {},
@@ -17,6 +18,23 @@ module.exports = {
         worker.on("markers", function(event) {
             _self.addMarkers(event, language.editor);
         });
+        worker.on("hint", function(event) {
+            _self.onHint(event);
+        });
+    },
+
+    onHint: function(event) {
+        var message = event.data.message;
+        var pos = event.data.pos;
+        var cursorPos = ceEditor.$editor.getCursorPosition();
+        console.log(message);
+        if(cursorPos.column === pos.column && cursorPos.row === pos.row && message) {
+            console.log("Showing");
+            tooltip.show(message);
+        } else {
+            console.log("Hiding");
+            tooltip.hide();
+        }
     },
     
     removeMarkers: function(session) {

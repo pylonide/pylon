@@ -21,6 +21,8 @@ var deferredInvoke = lang.deferredCall(function() {
     var line = editor.getSession().getDocument().getLine(pos.row);
     if(keyhandler.preceededByIdentifier(line, pos.column) || line[pos.column - 1] === '.')
         module.exports.invoke(true);
+    else
+        module.exports.closeCompletionBox();
 });
 
 function retrievePreceedingIdentifier(text, pos) {

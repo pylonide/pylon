@@ -226,7 +226,10 @@ oop.inherits(LanguageWorker, Mirror);
         } else {
             this.setLastAggregateActions(aggregateActions);
         }
-        this.scheduleEmit("hint", hintMessage);
+        this.scheduleEmit("hint", {
+        	pos: pos,
+        	message: hintMessage
+        });
     };
     
     this.sendVariablePositions = function(event) {
