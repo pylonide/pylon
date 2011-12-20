@@ -18,8 +18,23 @@ var ext = require("core/ext");
 var fs = require("ext/filesystem/filesystem");
 var markup = require("text!ext/autosave/autosave.xml");
 
-var INTERVAL = 10000; // Auto-save every 10 seconds for the sake of debug
+var INTERVAL = 60000;
 var FILE_SUFFIX = "c9save";
+
+var getTempPath = function(originalPath) {
+    var pathLeafs = originalPath.split("/");
+    var last = pathLeafs.length - 1;
+
+    pathLeafs[last] = "." + pathLeafs[last] + "." + FILE_SUFFIX;
+    return pathLeafs.join("/");
+};
+
+var removeFile = function(path) {
+    fs.exists(path, function(exists) {
+        if (exists)
+            fs.remove(path);
+    });
+};
 
 module.exports = ext.register("ext/autosave/autosave", {
     dev       : "Ajax.org",
@@ -52,7 +67,7 @@ module.exports = ext.register("ext/autosave/autosave", {
 
             var node = data.doc.getNode();
             var dateOriginal = new Date(node.getAttribute("modifieddate"));
-            var bkpPath = self._getTempPath(node.getAttribute("path"));
+            var bkpPath = getTempPath(node.getAttribute("path"));
 
             // If there is already a backup file
             fs.exists(bkpPath, function(exists) {
@@ -84,7 +99,7 @@ module.exports = ext.register("ext/autosave/autosave", {
 
         // Remove any temporary file after the user saves willingly.
         ide.addEventListener("afterfilesave", function(obj) {
-            self._removeFile(self._getTempPath(obj.node.getAttribute("path")));
+            removeFile(getTempPath(obj.node.getAttribute("path")));
         });
     },
 
@@ -101,7 +116,7 @@ module.exports = ext.register("ext/autosave/autosave", {
             btnRestoreYes.addEventListener("click", function() {
                 var contents = winNewerSave.restoredContents;
                 winNewerSave.doc && winNewerSave.doc.setValue(contents);
-                winNewerSave.path && self._removeFile(winNewerSave.path);
+                winNewerSave.path && removeFile(winNewerSave.path);
                 resetWinAndHide();
             });
 
@@ -110,34 +125,17 @@ module.exports = ext.register("ext/autosave/autosave", {
                 // It is understood that if the user doesn't want to restore
                 // contents from the previous file the first time, he will
                 // never want to.
-                winNewerSave.path && self._removeFile(winNewerSave.path);
+                winNewerSave.path && removeFile(winNewerSave.path);
                 resetWinAndHide();
             });
         };
     },
 
     doAutoSave: function() {
-        if (true) {
-            var pages = tabEditors.getPages();
-            for (var i = 0, len = pages.length; i < len; i++) {
-                this.saveTmp(pages[i]);
-            }
+        var pages = tabEditors.getPages();
+        for (var i = 0, len = pages.length; i < len; i++) {
+            this.saveTmp(pages[i]);
         }
-    },
-
-    _getTempPath: function(originalPath) {
-        var pathLeafs = originalPath.split("/");
-        var last = pathLeafs.length - 1;
-
-        pathLeafs[last] = "." + pathLeafs[last] + "." + FILE_SUFFIX;
-        return pathLeafs.join("/");
-    },
-
-    _removeFile: function(path) {
-        fs.exists(path, function(exists) {
-            if (exists)
-                fs.remove(path);
-        });
     },
 
     saveTmp : function(page) {
@@ -177,7 +175,7 @@ module.exports = ext.register("ext/autosave/autosave", {
         var fileName = pathLeafs.pop();
         var dirName = pathLeafs.join("/");
 
-        fileName = this._getTempPath(fileName);
+        fileName = getTempPath(fileName);
 
         var self = this;
         var bkpPath = dirName + "/" + fileName;
@@ -220,6 +218,5 @@ module.exports = ext.register("ext/autosave/autosave", {
         this.nodes = [];
     }
 });
-
 });
 
