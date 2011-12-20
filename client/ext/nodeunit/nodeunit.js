@@ -83,7 +83,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                 //@todo support for submodules
                 if (node.firstChild.nodeValue.match(/_test\.js$/)) {
                     var file = apf.getXml("<file />");
-                    var path = ide.workspaceDir + "/" + node.firstChild.nodeValue;
+                    var path = ide.davPrefix + "/" + node.firstChild.nodeValue;
                     file.setAttribute("name", path.split("/").pop());
                     file.setAttribute("path", path);
                     file.setAttribute("type", "nodeunit");
@@ -321,7 +321,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
     
     createAndOpenTest : function(){
         var _self = this;
-        var path  = (ide.workspaceDir + "/" + this.testpath).split("/");
+        var path  = (ide.davPrefix + "/" + this.testpath).split("/");
         var stack = [];
         
         var recur = function(){
@@ -329,7 +329,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
             
             if (path.length == 0) {
                 newresource.newfile("_test.js", _self.template, 
-                  ide.workspaceDir + "/");
+                  ide.davPrefix + "/");
                 return;
             }
             
