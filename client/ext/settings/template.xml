@@ -1,9 +1,6 @@
 <settings version="0.0.4">
     <auto />
-    <general name="General"
-        saveallbeforerun="true"
-        openfiles="true"
-        autosave="false" />
+    <general name="General" saveallbeforerun="true" openfiles="true"/>
     <beautify name="Beautify">
         <jsbeautify name="JS Beautify"
           preserveemptylines="true"
