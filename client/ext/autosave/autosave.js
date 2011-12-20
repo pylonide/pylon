@@ -6,30 +6,31 @@
  * @author Sergi Mansilla <sergi AT ajax DOT org>
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ *
  */
 
 define(function(require, exports, module) {
 
+"use strict";
+
 var ide = require("core/ide");
 var ext = require("core/ext");
 var fs = require("ext/filesystem/filesystem");
-var settings = require("text!ext/autosave/settings.xml");
 var markup = require("text!ext/autosave/autosave.xml");
-var extSettings = require("ext/settings/settings");
 
 var INTERVAL = 10000; // Auto-save every 10 seconds for the sake of debug
-var FILE_SUFFIX = "swp";
+var FILE_SUFFIX = "c9save";
 
 module.exports = ext.register("ext/autosave/autosave", {
-    dev         : "Ajax.org",
-    name        : "Save",
-    alone       : true,
-    type        : ext.GENERAL,
-    markup      : markup,
-    deps        : [fs],
-    offline     : true,
-    nodes       : [],
-    saveBuffer  : {},
+    dev       : "Ajax.org",
+    name      : "Save",
+    alone     : true,
+    type      : ext.GENERAL,
+    markup    : markup,
+    deps      : [fs],
+    offline   : true,
+    nodes     : [],
+    saveBuffer: {},
 
     hook : function(){
         if (!tabEditors)
@@ -45,7 +46,7 @@ module.exports = ext.register("ext/autosave/autosave", {
             self.doAutoSave();
         }, INTERVAL);
 
-        ide.addEventListener("openfile", function(data) {
+        ide.addEventListener("afteropenfile", function(data) {
             if (!data || !data.doc)
                 return;
 
@@ -58,23 +59,26 @@ module.exports = ext.register("ext/autosave/autosave", {
                 if (!exists)
                     return;
 
-                var node = fs.model.data.selectSingleNode("//file[@path='" + bkpPath + "']");
-                var date = node && new Date(node.getAttribute("modifieddate"));
+                fs.list(bkpPath, function(xml, depth, fileObj) {
+                    var date;
+                    if (fileObj.data.parentNode.lastModified)
+                        date = new Date(fileObj.data.parentNode.lastModified);
 
-                // If the date of the backed up file is newer than the file we
-                // are trying to open, present the user with a choice dialog
-                if (date && date.getTime() > dateOriginal.getTime()) {
-                    ext.initExtension(self);
+                    // If the date of the backed up file is newer than the file we
+                    // are trying to open, present the user with a choice dialog
+                    if (date && date.getTime() > dateOriginal.getTime()) {
+                        ext.initExtension(self);
 
-                    fs.readFile(bkpPath, function(contents) {
-                        // Set up some state into the window itself. Not great,
-                        // but easiest way and not too awful
-                        winNewerSave.restoredContents = contents;
-                        winNewerSave.doc = data.doc;
-                        winNewerSave.path = bkpPath;
-                        winNewerSave.show();
-                    });
-                }
+                        fs.readFile(bkpPath, function(contents) {
+                            // Set up some state into the window itself. Not great,
+                            // but easiest way and not too awful
+                            winNewerSave.restoredContents = contents;
+                            winNewerSave.doc = data.doc;
+                            winNewerSave.path = bkpPath;
+                            winNewerSave.show();
+                        });
+                    }
+                });
             });
         });
 
@@ -97,6 +101,7 @@ module.exports = ext.register("ext/autosave/autosave", {
             btnRestoreYes.addEventListener("click", function() {
                 var contents = winNewerSave.restoredContents;
                 winNewerSave.doc && winNewerSave.doc.setValue(contents);
+                winNewerSave.path && self._removeFile(winNewerSave.path);
                 resetWinAndHide();
             });
 
@@ -112,8 +117,7 @@ module.exports = ext.register("ext/autosave/autosave", {
     },
 
     doAutoSave: function() {
-        var node = extSettings.model.data.selectSingleNode("general/@autosave");
-        if (node && node.firstChild && node.firstChild.nodeValue == "true") {
+        if (true) {
             var pages = tabEditors.getPages();
             for (var i = 0, len = pages.length; i < len; i++) {
                 this.saveTmp(pages[i]);
@@ -122,7 +126,11 @@ module.exports = ext.register("ext/autosave/autosave", {
     },
 
     _getTempPath: function(originalPath) {
-        return originalPath + "." + FILE_SUFFIX;
+        var pathLeafs = originalPath.split("/");
+        var last = pathLeafs.length - 1;
+
+        pathLeafs[last] = "." + pathLeafs[last] + "." + FILE_SUFFIX;
+        return pathLeafs.join("/");
     },
 
     _removeFile: function(path) {
@@ -148,13 +156,13 @@ module.exports = ext.register("ext/autosave/autosave", {
 
         var doc = page.$doc;
         var node = doc.getNode();
-        if (/* for now */ node.getAttribute('newfile') ||
+        if (/* for now */ node.getAttribute("newfile") ||
             node.getAttribute("debug")) {
             return;
         }
 
         // Check if we're already saving!
-        var saving = parseInt(node.getAttribute("saving"));
+        var saving = parseInt(node.getAttribute("saving"), 10);
         var path = node.getAttribute("path");
         if (saving) {
             this.saveBuffer[path] = page;
@@ -169,7 +177,7 @@ module.exports = ext.register("ext/autosave/autosave", {
         var fileName = pathLeafs.pop();
         var dirName = pathLeafs.join("/");
 
-        fileName = fileName + "." + FILE_SUFFIX;
+        fileName = this._getTempPath(fileName);
 
         var self = this;
         var bkpPath = dirName + "/" + fileName;
@@ -214,3 +222,4 @@ module.exports = ext.register("ext/autosave/autosave", {
 });
 
 });
+
