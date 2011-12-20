@@ -165,8 +165,8 @@ module.exports = ext.register("ext/code/code", {
 
         var sel = doc.getSelection();
         return {
-            scrolltop  : ceEditor.$editor.renderer.getScrollTop(),
-            scrollleft : ceEditor.$editor.renderer.getScrollLeft(),
+            scrolltop  : doc.getScrollTop(),
+            scrollleft : doc.getScrollLeft(),
             selection  : sel.getRange(),
             folds      : folds
         };
@@ -181,8 +181,9 @@ module.exports = ext.register("ext/code/code", {
 
         //are those 3 lines set the values in per document base or are global for editor
         sel.setSelectionRange(state.selection, false);
-        ceEditor.$editor.renderer.scrollToY(state.scrolltop);
-        ceEditor.$editor.renderer.scrollToX(state.scrollleft);
+        
+        aceDoc.setScrollTop(state.scrolltop);
+        aceDoc.setScrollLeft(state.scrollleft);
 
         if (state.folds) {
             for (var i = 0, l=state.folds.length; i < l; i++) {
