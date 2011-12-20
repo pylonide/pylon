@@ -56054,7 +56054,7 @@ apf.aml.setElement("divider", apf.divider);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/dropdown.js)SIZE(15384)TIME(Sun, 27 Nov 2011 23:15:55 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/dropdown.js)SIZE(15434)TIME(Tue, 20 Dec 2011 00:13:16 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56280,7 +56280,8 @@ apf.dropdown = function(struct, tagName){
         }
         
         this.$setStyleClass(this.$ext, '', [this.$baseCSSname + "Down"]);
-        apf.popup.hide();
+        if (apf.popup.last == this.$uniqueId)
+            apf.popup.hide();
         return false;
     };
     
@@ -57249,7 +57250,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/hbox.js)SIZE(41434)TIME(Sat, 17 Dec 2011 18:18:59 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/packager/lib/../support/apf/elements/hbox.js)SIZE(41301)TIME(Mon, 19 Dec 2011 15:51:01 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57469,7 +57470,7 @@ apf.vbox = function(struct, tagName){
                 var el = !apf.hasFlexibleBox && this.$vbox ? this.$ext : this.$int;
                 el.style.textAlign = "";
                 
-                var node, nodes = this.childNodes;
+                var nodes = this.childNodes;
                 for (var i = 0, l = nodes.length; i < l; i++) {
                     if ((node = nodes[i]).nodeFunc != apf.NODE_VISIBLE || !node.$amlLoaded) //|| node.visible === false 
                         continue;
@@ -57502,7 +57503,7 @@ apf.vbox = function(struct, tagName){
                 var isLast = isLastVisibleChild(this);
                 if (!isLast) {
                     if (!this.nextSibling.$splitter && !this.nextSibling.nosplitter
-                      && !isFirstVisibleChild(this) && !this.nosplitter) {
+                      && (!isFirstVisibleChild(this) || !this.nosplitter)) {
                         this.parentNode.insertBefore(
                             this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
                             this.nextSibling);
@@ -57956,12 +57957,7 @@ apf.vbox = function(struct, tagName){
     });
 
     this.addEventListener("DOMNodeInserted", function(e){
-        if (e.currentTarget == this) {
-            this.$ext.style.display = apf.CSSPREFIX2 + "-box"; //Webkit issue
-            return;
-        }
-        
-        if (e.currentTarget.nodeType != 1)
+        if (e.currentTarget == this || e.currentTarget.nodeType != 1)
             return;
 
         if (e.relatedNode == this && !e.$isMoveWithinParent) {

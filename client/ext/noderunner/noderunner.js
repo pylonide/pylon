@@ -61,7 +61,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     },
 
     $onDebugProcessDeactivate : function() {
-        dbg.detach();
+        dbg.detach(function(){});
     },
 
     onMessage : function(e) {

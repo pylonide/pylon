@@ -245,6 +245,9 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         var state = state || this.layout.getState(true);
         var list  = [];
         
+        if (!state.bars)
+            return list;
+        
         state.bars.each(function(bar){
             var found = false;
             bar.sections.each(function(section){
@@ -297,12 +300,6 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         bars.each(function(bar){
             if (expand && bar.expanded < 0)
                 _self.layout.expandBar(bar.uniqueId);
-            
-            if (bar.expanded > 0)
-                _self.layout.findTabs(bar.uniqueId, true)
-                    .each(function(tab){
-                        tab.set(tab.getPage(0));
-                    });
         });
     },
     
