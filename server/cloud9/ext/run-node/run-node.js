@@ -41,6 +41,7 @@ sys.inherits(NodeRuntimePlugin, Plugin);
         var _self = this;
 
         var res = true;
+                
         switch (cmd) {
             case "run":
                 this.$run(message, client);
@@ -50,8 +51,7 @@ sys.inherits(NodeRuntimePlugin, Plugin);
                     if (err)
                         return _self.$error("Could not find a free port", 9, err);
 
-                    _self.NODE_DEBUG_PORT = port;
-                    message.preArgs = ["--debug=" + _self.NODE_DEBUG_PORT];
+                    message.preArgs = ["--debug=" + port];
                     message.debug = true;
                     _self.$run(message, client);
 
@@ -63,8 +63,7 @@ sys.inherits(NodeRuntimePlugin, Plugin);
                     if (err)
                         return _self.$error("Could not find a free port", 9, err);
 
-                    _self.NODE_DEBUG_PORT = port;
-                    message.preArgs = ["--debug-brk=" + _self.NODE_DEBUG_PORT];
+                    message.preArgs = ["--debug-brk=" + port];
                     message.debug = true;
                     _self.$run(message, client);
 
