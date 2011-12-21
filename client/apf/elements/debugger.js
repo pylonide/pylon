@@ -152,11 +152,44 @@ apf.dbg = module.exports = function(struct, tagName){
         var _self = this;
         if (!this.$debugger || this.$debugger.isRunning())
             return;
-            
+                
         this.$debugger.backtrace(this.$mdlStack, function() {
+            console.log(_self.activeframe, _self.$updateMarkerPrerequisite());
+            
+            if (_self.activeframe && !_self.$updateMarkerPrerequisite()) {
+                _self.continueScript();
+                return;
+            }
+            
             _self.dispatchEvent("break");
         });
     };
+    
+    this.$updateMarkerPrerequisite = function () {
+        var frame = this.activeframe;
+        if (!frame) {
+            return;
+        }
+        
+        // when running node with 'debugbrk' it will auto break on the first line of executable code
+        // we don't want to really break here so we put this:                
+        if (frame.getAttribute("name") === "anonymous(exports, require, module, __filename, __dirname)"
+                && frame.getAttribute("index") === "0" && frame.getAttribute("line") === "0") {
+                    
+            var fileNameNode = frame.selectSingleNode("//frame/vars/item[@name='__filename']");
+            var fileName = fileNameNode ? fileNameNode.getAttribute("value") : "";
+            var model = this.$mdlBreakpoints.data;
+            
+            // is there a breakpoint on the exact same line and file? then continue
+            if (fileName && model && model.selectSingleNode("//breakpoints/breakpoint[@script='" + fileName + "' and @line=0]")) {
+                return frame;
+            }
+            
+            return;
+        }
+        
+        return frame;
+    };    
     
     this.$onAfterCompile = function(e) {
         var id = e.script.getAttribute("id");
@@ -191,11 +224,20 @@ apf.dbg = module.exports = function(struct, tagName){
     };
     
     this.detach = function(callback) {
+        var _self = this;
+        
         this.continueScript();
-        if (this.$host)
-            this.$host.$detach(this.$debugger, callback);
-        else 
+        if (this.$host) {
+            this.$host.$detach(this.$debugger, function () {
+                callback();
+                
+                // always detach, so we won't get into limbo state
+                _self.$onDetach();
+            });
+        }
+        else {
             this.$onDetach();
+        }
     };
 
     this.$loadSources = function(callback) {
