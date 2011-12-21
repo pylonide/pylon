@@ -12,7 +12,6 @@ require("apf/elements/debughost");
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var markup = require("text!ext/noderunner/noderunner.xml");
 
 module.exports = ext.register("ext/noderunner/noderunner", {
@@ -30,6 +29,8 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             }
         }
     },
+
+    NODE_VERSION: "0.6.x",
 
     init : function(amlNode){
         ide.addEventListener("socketDisconnect", this.onDisconnect.bind(this));
@@ -158,6 +159,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             "file"    : path.replace(/^\/+/, ""),
             "runner"  : "node", //ddRunnerSelector.value, // Explicit addition; trying to affect as less logic as possible for now...
             "args"    : args || "",
+            "version" : this.NODE_VERSION,
             "env"     : {
                 "C9_SELECTED_FILE": page ? page.getAttribute("path").slice(ide.davPrefix.length) : ""
             }

@@ -11,6 +11,8 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var panels = require("ext/panels/panels");
 var editors = require("ext/editors/editors");
+var noderunner = require("ext/noderunner/noderunner");
+
 var Parser = require("ext/console/parser");
 var Logger = require("ext/console/logger");
 var Trie = require("ext/console/trie");
@@ -271,6 +273,9 @@ module.exports = ext.register("ext/console/console", {
                             line: line,
                             cwd: this.getCwd()
                         };
+                        
+                        if (cmd.trim() == "npm")
+                            data.version = noderunner.NODE_VERSION;
 
                         if (ext.execCommand(cmd, data) !== false) {
                             var cmdEvt = "consolecommand." + cmd;
