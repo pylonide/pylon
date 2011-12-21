@@ -1,11 +1,11 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:skin id="prefs" 
-      src        = "{require('ext/settings/settings').skin}" 
+    <a:skin id="prefs"
+      src        = "{require('ext/settings/settings').skin}"
       media-path = "/static/ext/settings/images/" />
 
     <a:window id="winSettings"
       skin      = "fm-window"
-	  class		= "unselectable"
+      class     = "unselectable"
       title     = "Preferences"
       visible   = "true"
       flex      = "1"

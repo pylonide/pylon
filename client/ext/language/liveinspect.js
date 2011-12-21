@@ -67,17 +67,17 @@ module.exports = (function () {
         stDebugProcessRunning.addEventListener("prop.active", checkDebuggerActive);
         
         // when hovering over the inspector window we should ignore all further listeners
-        datagridHtml.addEventListener("mouseover", function () {
+        apf.addListener(datagridHtml, "mouseover", function() {
             if (activeTimeout) {
                 clearTimeout(activeTimeout);
             }
         });
         
         // we should track mouse movement over the whole window
-        document.addEventListener("mousemove", onDocumentMouseMove)
+        apf.addListener(document, "mousemove", onDocumentMouseMove);
         
-        // yes, this is superhacky but the editor function in APF is crazy        
-        datagridHtml.addEventListener("dblclick", initializeEditor);
+        // yes, this is superhacky but the editor function in APF is crazy
+        apf.addListener(datagridHtml, "dblclick", initializeEditor);
         
         // when collapsing or expanding the datagrid we want to resize
         dgLiveInspect.addEventListener("expand", resizeWindow);
@@ -183,10 +183,10 @@ module.exports = (function () {
             };
             
             // when blurring, update
-            edit.addEventListener("blur", onBlur);
+            apf.addListener(edit, "blur", onBlur);
             
             // on keydown, same same
-            edit.addEventListener("keydown", function (ev) {
+            apf.addListener(edit, "keydown", function(ev) {
                 if (ev.keyCode === 27 || ev.keyCode === 13) { // tab or enter
                     return onBlur.call(this);
                 }
