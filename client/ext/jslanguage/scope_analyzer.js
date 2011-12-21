@@ -26,6 +26,7 @@ var GLOBALS = {
     "null"                   : true,
     "this"                   : true,
     "arguments"              : true,
+    self                     : true,
     Infinity                 : true,
     // Browser
     ArrayBuffer              : true,

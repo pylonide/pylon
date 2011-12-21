@@ -196,6 +196,8 @@ module.exports = {
         
         var keyBinding = editors.currentEditor.ceEditor.$editor.keyBinding;
         
+        //keyBinding = 10;
+        
         switch(keyCode) {
             case 0: break;
             case 32: // Space
@@ -235,14 +237,17 @@ module.exports = {
                     this.scrollIdx++;
                     this.matchEls[this.scrollIdx].scrollIntoView(true);
                 }
+                else
+                    this.closeCompletionBox();
                 e.stopPropagation();
                 e.preventDefault();
                 break;
             case 38: // Up
                 this.matchEls[this.selectedIdx].className = "cc_complete_option";
-                if(this.selectedIdx > 0) {
+                if(this.selectedIdx > 0) 
                     this.selectedIdx--;
-                }
+                else
+                    this.closeCompletionBox();
                 this.matchEls[this.selectedIdx].className = "cc_complete_option_selected";
                 if(this.selectedIdx < this.matches.length - 4 && this.scrollIdx > 0) {
                     this.scrollIdx = this.selectedIdx - 4;

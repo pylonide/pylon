@@ -103,8 +103,6 @@ module.exports = ext.register("ext/language/language", {
         this.setPath();
         
         if(this.enableContinuousCompletion) {
-            var defaultKeyHandler = this.editor.keyBinding.onCommandKey.bind(this.editor.keyBinding);
-            this.editor.keyBinding.onCommandKey = keyhandler.composeHandlers(keyhandler.typeAlongComplete, defaultKeyHandler);
             var defaultOnTextInput = this.editor.keyBinding.onTextInput.bind(this.editor.keyBinding);
             this.editor.keyBinding.onTextInput = keyhandler.composeHandlers(keyhandler.typeAlongCompleteTextInput, defaultOnTextInput);
         }

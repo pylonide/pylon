@@ -17,16 +17,20 @@ function composeHandlers(mainHandler, fallbackHandler) {
     };
 }
 
-function typeAlongComplete(e) {
+/*function typeAlongComplete(e) {
     if(e.metaKey || e.altKey || e.ctrlKey)
         return false;
     if(editors.currentEditor.amlEditor.syntax !== "javascript")
         return false;
-    var ch = String.fromCharCode(parseInt(e.keyIdentifier.replace("U+", ""), 16));
-    return handleChar(ch);
-}
+    var ch = String.fromCharCode(e.keyIdentifier ? parseInt(e.keyIdentifier.replace("U+", ""), 16) : e.keyCode);
+    console.log(e);
+    handleChar(ch);
+    return false;
+}*/
 
 function typeAlongCompleteTextInput(text, pasted) {
+    if(editors.currentEditor.amlEditor.syntax !== "javascript")
+        return false;
     if(!pasted)
         handleChar(text);
 }
@@ -41,7 +45,6 @@ function handleChar(ch) {
         if(!preceededByIdentifier(line, pos.column, ch))
             return false;
         ext.deferredInvoke();
-        return true;
     }
 }
 
@@ -87,7 +90,6 @@ function preceededByIdentifier(line, column, postfix) {
     return id !== "" && !(id[0] >= '0' && id[0] <= '9') && inCompletableCodeContext(line, column);
 }
 
-exports.typeAlongComplete = typeAlongComplete;
 exports.typeAlongCompleteTextInput = typeAlongCompleteTextInput;
 exports.composeHandlers = composeHandlers;
 exports.inCompletableCodeContext = inCompletableCodeContext;
