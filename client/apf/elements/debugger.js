@@ -154,8 +154,6 @@ apf.dbg = module.exports = function(struct, tagName){
             return;
                 
         this.$debugger.backtrace(this.$mdlStack, function() {
-            console.log(_self.activeframe, _self.$updateMarkerPrerequisite());
-            
             if (_self.activeframe && !_self.$updateMarkerPrerequisite()) {
                 _self.continueScript();
                 return;
