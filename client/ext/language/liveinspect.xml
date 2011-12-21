@@ -13,6 +13,8 @@
           flex       = "1"
           border     = "0 0 0 0"
           options    = "size|move"
+          class      = "noscrollbar"
+          scrollbar  = "sbShared 20 2 2"
           prerender  = "false"
           caching    = "false"
           empty-message   = "Loading..."

@@ -189,9 +189,6 @@ module.exports = ext.register("ext/editors/editors", {
      * the focus extension to get the destination coordinates and
      * dimensions of tabEditors.parentNode when the editor goes
      * out of focus mode
-     * 
-     * [Ruben] This seems like a huge hack, why can't this be measured?
-     *      - editors should not depend on dockpanel
      */
     setTabResizeValues : function(ext) {
         var ph;
@@ -199,7 +196,8 @@ module.exports = ext.register("ext/editors/editors", {
         ext.style.left = (pos[0] - 2) + "px";
         ext.style.top = pos[1] + "px";
         var d = apf.getDiff(ext);
-        ext.style.width = (ph.offsetWidth + 2 + (hboxDockPanel.getWidth() && apf.isGecko ? 2 : 0) - d[0]) + "px";
+        // + (hboxDockPanel.getWidth() && apf.isGecko ? 2 : 0)
+        ext.style.width = (ph.offsetWidth + 2 - d[0]) + "px";
         ext.style.height = (ph.offsetHeight - d[1]) + "px";
     },
 

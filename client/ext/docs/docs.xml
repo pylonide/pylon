@@ -18,6 +18,8 @@
                 <a:page id="search">
                     <a:datagrid model="mdlDocs"
                       anchors   = "0 0 0 0"
+                      class     = "noscrollbar"
+                      scrollbar = "sbShared 20 2 2"
                       style="border:none;"
                       onafterchoose = "
                         pgDocs.getPage(1).setAttribute('model', this.selected);

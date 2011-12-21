@@ -179,7 +179,7 @@ BODY {
     position: absolute;
     right: -3px;
     top: 0;
-    border-bottom: 1px solid black;
+    /*border-bottom: 1px solid black;*/
 }
 .dockcol .ace_scroller {
     -moz-border-radius    : 0;

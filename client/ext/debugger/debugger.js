@@ -171,9 +171,11 @@ module.exports = ext.register("ext/debugger/debugger", {
         }, function(type) {
             ext.initExtension(_self);
             
+            // Why is this code here? This is super hacky and has lots of 
+            // unwanted side effects (Ruben)
             // when visible -> make sure to refresh the grid
             dbgVariable.addEventListener("prop.visible", function(e) {
-                if (e.value && self["dgVars"]) {
+                if (e.value && self.dgVars) {
                     dgVars.reload();
                 }
             });

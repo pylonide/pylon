@@ -81,6 +81,7 @@
                       id            = "trSaveAs"
                       class         = "trDgLike"
                       flex          = "1"
+                      scrollbar     = "sbShared 2 2 2"
                       model         = "{require('ext/filesystem/filesystem').model}"
                       contextmenu   = "mnuCtxTree"
                       onafterselect = "chooseSaveAsFolder(this.selected)"
@@ -109,14 +110,6 @@
                         <a:drop match="[folder|file]" target="[folder]"
                             action="tree-append" copy="{event.ctrlKey}" />
                     </a:tree>
-
-                    <a:scrollbar
-                        for      = "trSaveAs"
-                        margin   = "2"
-                        skin     = "sbios"
-                        width    = "7"
-                        overflow = "auto"
-                    />
                 </a:hbox>
             </div>
             <a:hbox padding="15" align="center">

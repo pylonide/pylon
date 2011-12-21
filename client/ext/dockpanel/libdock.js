@@ -1948,7 +1948,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 childNodes : [
                     new apf.divider({
                         skin      : "divider-debugpanel",
-                        margin    : "3 4 -4 2",
+                        margin    : "3 2 -4 2",
                         dock      : 1,
                         visible   : sectionOpt.draggable === false ? false : true,
                         draggable : true
@@ -2218,10 +2218,11 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             }
             else if (options.active) {
                 //Set proper event to delay rendering
-                apf.window.vManager.check(page.parentNode, "page", function(){
+                if (apf.window.vManager.check(page.parentNode, "page", function(){
                     if (!page.parentNode.activepage)
                         page.parentNode.set(page);
-                });
+                }) && !page.parentNode.activepage)
+                    page.parentNode.set(page);
             }
         }
         

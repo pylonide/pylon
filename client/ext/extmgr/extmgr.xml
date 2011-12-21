@@ -27,17 +27,19 @@
                             />
                         </a:hbox>
                         <a:datagrid id = "dgExtUser"
-                          flex = "1"
-                          model = "mdlExt"
-                          empty-message = "No user extensions"
+                          flex       = "1"
+                          model      = "mdlExt"
+                          class      = "noscrollbar"
+                          scrollbar  = "sbShared 20 2 2"
                           autoselect = "false"
-                          each = "[plugin[@userext='1']]"
-                          eachvalue = "[@path]">
+                          each       = "[plugin[@userext='1']]"
+                          eachvalue  = "[@path]"
+                          empty-message = "No user extensions">
                             <a:column width="25%" value="[@name]" caption="Name" />
                             <a:column width="30%" value="[@path]" caption="Path" />
                             <a:column width="15%" value="[@type]" caption="Type" />
                             <a:column width="20%" value="[@dev]" caption="Developer" />
-                            <a:column width="10%" value="{[@enabled] == 1 ? 'Enabled' : 'Disabled'}" caption="Enabled" />
+                            <a:column width="11%" value="{[@enabled] == 1 ? 'Enabled' : 'Disabled'}" caption="Enabled" />
                         </a:datagrid>
                         
                     </a:vbox>
@@ -45,15 +47,17 @@
                 <a:page caption="Defaults">
                     <a:vbox anchors="10 10 10 10">
                         <a:datagrid id="dgExt" flex="1"
-                          model = "mdlExt"
+                          model      = "mdlExt"
+                          class      = "noscrollbar"
+                          scrollbar  = "sbShared 20 2 2"
                           autoselect = "false"
-                          each = "[plugin[@userext='0']]"
-                          eachvalue = "[@path]">
+                          each       = "[plugin[@userext='0']]"
+                          eachvalue  = "[@path]">
                             <a:column width="25%" value="[@name]" caption="Name" /> 
                             <a:column width="30%" value="[@path]" caption="Path" /> 
                             <a:column width="15%" value="[@type]" caption="Type" /> 
                             <a:column width="20%" value="[@dev]" caption="Developer" /> 
-                            <a:column width="10%" value="{[@enabled] == 1 ? 'Enabled' : 'Disabled'}" caption="Enabled" /> 
+                            <a:column width="11%" value="{[@enabled] == 1 ? 'Enabled' : 'Disabled'}" caption="Enabled" /> 
                         </a:datagrid>
                     </a:vbox>
                 </a:page>

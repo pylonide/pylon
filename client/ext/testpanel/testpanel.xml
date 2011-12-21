@@ -8,10 +8,12 @@
       optimize = "true">
         <a:bar skin="c9-header-bar" top="-30" right="28" height="30">
             <a:hbox id="barTestTools">
-                <a:splitbutton
+                <a:button
                   id       = "btnNewTestType"
                   caption  = "New"
                   onclick  = ""
+                  skin     = "c9-toolbarbutton"
+                  class    = "with-arrow"
                   submenu  = "mnuTestNew" />
                 <a:menu id="mnuTestNew">
                     
@@ -81,7 +83,8 @@
                   options   = "size"
                   model     = "mdlTests"
                   each      = "[repo|file|test|assert|error]"
-                  class     = "noscrollbar"
+                  class     = "noscrollbar with-noise"
+                  scrollbar = "sbShared 20 2 2"
                   multiselect    = "true"
                   startcollapsed = "true"
                   contextmenu    = "mnuTestContext"
@@ -110,18 +113,6 @@
                     <a:expanded match="[test|file[test]]" id="expTestRule" />
                     <a:expanded match="{apf.getChildNumber(%[repo]) == 1}" />
                 </a:datagrid>
-                
-                <a:scrollbar
-                    for      = "dgTestProject"
-                    id       = "sbTestProject"
-                    margin   = "2"
-                    skin     = "sbios"
-                    top      = "20"
-                    right    = "0"
-                    bottom   = "0"
-                    width    = "7"
-                    showonscroll = "true"
-                />
             </a:bar>
             
             <!--

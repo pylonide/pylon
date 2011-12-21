@@ -9,7 +9,7 @@ var Sys = require("sys"),
     Fs  = require("fs"),
     Parser = require("cloud9/optparse");
 
-if (parseInt(process.version.split(".")[1]) < 2) {
+if (parseInt(process.version.split(".")[1], 10) < 2) {
     Sys.puts("ERROR: Cloud9 IDE requires node version 0.2.x or higher, but you are using " + process.version);
     process.exit(1);
 }

@@ -12,17 +12,6 @@
       kbclose   = "true"
       buttons   = "close"
       draggable = "true">
-        <a:scrollbar
-            for      = "lstFileTemplates"
-            margin   = "2"
-            skin     = "sbios"
-            width    = "7"
-            overflow = "auto"
-            right    = "12"
-            top      = "12"
-            bottom   = "55"
-        />
-      
         <a:vbox padding="10" anchors="0 0 0 0">
             <a:list id="lstFileTemplates"
               model     = "mdlFileTemplates" 
@@ -30,6 +19,8 @@
               margin    = "10 10 10 10"
               caption   = "[@caption]" 
               icon      = "[@icon]" 
+              class     = "noscrollbar"
+              scrollbar = "sbShared 12 12 55"
               each      = "item"
               eachvalue = "[@value]" 
               style     = "overflow:hidden"

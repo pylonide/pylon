@@ -908,16 +908,24 @@
         }
 
         .btn_console_openOver {
+            background-position: 0 -76px;
         }
-
+        
         .btn_console_openDown {
-
+            background-position: 0 -152px;
         }
-
+        
+        .btn_console_openOpen.btn_console_openOver {
+            background-position: 0 -114px;
+        }
+        .btn_console_openOpen.btn_console_openDown {
+            background-position: 0 -190px;
+        }
+        
         .btn_console_openOpen {
             background-position: 0 -38px;
         }
-
+        
         .btn_console_openDown:hover {
         }
 
@@ -1454,7 +1462,11 @@
             line-height        : 17px;
             border:1px solid transparent;
         }
-
+        
+        .with-arrow.c9-toolbarbutton {
+            padding-right: 5px;
+        }
+        
         .hbox > .c9-toolbarbutton {
             height: 23px;
         }
@@ -1501,7 +1513,11 @@
             height:15px;
             padding:4px 6px 0 6px;
         }
-
+        
+        .with-arrow.c9-toolbarbutton .c9-label {
+            background:url(images/btn-arrow.png) no-repeat right 9px;
+        }
+        
         .c9-toolbarbuttonEmpty .c9-icon {
             position:relative;
         }
@@ -2700,9 +2716,6 @@
         }
 
         .ace_gutter {
-          overflow-x: scroll;
-          overflow-y: hidden;
-          height: 100%;
           -moz-user-select: -moz-none;
           -khtml-user-select: none;
           -webkit-user-select: none;
@@ -2934,7 +2947,11 @@
             border-style:solid;
             border-width:1px 0 0;
         }
-
+        
+        .with-noise .records {
+            background: url(images/dg_noise.png) repeat 0 0;
+        }
+        
         .noscrollbar .records{
             overflow-y : hidden;
         }
@@ -2956,7 +2973,13 @@
             border-right:1px solid #D6D6D6;
             border-left : 1px solid white;
         }
-
+        
+        .datagrid .records .row span {
+            background-image: url(images/dg_noise.png);
+            background-repeat: repeat;
+            border-top: #f0f0f0;
+            background-color: #e1e1e1;
+        }
         .noscrollbar .datagrid .records .row span{
             background-color : transparent;
         }
@@ -2990,8 +3013,9 @@
         .datagrid .row:nth-child(4n-1) span{
             background: #f0f0f0;
         }
-        .datagrid .row:nth-child(4n+1) span{
-            background: #fdfdfd;
+        .with-noise .row:nth-child(4n-1) span {
+            background: #d1d1d1;
+            background-image: url(images/dg_noise.png);
         }
 
         .datagrid .records .testhead{
@@ -4603,6 +4627,9 @@
             background-color: #fafbfc;
             cursor: default;
         }
+        .noscrollbar{
+            overflow: hidden;
+        }
 
         .white{
             background : white;
@@ -5105,7 +5132,7 @@
             width    : 7px;
             margin   : 0 0 0 0;
             min-height: 20px;
-            background: #aaadaf;
+            background: #616161;
             opacity  : 0.8;
             -webkit-border-radius: 3px;
             -moz-border-radius: 3px;
@@ -6702,9 +6729,11 @@
             background : -webkit-gradient(linear, left top, left bottom, from(#393939), color-stop(1, #333333));
             background : -moz-linear-gradient(center bottom, #333333 0%, #393939 100%) repeat scroll 0 0 transparent;
 
-            -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.15);
-            -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.15);
-            box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.15);
+            border:1px solid #1c1c1c;
+
+            -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
+            -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
+            box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
 
             float:left;
         }
@@ -6917,6 +6946,7 @@
             height : 0px;
             margin : 0;
             border-bottom: 1px solid #393A3B;
+            border-top: 1px solid black;
         }
         
         .dockcol .splitter.horizontal div{
@@ -8492,7 +8522,7 @@
         
         .dockcol .docktab .page {
             top: 23px;
-            right: 3px;
+            right: 4px;
             left: 3px;
             bottom: 5px;
         }

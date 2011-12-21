@@ -29,6 +29,8 @@
                   overflow = "hidden">
                     <a:list
                       id            = "lstSaveSessionAs"
+                      class         = "noscrollbar"
+                      scrollbar     = "sbShared 2 2 2"
                       class         = "trDgLike emptyLeft"
                       style         = "border: none; overflow: hidden"
                       flex          = "1"
@@ -42,14 +44,6 @@
                              value = "page_white_text.png" />
                         </a:each>
                     </a:list>
-                    
-                    <a:scrollbar
-                        for      = "lstSaveSessionAs"
-                        margin   = "2"
-                        skin     = "sbios"
-                        width    = "7"
-                        overflow = "auto"
-                    />
                 </a:hbox>
             </div>
 
