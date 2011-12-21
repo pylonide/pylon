@@ -579,7 +579,7 @@ apf.webdav = function(struct, tagName){
                     bubbles : true
                   }) === false && !callback)
                     throw oError;
-                callback && callback.call(this, data, apf.ERROR, extra);
+                return callback && callback.call(this, data, apf.ERROR, extra);
             }
             else {
                 _self.getProperties(sPath, 0, callback);
