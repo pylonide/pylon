@@ -38,8 +38,14 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     },
 
     saveFile : function(path, data, callback) {
-        if (this.webdav)
-            this.webdav.write(path, data, null, callback);
+        if (!this.webdav)
+            return;
+        this.webdav.write(path, data, null, function(data, state, extra) {
+            if ((state == apf.ERROR && extra.status == 400 && extra.retries < 3) || state == apf.TIMEOUT)
+                return extra.tpModule.retry(extra.id);
+
+            callback(data, state, extra);
+        });
     },
 
     list : function(path, callback) {
