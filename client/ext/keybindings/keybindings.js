@@ -84,7 +84,7 @@ module.exports = ext.register("ext/keybindings/keybindings", {
                     callback({keybindings: _self.current});
             });
             
-            ide.addEventListener("init.ext", function(e){
+            ide.addEventListener("ext.register", function(e){
                 _self.update(e.ext);
             });
             

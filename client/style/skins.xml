@@ -4603,6 +4603,9 @@
             background-color: #fafbfc;
             cursor: default;
         }
+        .noscrollbar{
+            overflow: hidden;
+        }
 
         .white{
             background : white;
@@ -5105,7 +5108,7 @@
             width    : 7px;
             margin   : 0 0 0 0;
             min-height: 20px;
-            background: #aaadaf;
+            background: #616161;
             opacity  : 0.8;
             -webkit-border-radius: 3px;
             -moz-border-radius: 3px;

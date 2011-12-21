@@ -35,10 +35,10 @@
         </a:menu>
         
         <a:tree id="trFiles" canrename="true" border="0" simpledata="true"
-          contextmenu="mnuCtxTree" multiselect="true" reselectable="true" 
+          contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
           onbeforeremove="return require('core/util').removeInteractive(this)" disabled="{{!stServerConnected.active}}"
           onbeforemove="this.disable();" autoselect="false"
-          flex="1" anchors="0 0 0 0"
+          flex="1" anchors="0 0 0 0" scrollbar="sbShared 2 2 2"
         >
             <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
                 <a:insert match="[folder]" get="{davProject.readdir([@path])}" />
@@ -65,17 +65,6 @@
                 action="insert-before" copy="{event.ctrlKey}" />    
         </a:tree>
         
-        <a:scrollbar
-            for      = "trFiles"
-            id       = "sbTrFiles"
-            margin   = "2"
-            skin     = "sbios"
-            top      = "0"
-            right    = "0"
-            bottom   = "0"
-            width    = "7"
-            showonscroll = "true"
-        />
         <a:menu id="mnuCtxTree" disabled="{!stServerConnected.active}">
             <a:item match="[file]" class="strong"  onclick="
                 require('core/ide').dispatchEvent('openfile', {doc: require('core/ide').createDocument(apf.activeElement.selected)})

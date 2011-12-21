@@ -82,6 +82,7 @@
                   model     = "mdlTests"
                   each      = "[repo|file|test|assert|error]"
                   class     = "noscrollbar"
+                  scrollbar = "sbShared 20 2 2"
                   multiselect    = "true"
                   startcollapsed = "true"
                   contextmenu    = "mnuTestContext"
@@ -110,18 +111,6 @@
                     <a:expanded match="[test|file[test]]" id="expTestRule" />
                     <a:expanded match="{apf.getChildNumber(%[repo]) == 1}" />
                 </a:datagrid>
-                
-                <a:scrollbar
-                    for      = "dgTestProject"
-                    id       = "sbTestProject"
-                    margin   = "2"
-                    skin     = "sbios"
-                    top      = "20"
-                    right    = "0"
-                    bottom   = "0"
-                    width    = "7"
-                    showonscroll = "true"
-                />
             </a:bar>
             
             <!--

@@ -37,6 +37,7 @@
           anchors     = "0 0 0 0" 
           model       = "{require('ext/openfiles/openfiles').model}"
           border      = "0"
+          scrollbar   = "sbShared 2 2 2"
           multiselect = "true" 
           autoselect  = "false"
           skin        = "tree">
@@ -47,17 +48,5 @@
             </a:each>
             <a:remove match="[file|folder]" />
         </a:list>
-        
-        <a:scrollbar
-            for      = "lstOpenFiles"
-            id       = "sbOpenFiles"
-            margin   = "2"
-            skin     = "sbios"
-            top      = "0"
-            right    = "0"
-            bottom   = "0"
-            width    = "7"
-            showonscroll = "true"
-        />
     </a:window>
 </a:application>

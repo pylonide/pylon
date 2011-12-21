@@ -87,7 +87,7 @@ module.exports = ext.register("ext/newresource/newresource", {
             }
         }
         if (!path)
-            path = "/workspace/";
+            path = ide.davPrefix + "/";
 
         var name = "Untitled", count = 1;
         while (tabEditors.getPage(path + name + count + type))

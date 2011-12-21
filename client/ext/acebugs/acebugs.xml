@@ -8,6 +8,8 @@
               options    = "size|move"
               prerender  = "false"
               caching    = "false"
+              class      = "noscrollbar"
+              scrollbar  = "sbShared 20 2 2"
               onafterchoose = "require('ext/acebugs/acebugs').goToAnnotation()"
               model      = "mdlAceAnnotations"
               loading-message = "Loading..."

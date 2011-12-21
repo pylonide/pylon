@@ -133,12 +133,14 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 path.split("/").pop() + " (active file)");
         });
         
+        var hasBreaked = false;
         stProcessRunning.addEventListener("deactivate", function(){
             if (!_self.autoHidePanel())
                 return;
             
             var name = "ext/debugger/debugger";
             dock.hideSection(name, false);
+            hasBreaked = false;
             
             /*var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
             if (!bar.extended)
@@ -153,8 +155,10 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 dock.showBar(bar); 
         });*/
         ide.addEventListener("break", function(){
-            if (!_self.shouldRunInDebugMode() || !_self.autoHidePanel())
+            if (!_self.shouldRunInDebugMode() || !_self.autoHidePanel() || hasBreaked)
                 return;
+            
+            hasBreaked = true;
             
             var name = "ext/debugger/debugger";
             dock.showSection(name, false);

@@ -79,12 +79,14 @@ module.exports = ext.register("ext/panels/panels", {
             panelExt.panel.setAttribute("draggable", "false");
         });
         
-        if (!settings.model.queryNode("auto/panels/panel[@path='" 
-            + panelExt.path + "']")) {
-            settings.model.appendXml("<panel path='" 
-                + panelExt.path + "' width='" 
-                + panelExt.defaultWidth + "' />", "auto/panels");
-        }
+        ide.addEventListener("loadsettings", function(){
+            if (!settings.model.queryNode("auto/panels/panel[@path='" 
+                + panelExt.path + "']")) {
+                settings.model.appendXml("<panel path='" 
+                    + panelExt.path + "' width='" 
+                    + panelExt.defaultWidth + "' />", "auto/panels");
+            }
+        });
         
         var active = settings.model.queryValue("auto/panels/@active");
         if (panelExt["default"] && !active || active == panelExt.path)
