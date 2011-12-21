@@ -997,7 +997,7 @@ break;}}for(var node,pnode,next,nr,tonr,i=0;i<reorderRules.length;i++){node=reor
 nr=node.$childNumber;tonr=reorderRules[i][1];pnode=node.parentNode;next=pnode.childNodes[tonr+(nr<tonr?1:0)];
 if(node.nextSibling!=next&&node!=next){pnode.insertBefore(node,next);}}apf.queue.empty();
 };apf.zmanager=function(){var count={"default":{level:10},plane:{level:100000},popup:{level:200000},notifier:{level:300000},drag:{level:400000},print:{level:1000000}};
-this.set=function(type,main,companion){main.style.zIndex=count[type].level++;if(companion){if(companion.$storedZ==undefined){companion.$storedZ=companion.style.zIndex;
+this.set=function(type,main,companion){main.style.zIndex=count[type].level++;if(companion){if(companion.$storedZ==undefined){companion.$storedZ=companion.style.zIndex||parseInt(main.style.zIndex)+1;
 }companion.style.zIndex=count[type].level++;}};this.clear=function(main,companion){if(companion.style.zIndex==parseInt(main.style.zIndex)+1){companion.style.zIndex=companion.$storedZ;
 companion.$storedZ=undefined;}};};apf.history={inited:false,page:null,past:[],future:[],delay:1,init:function(defName,getVar,delay){if(this.inited||window.history.pushState){return;
 }if(delay){this.delay=delay;}this.inited=true;var name,_self=this;function preInit(){name=apf.dispatchEvent("hashinit")||location.href.match(/#(.*)$/)&&decodeURI(RegExp.$1)||apf._GET[getVar||-1]||defName;
@@ -7382,8 +7382,8 @@ this.$button2.setProperty("disabled",value);};this.$propHandlers.submenu=functio
 var _self=this;this.$button2.addEventListener("mousedown",function(){if(!self[value].$splitInited){self[value].addEventListener("display",function(){var split=this.opener.parentNode;
 this.$ext.style.marginLeft="-"+split.$button1.$ext.offsetWidth+"px";});self[value].$splitInited=true;
 }this.removeEventListener("mousedown",arguments.callee);});};this.$draw=function(){var _self=this;
-this.$ext=this.$pHtmlNode.appendChild(document.createElement("div"));this.$ext.style.overflow="hidden";
-var skin=this.getAttribute("skin")||this.localName;this.$button1=new apf.button({htmlNode:this.$ext,parentNode:this,skin:skin,"class":"main",onmouseover:function(){apf.setStyleClass(this.$ext,"primary");
+this.$ext=this.$pHtmlNode.appendChild(document.createElement("div"));var skin=this.getAttribute("skin")||this.localName;
+this.$button1=new apf.button({htmlNode:this.$ext,parentNode:this,skin:skin,"class":"main",onmouseover:function(){apf.setStyleClass(this.$ext,"primary");
 _self.$button2.$setState("Over",{});},onmouseout:function(){apf.setStyleClass(this.$ext,"",["primary"]);
 _self.$button2.$setState("Out",{});},onclick:function(e){_self.dispatchEvent("click");
 }});this.$button2=new apf.button({htmlNode:this.$ext,parentNode:this,skin:skin,"class":"arrow",onmouseover:function(){apf.setStyleClass(this.$ext,"primary");
