@@ -6,7 +6,6 @@
  * @author Sergi Mansilla <sergi AT ajax DOT org>
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
- *
  */
 
 define(function(require, exports, module) {
@@ -104,7 +103,6 @@ module.exports = ext.register("ext/autosave/autosave", {
     },
 
     init : function() {
-        var self = this;
         var resetWinAndHide = function() {
             winNewerSave.restoredContents = null;
             winNewerSave.doc = null;
