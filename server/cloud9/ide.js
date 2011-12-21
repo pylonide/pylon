@@ -118,6 +118,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/noderunner/noderunner", //Add location rule
     "ext/console/console",
     "ext/tabbehaviors/tabbehaviors",
+    "ext/tabsessions/tabsessions",
     "ext/keybindings/keybindings",
     "ext/watcher/watcher",
     "ext/dragdrop/dragdrop",
