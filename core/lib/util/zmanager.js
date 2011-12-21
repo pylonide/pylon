@@ -61,7 +61,7 @@ apf.zmanager = function(){
     this.set = function(type, main, companion){
         main.style.zIndex = count[type].level++;
         if (companion) {
-            if (companion.$storedZ == undefined)
+            //if (companion.$storedZ == undefined)
                 companion.$storedZ = companion.style.zIndex;
             companion.style.zIndex = count[type].level++
         }
