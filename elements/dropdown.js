@@ -222,7 +222,8 @@ apf.dropdown = function(struct, tagName){
         }
         
         this.$setStyleClass(this.$ext, '', [this.$baseCSSname + "Down"]);
-        apf.popup.hide();
+        if (apf.popup.last == this.$uniqueId)
+            apf.popup.hide();
         return false;
     };
     

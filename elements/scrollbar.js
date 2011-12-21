@@ -54,11 +54,14 @@ apf.scrollbar = function(struct, tagName){
     });
 
     this.$propHandlers["showonscroll"] = function(value){
+        clearTimeout(this.$hideOnScrollTimer);
+        
         if (value) {
             this.$ext.style.display = "none";
         }
         else {
             this.$ext.style.display = "block";
+            this.show(); //Trigger positioning event
         }
     };
 
@@ -411,6 +414,7 @@ apf.scrollbar = function(struct, tagName){
         
         if (this.showonscroll && byUser) {
             var _self = this;
+            this.scrolling = true;
             
             clearTimeout(this.$hideOnScrollTimer);
             if (_self.$hideOnScrollControl)
@@ -420,21 +424,60 @@ apf.scrollbar = function(struct, tagName){
             !this.visible ? this.show() : this.$ext.style.display = "block";
             this.$update();
             
-            this.$hideOnScrollTimer = setTimeout(function(){
-                apf.tween.single(_self.$ext, {
-                    control : _self.$hideOnScrollControl = {},
-                    type : "fade",
-                    from : 1,
-                    to   : 0,
-                    onfinish : function(){
-                        _self.$ext.style.display = "none";
-                        apf.setOpacity(_self.$ext, 1);
-                    }
-                });
-            }, 500)
+            this.$hideOnScrollTimer = this.animHideScrollbar(500, function(){
+                _self.scrolling = false;
+            });
         }
         
         this.pos = this.$curValue;
+    }
+    
+    this.animShowScrollbar = function(timeout, cb){
+        var _self = this;
+        return setTimeout(function(){
+            _self.$ext.style.display = "block";
+            
+            if (_self.$showOnScrollControl
+              && _self.$showOnScrollControl.state == apf.tween.RUNNING)
+                return;
+            
+            if (_self.$hideOnScrollControl)
+                _self.$hideOnScrollControl.stop();
+
+            apf.tween.single(_self.$ext, {
+                control : _self.$hideOnScrollControl = {},
+                type : "fade",
+                from : 0,
+                to   : 1,
+                onfinish : function(){
+                    cb && cb();
+                }
+            });
+        }, timeout)
+    }
+    
+    this.animHideScrollbar = function(timeout, cb){
+        var _self = this;
+        return setTimeout(function(){
+            if (_self.$hideOnScrollControl
+              && _self.$hideOnScrollControl.state == apf.tween.RUNNING)
+                return;
+            
+            if (_self.$showOnScrollControl)
+                _self.$showOnScrollControl.stop();
+            apf.tween.single(_self.$ext, {
+                control : _self.$hideOnScrollControl = {},
+                type : "fade",
+                from : 1,
+                to   : 0,
+                onfinish : function(){
+                    _self.$ext.style.display = "none";
+                    apf.setOpacity(_self.$ext, 1);
+                    
+                    cb && cb();
+                }
+            });
+        }, timeout)
     }
     
     this.scrollUp = function (v){
@@ -608,6 +651,8 @@ apf.scrollbar = function(struct, tagName){
 
             _self.$setStyleClass(_self.$ext, _self.$baseCSSname + "Down");
             _self.dispatchEvent("mousedown", {});
+            
+            _self.dragging = true;
 
             document.onmousemove = function(e){
                 if (!e) 
@@ -643,6 +688,9 @@ apf.scrollbar = function(struct, tagName){
                 
                 _self.$setStyleClass(_self.$ext, "", [_self.$baseCSSname + "Down"]);
                 _self.dispatchEvent("mouseup", {});
+                
+                _self.dragging = false;
+                
                 document.onmouseup   = 
                 document.onmousemove = null;
             };
@@ -731,4 +779,104 @@ apf.scrollbar = function(struct, tagName){
     }
 }).call(apf.scrollbar.prototype = new apf.Presentation());
 apf.aml.setElement("scrollbar", apf.scrollbar);
+
+apf.GuiElement.propHandlers["scrollbar"] = function(value) {
+    if (this.$sharedScrollbar == undefined) {
+        var values = value.split(" ");
+        var name = values[0];
+        var top  = values[1] || 0;
+        var right  = values[2] || 0;
+        var bottom  = values[3] || 0;
+        
+        var _self = this;
+        this.$sharedScrollbar = self[name] || false;
+        
+        function hasOnScroll(){
+            return apf.isTrue(sb.getAttribute("showonscroll"));
+        }
+        
+        var oHtml = this.$container || this.$int || this.$ext, timer, sb;
+        var mouseMove;
+        apf.addListener(oHtml, "mousemove", mouseMove = function(e){
+            if (!_self.$sharedScrollbar)
+                _self.$sharedScrollbar = self[name];
+            
+            sb = _self.$sharedScrollbar;
+            
+            if (sb.$host != _self) {
+                (_self.$ext == oHtml ? _self.$ext.parentNode : _self.$ext).appendChild(sb.$ext);
+                sb.setProperty("showonscroll", true);
+                sb.$ext.style.display = "block";
+                sb.setAttribute("top", top);
+                sb.setAttribute("right", right);
+                sb.setAttribute("bottom", bottom);
+                sb.setAttribute("for", _self);
+                sb.$ext.style.display = "none";
+                sb.dragging = false;
+                if (sb.$hideOnScrollControl)
+                    sb.$hideOnScrollControl.stop();
+            }
+            
+            if (hasOnScroll()) {
+                clearTimeout(timer);
+                var pos = apf.getAbsolutePosition(oHtml);
+                var show = oHtml.offsetWidth - (e.clientX - pos[0]) < 40;
+                if (show && sb.$ext.style.display == "none" || !show && sb.$ext.style.display == "block") {
+                    if (show)
+                        showScrollbar();
+                    else
+                        hideScrollbar();
+                }
+                else if (!show)
+                    sb.showonscroll = true;
+            }
+        });
+        
+        function showScrollbar(){
+            sb.setProperty("showonscroll", false);
+            sb.$ext.style.display = "none";
+            timer = sb.animShowScrollbar(200);
+        }
+        
+        function hideScrollbar(timeout){
+            if (sb.scrolling)
+                return;
+            
+            if (!sb.dragging)
+                timer = sb.animHideScrollbar(timeout || 200, function(){
+                    sb.setProperty("showonscroll", true);
+                });
+            else
+                apf.addListener(document, "mouseup", function(e){
+                    var tgt = apf.findHost(e.target);
+                    if (tgt == sb)
+                        return;
+                        
+                    if (tgt == _self)
+                        mouseMove(e);
+                    else
+                        hideScrollbar();
+                    
+                    apf.removeListener(document, "mouseup", arguments.callee);
+                });
+        }
+        
+        apf.addListener(oHtml, "mouseout", function(e){
+            if (!hasOnScroll())
+                return;
+            
+            if (apf.findHost(e.relatedTarget) == sb) {
+                apf.addListener(sb.$ext, "mouseout", function(e){
+                    hideScrollbar();
+                    
+                    apf.removeListener(sb.$ext, "mouseout", arguments.callee);
+                });
+                return;
+            }
+            
+            clearTimeout(timer);
+            hideScrollbar();
+        });
+    }
+};
 //#endif
