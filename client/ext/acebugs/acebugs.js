@@ -36,7 +36,7 @@ module.exports = ext.register("ext/acebugs/acebugs", {
 
     hook: function() {
         var _self = this;
-        this.annotationWorker = new Worker("/static/ext/acebugs/annotation_worker.js");
+        this.annotationWorker = new Worker(ide.staticPrefix + "/ext/acebugs/annotation_worker.js");
         this.lastAnnotations = "";
         this.annotationWorker.onmessage = function(e) {
             if (e.data.outXml == _self.lastAnnotations)
