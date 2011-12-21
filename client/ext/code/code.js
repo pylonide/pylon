@@ -341,6 +341,10 @@ module.exports = ext.register("ext/code/code", {
             }
         });
         
+        tabEditors.addEventListener("afterswitch", function(e) {
+            ceEditor.afterOpenFile(ceEditor.getSession());
+        });
+        
         // preload common language modes
         require(["ace/mode/javascript", "ace/mode/html", "ace/mode/css"], function() {});
     },

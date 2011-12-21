@@ -32,9 +32,11 @@ apf.dbg = module.exports = function(struct, tagName){
     this.$host = null;
     this.$debugger = null;
     
+    this.autoAttachComingIn = false;
+    
     this.$supportedProperties.push("state-running", "state-attached", 
         "model-sources", "model-stacks", "model-breakpoints", "activeframe");
-  
+    
     this.$createModelPropHandler = function(name, xml, callback) {
         return function(value) {
             if (!value) return;
@@ -78,6 +80,21 @@ apf.dbg = module.exports = function(struct, tagName){
         }
         this.dispatchEvent("changeframe", {data: value});
     };
+    
+    /**
+     * If you are auto attaching, please announce yourself here
+     */
+    this.registerAutoAttach = function () {
+        this.autoAttachComingIn = true;
+    };
+    
+    /**
+     * Manual click on the run button?
+     * Youll get special behavior!
+     */
+    this.registerManualAttach = function () {
+        this.autoAttachComingIn = false;
+    };
 
     this.attach = function(host, tab) {
         var _self = this;
@@ -109,7 +126,11 @@ apf.dbg = module.exports = function(struct, tagName){
                         dbgImpl.addEventListener("changeRunning", _self.$onChangeRunning.bind(_self));
                         dbgImpl.addEventListener("break", _self.$onBreak.bind(_self));
                         dbgImpl.addEventListener("detach", _self.$onDetach.bind(_self));
-                        dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));                        
+                        dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));
+                        
+                        _self.setProperty("activeframe", frame);
+                        
+                        _self.autoAttachComingIn = false;
                     });
                 });
             });
@@ -118,6 +139,8 @@ apf.dbg = module.exports = function(struct, tagName){
     
     this.$allowAttaching = function (frame) {
         var _self = this;
+        
+        if (this.autoAttachComingIn) return true;
         
         if (frame) {
             var scriptId = frame.getAttribute("scriptid");

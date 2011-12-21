@@ -186,6 +186,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         _self.$clearMarker();
 
         _self.$editor.setSession(doc);
+        
+        // clear breakpoints
+        doc.setBreakpoints([]);
     };
     
     this.afterOpenFile = function(doc) {
