@@ -433,7 +433,7 @@ module.exports = ext.register("ext/save/save", {
             this.saveBuffer[path] = page;
             return;
         }
-        apf.xmldb.setAttribute(node, "saving", "1");
+        apf.xmldb.setAttribute(file, "saving", "1");
 
         var self = this;
         var doSave = function() {
