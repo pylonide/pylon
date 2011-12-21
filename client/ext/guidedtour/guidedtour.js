@@ -14,9 +14,11 @@ var ext = require("core/ext");
 var ide = require("core/ide");
 var skin = require("text!ext/guidedtour/skin.xml");
 var markup = require("text!ext/guidedtour/guidedtour.xml");
-var console = require("ext/console/console");
+var ideConsole = require("ext/console/console");
 var zen = require("ext/zen/zen");
 var dockpanel = require("ext/dockpanel/dockpanel");
+var panels = require("ext/panels/panels");
+var settings = require("core/settings");
 
 var save;
 var madeNewFile = false;
@@ -34,8 +36,7 @@ var jsonTourIde = {
         pos: "right",
         time: 5
     }, {
-        before: function()
-        {
+        before: function() {
             // require("ext/tree/tree").enable();
         },
         el: apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[1]/button[@caption="Project Files"]'),
@@ -43,8 +44,7 @@ var jsonTourIde = {
         pos: "right",
         time: 5
     }, {
-        before: function()
-        {
+        before: function() {
             //require("ext/openfiles/openfiles").enable();
         },
         el: apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[1]/button[@caption="Open Files"]'),
@@ -52,8 +52,7 @@ var jsonTourIde = {
         pos: "right",
         time: 5
     }, {
-        before: function()
-        {
+        before: function() {
             //require("ext/settings/settings").enable();
         },
         el: apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[1]/button[@caption="Preferences"]'),
@@ -61,17 +60,15 @@ var jsonTourIde = {
         pos: "right",
         time: 7
     }, {
-        before: function()
-        {
+        before: function() {
             //require("ext/tree/tree").enable();
         },
-        el: (!self["winFilesViewer"] && apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[1]/button[@caption="Project Files"]').dispatchEvent('mousedown')) && winFilesViewer,
+        el: self["winFilesViewer"],
         desc: "All your project files are listed here. You can rename and delete files, as well as drag in new ones from your computer. You can also right-click to see context options.",
         pos: "right",
         time: 6
     }, {
-        before: function()
-        {
+        before: function() {
             //require("ext/tree/tree").enable();
         },
         el: plus_tab_button,
@@ -79,10 +76,8 @@ var jsonTourIde = {
         pos: "left",
         time: 5
     }, {
-        before: function()
-        {
-            if (madeNewFile == false)
-            {
+        before: function(){
+            if (madeNewFile == false) {
                 madeNewFile = true;
                 require("ext/newresource/newresource").newfile();
             }
@@ -92,8 +87,7 @@ var jsonTourIde = {
         pos: "bottom",
         time: 5
     }, {
-        before: function()
-        {
+        before: function() {
             var helloWorldScript = "var http = require(\'http\');\nhttp.createServer(function (req, res) {\n\tres.writeHead(200, {\'Content-Type\': \'text/plain\'});\n\tres.end(\'Hello World\\n\');\n}).listen(1337, \"127.0.0.1\");\n\nconsole.log(\'Server running at http://127.0.0.1:1337/\');";
             tabEditors.getPage().$doc.setValue(helloWorldScript);
             if (!save) save = require("ext/save/save");
@@ -107,10 +101,8 @@ var jsonTourIde = {
         pos: "left",
         time: 6
     }, {
-        before: function()
-        {
-            if (wentToZen)
-            {
+        before: function(){
+            if (wentToZen){
                 zen.fadeZenButtonOut();
                 wentToZen = false;
             }
@@ -121,8 +113,7 @@ var jsonTourIde = {
         pos: "right",
         time: 6
     }, {
-        before: function()
-        {
+        before: function(){
             wentToZen = true;
             zen.fadeZenButtonIn();
         },
@@ -132,46 +123,47 @@ var jsonTourIde = {
         pos: "left",
         time: 6
     }, {
-        before: function()
-        {
+        before: function() {
+            var hlElement = require("ext/guidedtour/guidedtour").hlElement;
+            hlElement.style.visibility = "hidden";
+            winTourText.hide();
             document.getElementsByClassName("tgDialog")[0].style.display = "none";
             zen.fadeZenButtonOut();
             zen.enterIntoZenMode();
-
-            setTimeout(
-
-            function()
-            {
+            
+            setTimeout(function(){
                 zen.escapeFromZenMode();
                 document.getElementsByClassName("tgDialog")[0].style.display = "";
                 require("ext/guidedtour/guidedtour").stepForward();
+                hlElement.style.visibility = "visible";
+                winTourText.show();
+                zen.fadeZenButtonOut();
             }, 3000);
         },
         time: 1,
+        desc: "",
         skip: true
     }, {
-        before: function()
-        {
-            console.disable();
+        before: function(){
+            ideConsole.disable();
         },
         el: apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:bar[1]/a:vbox[1]/a:hbox[1]'),
         desc: "This area down here acts just like a command line for your project in the Cloud9 IDE. You can always type 'help' to get a list of the available commands.",
         pos: "top",
         time: 6
     }, {
-        before: function()
-        {
-            console.enable();
+        before: function() {
+            ideConsole.enable();
+            ideConsole.show();
         },
         el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabConsole.$ext),
         desc: "After clicking the expand arrows, you'll be able to get to the full console view. Any output from your program&mdash;like console.log() messages or compilation errors&mdash;appears in the Output tab.",
         pos: "top",
         time: 5
     }, {
-        before: function()
-        {
-            winRunCfgNew.hide();
-            console.disable();
+        before: function() {
+            //winRunCfgNew.hide();
+            ideConsole.disable();
             var doc = require("ext/editors/editors").currentEditor.ceEditor.getSession();
             doc.setBreakpoints([5]);
         },
@@ -181,35 +173,35 @@ var jsonTourIde = {
         pos: "right",
         time: 6
     }, {
-        before: function()
-        {
-            if (!madeDebug)
-            {
+        before: function(){
+            panels.activate(require("ext/runpanel/runpanel"));
+            if (!madeDebug) {
                 madeDebug = true;
                 var cfg = apf.n("<config />").attr("path", "helloWorld.js").attr("name", "helloWorld").attr("extension", "").attr("args", "").node();
-
-                mdlRunConfigurations.appendXml(cfg);
+                
+                apf.xmldb.appendChild(mdlRunConfigurations.data, cfg);
+                
+                settings.model.setQueryValue('auto/configurations/@debug', true);
             }
-            winRunCfgNew.show();
-            require("ext/run/run").selectLastConfig();
+            
+            //winRunCfgNew.show();
+            //require("ext/run/run").selectLastConfig();
         },
-        el: winRunCfgNew,
+        el: self["winRunPanel"],
         desc: "Here's where the fun begins! After clicking Debug, then Run Configurations, you'll be able to create or modify a debug configuration. Every configuration needs a name and a file to run, but you can also pass arguments.",
         pos: "right",
         time: 6
     }, {
-        before: function()
-        {
-            winRunCfgNew.hide();
-            require('ext/run/run').run(true);
+        before: function() {
+            //winRunCfgNew.hide();
+            require('ext/runpanel/runpanel').run(true);
         },
         el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabConsole.$ext),
         desc: "Whoa! A lot of things just happened. First off, the Output tab opened up to show us that our code is running, and currently being debugged.",
         pos: "top",
         time: 5
     }, {
-        before: function()
-        {
+        before: function() {
 
         },
         el: undefined,
@@ -218,8 +210,7 @@ var jsonTourIde = {
         pos: "left",
         time: 5
     }, {
-        before: function()
-        {
+        before: function() {
             dbgCallStack.show();
         },
         el: undefined,
@@ -229,10 +220,7 @@ var jsonTourIde = {
         pos: "left",
         time: 5
     }, {
-        before: function()
-        {
-
-            },
+        before: function() {},
         el: undefined,
         div: "DIV[2]",
         node: "/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[4]/a:hbox[1]/vbox[1]/tab[2]",
@@ -240,10 +228,7 @@ var jsonTourIde = {
         pos: "left",
         time: 4
     }, {
-        before: function()
-        {
-
-            },
+        before: function() {},
         el: undefined,
         div: "DIV[2]",
         node: "/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[4]/a:hbox[1]/vbox[1]/tab[3]",
@@ -251,8 +236,7 @@ var jsonTourIde = {
         pos: "left",
         time: 4
     }, {
-        before: function()
-        {
+        before: function() {
             dbg.continueScript();
             txtConsoleInput.setValue("git status");
         },
@@ -261,11 +245,9 @@ var jsonTourIde = {
         pos: "top",
         time: 4
     }, {
-        before: function()
-        {
+        before: function() {
             require('ext/run/run').stop();
-            require("ext/console/console").commandTextHandler(
-            {
+            require("ext/console/console").commandTextHandler({
                 keyCode: 13,
                 currentTarget: txtConsoleInput
             });
@@ -276,20 +258,17 @@ var jsonTourIde = {
         pos: "top",
         time: 4
     }, {
-        before: function()
-        {
-            if (!deletedFile)
-            {
+        before: function() {
+            if (!deletedFile) {
                 deletedFile = true;
                 tabEditors.remove(tabEditors.getPage());
-                require("ext/console/console").commandTextHandler(
-                {
+                require("ext/console/console").commandTextHandler({
                     keyCode: 13,
                     currentTarget: txtConsoleInput
                 });
             }
         },
-        el: winFilesViewer,
+        el: self["winFilesViewer"],
         desc: "Voila! Notice that the file is gone from your project.",
         pos: "right",
         time: 4
@@ -302,7 +281,6 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     alone: true,
     type: ext.GENERAL,
     markup: markup,
-    tour: jsonTourIde,
     skin    : {
         id   : "guidedtour",
         data : skin,
@@ -317,13 +295,17 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     },
     
     init: function(amlNode) {
+        this.initTour();
+        
+        this.tour = jsonTourIde;
+        
         this.overlay   = document.createElement("div");
         this.hlElement = document.createElement("div");
         
         this.overlay.setAttribute("style", "display:none;position:fixed;left: 0px;top: 0px;width:100%;height:100%;opacity:0.3;background:#000;opacity:0");
         document.body.appendChild(this.overlay);
 
-        this.hlElement.setAttribute("style", "z-index:99999;display:none;position:absolute;box-shadow:0px 0px 15px #000;");
+        this.hlElement.setAttribute("style", "z-index:99998;display:none;position:absolute;box-shadow:0px 0px 15px #000;");
         document.body.appendChild(this.hlElement);
 
         winTourGuide.addEventListener("hide", this.shutdown(this.hlElement));
@@ -341,7 +323,19 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         winTourButtonClose.show();
         winTourButtonDone.hide();
     },
-
+    
+    initTour: function(){
+        this.animateui = settings.model.queryValue('general/@animateui');
+        settings.model.setQueryValue('general/@animateui', false);
+        
+        /*ide.addEventListener("loadsettings", function(e){
+            _self.animateui = settings.model.queryValue('general/@animateui');
+            settings.model.setQueryValue('general/@animateui', false);
+        });*/
+        
+        !self["winFilesViewer"] && panels.activate(require("ext/tree/tree"));
+    },
+    
     /**
      * Play controls
      */
@@ -376,6 +370,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         this.stepForward();
         
         this.overlay.style = 'block';
+        
+        settings.model.setQueryValue('general/@animateui', false);
+        
         // remove the modal overlay, but keep it around to block input
         //var modalBackground = document.getElementsByClassName("bk-window-cover");
         //modalBackground[modalBackground.length - 1].style.opacity = "0";
@@ -393,7 +390,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
 
         if (this.currentStep === 0) {
             btnTourStepBack.disable();
-            btnTourStepBack.$ext.childNodes[1].style.backgroundPosition = "25px -20px";
+            btnTourStepBack.$ext.childNodes[1].style.backgroundPosition = "20px -19px";
         }
 
         btnTourStepForward.enable();
@@ -421,7 +418,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         else {
             if (this.currentStep > 0){
                 btnTourStepBack.enable();
-                btnTourStepBack.$ext.childNodes[1].style.backgroundPosition = "25px 5px";
+                btnTourStepBack.$ext.childNodes[1].style.backgroundPosition = "20px 5px";
             }
 
             var step = this.tour.steps[this.currentStep];
@@ -446,8 +443,10 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     // These are common operations we do for step
     // forwards and back, so we DRY
     commonStepOps: function(step){
-        if (step.before) step.before();
-            this.highlightElement(step);
+        if (step.before) 
+            step.before();
+        
+        this.highlightElement(step);
 
         textTourDesc.setValue(step.desc);
 
@@ -461,8 +460,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         winTourText.setAttribute("class", step.pos);
 
         this.setPositions(step.pos, pos, winTourText);
-
-        winTourText.show();
+        
+        if(step.pos)
+            winTourText.show();
     },
 
     setPositions: function(position, posArray, div) {
@@ -523,13 +523,14 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         var pos = this.getElementPosition(this.currentEl);
         this.hlElement.style.left = (pos[0] + 2) + "px";
         this.hlElement.style.top = pos[1] + "px";
-        this.hlElement.style.width = pos[2] + "px";
-        this.hlElement.style.height = pos[3] + "px";
+        this.hlElement.style.width = (pos[2] - 6) + "px";
+        this.hlElement.style.height = (pos[3] - 4) + "px";
         this.hlElement.style.display = "block";
         this.hlElement.style.border = "solid 2px #bee82c";
     },
 
     getElementPosition: function(el){
+        console.log(el)
         var elExt = el.$ext;
         if (elExt === undefined) {
             var pos = apf.getAbsolutePosition(el[0]);
@@ -563,6 +564,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             (hlElement || _self.hlElement).style.display = "none";
             _self.currentStep = -1;
             _self.overlay.style = 'none';
+            
+            //set anim settings to what it was before the tour
+            settings.model.setQueryValue('general/@animateui', _self.animateui);
         };
     },
 

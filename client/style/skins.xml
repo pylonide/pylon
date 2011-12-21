@@ -9057,6 +9057,49 @@
     </a:presentation>
 </a:textbox>
 
+<a:textarea name="textarea_ide">
+    <a:style><![CDATA[
+        .textarea_ide {
+            font-family: Arial;
+            font-size: 10px;
+            color: #202020;
+            padding: 5px;
+            word-wrap: break-word;
+            line-height: 14px;
+            margin-left: 70px;
+            border-top: 1px solid #737373;
+            border-bottom: 1px solid #999999;
+            border-left: 1px solid #999999;
+            border-right: 1px solid #999999;
+            overflow    : auto;
+            outline     : none;
+            background-color: #ffffff;
+        }
+
+        .textarea_ideFocus {
+            
+        }
+
+        .textarea_ideDisabled{
+            
+        }
+
+        .textarea_ideInitial{
+            
+        }
+
+        .textarea_ideError{
+            
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input=".">
+            <textarea type='text' class="textarea_ide" />
+        </a:main>
+    </a:presentation>
+</a:textarea>
+
 <a:textbox name="textbox-modal">
     <a:style><![CDATA[
         .textbox-modal {

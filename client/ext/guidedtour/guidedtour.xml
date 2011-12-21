@@ -35,6 +35,7 @@
       modal   = "false"
       kbclose = "false"
       width   = "295"
+      zindex  = "99999"
       height  = "58"
       skinset = "guidedtour"
       skin    = "win-controls"
