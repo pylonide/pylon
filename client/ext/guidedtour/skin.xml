@@ -73,9 +73,12 @@
             .wn_cp_content .btnIcon .lbl span {
                 width: 40px;
             }
-             
+            
+            .tgDialog {
+                z-index: 99999;
+            }
             .tgDialog, .guidetool {
-                z-index: 999999999999;
+                z-index: 999999;
             }
              
             .tgDialog > .bk-header {
@@ -110,7 +113,7 @@
             
             .tgForwardButton .caption {
                 height: 15px;
-                background: url(images/tg_button_forward.png) no-repeat 24px 5px;
+                background: url(images/tg_button_forward.png) no-repeat 27px 5px;
             }
         ]]></a:style>
     
