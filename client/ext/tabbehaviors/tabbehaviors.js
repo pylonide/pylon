@@ -54,14 +54,30 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
         this.nodes.push(
             mnuTabs.appendChild(new apf.item({
+                caption : "Reveal in File Tree",
+                onclick : function() {
+                    _self.revealtab(tabEditors.contextPage);
+                },
+                disabled : "{!!!tabEditors.activepage}"
+            })),
+            mnuTabs.appendChild(new apf.item({
+                caption : "Close Tab",
+                onclick : function() {
+                    _self.closetab(tabEditors.contextPage);
+                },
+                disabled : "{!!!tabEditors.activepage}"
+            })),
+            mnuTabs.appendChild(new apf.item({
                 caption : "Close All Tabs",
-                onclick : this.closealltabs.bind(this)
+                onclick : this.closealltabs.bind(this),
+                disabled : "{!!!tabEditors.activepage}"
             })),
             mnuTabs.appendChild(new apf.item({
                 caption : "Close All But Current Tab",
                 onclick : function() {
                     _self.closeallbutme();
-                }
+                },
+                disabled : "{!!!tabEditors.activepage}"
             })),
             //mnuTabs.appendChild(new apf.divider()),
             apf.document.body.appendChild(new apf.menu({
@@ -93,10 +109,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             }))
         );
 
-        this.hotitems.revealtab     = [mnuContextTabs.childNodes[0]];
-        this.hotitems.closetab      = [mnuContextTabs.childNodes[1]];
-        this.hotitems.closealltabs  = [this.nodes[0], mnuContextTabs.childNodes[2]];
-        this.hotitems.closeallbutme = [this.nodes[1], mnuContextTabs.childNodes[3]];
+        this.hotitems.revealtab     = [this.nodes[0], mnuContextTabs.childNodes[0]];
+        this.hotitems.closetab      = [this.nodes[1], mnuContextTabs.childNodes[1]];
+        this.hotitems.closealltabs  = [this.nodes[2], mnuContextTabs.childNodes[2]];
+        this.hotitems.closeallbutme = [this.nodes[3], mnuContextTabs.childNodes[3]];
 
         tabEditors.setAttribute("contextmenu", "mnuContextTabs");
 
@@ -476,7 +492,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.sep = null;
         }
         else if (!this.sep && (len || force)) {
-            this.sep = mnuTabs.insertBefore(new apf.divider(), mnuTabs.childNodes[6]);
+            this.sep = mnuTabs.insertBefore(new apf.divider(), mnuTabs.childNodes[8]);
         }
 
         if (len < (force ? 19 : 20)) { // we already have 9 other menu items
