@@ -62,7 +62,7 @@ apf.zmanager = function(){
         main.style.zIndex = count[type].level++;
         if (companion) {
             if (companion.$storedZ == undefined)
-                companion.$storedZ = companion.style.zIndex;
+                companion.$storedZ = companion.style.zIndex || parseInt(main.style.zIndex) + 1;
             companion.style.zIndex = count[type].level++
         }
     }
