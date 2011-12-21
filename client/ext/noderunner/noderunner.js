@@ -30,7 +30,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         }
     },
 
-    NODE_VERSION: "0.6.x",
+    NODE_VERSION: "auto",
 
     init : function(amlNode){
         ide.addEventListener("socketDisconnect", this.onDisconnect.bind(this));
