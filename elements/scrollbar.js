@@ -820,7 +820,7 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
             if (hasOnScroll()) {
                 clearTimeout(timer);
                 var pos = apf.getAbsolutePosition(oHtml);
-                var show = oHtml.offsetWidth - (e.clientX - pos[0]) < 40;
+                var show = oHtml.offsetWidth - (e.clientX - pos[0]) < 25;
                 if (show && sb.$ext.style.display == "none" || !show && sb.$ext.style.display == "block") {
                     if (show)
                         showScrollbar();
