@@ -62,16 +62,15 @@ apf.zmanager = function(){
         main.style.zIndex = count[type].level++;
         if (companion) {
             if (companion.$storedZ == undefined)
-                companion.$storedZ = companion.style.zIndex || parseInt(main.style.zIndex) + 1;
+                companion.$storedZ = companion.style.zIndex;
             companion.style.zIndex = count[type].level++
         }
     }
     
     this.clear = function(main, companion){
-        if (companion.style.zIndex == parseInt(main.style.zIndex) + 1) {
+        if (companion.style.zIndex == parseInt(main.style.zIndex) + 1)
             companion.style.zIndex = companion.$storedZ;
-            companion.$storedZ = undefined;
-        }
+        companion.$storedZ = undefined;
     }
 };
 //#endif
