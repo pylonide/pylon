@@ -1,0 +1,23 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window
+      id        = "winNewerSave"
+      title     = "There is an auto-saved version of this file available"
+      icon      = ""
+      center    = "true"
+      render    = "runtime"
+      width     = "512"
+      skin      = "change_photo">
+        <a:vbox padding="10" edge="15 20 10 20">
+            <h3 class="wheader">Restore auto-saved version?</h3>
+            <div>There is a more recent version of the file you are trying to open. Do you want to open the auto-saved copy instead?</div>
+        </a:vbox>
+
+        <a:vbox>
+            <a:divider skin="hordivider" />
+            <a:hbox pack="end" padding="7" edge="10 10 5 10">
+                <a:button id="btnRestoreYes" width="80" default="3" class="ui-btn-green" caption="Yes" />
+                <a:button id="btnRestoreNo" width="80" class="ui-btn-red" caption="No" />
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+</a:application>

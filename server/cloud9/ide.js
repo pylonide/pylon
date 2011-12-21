@@ -128,6 +128,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/nodeunit/nodeunit", 
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",
+    "ext/autosave/autosave",
     "ext/vim/vim",
     "ext/jslanguage/jslanguage"
     //"ext/autotest/autotest"

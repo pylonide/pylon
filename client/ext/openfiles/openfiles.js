@@ -1,7 +1,7 @@
 /**
  * Code Editor for the Cloud9 IDE
  *
- * @copyright 2010, Ajax.org B.V.
+ * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
@@ -48,6 +48,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
         ide.addEventListener("updatefile", function(e){
             var node = e.xmlNode;
+
             var path = e.path || node.getAttribute("path");
 
             var fNode = model.queryNode("//node()[@path='" + path + "']");
@@ -75,7 +76,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             if (!node || this.selection.length > 1)
                 return;
 
-            ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
+            ide.dispatchEvent("openfile", { doc: ide.createDocument(node) });
         });
 
         lstOpenFiles.addEventListener("afterremove", function(e){
@@ -97,6 +98,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         });
 
         ide.addEventListener("treechange", function(e) {
+
             var path = e.path
                         .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
                         .replace(/\[@name="workspace"\]/, "")
@@ -110,27 +112,30 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             var removed = [];
 
             for (var i = 0; i < nodes.length; ++i) {
-                var node    = nodes[i],
-                    name    = node.getAttribute("name");
+                var node = nodes[i];
+                var name = node.getAttribute("name");
 
                 if (files[name])
                     delete files[name];
                 else
                     removed.push(node);
             }
+
             removed.forEach(function (node) {
-                // console.log("REMOVE", node);
                 apf.xmldb.removeNode(node);
             });
+
             path = parent.getAttribute("path");
+
             for (var name in files) {
                 var file = files[name];
 
                 var xmlNode = "<" + file.type +
                     " type='" + file.type + "'" +
-                    " name='" + name + "'" +
-                    " path='" + path + "/" + name + "'" +
+                    " name='" + filename + "'" +
+                    " path='" + path + "/" + filename + "'" +
                 "/>";
+
                 trFiles.add(xmlNode, parent);
             }
         });
