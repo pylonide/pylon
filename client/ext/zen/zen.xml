@@ -2,8 +2,8 @@
     <a:skin
        id  = "zen"
        src = "{require('text!ext/zen/skin.xml')}"
-       media-path = "/static/style/images/"
-       icon-path  = "/static/style/icons/"
+       media-path = "{require('core/ide').staticPrefix + '/style/images/'}"
+       icon-path  = "{require('core/ide').staticPrefix + '/style/icons/'}"
     />
     <a:button id="btnZenFullscreen"
       visible = "true"
