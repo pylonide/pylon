@@ -186,9 +186,11 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         _self.$clearMarker();
 
         _self.$editor.setSession(doc);
-        
-        _self.$updateMarker();
-        _self.$updateBreakpoints(doc);
+    };
+    
+    this.afterOpenFile = function(doc) {
+        this.$updateMarker();
+        this.$updateBreakpoints(doc);
     };
 
     this.$addDocListeners = function(doc) {
@@ -252,8 +254,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         doc = doc || this.$editor.getSession();
 
         doc.setBreakpoints([]);
-        if (!this.$breakpoints)
+        if (!this.$breakpoints) {
             return;
+        }
 
         if (this.xmlRoot) {
             var scriptName = this.xmlRoot.getAttribute("scriptname");
