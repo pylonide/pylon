@@ -29,9 +29,8 @@
                   overflow = "hidden">
                     <a:list
                       id            = "lstSaveSessionAs"
-                      class         = "noscrollbar"
+                      class         = "noscrollbar trDgLike emptyLeft"
                       scrollbar     = "sbShared 2 2 2"
-                      class         = "trDgLike emptyLeft"
                       style         = "border: none; overflow: hidden"
                       flex          = "1"
                       model         = "{require('ext/settings/settings').model}"
