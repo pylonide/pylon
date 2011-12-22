@@ -251,6 +251,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         }
         ide.dispatchEvent("updatefile", {
             path: path,
+            newPath: newPath,
             filename: name && name.input,
             xmlNode: node
         });

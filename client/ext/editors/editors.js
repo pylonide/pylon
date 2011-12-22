@@ -512,10 +512,6 @@ module.exports = ext.register("ext/editors/editors", {
                 tabEditors.set(page);
         };
 
-        /*ide.addEventListener("updatefile", function(e) {
-            console.log("Update file!", e);
-        });*/
-
         apf.addEventListener("hashchange", function(e){
             var page = "/workspace" + e.page;
             if (tabEditors.activepage != page && tabEditors.getPage(page))

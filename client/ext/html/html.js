@@ -12,12 +12,10 @@ var ext = require("core/ext");
 var code = require("ext/code/code");
 var markup = require("text!ext/html/html.xml");
 
-var mimeTypes = [
-    "text/html",
-    "application/xhtml+xml",
-    "text/javascript",
-    "text/plain",
-    "application/xml"
+var previewExtensions = [
+    "htm", "html", "xhtml", 
+    "conf", "log", "text", "txt",
+    "xml", "xsl"
 ];
 
 module.exports = ext.register("ext/html/html", {
@@ -39,14 +37,19 @@ module.exports = ext.register("ext/html/html", {
             if (e.editor && e.node.$model)
                 _self.afterSwitchOrOpen(e.node);
         });
+        ide.addEventListener("updatefile", function(e) {
+            var page = tabEditors.getPage(e.newPath);
+            if (!page || !page.$active)
+                return;
+            _self.afterSwitchOrOpen(page);
+        });
     },
-    
+
     afterSwitchOrOpen : function(node) {
-        console.log(node.$model.data.getAttribute("contenttype"), node.$model.data.getAttribute("path"));
-        var contentType = node.$model.data.getAttribute("contenttype") || "";
-        var mime = contentType.split(";")[0];
-    
-        if (mimeTypes.indexOf(mime) > -1) {
+        var name = node.$model.data.getAttribute("name");
+        var fileExtension = name.split(".").pop();
+
+        if (previewExtensions.indexOf(fileExtension) > -1) {
             ext.initExtension(this);
             this.page = node;
             this.enable();
