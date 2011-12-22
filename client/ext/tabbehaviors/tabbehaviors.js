@@ -192,6 +192,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
 
         tabEditors.addEventListener("aftersavedialogcancel", function(e) {
+            if (!_self.changedPages)
+                return
+
             var i, l, page;
             for (i = 0, l = _self.changedPages.length; i < l; i++) {
                 page = _self.changedPages[i];
