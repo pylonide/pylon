@@ -132,6 +132,9 @@ module.exports = ext.register("ext/offline/offline", {
                 command: "state", 
                 action: "publish" 
             }));
+            
+            // the debugger needs to know that we are going to attach, but that its not a normal state message
+            dbg.registerAutoAttach();
         });
         
         /**** File System ****/

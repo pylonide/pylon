@@ -113,12 +113,12 @@
               options    = "size|move"
               prerender  = "false"
               caching    = "false"
-              model      = "[{dgStack.selected}::vars]"
+              model      = "[{dbg.activeframe}::vars]"
               disabled   = "{!stDebugProcessRunning.active or stRunning.active}"
               loading-message = "Calculating...">
                 <a:actions />
                 <a:each match="[item|globals]" sort="[@name]">
-                    <a:insert match="[globals]" get="{adbg.loadFrame(dbg, {dgStack.selected})}"/>
+                    <a:insert match="[globals]" get="{adbg.loadFrame(dbg, {dbg.activeframe})}"/>
                     <a:insert match="[item[@children='true']]" get="{adbg.loadObjects(dbg, %[.])}" />
                     <a:column caption="Property" value="{[@name] || 'Globals'}" width="40%" icon="debugger/genericvariable_obj.gif" tree="true" />
                     <a:column caption="Value" value="[@value]" width="60%" />

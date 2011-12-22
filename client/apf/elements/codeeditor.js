@@ -188,8 +188,13 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
         _self.$editor.setSession(doc);
         
-        _self.$updateMarker();
-        _self.$updateBreakpoints(doc);
+        // clear breakpoints
+        doc.setBreakpoints([]);
+    };
+    
+    this.afterOpenFile = function(doc) {
+        this.$updateMarker();
+        this.$updateBreakpoints(doc);
     };
 
     this.$addDocListeners = function(doc) {
@@ -221,32 +226,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
      * Indicates whether we are going to set a marker
      */
     this.$updateMarkerPrerequisite = function () {
-        if (!this.$debugger) {
-            return;
-        }
-        var frame = this.$debugger.activeframe;
-        if (!frame) {
-            return;
-        }
-        
-        // when running node with 'debugbrk' it will auto break on the first line of executable code
-        // we don't want to really break here so we put this:                
-        if (frame.getAttribute("name") === "anonymous(exports, require, module, __filename, __dirname)"
-                && frame.getAttribute("index") === "0" && frame.getAttribute("line") === "0") {
-                    
-            var fileNameNode = frame.selectSingleNode("//frame/vars/item[@name='__filename']");
-            var fileName = fileNameNode ? fileNameNode.getAttribute("value") : "";
-            var model = this["model-breakpoints"].data;
-            
-            // is there a breakpoint on the exact same line and file? then continue
-            if (fileName && model && model.selectSingleNode("//breakpoints/breakpoint[@script='" + fileName + "' and @line=0]")) {
-                return frame;
-            }
-            
-            return;
-        }
-        
-        return frame;
+        return this.$debugger && this.$debugger.$updateMarkerPrerequisite();
     };
     
     this.$updateMarker = function () {
@@ -278,8 +258,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         doc = doc || this.$editor.getSession();
 
         doc.setBreakpoints([]);
-        if (!this.$breakpoints)
+        if (!this.$breakpoints) {
             return;
+        }
 
         if (this.xmlRoot) {
             var scriptName = this.xmlRoot.getAttribute("scriptname");
