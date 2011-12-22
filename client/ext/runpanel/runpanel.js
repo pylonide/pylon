@@ -93,6 +93,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 
                 e.model.setQueryValue("general/@saveallbeforerun", false);
             }
+            if (!e.model.queryNode("auto/configurations/@debug"))
+                e.model.setQueryValue("auto/configurations/@debug", true);
             if (!e.model.queryNode("auto/configurations/@autohide"))
                 e.model.setQueryValue("auto/configurations/@autohide", true);
 

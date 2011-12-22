@@ -169,13 +169,13 @@
             border-right    : 1px solid #2E2E2E;
         }
 
-        .deploy.mnubtn {
+        /*.deploy.mnubtn {
             border-bottom : none;
         }
 
         .deploy.mnubtn.mnubtnDown {
             border-bottom: 1px solid #3F3F41;
-        }
+        }*/
 
         .black-menu-bar .c9menulogo {
             width    : 65px;
@@ -7300,7 +7300,7 @@
     }
 
     .tab_console .btncontainer{
-        padding : 5px 6px 1px;
+        padding : 5px 6px 3px;
         z-index : 100;
         height: 20px;
         overflow: visible;
@@ -7315,7 +7315,7 @@
 
         background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #191919),color-stop(1, #292929));
         background: -moz-linear-gradient(center bottom,#191919 0%, #292929 100%);
-        margin-top : -28px;
+        margin-top : -29px;
         width : auto;
     }
 

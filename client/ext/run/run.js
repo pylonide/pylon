@@ -62,7 +62,7 @@ module.exports = ext.register("ext/run/run", {
         dock.register(name, "pgDebugNav", {
             menu : "Run Commands",
             primary : {
-                backgroundImage: "/static/style/images/debugicons.png",
+                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
                 defaultState: { x: -6, y: -265 },
                 activeState: { x: -6, y: -265 }
             }

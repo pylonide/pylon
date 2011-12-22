@@ -14,6 +14,9 @@ var settings = require("ext/settings/settings");
 var tabbehaviors = require("ext/tabbehaviors/tabbehaviors");
 var css = require("text!ext/save/save.css");
 var markup = require("text!ext/tabsessions/tabsessions.xml");
+var tabbeh = require("ext/tabbehaviors/tabbehaviors");
+
+tabbeh.menuOffset = 8;
 
 module.exports = ext.register("ext/tabsessions/tabsessions", {
     name       : "Tab Sessions",

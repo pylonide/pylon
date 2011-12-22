@@ -263,7 +263,6 @@ module.exports = ext.register("ext/save/save", {
         var _self = this, panel = sbMain.firstChild;
         panel.setAttribute("caption", "Saving file " + path);
 
-
         var value = doc.getValue();
 
         fs.saveFile(path, value, function(data, state, extra){
@@ -314,7 +313,7 @@ module.exports = ext.register("ext/save/save", {
             this.saveBuffer[path] = page;
             return;
         }
-        apf.xmldb.setAttribute(node, "saving", "1");
+        apf.xmldb.setAttribute(file, "saving", "1");
 
         var self = this;
         var panel = sbMain.firstChild;
@@ -433,7 +432,7 @@ module.exports = ext.register("ext/save/save", {
             this.saveBuffer[path] = page;
             return;
         }
-        apf.xmldb.setAttribute(node, "saving", "1");
+        //apf.xmldb.setAttribute(file, "saving", "1");
 
         var self = this;
         var doSave = function() {

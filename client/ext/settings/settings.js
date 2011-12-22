@@ -23,7 +23,7 @@ module.exports = ext.register("ext/settings/settings", {
     skin    : {
         id   : "prefs",
         data : skin,
-        "media-path" : "/static/ext/settings/images/"
+        "media-path" : ide.staticPrefix + "/ext/settings/images/"
     },
     
     defaultWidth : 250,
