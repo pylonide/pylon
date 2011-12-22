@@ -2949,7 +2949,7 @@
         }
         
         .with-noise .records {
-            background: url(images/dg_noise.png) repeat 0 0;
+            background: #E1E1E1 url(images/dg_noise.png) repeat 0 0;
         }
         
         .noscrollbar .records{
@@ -2972,6 +2972,10 @@
             overflow : hidden;
             border-right:1px solid #D6D6D6;
             border-left : 1px solid white;
+        }
+        
+        .with-noise .records .row span u {
+            border-left: 1px solid #D1D1D1;
         }
         
         .with-noise .records .row span {
