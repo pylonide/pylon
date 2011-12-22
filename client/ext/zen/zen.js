@@ -1,15 +1,15 @@
 /**
  * Zen mode
- * 
+ *
  * @TODO
  * - Disabling the extension doesn't call the disable() function
  * - Exit zen mode when doing any keybinding operation (except openfiles, quicksearch, gotoline)
  * - While animating, disable ability to toggle zen mode (better: cancel and reverse the operation)
- * 
+ *
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
 require("ext/zen/firmin-all-min");
@@ -27,7 +27,12 @@ module.exports = ext.register("ext/zen/zen", {
     alone    : true,
     type     : ext.GENERAL,
     markup   : markup,
-    skin     : skin,
+    skin     : {
+        id   : "zen",
+        data : skin,
+        "media-path" : ide.staticPrefix + "/style/images/",
+        "icon-path"  : ide.staticPrefix + "/style/icons/"
+    },
     isFocused : false,
     neverShown : true,
 
@@ -94,7 +99,7 @@ module.exports = ext.register("ext/zen/zen", {
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor)
             editor.ceEditor.parentNode.appendChild(btnZenFullscreen);
-            
+
         vbMain.parentNode.appendChild(new apf.vbox({
             anchors: "0 0 0 0",
             id: "vbZen",
@@ -204,7 +209,7 @@ module.exports = ext.register("ext/zen/zen", {
     /**
      * Method invoked to do the actual toggling of zen mode
      * Detects if zened or not
-     * 
+     *
      * @param {amlEvent} e Event from click
      */
     toggleFullscreenZen : function(e) {
@@ -220,7 +225,7 @@ module.exports = ext.register("ext/zen/zen", {
 
     /**
      * Checks if the current browser supports fancy shmancy animations
-     * 
+     *
      * @return {boolean} true if supported, false otherwise
      */
     checkBrowserCssTransforms : function() {
@@ -232,7 +237,7 @@ module.exports = ext.register("ext/zen/zen", {
 
     /**
      * Enters the editor into fullscreen/zen mode
-     * 
+     *
      * @param {boolean} slow Whether to slow down the animation
      */
     enterIntoZenMode : function(slow) {
@@ -351,7 +356,7 @@ module.exports = ext.register("ext/zen/zen", {
     /**
      * Returns the editor to its original, non-zen,
      * non-fullscreen state
-     * 
+     *
      * @param {boolean} slow Whether to slow down the animation
      */
     escapeFromZenMode : function(slow) {
@@ -389,12 +394,12 @@ module.exports = ext.register("ext/zen/zen", {
                 _self.animateZen.style.display = "none";
                 // Reset values
                 _self.resetTabEditorsParentStyles();
-                
+
                 apf.document.body.appendChild(tabEditors.parentNode);
-                
+
                 editors.enableTabResizeEvent();
                 apf.layout.forceResize(tabEditors.parentNode.$ext);
-                
+
                 tabEditors.parentNode.$ext.style.position = "absolute";
 
                 setTimeout(function() {
@@ -412,16 +417,16 @@ module.exports = ext.register("ext/zen/zen", {
         }
         else {
             this.resetTabEditorsParentStyles();
-            
+
             apf.document.body.appendChild(tabEditors.parentNode);
-            
+
             editors.enableTabResizeEvent();
             this.animateZen.style.display = "none";
             vbZen.$ext.style.opacity = "0";
             vbZen.hide();
-            
+
             tabEditors.parentNode.$ext.style.position = "absolute";
-            
+
             apf.layout.forceResize();
             setTimeout(function() {
                 ceEditor.focus();
@@ -469,15 +474,15 @@ module.exports = ext.register("ext/zen/zen", {
         this.animateZen.style.height = teHeight + "px";
         this.animateZen.style.display = "block";
     },
-    
+
     /**
      * Gets the class selectors from the ace_editor element and
      * gets the corresponding bg color for the theme. Then it
      * applies that bg color to the scroller element
-     * 
+     *
      * Otherwise the default background color is grayish and the
      * animation exposes that bg color - making it look bad
-     * 
+     *
      * This is hacked and should probably be in Ace already
      */
     setAceThemeBackground : function() {
@@ -485,7 +490,7 @@ module.exports = ext.register("ext/zen/zen", {
         var ace_editor = document.getElementsByClassName("ace_editor")[0];
         if (!ace_editor)
             return;
-        
+
         var classNames = ace_editor.getAttribute("class").split(" ");
         for (var cn = 0; cn < classNames.length; cn++) {
             if (classNames[cn].indexOf("ace-") === 0) {
@@ -501,15 +506,15 @@ module.exports = ext.register("ext/zen/zen", {
 
     /**
      * Calls appendChild on the animation window to receive
-     * tabEditors.parentNode - then sets the styles of 
-     * tabEditors.parentNode so it fits properly into the 
+     * tabEditors.parentNode - then sets the styles of
+     * tabEditors.parentNode so it fits properly into the
      * animation window
      */
     placeTabIntoAnimationWindow : function() {
         var reappendlist = [];
         var iframelist   = apf.getArrayFromNodelist(
             tabEditors.parentNode.$ext.getElementsByTagName("iframe"));
-            
+
         for (var i = 0; i < iframelist.length; i++) {
             reappendlist[i] = [
                 iframelist[i].parentNode,
@@ -517,15 +522,15 @@ module.exports = ext.register("ext/zen/zen", {
                 document.adoptNode(iframelist[i]),
             ]
         }
-        
+
         this.animateZen.appendChild(tabEditors.parentNode.$ext);
-        
+
         for (var i = reappendlist.length - 1; i >= 0; i--) {
             reappendlist[i][0].insertBefore(
                 reappendlist[i][2],
                 reappendlist[i][1]);
         }
-        
+
         //this.animateZen.appendChild(tabEditors.parentNode.$ext);
         tabEditors.parentNode.$ext.style.width = "100%";
         tabEditors.parentNode.$ext.style.height = "100%";

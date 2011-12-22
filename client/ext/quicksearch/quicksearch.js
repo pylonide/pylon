@@ -7,6 +7,7 @@
 
 define(function(require, exports, module) {
 
+var ide = require("core/ide");
 var ext = require("core/ext");
 var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
@@ -21,7 +22,11 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
-    skin    : skin,
+    skin     : {
+        id   : "quicksearch",
+        data : skin,
+        "icon-path" : ide.staticPrefix + "/ext/quicksearch/icons/"
+    },
     markup  : markup,
     commands : {
         "quicksearch": {hint: "quickly search for a string inside the active document, without further options (see 'search')"},

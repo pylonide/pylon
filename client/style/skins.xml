@@ -2974,7 +2974,7 @@
             border-left : 1px solid white;
         }
         
-        .datagrid .records .row span {
+        .with-noise .records .row span {
             background-image: url(images/dg_noise.png);
             background-repeat: repeat;
             border-top: #f0f0f0;

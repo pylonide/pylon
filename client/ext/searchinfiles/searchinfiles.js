@@ -22,7 +22,11 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     alone    : true,
     offline  : false,
     markup   : markup,
-    skin     : skin,
+    skin     : {
+        id   : "searchinfiles",
+        data : skin,
+        "media-path" : ide.staticPrefix + "/ext/searchinfiles/images/"
+    },
     commands  : {
         "searchinfiles": {hint: "search for a string through all files in the current workspace"}
     },
@@ -173,7 +177,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             this.$model.addEventListener("afterload", function() {
                 tabConsole.set(_self.pageID);
             });
-            
+
             this.$panel.addEventListener("afterclose", function(){
                 this.removeNode();
                 return false;
@@ -188,7 +192,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         var node = this.$currentScope = grpSFScope.value == "projects"
             ? trFiles.xmlRoot.selectSingleNode("folder[1]")
             : this.getSelectedTreeNode();
-            
+
         var findValueSanitized = txtSFFind.value.trim().replace(/([\[\]\{\}])/g, "\\$1");
         _self.$model.clear();
         trSFResult.setAttribute("empty-message", "Searching for '" + findValueSanitized + "'...");
