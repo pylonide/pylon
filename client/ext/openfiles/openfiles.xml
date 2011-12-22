@@ -4,34 +4,49 @@
             return (xmlNode.tagName == "folder" ? 0 : 1) + value.toLowerCase();
         }
     ]]></a:script>
-    <a:window id="winOpenFiles" 
-      flex     = "1" 
-      skin     = "fm-window" 
-      title    = "Active Files" 
-      modal    = "false" 
-      visible  = "true" 
-      buttons  = "close" 
+    <a:window id="winOpenFiles"
+      flex     = "1"
+      skin     = "fm-window"
+      title    = "Open Files"
+      modal    = "false"
+      buttons  = "close"
       optimize = "true">
-        <a:hbox
-          anchors  = "0 0 0 0"
-          overflow = "hidden"
-        >
-            <a:list id="lstOpenFiles" canrename="true" flex="1" border="0"
-              multiselect="true" skin="tree">
-                <a:each match="[file]" sort="[@name]" sort-method="filesort">
-                    <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.] + ' - ' + [../@path].split('/').slice(-2).join('/')}" />
-                    <a:icon match="[folder|project]" value="folder.png" />
-                    <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
-                </a:each>
-                <a:remove match="[file|folder]" />
-            </a:list>
-            <a:scrollbar
-                for      = "lstOpenFiles"
-                margin   = "2"
-                skin     = "sbios"
-                width    = "7"
-                overflow = "auto"
+        <a:button
+          top="-22"
+          skin="header-btn"
+          right="5"
+          icon="panel_settings.png"
+          submenu="mnuOpenFilesSettings"/>
+        
+        <a:menu id="mnuOpenFilesSettings">
+            <a:item id="cbShowFiles"
+                caption = "Show Path"
+                type    = "check"
+                visible = "{lstOpenFiles.visible}"
+                checked = "[{require('ext/settings/settings').model}::auto/openfiles/@showpath]"
+                onclick = "
+                    var sel = lstOpenFiles.getSelection();
+                    lstOpenFiles.reload();
+                    lstOpenFiles.selectList(sel);
+                "
             />
-        </a:hbox>
+        </a:menu>
+        
+        <a:list id="lstOpenFiles" 
+          canrename   = "true" 
+          anchors     = "0 0 0 0" 
+          model       = "{require('ext/openfiles/openfiles').model}"
+          border      = "0"
+          scrollbar   = "sbShared 2 2 2"
+          multiselect = "true" 
+          autoselect  = "false"
+          skin        = "tree">
+            <a:each match="[file]" sort="[@name]" sort-method="filesort">
+                <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.] + (cbShowFiles.checked ? ' - ' + [../@path].split('/').slice(-2).join('/') : '')}" />
+                <a:icon match="[folder|project]" value="folder.png" />
+                <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
+            </a:each>
+            <a:remove match="[file|folder]" />
+        </a:list>
     </a:window>
 </a:application>

@@ -54,7 +54,7 @@ module.exports = ext.register("ext/offline/offline", {
         
         // preload the offline image programmatically:
         var img = new Image();
-        img.src = "/static/style/images/offline.png";
+        img.src = ide.staticPrefix + "/style/images/offline.png";
 
         //Replace http checking because we already have a socket
         //offline.isSiteAvailable = function(){};
@@ -132,6 +132,9 @@ module.exports = ext.register("ext/offline/offline", {
                 command: "state", 
                 action: "publish" 
             }));
+            
+            // the debugger needs to know that we are going to attach, but that its not a normal state message
+            dbg.registerAutoAttach();
         });
         
         /**** File System ****/
@@ -149,20 +152,23 @@ module.exports = ext.register("ext/offline/offline", {
         // not available
         var fIdent = "cloud9.files." + ide.workspaceId;
         
-        // If we don't have the real webdav, we need to use the offline one
-        if (!fs.realWebdav)
-            fs.realWebdav = fs.webdav;
-            
-        // Now we create a fake webdav object
-        var fakeWebdav = new WebdavWrapper(fs.realWebdav, sync, fIdent, function(){
-            // We need to set if we have offline file system support, and if we
-            // do we don't need to disable plugins like tree, save, etc
-            ide.offlineFileSystemSupport = fakeWebdav && fakeWebdav.hasFileSystem;
-        });
         
-        // Finally set the objects we need to make the calls on
-        fs.webdav = fakeWebdav;
-        davProject = fakeWebdav;
+        ide.addEventListener("init.ext/filesystem/filesystem", function(){
+            // If we don't have the real webdav, we need to use the offline one
+            if (!fs.realWebdav)
+                fs.realWebdav = fs.webdav;
+                
+            // Now we create a fake webdav object
+            var fakeWebdav = new WebdavWrapper(fs.realWebdav, sync, fIdent, function(){
+                // We need to set if we have offline file system support, and if we
+                // do we don't need to disable plugins like tree, save, etc
+                ide.offlineFileSystemSupport = fakeWebdav && fakeWebdav.hasFileSystem;
+            });
+            
+            // Finally set the objects we need to make the calls on
+            fs.webdav = fakeWebdav;
+            davProject = fakeWebdav; //intended global
+        });
         
         /**
          * Handler for syncing, wedav-write.  This is used when we go back online
@@ -296,35 +302,6 @@ module.exports = ext.register("ext/offline/offline", {
         
         fs.model.addEventListener("update", saveModel);
         fs.model.addEventListener("afterload", saveModel);
-        
-        /**** Settings ****/
-        
-        var settings = require("ext/settings/settings");
-        var sIdent = "cloud9.settings." + ide.workspaceId;
-        
-        settings.$saveToFile = settings.saveToFile;
-        settings.saveToFile = function(){
-            if (settings.model.data)
-                localStorage[sIdent] = apf.xmldb.cleanXml(settings.model.data.xml) || "";
-            
-            if (ide.onLine)
-                settings.$saveToFile();
-        };
-        
-        ide.addEventListener("beforeonline", function(){
-            if (localStorage[sIdent] && !settings.model.data) {
-                ide.settings = localStorage[sIdent];
-                settings.load();
-            }
-            delete localStorage[sIdent];
-        });
-        
-        ide.addEventListener("afteroffline", function(){
-            if (localStorage[sIdent] && !settings.model.data) {
-                ide.settings = localStorage[sIdent];
-                settings.load();
-            }
-        });
         
         //File contents
         /**

@@ -143,12 +143,13 @@ module.exports = ext.register("ext/code/code", {
     name    : "Code Editor",
     dev     : "Ajax.org",
     type    : ext.EDITOR,
-    contentTypes : Object.keys(SupportedModes),
     markup  : markup,
     deps    : [editors],
 
     nodes : [],
-    commandManager: new CommandManager(useragent.isMac ? "mac" : "win", defaultCommands),
+    
+    fileExtensions : Object.keys(contentTypes),
+    commandManager : new CommandManager(useragent.isMac ? "mac" : "win", defaultCommands),
     
     getState : function(doc) {
         doc = doc ? doc.acesession : this.getDocument();
@@ -239,6 +240,7 @@ module.exports = ext.register("ext/code/code", {
 
     setDocument : function(doc, actiontracker){
         var _self = this;
+        
         if (!doc.acesession) {
             doc.isInited = doc.hasValue();
             doc.acedoc = doc.acedoc || new ProxyDocument(new Document(doc.getValue() || ""));
@@ -251,6 +253,9 @@ module.exports = ext.register("ext/code/code", {
                  _self.setState(doc, doc.state);
 
             doc.addEventListener("prop.value", function(e) {
+                if (this.editor != _self)
+                    return;
+                    
                 doc.acesession.setValue(e.value || "");
                 if (doc.state)
                     _self.setState(doc, doc.state);
@@ -258,27 +263,69 @@ module.exports = ext.register("ext/code/code", {
             });
 
             doc.addEventListener("retrievevalue", function(e) {
-                if (!doc.isInited)
+                if (this.editor != _self)
+                    return;
+                    
+                if (!doc.isInited) 
                     return e.value;
                 else
                     return doc.acesession.getValue();
             });
+            
+            doc.addEventListener("close", function(){
+                if (this.editor != _self)
+                    return;
+                
+                //??? destroy doc.acesession
+            });
         }
         ceEditor.setProperty("value", doc.acesession);
+        
+        if (doc.editor && doc.editor != this) {
+            var value = doc.getValue();
+            if (doc.acesession.getValue() !== value) {
+                doc.editor = this;
+                doc.dispatchEvent("prop.value", {value : value});
+            }
+        }
+        
+        doc.editor = this;
     },
 
     hook: function() {
         var _self      = this;
-        var commitFunc = this.onCommit.bind(this);
-        var name       = this.name;
-
+        
         //Settings Support
         ide.addEventListener("init.ext/settings/settings", function(e) {
-            e.ext.addSection("code", name, "editors", commitFunc);
-            barSettings.insertMarkup(markupSettings);
+            var heading = e.ext.getHeading("Code Editor");
+            heading.insertMarkup(markupSettings);
         });
 
         ide.addEventListener("loadsettings", function(e) {
+            var model = e.model;
+            if (!model.queryNode("editors/code")) {
+                var node = apf.n("<code />")
+                  .attr("overwrite", "false")
+                  .attr("selectstyle", "line")
+                  .attr("activeline", "true")
+                  .attr("showinvisibles", "false")
+                  .attr("showprintmargin", "true")
+                  .attr("printmargincolumn", "80")
+                  .attr("softtabs", "true")
+                  .attr("tabsize", "4")
+                  .attr("scrollspeed", "2")
+                  .attr("fontsize", "12")
+                  .attr("wrapmode", "false")
+                  .attr("wraplimitmin", "")
+                  .attr("wraplimitmax", "")
+                  .attr("gutter", "true")
+                  .attr("highlightselectedword", "true")
+                  .attr("autohidehorscrollbar", "true").node();
+                
+                var editors = apf.createNodeFromXpath(model.data, "editors");
+                apf.xmldb.appendChild(editors, node);
+            }
+            
             // pre load theme
             var theme = e.model.queryValue("editors/code/@theme");
             if (theme)
@@ -286,7 +333,27 @@ module.exports = ext.register("ext/code/code", {
             // pre load custom mime types
             _self.getCustomTypes(e.model);
         });
-
+        
+        ide.addEventListener("afteropenfile", function(e) {
+            if (_self.setState)
+                _self.setState(e.doc, e.doc.state);
+                
+            if (e.doc && e.doc.editor && e.doc.editor.ceEditor) {
+                // check if there is a scriptid, if not check if the file is somewhere in the stack
+                if (!e.node.getAttribute("scriptid") && mdlDbgStack && mdlDbgStack.data) {
+                    var nodes = mdlDbgStack.data.selectNodes("//frame[@script='" + e.node.getAttribute("scriptname").replace(ide.workspaceDir + "/", "") + "']");
+                    if (nodes.length) {
+                        e.node.setAttribute("scriptid", nodes[0].getAttribute("scriptid"));
+                    }
+                }
+                e.doc.editor.ceEditor.afterOpenFile(e.doc.editor.ceEditor.getSession());
+            }
+        });
+        
+        tabEditors.addEventListener("afterswitch", function(e) {
+            ceEditor.afterOpenFile(ceEditor.getSession());
+        });
+        
         // preload common language modes
         require(["ace/mode/javascript", "ace/mode/html", "ace/mode/css"], function() {});
     },
@@ -327,7 +394,7 @@ module.exports = ext.register("ext/code/code", {
             mnuView.appendChild(new apf.item({
                 type    : "check",
                 caption : "Wrap Lines",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
+                checked : "{ceEditor.wrapmode}"
             }))
         );
 
@@ -431,10 +498,6 @@ module.exports = ext.register("ext/code/code", {
         });
     },
 
-    onCommit: function() {
-        //console.log("commit func called!")
-        //todo
-    },
 
     enable : function() {
         this.nodes.each(function(item){

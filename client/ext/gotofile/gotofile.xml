@@ -8,6 +8,8 @@
       height    = "300"
       resizable = "true"
       kbclose   = "true"
+      skin      = "bk-window"
+      class     = "nofooter"
       zindex    = "999999"
       onshow    = "
         txtGoToFile.select();
@@ -18,9 +20,11 @@
         <a:datagrid id="dgGoToFile"
           anchors = "34 0 0 0"
           border  = "1 0 0 0"
-          class   = "searchresults"
+          class   = "searchresults noscrollbar"
+          scrollbar = "sbShared 20 2 2"
           model   = "mdlGoToFile"
           each    = "[d:response/d:href]"
+          multiselect     = "true"
           loading-message = "Searching Project..."
           empty-message   = "No search results"
           startcollapsed  = "false">

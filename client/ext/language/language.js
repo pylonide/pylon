@@ -74,11 +74,15 @@ module.exports = ext.register("ext/language/language", {
         marker.hook(this, worker);
         complete.hook(this, worker);
         refactor.hook(this, worker);
-        liveInspect.hook(this, worker);
+        
+        ide.dispatchEvent("language.worker", {worker: worker});
+        ide.addEventListener("$event.language.worker", function(callback){
+            callback({worker: worker});
+        });
         
         ide.addEventListener("init.ext/settings/settings", function (e) {
-            e.ext.addSection("language", _self.name, "language", function () {});
-            barSettings.insertMarkup(settings);
+            var heading = e.ext.getHeading("Language Support");
+            heading.insertMarkup(settings);
         });
 	},
 
@@ -124,6 +128,11 @@ module.exports = ext.register("ext/language/language", {
     },
     
     setPath: function() {
+        var page =  tabEditors.getPage();
+        if (!page)
+            return;
+        var currentPath = page.getAttribute("id");
+
         // Currently no code editor active
         if(!editors.currentEditor.ceEditor || !tabEditors.getPage())
             return;

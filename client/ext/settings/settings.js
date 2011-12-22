@@ -10,9 +10,9 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var markup = require("text!ext/settings/settings.xml");
-var template = require("text!ext/settings/template.xml");
 var panels = require("ext/panels/panels");
 var skin = require("text!ext/settings/skin.xml");
+var settings = require("core/settings");
 
 module.exports = ext.register("ext/settings/settings", {
     name    : "Preferences",
@@ -20,7 +20,14 @@ module.exports = ext.register("ext/settings/settings", {
     alone   : true,
     type    : ext.GENERAL,
     markup  : markup,
-    skin    : skin,
+    skin    : {
+        id   : "prefs",
+        data : skin,
+        "media-path" : ide.staticPrefix + "/ext/settings/images/"
+    },
+    
+    defaultWidth : 250,
+    
     commands : {
         "showsettings": {hint: "open the settings window"}
     },
@@ -28,27 +35,9 @@ module.exports = ext.register("ext/settings/settings", {
 
     nodes : [],
 
+    //Backwards compatible
     save : function() {
-        var _self = this;
-        clearTimeout(this.$customSaveTimer);
-
-        this.$customSaveTimer = setTimeout(function(){
-            ide.dispatchEvent("savesettings", {model : _self.model});
-            _self.saveToFile();
-        }, 100);
-    },
-
-    saveToFile : function() {
-        var data = this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || "";
-        ide.send(JSON.stringify({
-            command: "settings",
-            action: "set",
-            settings: data
-        }));
-        ide.dispatchEvent("track_action", {
-            type: "save settings",
-            settings: data
-        });
+        settings.save();
     },
 
     saveSettingsPanel: function() {
@@ -66,7 +55,7 @@ module.exports = ext.register("ext/settings/settings", {
         if (ide.dispatchEvent("savesettings", {
             model : this.model
         }) !== false || changed)
-            this.saveToFile();
+            settings.save();
     },
 
     addSection : function(tagName, name, xpath, cbCommit){
@@ -75,100 +64,41 @@ module.exports = ext.register("ext/settings/settings", {
             this.model.appendXml('<' + tagName + ' name="' + name +'" />', xpath);
     },
 
-    load : function(){
-        var _self = this;
-
-        //@todo this should actually be an identifier to know that it was rights that prevented loading it
-        ide.settings = ide.settings == "defaults" ? template : ide.settings;
-
-        if (!ide.settings) {
-            ide.addEventListener("socketMessage", function(e){
-                if (e.message.type == "settings") {
-                    var settings = e.message.settings;
-                    if (!settings || settings == "defaults")
-                        settings = template;
-                    ide.settings =  settings;
-                    _self.load();
-
-                    ide.removeEventListener("socketMessage", arguments.callee);
-                }
-            });
-            
-            if (ide.onLine === true)
-                ide.send(JSON.stringify({command: "settings", action: "get"}));
-            return;
-        }
-
-        try {
-            this.model.load(ide.settings);
-        } catch(e) {
-            this.model.load(template);
-        }
-
-        ide.dispatchEvent("loadsettings", {
-            model : _self.model
-        });
-
-        var checkSave = function() {
-            if (ide.dispatchEvent("savesettings", {
-                model : _self.model
-            }) === true)
-                _self.saveToFile();
-        };
-        this.$timer = setInterval(checkSave, 60000);
-
-        apf.addEventListener("exit", checkSave);
-
-        ide.addEventListener("$event.loadsettings", function(callback) {
-            callback({model: _self.model});
-        });
-
-        ide.removeEventListener("afteronline", this.$handleOnline);
-    },
-
     hook : function(){
-        panels.register(this);
-
-        var btn = this.button = navbar.insertBefore(new apf.button({
-            skin    : "mnubtn",
-            state   : true,
-            "class" : "preferences",
-            caption : "Preferences"
-        }), navbar.firstChild);
-
-        var _self = this;
-
-        btn.addEventListener("mousedown", function(e){
-            var value = this.value;
-            if (navbar.current && (navbar.current != _self || value)) {
-                navbar.current.disable(navbar.current == _self);
-                if (value)
-                    return;
-            }
-
-            panels.initPanel(_self);
-            _self.enable(true);
+        panels.register(this, {
+            position : 100000,
+            caption: "Preferences",
+            "class": "preferences"
         });
-
-        this.model = new apf.model();
-
-        ide.addEventListener("afteronline", this.$handleOnline = function(){
-            _self.load();
-        });
+        
+        //Backwards compatible
+        this.model = settings.model;
+    },
+    
+    headings : {},
+    getHeading : function(name){
+        if (this.headings[name])
+            return this.headings[name];
+        
+        var heading = barSettings.appendChild(new apf.bar({
+            skin: "basic"
+        }));
+        heading.$int.innerHTML = '<div class="header"><span></span><div>' 
+            + name + '</div></div>';
+        
+        this.headings[name] = heading;
+        
+        return heading;
     },
 
     init : function(amlNode){
         this.panel = winSettings;
 
-        /*winSettings.addEventListener("hide", function(){
-            colLeft.$ext.style.minWidth = "0px"; //hack
-        });
-
-        winSettings.addEventListener("show", function() {
-            colLeft.$ext.style.minWidth = "215px"; //hack
-        });*/
-
         colLeft.appendChild(winSettings);
+        
+        this.getHeading("General");
+        
+        this.nodes.push(winSettings);
     },
 
     showsettings: function(e){
@@ -197,25 +127,16 @@ module.exports = ext.register("ext/settings/settings", {
         }
     },
 
-    enable : function(noButton){
-        winSettings.show();
-        colLeft.show();
-        if (!noButton) {
-            this.button.setValue(true);
-            if(navbar.current && (navbar.current != this))
-                navbar.current.disable(false);
-        }
-        splitterPanelLeft.show();
-        navbar.current = this;
+    enable : function(){
+        this.nodes.each(function(item){
+            item.enable();
+        });
     },
-
-    disable : function(noButton){
-        if (self.winSettings)
-            winSettings.hide();
-        if (!noButton)
-            this.button.setValue(false);
-
-        splitterPanelLeft.hide();
+    
+    disable : function(){
+        this.nodes.each(function(item){
+            item.disable();
+        });
     },
 
     destroy : function(){
@@ -223,6 +144,8 @@ module.exports = ext.register("ext/settings/settings", {
             item.destroy(true, true);
         });
         this.nodes = [];
+        
+        panels.unregister(this);
     }
 });
 

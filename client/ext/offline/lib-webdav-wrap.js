@@ -15,7 +15,7 @@ var WebdavLocalStorage = require("ext/offline/lib-offlinels");
  * Create the webdav wrapper, if we have a real webdav object we'll be
  * saving remotely, otherwise we'll save locally
  */
-var WebdavWrapper = module.exports = function(webdav, sync, fIdent, callback) {
+var WebdavWrapper = function(webdav, sync, fIdent, callback) {
     this.realWebdav    = webdav;
     
     // Check Local filesystem is available, or use localStorage
@@ -142,6 +142,8 @@ var WebdavWrapper = module.exports = function(webdav, sync, fIdent, callback) {
     this.handleError = function(callback, error) {
         callback(null, apf.ERROR, error ? {message: error.code} : {});
     }
-}).call(WebdavWrapper.prototype = new apf.Class().$init());
+}).call(WebdavWrapper.prototype = new apf.AmlElement().$init());
+
+module.exports = WebdavWrapper
 
 });

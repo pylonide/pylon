@@ -7,12 +7,11 @@
  
 define(function(require, exports, module) {
 
-require("apf/elements/debugger");
-require("apf/elements/debughost");
+var debug = require("apf/elements/debugger");
+var debugHost = require("apf/elements/debughost");
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var markup = require("text!ext/noderunner/noderunner.xml");
 
 module.exports = ext.register("ext/noderunner/noderunner", {
@@ -34,6 +33,10 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     init : function(amlNode){
         ide.addEventListener("socketDisconnect", this.onDisconnect.bind(this));
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
+
+        dbg.addEventListener("break", function(e){
+            ide.dispatchEvent("break", e);
+        });
 
         dbgNode.addEventListener("onsocketfind", function() {
             return ide.socket;
@@ -58,7 +61,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     },
 
     $onDebugProcessDeactivate : function() {
-        dbg.detach();
+        dbg.detach(function(){});
     },
 
     onMessage : function(e) {
@@ -91,6 +94,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 break;
 
             case "state":
+                
                 stDebugProcessRunning.setProperty("active", message.debugClient || message.nodeDebugClient);
                 stProcessRunning.setProperty("active", message.processRunning || message.nodeProcessRunning || message.pythonProcessRunning);
                 dbgNode.setProperty("strip", message.workspaceDir + "/");
@@ -148,7 +152,10 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         this.$run(true);
     },
 
-    run : function(path, args, debug) {      
+    run : function(path, args, debug) {
+        // this is a manual action, so we'll tell that to the debugger
+        dbg.registerManualAttach();
+        
         if (stProcessRunning.active || !stServerConnected.active/* || (ddRunnerSelector.value=='gae' ? '' : !path)*/ || typeof path != "string")
             return false;
 

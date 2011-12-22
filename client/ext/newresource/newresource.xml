@@ -7,38 +7,29 @@
       render    = "runtime"
       width     = "350"
       height    = "300"
-      skin      = "change_photo"
+      skin      = "bk-window"
       resizable = "true"
       kbclose   = "true"
-      buttons   = "close">
-        <a:scrollbar
-            for      = "lstFileTemplates"
-            margin   = "2"
-            skin     = "sbios"
-            width    = "7"
-            overflow = "auto"
-            right    = "12"
-            top      = "12"
-            bottom   = "58"
-        />
-      
+      buttons   = "close"
+      draggable = "true">
         <a:vbox padding="10" anchors="0 0 0 0">
             <a:list id="lstFileTemplates"
               model     = "mdlFileTemplates" 
               flex      = "1" 
-              margin    = "10 10 0 10"
+              margin    = "10 10 10 10"
               caption   = "[@caption]" 
               icon      = "[@icon]" 
+              class     = "noscrollbar"
+              scrollbar = "sbShared 12 12 55"
               each      = "item"
               eachvalue = "[@value]" 
               style     = "overflow:hidden"
               onafterchoose = "
                 btnFileTemplateSave.dispatchEvent('click');
               " />
-            <a:divider skin="hordivider" />
-            <a:hbox pack="end" padding="7" edge="0 10 5 5">
+            <a:hbox pack="end" padding="7" edge="10">
                 <a:button id="btnFileTemplateSave" width="80" default="2" 
-                  class="ui-btn-green" caption="Create" 
+                  class="btn-green" skin="btn-default-css3" caption="Create" 
                   onclick="
                     require('ext/newresource/newresource').newfile(
                         '.' + lstFileTemplates.value,
@@ -46,7 +37,7 @@
                     );
                     winNewFileTemplate.hide();
                   "/>
-                <a:button id="btnFileTemplateCancel" width="80"
+                <a:button id="btnFileTemplateCancel" skin="btn-default-css3" width="80"
                   onclick="winNewFileTemplate.hide()">Cancel</a:button>
             </a:hbox>
         </a:vbox>
@@ -56,6 +47,24 @@
         <templates>
             <item value="txt" icon="page_white_text.png" caption="Text file"><![CDATA[]]></item>
             <item value="js" icon="page_white_code.png" caption="JavaScript file"><![CDATA[]]></item>
+            <item value="js" icon="page_white_code.png" caption="Unit Test"><![CDATA["use strict";
+require("./support/paths");
+
+var assert = require("assert");
+//var module = require("./module");
+
+module.exports = {
+    
+    "test untitled 1" : function() {
+        //assert.equal(!true, false);
+    }
+
+};
+
+if (typeof module !== "undefined" && module === require.main) {
+    require("asyncjs").test.testcase(module.exports).exec()
+}]]></item>
+            <item value="stest" icon="page_white_code.png" caption="Selenium Test"><![CDATA[{}]]></item>
             <item value="coffee" icon="page_white_code.png" caption="CoffeeScript file"><![CDATA[]]></item>
             <item value="html" icon="html.png" caption="HTML file"><![CDATA[<!DOCTYPE html>
 <html  xmlns="http://www.w3.org/1999/xhtml">

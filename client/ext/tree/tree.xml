@@ -4,58 +4,6 @@
             return (xmlNode.tagName == "folder" ? 0 : 1) + value.toLowerCase();
         }
 
-        var confirmed = false;
-
-        function remove() {
-            if(window.cloud9config.readonly == true)
-                return false;
-            if (!confirmed) {
-                var files = trFiles.getSelection();
-
-                function confirm(file) {
-                    var name = file.getAttribute("name");
-                
-                    require("core/util").question(
-                        "Remove file?",
-                        "You are about to remove the file " + name,
-                        "Do you want continue? (This change cannot be undone)",
-                        function () { // Yes
-                            confirmed = true;
-                            trFiles.remove(file);
-                            confirmed = false;
-                            if (files.length > 0)
-                                confirm(files.shift());
-                            else
-                                winQuestion.hide();
-                        },
-                        function () { // Yes to all
-                            confirmed = true;
-                            trFiles.remove(file);
-                            files.forEach(function (file) {
-                                trFiles.remove(file);
-                            });
-                            confirmed = false;
-                            winQuestion.hide();
-                        },
-                        function () { // No
-                            if (files.length > 0)
-                                confirm(files.shift());
-                            else
-                                winQuestion.hide();
-                        },
-                        function () { // No to all
-                            winQuestion.hide();
-                        }
-                    );
-                    btnQuestionYesToAll.setAttribute("visible", files.length > 0);
-                    btnQuestionNoToAll.setAttribute("visible", files.length > 0);
-                }
-                confirm(files.shift());
-                return false;
-            } else
-                return true;
-        };
-
         function createPath(a, b){
             return b + "/" + apf.getFilename(a);
         }
@@ -65,25 +13,35 @@
       skin     = "fm-window"
       title    = "Project Files"
       modal    = "false"
-      visible  = "true"
       buttons  = "close"
       optimize = "true">
         <a:button
           top="-22"
           skin="header-btn"
           right="5"
-          icon="refresh.png"
+          icon="panel_settings.png"
+          submenu="mnuFilesSettings"/>
+        <a:button
+          top="-22"
+          skin="header-btn"
+          right="29"
+          icon="panel_refresh.png"
+          visible = "{trFiles.visible}"
           onclick="require('ext/tree/tree').refresh()" />
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
+        
+        <a:menu id="mnuFilesSettings">
+            
+        </a:menu>
+        
         <a:tree id="trFiles" canrename="true" border="0" simpledata="true"
-          contextmenu="mnuCtxTree" multiselect="false" reselectable="true" 
+          contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
+          onbeforeremove="return require('core/util').removeInteractive(this)" disabled="{{!stServerConnected.active}}"
           onbeforemove="this.disable();" autoselect="false"
-          onbeforeremove="return remove()" disabled="{{!stServerConnected.active}}"
-          flex="1" anchors="0 0 0 0" onmouseover="var tree = require('ext/tree/tree');if (tree) tree.onTreeOver()"
-          onmouseout="var tree = require('ext/tree/tree');if (tree) tree.onTreeOut()"
+          flex="1" anchors="0 0 0 0" scrollbar="sbShared 2 2 2"
         >
             <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
-                <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
+                <a:insert match="[folder]" get="{davProject.readdir([@path])}" />
                 <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
                 <a:icon match="[folder|project]" value="folder.png" />
                 <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
@@ -107,21 +65,6 @@
                 action="insert-before" copy="{event.ctrlKey}" />    
         </a:tree>
         
-        <a:scrollbar
-            for      = "trFiles"
-            id       = "sbTrFiles"
-            margin   = "2"
-            skin     = "sbios"
-            top      = "0"
-            right    = "0"
-            bottom   = "0"
-            width    = "7"
-            overflow = "auto"
-            onmouseover = "require('ext/tree/tree').onSBMouseOver()"
-            onmouseout  = "require('ext/tree/tree').onSBMouseOut()"
-            onmousedown = "require('ext/tree/tree').onSBMouseDown()"
-            onmouseup   = "require('ext/tree/tree').onSBMouseUp()"
-        />
         <a:menu id="mnuCtxTree" disabled="{!stServerConnected.active}">
             <a:item match="[file]" class="strong"  onclick="
                 require('core/ide').dispatchEvent('openfile', {doc: require('core/ide').createDocument(apf.activeElement.selected)})
@@ -137,7 +80,7 @@
             <a:item match="[file|folder[not(@root)]]" onclick="
                 apf.clipboard.copySelection(apf.activeElement);
             ">Copy</a:item>
-            <a:item match="[folder|project]" disabled="{!apf.clipboard.empty}" onclick="
+            <a:item match="[folder|project]" disabled="{apf.clipboard.empty}" onclick="
                 apf.clipboard.pasteSelection(apf.activeElement);
             ">Paste</a:item>
             <a:divider />

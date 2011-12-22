@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var save = require("ext/save/save");
 var panels = require("ext/panels/panels");
+var openfiles = require("ext/openfiles/openfiles");
 
 module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     name       : "Tab Behaviors",
@@ -23,7 +24,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     $tabAccessCycle : 2,
     sep        : null,
     more       : null,
-    menuOffset : 3,
+    menuOffset : 4, //This is fucking stupid
     commands   : {
         "closetab": {hint: "close the tab that is currently active", msg: "Closing active tab."},
         "closealltabs": {hint: "close all opened tabs", msg: "Closing all tabs."},
@@ -53,14 +54,30 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
         this.nodes.push(
             mnuTabs.appendChild(new apf.item({
+                caption : "Reveal in File Tree",
+                onclick : function() {
+                    _self.revealtab(tabEditors.contextPage);
+                },
+                disabled : "{!!!tabEditors.activepage}"
+            })),
+            mnuTabs.appendChild(new apf.item({
+                caption : "Close Tab",
+                onclick : function() {
+                    _self.closetab(tabEditors.contextPage);
+                },
+                disabled : "{!!!tabEditors.activepage}"
+            })),
+            mnuTabs.appendChild(new apf.item({
                 caption : "Close All Tabs",
-                onclick : this.closealltabs.bind(this)
+                onclick : this.closealltabs.bind(this),
+                disabled : "{!!!tabEditors.activepage}"
             })),
             mnuTabs.appendChild(new apf.item({
                 caption : "Close All But Current Tab",
                 onclick : function() {
                     _self.closeallbutme();
-                }
+                },
+                disabled : "{!!!tabEditors.activepage}"
             })),
             //mnuTabs.appendChild(new apf.divider()),
             apf.document.body.appendChild(new apf.menu({
@@ -92,10 +109,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             }))
         );
 
-        this.hotitems.revealtab     = [mnuContextTabs.childNodes[0]];
-        this.hotitems.closetab      = [mnuContextTabs.childNodes[1]];
-        this.hotitems.closealltabs  = [this.nodes[0], mnuContextTabs.childNodes[2]];
-        this.hotitems.closeallbutme = [this.nodes[1], mnuContextTabs.childNodes[3]];
+        this.hotitems.revealtab     = [this.nodes[0], mnuContextTabs.childNodes[0]];
+        this.hotitems.closetab      = [this.nodes[1], mnuContextTabs.childNodes[1]];
+        this.hotitems.closealltabs  = [this.nodes[2], mnuContextTabs.childNodes[2]];
+        this.hotitems.closeallbutme = [this.nodes[3], mnuContextTabs.childNodes[3]];
 
         tabEditors.setAttribute("contextmenu", "mnuContextTabs");
 
@@ -119,7 +136,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
             if (e.$isMoveWithinParent) {
                 if (page.$tabMenu) {
-                    page.$tabMenu.parentNode.insertBefore(page.$tabMenu,
+                    mnuTabs.insertBefore(page.$tabMenu,
                         page.nextSibling ? page.nextSibling.$tabMenu : null);
 
                     _self.updateState();
@@ -130,6 +147,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
 
         tabEditors.addEventListener("DOMNodeRemoved", function(e) {
+            if (e.$doOnlyAdmin)
+                return;
+            
             var page = e.currentTarget;
             _self.removeItem(page);
 
@@ -173,6 +193,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
 
         tabEditors.addEventListener("aftersavedialogcancel", function(e) {
+            if (!_self.changedPages)
+                return
+            
             for (i = 0, l = _self.changedPages.length; i < l; i++) {
                 page = _self.changedPages[i];
                 page.removeEventListener("aftersavedialogclosed", arguments.callee);
@@ -354,8 +377,15 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             page = tabEditors.getPage();
         if (!page)
             return false;
+        
+        this.revealfile(page.$doc.getNode());
+    },
+    
+    revealfile : function(docNode) {
+        var path = docNode.getAttribute('path');
+        var node = trFiles.queryNode('//file[@path="' + path + '"]');
 
-        var node = trFiles.queryNode('//file[@path="' + page.name + '"]');
+        require("ext/panels/panels").activate(require("ext/tree/tree"));
 
         if (node) {
             trFiles.expandAndSelect(node);
@@ -363,7 +393,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             scrollToFile();
         }
         else {
-            var parts = page.name.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
+            var parts = path.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
             var file = parts.pop();
             var pathList = ["folder[1]"];
             var str = "";
@@ -382,7 +412,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             });
         }
 
-        var parts = page.name.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
+        var parts = path.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
         var file = parts.pop();
         var pathList = ["folder[1]"];
         var str = "";
@@ -393,7 +423,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
 
         var xpath = pathList[pathList.length - 1];
-        var docNode = page.$doc.getNode();
+        //var docNode = page.$doc.getNode();
         // Show spinner in active tab the file is being looked up
         apf.xmldb.setAttribute(docNode, "lookup", "1");
 
@@ -447,7 +477,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     removeItem: function(page) {
         var item, idx, keyId,
             i = this.menuOffset,
-            l = this.nodes.length;
+            l = this.nodes.length,
+            _self = this;
+            
         for (; i < l; ++i) {
             if ((item = this.nodes[i]).relPage == page.id) {
                 item.destroy(true, true);
@@ -456,7 +488,12 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 keyId = "tab" + (idx == 10 ? 0 : idx);
                 if (this.commands[keyId] && typeof this.commands[keyId].hotkey != "undefined")
                     apf.hotkeys.remove(this.commands[keyId].hotkey);
-                return this.updateState();
+                
+                setTimeout(function(){
+                    _self.updateState();
+                });
+                
+                return;
             }
         }
     },
@@ -468,7 +505,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.sep = null;
         }
         else if (!this.sep && (len || force)) {
-            this.sep = mnuTabs.insertBefore(new apf.divider(), mnuTabs.childNodes[6]);
+            this.sep = mnuTabs.insertBefore(new apf.divider(), mnuTabs.childNodes[this.menuOffset]);
         }
 
         if (len < (force ? 19 : 20)) { // we already have 9 other menu items
@@ -481,7 +518,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.more = mnuTabs.appendChild(new apf.item({
                 caption : "More...",
                 onclick : function() {
-                    require("ext/openfiles/openfiles").show();
+                    panels.activate(openfiles);
                 }
             }));
         }

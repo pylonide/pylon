@@ -1,7 +1,4 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:skin id="inlinedg" 
-      src        = "{require('ext/language/liveinspect').skin}" />
-
     <a:bar id="winLiveInspect"
       modal     = "false" 
       center    = "false"
@@ -16,6 +13,8 @@
           flex       = "1"
           border     = "0 0 0 0"
           options    = "size|move"
+          class      = "noscrollbar"
+          scrollbar  = "sbShared 20 2 2"
           prerender  = "false"
           caching    = "false"
           empty-message   = "Loading..."

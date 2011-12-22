@@ -1,8 +1,4 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:skin id="quicksearch" 
-      src       = "{require('ext/quicksearch/quicksearch').skin}" 
-      icon-path = "/static/ext/quicksearch/icons/" />
-
     <a:bar id="winQuickSearch"
       skinset = "quicksearch"
       visible = "false"

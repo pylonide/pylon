@@ -22,7 +22,11 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     alone    : true,
     offline  : false,
     markup   : markup,
-    skin     : skin,
+    skin     : {
+        id   : "searchinfiles",
+        data : skin,
+        "media-path" : ide.staticPrefix + "/ext/searchinfiles/images/"
+    },
     commands  : {
         "searchinfiles": {hint: "search for a string through all files in the current workspace"}
     },
@@ -64,42 +68,32 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
                 name = name.substr(0, 22) + "...";
             rbSFSelection.setAttribute("label", "Selection ( " + name + " )");
         };
-        trSFResult.addEventListener("afterselect", function(e) {
-            var path,
-                root = trFiles.xmlRoot.selectSingleNode("folder[1]"),
-                node = trSFResult.selected,
-                line = 0,
-                text = "";
-            if (node.tagName == "d:maxreached" || node.tagName == "d:querydetail")
-                return;
-            if (node.tagName == "d:excerpt") {
-                path = node.parentNode.getAttribute("path");
-                line = node.getAttribute("line");
-                text = node.parentNode.getAttribute("query");
-            }
-            else {
-                path = node.getAttribute("path");
-                text = node.getAttribute("query");
-            }
-            editors.showFile(root.getAttribute("path") + "/" + path, line, 0, text);
-        });
-
-        ideConsole.enable();
-        if (!this.$panel) {
-            this.$panel = tabConsole.add(this.pageTitle, this.pageID);
-            this.$panel.appendChild(trSFHbox);
-            tabConsole.set(this.pageID);
-            trSFResult.setProperty("visible", true);
-            this.$model = trSFResult.getModel();
-            // make sure the tab is shown when results come in
-            this.$model.addEventListener("afterload", function() {
-                tabConsole.set(_self.pageID);
+        trSFHbox.addEventListener("afterrender", function(){
+            trSFResult.addEventListener("afterselect", function(e) {
+                var path,
+                    root = trFiles.xmlRoot.selectSingleNode("folder[1]"),
+                    node = trSFResult.selected,
+                    line = 0,
+                    text = "";
+                if (node.tagName == "d:maxreached" || node.tagName == "d:querydetail")
+                    return;
+                if (node.tagName == "d:excerpt") {
+                    path = node.parentNode.getAttribute("path");
+                    line = node.getAttribute("line");
+                    text = node.parentNode.getAttribute("query");
+                }
+                else {
+                    path = node.getAttribute("path");
+                    text = node.getAttribute("query");
+                }
+                editors.showFile(root.getAttribute("path") + "/" + path, line, 0, text);
             });
-        }
+        });
+        //ideConsole.show();
     },
 
     getSelectedTreeNode: function() {
-        var node = trFiles.selected;
+        var node = self["trFiles"] ? trFiles.selected : require("ext/filesystem/filesystem").model.queryNode("folder[1]");
         if (!node)
             node = trFiles.xmlRoot.selectSingleNode("folder[1]");
         while (node.tagName != "folder")
@@ -170,16 +164,27 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         var _self = this;
         winSearchInFiles.hide();
         // show the console (also used by the debugger):
-        ideConsole.enable();
+        ideConsole.show();
         if (!this.$panel) {
             this.$panel = tabConsole.add(this.pageTitle, this.pageID);
+            this.$panel.setAttribute("closebtn", true);
             this.$panel.appendChild(trSFHbox);
+            tabConsole.set(_self.pageID);
+            trSFHbox.show();
             trSFResult.setProperty("visible", true);
             this.$model = trSFResult.getModel();
             // make sure the tab is shown when results come in
             this.$model.addEventListener("afterload", function() {
                 tabConsole.set(_self.pageID);
             });
+
+            this.$panel.addEventListener("afterclose", function(){
+                this.removeNode();
+                return false;
+            });
+        }
+        else {
+            tabConsole.appendChild(this.$panel);
         }
         // show the tab
         tabConsole.set(this.pageID);
@@ -192,12 +197,10 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         _self.$model.clear();
         trSFResult.setAttribute("empty-message", "Searching for '" + findValueSanitized + "'...");
         davProject.report(node.getAttribute("path"), "codesearch", this.getOptions(), function(data, state, extra){
-            if (state !== apf.SUCCESS)
-                return;
-            if (!parseInt(data.getAttribute("count"), 10))
-                trSFResult.setAttribute("empty-message", "No results found for '" + findValueSanitized + "'");
-            else
-                _self.$model.load(data);
+            if (state !== apf.SUCCESS || !parseInt(data.getAttribute("count"), 10))
+                return trSFResult.setAttribute("empty-message", "No results found for '" + findValueSanitized + "'");;
+
+            _self.$model.load(data);
         });
 
         ide.dispatchEvent("track_action", {type: "searchinfiles"});
