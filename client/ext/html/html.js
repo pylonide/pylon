@@ -32,17 +32,28 @@ module.exports = ext.register("ext/html/html", {
     hook : function(){
         var _self = this;
         tabEditors.addEventListener("afterswitch", function(e){
-            var mime = e.nextPage.contentType;
-
-            if (mimeTypes.indexOf(mime) > -1) {
-                ext.initExtension(_self);
-                _self.page = e.nextPage;
-                _self.enable();
-            }
-            else {
-                _self.disable();
-            }
+            _self.afterSwitchOrOpen(e.nextPage);
         });
+        ide.addEventListener("afteropenfile", function(e){
+            // Only listen for event from editors.js
+            if (e.editor && e.node.$model)
+                _self.afterSwitchOrOpen(e.node);
+        });
+    },
+    
+    afterSwitchOrOpen : function(node) {
+        console.log(node.$model.data.getAttribute("contenttype"), node.$model.data.getAttribute("path"));
+        var contentType = node.$model.data.getAttribute("contenttype") || "";
+        var mime = contentType.split(";")[0];
+    
+        if (mimeTypes.indexOf(mime) > -1) {
+            ext.initExtension(this);
+            this.page = node;
+            this.enable();
+        }
+        else {
+            this.disable();
+        }
     },
 
     init : function() {

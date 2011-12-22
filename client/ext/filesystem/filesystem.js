@@ -245,7 +245,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         }
         ide.dispatchEvent("updatefile", {
             path: path,
-            name: name.input,
+            name: name,
             xmlNode: node
         });
     },
@@ -304,6 +304,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
         var processing = {};
         this.model.addEventListener("update", function(e){
+            //console.log("FS MODEL UPDATE!", e);
             //resort on move, copy, rename, add
             if (e.action == "attribute" || e.action == "add" || e.action == "move") {
                 var xmlNode = e.xmlNode, pNode = xmlNode.parentNode;
@@ -401,6 +402,10 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         }
                     }
                     else {
+                        /*var contentType = (extra.http.getResponseHeader("content-type") || "").replace(/;.*$/, '');
+                        if (contentType) {
+                            node.setAttribute("contenttype", contentType);
+                        }*/
                         doc.setValue(data);
                         ide.dispatchEvent("afteropenfile", {doc: doc, node: node});
                     }
