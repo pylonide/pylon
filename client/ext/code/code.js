@@ -346,7 +346,7 @@ module.exports = ext.register("ext/code/code", {
             mnuView.appendChild(new apf.item({
                 type    : "check",
                 caption : "Wrap Lines",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
+                checked : "{ceEditor.wrapmode}"
             }))
         );
 
