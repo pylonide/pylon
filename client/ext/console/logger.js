@@ -42,8 +42,8 @@ exports.logNodeStream = function(data, stream, useOutput) {
     var log = [];
     // absolute workspace files
 
-    if (!tabConsole.$rendered)
-        tabConsole.$render();
+//    if (!tabConsole.$rendered)
+//        tabConsole.$render();
 
     var parentEl = useOutput ? txtOutput : txtConsole;
     var lines = data.split("\n", MAX_LINES);
