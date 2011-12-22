@@ -82,7 +82,6 @@ module.exports = ext.register("ext/tree/tree", {
         }));
         
         ide.addEventListener("loadsettings", function(e) {
-            debugger;
             var model = e.model;
             (davProject.realWebdav || davProject).setAttribute("showhidden", 
                 apf.isTrue(model.queryValue('auto/tree/@showhidden')));
