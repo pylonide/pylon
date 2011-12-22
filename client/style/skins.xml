@@ -2949,7 +2949,7 @@
         }
         
         .with-noise .records {
-            background: url(images/dg_noise.png) repeat 0 0;
+            background: #E1E1E1 url(images/dg_noise.png) repeat 0 0;
         }
         
         .noscrollbar .records{
@@ -2974,7 +2974,11 @@
             border-left : 1px solid white;
         }
         
-        .datagrid .records .row span {
+        .with-noise .records .row span u {
+            border-left: 1px solid #D1D1D1;
+        }
+        
+        .with-noise .records .row span {
             background-image: url(images/dg_noise.png);
             background-repeat: repeat;
             border-top: #f0f0f0;

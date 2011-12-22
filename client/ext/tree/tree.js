@@ -72,15 +72,18 @@ module.exports = ext.register("ext/tree/tree", {
             checked : "[{require('ext/settings/settings').model}::auto/tree/@showhidden]",
             onclick : function(){
                 _self.changed = true;
-                require(["ext/tree/tree", "ext/settings/settings"], function(tree, settings) {
-                    tree.refresh();
-                    settings.save();
-                })
+                
+                (davProject.realWebdav || davProject)
+                    .setAttribute("showhidden", this.checked);
+
+                _self.refresh();
+                settings.save();
             }
         }));
         ide.addEventListener("loadsettings", function(e) {
             var model = e.model;
-            (davProject.realWebdav || davProject).setAttribute("showhidden", model.queryValue('auto/tree/@showhidden'));
+            (davProject.realWebdav || davProject).setAttribute("showhidden", 
+                apf.isTrue(model.queryValue('auto/tree/@showhidden')));
         });
 
         mnuView.appendChild(new apf.divider());

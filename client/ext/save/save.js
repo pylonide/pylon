@@ -364,7 +364,6 @@ module.exports = ext.register("ext/save/save", {
                 doc: doc,
                 value: value
             });
-            ide.dispatchEvent("filecallback");            
         });
 
         var at = page.$at

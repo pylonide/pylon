@@ -114,6 +114,30 @@ module.exports = {
             }
         }
     },
+    "shift-f": {
+        param: true,
+        nav: function(editor, range, count, param) {
+            count = parseInt(count, 10) || 1;
+            var ed = editor;
+            var cursor = ed.getCursorPosition();
+            var column = util.getLeftNthChar(editor, cursor, param, count);
+
+            if (typeof column === "number") {
+                ed.selection.clearSelection(); // Why does it select in the first place?
+                ed.moveCursorTo(cursor.row, cursor.column - column + 1);
+            }
+        },
+        sel: function(editor, range, count, param) {
+            count = parseInt(count, 10) || 1;
+            var ed = editor;
+            var cursor = ed.getCursorPosition();
+            var column = util.getLeftNthChar(editor, cursor, param, count);
+
+            if (typeof column === "number") {
+                ed.moveCursorTo(cursor.row, cursor.column - column + 1);
+            }
+        }
+    },
     "t": {
         param: true,
         nav: function(editor, range, count, param) {
