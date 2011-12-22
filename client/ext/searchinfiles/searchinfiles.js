@@ -99,7 +99,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     },
 
     getSelectedTreeNode: function() {
-        var node = trFiles.selected;
+        var node = self["trFiles"] ? trFiles.selected : require("ext/filesystem/filesystem").model.queryNode("folder[1]");
         if (!node)
             node = trFiles.xmlRoot.selectSingleNode("folder[1]");
         while (node.tagName != "folder")
