@@ -90,6 +90,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$booleanProperties["autohidehorscrollbar"]     = true;
     this.$booleanProperties["behaviors"]                = true;
     this.$booleanProperties["folding"]                  = true;
+    this.$booleanProperties["wrapmode"]                 = true;
     
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
