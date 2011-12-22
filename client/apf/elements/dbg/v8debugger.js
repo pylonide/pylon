@@ -414,7 +414,7 @@ var V8Debugger = module.exports = function(dbg, host) {
             model.appendXml(_self.$getBreakpointXml(v8bp, options.lineOffset, options.scriptId));
             
             // bind model and breakpoint to eachother
-            _self.$bindV8BreakpointToModel(model.selectSingleNode("//breakpoint[@script=\'" + options.name + "\' and @line=" + options.row + "]"), v8bp);
+            _self.$bindV8BreakpointToModel(model.data.selectSingleNode("//breakpoint[@script=\'" + v8bp.source + "\' and @line=" + options.row + "]"), v8bp);
             
             if (typeof callback === "function") {
                 callback();
