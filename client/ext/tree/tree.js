@@ -183,7 +183,8 @@ module.exports = ext.register("ext/tree/tree", {
             onclick : function(){
                 _self.changed = true;
                 require(["ext/tree/tree", "ext/settings/settings"], function(tree, settings) {
-                    tree.refresh();
+                    (davProject.realWebdav || davProject).setAttribute("showhidden", this.checked);
+                    _self.refresh();
                     settings.save();
                 })
             }
@@ -191,7 +192,8 @@ module.exports = ext.register("ext/tree/tree", {
         
         ide.addEventListener("loadsettings", function(e) {
             var model = e.model;
-            (davProject.realWebdav || davProject).setAttribute("showhidden", model.queryValue('auto/tree/@showhidden'));
+            (davProject.realWebdav || davProject).setAttribute("showhidden", 
+                apf.isTrue(model.queryValue('auto/tree/@showhidden')));
         });
 
         mnuView.appendChild(new apf.divider());
