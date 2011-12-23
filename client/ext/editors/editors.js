@@ -162,6 +162,7 @@ module.exports = ext.register("ext/editors/editors", {
             }
 
             if (e.relatedNode == this && e.currentTarget.localName == "page") {
+                tabEditors.appendChild(btn);
                 tabEditors.$buttons.appendChild(btn.$ext);
                 btn.$ext.style.position = "";
                 btn.$ext.style.right = "";

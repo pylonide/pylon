@@ -23,7 +23,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     $tabAccessCycle : 2,
     sep        : null,
     more       : null,
-    menuOffset : 3,
+    menuOffset : 4,
     commands   : {
         "closetab": {hint: "close the tab that is currently active", msg: "Closing active tab."},
         "closealltabs": {hint: "close all opened tabs", msg: "Closing all tabs."},
@@ -135,10 +135,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
             if (e.$isMoveWithinParent) {
                 if (page.$tabMenu) {
-                    if (page.$tabMenu.parentNode) {
-                        page.$tabMenu.parentNode.insertBefore(page.$tabMenu,
-                            page.nextSibling ? page.nextSibling.$tabMenu : null);
-                    }
+                    mnuTabs.insertBefore(page.$tabMenu,
+                        page.nextSibling ? page.nextSibling.$tabMenu : null);
 
                     _self.updateState();
                 }
@@ -148,6 +146,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
 
         tabEditors.addEventListener("DOMNodeRemoved", function(e) {
+            if (e.$doOnlyAdmin)
+                return;
+
             var page = e.currentTarget;
             _self.removeItem(page);
 
@@ -464,9 +465,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     removeItem: function(page) {
-        var item, idx, keyId,
-            i = this.menuOffset,
-            l = this.nodes.length;
+        var item, idx, keyId;
+        var i = this.menuOffset;
+        var l = this.nodes.length;
+        var _self = this;
         for (; i < l; ++i) {
             if ((item = this.nodes[i]).relPage == page.id) {
                 item.destroy(true, true);
@@ -475,7 +477,12 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 keyId = "tab" + (idx == 10 ? 0 : idx);
                 if (this.commands[keyId] && typeof this.commands[keyId].hotkey != "undefined")
                     apf.hotkeys.remove(this.commands[keyId].hotkey);
-                return this.updateState();
+                
+                setTimeout(function(){
+                    _self.updateState();
+                });
+
+                return;
             }
         }
     },
