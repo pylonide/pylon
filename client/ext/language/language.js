@@ -74,7 +74,6 @@ module.exports = ext.register("ext/language/language", {
             deferred.cancel().schedule(100);
 	    });
         
-        extSettings.model.addEventListener("update", this.updateSettings.bind(this));
         
         // Language features
         marker.hook(this, worker);
@@ -134,6 +133,7 @@ module.exports = ext.register("ext/language/language", {
             worker.emit("inspect", { data: { row: e.row, col: e.col } });
         });
         
+        extSettings.model.addEventListener("update", this.updateSettings.bind(this));
         
     },
     
@@ -157,6 +157,7 @@ module.exports = ext.register("ext/language/language", {
             this.worker.call("enableFeature", ["undeclaredVars"]);
         else
             this.worker.call("disableFeature", ["undeclaredVars"]);
+        this.worker.call("setWarningLevel", [extSettings.model.queryValue("language/@warnLevel") || "info"]);
         var cursorPos = this.editor.getCursorPosition();
         cursorPos.force = true;
         this.worker.emit("cursormove", {data: cursorPos});

@@ -152,7 +152,7 @@ oop.inherits(LanguageWorker, Mirror);
         filterMarkersAroundError(ast, markers);
         if (this.getLastAggregateActions().markers.length > 0)
             extendedMakers = markers.concat(this.getLastAggregateActions().markers);
-        this.scheduleEmit("markers", extendedMakers);
+        this.scheduleEmit("markers", this.filterMarkersBasedOnLevel(extendedMakers));
         this.currentMarkers = markers;
         if (this.postponedCursorMove) {
             this.onCursorMove(this.postponedCursorMove);
@@ -168,6 +168,17 @@ oop.inherits(LanguageWorker, Mirror);
             }
         }
     };
+    
+    this.filterMarkersBasedOnLevel = function(markers) {
+        for (var i = 0; i < markers.length; i++) {
+            var marker = markers[i];
+            if(marker.level && WARNING_LEVELS[marker.level] < WARNING_LEVELS[this.$warningLevel]) {
+                markers.splice(i, 1);
+                i--;
+            }
+        }
+        return markers;
+    }
     
     /**
      * Request the AST node on the current position
@@ -228,7 +239,7 @@ oop.inherits(LanguageWorker, Mirror);
                 if (aggregateActions.hint && !hintMessage) {
                     hintMessage = aggregateActions.hint;
                 }
-                this.scheduleEmit("markers", this.currentMarkers.concat(aggregateActions.markers));
+                this.scheduleEmit("markers", this.filterMarkersBasedOnLevel(this.currentMarkers.concat(aggregateActions.markers)));
                 this.scheduleEmit("enableRefactorings", aggregateActions.enableRefactorings);
                 this.lastCurrentNode = currentNode;
                 this.setLastAggregateActions(aggregateActions);
