@@ -1453,6 +1453,11 @@
             height:15px;
             padding:3px 6px 0 6px;
         }
+        
+        .with-arrow.c9-toolbarbutton .c9-label {
+            background:url(images/btn-arrow.png) no-repeat right 9px;
+            padding-right: 11px;
+        }
 
         .c9-toolbarbuttonEmpty .c9-icon {
             position:relative;
@@ -5928,6 +5933,9 @@
         overflow: hidden;
         position:relative;
         padding-top: 28px;
+        -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
+        -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
     }
 
     .tab_console .btncontainer{
