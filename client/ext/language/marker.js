@@ -69,7 +69,7 @@ module.exports = {
             var rowDiff = anno.pos.el - anno.pos.sl;
             var gutterAnno = {
                 guttertext: anno.message,
-                type: anno.type === 'error' ? 'error' : anno.type === 'info' ? 'info' : 'warning',
+                type: anno.level || "warning",
                 text: anno.message
                 // row will be filled in updateFloat()
             };

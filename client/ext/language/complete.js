@@ -229,16 +229,15 @@ module.exports = {
                 break;
             case 40: // Down
                 this.matchEls[this.selectedIdx].className = "cc_complete_option";
-                if(this.selectedIdx < this.matches.length-1) {
+                if(this.selectedIdx < this.matches.length-1)
                     this.selectedIdx++;
-                }
+                else
+                    this.closeCompletionBox();
                 this.matchEls[this.selectedIdx].className = "cc_complete_option_selected";
                 if(this.selectedIdx - this.scrollIdx > 4) {
                     this.scrollIdx++;
                     this.matchEls[this.scrollIdx].scrollIntoView(true);
                 }
-                else
-                    this.closeCompletionBox();
                 e.stopPropagation();
                 e.preventDefault();
                 break;

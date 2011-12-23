@@ -74,6 +74,8 @@ module.exports = ext.register("ext/language/language", {
             deferred.cancel().schedule(100);
 	    });
         
+        extSettings.model.addEventListener("update", this.updateSettings.bind(this));
+        
         // Language features
         marker.hook(this, worker);
         complete.hook(8, worker);
@@ -106,12 +108,9 @@ module.exports = ext.register("ext/language/language", {
             var defaultOnTextInput = this.editor.keyBinding.onTextInput.bind(this.editor.keyBinding);
             this.editor.keyBinding.onTextInput = keyhandler.composeHandlers(keyhandler.typeAlongCompleteTextInput, defaultOnTextInput);
         }
-    
-        this.setJSHint();
-        this.setInstanceHighlight();
-        this.setUnusedFunctionArgs();
-        this.setUndeclaredVars();
         
+        this.updateSettings();
+    
         this.editor.on("changeSession", function() {
             // Time out a litle, to let the page path be updated
             setTimeout(function() {
@@ -138,46 +137,38 @@ module.exports = ext.register("ext/language/language", {
         
     },
     
+    updateSettings: function() {
+        // Currently no code editor active
+        if(!editors.currentEditor.ceEditor || !tabEditors.getPage())
+            return;
+        if(extSettings.model.queryValue("language/@jshint") != "false")
+            this.worker.call("enableFeature", ["jshint"]);
+        else
+            this.worker.call("disableFeature", ["jshint"]);
+        if(extSettings.model.queryValue("language/@instanceHighlight") != "false")
+            this.worker.call("enableFeature", ["instanceHighlight"]);
+        else
+            this.worker.call("disableFeature", ["instanceHighlight"]);
+        if(extSettings.model.queryValue("language/@unusedFunctionArgs") != "false")
+            this.worker.call("enableFeature", ["unusedFunctionArgs"]);
+        else
+            this.worker.call("disableFeature", ["unusedFunctionArgs"]);
+        if(extSettings.model.queryValue("language/@undeclaredVars") != "false")
+            this.worker.call("enableFeature", ["undeclaredVars"]);
+        else
+            this.worker.call("disableFeature", ["undeclaredVars"]);
+        var cursorPos = this.editor.getCursorPosition();
+        cursorPos.force = true;
+        this.worker.emit("cursormove", {data: cursorPos});
+        this.setPath();
+    },
+    
     setPath: function() {
         // Currently no code editor active
         if(!editors.currentEditor.ceEditor || !tabEditors.getPage())
             return;
         var currentPath = tabEditors.getPage().getAttribute("id");
         this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition()]);
-    },
-    
-    setJSHint: function() {
-        if(extSettings.model.queryValue("language/@jshint") != "false")
-            this.worker.call("enableFeature", ["jshint"]);
-        else
-            this.worker.call("disableFeature", ["jshint"]);
-        this.setPath();
-    },
-    
-    setInstanceHighlight: function() {
-        if(extSettings.model.queryValue("language/@instanceHighlight") != "false")
-            this.worker.call("enableFeature", ["instanceHighlight"]);
-        else
-            this.worker.call("disableFeature", ["instanceHighlight"]);
-        var cursorPos = this.editor.getCursorPosition();
-        cursorPos.force = true;
-        this.worker.emit("cursormove", {data: cursorPos});
-    },
-    
-    setUnusedFunctionArgs: function() {
-        if(extSettings.model.queryValue("language/@unusedFunctionArgs") != "false")
-            this.worker.call("enableFeature", ["unusedFunctionArgs"]);
-        else
-            this.worker.call("disableFeature", ["unusedFunctionArgs"]);
-        this.setPath();
-    },
-    
-    setUndeclaredVars: function() {
-        if(extSettings.model.queryValue("language/@undeclaredVars") != "false")
-            this.worker.call("enableFeature", ["undeclaredVars"]);
-        else
-            this.worker.call("disableFeature", ["undeclaredVars"]);
-        this.setPath();
     },
     
     /**

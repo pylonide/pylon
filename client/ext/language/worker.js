@@ -16,6 +16,11 @@ var oop = require("ace/lib/oop");
 var Mirror = require("ace/worker/mirror").Mirror;
 var tree = require('treehugger/tree');
 
+var WARNING_LEVELS = {
+    error: 3,
+    warning: 2,
+    info: 1
+};
 
 // Leaking into global namespace of worker, to allow handlers to have access
 disabledFeatures = {};
@@ -25,6 +30,7 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     this.handlers = [];
     this.currentMarkers = [];
     this.$lastAggregateActions = {};
+    this.$warningLevel = "info";
     
     Mirror.call(this, sender);
     this.setTimeout(500);
@@ -72,6 +78,10 @@ oop.inherits(LanguageWorker, Mirror);
 
     this.disableFeature = function(name) {
         disabledFeatures[name] = true;
+    };
+    
+    this.setWarningLevel = function(level) {
+        this.$warningLevel = level;
     };
     
     /**

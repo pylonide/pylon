@@ -41,7 +41,8 @@ handler.analyze = function(doc) {
                     el: lineNumber
                 },
                 message: message,
-                type: "error"
+                type: "error",
+                level: "error"
             }];
             return markers;
         }
@@ -67,7 +68,8 @@ handler.analyze = function(doc) {
                     sl: warning.line-1,
                     sc: warning.column-1
                 },
-                type: 'warning',
+                type: "warning",
+                level: "warning",
                 message: warning.reason
             });
         });

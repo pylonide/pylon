@@ -28,6 +28,7 @@ var GLOBALS = {
     "arguments"              : true,
     self                     : true,
     Infinity                 : true,
+    onmessage                : true,
     // Browser
     ArrayBuffer              : true,
     ArrayBufferView          : true,
@@ -395,13 +396,14 @@ handler.analyze = function(doc, ast) {
                 'Assign(Var(x), e)', function(b, node) {
                     if(!scope.isDeclared(b.x.value)) {
                         markers.push({
-                            pos: node.getPos(),
+                            pos: node[0].getPos(),
+                            level: 'warning',
                             type: 'warning',
                             message: "Assigning to undeclared variable."
                         });
                     }
                     else {
-                        scope.get(b.x.value).addUse(node);
+                        scope.get(b.x.value).addUse(node[0]);
                     }
                     analyze(scope, b.e);
                     return this;
@@ -410,6 +412,7 @@ handler.analyze = function(doc, ast) {
                     if(!scope.isDeclared(b.x.value)) {
                         markers.push({
                             pos: this.getPos(),
+                            level: 'warning',
                             type: 'warning',
                             message: "Using undeclared variable as iterator variable."
                         });
@@ -425,6 +428,7 @@ handler.analyze = function(doc, ast) {
                     } else if(handler.isFeatureEnabled("undeclaredVars") && !GLOBALS[b.x.value]) {
                         markers.push({
                             pos: this.getPos(),
+                            level: 'warning',
                             type: 'warning',
                             message: "Undeclared variable."
                         });
@@ -457,6 +461,7 @@ handler.analyze = function(doc, ast) {
                     markers.push({
                         pos: node.getPos(),
                         type: 'warning',
+                        level: 'warning',
                         message: "Did you mean 'length'?"
                     });
                 },
@@ -464,6 +469,7 @@ handler.analyze = function(doc, ast) {
                     markers.push({
                         pos: this[0].getPos(),
                         type: 'info',
+                        level: 'info',
                         message: "Missing radix argument."
                     });
                 },
@@ -481,6 +487,7 @@ handler.analyze = function(doc, ast) {
                         markers.push({
                             pos: decl.getPos(),
                             type: 'unused',
+                            level: 'info',
                             message: 'Unused variable.'
                         });
                     });
