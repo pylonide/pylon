@@ -290,7 +290,7 @@ module.exports = ext.register("ext/code/code", {
             if (_self.setState)
                 _self.setState(e.doc, e.doc.state);
                 
-            if (e.doc && e.doc.editor && e.doc.editor.ceEditor) {
+            if (e.doc && ceEditor) {
                 // check if there is a scriptid, if not check if the file is somewhere in the stack
                 if (!e.node.getAttribute("scriptid") && mdlDbgStack && mdlDbgStack.data) {
                     var nodes = mdlDbgStack.data.selectNodes("//frame[@script='" + e.node.getAttribute("scriptname").replace(ide.workspaceDir + "/", "") + "']");
@@ -298,7 +298,7 @@ module.exports = ext.register("ext/code/code", {
                         e.node.setAttribute("scriptid", nodes[0].getAttribute("scriptid"));
                     }
                 }
-                e.doc.editor.ceEditor.afterOpenFile(e.doc.editor.ceEditor.getSession());
+                ceEditor.afterOpenFile(ceEditor.getSession());
             }
         });
         
