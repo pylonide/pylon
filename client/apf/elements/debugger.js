@@ -250,7 +250,7 @@ apf.dbg = module.exports = function(struct, tagName){
         this.continueScript();
         if (this.$host) {
             this.$host.$detach(this.$debugger, function () {
-                callback();
+                if (typeof callback === "function") callback();
                 
                 // always detach, so we won't get into limbo state
                 _self.$onDetach();
