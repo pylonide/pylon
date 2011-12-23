@@ -23,7 +23,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     $tabAccessCycle : 2,
     sep        : null,
     more       : null,
-    menuOffset : 5,
+    menuOffset : 3,
     commands   : {
         "closetab": {hint: "close the tab that is currently active", msg: "Closing active tab."},
         "closealltabs": {hint: "close all opened tabs", msg: "Closing all tabs."},
@@ -116,7 +116,6 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         tabEditors.setAttribute("contextmenu", "mnuContextTabs");
 
         tabEditors.addEventListener("close", function(e) {
-            _self.removeItem(e.page);
             if (!e || !e.htmlEvent)
                 return;
             var page = e.page;
@@ -148,6 +147,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
         tabEditors.addEventListener("DOMNodeRemoved", function(e) {
             var page = e.currentTarget;
+            _self.removeItem(page);
+
             if (page.localName != "page" || e.relatedNode != this || page.nodeType != 1)
                 return;
 
@@ -186,6 +187,13 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 cycleKeyPressed = false;
             }
         });
+
+        tabEditors.addEventListener("aftersavedialogcancel", function(e) {
+            for (i = 0, l = _self.changedPages.length; i < l; i++) {
+                page = _self.changedPages[i];
+                page.removeEventListener("aftersavedialogclosed", arguments.callee);
+            }
+        });
     },
 
     closetab: function(page) {
@@ -197,47 +205,73 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         return false;
     },
 
-    closealltabs: function() {
-        var tabs  = tabEditors,
-            pages = tabs.getPages(),
-            _self = this;
-
-        save.saveAllInteractive(pages, function(all){
-            if (all == -100) //Cancel
-                return;
-
-            pages.each(function(page){
-                //page.$at.undo(-1);
-                _self.removeItem(page);
-                tabs.remove(page, true);
-            });
-        });
+    closealltabs: function(callback) {
+        callback = typeof callback == "function" ? callback : null;
+        this.closeallbutme(1, callback);
     },
 
-    closeallbutme: function(page) {
-        page = page || tabEditors.getPage();
-        var tabs  = tabEditors,
-            pages = tabs.getPages(),
-            i     = pages.length - 1,
-            set   = [],
-            _self = this;
-        for (; i >= 0; --i) {
-            if (pages[i] == page) continue;
-            set.push(pages[i]);
+    // ignore is the page that shouldn't be closed, null to close all tabs
+    closeallbutme: function(ignore, callback) {
+        ignore = ignore || tabEditors.getPage();
+        this.changedPages = [];
+        this.unchangedPages = [];
+
+        var page;
+        var pages = tabEditors.getPages();
+
+        var _self = this;
+        for (var i = 0, l = pages.length; i < l; i++) {
+            page = pages[i];
+
+            if (ignore && page == ignore)
+                continue;
+
+            if (page.$doc.getNode().getAttribute("changed") == "1") {
+                page.noAnim = true; // turn off animation on closing tab
+                this.changedPages.push(page);
+
+                page.addEventListener("aftersavedialogclosed", function(e) {
+                    var curPage = _self.changedPages[0];
+                    if (_self.changedPages.length && curPage.caption != e.currentTarget.caption)
+                        return
+                    _self.changedPages.shift();
+                    this.removeEventListener("aftersavedialogclosed", arguments.callee);
+                    if (_self.changedPages.length == 0) {
+                        _self.closeUnchangedPages(function() {
+                            if (callback)
+                                callback();
+                        });
+                    }
+                    else {
+                        tabEditors.remove(_self.changedPages[0], null, true);
+                    }
+                });
+            }
+            else {
+                this.unchangedPages.push(page);
+            }
         }
 
-        save.saveAllInteractive(set, function(all){
-            if (all == -100) //Cancel
-                return;
-
-            set.each(function(page){
-                //page.$at.undo(-1);
-                _self.removeItem(page);
-                tabs.remove(page, true);
+        if (this.changedPages.length) {
+            tabEditors.remove(this.changedPages[0], null, true);
+        }
+        else {
+            this.closeUnchangedPages(function() {
+                if (callback)
+                    callback();
             });
-        });
+        }
+    },
 
-        return false;
+    closeUnchangedPages : function(callback) {
+        var page;
+        for (var i = 0, l = this.unchangedPages.length; i < l; i++) {
+            page = this.unchangedPages[i];
+            tabEditors.remove(page, null, true);
+        }
+
+        if (callback)
+            callback();
     },
 
     nexttab : function(){

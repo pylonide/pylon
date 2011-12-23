@@ -2048,11 +2048,9 @@
         }
 
         .ace_gutter {
-          position: absolute;
           overflow-x: scroll;
           overflow-y: hidden;
           height: 100%;
-          width: 60px !important;
           -moz-user-select: -moz-none;
           -khtml-user-select: none;
           -webkit-user-select: none;
@@ -3883,6 +3881,10 @@
             font-weight : normal;
         }
 
+        .list.emptyLeft .empty {
+            text-align: left;
+        }
+        
         .shortlist{
             border : 0;
             overflow-y : auto;

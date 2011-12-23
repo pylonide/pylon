@@ -42,8 +42,9 @@ module.exports = ext.register("ext/save/save", {
             var at = e.page.$at;
             if (!at.undo_ptr)
                 at.undo_ptr = at.$undostack[0];
-            if (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
-              || !at.undo_ptr && e.page.$doc.getNode().getAttribute("changed") == 1
+            var node = e.page.$doc.getNode();
+            if (node && at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
+              || !at.undo_ptr && node.getAttribute("changed") == 1
               && e.page.$doc.getValue()) {
                 ext.initExtension(_self);
 
@@ -54,10 +55,16 @@ module.exports = ext.register("ext/save/save", {
                 winCloseConfirm.addEventListener("hide", function(){
                     if (winCloseConfirm.all != -100) {
                         var f = function(resetUndo){
-                            tabEditors.remove(winCloseConfirm.page, true);
+                            var page;
+                            if (!(page=winCloseConfirm.page))
+                                return;
+                            
+                            tabEditors.remove(page, true, page.noAnim);
+                            delete page.noAnim;
                             if (resetUndo)
-                                winCloseConfirm.page.$at.undo(-1);
+                                page.$at.undo(-1);
                             delete winCloseConfirm.page;
+                            page.dispatchEvent("aftersavedialogclosed");
                         };
 
                         if (winCloseConfirm.all == -200)
@@ -66,6 +73,9 @@ module.exports = ext.register("ext/save/save", {
                             f(true);
                         /*winSaveAs.page = winCloseConfirm.page;*/
                     }
+                    else
+                        tabEditors.dispatchEvent("aftersavedialogcancel");
+                    
                     winCloseConfirm.removeEventListener("hide", arguments.callee);
                 });
 
