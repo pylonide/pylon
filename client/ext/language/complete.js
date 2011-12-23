@@ -231,8 +231,10 @@ module.exports = {
                 this.matchEls[this.selectedIdx].className = "cc_complete_option";
                 if(this.selectedIdx < this.matches.length-1)
                     this.selectedIdx++;
-                else
+                else {
                     this.closeCompletionBox();
+                    return;
+                }
                 this.matchEls[this.selectedIdx].className = "cc_complete_option_selected";
                 if(this.selectedIdx - this.scrollIdx > 4) {
                     this.scrollIdx++;
