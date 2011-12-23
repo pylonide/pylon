@@ -135,8 +135,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
             if (e.$isMoveWithinParent) {
                 if (page.$tabMenu) {
-                    page.$tabMenu.parentNode.insertBefore(page.$tabMenu,
-                        page.nextSibling ? page.nextSibling.$tabMenu : null);
+                    if (page.$tabMenu.parentNode) {
+                        page.$tabMenu.parentNode.insertBefore(page.$tabMenu,
+                            page.nextSibling ? page.nextSibling.$tabMenu : null);
+                    }
 
                     _self.updateState();
                 }
@@ -189,6 +191,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
 
         tabEditors.addEventListener("aftersavedialogcancel", function(e) {
+            var i, l, page;
             for (i = 0, l = _self.changedPages.length; i < l; i++) {
                 page = _self.changedPages[i];
                 page.removeEventListener("aftersavedialogclosed", arguments.callee);
