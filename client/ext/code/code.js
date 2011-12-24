@@ -97,6 +97,7 @@ var contentTypes = {
     "html": "text/html",
     "xhtml": "application/xhtml+xml",
     "coffee": "text/x-script.coffeescript",
+    "*Cakefile": "text/x-script.coffeescript",
     "py": "text/x-script.python",
 
     "ru": "text/x-script.ruby",
@@ -284,7 +285,27 @@ module.exports = ext.register("ext/code/code", {
             // pre load custom mime types
             _self.getCustomTypes(e.model);
         });
-
+        
+        ide.addEventListener("afteropenfile", function(e) {
+            if (_self.setState)
+                _self.setState(e.doc, e.doc.state);
+                
+            if (e.doc && ceEditor) {
+                // check if there is a scriptid, if not check if the file is somewhere in the stack
+                if (!e.node.getAttribute("scriptid") && mdlDbgStack && mdlDbgStack.data) {
+                    var nodes = mdlDbgStack.data.selectNodes("//frame[@script='" + e.node.getAttribute("scriptname").replace(ide.workspaceDir + "/", "") + "']");
+                    if (nodes.length) {
+                        e.node.setAttribute("scriptid", nodes[0].getAttribute("scriptid"));
+                    }
+                }
+                ceEditor.afterOpenFile(ceEditor.getSession());
+            }
+        });
+        
+        tabEditors.addEventListener("afterswitch", function(e) {
+            ceEditor.afterOpenFile(ceEditor.getSession());
+        });
+        
         // preload common language modes
         require(["ace/mode/javascript", "ace/mode/html", "ace/mode/css"], function() {});
     },
@@ -325,7 +346,7 @@ module.exports = ext.register("ext/code/code", {
             mnuView.appendChild(new apf.item({
                 type    : "check",
                 caption : "Wrap Lines",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
+                checked : "{ceEditor.wrapmode}"
             }))
         );
 

@@ -8,8 +8,7 @@ var V8Debugger = module.exports = function(dbg, host) {
 
     this.$debugger = dbg;
     this.$host = host;
-
-    this.$breakpoints = {};
+    this.$v8breakpoints = {};
 
     var _self = this;
     dbg.addEventListener("changeRunning", function(e) {
@@ -287,91 +286,82 @@ var V8Debugger = module.exports = function(dbg, host) {
         return this.$activeFrame;
     };
 
+    /**
+     * Initialization function that sets the breakpoints right after attaching to the debugger
+     */
     this.setBreakpoints = function(model, callback) {
         var _self = this;
-
-        var breakpoints = model.queryNodes("breakpoint");
-        _self.$debugger.listbreakpoints(function(v8Breakpoints) {
-            if (v8Breakpoints.breakpoints) {
-                var bp;
-                for (var bId in _self.$breakpoints) {
-                    bp = _self.$breakpoints[bId];
-                    bp.destroy();
-                    if (bp.xml) {
-                        apf.xmldb.removeNode(bp.xml);
-                        delete bp.xml;
-                    }
-                }
-                _self.$breakpoints = {};
+        
+        // so read all the breakpoints, then call the debugger to actually set them
+        var allBreakpoints = model.queryNodes("breakpoint");
+        allBreakpoints.forEach(function(bp) {
+            var script = bp.getAttribute("script");
+            var line = bp.getAttribute("line");
+            var col = bp.getAttribute("column");
+            
+            // construct a nice 'Breakpoint' object
+            var v8bp = new Breakpoint(script, line, col);
+            // attach it to the debugger
+            v8bp.attach(_self.$debugger, function () {
+                _self.$bindV8BreakpointToModel(bp, v8bp);
                 
-                for (var i = 0, l = v8Breakpoints.breakpoints.length; i < l; i++) {
-                    if (v8Breakpoints.breakpoints[i].type == "scriptId")
-                        continue;
-                        
-                    var breakpoint = Breakpoint.fromJson(v8Breakpoints.breakpoints[i], _self.$debugger);
-                    var id = breakpoint.source + "|" + breakpoint.line;
-                    
-                    _self.$breakpoints[id] = breakpoint;
-                    
-                    model.removeXml("breakpoint[@script='" + breakpoint.source + "' and @line='" + breakpoint.line + "']");
-                    breakpoint.xml = model.appendXml(_self.$getBreakpointXml(breakpoint, 0));
-                }
-            }
-    
-            var modelBps = model.queryNodes("breakpoint") || [];
-            apf.asyncForEach(Array.prototype.slice.call(modelBps, 0), function(modelBp, next) {
-                var script = modelBp.getAttribute("script");
-                var line   = modelBp.getAttribute("line");
-                var id     = script + "|" + line;
-                var bp     = _self.$breakpoints[id];
-                
-                if (modelBp.parentNode)
-                    apf.xmldb.removeNode(modelBp);
-                if (!bp) {
-                    bp = _self.$addBreakpoint({
-                        id: id,
-                        name: script,
-                        row: line,
-                        col: modelBp.getAttribute("column"),
-                        lineOffset: 0,
-                        scriptId: null,
-                        data: {
-                            condition:   modelBp.getAttribute("condition"),
-                            ignoreCount: parseInt(modelBp.getAttribute("ignorecount") || 0, 10),
-                            enabled:     (modelBp.getAttribute("enabled") == "true")
-                        }
-                    }, model, next);
-                }
-                else {
-                    model.appendXml(_self.$getBreakpointXml(bp, 0));
-                    next();
-                }
-            }, callback);
+                handleAdded();
+            });
         });
+        
+        // keep track of all breakpoints and check if they're really added
+        var counter = 0;
+        function handleAdded() {
+            if (++counter === allBreakpoints.length) {
+                callback();
+            }
+        }
+        
+        if (!allBreakpoints.length) {
+            callback();
+        }
     };
     
+    /**
+     * Used from the UI to enable or disable a breakpoint
+     */
     this.toggleBreakpoint = function(script, relativeRow, model) {
+        var _self      = this;
+        
+        // grab some basic info from the 'script' attribute
         var name       = script.getAttribute("scriptname");
         var lineOffset = parseInt(script.getAttribute("lineoffset") || "0", 10);
         var row        = lineOffset + relativeRow;
-        var id         = name + "|" + row;
-        var breakpoint = this.$breakpoints[id];
-        var _self      = this;
         
-        if (breakpoint) {
-            try {
-                breakpoint.clear(function() {
-                    _self.$removeBreakpoint(breakpoint, model);
-                });
-            }
-            catch(ex) {
-                // aie! failed, remove it to be sure.
-                _self.$removeBreakpoint(breakpoint, model);
-            }
+        // query to see if we already have breakpoints on this script + line
+        var breakpoints = model.data.selectNodes("//breakpoint[@script=\'" + name + "\' and @line=" + row + "]");
+        
+        // if there are breakpoints already, remove them
+        if (breakpoints.length) {
+            breakpoints.forEach(function (bp) {
+                var removeHandled = false;
+                
+                try {
+                    // callback to the V8 debugger
+                    _self.$getV8BreakpointFromModel(bp).clear(function() {
+                        // and remove it from the UI
+                        _self.$removeBreakpoint(bp, model);
+                    });
+                    removeHandled = true;
+                }
+                // if it fails? then remove from the UI anyways
+                catch (ex) {
+                    removeHandled = false;
+                }
+                
+                // no debugger handling this via a callback, then well do it ourselves
+                if (!removeHandled) {
+                    _self.$removeBreakpoint(bp, model);
+                }
+            });
         }
         else {
-            breakpoint = this.$addBreakpoint({
-                id: id,
+            this.$addBreakpoint({
                 name: name,
                 row: row,
                 col: 0,
@@ -381,29 +371,75 @@ var V8Debugger = module.exports = function(dbg, host) {
         }
     };
     
+    /**
+     * Remove a breakpoint
+     */
     this.$removeBreakpoint = function(bp, model) {
+        // removing a certain breakpoint from the model
+        var xpath;
+        
+        // check if we have some identifier
         if (bp.$id) {
-            var node,
-                xpath = "breakpoint[@id=" + bp.$id + "]";
-            while (node = model.queryNode(xpath))
-                apf.xmldb.removeNode(node);
+            xpath = "breakpoint[@id=" + bp.$id + "]";
         }
-        delete this.$breakpoints[bp.id];
+        else {
+            xpath = "//breakpoint[@script=\'" + bp.getAttribute("script") + "\' and @line=" + bp.getAttribute("line") + "]";
+        }
+        
+        // remove all nodes
+        var node;
+        
+        while (node = model.queryNode(xpath)) {
+            apf.xmldb.removeNode(node);
+        }
     };
     
+    /**
+     * Adds a new breakpoint
+     */
     this.$addBreakpoint = function(options, model, callback) {
-        //id, name, row, col, lineOffset, scriptId, dbg, data
-        var bp = this.$breakpoints[options.id] = new Breakpoint(options.name, options.row, options.col, options.dbg);
-        bp.id = options.id;
-        if (options.data)
-            apf.extend(bp, options.data);
         var _self = this;
-        bp.attach(this.$debugger, function() {
-            // TODO: error handling
-            model.appendXml(_self.$getBreakpointXml(bp, options.lineOffset, options.scriptId));
-            callback && callback();
+        
+        // create 
+        var v8bp = new Breakpoint(options.name, options.row, options.col, options.dbg);
+
+        // no clue what this does
+        if (options.data) {
+            apf.extend(v8bp, options.data);
+        }
+        
+        // now attach it
+        v8bp.attach(this.$debugger, function () {
+            // after succeeding, also add it to the the model
+            model.appendXml(_self.$getBreakpointXml(v8bp, options.lineOffset, options.scriptId));
+            
+            // bind model and breakpoint to eachother
+            _self.$bindV8BreakpointToModel(model.data.selectSingleNode("//breakpoint[@script=\'" + v8bp.source + "\' and @line=" + options.row + "]"), v8bp);
+            
+            if (typeof callback === "function") {
+                callback();
+            }            
         });
-        return bp;
+        
+        return v8bp;
+    };
+    
+    /**
+     * Based on a breakpoint from the model, you can get the v8 breakpoint
+     */
+    this.$getV8BreakpointFromModel = function (node) {
+        var id = node.getAttribute("script") + "|" + node.getAttribute("line");
+        
+        return this.$v8breakpoints[id];
+    };
+    
+    /**
+     * Binds a model node to a real v8 breakpoint
+     */
+    this.$bindV8BreakpointToModel = function (node, v8breakpoint) {
+        var id = node.getAttribute("script") + "|" + node.getAttribute("line");
+        
+        this.$v8breakpoints[id] = v8breakpoint;
     };
     
     this.$getBreakpointXml = function(breakpoint, lineOffset, scriptId) {

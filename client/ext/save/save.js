@@ -55,10 +55,16 @@ module.exports = ext.register("ext/save/save", {
                 winCloseConfirm.addEventListener("hide", function(){
                     if (winCloseConfirm.all != -100) {
                         var f = function(resetUndo){
-                            tabEditors.remove(winCloseConfirm.page, true);
+                            var page;
+                            if (!(page=winCloseConfirm.page))
+                                return;
+                            
+                            tabEditors.remove(page, true, page.noAnim);
+                            delete page.noAnim;
                             if (resetUndo)
-                                winCloseConfirm.page.$at.undo(-1);
+                                page.$at.undo(-1);
                             delete winCloseConfirm.page;
+                            page.dispatchEvent("aftersavedialogclosed");
                         };
 
                         if (winCloseConfirm.all == -200)
@@ -67,6 +73,9 @@ module.exports = ext.register("ext/save/save", {
                             f(true);
                         /*winSaveAs.page = winCloseConfirm.page;*/
                     }
+                    else
+                        tabEditors.dispatchEvent("aftersavedialogcancel");
+                    
                     winCloseConfirm.removeEventListener("hide", arguments.callee);
                 });
 
@@ -313,7 +322,7 @@ module.exports = ext.register("ext/save/save", {
             this.saveBuffer[path] = page;
             return;
         }
-        apf.xmldb.setAttribute(node, "saving", "1");
+        apf.xmldb.setAttribute(file, "saving", "1");
 
         var self = this;
         var panel = sbMain.firstChild;
@@ -364,7 +373,6 @@ module.exports = ext.register("ext/save/save", {
                 doc: doc,
                 value: value
             });
-            ide.dispatchEvent("filecallback");            
         });
 
         var at = page.$at
@@ -432,7 +440,8 @@ module.exports = ext.register("ext/save/save", {
             this.saveBuffer[path] = page;
             return;
         }
-        apf.xmldb.setAttribute(node, "saving", "1");
+
+        //apf.xmldb.setAttribute(file, "saving", "1");
 
         var self = this;
         var doSave = function() {

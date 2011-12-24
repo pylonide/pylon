@@ -32,9 +32,11 @@ apf.dbg = module.exports = function(struct, tagName){
     this.$host = null;
     this.$debugger = null;
     
+    this.autoAttachComingIn = false;
+    
     this.$supportedProperties.push("state-running", "state-attached", 
         "model-sources", "model-stacks", "model-breakpoints", "activeframe");
-  
+    
     this.$createModelPropHandler = function(name, xml, callback) {
         return function(value) {
             if (!value) return;
@@ -78,6 +80,21 @@ apf.dbg = module.exports = function(struct, tagName){
         }
         this.dispatchEvent("changeframe", {data: value});
     };
+    
+    /**
+     * If you are auto attaching, please announce yourself here
+     */
+    this.registerAutoAttach = function () {
+        this.autoAttachComingIn = true;
+    };
+    
+    /**
+     * Manual click on the run button?
+     * Youll get special behavior!
+     */
+    this.registerManualAttach = function () {
+        this.autoAttachComingIn = false;
+    };
 
     this.attach = function(host, tab) {
         var _self = this;
@@ -109,7 +126,11 @@ apf.dbg = module.exports = function(struct, tagName){
                         dbgImpl.addEventListener("changeRunning", _self.$onChangeRunning.bind(_self));
                         dbgImpl.addEventListener("break", _self.$onBreak.bind(_self));
                         dbgImpl.addEventListener("detach", _self.$onDetach.bind(_self));
-                        dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));                        
+                        dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));
+                        
+                        _self.setProperty("activeframe", frame);
+                        
+                        _self.autoAttachComingIn = false;
                     });
                 });
             });
@@ -118,6 +139,8 @@ apf.dbg = module.exports = function(struct, tagName){
     
     this.$allowAttaching = function (frame) {
         var _self = this;
+        
+        if (this.autoAttachComingIn) return true;
         
         if (frame) {
             var scriptId = frame.getAttribute("scriptid");
@@ -152,11 +175,42 @@ apf.dbg = module.exports = function(struct, tagName){
         var _self = this;
         if (!this.$debugger || this.$debugger.isRunning())
             return;
-            
+                
         this.$debugger.backtrace(this.$mdlStack, function() {
+            if (_self.activeframe && !_self.$updateMarkerPrerequisite()) {
+                _self.continueScript();
+                return;
+            }
+            
             _self.dispatchEvent("break");
         });
     };
+    
+    this.$updateMarkerPrerequisite = function () {
+        var frame = this.activeframe;
+        if (!frame) {
+            return;
+        }
+        
+        // when running node with 'debugbrk' it will auto break on the first line of executable code
+        // we don't want to really break here so we put this:                
+        if (frame.getAttribute("name") === "anonymous(exports, require, module, __filename, __dirname)"
+                && frame.getAttribute("index") === "0" && frame.getAttribute("line") === "0") {
+                    
+            var fileNameNode = frame.selectSingleNode("//frame/vars/item[@name='__filename']");
+            var fileName = fileNameNode ? fileNameNode.getAttribute("value") : "";
+            var model = this.$mdlBreakpoints.data;
+            
+            // is there a breakpoint on the exact same line and file? then continue
+            if (fileName && model && model.selectSingleNode("//breakpoints/breakpoint[@script='" + fileName + "' and @line=0]")) {
+                return frame;
+            }
+            
+            return;
+        }
+        
+        return frame;
+    };    
     
     this.$onAfterCompile = function(e) {
         var id = e.script.getAttribute("id");
@@ -191,11 +245,20 @@ apf.dbg = module.exports = function(struct, tagName){
     };
     
     this.detach = function(callback) {
+        var _self = this;
+        
         this.continueScript();
-        if (this.$host)
-            this.$host.$detach(this.$debugger, callback);
-        else 
+        if (this.$host) {
+            this.$host.$detach(this.$debugger, function () {
+                if (typeof callback === "function") callback();
+                
+                // always detach, so we won't get into limbo state
+                _self.$onDetach();
+            });
+        }
+        else {
             this.$onDetach();
+        }
     };
 
     this.$loadSources = function(callback) {
