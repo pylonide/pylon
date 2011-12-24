@@ -133,25 +133,28 @@ var GridLayouts = {
     }
 };
 
+var grids = module.exports = new apf.Class().$init();
+
 var GridNames = Object.keys(GridLayouts);
 
-var defaultGrid = exports.DEFAULT_GRID = "3cols";
+var defaultGrid = grids.DEFAULT_GRID = "3cols";
+
 
 /**
  * Create the available grids 
  */
-exports.init = function(gridLayout) {
+grids.init = function(gridLayout) {
     gridLayout = gridLayout || defaultGrid;
     //console.log("init called", gridLayout);
     createGridNodes(gridLayout);
     return gridLayout;
 };
 
-exports.get = function(name) {
+grids.get = function(name) {
     return GridLayouts[name];
 };
 
-exports.update = function(gridLayout, split) {
+grids.update = function(gridLayout, split) {
     var grid = GridLayouts[gridLayout];
     
     //console.log("update: ", split.pages[0].$pHtmlNode, grid.node, grid.node.parentNode, grid.node.$pHtmlNode);
@@ -173,7 +176,7 @@ exports.update = function(gridLayout, split) {
         splitters[i].hide();
 };
 
-exports.show = function(gridLayout) {
+grids.show = function(gridLayout) {
     GridNames.forEach(function(name) {
         var grid = GridLayouts[name];
         if (!grid.node)
@@ -186,7 +189,7 @@ exports.show = function(gridLayout) {
     });
 };
 
-exports.hide = function(gridLayout) {
+grids.hide = function(gridLayout) {
     gridLayout = gridLayout || defaultGrid;
     var grid = GridLayouts[gridLayout];
     if (!grid || !grid.node)
@@ -258,8 +261,7 @@ function createGridNodes(name) {
             lastEvent = e;
             if (timeout)
                 return;
-            if (exports.onresize)
-                exports.onresize(lastEvent, this);
+            grids.dispatchEvent("resize", lastEvent, this);
             timeout = setTimeout(function(){ timeout = null; }, 100);
         });
     }

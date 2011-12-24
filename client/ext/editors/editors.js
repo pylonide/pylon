@@ -436,12 +436,13 @@ module.exports = ext.register("ext/editors/editors", {
         if (editorPage.actiontracker != page.$at)
             editorPage.setAttribute("actiontracker", page.$at);
 
-        page.$editor.setDocument && page.$editor.setDocument(page.$doc, page.$at);
 
-        ide.dispatchEvent("editorswitch", {
+        if (ide.dispatchEvent("editorswitch", {
             previousPage: e.previousPage,
             nextPage: e.nextPage
-        });
+        }) !== false) {
+            page.$editor.setDocument && page.$editor.setDocument(page.$doc, page.$at);
+        }
     },
 
     afterswitch : function(e) {

@@ -69,7 +69,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         );
         
         ide.addEventListener("editorswitch", function(e) {
-            _self.updateSplitView(e.previousPage, e.nextPage);
+            return _self.updateSplitView(e.previousPage, e.nextPage);
         });
         
         ide.addEventListener("closefile", function(e) {
@@ -180,6 +180,7 @@ module.exports = ext.register("ext/splitview/splitview", {
                 ret = false;
                 break;
             }
+            Splits.setActivePage(split, page);
             // only the first tab in the split view is the trigger to select all
             // other tabs as well (because only the page of the first tab is 
             // REALLY shown)
@@ -306,6 +307,8 @@ module.exports = ext.register("ext/splitview/splitview", {
         apf.layout.forceResize();
         
         this.save();
+        
+        return false;
     },
     
     changeLayout: function(page, gridLayout) {

@@ -53,7 +53,7 @@ exports.init = function(splitView) {
         e.returnValue = correctGotoLineDialog(e);
     });
     
-    Grids.onresize = function(e, node) {
+    Grids.addEventListener("resize", function(e, node) {
         var correct;
         if (searchWindow && searchWindow.visible) {
             correct = correctQuickSearchDialog();
@@ -76,7 +76,7 @@ exports.init = function(splitView) {
             if (typeof correct.left != "undefined")
                 gotoLineWindow.$ext.style.left = correct.left + "px";
         }
-    };
+    });
     
     return this;
 };
@@ -92,6 +92,7 @@ exports.create = function(page, gridLayout) {
     var split = {
         editors: [editor],
         pages: [page],
+        activePage: 0,
         gridLayout: gridLayout
     };
     Splits.push(split);
@@ -194,6 +195,8 @@ exports.update = function(split, gridLayout) {
     Grids.update(gridLayout, split);
     // make sure visual styles are OK
     setSplitViewStyles(split);
+    
+    exports.setActivePage(split);
     
     // make sure the buttons of the pages in the active split are highlighted
     if (split === ActiveSplit) {
@@ -301,6 +304,11 @@ exports.isActive = function(split) {
 
 exports.getActive = function() {
     return ActiveSplit || null;
+};
+
+exports.setActivePage = function(split, activePage) {
+    var idx = activePage ? exports.indexOf(split, activePage) : split.activePage;
+    split.editors[idx].focus();
 };
 
 /*
@@ -438,12 +446,15 @@ function onEditorFocus(editor) {
 
     splits.forEach(function(split) {
         var activePage = split.pages[exports.indexOf(split, editor)];
-        split.pages.forEach(function(page) {
-            if (page === activePage)
+        for (var page, i = 0, l = split.pages.length; i < l; ++i) {
+            page = split.pages[i];
+            if (page === activePage) {
+                split.activePage = i;
                 apf.setStyleClass(page.$button, ActiveClass, [InactiveClass]);
+            }
             else
                 apf.setStyleClass(page.$button, InactiveClass, [ActiveClass]);
-        });
+        }
     });
 }
 
