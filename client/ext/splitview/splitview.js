@@ -219,14 +219,14 @@ module.exports = ext.register("ext/splitview/splitview", {
         if (!split)
             return;
         if (split.pages.length == pages.length)
-            return false;
+            return (e.returnValue = false);
         
         var maxIdx = pages.length - 1;
         var bRight = e.dir == "right";
         var idx = pages.indexOf(split.pages[bRight ? split.pages.length - 1 : 0]) + (bRight ? 1 : -1);
         idx = idx < 0 ? maxIdx : idx > maxIdx ? 0 : idx;
         if (Splits.indexOf(split, pages[idx]) > -1)
-            return false;
+            return (e.returnValue = false);
         
         // check if the next tab is inside a split as well:
         split = Splits.get(pages[idx])[0];
@@ -454,7 +454,10 @@ module.exports = ext.register("ext/splitview/splitview", {
                 active = Splits.getActive();
         }
         
-        tabs.set(activePage);
+        if (!active || Splits.indexOf(active, activePage) == -1)
+            tabs.set(activePage);
+        else
+            Splits.show(active);
     },
     
     enable : function(){
