@@ -308,6 +308,8 @@ exports.getActive = function() {
 
 exports.setActivePage = function(split, activePage) {
     var idx = activePage ? exports.indexOf(split, activePage) : split.activePage;
+    if (idx == -1)
+        return;
     split.editors[idx].focus();
 };
 
