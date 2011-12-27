@@ -1,12 +1,12 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:window 
       id        = "winNewFileTemplate"
-      title     = "Choose a file template"
+      title     = "New from Template"
       icon      = ""
       center    = "true"
       render    = "runtime"
       width     = "350"
-      height    = "300"
+      height    = "370"
       skin      = "change_photo"
       resizable = "true"
       kbclose   = "true"
@@ -22,7 +22,7 @@
             bottom   = "58"
         />
       
-        <a:vbox padding="10" anchors="0 0 0 0">
+        <a:vbox padding="12" anchors="0 0 0 0">
             <a:list id="lstFileTemplates"
               model     = "mdlFileTemplates" 
               flex      = "1" 
@@ -35,8 +35,7 @@
               onafterchoose = "
                 btnFileTemplateSave.dispatchEvent('click');
               " />
-            <a:divider skin="hordivider" />
-            <a:hbox pack="end" padding="7" edge="0 10 5 5">
+            <a:hbox pack="end" padding="7" edge="12 10 5 5">
                 <a:button id="btnFileTemplateSave" width="80" default="2" 
                   class="ui-btn-green" caption="Create" 
                   onclick="
@@ -58,8 +57,8 @@
             <item value="js" icon="page_white_code.png" caption="JavaScript file"><![CDATA[]]></item>
             <item value="coffee" icon="page_white_code.png" caption="CoffeeScript file"><![CDATA[]]></item>
             <item value="html" icon="html.png" caption="HTML file"><![CDATA[<!DOCTYPE html>
-<html  xmlns="http://www.w3.org/1999/xhtml">
-    <head profile="http://www.w3.org/2005/10/profile">
+<html>
+    <head>
         <title> </title>
     </head>
     <body>
@@ -78,7 +77,7 @@
             <item value="rb" icon="page_white_ruby.png" caption="Ruby file"><![CDATA[]]></item>
             <item value="mli" icon="page_white_code.png" caption="OCaml file"><![CDATA[]]></item>
             <item value="clj" icon="page_white_code.png" caption="Clojure file"><![CDATA[]]></item>
-            <item value="md" icon="page_white_text.png" caption="Markdown"><![CDATA[]]></item>
+            <item value="md" icon="page_white_text.png" caption="Markdown file"><![CDATA[]]></item>
         </templates>
     </a:model>
 </a:application>
