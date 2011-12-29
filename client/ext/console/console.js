@@ -309,6 +309,10 @@ module.exports = ext.register("ext/console/console", {
         if (message.type != "result")
             return;
 
+        // Ignore some results
+        if (message.subtype == "issues")
+            return;
+
         switch (message.subtype) { 
             case "commandhints":
                 var cmds = message.body;

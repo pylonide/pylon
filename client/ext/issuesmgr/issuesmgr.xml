@@ -1,0 +1,24 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:skin id="skinissues" 
+      src        = "{require('ext/issuesmgr/issuesmgr').skin}" 
+      media-path = "/static/ext/issuesmgr/images/" />
+    <a:window id="winIssuesMgr"
+      flex     = "1"
+      skin     = "fm-window"
+      title    = "Issues"
+      modal    = "false"
+      visible  = "true"
+      buttons  = "close"
+      optimize = "true">
+        <a:model id="mdlIssues"></a:model>
+        <a:list anchors="0 0 0 0" id="lstIssues" skinset="skinissues" skin="issueslist"
+          flex="1" border="0" multiselect="false" autoselect="false" model="mdlIssues"
+          empty-message = ""
+          onafterselect="require('ext/issuesmgr/issuesmgr').expandIssue()">
+            <a:each match="[issue]">
+                <a:caption value="[@number]. [@title]" />
+                <div class="issue_detail" id="issue_detail[@number]" />
+            </a:each>
+        </a:list>
+    </a:window>
+</a:application>

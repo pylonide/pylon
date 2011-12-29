@@ -34,3 +34,6 @@
 [submodule "support/treehugger"]
 	path = support/treehugger
 	url = git://github.com/ajaxorg/treehugger.git
+[submodule "support/node-github"]
+	path = support/node-github
+	url = https://mattpardee@github.com/ajaxorg/node-github.git
