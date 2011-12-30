@@ -22,7 +22,7 @@ handler.analysisRequiresParsing = function() {
     return false;
 };
 
-handler.analyze = function(doc) {
+handler.analyze = function(doc, ast, callback) {
     var value = doc.getValue();
     value = value.replace(/^(#!.*\n)/, "//$1");
 
@@ -44,7 +44,7 @@ handler.analyze = function(doc) {
                 type: "error",
                 level: "error"
             }];
-            return markers;
+            return callback(markers);
         }
     }
     finally {}
@@ -74,7 +74,7 @@ handler.analyze = function(doc) {
             });
         });
     }
-    return markers;
+    callback(markers);
 };
     
 });

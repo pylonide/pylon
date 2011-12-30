@@ -42,7 +42,7 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
         _self.documentClose(event);
     });
     sender.on("analyze", function(event) {
-        _self.analyze(event);
+        _self.analyze(function() { });
     });
     sender.on("cursormove", function(event) {
         _self.onCursorMove(event);
@@ -53,12 +53,52 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     sender.on("change", function() {
         _self.scheduledUpdate = true;
     });
+    sender.on("jumpToDefinition", function(event) {
+        _self.jumpToDefinition(event);
+    });
     sender.on("fetchVariablePositions", function(event) {
         _self.sendVariablePositions(event);
     });
 };
 
 oop.inherits(LanguageWorker, Mirror);
+
+function asyncForEach(array, fn, callback) {
+	array = array.slice(0); // Just to be sure
+	function processOne() {
+		var item = array.pop();
+		fn(item, function(result, err) {
+			if (array.length > 0) {
+				processOne();
+			}
+			else {
+				callback(result, err);
+			}
+		});
+	}
+	if (array.length > 0) {
+		processOne();
+	}
+	else {
+		callback();
+	}
+}
+
+function asyncParForEach(array, fn, callback) {
+	var completed = 0;
+	var arLength = array.length;
+	if (arLength === 0) {
+		callback();
+	}
+	for (var i = 0; i < arLength; i++) {
+		fn(array[i], function(result, err) {
+			completed++;
+			if (completed === arLength) {
+				callback(result, err);
+			}
+		});
+	}
+}
 
 (function() {
     
@@ -92,24 +132,25 @@ oop.inherits(LanguageWorker, Mirror);
         this.handlers.push(handler);
     };
 
-    this.parse = function() {
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            if (handler.handlesLanguage(this.$language)) {
+    this.parse = function(callback) {
+        var _self = this;
+        this.cachedAst = null;
+        asyncForEach(this.handlers, function(handler, next) {
+            if (handler.handlesLanguage(_self.$language)) {
                 try {
-                    var ast = handler.parse(this.doc.getValue());
-                    if(ast) {
-                        this.cachedAst = ast;
-                        return ast;
-                    }
+                    handler.parse(_self.doc.getValue(), function(ast) {
+                        if(ast)
+                            _self.cachedAst = ast;
+                        next();
+                    });
                 } catch(e) {
                     // Ignore parse errors
+                    next();
                 }
             }
-        }
-        // No parser available
-        this.cachedAst = null;
-        return null;
+        }, function() {
+            callback(_self.cachedAst);
+        });
     };
 
     this.scheduleEmit = function(messageType, data) {
@@ -137,26 +178,30 @@ oop.inherits(LanguageWorker, Mirror);
         }
     }
     
-    this.analyze = function() {
-        var ast = this.parse();
-        var markers = [];
-        for(var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            if (handler.handlesLanguage(this.$language) && (ast || !handler.analysisRequiresParsing())) {
-                var result = handler.analyze(this.doc, ast);
-                if (result)
-                    markers = markers.concat(result);
-            }
-        }
-        var extendedMakers = markers;
-        filterMarkersAroundError(ast, markers);
-        if (this.getLastAggregateActions().markers.length > 0)
-            extendedMakers = markers.concat(this.getLastAggregateActions().markers);
-        this.scheduleEmit("markers", this.filterMarkersBasedOnLevel(extendedMakers));
-        this.currentMarkers = markers;
-        if (this.postponedCursorMove) {
-            this.onCursorMove(this.postponedCursorMove);
-        }
+    this.analyze = function(callback) {
+        var _self = this;
+        this.parse(function(ast) {
+            var markers = [];
+            asyncForEach(_self.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language) && (ast || !handler.analysisRequiresParsing())) {
+                    handler.analyze(_self.doc, ast, function(result) {
+                        if (result)
+                            markers = markers.concat(result);
+                        next();
+                    });
+                }
+            }, function() {
+                var extendedMakers = markers;
+                filterMarkersAroundError(ast, markers);
+                if (_self.getLastAggregateActions().markers.length > 0)
+                    extendedMakers = markers.concat(_self.getLastAggregateActions().markers);
+                _self.scheduleEmit("markers", _self.filterMarkersBasedOnLevel(extendedMakers));
+                _self.currentMarkers = markers;
+                if (_self.postponedCursorMove)
+                    _self.onCursorMove(_self.postponedCursorMove);
+                callback();
+            });
+        });
     };
 
     this.checkForMarker = function(pos) {
@@ -211,6 +256,7 @@ oop.inherits(LanguageWorker, Mirror);
             return;
         }
         var pos = event.data;
+        var _self = this;
         var hintMessage = ""; // this.checkForMarker(pos) || "";
         // Not going to parse for this, only if already parsed successfully
         var aggregateActions = {markers: [], hint: null, enableRefactorings: []};
@@ -218,42 +264,51 @@ oop.inherits(LanguageWorker, Mirror);
             var ast = this.cachedAst;
             var currentNode = ast.findNode({line: pos.row, col: pos.column});
             if (currentNode !== this.lastCurrentNode || pos.force) {
-                for (var i = 0; i < this.handlers.length; i++) {
-                    var handler = this.handlers[i];
-                    if (handler.handlesLanguage(this.$language)) {
-                        var response = handler.onCursorMovedNode(this.doc, ast, pos, currentNode);
-                        if (!response)
-                            continue;
-                        if (response.markers && response.markers.length > 0) {
-                            aggregateActions.markers = aggregateActions.markers.concat(response.markers);
-                        }
-                        if (response.enableRefactorings && response.enableRefactorings.length > 0) {
-                            aggregateActions.enableRefactorings = aggregateActions.enableRefactorings.concat(response.enableRefactorings);
-                        }
-                        if (response.hint) {
-                            // Last one wins, support multiple?
-                            aggregateActions.hint = response.hint;
-                        }
+                asyncForEach(this.handlers, function(handler, next) {
+                    if (handler.handlesLanguage(_self.$language)) {
+                        handler.onCursorMovedNode(_self.doc, ast, pos, currentNode, function(response) {
+                            if (!response)
+                                return next();
+                            if (response.markers && response.markers.length > 0) {
+                                aggregateActions.markers = aggregateActions.markers.concat(response.markers);
+                            }
+                            if (response.enableRefactorings && response.enableRefactorings.length > 0) {
+                                aggregateActions.enableRefactorings = aggregateActions.enableRefactorings.concat(response.enableRefactorings);
+                            }
+                            if (response.hint) {
+                                // Last one wins, support multiple?
+                                aggregateActions.hint = response.hint;
+                            }
+                            next();
+                        });
                     }
-                }
-                if (aggregateActions.hint && !hintMessage) {
-                    hintMessage = aggregateActions.hint;
-                }
-                this.scheduleEmit("markers", this.filterMarkersBasedOnLevel(this.currentMarkers.concat(aggregateActions.markers)));
-                this.scheduleEmit("enableRefactorings", aggregateActions.enableRefactorings);
-                this.lastCurrentNode = currentNode;
-                this.setLastAggregateActions(aggregateActions);
+                    else
+                        next();
+                }, function() {
+                    if (aggregateActions.hint && !hintMessage) {
+                        hintMessage = aggregateActions.hint;
+                    }
+                    _self.scheduleEmit("markers", _self.filterMarkersBasedOnLevel(_self.currentMarkers.concat(aggregateActions.markers)));
+                    _self.scheduleEmit("enableRefactorings", aggregateActions.enableRefactorings);
+                    _self.lastCurrentNode = currentNode;
+                    _self.setLastAggregateActions(aggregateActions);
+                    _self.scheduleEmit("hint", {
+                    	pos: pos,
+                    	message: hintMessage
+                    });
+                });
             }
         } else {
             this.setLastAggregateActions(aggregateActions);
+            this.scheduleEmit("hint", {
+                pos: pos,
+            	message: hintMessage
+            });
         }
-        this.scheduleEmit("hint", {
-        	pos: pos,
-        	message: hintMessage
-        });
     };
-    
-    this.sendVariablePositions = function(event) {
+
+
+    this.jumpToDefinition = function(event) {
         var pos = event.data;
         // Not going to parse for this, only if already parsed successfully
         if (this.cachedAst) {
@@ -262,23 +317,45 @@ oop.inherits(LanguageWorker, Mirror);
             for (var i = 0; i < this.handlers.length; i++) {
                 var handler = this.handlers[i];
                 if (handler.handlesLanguage(this.$language)) {
-                    var response = handler.getVariablePositions(this.doc, ast, pos, currentNode);
+                    var response = handler.jumpToDefinition(this.doc, ast, pos, currentNode);
                     if (response)
-                        this.sender.emit("variableLocations", response);
+                        this.sender.emit("jumpToDefinition", response);
                 }
             }
         }
     };
 
+    this.sendVariablePositions = function(event) {
+        var pos = event.data;
+        var _self = this;
+        // Not going to parse for this, only if already parsed successfully
+        if (this.cachedAst) {
+            var ast = this.cachedAst;
+            var currentNode = ast.findNode({line: pos.row, col: pos.column});
+            asyncForEach(this.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language)) {
+                    handler.getVariablePositions(_self.doc, ast, pos, currentNode, function(response) {
+                        if (response)
+                            _self.sender.emit("variableLocations", response);
+                        next();
+                    });
+                }
+            }, function() {
+            });
+        }
+    };
+
     this.onUpdate = function() {
         this.scheduledUpdate = false;
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            if (handler.handlesLanguage(this.$language)) {
-                handler.onUpdate(this.doc);
-            }
-        }
-        this.analyze();
+        var _self = this;
+        asyncForEach(this.handlers, function(handler, next) { 
+            if (handler.handlesLanguage(_self.$language))
+                handler.onUpdate(_self.doc, next);
+            else
+                next();
+        }, function() {
+            _self.analyze(function() {});
+        });
     };
     
     this.switchFile = function(path, language, code) {
@@ -289,20 +366,19 @@ oop.inherits(LanguageWorker, Mirror);
         this.cachedAst = null;
         this.lastCurrentNode = null;
         this.setValue(code);
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
+        var doc = this.doc;
+        asyncForEach(this.handlers, function(handler, next) {
             handler.path = path;
             handler.language = language;
-            handler.onDocumentOpen(path, this.doc, oldPath);
-        }
+            handler.onDocumentOpen(path, doc, oldPath, next);
+        }, function() { });
     };
     
     this.documentClose = function(event) {
         var path = event.data;
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            handler.onDocumentClose(path);
-        }
+        asyncForEach(this.handlers, function(handler, next) {
+            handler.onDocumentClose(path, next);
+        }, function() { });
     };
     
     // For code completion
@@ -340,48 +416,58 @@ oop.inherits(LanguageWorker, Mirror);
         var pos = event.data;
         // Check if anybody requires parsing for its code completion
         var ast, currentNode;
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            if (handler.handlesLanguage(this.$language) && handler.completionRequiresParsing()) {
-                ast = this.parse();
-                if(ast)
-                    currentNode = ast.findNode({line: pos.row, col: pos.column});
-                break;
-            }
-        }
+        var _self = this;
         
-        var matches = [];
         
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            if (handler.handlesLanguage(this.$language)) {
-                var completions = handler.complete(this.doc, ast, pos, currentNode);
-                if (completions)
-                    matches = matches.concat(completions);
+        asyncForEach(this.handlers, function(handler, next) {
+            if (!ast && handler.handlesLanguage(_self.$language) && handler.completionRequiresParsing()) {
+                _self.parse(function(hAst) {
+                    if(hAst) {
+                        ast = hAst;
+                        currentNode = ast.findNode({line: pos.row, col: pos.column});
+                    }
+                    next();
+                });
             }
-        }
-
-        removeDuplicateMatches(matches);
-        // Sort by priority, score
-        matches.sort(function(a, b) {
-            if (a.priority < b.priority)
-                return 1;
-            else if (a.priority > b.priority)
-                return -1;
-            else if (a.score < b.score)
-                return 1;
-            else if (a.score > b.score)
-                return -1;
-            else if(a.name < b.name)
-                return -1;
-            else if(a.name > b.name)
-                return 1;
             else
-                return 0;
+                next();
+        }, function() {
+            var matches = [];
+            
+            asyncParForEach(_self.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language)) {
+                    handler.complete(_self.doc, ast, pos, currentNode, function(completions) {
+                        if (completions)
+                            matches = matches.concat(completions);
+                        next();
+                    });
+                }
+                else
+                    next();
+            }, function() {
+                removeDuplicateMatches(matches);
+                // Sort by priority, score
+                matches.sort(function(a, b) {
+                    if (a.priority < b.priority)
+                        return 1;
+                    else if (a.priority > b.priority)
+                        return -1;
+                    else if (a.score < b.score)
+                        return 1;
+                    else if (a.score > b.score)
+                        return -1;
+                    else if(a.name < b.name)
+                        return -1;
+                    else if(a.name > b.name)
+                        return 1;
+                    else
+                        return 0;
+                });
+                
+                matches = matches.slice(0, 50); // 50 ought to be enough for everybody
+                _self.sender.emit("complete", matches);
+            });
         });
-        
-        matches = matches.slice(0, 50); // 50 ought to be enough for everybody
-        this.sender.emit("complete", matches);
     };
 
 }).call(LanguageWorker.prototype);

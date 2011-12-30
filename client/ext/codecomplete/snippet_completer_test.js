@@ -7,7 +7,8 @@ define(function(require, exports, module) {
 
 var Document = require("ace/document").Document;
 var assert = require("ace/test/assertions");
-var Completer = require("ext/codecomplete/snippet_completer").Completer;
+var completer = require("ext/codecomplete/snippet_completer");
+var completeUtil = require("ext/codecomplete/complete_util");
 
 function matchSorter(matches) {
     matches.sort(function(a, b) {
@@ -20,34 +21,34 @@ function matchSorter(matches) {
     });
 }
 
-Completer.prototype.fetchText = function(path) {
+completer.fetchText = function(path) {
     return require('fs').readFileSync(__dirname + "/../../" + path, 'ascii');
 };
+
 
 module.exports = {
     "test javascript found completions" : function() {
         var doc = new Document("while(true) {\n    fn\n}");
-        var completer = new Completer();
-        completer.path = 'bla.js';
-        var matches = completer.complete(doc, null, {row: 1, column: 6});
-
-        matchSorter(matches);
-        assert.equal(matches.length, 1);
-        assert.equal(matches[0].name, "fn");
+        completer.language = 'javascript';
+        completer.complete(doc, null, {row: 1, column: 6}, null, function(matches) {
+            matchSorter(matches);
+            assert.equal(matches.length, 1);
+            assert.equal(matches[0].name, "fn");
+        });
     },
 
-    "test javascript insertion" : function(next) {
+    "test javascript insertion" : function() {
         var doc = new Document("while(true) {\n    fn\n}");
-        var completer = new Completer();
-        completer.path = 'bla.js';
-        var matches = completer.complete(doc, null, {row: 1, column: 6});
-        matchSorter(matches);
-        
-        completeUtil.replaceText(editor, "fn", matches[0].replaceText);
-        assert.equal(session.getValue(), "while(true) {\n    function () {\n        \n    }\n}");
-        var pos = editor.getCursorPosition();
-        assert.equal(pos.row, 1);
-        assert.equal(pos.column, 13);
+        completer.language = 'javascript';
+        completer.complete(doc, null, {row: 1, column: 6}, null, function(matches) {
+            matchSorter(matches);
+            
+            completeUtil.replaceText(editor, "fn", matches[0].replaceText);
+            assert.equal(session.getValue(), "while(true) {\n    function () {\n        \n    }\n}");
+            var pos = editor.getCursorPosition();
+            assert.equal(pos.row, 1);
+            assert.equal(pos.column, 13);
+        });
     },
 
     "test javascript insertion 2" : function(next) {

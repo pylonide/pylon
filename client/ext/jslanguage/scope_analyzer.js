@@ -352,7 +352,7 @@ Scope.prototype.getVariableNames = function() {
     return names;
 };
 
-handler.analyze = function(doc, ast) {
+handler.analyze = function(doc, ast, callback) {
     var handler = this;
     var markers = [];
     
@@ -497,12 +497,12 @@ handler.analyze = function(doc, ast) {
     }
     var rootScope = new Scope();
     scopeAnalyzer(rootScope, ast);
-    return markers;
+    callback(markers);
 };
 
-handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
+handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callback) {
     if (!currentNode)
-        return;
+        return callback();
     var markers = [];
     var enableRefactorings = [];
     
@@ -556,15 +556,15 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
     );
     
     if (!this.isFeatureEnabled("instanceHighlight"))
-        return { enableRefactorings: enableRefactorings };    
+        return callback({ enableRefactorings: enableRefactorings });
 
-    return {
+    callback({
         markers: markers,
         enableRefactorings: enableRefactorings
-    };
+    });
 };
 
-handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
+handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, callback) {
     var v;
     var mainNode;    
     currentNode.rewrite(
@@ -609,14 +609,14 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
             others.push({column: pos.sc, row: pos.sl});
         }
     });
-    return {
+    callback({
         length: length,
         pos: {
             row: pos.sl,
             column: pos.sc
         },
         others: others
-    };
+    });
 };
 
 });

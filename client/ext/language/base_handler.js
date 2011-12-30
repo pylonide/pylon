@@ -36,8 +36,8 @@ module.exports = {
      * @param code code to parse
      * @return treehugger AST or null if not implemented
      */
-    parse: function(doc) {
-        return null;
+    parse: function(doc, callback) {
+        callback();
     },
     
     /**
@@ -52,14 +52,16 @@ module.exports = {
      * Invoked on a successful parse
      * @param ast the resulting AST in treehugger format
      */
-    onParse: function(ast) {
+    onParse: function(ast, callback) {
+        callback();
     },
     
     /**
      * Invoked when the document has been updated (possibly after a certain interval)
      * @param doc the document object
      */
-    onUpdate: function(doc) {
+    onUpdate: function(doc, callback) {
+        callback();
     },
     
     /**
@@ -68,29 +70,32 @@ module.exports = {
      * @param doc the document object
      * @param oldPath the path of the document that was active before
      */
-    onDocumentOpen: function(path, doc, oldPath) {
+    onDocumentOpen: function(path, doc, oldPath, callback) {
+        callback();
     },
     
     /**
      * Invoked when a document is closed in the IDE
      * @param path the path of the file
      */
-    onDocumentClose: function(path) {
+    onDocumentClose: function(path, callback) {
+        callback();
     },
     
     /**
      * Invoked when the cursor has been moved inside to a different AST node
      * @return a JSON object with three optional keys: {markers: [...], hint: {message: ...}, enableRefactoring: [...]}
      */
-    onCursorMovedNode: function(doc, fullAst, cursorPos, currentNode) {
+    onCursorMovedNode: function(doc, fullAst, cursorPos, currentNode, callback) {
+        callback();
     },
     
     /**
      * Invoked when an outline is required
      * @return a JSON outline structure or null if not supported
      */
-    outline: function(ast) {
-        return null;
+    outline: function(ast, callback) {
+        callback();
     },
     
     /**
@@ -107,8 +112,8 @@ module.exports = {
      * @param cursorPos the current cursor position (object with keys 'row' and 'column')
      * @param currentNode the AST node the cursor is currently at
      */
-    complete: function(doc, fullAst, cursorPos, currentNode) {
-        return null;
+    complete: function(doc, fullAst, cursorPos, currentNode, callback) {
+        callback();
     },
 
     /**
@@ -121,16 +126,16 @@ module.exports = {
     /**
      * Enables the handler to do analysis of the AST and annotate as desired
      */
-    analyze: function(doc, fullAst) {
-        return null;
+    analyze: function(doc, fullAst, callback) {
+        callback();
     },
     
     /**
      * Invoked when inline variable renaming is activated
      * @return an array of positions of the currently selected variable
      */
-    getVariablePositions: function(doc, fullAst, pos, currentNode) {
-        return null;
+    getVariablePositions: function(doc, fullAst, pos, currentNode, callback) {
+        callback();
     }
 };
 

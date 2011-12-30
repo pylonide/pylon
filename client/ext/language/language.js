@@ -65,7 +65,8 @@ module.exports = ext.register("ext/language/language", {
                 return;
             ext.initExtension(_self);
             var path = event.node.getAttribute("path");
-            worker.call("switchFile", [path, editors.currentEditor.ceEditor.syntax, event.doc.getValue()]);
+            var editor = editors.currentEditor.ceEditor.$editor;
+            worker.call("switchFile", [path, editor.syntax, event.doc.getValue()]);
             event.doc.addEventListener("close", function() {
                 worker.emit("documentClose", {data: path});
             });
@@ -135,6 +136,7 @@ module.exports = ext.register("ext/language/language", {
         
         extSettings.model.addEventListener("update", this.updateSettings.bind(this));
         
+        this.editor.addEventListener("mousedown", this.onEditorClick.bind(this));
     },
     
     updateSettings: function() {
@@ -172,11 +174,17 @@ module.exports = ext.register("ext/language/language", {
         this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition()]);
     },
     
+    onEditorClick: function(event) {
+        if(event.domEvent.altKey) {
+            var pos = event.getDocumentPosition();
+            this.worker.emit("jumpToDefinition", {data: pos});
+        }
+    },
+    
     /**
      * Method attached to key combo for complete
      */
     complete: function() {
-        console.log("Completing!");
         complete.invoke();
     },
     

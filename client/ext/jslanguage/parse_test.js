@@ -19,8 +19,9 @@ module.exports = {
         worker.register("ext/jslanguage/parse");
         assert.equal(worker.handlers.length, 1);
         worker.switchFile("test.js", "javascript", "hello();");
-        var ast = worker.parse();
-        assert.equal(ast, '[Call(Var("hello"),[])]');
+        worker.parse(function(ast) {
+            assert.equal(ast, '[Call(Var("hello"),[])]');
+        });
     }
 };
 

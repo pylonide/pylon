@@ -56,7 +56,7 @@ completer.completionRequiresParsing = function() {
     return false;
 };
     
-completer.complete = function(doc, fullAst, pos, currentNode) {
+completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var identDict = analyze(doc, pos);
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
@@ -67,7 +67,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
     }
     var matches = completeUtil.findCompletions(identifier, allIdentifiers);
 
-    return matches.map(function(m) {
+    callback(matches.map(function(m) {
         return {
           name        : m,
           replaceText : m,
@@ -76,7 +76,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
           meta        : "",
           priority    : 1
         };
-    });
+    }));
 };
 
 });
