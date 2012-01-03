@@ -31,6 +31,10 @@ module.exports = ext.register("ext/tree/tree", {
     pendingSBFadeOut : false,
     animControl      : {},
 
+    commands : {
+        "refresh": {hint: "refresh folder tree"}
+    },
+
     onSBMouseOver : function() {
         if (this.ignoreSBMouseOut)
             this.pendingSBFadeOut = false;
