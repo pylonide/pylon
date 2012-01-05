@@ -372,7 +372,7 @@ apf.button  = function(struct, tagName){
 
         this.parentNode.hasMoved = false;
 
-        if (e)
+        if (e && e.htmlEvent)
             apf.stopPropagation(e.htmlEvent);
 
         return false;

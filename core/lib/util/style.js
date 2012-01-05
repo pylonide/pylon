@@ -37,7 +37,7 @@ apf.setStyleRule = function(name, type, value, stylesheet, win){
             try {
                 var rules = sheets[j][apf.styleSheetRules];
                 for (var i = 0; i < rules.length; i++) {
-                    if (rules.item(i).selectorText.toLowerCase() == name) {
+                    if (rules.item(i).selectorText && rules.item(i).selectorText.toLowerCase() == name) {
                         rules.item(i).style[type] = value;
                         return true;
                     }
@@ -49,7 +49,7 @@ apf.setStyleRule = function(name, type, value, stylesheet, win){
     else {
         var rules = (win || self).document.styleSheets[stylesheet || 0][apf.styleSheetRules];
         for (var i = 0; i < rules.length; i++) {
-            if (rules.item(i).selectorText.toLowerCase() == name) {
+            if (rules.item(i).selectorText && rules.item(i).selectorText.toLowerCase() == name) {
                 rules.item(i).style[type] = value;
                 return true;
             }
@@ -74,7 +74,7 @@ apf.getStyleRule = function(name, type, stylesheet, win){
             try {
                 var rules = sheets[j][apf.styleSheetRules];
                 for (var i = 0; i < rules.length; i++) {
-                    if (rules.item(i).selectorText.toLowerCase() == name) {
+                    if (rules.item(i).selectorText && rules.item(i).selectorText.toLowerCase() == name) {
                         return rules.item(i).style[type];
                     }
                 }
@@ -85,7 +85,7 @@ apf.getStyleRule = function(name, type, stylesheet, win){
     else {
         var rules = (win || self).document.styleSheets[stylesheet || 0][apf.styleSheetRules];
         for (var i = 0; i < rules.length; i++) {
-            if (rules.item(i).selectorText.toLowerCase() == name) {
+            if (rules.item(i).selectorText && rules.item(i).selectorText.toLowerCase() == name) {
                 return rules.item(i).style[type];
             }
         }
