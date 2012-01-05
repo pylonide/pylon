@@ -10,64 +10,57 @@
                 -moz-border-radius    : 8px;
                 -webkit-border-radius : 8px;
                 border-radius         : 8px;
+                -webkit-box-shadow: 0 1px 5px 1px #000000;
+                -moz-box-shadow: 0 1px 5px 1px #000000;
+                box-shadow: 0 1px 5px 1px #000000;
             }
             .guidetool .gt-header {
                 display : none;
             }
             .guidetool .gt-content {
-                background : #222222;
-                border : 1px solid #999;
+                background : url(images/tour-info-bg.png) repeat 0 0;
+                border : 1px solid #000101;
+                -webkit-box-shadow: inset 0px 1px 0px 0px #343434;
+                -moz-box-shadow: inset 0px 1px 0px 0px #343434;
+                box-shadow: inset 0px 1px 0px 0px #343434;
                 -moz-border-radius    : 8px;
                 -webkit-border-radius : 8px;
                 border-radius         : 8px;
                 padding: 15px 15px;
+                min-height: 25px;
             }
             .guidetool .gt-content .text {
                 color: #cee57f;
-                background-color: #222222;
+                background : url(images/tour-info-bg.png) repeat 0 0;
             }
             .guidetool .gt-arrow {
                 position: absolute;
-                width : 16px;
-                height : 16px;
-                background : transparent;
+                width: 25px;
+                height: 25px;
+                background : url(images/arrow.png) no-repeat 0 0;
             }
             .guidetool.top .gt-arrow {
                 left: 50%;
-                bottom: -9px;
-                width: 0px;
-                height: 0px;
-                border-left: 10px solid transparent;
-                border-right: 10px solid transparent;
-                border-top: 10px solid #222;
+                height: 17px;
+                bottom: -16px;
+                background-position : 0 -42px;
             }
             .guidetool.bottom .gt-arrow {
                 left: 50%;
-                top: -9px;
-                width: 0px;
-                height: 0px;
-                border-left: 10px solid transparent;
-                border-right: 10px solid transparent;
-                border-bottom: 10px solid #222;
+                top: -15px;
+                height: 17px;
+                background-position : 0 -25px;
             }
             .guidetool.left .gt-arrow {
-                right: -9px;    
-                top: 43%;
-                width: 0px;
-                height: 0px;
-                border-top: 10px solid transparent;
-                border-bottom: 10px solid transparent;
-                border-left: 10px solid #222;
+                right: -24px;    
+                top: 37%;
+                background-position : 0 -59px;
             }
             
             .guidetool.right .gt-arrow {
-                left: -9px;	
+                left: -24px;	
                 top: 43%;
-                width: 0px;
-                height: 0px;
-                border-top: 10px solid transparent;
-                border-bottom: 10px solid transparent;
-                border-right: 10px solid #222;
+                background-position : 0 0;
             }
             
             .wn_cp_content .btnIcon .lbl span {

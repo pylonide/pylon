@@ -9,7 +9,7 @@
       skin    = "bk-window"
       class   = "relative">
         <a:vbox padding="10" edge="15 20 25 20">
-            <a:text id="winTourDesc" class="tgDesc modal_text" />
+            <a:text id="winTourDesc" class="tgDesc modal_text" height="130"/>
         </a:vbox>
         <a:hbox padding="10" pack="end" edge="10 10 10 20" align="center">
             <a:button id="winTourButtonDone" 

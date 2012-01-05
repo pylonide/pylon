@@ -135,6 +135,16 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 path.split("/").pop() + " (active file)");
         });
         
+        ide.addEventListener("afterfilesave", function(e){
+            var page = tabEditors.getPage();
+            if (page) {
+                var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
+                mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
+                mdlRunConfigurations.setQueryValue("config[@curfile]/@name", 
+                    path.split("/").pop() + " (active file)");
+            }
+        });
+        
         var hasBreaked = false;
         stProcessRunning.addEventListener("deactivate", function(){
             if (!_self.autoHidePanel())
