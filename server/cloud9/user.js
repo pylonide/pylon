@@ -141,13 +141,23 @@ User.VISITOR_PERMISSIONS = {
             this.broadcast(error);
     };
     
-    this.broadcast = function(msg, scope) {
+    this.broadcast = function(msg, scope, sid) {
         if (scope && this.$server_exclude[scope])
             return;
 
-        // pass a lambda to enable socket.io ACK
-        for (var id in this.clients)
-            this.clients[id].send(msg, function() {});
+        if (sid) {
+            if (this.clients[sid])
+                this.clients[sid].send(msg, function() {});
+            // If we intended on sending this to only one client
+            // and they weren't found, we still want to exit here
+            return;
+        }
+
+        else {
+            // pass a lambda to enable socket.io ACK
+            for (var id in this.clients)
+                this.clients[id].send(msg, function() {});
+        }
     };
     
 }).call(User.prototype);

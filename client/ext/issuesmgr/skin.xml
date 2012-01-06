@@ -32,12 +32,14 @@
             .issueslist > div {
                 padding: 8px 12px;
                 line-height: 16px;
+                border-bottom: 1px solid #ddd;
             }
+            /* deprecated unless we can get logic working (see issuesmgr.xml)
             .issueslist > div.odd {
                 background: #f9f9f9;
                 border-top: 1px solid #ddd;
                 border-bottom: 1px solid #ddd;
-            }
+            }*/
             .issueslist .issue_top .number {
                 color: #666;
                 float: left;

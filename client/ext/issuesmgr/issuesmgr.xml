@@ -16,9 +16,16 @@
       buttons  = "close"
       optimize = "true">
         <a:model id="mdlIssues"></a:model>
-        <a:menu id="mnuIssuesFilter">
-            <a:item>Yep</a:item>
-            <a:item>Yep2</a:item>
+        <a:menu id="mnuIssuesOrder">
+            <a:item type="check">Ascending</a:item>
+            <a:item type="check" checked="true">Descending</a:item>
+        </a:menu>
+        <a:menu id="mnuIssuesSort">
+            <a:item submenu="mnuIssuesOrder">Order</a:item>
+            <a:divider />
+            <a:item type="check" checked="true">Submitted</a:item>
+            <a:item type="check">Updated</a:item>
+            <a:item type="check">Comments</a:item>
         </a:menu>
         <a:tab id="tabIssues" skinset="skinissues" skin="issuestab"
             anchors="0 0 0 0" flex="1">
@@ -27,6 +34,7 @@
                     <a:hbox edge="5 12 5 12">
                         <a:textbox 
                           id              = "tbIssuesSearch"
+                          disabled = "true"
                           realtime        = "true"
                           flex            = "1"
                           skin            = "searchbox_textbox"
@@ -36,15 +44,19 @@
                           margin          = "0 12 0 0"
                         />
                         <a:button
-                          width = "80"
-                          caption = "Filters"
-                          submenu = "mnuIssuesFilter"
+                          id = "btnIssuesSort"
+                          disabled = "true"
+                          width = "60"
+                          caption = "Sort"
+                          submenu = "mnuIssuesSort"
                         />
                     </a:hbox>
                 </a:bar>
                 <a:list id="lstIssues" skinset="skinissues" skin="issueslist"
                   flex="1" anchors="35 0 0 0" border="0" multiselect="false"
-                  autoselect="false" model="mdlIssues" empty-message=" ">
+                  autoselect="false" model="mdlIssues" empty-message="Loading issues... sit tight :)">
+                    <!-- Note set filter-fields to @title,@body but slow for
+                        lots of issues -->
                     <a:each
                       match         = "[issue]"
                       filter        = "{tbIssuesSearch.value}"
@@ -61,7 +73,6 @@
                                 <span class="user">by [@user]</span> <span class="date">[@created_at]</span>
                             </div>
                         ?></a:caption>
-                        <a:css match="{[@internal_counter]%2 == 1}" value="odd" />
                     </a:each>
                 </a:list>
             </a:page>

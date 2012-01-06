@@ -52,10 +52,10 @@ sys.inherits(IssuesPlugin, Plugin);
 
         switch (message.subcommand) {
             case "init":
-                this.initIssues(message);
+                this.initIssues(message, client);
                 break;
             case "list":
-                this.getIssuesList(message);
+                this.getIssuesList(message, client);
                 break;
             default:
                 console.log("Issues Manager warning: subcommand `" + 
@@ -66,11 +66,11 @@ sys.inherits(IssuesPlugin, Plugin);
         return true;
     };
     
-    this.initIssues = function(message) {
+    this.initIssues = function(message, client) {
         var self = this;
         this.getOriginUrl(function(err, url) {
             if (err) {
-                return self.sendResult(0, message.command, {
+                return self.sendResult(client.id, message.command, {
                             code: 0,
                             subcommand: message.subcommand,
                             argv: message.argv,
@@ -80,7 +80,7 @@ sys.inherits(IssuesPlugin, Plugin);
             }
 
             if (!url) {
-                return self.sendResult(0, message.command, {
+                return self.sendResult(client.id, message.command, {
                             code: 0,
                             subcommand: message.subcommand,
                             argv: message.argv,
@@ -103,7 +103,7 @@ sys.inherits(IssuesPlugin, Plugin);
                 }
 
                 self.urlMatch = urlMatch;
-                return self.sendResult(0, message.command, {
+                return self.sendResult(client.id, message.command, {
                             code: 0,
                             subcommand: message.subcommand,
                             argv: message.argv,
@@ -129,7 +129,7 @@ sys.inherits(IssuesPlugin, Plugin);
                 return returnInitOk("readonly", urlTest);
 
             // If we get to this point, it isn't a GitHub URL
-            return self.sendResult(0, message.command, {
+            return self.sendResult(client.id, message.command, {
                         code: 0,
                         argv: message.argv,
                         subcommand: message.subcommand,
@@ -155,11 +155,11 @@ sys.inherits(IssuesPlugin, Plugin);
         );
     };
     
-    this.getIssuesList = function(message) {
+    this.getIssuesList = function(message, client) {
         var self = this;
         this.issuesApi.getList(this.contextName, this.projectName, "open", function(err, issues) {
             if (err) {
-                return self.sendResult(0, message.command, {
+                return self.sendResult(client.id, message.command, {
                     code: 0,
                     subcommand: message.subcommand,
                     err: err,
@@ -167,7 +167,7 @@ sys.inherits(IssuesPlugin, Plugin);
                 });
             }
 
-            self.sendResult(0, message.command, {
+            self.sendResult(client.id, message.command, {
                 err: null,
                 subcommand : message.subcommand,
                 out: issues

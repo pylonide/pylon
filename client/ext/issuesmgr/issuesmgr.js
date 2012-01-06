@@ -182,8 +182,19 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
     onListMessage : function(message) {
         // Formulate list
         var list = message.body.out;
+
+        // Set for our records (APF clears out newlines in XML attrs?)
+        // Need to save em!
+        this.issuesList = {};
+        for (var i = 0, len = list.length; i < len; i++)
+            this.issuesList[list[i].number] = list[i];
+
         var listOut = this.array2Xml(list, "issue");
         mdlIssues.load(apf.getXml(listOut));
+
+        lstIssues.setAttribute("empty-message", "No results");
+        tbIssuesSearch.enable();
+        btnIssuesSort.enable();
     },
 
     openSelectedIssue : function() {
@@ -200,7 +211,7 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
         var htmlNode = apf.xmldb.getHtmlNode(lstIssues.selected, lstIssues);
 
         var title = lstIssues.selected.getAttribute("title");
-        var body = lstIssues.selected.getAttribute("body").replace(/(\r\n|\n|\r)/gm, "<br />");
+        var body = this.issuesList[number].body.replace(/(\r\n|\n|\r)/gm, "<br />");
         var author = lstIssues.selected.getAttribute("user");
 
         var htmlArr = ["<h1>", title, '</h1><p class="author">by ',

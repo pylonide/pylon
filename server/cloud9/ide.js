@@ -314,11 +314,11 @@ Ide.DEFAULT_PLUGINS = [
         this.emit("clientCountChange", Object.keys(this.$users).length);
     };
 
-    this.broadcast = function(msg, scope) {
+    this.broadcast = function(msg, scope, sid) {
         // TODO check permissions
         for (var username in this.$users) {
             var user = this.$users[username];
-            user.broadcast(msg, scope);
+            user.broadcast(msg, scope, sid);
         }
     };
 

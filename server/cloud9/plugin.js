@@ -31,7 +31,7 @@ sys.inherits(Plugin, events.EventEmitter);
         // plugin or in a infra plugin. Pretty nasty, but it will hopefully go
         // away soon.
         if (this.ide)
-            this.ide.broadcast(JSON.stringify(error), this.name);
+            this.ide.broadcast(JSON.stringify(error), this.name, sid);
         else
             this.send(error);
     };
