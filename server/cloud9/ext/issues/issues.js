@@ -15,6 +15,21 @@ var IssuesPlugin = module.exports = function(ide) {
     this.name      = "issues";
     this.api       = new nodegh();
     this.issuesApi = this.api.getIssueApi();
+
+    this.ghUrlTest = {
+         "ssh": {
+             re: /[\w]+@github\.com:([\w\.\d-_]+)\/([\w\.\d-_]+)$/,
+             pattern: "git@github.com:{context}/{name}"
+         },
+         "http": {
+             re: /^https\:\/\/([\w\.\d-_]+)@github\.com\/(\1|[\w\.\d-_]+)\/([\w\.\d-_]+)$/,
+             pattern: "https://{context}@github.com/{context_or_organization}/{name}"
+         },
+         "readonly": {
+             re: /^git\:\/\/github\.com\/([\w\.\d-_]+)\/([\w\.\d\-\_]+)$/,
+             pattern: "git://github.com/{context}/{name}"
+         }
+     }
 };
 
 sys.inherits(IssuesPlugin, Plugin);
@@ -36,6 +51,9 @@ sys.inherits(IssuesPlugin, Plugin);
             return false;
 
         switch (message.subcommand) {
+            case "init":
+                this.initIssues(message);
+                break;
             case "list":
                 this.getIssuesList(message);
                 break;
@@ -48,19 +66,110 @@ sys.inherits(IssuesPlugin, Plugin);
         return true;
     };
     
+    this.initIssues = function(message) {
+        var self = this;
+        this.getOriginUrl(function(err, url) {
+            if (err) {
+                return self.sendResult(0, message.command, {
+                            code: 0,
+                            subcommand: message.subcommand,
+                            argv: message.argv,
+                            err: err,
+                            out: null
+                        });
+            }
+
+            if (!url) {
+                return self.sendResult(0, message.command, {
+                            code: 0,
+                            subcommand: message.subcommand,
+                            argv: message.argv,
+                            err: "nourl",
+                            out: null
+                        });
+            }
+
+            function returnInitOk(type, urlMatch) {
+                self.type = type;
+                if (type === "http") {
+                    self.cloneUrl = urlMatch[0];
+                    self.userContext = urlMatch[1];
+                    self.contextName = urlMatch[2];
+                    self.projectName = urlMatch[3].substr(0, urlMatch[3].length-4);
+                } else {
+                    self.cloneUrl = urlMatch[0];
+                    self.contextName = urlMatch[1];
+                    self.projectName = urlMatch[2].substr(0, urlMatch[2].length-4);;
+                }
+
+                self.urlMatch = urlMatch;
+                return self.sendResult(0, message.command, {
+                            code: 0,
+                            subcommand: message.subcommand,
+                            argv: message.argv,
+                            err: null,
+                            out: "ok"
+                        });
+            }
+
+            // Trim the string
+            url = url.replace(/^\s*([\S\s]*?)\s*$/, '$1');
+
+            // Now test for GitHub URLs
+            var urlTest = url.match(self.ghUrlTest["ssh"].re);
+            if (urlTest)
+                return returnInitOk("ssh", urlTest);
+
+            urlTest = url.match(self.ghUrlTest["http"].re);
+            if (urlTest)
+                return returnInitOk("http", urlTest);
+
+            urlTest = url.match(self.ghUrlTest["readonly"].re);
+            if (urlTest)
+                return returnInitOk("readonly", urlTest);
+
+            // If we get to this point, it isn't a GitHub URL
+            return self.sendResult(0, message.command, {
+                        code: 0,
+                        argv: message.argv,
+                        subcommand: message.subcommand,
+                        err: null,
+                        out: "notgithuburl"
+                    });
+        });
+    };
+
+    this.getOriginUrl = function(callback) {
+        var argv = ["config", "--get", "remote.origin.url"];
+
+        this.spawnCommand("git", argv, this.ide.workspaceDir,
+            function(err) { // Error
+                return callback(err);
+            },
+            function(out) { // Data
+                return callback(null, out);
+            },
+            function(code, err, out) {
+                // Exit
+            }
+        );
+    };
+    
     this.getIssuesList = function(message) {
         var self = this;
-        this.issuesApi.getList("ajaxorg", "cloud9", "open", function(err, issues) {
+        this.issuesApi.getList(this.contextName, this.projectName, "open", function(err, issues) {
             if (err) {
                 return self.sendResult(0, message.command, {
                     code: 0,
+                    subcommand: message.subcommand,
                     err: err,
                     out: null
                 });
             }
-            
+
             self.sendResult(0, message.command, {
                 err: null,
+                subcommand : message.subcommand,
                 out: issues
             });
         });

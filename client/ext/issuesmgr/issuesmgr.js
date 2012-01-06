@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var ide = require("core/ide");
+var util = require("core/util");
 var panels = require("ext/panels/panels");
 var markup = require("text!ext/issuesmgr/issuesmgr.xml");
 var skin = require("text!ext/issuesmgr/skin.xml");
@@ -20,6 +21,7 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
     type     : ext.GENERAL,
     skin     : skin,
     markup   : markup,
+    appendedColumn : false,
 
     nodes : [],
 
@@ -30,13 +32,14 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
         lstIssues.addEventListener("click", function() {
             _self.openSelectedIssue();
         });
-
-        colLeft.appendChild(winIssuesMgr);
-        this.requestList();
     },
 
     hook : function(){
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
+        this.initIssues();
+    },
+    
+    setupElements : function() {
         panels.register(this);
 
         var _self = this;
@@ -59,10 +62,42 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
             }
 
             panels.initPanel(_self);
+            if (_self.appendedColumn === false)
+                colLeft.appendChild(winIssuesMgr);
+
             _self.enable(true);
         });
+        
+        panels.initPanel(this);
     },
-    
+
+    initIssues : function() {
+        var cmd = "issues";
+
+        var data = {
+            command : cmd,
+            subcommand : "init"
+        };
+
+        ide.dispatchEvent("track_action", {type: "issues", cmd: cmd});
+        if (ext.execCommand(cmd, data) !== false) {
+            if (ide.dispatchEvent("consolecommand." + cmd, {
+              data: data
+            }) !== false) {
+                if (!ide.onLine) {
+                    util.alert(
+                        "Currently Offline",
+                        "Currently Offline",
+                        "This operation could not be completed because you are offline."
+                    );
+                }
+                else {
+                    ide.send(JSON.stringify(data));
+                }
+            }
+        }
+    },
+
     requestList : function() {
         var cmd = "issues";
 
@@ -100,9 +135,8 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
                     apf.htmlentities(val[j]).replace(/"/g, "&quot;") : val[j];
                 out.push(j, '="', attrVal, '" ');
             }
-            
-            out.push('internal_counter="', i, '"');
 
+            out.push('internal_counter="', i, '"');
             out.push(' />');
         }
 
@@ -130,6 +164,22 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
         if (!message.body.out)
             return;
 
+        switch(message.body.subcommand) {
+            case "init":
+                if (message.body.out === "ok") {
+                    this.setupElements();
+                    this.requestList();
+                }
+                break;
+            case "list":
+                this.onListMessage(message);
+                break;
+            default:
+                break;
+        }
+    },
+    
+    onListMessage : function(message) {
         // Formulate list
         var list = message.body.out;
         var listOut = this.array2Xml(list, "issue");
