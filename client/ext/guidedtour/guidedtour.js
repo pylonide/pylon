@@ -34,7 +34,7 @@ var jsonTourIde = {
         el: navbar,
         desc: "This is the project bar. It controls the behavior of the IDE, as well as the presentation of your code.",
         pos: "right",
-        time: 5
+        time: 4
     }, {
         before: function() {
             // require("ext/tree/tree").enable();
@@ -42,7 +42,7 @@ var jsonTourIde = {
         el: apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[1]/button[@caption="Project Files"]'),
         desc: "This button shows and hides your project files.",
         pos: "right",
-        time: 5
+        time: 4
     }, {
         before: function() {
             //require("ext/openfiles/openfiles").enable();
@@ -50,7 +50,7 @@ var jsonTourIde = {
         el: apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[1]/button[@caption="Open Files"]'),
         desc: "This button shows and hides your open files in a list view.",
         pos: "right",
-        time: 5
+        time: 4
     }, {
         before: function() {
             //require("ext/settings/settings").enable();
@@ -58,7 +58,7 @@ var jsonTourIde = {
         el: apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[1]/button[@caption="Preferences"]'),
         desc: "Here, you can change the behavior of the editor, manipulate the code beautifier, and change the indentation and width of the editor, among other options.",
         pos: "right",
-        time: 7
+        time: 4
     }, {
         before: function() {
             //require("ext/tree/tree").enable();
@@ -66,7 +66,7 @@ var jsonTourIde = {
         el: "winFilesViewer",
         desc: "All your project files are listed here. You can rename and delete files, as well as drag in new ones from your computer. You can also right-click to see context options.",
         pos: "right",
-        time: 6
+        time: 4
     }, {
         before: function() {
             //require("ext/tree/tree").enable();
@@ -74,7 +74,7 @@ var jsonTourIde = {
         el: plus_tab_button,
         desc: "You can use this button to quickly add new files to the editor. We'll simulate pushing that right now.",
         pos: "left",
-        time: 5
+        time: 4
     }, {
         before: function(){
             if (madeNewFile == false) {
@@ -85,7 +85,7 @@ var jsonTourIde = {
         el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabEditors.$ext),
         desc: "Here's a tabbed arrangement of all your active files, including the new one we just created. You can rearrange the tabs however you like and swap through them with keyboard shortcuts.",
         pos: "bottom",
-        time: 5
+        time: 4
     }, {
         before: function() {
             var helloWorldScript = "var http = require(\'http\');\nhttp.createServer(function (req, res) {\n\tres.writeHead(200, {\'Content-Type\': \'text/plain\'});\n\tres.end(\'Hello World\\n\');\n}).listen(1337, \"127.0.0.1\");\n\nconsole.log(\'Server running at http://127.0.0.1:1337/\');";
@@ -99,7 +99,7 @@ var jsonTourIde = {
         div: "ceEditor",
         desc: "We've just typed up a quick code example and saved it as \"helloWorld-quideTour.js.\" We'll work with this file, then delete it when we're done.",
         pos: "left",
-        time: 6
+        time: 5
     }, {
         before: function(){
             if (wentToZen){
@@ -111,7 +111,7 @@ var jsonTourIde = {
         div: "DIV[1]",
         desc: "The gutter can do more than show line numbers. It also detects and displays warnings and errors in your code. If you're debugging an application, you can also set breakpoints here.",
         pos: "right",
-        time: 6
+        time: 5
     }, {
         before: function(){
             wentToZen = true;
@@ -121,7 +121,7 @@ var jsonTourIde = {
         div: undefined,
         desc: "If you hover over this corner, you can activate \"Zen Mode,\" which is a distraction-free environment. We'll simulate pressing that button now.",
         pos: "left",
-        time: 6
+        time: 5
     }, {
         before: function() {
             var hlElement = require("ext/guidedtour/guidedtour").hlElement;
@@ -138,9 +138,9 @@ var jsonTourIde = {
                 hlElement.style.visibility = "visible";
                 winTourText.show();
                 zen.fadeZenButtonOut();
-            }, 3000);
+            }, 2000);
         },
-        time: 1,
+        time: 4,
         desc: "",
         skip: true
     }, {
@@ -150,7 +150,7 @@ var jsonTourIde = {
         el: apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:bar[1]/a:vbox[1]/a:hbox[1]'),
         desc: "This area down here acts just like a command line for your project in the Cloud9 IDE. You can always type 'help' to get a list of the available commands.",
         pos: "top",
-        time: 6
+        time: 5
     }, {
         before: function() {
             ideConsole.enable();
@@ -159,7 +159,7 @@ var jsonTourIde = {
         el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabConsole.$ext),
         desc: "After clicking the expand arrows, you'll be able to get to the full console view. Any output from your program&mdash;like console.log() messages or compilation errors&mdash;appears in the Output tab.",
         pos: "top",
-        time: 5
+        time: 4
     }, {
         before: function() {
             //winRunCfgNew.hide();
@@ -171,12 +171,11 @@ var jsonTourIde = {
         div: "DIV[1]",
         desc: "We're ready to test our code, so we've inserted a breakpoint on this line by clicking in the gutter. Before debugging, though, we'll need to set up a debugging scenario.",
         pos: "right",
-        time: 6
+        time: 5
     }, {
         before: function(){
             panels.activate(require("ext/runpanel/runpanel"));
             if (!madeDebug) {
-                require('ext/runpanel/runpanel').addConfig();
                 settings.model.setQueryValue('auto/configurations/@debug', true);
             }
             setTimeout(function(){
@@ -186,40 +185,50 @@ var jsonTourIde = {
         el: "winRunPanel",
         desc: "Here's where the fun begins! After clicking Debug, then Run Configurations, you'll be able to create or modify a debug configuration. Every configuration needs a name and a file to run, but you can also pass arguments.",
         pos: "right",
-        time: 6
+        time: 5
     }, {
         before: function() {
             require('ext/runpanel/runpanel').run(true);
+            var bar = dockpanel.layout.$getLastBar();
+            if(!bar) {
+                dockpanel.showBar(dockpanel.getBars("ext/debugger/debugger", "pgDebugNav")[0]);
+            }
         },
         el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabConsole.$ext),
         desc: "Whoa! A lot of things just happened. First off, the Output tab opened up to show us that our code is running, and currently being debugged.",
         pos: "top",
-        time: 5
+        time: 4
     }, {
         before: function() {
         },
         el: function(){
-            return dockpanel.layout.$getLastBar()
+            return dockpanel.layout.$getLastBar();;
         },
         desc: "Next, when you start debugging, you'll instantly get a new debugging toolbar.",
         pos: "left",
-        time: 5
+        time: 4
     }, {
         before: function() {
-            if(!pgDebugNav.parentNode.parentNode.visible)
-                btnRunCommands.dispatchEvent("mousedown",  {});
+            var menuId = dockpanel.getButtons("ext/debugger/debugger", "pgDebugNav")[0];
+            if(menuId) {
+                dockpanel.layout.showMenu(menuId.uniqueId);
+                if(!pgDebugNav.parentNode.parentNode.visible)
+                    btnRunCommands.dispatchEvent("mousedown",  {});
+            }
         },
         el: function(){
             return pgDebugNav;
         },
         desc: "In this toolbar, the usual start, stop, and step buttons are at the top, to help control the flow of the debugging.",
         pos: "left",
-        time: 5
+        time: 4
     }, {
         before: function() {
             var menuId = dockpanel.getButtons("ext/debugger/debugger", "dbgVariable")[0];
-            if(menuId)
+            if(menuId) {
                 dockpanel.layout.showMenu(menuId.uniqueId);
+                dbgVariable.parentNode.set(dbgVariable)
+            }
         },
         el: function(){
             return dbgVariable;
@@ -232,6 +241,7 @@ var jsonTourIde = {
             var menuId = dockpanel.getButtons("ext/debugger/debugger", "dbgCallStack")[0];
             if(menuId)
                 dockpanel.layout.showMenu(menuId.uniqueId);
+            dbgCallStack.parentNode.set(dbgCallStack)
         },
         el: function(){
             return dbgCallStack;
@@ -249,6 +259,17 @@ var jsonTourIde = {
         desc: "We indicated to the debugger that we want to continue. At last, the console.log() message printed out. Now, we're going to simulate typing 'git status' in the command line.",
         pos: "top",
         time: 4
+    }, {
+        before: function(){
+            if(ide.workspaceId != ".") {
+                //panels.activate(require("c9/ext/deploy/deploy"));
+            }
+        },
+        el: "winDeploy",
+        desc: "In this panel you can manage(add/remove) your deploy targets for your application, in different services, like Joyent and Heroku.",
+        pos: "right",
+        notAvailable: ide.workspaceId == ".",
+        time: 5
     }, {
         before: function() {
             require('ext/runpanel/runpanel').stop();
@@ -454,11 +475,14 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         winTourButtonDone.show();
     },
 
-    // These are common operations we do for step
+    // These are common o02022perations we do for step
     // forwards and back, so we DRY
     commonStepOps: function(step){
         var _self = this;
-        
+        if(step.notAvailable) {
+            this.stepForward();
+            return;
+        }
         if (step.before) 
             step.before();
         
@@ -534,7 +558,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             // fixes issue with no zen button existing
             this.currentEl = btnZenFullscreen;
         }
-
+        
         //this.currentEl.addEventListener("resize", this.$celResize = function() {
         //_self.resizeHighlightedEl();
         //});
@@ -553,10 +577,14 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         if(this.currentEl.$ext) {
             var zIndex;
             var pNode = this.currentEl;
-            while (pNode.tagName != "body" && (!zIndex || zIndex <= 99998)) {
-                zIndex = pNode.$ext.style && (pNode.$ext.style.zIndex || 99997) + 1; 
-                pNode = pNode.parentNode;
+            if(pNode) {
+                while (pNode.tagName != "body" && (!zIndex || zIndex <= 99998)) {
+                    zIndex = pNode.$ext.style && (pNode.$ext.style.zIndex || 99997) + 1; 
+                    pNode = pNode.parentNode;
+                }
             }
+            else
+                zIndex = 99998;
         }
         else
             zIndex = this.currentEl.style && (this.currentEl.style.zIndex || 99997) + 1;
