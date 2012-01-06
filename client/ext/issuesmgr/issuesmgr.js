@@ -27,6 +27,10 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
         this.panel = winIssuesMgr;
 
         var _self = this;
+        lstIssues.addEventListener("click", function() {
+            _self.openSelectedIssue();
+        });
+
         colLeft.appendChild(winIssuesMgr);
         this.requestList();
     },
@@ -42,7 +46,7 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
         var btn = this.button = navbar.insertBefore(new apf.button({
             skin    : "mnubtn",
             state   : "true",
-            "class" : "issuesmgr",
+            "class" : "issues_list",
             caption : "Issues"
         }), el);
         
@@ -92,9 +96,12 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
             out.push("<", elName, " ");
             var val = arr[i];
             for (var j in val) {
-                out.push(j, '="', typeof val[j] === "string" ? 
-                    apf.htmlentities(val[j]).replace(/"/g, "&quot;") : val[j], '" ');
+                var attrVal = typeof val[j] === "string" ? 
+                    apf.htmlentities(val[j]).replace(/"/g, "&quot;") : val[j];
+                out.push(j, '="', attrVal, '" ');
             }
+            
+            out.push('internal_counter="', i, '"');
 
             out.push(' />');
         }
@@ -128,28 +135,43 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
         var listOut = this.array2Xml(list, "issue");
         mdlIssues.load(apf.getXml(listOut));
     },
-    
-    expandIssue : function() {
+
+    openSelectedIssue : function() {
+        if (!lstIssues.selected)
+            return;
+
+        var number = lstIssues.selected.getAttribute("number");
+        var pageId = "issue" + number;
+        if (window[pageId]) {
+            tabIssues.set(pageId);
+            return;
+        }
+
         var htmlNode = apf.xmldb.getHtmlNode(lstIssues.selected, lstIssues);
-        var detailNode = htmlNode.getElementsByClassName("issue_detail")[0];
 
         var title = lstIssues.selected.getAttribute("title");
-        var number = lstIssues.selected.getAttribute("number");
         var body = lstIssues.selected.getAttribute("body").replace(/(\r\n|\n|\r)/gm, "<br />");
         var author = lstIssues.selected.getAttribute("user");
 
-        var htmlArr = ["<h1>", number, ". ", title, '</h1><div class="author">by ',
-            '<a href="http://github.com/', author, '" target="_blank">', author,
-            '</a></div><div class="issue_body">', body, '</div>'];
-        detailNode.innerHTML = htmlArr.join("");
+        var htmlArr = ["<h1>", number, ". ", title, '</h1><p class="author">by ',
+            '<a class="author_link" href="http://github.com/', author, '" target="_blank">', author,
+            '</a></p><p class="issue_body">', body, '</p>'];
+            
+        tabIssues.add("Issue" + number, pageId, null, null, function(page) {
+            setTimeout(function() {
+                page.$ext.innerHTML = htmlArr.join("");
+            });
+        });
 
-        apf.tween.single(detailNode, {
+        tabIssues.set(pageId);
+
+        /*apf.tween.single(detailNode, {
             type: "height",
             from: 0,
             to  : 300,
             anim : apf.tween.EASEOUT,
             steps : 20
-        });
+        });*/
     },
 
     enable : function(noButton){

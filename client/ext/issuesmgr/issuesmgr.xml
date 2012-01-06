@@ -11,14 +11,25 @@
       buttons  = "close"
       optimize = "true">
         <a:model id="mdlIssues"></a:model>
-        <a:list anchors="0 0 0 0" id="lstIssues" skinset="skinissues" skin="issueslist"
-          flex="1" border="0" multiselect="false" autoselect="false" model="mdlIssues"
-          empty-message = ""
-          onafterselect="require('ext/issuesmgr/issuesmgr').expandIssue()">
-            <a:each match="[issue]">
-                <a:caption value="[@number]. [@title]" />
-                <div class="issue_detail" id="issue_detail[@number]" />
-            </a:each>
-        </a:list>
+        <a:tab id="tabIssues" skinset="skinissues" skin="issuestab"
+            anchors="0 0 0 0" flex="1">
+            <a:page id="pgIssuesList" caption="Issues">
+                <a:list id="lstIssues" skinset="skinissues" skin="issueslist"
+                  flex="1" anchors="0 0 0 0" border="0" multiselect="false"
+                  autoselect="false" model="mdlIssues" empty-message=" ">
+                    <a:each match="[issue]">
+                        <a:caption><?lm
+                            <div class="issue_top">
+                                <div class="number">&#35;[@number]</div> <div class="title">{apf.htmlentities([@title])}</div>
+                            </div>
+                            <div class="issue_bottom">
+                                <span class="user">by [@user]</span> <span class="date">[@created_at]</span>
+                            </div>
+                        ?></a:caption>
+                        <a:css match="{[@internal_counter]%2 == 1}" value="odd" />
+                    </a:each>
+                </a:list>
+            </a:page>
+        </a:tab>
     </a:window>
 </a:application>

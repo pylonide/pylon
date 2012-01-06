@@ -1262,6 +1262,10 @@
             background-image:url(images/project_files.png);
         }
         
+        .mnubtn.issues_list .icon {
+            background-image:url(images/issues_list.png);
+        }
+        
         .mnubtn.open_files .icon {
             background-image:url(images/open_files.png);
         }
