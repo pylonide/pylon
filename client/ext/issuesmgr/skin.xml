@@ -14,7 +14,7 @@
                 cursor: default;
             }
             .issueslist > div:hover, .issueslist > div.odd:hover {
-                background-color: #e7e7e7;
+                background-color: #ffc; /*#e7e7e7;*/
             }
             .issueslist > .selected{
                 background-color: #e0e0e0;
@@ -30,7 +30,7 @@
                 font-weight : normal;
             }
             .issueslist > div {
-                padding: 8px 4px 8px 12px;
+                padding: 8px 12px;
                 line-height: 16px;
             }
             .issueslist > div.odd {
@@ -93,10 +93,6 @@
                 font-size : 11px;
                 border-bottom : 1px solid #8c8c8c;
     
-                /*border-top : 1px solid #ffffff;
-                border-right : 1px solid #8c8c8c;
-                border-left : 1px solid #8c8c8c;*/
-    
                 background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
                 background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
                 margin-top : -16px;
@@ -106,7 +102,6 @@
     
             .issuestab .btncontainer>div {
                 display: block;
-                /*float: left;*/
                 display : inline-block;
                 margin: 0 0 0 0;
                 padding: 0;
@@ -123,14 +118,7 @@
                 border-top : 1px solid #ffffff;
                 border-right : 1px solid #8c8c8c;
                 border-bottom : 1px solid #8c8c8c;
-    
-                background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(199,199,199)),color-stop(1, rgb(214,214,214)));
-                background: -moz-linear-gradient(center bottom,rgb(199,199,199) 50%,rgb(214,214,214) 100%);
             }
-    
-            /*.issuestab .btncontainer div.firstbtn {
-                margin-left: 0;
-            }*/
     
             .issuestab .btncontainer .btntab .issuestab_icon {
                 height:16px;
@@ -155,19 +143,10 @@
                 text-overflow : ellipsis;
                 white-space : nowrap;
             }
-    
-            .issuestab .btncontainer div.over {
-                background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
-                background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
-                cursor: default;
-            }
-    
             .issuestab .btncontainer div.curbtn {
                 color       : #202020;
                 cursor      : default;
                 z-index     : 1;
-                background: -webkit-gradient(linear,left bottom,left top,color-stop(0.6 rgb(246,246,246)),color-stop(1, rgb(237,237,237)));
-                background: -moz-linear-gradient(center bottom,rgb(246,246,246) 60%,rgb(237,237,237) 100%);
                 border-right : 1px solid #8c8c8c;
                 border-top: 1px solid #f9f9f9;
                 border-bottom: 1px solid #F6F6F6;
@@ -179,10 +158,6 @@
                 text-overflow : ellipsis;
                 white-space : nowrap;
             }
-    
-            .issuestabFocus .curbtn{
-            }
-    
             .issuestab .btncontainer .btnclose strong {
                 width               : 14px;
                 height              : 14px;
@@ -190,7 +165,6 @@
                 position            : absolute;
                 right               : 0;
                 top                 : 7px;
-                /*cursor              : pointer;*/
                 background-image    : url(images/close_tab_btn.png);
                 background-repeat   : no-repeat;
                 background-position : 0 -14px;
@@ -229,14 +203,16 @@
                 left : 0;
                 right : 0;
                 z-index : 10;
-                margin: 0 auto;
-                padding: 10px 15px;
-                background: #f6f6f6; /* f6f6f6 */
+                background: #f6f6f6;
                 color: #222;
                 clear: both;
                 font-family : Arial;
                 font-family: 12px;
                 overflow: auto;
+            }
+            
+            .issuestab .page.issue_detail {
+                padding: 10px 15px;
             }
 
             .issuestab .page p {

@@ -2,6 +2,11 @@
     <a:skin id="skinissues" 
       src        = "{require('ext/issuesmgr/issuesmgr').skin}" 
       media-path = "/static/ext/issuesmgr/images/" />
+    <a:style><![CDATA[
+        .filtersBar {
+            border-bottom: 1px solid #bbb;
+        }
+    ]]></a:style>
     <a:window id="winIssuesMgr"
       flex     = "1"
       skin     = "fm-window"
@@ -11,13 +16,43 @@
       buttons  = "close"
       optimize = "true">
         <a:model id="mdlIssues"></a:model>
+        <a:menu id="mnuIssuesFilter">
+            <a:item>Yep</a:item>
+            <a:item>Yep2</a:item>
+        </a:menu>
         <a:tab id="tabIssues" skinset="skinissues" skin="issuestab"
             anchors="0 0 0 0" flex="1">
             <a:page id="pgIssuesList" caption="Issues">
+                <a:bar height="35" class="filtersBar">
+                    <a:hbox edge="5 12 5 12">
+                        <a:textbox 
+                          id              = "tbIssuesSearch"
+                          realtime        = "true"
+                          flex            = "1"
+                          skin            = "searchbox_textbox"
+                          class           = "small_font"
+                          focusselect     = "true"
+                          initial-message = "Search Issues"
+                          margin          = "0 12 0 0"
+                        />
+                        <a:button
+                          width = "80"
+                          caption = "Filters"
+                          submenu = "mnuIssuesFilter"
+                        />
+                    </a:hbox>
+                </a:bar>
                 <a:list id="lstIssues" skinset="skinissues" skin="issueslist"
-                  flex="1" anchors="0 0 0 0" border="0" multiselect="false"
+                  flex="1" anchors="35 0 0 0" border="0" multiselect="false"
                   autoselect="false" model="mdlIssues" empty-message=" ">
-                    <a:each match="[issue]">
+                    <a:each
+                      match         = "[issue]"
+                      filter        = "{tbIssuesSearch.value}"
+                      filter-fields = "@title"
+                      sort          = "[@number]"
+                      data-type     = "number"
+                      order         = "descending"
+                    >
                         <a:caption><?lm
                             <div class="issue_top">
                                 <div class="number">&#35;[@number]</div> <div class="title">{apf.htmlentities([@title])}</div>

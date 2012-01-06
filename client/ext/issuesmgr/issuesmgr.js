@@ -153,11 +153,13 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
         var body = lstIssues.selected.getAttribute("body").replace(/(\r\n|\n|\r)/gm, "<br />");
         var author = lstIssues.selected.getAttribute("user");
 
-        var htmlArr = ["<h1>", number, ". ", title, '</h1><p class="author">by ',
-            '<a class="author_link" href="http://github.com/', author, '" target="_blank">', author,
+        var htmlArr = ["<h1>", title, '</h1><p class="author">by ',
+            '<a class="author_link" href="http://github.com/', author, 
+            '" target="_blank">', author,
             '</a></p><p class="issue_body">', body, '</p>'];
-            
+
         tabIssues.add("Issue" + number, pageId, null, null, function(page) {
+            page.setAttribute("class", "issue_detail");
             setTimeout(function() {
                 page.$ext.innerHTML = htmlArr.join("");
             });
