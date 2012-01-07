@@ -57,6 +57,9 @@ sys.inherits(IssuesPlugin, Plugin);
             case "list":
                 this.getIssuesList(message, client);
                 break;
+            case "getcomments":
+                this.getIssueComments(message, client);
+                break;
             default:
                 console.log("Issues Manager warning: subcommand `" + 
                     message.subcommand + "` not found");
@@ -174,6 +177,28 @@ sys.inherits(IssuesPlugin, Plugin);
             });
         });
     };
+
+    this.getIssueComments = function(message, client) {
+        var self = this;
+        this.issuesApi.getIssueComments(this.contextName, this.projectName, message.extra, function(err, comments) {
+            if (err) {
+                return self.sendResult(client.id, message.command, {
+                    code: 0,
+                    subcommand: message.subcommand,
+                    issue_num: message.extra,
+                    err: err,
+                    out: null
+                });
+            }
+            
+            self.sendResult(client.id, message.command, {
+                err: null,
+                subcommand : message.subcommand,
+                issue_num: message.extra,
+                out: comments
+            });
+        });
+    }
 
     this.dispose = function(callback) {
         // TODO kill all running processes!

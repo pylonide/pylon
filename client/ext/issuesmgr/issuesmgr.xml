@@ -7,6 +7,12 @@
             border-bottom: 1px solid #bbb;
         }
     ]]></a:style>
+    <a:script><![CDATA[
+        function formatDate(timestamp) {
+            var d = new Date(timestamp);
+            return d.toString("MMMM dd, yyyy");
+        }
+    ]]></a:script>
     <a:window id="winIssuesMgr"
       flex     = "1"
       skin     = "fm-window"
@@ -40,7 +46,7 @@
                           skin            = "searchbox_textbox"
                           class           = "small_font"
                           focusselect     = "true"
-                          initial-message = "Search Titles"
+                          initial-message = "Search by Title or User"
                           margin          = "0 12 0 0"
                         />
                         <a:button
@@ -55,12 +61,12 @@
                 <a:list id="lstIssues" skinset="skinissues" skin="issueslist"
                   flex="1" anchors="35 0 0 0" border="0" multiselect="false"
                   autoselect="false" model="mdlIssues" empty-message="Loading issues... sit tight :)">
-                    <!-- Note set filter-fields to @title,@body but slow for
-                        lots of issues -->
+                    <!-- Note set filter-fields to @title,@user,@body but too
+                        slow for searching lots of issues against the body -->
                     <a:each
                       match         = "[issue]"
                       filter        = "{tbIssuesSearch.value}"
-                      filter-fields = "@title"
+                      filter-fields = "@title,@user"
                       sort          = "[@number]"
                       data-type     = "number"
                       order         = "descending"
@@ -70,7 +76,13 @@
                                 <div class="number">&#35;[@number]</div> <div class="title">{apf.htmlentities([@title])}</div>
                             </div>
                             <div class="issue_bottom">
-                                <span class="user">by [@user]</span> <span class="date">[@created_at]</span>
+                                <p>by 
+                                    <span class="user">[@user]</span> on
+                                    <span class="date">{formatDate([@created_at])}</span>
+                                </p>
+                                {if ([@comments] > 0) {
+                                    <p class="comments">[@comments]</p>
+                                }}
                             </div>
                         ?></a:caption>
                     </a:each>

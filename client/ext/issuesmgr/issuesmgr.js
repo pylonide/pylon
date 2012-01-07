@@ -22,6 +22,9 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
     skin     : skin,
     markup   : markup,
     appendedColumn : false,
+    
+    normalDate : "MMMM dd, yyyy hh:mm tt",
+    updatedDate : "MMMM dd, yyyy hh:mm:ss tt",
 
     nodes : [],
 
@@ -36,7 +39,7 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
 
     hook : function(){
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
-        this.initIssues();
+        this.sendRequest("init");
     },
     
     setupElements : function() {
@@ -70,61 +73,37 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
         
         panels.initPanel(this);
     },
-
-    initIssues : function() {
-        var cmd = "issues";
-
-        var data = {
-            command : cmd,
-            subcommand : "init"
-        };
-
-        ide.dispatchEvent("track_action", {type: "issues", cmd: cmd});
-        if (ext.execCommand(cmd, data) !== false) {
-            if (ide.dispatchEvent("consolecommand." + cmd, {
-              data: data
-            }) !== false) {
-                if (!ide.onLine) {
-                    util.alert(
-                        "Currently Offline",
-                        "Currently Offline",
-                        "This operation could not be completed because you are offline."
-                    );
-                }
-                else {
-                    ide.send(JSON.stringify(data));
-                }
-            }
-        }
-    },
-
-    requestList : function() {
-        var cmd = "issues";
-
-        var data = {
-            command : cmd,
-            subcommand : "list"
-        };
-
-        ide.dispatchEvent("track_action", {type: "issues", cmd: cmd});
-        if (ext.execCommand(cmd, data) !== false) {
-            if (ide.dispatchEvent("consolecommand." + cmd, {
-              data: data
-            }) !== false) {
-                if (!ide.onLine) {
-                    util.alert(
-                        "Currently Offline",
-                        "Currently Offline",
-                        "This operation could not be completed because you are offline."
-                    );
-                }
-                else {
-                    ide.send(JSON.stringify(data));
-                }
-            }
-        }
-    },
     
+    sendRequest : function(subcommand, extra) {
+        var cmd = "issues";
+
+        var data = {
+            command : cmd,
+            subcommand : subcommand
+        };
+
+        if (extra)
+            data.extra = extra;
+
+        ide.dispatchEvent("track_action", {type: "issues", cmd: cmd});
+        if (ext.execCommand(cmd, data) !== false) {
+            if (ide.dispatchEvent("consolecommand." + cmd, {
+              data: data
+            }) !== false) {
+                if (!ide.onLine) {
+                    util.alert(
+                        "Currently Offline",
+                        "Currently Offline",
+                        "This operation could not be completed because you are offline."
+                    );
+                }
+                else {
+                    ide.send(JSON.stringify(data));
+                }
+            }
+        }
+    },
+
     array2Xml : function(arr, elName) {
         var out = [];
         for (var i = 0, len = arr.length; i < len; i++) {
@@ -168,20 +147,66 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
             case "init":
                 if (message.body.out === "ok") {
                     this.setupElements();
-                    this.requestList();
+                    this.sendRequest("list");
                 }
                 break;
             case "list":
                 this.onListMessage(message);
+                break;
+            case "getcomments":
+                this.onCommentsMessage(message);
                 break;
             default:
                 break;
         }
     },
     
+    formulateBody : function(text) {
+        return text.replace(/(\r\n|\n|\r)/gm, "<br />");
+    },
+
+    formulateCommentHTML : function(comment) {
+        var d, dateStr;
+        // Include seconds
+        if (comment.updated_at != comment.created_at) {
+            d = new Date(comment.created_at);
+            dateStr = d.toString(this.updatedDate);
+            d = new Date(comment.updated_at);
+            dateStr += '<br />updated ' + d.toString(this.updatedDate);
+        } else {
+            d = new Date(comment.created_at);
+            dateStr = d.toString(this.normalDate);
+        }
+
+        var htmlArr = ['<div class="comment"><div class="comment_user">',
+            '<img class="user_image" src="http://www.gravatar.com/avatar/',
+            comment.gravatar_id, '?s=120&d=mm" width="30" height="30" /></div>',
+            '<div class="comment_details"><p class="comment_body"><strong>',
+            comment.user, ':</strong> ', this.formulateBody(comment.body),
+            '</p><p class="created_at">', dateStr,'</p></div></div>'
+        ];
+
+        return htmlArr.join("");
+    },
+
+    onCommentsMessage : function(message) {
+        var comments = message.body.out;
+        this.issuesList[message.body.issue_num].comments_arr = comments;
+
+        //console.log(comments);
+
+        var allHtml = [];
+        for (var i = 0, len = comments.length; i < len; i++)
+            allHtml.push(this.formulateCommentHTML(comments[i]));
+
+        var clistDiv = window["issue" + message.body.issue_num].$ext.getElementsByClassName("issue_comments_list")[0];
+        clistDiv.innerHTML = allHtml.join("");
+    },
+
     onListMessage : function(message) {
         // Formulate list
         var list = message.body.out;
+        //console.log(list);
 
         // Set for our records (APF clears out newlines in XML attrs?)
         // Need to save em!
@@ -208,16 +233,52 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
             return;
         }
 
-        var htmlNode = apf.xmldb.getHtmlNode(lstIssues.selected, lstIssues);
+        var num_comments = this.issuesList[number].comments;
+        if (num_comments > 0)
+            this.sendRequest("getcomments", number);
 
         var title = lstIssues.selected.getAttribute("title");
-        var body = this.issuesList[number].body.replace(/(\r\n|\n|\r)/gm, "<br />");
         var author = lstIssues.selected.getAttribute("user");
+        var body = this.formulateBody(this.issuesList[number].body);
+        var created_at = this.issuesList[number].created_at;
+        var updated_at = this.issuesList[number].updated_at;
+        var html_url = this.issuesList[number].html_url;
+        var labels_arr = this.issuesList[number].labels;
+        var state = this.issuesList[number].state;
+        var votes = this.issuesList[number].votes;
 
-        var htmlArr = ["<h1>", title, '</h1><p class="author">by ',
+        var d, dateStr;
+        // Include seconds
+        if (updated_at != created_at) {
+            d = new Date(created_at);
+            dateStr = d.toString(this.updatedDate);
+            d = new Date(updated_at);
+            dateStr += '<br />updated ' + d.toString(this.updatedDate);
+        } else {
+            d = new Date(created_at);
+            dateStr = d.toString(this.normalDate);
+        }
+
+        var htmlArr = ['<div class="issue_header"><img src="http://www.gravatar.com/avatar/',
+            this.issuesList[number].gravatar_id, '?s=120&d=mm" width="30" height="30" /><h1>',
+            title, '</h1></div><p class="issue_body">', body,
+            '</p><p class="author">by ',
             '<a class="author_link" href="http://github.com/', author, 
-            '" target="_blank">', author,
-            '</a></p><p class="issue_body">', body, '</p>'];
+            '" target="_blank">', author, '</a> on ', dateStr, '</p>'
+        ];
+
+        if (labels_arr.length) {
+            htmlArr.push('<div class="labels">');
+            for (var i = 0, len = labels_arr.length; i < len; i++)
+                htmlArr.push('<div class="issue_label">', labels_arr[i], '</div>');
+            htmlArr.push('</div>');
+        }
+
+        htmlArr.push(
+            '<div class="issue_comments_divider"><img src="/static/style/images/empty_editor_divider.png" />',
+            '</div><div class="issue_comments"><p><strong>Comments (', num_comments,
+            ')</strong></p><div class="issue_comments_list"></div></div>'
+        );
 
         tabIssues.add("Issue" + number, pageId, null, null, function(page) {
             page.setAttribute("class", "issue_detail");
@@ -235,6 +296,10 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
             anim : apf.tween.EASEOUT,
             steps : 20
         });*/
+    },
+
+    showIssuesList : function() {
+        tabIssues.set("pgIssuesList");
     },
 
     enable : function(noButton){
