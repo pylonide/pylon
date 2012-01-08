@@ -15,7 +15,8 @@
     ]]></a:script>
     <a:window id="winIssuesMgr"
       flex     = "1"
-      skin     = "fm-window"
+      skinset  = "skinissues"
+      skin     = "issue-window"
       title    = "Issues"
       modal    = "false"
       visible  = "false"
