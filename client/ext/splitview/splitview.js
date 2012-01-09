@@ -39,6 +39,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         apf.importCssString(css || "");
         
         var _self = this;
+        var tabs = tabEditors; // localize global 'tabEditors'
         
         var parent = Tabbehaviors.nodes[Tabbehaviors.nodes.length - 1];
         this.nodes.push(
@@ -50,9 +51,9 @@ module.exports = ext.register("ext/splitview/splitview", {
                     checked : false,
                     onclick : function() {
                         if (this.checked)
-                            _self.startCloneView(tabEditors.contextPage);
+                            _self.startCloneView(tabs.contextPage);
                         else
-                            _self.endCloneView(tabEditors.contextPage);
+                            _self.endCloneView(tabs.contextPage);
                     }
                 }))
             ),
@@ -62,7 +63,7 @@ module.exports = ext.register("ext/splitview/splitview", {
                     type    : "check",
                     checked : true,
                     onclick : function() {
-                        _self.changeLayout(tabEditors.contextPage, this.checked ? "3rows" : "3cols");
+                        _self.changeLayout(tabs.contextPage, this.checked ? "3rows" : "3cols");
                     }
                 }))
             )
@@ -91,11 +92,11 @@ module.exports = ext.register("ext/splitview/splitview", {
             e.returnValue = split.pages[idx];
         });
         
-        tabEditors.addEventListener("tabselectclick", function(e) {
+        tabs.addEventListener("tabselectclick", function(e) {
             return _self.onTabClick(e);
         });
         
-        tabEditors.addEventListener("tabselectmouseup", function(e) {
+        tabs.addEventListener("tabselectmouseup", function(e) {
             var page = this.$activepage;
             var split = Splits.get(page)[0];
             if (split)
@@ -168,7 +169,8 @@ module.exports = ext.register("ext/splitview/splitview", {
      */
     onTabClick: function(e) {
         var page = e.page;
-        var activePage = tabEditors.getPage();
+        var tabs = tabEditors;
+        var activePage = tabs.getPage();
         var shiftKey = e.htmlEvent.shiftKey;
         var ret = null;
         var split = Splits.get(activePage)[0];
@@ -185,7 +187,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             // other tabs as well (because only the page of the first tab is 
             // REALLY shown)
             if (ret !== false && page !== split.pages[0]) {
-                tabEditors.set(split.pages[0]);
+                tabs.set(split.pages[0]);
                 ret = false;
             }
             
@@ -346,7 +348,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         fake.setAttribute("model", fake.$model = page.$model);
         
         page.addEventListener("DOMNodeRemovedFromDocument", function(e) {
-            if (typeof tabEditors == "undefined")
+            if (typeof tabEditors == "undefined" || !fake || !fake.parentNode)
                 return;
             tabEditors.remove(fake);
         });
@@ -357,6 +359,8 @@ module.exports = ext.register("ext/splitview/splitview", {
         
         split = Splits.get(fake)[0];
         split.clone = fake;
+        
+        Splits.update(split);
         
         this.save();
         
@@ -409,14 +413,14 @@ module.exports = ext.register("ext/splitview/splitview", {
     
     restore: function(settings) {
         // no tabs open... don't bother ;)
-        if (tabEditors.childNodes.length <= 1)
+        var tabs = tabEditors;
+        if (tabs.childNodes.length <= 1)
             return;
         
         var nodes = settings.selectNodes("splits/split");
         if (!nodes || !nodes.length)
             return;
         
-        var tabs = tabEditors;
         var activePage = tabs.getPage();
         var i, l, j, l2, ids, active, page, pages, pageSet, gridLayout;
         for (i = 0, l = nodes.length; i < l; ++i) {

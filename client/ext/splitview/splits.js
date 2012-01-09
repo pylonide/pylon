@@ -261,8 +261,11 @@ exports.mutate = function(split, page) {
                 }
             }
         }
-        if (!editorToUse && exports.indexOf(split, page.$editor.amlEditor) == -1)
-            editorToUse = page.$editor.amlEditor;
+        if (!editorToUse && exports.indexOf(split, clones.original) == -1)
+            editorToUse = clones.original;
+        
+        if (!editorToUse)
+            throw new Error("Splitview fatal error: no editor available to use.");
         
         split.pages.push(page);
         split.editors.push(editorToUse);
@@ -310,7 +313,7 @@ exports.setActivePage = function(split, activePage) {
     var idx = activePage ? exports.indexOf(split, activePage) : split.activePage;
     if (idx == -1)
         return;
-    split.editors[idx].focus();
+    (split.editors[idx] || split.editors[0]).focus();
 };
 
 /*
@@ -375,6 +378,7 @@ function createEditorClones(editor) {
     addEditorListeners.call(this, editor);
 
     EditorClones[id] = [];
+    EditorClones[id].original = editor;
     
     for (var i = 0; i < 2; ++i) {
         editor = editor.cloneNode(true);
@@ -410,6 +414,8 @@ exports.consolidateEditorSession = function(page, editor) {
         session = exports.getEditorSession(page);
         defEditor.setProperty("value", oldVal);
     }
+    if (!editor)
+        console.trace();
     editor.setAttribute("model", page.$model);
     editor.setAttribute("actiontracker", page.$at);
     if (editor.value !== session)
@@ -431,7 +437,7 @@ function addEditorListeners(editor) {
 function removeEditorListeners(editor) {
     if (!editor.$splitListener)
         return;
-    console.log("removing event listeners!!");
+    //console.log("removing event listeners!!");
     editor.removeEventListener("focus", editor.$splitListener);
     delete editor.$splitListener;
 }
@@ -440,7 +446,7 @@ var previousEditor;
 
 function onEditorFocus(editor) {
     var splits = exports.get(editor);
-    if (Editors.currentEditor.name.indexOf("Code Editor") > -1) {
+    if (Editors.currentEditor && Editors.currentEditor.name.indexOf("Code Editor") > -1) {
         if (!previousEditor)
             previousEditor = Editors.currentEditor.amlEditor;
         Editors.currentEditor.amlEditor = editor;
