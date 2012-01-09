@@ -7,11 +7,10 @@
 
 define(function(require, exports, module) {
 
-var Ide = require("core/ide");
-var Lang = require("ace/lib/lang");
+var ide = require("core/ide");
 
 // Maximum amount of buffer history
-var MAX_LINES = 255;
+var MAX_LINES = 512;
 // relative workspace files
 var wsrRe = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+(?:\.[\w\_\$]+))?(\:\d+)(\:\d+)*/g;
 // URL regexp
@@ -27,6 +26,12 @@ var colors = {
     37: "#eee"
 };
 
+var messages = {
+    divider: "<span style='display:block;border-top:1px solid #444; margin:6px 0 6px 0;'></span>",
+    prompt: "<span style='color:#86c2f6'>__MSG__</span>",
+    command: "<span style='color:#86c2f6'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 25px'>__MSG__</div></span>"
+};
+
 // Remove as many elements in the console output area so that between
 // the existing buffer and the stream coming in we have the right
 // amount of lines according to MAX_LIMIT.
@@ -35,15 +40,20 @@ var balanceBuffer = function(elem, len) {
         elem.removeChild(elem.firstChild);
 };
 
+var stringRepeat = function(str, times) {
+    return new Array(times + 1).join(str);
+};
+
+var escapeRegExp = function(str) {
+    return str.replace(/([.*+?^${}()|[\]\/\\])/g, '\\$1');
+};
+
 exports.logNodeStream = function(data, stream, useOutput) {
-    var workspaceDir = Ide.workspaceDir;
-    var davPrefix = Ide.davPrefix;
+    var workspaceDir = ide.workspaceDir;
+    var davPrefix = ide.davPrefix;
     var style = "color:#eee;";
     var log = [];
     // absolute workspace files
-
-//    if (!tabConsole.$rendered)
-//        tabConsole.$render();
 
     var parentEl = useOutput ? txtOutput : txtConsole;
     var lines = data.split("\n", MAX_LINES);
@@ -59,7 +69,7 @@ exports.logNodeStream = function(data, stream, useOutput) {
 
     // Probably nice to take this RegExp generation outside the function at
     // some point
-    var wsRe = new RegExp(Lang.escapeRegExp(workspaceDir) + "\\/([^:]*)(:\\d+)(:\\d+)*", "g");
+    var wsRe = new RegExp(escapeRegExp(workspaceDir) + "\\/([^:]*)(:\\d+)(:\\d+)*", "g");
     for (var i = 0, l = lines.length; i < l; i++) {
         if (!lines[i])
             continue;
@@ -69,7 +79,7 @@ exports.logNodeStream = function(data, stream, useOutput) {
             .replace(wsRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>" + workspaceDir + "/$1$2$3</a>")
             .replace(wsrRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>$1$2$3</a>")
             .replace(/\s{2,}/g, function(str) {
-                return Lang.stringRepeat("&nbsp;", str.length);
+                return stringRepeat("&nbsp;", str.length);
             })
             // tty escape sequences (http://ascii-table.com/ansi-escape-sequences.php)
             .replace(/(\u0007|\u001b)\[(K|2J)/g, "")
@@ -90,16 +100,9 @@ exports.log = function(msg, type, pre, post, otherOutput){
 
     if (!type)
         type = "log";
-    else if (type == "divider") {
-        msg = "<span style='display:block;border-top:1px solid #444; margin:6px 0 6px 0;'></span>";
-    }
-    else if (type == "prompt") {
-        msg = "<span style='color:#86c2f6'>" + msg + "</span>";
-    }
-    else if (type == "command") {
-        msg = "<span style='color:#86c2f6'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 25px'>"
-            + msg + "</div></span>";
-    }
+
+    if (messages[type])
+        msg = messages[type].replace("__MSG__", msg);
 
     var parentEl = otherOutput || txtConsole;
     balanceBuffer(parentEl.$ext, 1);
