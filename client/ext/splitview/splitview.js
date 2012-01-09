@@ -143,7 +143,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             return;
         // pass in null to mutate the active split view
         Splits.mutate(null, pages[idx]);
-        //Splits.update();
+        Splits.update();
         this.save();
         return false;
     },
