@@ -25,6 +25,7 @@ var madeNewFile = false;
 var wentToZen = false;
 var madeDebug = false;
 var deletedFile = false;
+var hasDeploy = false;
 
 var jsonTourIde = {
     initialText: "This guided tour introduces you to some of the ways Cloud 9 IDE makes it easy for you to program faster and smarter.\n\nClick the play button below to be taken on the tour automatically. Or, you can click the forward and backward buttons to navigate on your own. Remember that during the tour, you won't be able to interact with any of the editor's features.",
@@ -261,14 +262,15 @@ var jsonTourIde = {
         time: 4
     }, {
         before: function(){
-            if(ide.workspaceId != ".") {
-                //panels.activate(require("c9/ext/deploy/deploy"));
-            }
+            require(["c9/ext/deploy/deploy"], function(deploy) { 
+                hasDeploy = true;
+                panels.activate(deploy);
+            });
         },
         el: "winDeploy",
         desc: "In this panel you can manage(add/remove) your deploy targets for your application, in different services, like Joyent and Heroku.",
         pos: "right",
-        notAvailable: ide.workspaceId == ".",
+        notAvailable: !hasDeploy,
         time: 5
     }, {
         before: function() {
@@ -441,8 +443,10 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             _self.stepForward();
             if (_self.tour.steps[_self.currentStep + 1]) 
                 _self.stepForwardAuto();
-            else
+            else {
                 _self.end();
+                _self.finalStep();
+            }
         }, timeout * 1000);
     },
 
