@@ -109,7 +109,11 @@
                 background: url(images/tg_button_forward.png) no-repeat 27px 5px;
             }
         ]]></a:style>
-    
+        <a:style condition="apf.isGecko"><![CDATA[
+            .tgDesc {
+                height: 130px;
+            }
+        ]]></a:style>
         <a:presentation>
             <a:main
               collapsed-height = "30"

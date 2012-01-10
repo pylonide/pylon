@@ -8,8 +8,8 @@
       width   = "360"
       skin    = "bk-window"
       class   = "relative">
-        <a:vbox padding="10" edge="15 20 25 20">
-            <a:text id="winTourDesc" class="tgDesc modal_text" height="130"/>
+        <a:vbox padding="10" edge="15">
+            <a:text id="winTourDesc" class="tgDesc modal_text"/>
         </a:vbox>
         <a:hbox padding="10" pack="end" edge="10 10 10 20" align="center">
             <a:button id="winTourButtonDone" 
@@ -66,7 +66,7 @@
                   height  = "25" 
                   onclick = "require('ext/guidedtour/guidedtour').stepForward();" />
                 <a:divider skin="c9-divider" />
-                <a:button onclick="tourControlsDialog.hide()" skin="btn-default-simple">Quit</a:button>
+                <a:button onclick="tourControlsDialog.hide();require('ext/guidedtour/guidedtour').closeTG()" skin="btn-default-simple">Quit</a:button>
             </a:hbox>
         </a:vbox>
     </a:window>
@@ -80,6 +80,7 @@
       width     = "160"
       skinset   = "guidedtour"
       skin      = "guidetool"
+      zindex    = "999999"
       draggable = "false">
         <a:text id="textTourDesc" flex="1" />     
     </a:window>

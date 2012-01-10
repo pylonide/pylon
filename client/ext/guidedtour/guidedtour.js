@@ -28,7 +28,7 @@ var deletedFile = false;
 var hasDeploy = false;
 
 var jsonTourIde = {
-    initialText: "This guided tour introduces you to some of the ways Cloud 9 IDE makes it easy for you to program faster and smarter.\n\nClick the play button below to be taken on the tour automatically. Or, you can click the forward and backward buttons to navigate on your own. Remember that during the tour, you won't be able to interact with any of the editor's features.",
+    initialText: "This guided tour introduces you to some of the ways<br/> Cloud 9 IDE makes it easy for you to program faster and smarter.\n\nClick the play button below to be taken on the tour automatically. Or, you can click the forward and backward buttons to navigate on your own. Remember that during the tour, you won't be able to interact with any of the editor's features.",
     finalText: "Well, that's everything! Still have questions? Head on over to <a href=\"http://support.cloud9ide.com/forums\" target=\"_blank\">our documentation site</a>.",
     steps: [
     {
@@ -146,7 +146,7 @@ var jsonTourIde = {
         skip: true
     }, {
         before: function(){
-            ideConsole.disable();
+            //ideConsole.disable();
         },
         el: apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:bar[1]/a:vbox[1]/a:hbox[1]'),
         desc: "This area down here acts just like a command line for your project in the Cloud9 IDE. You can always type 'help' to get a list of the available commands.",
@@ -164,7 +164,7 @@ var jsonTourIde = {
     }, {
         before: function() {
             //winRunCfgNew.hide();
-            ideConsole.disable();
+            //ideConsole.disable();
             var doc = require("ext/editors/editors").currentEditor.ceEditor.getSession();
             doc.setBreakpoints([1]);
         },
@@ -340,9 +340,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         tourControlsDialog.addEventListener("hide", this.shutdown(this.hlElement));
     },
 
-    launchGT: function(){
+    launchGT: function(){        
         ext.initExtension(this);
-
+        
         madeNewFile = wentToZen = madeDebug = deletedFile = false;
         this.currentStep = -1;
         winTourDesc.setValue(this.tour.initialText);
@@ -401,6 +401,8 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     },
 
     startTour: function(){
+        var _self = this;
+        
         this.currentStep = -1;
         winTourGuide.hide();
         tourControlsDialog.show();
@@ -409,6 +411,15 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         this.overlay.style = 'block';
         
         settings.model.setQueryValue('general/@animateui', false);
+        
+        apf.removeEventListener("keyup", _self.keyUpEvent);
+        
+        apf.addEventListener("keyup", _self.keyUpEvent = function(e){
+            if(e.keyCode == 39)
+                _self.stepForward();
+            else if(e.keyCode == 37)
+                _self.stepBack();
+        });
         
         // remove the modal overlay, but keep it around to block input
         //var modalBackground = document.getElementsByClassName("bk-window-cover");
@@ -419,7 +430,10 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         this.currentStep--;
 
         var step = this.tour.steps[this.currentStep];
-
+        
+        if(!step)
+            return;
+        
         if (step.skip !== undefined) { // we're in the zen mode step, go back one more
             this.currentStep--;
             step = this.tour.steps[this.currentStep];
@@ -427,7 +441,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
 
         if (this.currentStep === 0) {
             btnTourStepBack.disable();
-            btnTourStepBack.$ext.childNodes[1].style.backgroundPosition = "20px -19px";
+            btnTourStepBack.$ext.childNodes[1].style.backgroundPosition = "20px -21px";
         }
 
         btnTourStepForward.enable();
@@ -459,7 +473,10 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
                 btnTourStepBack.enable();
                 btnTourStepBack.$ext.childNodes[1].style.backgroundPosition = "20px 5px";
             }
-
+            if(this.currentStep > 22) {
+                btnTourStepBack.disable();
+                btnTourStepBack.$ext.childNodes[1].style.backgroundPosition = "20px -21px";
+            }
             var step = this.tour.steps[this.currentStep];
             this.commonStepOps(step);
         }
@@ -571,9 +588,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
 
     resizeHighlightedEl: function() {
         var pos = this.getElementPosition(this.currentEl);
-        this.hlElement.style.left = (pos[0] + 2) + "px";
+        this.hlElement.style.left = pos[0] + "px";
         this.hlElement.style.top = pos[1] + "px";
-        this.hlElement.style.width = (pos[2] - 6) + "px";
+        this.hlElement.style.width = (pos[2] - 4) + "px";
         this.hlElement.style.height = (pos[3] - 4) + "px";
         this.hlElement.style.display = "block";
         this.hlElement.style.border = "solid 2px #bee82c";
@@ -617,11 +634,16 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     },
 
     closeTG: function() {
+        var _self = this;
         winTourGuide.hide();
+        
+        apf.removeEventListener("keyup", _self.keyUpEvent);
     },
 
     shutdown: function(hlElement) {
         var _self = this;
+        
+        apf.removeEventListener("keyup", _self.keyUpEvent);
         return function() {
             require("ext/guidedtour/guidedtour").pause(); // stop auto-moving
             winTourText.hide();
@@ -633,7 +655,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             
             //set anim settings to what it was before the tour
             settings.model.setQueryValue('general/@animateui', _self.animateui);
-        };
+        };        
     },
 
     disable: function() {

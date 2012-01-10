@@ -17,7 +17,7 @@ var markup = require("text!ext/quickstart/quickstart.xml");
 var jsonQuickStart = {
     identifiers: [
         {
-            el : navbar,
+            el : apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[1]/button[@caption="Project Files"]'),
             name : "qsProjectBar",
             pos: "right"
         },
@@ -29,7 +29,10 @@ var jsonQuickStart = {
        {
             el : tabEditors,
             name : "qsToolbar",
-            pos: "left"
+            pos: "left",
+            visible: function(){
+                return hboxDockPanel.childNodes[0];
+            }
         },
         {
             el : apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:bar[1]/a:vbox[1]/a:hbox[1]'),
@@ -67,19 +70,24 @@ module.exports = ext.register("ext/quickstart/quickstart", {
                 
         ide.addEventListener("loadsettings", function(e) {
             var showQS = require("ext/settings/settings").model.queryValue("auto/help/@show");
-            if (showQS == "true") {
+            if(showQS === "" || showQS == "true") {
+                require("ext/settings/settings").model.setQueryValue("auto/help/@show", "true");
+                apf.xmldb.setAttribute(require("ext/settings/settings").model.queryNode("auto/help"), "show", "true");
                  _self.launchQS();
              }
          });
     },
     
     launchQS : function() {
+        var _self = this;
         ext.initExtension(this);
         
          //debugPanelCompact.show();
-        quickStartDialog.show();
-        this.overlay.style.display = "block";
-        this.arrangeQSImages();
+        setTimeout(function(){
+            quickStartDialog.show();
+            _self.overlay.style.display = "block";
+            _self.arrangeQSImages();
+        })
     },
     
     /**
@@ -88,6 +96,9 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     arrangeQSImages : function() {
         var divToId, position, imgDiv;
         for (var i = 0; i < jsonQuickStart.identifiers.length; i++) {
+            if(jsonQuickStart.identifiers[i].visible && !jsonQuickStart.identifiers[i].visible())
+                continue;            
+            
             divToId = require("ext/guidedtour/guidedtour").getElementPosition(jsonQuickStart.identifiers[i].el);
             position = jsonQuickStart.identifiers[i].pos;
             imgDiv = apf.document.getElementById(jsonQuickStart.identifiers[i].name);

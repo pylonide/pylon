@@ -13,7 +13,7 @@
         onhide    = "require('ext/quickstart/quickstart').closeStart();"
         draggable = "false">    
         <div class="tgtext container">
-            <p>For a detailed guided tour, <a href="#" class="tgLink" onclick="require('ext/quickstart/quickstart').shutdownQSStartGT();">click here!</a></p>
+            <a href="javascript:void(0)" onclick="require('ext/quickstart/quickstart').shutdownQSStartGT();">For a detailed guided tour, <span class="tgLink">click here!</span></a>
         </div>
         
          <div class="qsSupportText container">

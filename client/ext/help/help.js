@@ -12,6 +12,8 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var markup = require("text!ext/help/help.xml");
+var css = require("text!ext/help/style.css");
+var skin = require("text!ext/help/skin.xml");
 
 module.exports = ext.register("ext/help/help", {
     name   : "Help Menu",
@@ -20,8 +22,13 @@ module.exports = ext.register("ext/help/help", {
     type   : ext.GENERAL, 
     nodes : [],
     markup : markup,
+    css    : css,
     panels : {},
-    
+    skin    : {
+        id   : "help-skin",
+        data : skin,
+        "media-path" : "/static/ext/help/images/"
+    },
     showingAll : true,
     
     initPanel : function(panelExt){
@@ -78,6 +85,8 @@ module.exports = ext.register("ext/help/help", {
     },
     
     init : function(amlNode) {
+        apf.importCssString((this.css || ""));
+        
         this.nodes.push(
             barMenu.appendChild(new apf.button({
                 submenu : "mnuHelp",
