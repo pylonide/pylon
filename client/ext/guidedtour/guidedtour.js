@@ -486,6 +486,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         require("ext/console/console").disable();
         winTourText.close();
         tourControlsDialog.hide();
+        this.closeTG();
         this.hlElement.style.display = "none";
 
         winTourGuide.show();
