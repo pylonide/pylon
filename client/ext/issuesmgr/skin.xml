@@ -13,6 +13,15 @@
                 font-size: 12px;
                 cursor: default;
             }
+            .issueslist > div.empty.message {
+                border: none;
+                font-size: 13px;
+                color: #666;
+                padding-top: 20px;
+            }
+            .issueslist > div.empty.message:hover {
+                background: none;
+            }
             .issueslist > div:hover, .issueslist > div.odd:hover {
                 background-color: #ffc; /*#e7e7e7;*/
             }
@@ -224,16 +233,20 @@
                 font-family: 12px;
                 overflow: auto;
             }
-            
-            .issuestab .page.issue_detail {
+
+            .issuestab .page {
                 padding: 10px 15px 30px 15px;
             }
+            
+            .issuestab .page.mainissueslist {
+                padding: 0;
+            }
 
-            .issuestab .page.issue_detail .labels {
+            .issuestab .page .labels {
                 padding: 10px 0 0 0;
             }
 
-            .issuestab .page.issue_detail .issue_label {
+            .issuestab .page .issue_label {
                 float: left;
                 padding: 3px 12px;
                 background: #eee;
@@ -256,18 +269,28 @@
                 margin: 0 0 0 45px;
             }
 
+            .issuestab .page pre {
+                background-color: #F8F8F8;
+                border: 1px solid #CCC;
+                font-size: 13px;
+                line-height: 19px;
+                overflow: auto;
+                padding: 6px 10px;
+                border-radius: 5px;
+            }
+            
             .issuestab .page p.author {
                 color: #666;
                 line-height: 16px;
             }
             
-            .issuestab .page a.author_link {
+            .issuestab .page a.remote {
                 font-weight: bold;
             }
             
             .issuestab .page p a {
                 text-decoration: none;
-                color: #444;
+                color: #666;
             }
             
             .issuestab .page p a:visited {
@@ -278,12 +301,16 @@
                 text-decoration: underline;
             }
 
-            .issuestab .page p.issue_body {
+            .issuestab .page .issue_body {
                 clear: left;
-                padding : 15px 0 10px 0;
+                padding : 5px 0 10px 0;
                 font-size: 12px;
                 line-height: 16px;
                 font-family: Tahoma, Arial;
+            }
+            
+            .issuestab .page .issue_body p {
+                padding-top: 10px;
             }
             
             .issue_comments_list .comment {
@@ -294,6 +321,11 @@
                 font-size: 12px;
                 line-height: 16px;
                 font-family: Tahoma, Arial;
+                padding-top: 10px;
+            }
+            
+            .issuestab .page .issue_body p, .issue_comments_list .comment_body p {
+                white-space: pre-line;
             }
 
             .issue_comments_divider {
@@ -333,6 +365,11 @@
                 color: #999;
                 font-size: 11px;
             }
+            
+            .issue_nav {
+                height: 29px;
+                border-bottom: 1px solid #999;
+            }
         ]]></a:style>
     
         <a:presentation>
@@ -351,7 +388,8 @@
                 <strong> </strong>
             </a:btnclose>
             <a:page container=".">
-                <div class="page"> </div>
+                <div class="page">
+                </div>
             </a:page>
         </a:presentation>
     </a:tab>
@@ -360,19 +398,21 @@
             .issue-window {
                 position : relative;
                 overflow : hidden;
-        		z-index	 : 10000;
-                padding  : 30px 0 0 0;
+                z-index	 : 10000;
+                padding  : 0;
             }
             
             .issue-window .fm-header {
                 position : relative;
                 overflow : hidden;
                 height   : 30px;
-                top      : -30px;
+                top      : 0px;
+                text-align: center;
+                border-bottom: 1px solid #999;
             }
             
             .issue-window .fm-header .hcontent {
-                background    : url(images/header_backg.png)  repeat-x 0 0;
+                background    : url(images/header_backg.png);
                 margin-right  : 6px;
                 position      : relative;
                 overflow      : hidden;
@@ -382,8 +422,8 @@
                 font-size   : 12px;
                 line-height:16px;
                 font-weight : bold;
-                color       : #1d4566;
-                text-shadow   : rgba(255, 255, 255, 0.25) 0px 1px 0px;
+                color       : #E8E8E8;
+                text-shadow   : #2a2c2d 0px 1px 0px;
             }
             
             .issue-window .fm-header .right {
@@ -392,7 +432,7 @@
                 position:absolute;
                 top:0;
                 right:0;
-                background:url(images/header_right.png) no-repeat 0 0;
+                background:url(images/header_right.png);
             }
     
             .issue-window .fm-content {
@@ -404,6 +444,15 @@
                 right : 0;
                 bottom : 0;
             }
+            
+            #issues_back {
+                width: 30px;
+                height: 20px;
+                position: absolute;
+                top: 5px;
+                background: url('images/search_arrow.png') 0 0 no-repeat;
+                display: none;
+            }
         ]]></a:style>
         
         <a:presentation>
@@ -413,12 +462,11 @@
               minwidth         = "60"
               container        = "div[2]" 
               drag             = "div[2]" 
-              title            = "div[1]/div[1]/text()" 
-              icon             = "div[1]/div[1]/div[1]"
+              title            = "div[1]/div[1]/text()"
               buttons          = "div[1]/div[1]/div[2]">
                 <div class="issue-window">
                     <div class="fm-header">
-                        <div class="hcontent">-<div class="icon"></div><div class="buttons"></div></div>
+                        <div class="hcontent">-<div id="issues_back"></div><div class="buttons"></div></div>
                         <div class="right"></div>
                     </div>
                     <div class="fm-content"> </div>

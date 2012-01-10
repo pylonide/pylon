@@ -25,6 +25,10 @@ var IssuesPlugin = module.exports = function(ide) {
              re: /^https\:\/\/([\w\.\d-_]+)@github\.com\/(\1|[\w\.\d-_]+)\/([\w\.\d-_]+)$/,
              pattern: "https://{context}@github.com/{context_or_organization}/{name}"
          },
+         "httpalt": {
+             re: /^https\:\/\/github\.com\/(\1|[\w\.\d-_]+)\/([\w\.\d-_]+)$/,
+             pattern: "https://github.com/{context_or_organization}/{name}"
+         },
          "readonly": {
              re: /^git\:\/\/github\.com\/([\w\.\d-_]+)\/([\w\.\d\-\_]+)$/,
              pattern: "git://github.com/{context}/{name}"
@@ -111,7 +115,11 @@ sys.inherits(IssuesPlugin, Plugin);
                             subcommand: message.subcommand,
                             argv: message.argv,
                             err: null,
-                            out: "ok"
+                            out: "ok",
+                            project : {
+                                "name" : self.projectName,
+                                "context" : self.contextName
+                            }
                         });
             }
 
@@ -126,6 +134,10 @@ sys.inherits(IssuesPlugin, Plugin);
             urlTest = url.match(self.ghUrlTest["http"].re);
             if (urlTest)
                 return returnInitOk("http", urlTest);
+
+            urlTest = url.match(self.ghUrlTest["httpalt"].re);
+            if (urlTest)
+                return returnInitOk("httpalt", urlTest);
 
             urlTest = url.match(self.ghUrlTest["readonly"].re);
             if (urlTest)

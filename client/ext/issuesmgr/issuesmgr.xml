@@ -30,13 +30,13 @@
         <a:menu id="mnuIssuesSort">
             <a:item submenu="mnuIssuesOrder">Order</a:item>
             <a:divider />
-            <a:item type="check" checked="true">Submitted</a:item>
+            <a:item type="check" checked="true">Created</a:item>
             <a:item type="check">Updated</a:item>
             <a:item type="check">Comments</a:item>
         </a:menu>
         <a:tab id="tabIssues" skinset="skinissues" skin="issuestab"
             anchors="0 0 0 0" flex="1">
-            <a:page id="pgIssuesList" caption="Issues">
+            <a:page id="pgIssuesList" caption="Issues" class="mainissueslist">
                 <a:bar height="35" class="filtersBar">
                     <a:hbox edge="5 12 5 12">
                         <a:textbox 
@@ -47,7 +47,7 @@
                           skin            = "searchbox_textbox"
                           class           = "small_font"
                           focusselect     = "true"
-                          initial-message = "Search by Title or User"
+                          initial-message = "Title, User or Issue #"
                           margin          = "0 12 0 0"
                         />
                         <a:button
@@ -62,12 +62,12 @@
                 <a:list id="lstIssues" skinset="skinissues" skin="issueslist"
                   flex="1" anchors="35 0 0 0" border="0" multiselect="false"
                   autoselect="false" model="mdlIssues" empty-message="Loading issues... sit tight :)">
-                    <!-- Note set filter-fields to @title,@user,@body but too
+                    <!-- Note set filter-fields to @title,@user,@number,@body but too
                         slow for searching lots of issues against the body -->
                     <a:each
                       match         = "[issue]"
                       filter        = "{tbIssuesSearch.value}"
-                      filter-fields = "@title,@user"
+                      filter-fields = "@title,@user,@number"
                       sort          = "[@number]"
                       data-type     = "number"
                       order         = "descending"

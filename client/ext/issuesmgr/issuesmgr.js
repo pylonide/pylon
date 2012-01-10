@@ -13,6 +13,7 @@ var util = require("core/util");
 var panels = require("ext/panels/panels");
 var markup = require("text!ext/issuesmgr/issuesmgr.xml");
 var skin = require("text!ext/issuesmgr/skin.xml");
+var markdown = require("ext/issuesmgr/pagedown-js");
 
 module.exports = ext.register("ext/issuesmgr/issuesmgr", {
     name     : "Issues Manager",
@@ -22,6 +23,7 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
     skin     : skin,
     markup   : markup,
     appendedColumn : false,
+    converter : new Markdown.Converter(),
     
     normalDate : "MMMM dd, yyyy hh:mm tt",
     updatedDate : "MMMM dd, yyyy hh:mm:ss tt",
@@ -34,6 +36,11 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
         var _self = this;
         lstIssues.addEventListener("click", function() {
             _self.openSelectedIssue();
+        });
+
+        this.issues_back = document.getElementById("issues_back");
+        this.issues_back.addEventListener("click", function() {
+            _self.showIssuesList();
         });
     },
 
@@ -146,6 +153,8 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
         switch(message.body.subcommand) {
             case "init":
                 if (message.body.out === "ok") {
+                    this.projectName = message.body.project.name;
+                    this.projectContext = message.body.project.context;
                     this.setupElements();
                     this.sendRequest("list");
                 }
@@ -160,9 +169,9 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
                 break;
         }
     },
-    
+
     formulateBody : function(text) {
-        return text.replace(/(\r\n|\n|\r)/gm, "<br />");
+        return this.converter.makeHtml(text);
     },
 
     formulateCommentHTML : function(comment) {
@@ -181,9 +190,9 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
         var htmlArr = ['<div class="comment"><div class="comment_user">',
             '<img class="user_image" src="http://www.gravatar.com/avatar/',
             comment.gravatar_id, '?s=120&d=mm" width="30" height="30" /></div>',
-            '<div class="comment_details"><p class="comment_body"><strong>',
+            '<div class="comment_details"><div class="comment_body"><strong>',
             comment.user, ':</strong> ', this.formulateBody(comment.body),
-            '</p><p class="created_at">', dateStr,'</p></div></div>'
+            '</div><p class="created_at">', dateStr,'</p></div></div>'
         ];
 
         return htmlArr.join("");
@@ -226,7 +235,10 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
         if (!lstIssues.selected)
             return;
 
+        this.issues_back.style.display = "block";
+
         var number = lstIssues.selected.getAttribute("number");
+        winIssuesMgr.setTitle("#" + number);
         var pageId = "issue" + number;
         if (window[pageId]) {
             tabIssues.set(pageId);
@@ -247,13 +259,13 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
         var state = this.issuesList[number].state;
         var votes = this.issuesList[number].votes;
 
-        var d, dateStr;
+        var d, dateStr, updatedDateStr = "";
         // Include seconds
         if (updated_at != created_at) {
             d = new Date(created_at);
             dateStr = d.toString(this.updatedDate);
             d = new Date(updated_at);
-            dateStr += '<br />updated ' + d.toString(this.updatedDate);
+            updatedDateStr = '<br />updated ' + d.toString(this.updatedDate);
         } else {
             d = new Date(created_at);
             dateStr = d.toString(this.normalDate);
@@ -261,10 +273,12 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
 
         var htmlArr = ['<div class="issue_header"><img src="http://www.gravatar.com/avatar/',
             this.issuesList[number].gravatar_id, '?s=120&d=mm" width="30" height="30" /><h1>',
-            title, '</h1></div><p class="issue_body">', body,
-            '</p><p class="author">by ',
-            '<a class="author_link" href="http://github.com/', author, 
-            '" target="_blank">', author, '</a> on ', dateStr, '</p>'
+            apf.htmlentities(title), '</h1></div><div class="issue_body">', body,
+            '</div><p class="author">by ',
+            '<a class="remote" href="http://github.com/', author, 
+            '" target="_blank">', author, '</a> on <a target="_blank" class="remote" href="http://github.com/',
+            this.projectContext, '/', this.projectName, '/issues/', number, '">',
+            dateStr, '</a>', updatedDateStr, '</p>'
         ];
 
         if (labels_arr.length) {
@@ -281,7 +295,6 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
         );
 
         tabIssues.add("Issue" + number, pageId, null, null, function(page) {
-            page.setAttribute("class", "issue_detail");
             setTimeout(function() {
                 page.$ext.innerHTML = htmlArr.join("");
             });
@@ -299,6 +312,8 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
     },
 
     showIssuesList : function() {
+        this.issues_back.style.display = "none";
+        winIssuesMgr.setTitle("Issues");
         tabIssues.set("pgIssuesList");
     },
 
