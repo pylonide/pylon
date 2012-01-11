@@ -111,6 +111,7 @@ module.exports = ext.register("ext/console/console", {
     autoOpen : true,
     excludeParent : true,
     allCommands: {},
+    keyEvents: {},
     commands: {
         "help": {
             hint: "show general help information and a list of available commands"
@@ -255,26 +256,13 @@ module.exports = ext.register("ext/console/console", {
     },
 
     commandTextHandler: function(e) {
-        var cli = e.currentTarget;
         var code = e.keyCode;
-        if (code === KEY_UP || code === KEY_DOWN) {
-            var newVal = cmdHistory.getFromKey(code);
-            if (newVal)
-                cli.setValue(newVal);
-
-            return;
-        }
-        else if (code !== KEY_CR) {
-            return;
-        }
-
-        this.evalCmd(cli.getValue());
-        cli.setValue("");
+        if (this.keyEvents[code])
+            this.keyEvents[code](e.currentTarget, code, this);
     },
 
     onMessage: function(e) {
         var message = e.message;
-
         if (message.type === "node-data")
             return Logger.logNodeStream(message.data, message.stream, true);
 
@@ -300,14 +288,12 @@ module.exports = ext.register("ext/console/console", {
 
     init : function(amlNode){
         var _self = this;
-
         this.panel = tabConsole;
         this.$cwd  = "/workspace"; // code smell
 
+        apf.importCssString(this.css);
         // Append the console window at the bottom below the tab
         mainRow.appendChild(winDbgConsole);
-
-        apf.importCssString(this.css);
 
         stProcessRunning.addEventListener("activate", function() {
             _self.clear();
@@ -329,7 +315,6 @@ module.exports = ext.register("ext/console/console", {
         });
 
         txtConsoleInput.addEventListener("keyup", this.keyupHandler.bind(this));
-
         txtConsoleInput.addEventListener("keydown", this.keydownHandler.bind(this));
 
         function kdHandler(e){
@@ -395,12 +380,18 @@ module.exports = ext.register("ext/console/console", {
         });
 
         apf.extend(this.allCommands, ext.commandsLut);
-        /*
-        for (var name in ext.commandsLut) {
-            if (ext.commandsLut[name].commands)
-                commands[name].commands = ext.commandsLut[name].commands;
-        }
-        */
+
+        this.keyEvents[KEY_UP] =
+        this.keyEvents[KEY_DOWN] = function(input, code) {
+            var newVal = cmdHistory.getFromKey(code);
+            if (newVal)
+                input.setValue(newVal);
+        };
+
+        this.keyEvents[KEY_CR] = function (input, code) {
+            _self.evalCmd(input.getValue());
+            input.setValue("");
+        };
     },
 
     maximize : function(){
@@ -434,13 +425,9 @@ module.exports = ext.register("ext/console/console", {
         btnConsoleMax.setValue(false);
     },
 
-    show: function(immediate) {
-        this._show(true, immediate);
-    },
+    show: function(immediate) { this._show(true, immediate); },
 
-    hide: function(immediate) {
-        this._show(false, immediate);
-    },
+    hide: function(immediate) { this._show(false, immediate); },
 
     _show: function(shouldShow, immediate) {
         if (this.hidden != shouldShow)

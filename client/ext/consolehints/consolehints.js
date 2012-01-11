@@ -21,7 +21,6 @@ var KEY_CR = 13;
 var KEY_UP = 38;
 var KEY_ESC = 27;
 var KEY_DOWN = 40;
-var actionCodes = [KEY_TAB, KEY_CR, KEY_UP, KEY_ESC, KEY_DOWN];
 
 var filterCommands = function(commands, word) {
     return commands.filter(function(cmd) {
@@ -38,8 +37,9 @@ var mouseHandler = function(e) {
     if (el.tagName != "A")
         return;
 
+    var self = this;
     hintsTimer = setTimeout(function() {
-        exports.select(el);
+        self.select(el);
     }, 5);
 };
 
@@ -61,6 +61,23 @@ var getFontSize = function(txtNode) {
     return fontSize;
 };
 
+var hintLink = function(data) {
+    var dataAttr = [data.base, data.cmdName, data.cursorPos, !!data.cmd].join(",");
+    if (!data.cmd)
+        return '<a href="#" data-hint="'+ dataAttr + '">' + data.cmdName + '</a>';
+
+    var spanHotkey = "";
+    var cmdText = data.cmdName;
+    var key = data.cmd.hotkey;
+    if (key) {
+        var notation = apf.isMac ? apf.hotkeys.toMacNotation(key) : key;
+        spanHotkey = '<span class="hints_hotkey">' + notation + '</span>';
+    }
+    cmdText += '<span>' + data.cmd.hint + '</span>' + spanHotkey;
+
+    return '<a href="#" data-hint="'+ dataAttr + '">' + data.cmdName + cmdText + '</a>';
+};
+
 module.exports = ext.register("ext/consolehints/consolehints", {
     name   : "ConsoleHints",
     dev    : "Ajax.org",
@@ -79,6 +96,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         apf.importCssString(this.css);
         winHints = document.getElementById("barConsoleHints");
         apf.addListener(winHints, "mousemove", mouseHandler.bind(this));
+        apf.addListener(winHints, "click", this.click.bind(this));
 
         Console.messages.commandhints = function(message) {
             var cmds = message.body;
@@ -88,14 +106,15 @@ module.exports = ext.register("ext/consolehints/consolehints", {
 
         var self = this;
         txtConsoleInput.addEventListener("blur", function(e) {
-            self.hide();
+            //self.hide();
         });
 
         txtConsoleInput.addEventListener("keyup", function(e) {
-            var cli = e.currentTarget.getValue();
-            if (cli) {
+            var cli = e.currentTarget;
+            var cliValue = e.currentTarget.getValue();
+            if (cliValue) {
                 var keys = Object.keys(Console.allCommands);
-                var filtered = filterCommands(keys, cli);
+                var filtered = filterCommands(keys, cliValue);
                 if (filtered.length)
                     self.show(cli, "", filtered, 0);
                 else
@@ -113,36 +132,17 @@ module.exports = ext.register("ext/consolehints/consolehints", {
 
         winHints.innerHTML = "";
 
-        var cmdName, cmd;
-        var linksFragment = document.createDocumentFragment();
-        hints.forEach(function(hint) {
-            cmdName = base ? base + hint.substr(1) : hint;
-            cmd = Console.allCommands[cmdName];
+        var content = hints.map(function(hint) {
+            var cmdName = base ? base + hint.substr(1) : hint;
+            return hintLink({
+                base: base,
+                cmdName: cmdName,
+                cursorPos: cursorPos,
+                cmd: Console.allCommands[cmdName]
+            });
+        }).join("");
 
-            var link = document.createElement("a");
-            var dataHint = [base, cmdName, textbox.id, cursorPos, !!cmd].join(",");
-            link.setAttribute("data-hint", dataHint);
-            link.innerHTML = cmdName;
-
-            if (cmd) {
-                var span = document.createElement("span");
-                span.innerHTML = cmd.hint;
-
-                if (cmd.hotkey) {
-                    var spanHotkey = document.createElement("span");
-                    spanHotkey.setAttribute("class", "hints_hotkey");
-                    spanHotkey.innerHTML =
-                        apf.isMac ? apf.hotkeys.toMacNotation(cmd.hotkey) : cmd.hotkey;
-
-                    span.appendChild(spanHotkey);
-                }
-                link.appendChild(span);
-            }
-            linksFragment.appendChild(link);
-        });
-        winHints.appendChild(linksFragment);
-        winHints.addEventListener("click", this.click.bind(this));
-
+        winHints.innerHTML = content;
         selectedHint = null;
 
         if (apf.getStyle(winHints, "display") === "none") {
@@ -161,24 +161,25 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     },
 
     click: function(e) {
-        var node = e;
+        var node = e.target;
+        if (node.parentNode != winHints && node != winHints)
+            node = node.parentNode;
+console.log(node)
         var parts = node.getAttribute("data-hint").split(",");
         var base = parts[0];
         var cmdName = parts[1];
-        var txtId = parts[2];
-        var insertPoint = parseInt(parts[3], 10);
-        var isCmd = (parts[4] === "true");
+        var insertPoint = parseInt(parts[2], 10);
+        var isCmd = (parts[3] === "true");
 
         if (isCmd)
             cmdName += " "; // for commands we suffix with whitespace
 
-        var textbox = window[txtId];
-        var input = textbox.$ext.getElementsByTagName("input")[0];
-        var val = textbox.getValue();
+        var input = txtConsoleInput.$ext.getElementsByTagName("input")[0];
+        var val = txtConsoleInput.getValue();
         var before = val.substr(0, (insertPoint + 1 - base.length)) + cmdName;
 
-        textbox.setValue(before + val.substr(insertPoint + 1));
-        textbox.focus();
+        txtConsoleInput.setValue(before + val.substr(insertPoint + 1));
+        txtConsoleInput.focus();
         // set cursor position at the end of the text just inserted:
         input.selectionStart = input.selectionEnd = before.length;
         this.hide();
