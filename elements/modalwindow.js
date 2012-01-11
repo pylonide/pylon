@@ -377,7 +377,7 @@ apf.AmlWindow = function(struct, tagName){
             
             //@todo it's better to add this to the layout queue
             this.$ext.style.left = (Math.max(0, ((
-                size[0] - parseInt(this.$ext.offsetWidth || 0))/2)) + size[2]) + "px";
+                size[0] - parseInt((this.width || this.$ext.offsetWidth) || 0))/2)) + size[2]) + "px";
             this.$ext.style.top  = (Math.max(0, ((
                 size[1] - parseInt(this.$ext.offsetHeight || 0))/3)) + size[3]) + "px";
         }            
