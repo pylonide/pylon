@@ -53,19 +53,16 @@ exports.logNodeStream = function(data, stream, useOutput) {
     var davPrefix = ide.davPrefix;
     var style = "color:#eee;";
     var log = [];
-    // absolute workspace files
 
     var parentEl = useOutput ? txtOutput : txtConsole;
     var lines = data.split("\n", MAX_LINES);
 
-    if (lines.length >= MAX_LINES) {
+    if (lines.length >= MAX_LINES) 
         // If the stream coming in already contains more lines that our limit,
         // let's clear the console right away.
         parentEl.clear();
-    }
-    else {
+    else 
         balanceBuffer(parentEl.$ext, lines.length);
-    }
 
     // Probably nice to take this RegExp generation outside the function at
     // some point
@@ -74,10 +71,12 @@ exports.logNodeStream = function(data, stream, useOutput) {
         if (!lines[i])
             continue;
 
+        // The following is heinous, feel free to refactor it properly, I 
+        // cleaned it up before but I didn't have the time or the heart to refactor.
         log.push("<div class='item'><span style='" + style + "'>" + apf.htmlentities(lines[i])
             .replace(urlRe, "<a href='$1' target='_blank'>$1</a>")
-            .replace(wsRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>" + workspaceDir + "/$1$2$3</a>")
-            .replace(wsrRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>$1$2$3</a>")
+            .replace(wsRe, "<a href='#' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>" + workspaceDir + "/$1$2$3</a>")
+            .replace(wsrRe, "<a href='#' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>$1$2$3</a>")
             .replace(/\s{2,}/g, function(str) {
                 return stringRepeat("&nbsp;", str.length);
             })

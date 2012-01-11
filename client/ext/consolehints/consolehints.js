@@ -15,13 +15,6 @@ var css = require("text!ext/consolehints/consolehints.css");
 var Console = require("ext/console/console");
 
 var winHints, selectedHint, animControl, hintsTimer;
-
-var KEY_TAB = 9;
-var KEY_CR = 13;
-var KEY_UP = 38;
-var KEY_ESC = 27;
-var KEY_DOWN = 40;
-
 var filterCommands = function(commands, word) {
     return commands.filter(function(cmd) {
         return cmd.search("^" + word) !== -1;
@@ -31,16 +24,14 @@ var filterCommands = function(commands, word) {
 var mouseHandler = function(e) {
     clearTimeout(hintsTimer);
     var el = e.target || e.srcElement;
-    while (el && el.nodeType === 3 && el.tagName != "A" && el != winHints) {
+    while (el && el.nodeType === 3 && el.tagName != "A" && el != winHints)
         el = el.parentNode;
-    }
+        
     if (el.tagName != "A")
         return;
 
     var self = this;
-    hintsTimer = setTimeout(function() {
-        self.select(el);
-    }, 5);
+    hintsTimer = setTimeout(function() { self.select(el); }, 5);
 };
 
 var fontSize;
@@ -67,13 +58,12 @@ var hintLink = function(data) {
         return '<a href="#" data-hint="'+ dataAttr + '">' + data.cmdName + '</a>';
 
     var spanHotkey = "";
-    var cmdText = data.cmdName;
     var key = data.cmd.hotkey;
     if (key) {
         var notation = apf.isMac ? apf.hotkeys.toMacNotation(key) : key;
         spanHotkey = '<span class="hints_hotkey">' + notation + '</span>';
     }
-    cmdText += '<span>' + data.cmd.hint + '</span>' + spanHotkey;
+    var cmdText = '<span>' + data.cmd.hint + '</span>' + spanHotkey;
 
     return '<a href="#" data-hint="'+ dataAttr + '">' + data.cmdName + cmdText + '</a>';
 };
@@ -164,7 +154,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         var node = e.target;
         if (node.parentNode != winHints && node != winHints)
             node = node.parentNode;
-console.log(node)
+
         var parts = node.getAttribute("data-hint").split(",");
         var base = parts[0];
         var cmdName = parts[1];

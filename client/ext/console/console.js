@@ -82,18 +82,6 @@ var cmdHistory = {
             this._index = 0;
 
         return this._history[this._index];
-    },
-    getFromKey: function(keyCode) {
-        if (this.length()) {
-            var newVal;
-            if (keyCode === KEY_UP)
-                newVal = this.getPrev();
-            else if (keyCode === KEY_DOWN)
-                newVal = this.getNext();
-
-            if (newVal)
-                return newVal;
-        }
     }
 };
 
@@ -226,13 +214,13 @@ module.exports = ext.register("ext/console/console", {
         // Replace any quotes in the command
         argv[0] = argv[0].replace(/["'`]/g, "");
         cmdHistory.push(line);
-        Logger.log(this.getPrompt() + " " + line, "prompt");
+        Logger.log(this.getPrompt(line), "prompt");
         tabConsole.set("console");
 
+        // We want to expand the console after executing a command.
         var showConsole = true;
         var cmd = argv[0];
-        // `showConsole` is true if we want to expand the console after
-        // executing a command.
+        
         var predefined = require("ext/console/output").getPredefinedOutput(argv);
         if (predefined !== "") {
             this.write(predefined);
@@ -258,7 +246,7 @@ module.exports = ext.register("ext/console/console", {
     commandTextHandler: function(e) {
         var code = e.keyCode;
         if (this.keyEvents[code])
-            this.keyEvents[code](e.currentTarget, code, this);
+            this.keyEvents[code](e.currentTarget);
     },
 
     onMessage: function(e) {
@@ -269,21 +257,20 @@ module.exports = ext.register("ext/console/console", {
         if (message.type !== "result")
             return;
 
-        var msgFn = this.messages[message.subtype];
-        if (msgFn)
-            msgFn.call(this, message);
+        if (this.messages[message.subtype])
+            this.messages[message.subtype].call(this, message);
         else
             this.messages.__default__.call(this, message);
 
         ide.dispatchEvent("consoleresult." + message.subtype, { data: message.body });
     },
 
-    getPrompt: function() {
+    getPrompt: function(suffix) {
         var u = this.username;
         if (!u)
             u = (ide.workspaceId.match(/user\/(\w+)\//) || [,"guest"])[1];
 
-        return "[" + u + "@cloud9]:" + this.$cwd + "$";
+        return "[" + u + "@cloud9]:" + this.$cwd + "$" + ((" " + suffix) || "");
     },
 
     init : function(amlNode){
@@ -379,19 +366,22 @@ module.exports = ext.register("ext/console/console", {
             }
         });
 
-        apf.extend(this.allCommands, ext.commandsLut);
-
-        this.keyEvents[KEY_UP] =
-        this.keyEvents[KEY_DOWN] = function(input, code) {
-            var newVal = cmdHistory.getFromKey(code);
+        this.keyEvents[KEY_UP] = function(input) {
+            var newVal = cmdHistory.getPrev();
             if (newVal)
                 input.setValue(newVal);
         };
-
-        this.keyEvents[KEY_CR] = function (input, code) {
+        this.keyEvents[KEY_DOWN] = function(input) {
+            var newVal = cmdHistory.getNext();
+            if (newVal)
+                input.setValue(newVal);
+        };
+        this.keyEvents[KEY_CR] = function(input) {
             _self.evalCmd(input.getValue());
             input.setValue("");
         };
+        
+        apf.extend(this.allCommands, ext.commandsLut);
     },
 
     maximize : function(){
@@ -401,7 +391,6 @@ module.exports = ext.register("ext/console/console", {
 
         apf.document.body.appendChild(winDbgConsole);
         winDbgConsole.setAttribute('anchors', '0 0 0 0');
-        //this.lastHeight = winDbgConsole.height;
         this.lastZIndex = winDbgConsole.$ext.style.zIndex;
         winDbgConsole.removeAttribute('height');
         winDbgConsole.$ext.style.zIndex = 900000;
@@ -426,7 +415,6 @@ module.exports = ext.register("ext/console/console", {
     },
 
     show: function(immediate) { this._show(true, immediate); },
-
     hide: function(immediate) { this._show(false, immediate); },
 
     _show: function(shouldShow, immediate) {
@@ -482,7 +470,8 @@ module.exports = ext.register("ext/console/console", {
             chkConsoleExpanded[cfg.chkExpandedMethod]();
         };
 
-        if (!immediate && apf.isTrue(settings.model.queryValue("general/@animateui"))) {
+        var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
+        if (!immediate && animOn) {
             apf.tween.single(winDbgConsole.$ext, {
                 control : this.$control = {},
                 type  : "height",
@@ -492,9 +481,7 @@ module.exports = ext.register("ext/console/console", {
                 steps : 8,
                 interval : 5,
                 onfinish : finish,
-                oneach : function() {
-                    apf.layout.forceResize();
-                }
+                oneach : function() { apf.layout.forceResize(); }
             });
         }
         else {
