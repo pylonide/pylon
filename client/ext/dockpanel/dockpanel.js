@@ -228,6 +228,9 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         var state = state || this.layout.getState(true);
         var list  = [];
         
+        if(!state)
+            return;
+        
         state.bars.each(function(bar){
             bar.sections.each(function(section){
                 section.buttons.each(function(button){

@@ -92,6 +92,8 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     
     hideMenus: function(){
         var buttons = require("ext/dockpanel/dockpanel").getButtons("ext/debugger/debugger");
+        if(!buttons)
+            return;
         for(var i = 0, button; i < buttons.length; i++) {
             button = buttons[i];
             if(!button.showMenu || !button.cache)
