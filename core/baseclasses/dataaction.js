@@ -476,10 +476,13 @@ apf.DataAction = function(){
                 node  = model.queryNode(m.xpath);
                 xmlNode = model.data;
             }
-            else {
+            else if (m.model){
                 model = apf.xmldb.findModel(m.model);
                 node  = m.model.selectSingleNode(m.xpath);
                 xmlNode = m.model;
+            }
+            else {
+                
             }
 
             sel[1] = m.xpath;
