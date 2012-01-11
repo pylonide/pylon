@@ -11,8 +11,8 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var css = require("text!ext/splitview/splitview.css");
-var Tabbehaviors = require("ext/tabbehaviors/tabbehaviors");
 var Editors = require("ext/editors/editors");
+var Tabbehaviors = require("ext/tabbehaviors/tabbehaviors");
 var Settings = require("ext/settings/settings");
 
 var Splits = require("ext/splitview/splits");
@@ -41,7 +41,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         var _self = this;
         var tabs = tabEditors; // localize global 'tabEditors'
         
-        var parent = Tabbehaviors.nodes[Tabbehaviors.nodes.length - 1];
+        var parent = Tabbehaviors.menu;
         this.nodes.push(
             parent.appendChild(new apf.divider()),
             parent.appendChild(
@@ -70,6 +70,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         );
         
         ide.addEventListener("editorswitch", function(e) {
+            // the return value actually does something!
             return _self.updateSplitView(e.previousPage, e.nextPage);
         });
         
@@ -123,18 +124,27 @@ module.exports = ext.register("ext/splitview/splitview", {
     },
     
     mergeTab: function(dir) {
-        var bRight  = dir == "right";
-        var tabs    = tabEditors;
-        var pages   = tabs.getPages();
-        var curr    = tabs.getPage();
-        var split   = Splits.getActive();
+        var bRight   = dir == "right";
+        var tabs     = tabEditors;
+        var pages    = tabs.getPages();
+        var curr     = tabs.getPage();
+        var split    = Splits.getActive();
+        var splitLen = split ? split.pages.length : 0;
         if (split && Splits.indexOf(split, curr) > -1)
-            curr = split.pages[bRight ? split.pages.length - 1 : 0];
+            curr = split.pages[bRight ? splitLen - 1 : 0];
         if (!curr || pages.length == 1)
             return;
         
-        var currIdx = pages.indexOf(curr);
-        var idx = currIdx + (bRight ? 1 : -1);
+        var idx;
+        if (splitLen == 3) {
+            // if the max amount of tabs has been reached inside a split view,
+            // then the user may remove the last or first tab from it.
+            idx = pages.indexOf(split.pages[bRight ? splitLen - 1 : 0]);
+        }
+        else {
+            var currIdx = pages.indexOf(curr);
+            idx = currIdx + (bRight ? 1 : -1);
+        }
         if (idx < 0 || idx > pages.length - 1)
             return;
 
