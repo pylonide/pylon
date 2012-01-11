@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var save = require("ext/save/save");
 var panels = require("ext/panels/panels");
+var openfiles = require("ext/openfiles/openfiles");
 
 module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     name       : "Tab Behaviors",
@@ -202,7 +203,6 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
         var page;
         var pages = tabEditors.getPages();
-
         var _self = this;
         for (var i = 0, l = pages.length; i < l; i++) {
             page = pages[i];
@@ -354,8 +354,15 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             page = tabEditors.getPage();
         if (!page)
             return false;
+        
+        this.revealfile(page.$doc.getNode());
+    },
+    
+    revealfile : function(docNode) {
+        var path = docNode.getAttribute('path');
+        var node = trFiles.queryNode('//file[@path="' + path + '"]');
 
-        var node = trFiles.queryNode('//file[@path="' + page.name + '"]');
+        require("ext/panels/panels").activate(require("ext/tree/tree"));
 
         if (node) {
             trFiles.expandAndSelect(node);
@@ -363,7 +370,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             scrollToFile();
         }
         else {
-            var parts = page.name.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
+            var parts = path.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
             var file = parts.pop();
             var pathList = ["folder[1]"];
             var str = "";
@@ -382,7 +389,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             });
         }
 
-        var parts = page.name.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
+        var parts = path.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
         var file = parts.pop();
         var pathList = ["folder[1]"];
         var str = "";
@@ -393,7 +400,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
 
         var xpath = pathList[pathList.length - 1];
-        var docNode = page.$doc.getNode();
+        //var docNode = page.$doc.getNode();
         // Show spinner in active tab the file is being looked up
         apf.xmldb.setAttribute(docNode, "lookup", "1");
 
@@ -481,7 +488,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.more = mnuTabs.appendChild(new apf.item({
                 caption : "More...",
                 onclick : function() {
-                    require("ext/openfiles/openfiles").show();
+                    panels.activate(openfiles);
                 }
             }));
         }

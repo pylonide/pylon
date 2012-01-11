@@ -1,36 +1,37 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:window id="winSearchReplace"
-      onhide="require('ext/searchreplace/searchreplace').onHide()"
-      title="Search &amp; Replace" 
-      buttons="close" 
-      modal="false" 
-      center="true" 
-      width="350" 
-      kbclose="true">
-        <a:vbox edge="10" padding="5">
+      onhide  = "require('ext/searchreplace/searchreplace').onHide()"
+      title   = "Search &amp; Replace" 
+      buttons = "close" 
+      modal   = "false" 
+      center  = "true" 
+      skin    = "bk-window"
+      class   = "relative"
+      width   = "395" 
+      kbclose = "true">
+        <a:vbox edge="15 10 20" padding="5">
             <a:hbox align="center">
                 <a:label width="75">Search</a:label>
                 <a:textbox id="txtFind" flex="1" focusselect="true"/>
             </a:hbox>
             <a:hbox id="barReplace" align="center">
                 <a:label width="75">Replace With</a:label>
-                <a:textbox id="txtReplace" flex="1" />
+                <a:textbox id="txtReplace" flex="1" focusselect="true"/>
             </a:hbox>
             <a:table columns="150,150" edge="10 10 0 10">
-                <a:checkbox id="chkMatchCase" checked="false" label="Match Case" />
-                <a:checkbox id="chkWrapAround" checked="true" label="Wrap Around" />
-                <a:checkbox id="chkWholeWords" label="Whole Words" />
-                <a:checkbox id="chkSearchSelection" label="Search Selection" />
-                <a:checkbox id="chkRegEx" label="Regular Expressions" />
-                <a:checkbox id="chkSearchBackwards" label="Search Backwards" />
+                <a:checkbox id="chkMatchCase" checked="false" label="Match Case" skin="checkbox_grey" />
+                <a:checkbox id="chkWrapAround" checked="true" label="Wrap Around" skin="checkbox_grey" />
+                <a:checkbox id="chkWholeWords" label="Whole Words" skin="checkbox_grey" />
+                <a:checkbox id="chkSearchSelection" label="Search Selection" skin="checkbox_grey" />
+                <a:checkbox id="chkRegEx" label="Regular Expressions" skin="checkbox_grey" />
+                <a:checkbox id="chkSearchBackwards" label="Search Backwards" skin="checkbox_grey" />
             </a:table>
         </a:vbox>
-        <a:divider />
-        <a:hbox padding="5" pack="end" edge="10 10 5 10">
-            <a:button id="btnReplace">Replace</a:button>
-            <a:button id="btnReplaceAll">Replace All</a:button>
-            <a:button id="btnFind" default="2" class="ui-btn-green">Find</a:button>
-            <a:button onclick="winSearchReplace.hide()">Close</a:button>
+        <a:hbox padding="10" pack="end" edge="6 10 10">
+            <a:button id="btnReplace" skin="btn-default-css3">Replace</a:button>
+            <a:button id="btnReplaceAll" skin="btn-default-css3">Replace All</a:button>
+            <a:button id="btnFind" default="2" class="btn-green" skin="btn-default-css3">Find</a:button>
+            <a:button onclick="winSearchReplace.hide()" skin="btn-default-css3">Close</a:button>
         </a:hbox>
     </a:window>
 </a:application>

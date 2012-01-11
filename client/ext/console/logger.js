@@ -41,6 +41,7 @@ exports.logNodeStream = function(data, stream, useOutput) {
     var style = "color:#eee;";
     var log = [];
     // absolute workspace files
+
     var parentEl = useOutput ? txtOutput : txtConsole;
     var lines = data.split("\n", MAX_LINES);
 

@@ -229,17 +229,19 @@ module.exports = ext.register("ext/save/save", {
 
         var doc  = page.$doc;
         var node = doc.getNode();
+        var path = node.getAttribute("path");
+        
+        if (node.getAttribute("debug"))
+            return;
+            
+        if (ide.dispatchEvent("beforefilesave", {node: node, doc: doc }) === false)
+            return;
 
         if (node.getAttribute("newfile")){
             this.saveas(page, callback);
             return;
         }
-
-        if (node.getAttribute("debug"))
-            return;
-
-        var path = node.getAttribute("path");
-
+            
         if (callback) {
             ide.addEventListener("afterfilesave", function(e){
                 if (e.node == node) {
@@ -255,12 +257,12 @@ module.exports = ext.register("ext/save/save", {
             this.saveBuffer[path] = page;
             return;
         }
+        
         apf.xmldb.setAttribute(node, "saving", "1");
 
         var _self = this, panel = sbMain.firstChild;
         panel.setAttribute("caption", "Saving file " + path);
 
-        ide.dispatchEvent("beforefilesave", {node: node, doc: doc });
 
         var value = doc.getValue();
 

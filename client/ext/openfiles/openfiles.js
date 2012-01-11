@@ -10,7 +10,9 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var panels = require("ext/panels/panels");
+var settings = require("ext/settings/settings");
 var markup = require("text!ext/openfiles/openfiles.xml");
+var fs = require("ext/filesystem/filesystem");
 
 module.exports = ext.register("ext/openfiles/openfiles", {
     name            : "Active Files",
@@ -18,35 +20,19 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     alone           : true,
     type            : ext.GENERAL,
     markup          : markup,
+    nodes           : [],
+    
+    defaultWidth    : 130,
 
     hook : function(){
-        panels.register(this);
-
-        // Fix to prevent Active Files button is placed above Project Files
-        var el = (navbar.firstChild["class"] == "project_files") ? navbar.childNodes[1] : navbar.firstChild;
-        var btn = this.button = navbar.insertBefore(new apf.button({
-            skin    : "mnubtn",
-            state   : "true",
-            "class" : "open_files",
-            caption : "Active Files"
-        }), el);
-
-        var _self = this;
-        var model = this.model = new apf.model().load("<files />");
-
-        btn.addEventListener("mousedown", function(e){
-            var value = this.value;
-            if (navbar.current && (navbar.current != _self || value)) {
-                navbar.current.disable(navbar.current == _self);
-                if (value) {
-                    return;
-                }
-            }
-
-            panels.initPanel(_self);
-            _self.enable(true);
+        panels.register(this, {
+            position : 2000,
+            caption: "Open Files",
+            "class": "open_files"
         });
-
+        
+        var model = this.model = new apf.model().load("<files />");
+        
         ide.addEventListener("afteropenfile", function(e){
             var node = e.doc.getNode();
             if (node) {
@@ -64,20 +50,22 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             var node = e.xmlNode;
             var fNode = model.queryNode("//node()[@path='" + e.path + "']");
             if (node && fNode) {
-                fNode.setAttribute("path", node.getAttribute("path"));
-                if (e.name)
-                    apf.xmldb.setAttribute(fNode, "name", apf.getFilename(e.name));
+                if (e.path)
+                    fNode.setAttribute("path", node.getAttribute("path"));
+                if (e.filename)
+                    apf.xmldb.setAttribute(fNode, "name", apf.getFilename(e.filename));
+                if (e.changed != undefined)
+                    apf.xmldb.setAttribute(fNode, "changed", e.changed);
             }
         });
     },
 
     init : function() {
         this.panel = winOpenFiles;
-
-        var _self = this;
+        this.nodes.push(winOpenFiles);
+        
         colLeft.appendChild(winOpenFiles);
-        lstOpenFiles.setModel(this.model);
-
+        
         lstOpenFiles.addEventListener("afterselect", this.$afterselect = function(e) {
             var node = this.selected;
             if (!node || this.selection.length > 1) //ide.onLine can be removed after update apf
@@ -135,6 +123,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
             for (var name in files) {
                 var file = files[name];
+
                 var xmlNode = "<" + file.type +
                     " type='" + file.type + "'" +
                     " name='" + filename + "'" +
@@ -171,19 +160,21 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         splitterPanelLeft.show();
         navbar.current = this;
     },
-
-    disable : function(noButton){
-        if (self.winOpenFiles)
-            winOpenFiles.hide();
-        if (!noButton)
-            this.button.setValue(false);
-
-        splitterPanelLeft.hide();
+    
+    disable : function(){
+        this.nodes.each(function(item){
+            item.disable();
+        });
     },
-
+    
     destroy : function(){
+        this.nodes.each(function(item){
+            item.destroy(true, true);
+        });
+        this.nodes = [];
+        
         panels.unregister(this);
-    }
+    },
 });
 
 });

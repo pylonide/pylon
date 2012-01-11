@@ -15,56 +15,100 @@
         <a:divider></a:divider>
         <a:item onclick="require('ext/run/run').showRunConfigs(true)">Run Configurations ...</a:item>
     </a:menu>
-    
+    <a:tab id="tbDebugNav" skin="dockbar" visible="false" activepage="pgDebugNav">
+        <a:page id="pgDebugNav">
+            <a:hbox padding="3" edge="4 3 5">
+                <div class="expand-panel-bg"></div>
+        <!--        <a:button tooltip="Stop"
+                  icon     = "stop.png"
+                  skin     = "c9-sidepanelsbutton"
+                  onclick  = "require('ext/run/run').stop()"
+                  disabled = "{!stProcessRunning.active and 1}" />-->
+                <a:button id="btnResume" tooltip="Resume"
+                  icon     = "play.png"
+                  onclick  = "dbg.continueScript();"
+                  skin     = "c9-sidepanelsbutton"
+                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+                <a:button  tooltip="Suspend"
+                  skin     = "c9-sidepanelsbutton"
+                  icon     = "pause.png"
+                  onclick  = "dbg.suspend();"
+                  disabled = "{!stDebugProcessRunning.active or !stRunning.active}"/>
+                <a:divider skin="c9-divider" />
+                <a:button id="btnStepInto" tooltip="Step Into"
+                  icon     = "stepinto.png" 
+                  skin     = "c9-sidepanelsbutton"
+                  onclick  = "dbg.stepInto();" 
+                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+                <a:button id="btnStepOver" tooltip="Step Over"
+                  icon     = "step.png"
+                  skin     = "c9-sidepanelsbutton"
+                  onclick  = "dbg.stepNext();"
+                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+                <a:button id="btnStepOut" tooltip="Step Out"
+                  icon     = "stepback.png" 
+                  skin     = "c9-sidepanelsbutton"
+                  onclick  = "dbg.stepOut();"
+                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+                <a:divider skin="c9-divider" class="runcommandsdivider" />
+            </a:hbox>
+        </a:page>
+    </a:tab>
     <a:window id="winRunCfgNew" 
-      title="New Run Configuration" 
-      model="{lstRunCfg.selected}"
-      buttons="close" 
-      modal="false"
-      center="true" 
-      width="350"
-      height="400"
-      kbclose="true">
+      title   = "New Run Configuration" 
+      model   = "{lstRunCfg.selected}"
+      buttons = "close" 
+      modal   = "false"
+      center  = "true" 
+      width   = "370"
+      skin    = "bk-window"
+      height  = "400"
+      kbclose = "true">
         <a:vbox anchors="0 0 0 0">
-        <a:toolbar>
-            <a:bar>
-            <a:button
-              icon="debugger/monitorexpression_tsk{this.disabled ? '_disabled' : ''}.gif"
-              caption="Add"
-              onclick="require('ext/run/run').addConfig()"/>
-            <a:button 
-              icon="debugger/copy_edit_co{this.disabled ? '_disabled' : ''}.gif" 
-              caption="Duplicate"
-              onclick="require('ext/run/run').duplicate()"
-              disabled="{!lstRunCfg.selected}"/>
-            <a:button 
-              icon="debugger/delete_config{this.disabled ? '_disabled' : ''}.gif"
-              caption="Remove"
-              onclick="lstRunCfg.remove()"
-              disabled="{!lstRunCfg.selected}"/>
-            </a:bar>
-        </a:toolbar>
-        <a:list id="lstRunCfg" 
-          skin="lineselect"
-          model="mdlRunConfigurations"
-          each="[config]"
-          caption="[@name]"
-          empty-message="no run configurations"
-          autoselect="true"
-          flex="1"/>				
-            <a:divider />
-            <a:hbox align="center" margin="5 10 5 10" padding="10">
-                <a:label width="130" textalign="right">Name</a:label>
+            <a:toolbar class="modal-toolbar">
+                <a:bar>
+                <a:button
+                  icon="debugger/monitorexpression_tsk{this.disabled ? '_disabled' : ''}.png"
+                  caption="Add"
+                  onclick="require('ext/run/run').addConfig()"/>
+                <a:button 
+                  icon="debugger/copy_edit_co{this.disabled ? '_disabled' : ''}.png" 
+                  caption="Duplicate"
+                  class="width_20"
+                  onclick="require('ext/run/run').duplicate()"
+                  disabled="{!lstRunCfg.selected}"/>
+                <a:button 
+                  icon="debugger/delete_config{this.disabled ? '_disabled' : ''}.png"
+                  caption="Remove"
+                  onclick="lstRunCfg.remove()"
+                  disabled="{!lstRunCfg.selected}"/>
+                </a:bar>
+            </a:toolbar>
+            <a:list id="lstRunCfg" 
+              skin="lineselect"
+              class="runconfig"
+              model="mdlRunConfigurations"
+              each="[config]"
+              caption="[@name]"
+              empty-message="no run configurations"
+              autoselect="true"
+              flex="1"/>				
+            <a:divider class="modal-divider" />
+            <a:hbox align="center" margin="5 10 5 10" padding="5">
+                <a:label width="140" textalign="right" class="modal-label">Name</a:label>
                 <a:textbox id="txtRunCfgName" 
                   flex="1"
                   realtime="true"
                   value="[@name]"
+                  initial-message="Give it a descriptive name" 
+                  class="required-tb"
+                  skin="textbox-modal"
                   disabled="{!lstRunCfg.selected}"/>
             </a:hbox>
-            <a:divider />
-            <a:hbox align="center" id="hbRunCfg" margin="5 10" padding="10">
-                <a:label width="130" textalign="right">File path</a:label>
-                <a:textbox id="txtRunCfgName" flex="1" value="[@path]" disabled="{!lstRunCfg.selected}"/>
+            <a:divider class="modal-divider"/>
+            <a:hbox align="center" id="hbRunCfg" margin="5 10 0" padding="5">
+                <a:label width="140" textalign="right" class="modal-label">File path</a:label>
+                <a:textbox id="txtRunCfgName" flex="1" value="[@path]" disabled="{!lstRunCfg.selected}" initial-message="Optional" skin="textbox-modal"/>
                 <a:button visible="false" icon="folder.png" disabled="true" tooltip="Browse ..."></a:button>
             </a:hbox>
             <!--a:divider />
@@ -75,7 +119,7 @@
                         <element caption="Python" value="py" />
                     </data>
                 </a:model>
-                <a:label width="130" textalign="right">Runner</a:label>
+                <a:label width="140" textalign="right">Runner</a:label>
                 <a:dropdown id="ddRunnerSelector"
                     model="mdlRunnerSelector"
                     flex="1"
@@ -87,19 +131,24 @@
                     </a:each>
                 </a:dropdown>
             </a:hbox-->
-            <a:hbox align="center" margin="5 10" padding="10">
-                <a:label width="130" textalign="right">Command line arguments</a:label>
-                <a:textbox id="txtRunCfgName" flex="1" value="[@args]" disabled="{!lstRunCfg.selected}"/>
+            <a:hbox align="center" margin="5 10 10" padding="5">
+                <a:label width="140" textalign="right" class="modal-label">Command line arguments</a:label>
+                <a:textbox id="txtRunCfgName" flex="1" value="[@args]" disabled="{!lstRunCfg.selected}" initial-message="Optional" skin="textbox-modal"/>
             </a:hbox>
-            <a:divider />
-            <a:hbox padding="5" pack="end" edge="10 10 5 10">
+            <a:hbox padding="10" pack="end" edge="10 10 10 20" align="center">
+                <a:button onclick="winRunCfgNew.hide()" skin="btn-default-simple">Cancel</a:button>
+                <a:filler />
+                <a:button  
+                  skin="btn-default-css3"
+                  onclick="winRunCfgNew.hide()"
+                  caption="Done"/>
                 <a:button 
                   default="2" 
-                  class="ui-btn-green" 
+                  skin="btn-default-css3"
+                  class="btn-green" 
                   onclick="require('ext/run/run').runConfig(lstRunCfg.selected, mdlRunConfigurations.data.getAttribute('debug') == '1');winRunCfgNew.hide()"
                   disabled="{!lstRunCfg.selected}"
                   caption="Run"/>
-                <a:button onclick="winRunCfgNew.hide()">Close</a:button>
             </a:hbox>        
         </a:vbox>
     </a:window>

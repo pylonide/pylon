@@ -11,7 +11,7 @@
                 box-shadow: rgba(0, 0, 0, 0.308594) 0px 0px 4px 1px;
             }
             
-            .bar-liveinspect .datagridFocus .records .selected, .datagridFocus .records .selected span {
+            /*.bar-liveinspect .datagridFocus .records .selected, .bar-liveinspect .datagridFocus .records .selected span {
                 background-image: linear-gradient(bottom, #494949 0%, #646469 100%);
                 background-image: -o-linear-gradient(bottom, #494949 0%, #646469 100%);
                 background-image: -moz-linear-gradient(bottom, #494949 0%, #646469 100%);
@@ -25,7 +25,7 @@
                 	color-stop(0, #494949),
                 	color-stop(1, #646469)
                 );
-            }
+            }*/
             
             .bar-liveinspect .datagridFocus .records .selected span u {
                 border-left: 1px solid #808080;

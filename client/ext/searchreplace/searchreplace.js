@@ -60,6 +60,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
     },
 
     init : function(amlNode){
+        var _self = this;
+        
         this.txtFind       = txtFind;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
         this.txtReplace    = txtReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
         //bars
@@ -74,8 +76,61 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         winSearchReplace.onclose = function() {
             ceEditor.focus();
         }
+        
+        this.txtFind.addEventListener("keydown", function(e){
+            switch (e.keyCode){
+//                case 13: //ENTER
+//                    _self.execSearch(false, !!e.shiftKey);
+//                    return false;
+//                case 27: //ESCAPE
+//                    _self.toggleDialog(-1);
+//                    if (e.htmlEvent)
+//                        apf.stopEvent(e.htmlEvent)
+//                    else if (e.stop)
+//                        e.stop();
+//                    return false;
+                case 38: //UP
+                    _self.navigateList("prev");
+                break;
+                case 40: //DOWN
+                    _self.navigateList("next");
+                break;
+                case 36: //HOME
+                    if (!e.ctrlKey) return;
+                    _self.navigateList("first");
+                break;
+                case 35: //END
+                    if (!e.ctrlKey) return;
+                    _self.navigateList("last");
+                break;
+            }
+        });
     },
+    
+    navigateList : function(type){
+        var settings = require("ext/settings/settings");
+        if (!settings) return;
+        
+        var model = settings.model;
+        var lines = model.queryNodes("search/word");
+        
+        var next;
+        if (type == "prev")
+            next = Math.max(0, this.position - 1);
+        else if (type == "next")
+            next = Math.min(lines.length - 1, this.position + 1);
+        else if (type == "last")
+            next = Math.max(lines.length - 1, 0);
+        else if (type == "first")
+            next = 0;
 
+        if (lines[next]) {
+            this.txtFind.setValue(lines[next].getAttribute("key"));
+            this.txtFind.select();
+            this.position = next;
+        }
+    },
+    
     toggleDialog: function(isReplace, forceShow) {
         ext.initExtension(this);
 
@@ -94,6 +149,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                     var range = sel.getRange();
                     value = doc.getTextRange(range);
                 }
+                
                 if (value)
                     this.txtFind.setValue(value);
 
@@ -123,6 +179,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
 
     setupDialog: function(isReplace) {
         this.$lastState = isReplace;
+        this.position = 0;
 
         // hide all 'replace' features
         this.barReplace.setProperty("visible", isReplace);

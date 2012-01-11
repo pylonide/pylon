@@ -23,19 +23,21 @@
       
     <a:state id="stDebugProcessRunning" active="false" />
     
-    <a:window id="winTab" 
-      title="Choose a Tab"
-      icon="chromium_16.png"
-      zindex="10" 
-      center="true" 
-      modal="true" 
-      width="450" 
-      height="200" 
-      buttons="close"
-      visible="false">
+    <!--a:window id="winTab" 
+      title     = "Choose a Tab"
+      icon      = "chromium_16.png"
+      zindex    = "10" 
+      center    = "true" 
+      modal     = "true" 
+      width     = "450" 
+      height    = "200" 
+      buttons   = "close"
+      kbclose   = "true"
+      skin      = "bk-window"
+      visible   = "false">
         <a:list id="lstTabs" 
           model="mdlTabs" 
-          anchors="10 10 40 10" 
+          anchors="10 10 56 10" 
           multiselect="false" 
           autoselect="false" 
           each="[tab]" 
@@ -48,9 +50,10 @@
           width="60"
           disabled="{!lstTabs.selected}" 
           default="true"
+          skin="btn-default-css3"
           onclick="winTab.close();dbg.attach(dbgChrome, {lstTabs.selected})">
             OK
         </a:button>
-    </a:window>
+    </a:window-->
 
 </a:application>

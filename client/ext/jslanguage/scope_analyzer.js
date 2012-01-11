@@ -13,7 +13,6 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 define(function(require, exports, module) {
-
 var baseLanguageHandler = require('ext/language/base_handler');
 require('treehugger/traverse');
 var handler = module.exports = Object.create(baseLanguageHandler);
@@ -507,11 +506,11 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
 
 handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
     var v;
-    var mainNode;
+    var mainNode;    
     currentNode.rewrite(
         'VarDeclInit(x, _)', function(b, node) {
             v = node.getAnnotation("scope")[b.x.value];
-            mainNode = b.x;
+            mainNode = b.x;    
         },
         'VarDecl(x)', function(b, node) {
             v = node.getAnnotation("scope")[b.x.value];
@@ -538,7 +537,7 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
     var length = pos.ec - pos.sc;
 
     v.declarations.forEach(function(node) {
-         if(node !== mainNode) {
+         if(node !== currentNode[0]) {
             var pos = node.getPos();
             others.push({column: pos.sc, row: pos.sl});
         }

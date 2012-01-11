@@ -110,8 +110,10 @@ Ide.DEFAULT_PLUGINS = [
     //"ext/ftp/ftp",
     "ext/code/code",
     "ext/imgview/imgview",
+    //"ext/preview/preview",
     "ext/extmgr/extmgr",
-    "ext/run/run", //Add location rule
+    //"ext/run/run", //Add location rule
+    "ext/runpanel/runpanel", //Add location rule
     "ext/debugger/debugger", //Add location rule
     "ext/noderunner/noderunner", //Add location rule
     "ext/console/console",
@@ -122,12 +124,14 @@ Ide.DEFAULT_PLUGINS = [
     "ext/beautify/beautify",
     "ext/offline/offline",
     "ext/stripws/stripws",
+    "ext/testpanel/testpanel",
+    "ext/nodeunit/nodeunit", 
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",
     "ext/autosave/autosave",
     "ext/vim/vim",
-    "ext/jslanguage/jslanguage",
-    "ext/autotest/autotest"
+    "ext/jslanguage/jslanguage"
+    //"ext/autotest/autotest"
     //"ext/acebugs/acebugs"
 ];
 
