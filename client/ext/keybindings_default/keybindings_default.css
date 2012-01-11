@@ -8,19 +8,18 @@
 
 .keybindings_default_bar {
     background: url(/static/ext/keybindings_default/res/divider.png) repeat-y top left;
-    height: 312px;
     position: relative;
     left: 0px;
     right: 7px;
     top: 0px;
     bottom: 25px;
-    height: 310px;
+    height: 400px;
     padding: 20px 10px 0 24px;
     overflow: hidden;
 }
 
 .keybindings_default .sbios {
-    height: 318px;
+    height: 408px;
 }
 
 .keybindings_default_block,
