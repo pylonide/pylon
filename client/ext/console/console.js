@@ -1,7 +1,7 @@
 /**
  * Console for the Cloud9 IDE
  *
- * @copyright 2010, Ajax.org B.V.
+ * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
@@ -17,8 +17,6 @@ var css = require("text!ext/console/console.css");
 var markup = require("text!ext/console/console.xml");
 
 // Some constants used throughout the plugin
-var commands = {};
-var CWD = "/workspace";
 var bandRE = /^\s*!/;
 var KEY_TAB = 9;
 var KEY_CR = 13;
@@ -36,12 +34,13 @@ var execAction = function(cmd, data) {
     });
 
     if (ext.execCommand(cmd, data) !== false) {
-        var cmdEvt = "consolecommand." + cmd;
+        var commandEvt = "consolecommand." + cmd;
         var consoleEvt = "consolecommand";
 
-        if (ide.dispatchEvent(cmdEvt, { data: data }) !== false &&
-            ide.dispatchEvent(consoleEvt, { data: data }) !== false) {
+        var commandEvResult = ide.dispatchEvent(commandEvt, { data: data });
+        var consoleEvResult = ide.dispatchEvent(consoleEvt, { data: data });
 
+        if (commandEvResult !== false && consoleEvResult !== false) {
             if (!ide.onLine)
                 this.write("Cannot execute command. You are currently offline.");
             else
@@ -111,7 +110,8 @@ module.exports = ext.register("ext/console/console", {
 
     autoOpen : true,
     excludeParent : true,
-    commands : {
+    allCommands: {},
+    commands: {
         "help": {
             hint: "show general help information and a list of available commands"
         },
@@ -160,12 +160,12 @@ module.exports = ext.register("ext/console/console", {
     },
 
     help: function() {
-        var words = Object.keys(commands);
+        var words = Object.keys(this.allCommands);
         var tabs = "\t\t\t\t";
 
         Logger.logNodeStream(
             words
-                .map(function(w) { return w + tabs + commands[w].hint; })
+                .map(function(w) { return w + tabs + this.allCommands[w].hint; })
                 .join("\n")
         );
     },
@@ -298,8 +298,6 @@ module.exports = ext.register("ext/console/console", {
         return "[" + u + "@cloud9]:" + this.$cwd + "$";
     },
 
-    /**** Init ****/
-
     init : function(amlNode){
         var _self = this;
 
@@ -316,13 +314,11 @@ module.exports = ext.register("ext/console/console", {
             _self.showOutput();
 
             var autoshow = settings.model.queryValue("auto/console/@autoshow");
-            if (_self.autoOpen && apf.isTrue(autoshow)) {
+            if (_self.autoOpen && apf.isTrue(autoshow))
                 _self.show();
-            }
         });
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
-
         ide.addEventListener("consoleresult.internal-isfile", function(e) {
             var data = e.data;
             var path = data.cwd.replace(ide.workspaceDir, ide.davPrefix);
@@ -332,13 +328,9 @@ module.exports = ext.register("ext/console/console", {
                 Logger.log("'" + path + "' is not a file.");
         });
 
-        txtConsoleInput.addEventListener("keyup", function(e) {
-            _self.keyupHandler(e);
-        });
+        txtConsoleInput.addEventListener("keyup", this.keyupHandler.bind(this));
 
-        txtConsoleInput.addEventListener("keydown", function(e) {
-            _self.keydownHandler(e);
-        });
+        txtConsoleInput.addEventListener("keydown", this.keydownHandler.bind(this));
 
         function kdHandler(e){
             if (!e.ctrlKey && !e.metaKey && !e.altKey
@@ -371,7 +363,6 @@ module.exports = ext.register("ext/console/console", {
 
         this.nodes.push(
             winDbgConsole,
-
             mnuWindows.appendChild(new apf.item({
                 id: "chkConsoleExpanded",
                 caption: "Console",
@@ -403,7 +394,7 @@ module.exports = ext.register("ext/console/console", {
             }
         });
 
-        apf.extend(commands, ext.commandsLut);
+        apf.extend(this.allCommands, ext.commandsLut);
         /*
         for (var name in ext.commandsLut) {
             if (ext.commandsLut[name].commands)
@@ -460,59 +451,81 @@ module.exports = ext.register("ext/console/console", {
         if (this.$control)
             this.$control.stop();
 
+        var cfg;
         if (shouldShow) {
+            cfg = {
+                height: this.height,
+                dbgVisibleMethod: "show",
+                chkExpandedMethod: "check",
+                animFrom: 65,
+                animTo: this.height,
+                animTween: "easeOutQuint"
+            };
+
             tabConsole.show();
             apf.setStyleClass(btnCollapseConsole.$ext, "btn_console_openOpen");
         }
         else {
+            cfg = {
+                height: 41,
+                dbgVisibleMethod: "hide",
+                chkExpandedMethod: "uncheck",
+                animFrom: this.height,
+                animTo: 65,
+                animTween: "easeInOutCubic"
+            };
+
             if (winDbgConsole.parentNode != mainRow)
                 this.restore();
 
             apf.setStyleClass(btnCollapseConsole.$ext, "", ["btn_console_openOpen"]);
         }
 
-        var finish = function(height) {
-            winDbgConsole.height = height;
-            winDbgConsole.setAttribute("height", height);
-            winDbgConsole.previousSibling[shouldShow ? "show" : "hide"]();
+        var finish = function() {
+            if (!shouldShow)
+                tabConsole.hide();
+
+            winDbgConsole.height = cfg.height + 1;
+            winDbgConsole.setAttribute("height", cfg.height);
+            winDbgConsole.previousSibling[cfg.dbgVisibleMethod]();
 
             apf.layout.forceResize();
 
             settings.model.setQueryValue("auto/console/@expanded", shouldShow);
-            chkConsoleExpanded[shouldShow ? "check" : "uncheck"]();
+            chkConsoleExpanded[cfg.chkExpandedMethod]();
         };
 
         if (!immediate && apf.isTrue(settings.model.queryValue("general/@animateui"))) {
-            var from = shouldShow ? 65 : this.height;
-            var to = shouldShow ? this.height : 65;
-
             apf.tween.single(winDbgConsole.$ext, {
                 control : this.$control = {},
                 type  : "height",
-                anim  : apf.tween[shouldShow ? "easeOutQuint" : "easeInOutCubic"],
-                from  : from,
-                to    : to,
+                anim  : apf.tween[cfg.animTween],
+                from  : cfg.animFrom,
+                to    : cfg.animTo,
                 steps : 8,
                 interval : 5,
                 onfinish : finish,
-                oneach : apf.layout.forceResize()
+                oneach : function() {
+                    apf.layout.forceResize();
+                }
             });
         }
         else {
             finish();
         }
-
     },
-    enable : function() {
+    enable : function(){
         this.nodes.each(function(item){
             item.enable();
         });
     },
+
     disable : function(){
         this.nodes.each(function(item){
             item.disable();
         });
     },
+
     destroy : function(){
         this.nodes.each(function(item){
             item.destroy(true, true);

@@ -1,6 +1,4 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <div id="barConsoleHints" class="barConsoleHints"/>
-
     <a:bar id="winDbgConsole" height="41">
         <a:vbox anchors="0 0 0 0">
             <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false" render2="runtime">
@@ -90,3 +88,4 @@
         </a:vbox>
     </a:bar>
 </a:application>
+
