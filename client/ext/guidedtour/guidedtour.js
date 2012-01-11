@@ -342,7 +342,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
 
     launchGT: function(){        
         ext.initExtension(this);
-        
+        this.hideMenus();
         madeNewFile = wentToZen = madeDebug = deletedFile = false;
         this.currentStep = -1;
         winTourDesc.setValue(this.tour.initialText);
@@ -350,6 +350,17 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         winTourButtonStart.show();
         winTourButtonClose.show();
         winTourButtonDone.hide();
+    },
+    
+    hideMenus: function(){
+        var buttons = dockpanel.getButtons("ext/debugger/debugger");
+        for(var i = 0, button; i < buttons.length; i++) {
+            button = buttons[i];
+            if(!button.showMenu || !button.cache)
+                continue;
+            
+            self[button.cache.submenu].hide();
+        }
     },
     
     initTour: function(){
@@ -585,6 +596,10 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         //_self.resizeHighlightedEl();
         //});
         this.resizeHighlightedEl();
+        
+        var hlZindex = this.hlElement.style.zIndex;
+        winTourText.$ext.style.zIndex = hlZindex + 1;
+        tourControlsDialog.$ext.style.zIndex = hlZindex + 2;
     },
 
     resizeHighlightedEl: function() {

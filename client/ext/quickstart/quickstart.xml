@@ -58,7 +58,7 @@
         </a:vbox>
     </a:window>
     
-        <a:window
+    <a:window
         id = "qsMenuBar"
         title = ""
         center = "false"
@@ -73,7 +73,7 @@
         </a:vbox>
     </a:window>
     
-        <a:window
+    <a:window
         id = "qsToolbar"
         title = ""
         center = "false"
@@ -88,7 +88,7 @@
         </a:vbox>
     </a:window>
     
-        <a:window
+    <a:window
         id = "qsCLI"
         title = ""
         center = "false"

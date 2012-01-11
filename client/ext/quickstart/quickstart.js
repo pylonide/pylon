@@ -73,7 +73,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
             if(showQS === "" || showQS == "true") {
                 require("ext/settings/settings").model.setQueryValue("auto/help/@show", "true");
                 apf.xmldb.setAttribute(require("ext/settings/settings").model.queryNode("auto/help"), "show", "true");
-                 _self.launchQS();
+                _self.launchQS();
              }
          });
     },
@@ -81,13 +81,24 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     launchQS : function() {
         var _self = this;
         ext.initExtension(this);
-        
+        this.hideMenus();
          //debugPanelCompact.show();
         setTimeout(function(){
-            quickStartDialog.show();
             _self.overlay.style.display = "block";
             _self.arrangeQSImages();
+            quickStartDialog.show();
         })
+    },
+    
+    hideMenus: function(){
+        var buttons = require("ext/dockpanel/dockpanel").getButtons("ext/debugger/debugger");
+        for(var i = 0, button; i < buttons.length; i++) {
+            button = buttons[i];
+            if(!button.showMenu || !button.cache)
+                continue;
+            
+            self[button.cache.submenu].hide();
+        }
     },
     
     /**
@@ -120,7 +131,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
              div.setAttribute("left", (posArray[0] + (posArray[2]/2)) - (div.getWidth()/2));
         }
         else if (position == "right"){
-            div.setAttribute("left", posArray[0] + posArray[2] + 25);
+            div.setAttribute("left", posArray[0] + posArray[2] - 2);
             div.setAttribute("top", (posArray[1] + (posArray[3]/2)) - (div.getHeight()/2));            
         }
         else if (position == "bottom"){
@@ -129,7 +140,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
         }
         else if (position == "left"){
             div.setAttribute("top", 125);
-            div.setAttribute("right", 25);
+            div.setAttribute("right", 0);
         }  
         
         return div;
