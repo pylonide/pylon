@@ -149,7 +149,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         tabEditors.addEventListener("DOMNodeRemoved", function(e) {
             if (e.$doOnlyAdmin)
                 return;
-            
+
             var page = e.currentTarget;
             _self.removeItem(page);
 
@@ -195,7 +195,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         tabEditors.addEventListener("aftersavedialogcancel", function(e) {
             if (!_self.changedPages)
                 return
-            
+
+            var i, l, page;
             for (i = 0, l = _self.changedPages.length; i < l; i++) {
                 page = _self.changedPages[i];
                 page.removeEventListener("aftersavedialogclosed", arguments.callee);
@@ -377,10 +378,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             page = tabEditors.getPage();
         if (!page)
             return false;
-        
+
         this.revealfile(page.$doc.getNode());
     },
-    
+
     revealfile : function(docNode) {
         var path = docNode.getAttribute('path');
         var node = trFiles.queryNode('//file[@path="' + path + '"]');
@@ -475,11 +476,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     removeItem: function(page) {
-        var item, idx, keyId,
-            i = this.menuOffset,
-            l = this.nodes.length,
-            _self = this;
-            
+        var item, idx, keyId;
+        var i = this.menuOffset;
+        var l = this.nodes.length;
+        var _self = this;
         for (; i < l; ++i) {
             if ((item = this.nodes[i]).relPage == page.id) {
                 item.destroy(true, true);
@@ -488,11 +488,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 keyId = "tab" + (idx == 10 ? 0 : idx);
                 if (this.commands[keyId] && typeof this.commands[keyId].hotkey != "undefined")
                     apf.hotkeys.remove(this.commands[keyId].hotkey);
-                
+
                 setTimeout(function(){
                     _self.updateState();
                 });
-                
                 return;
             }
         }
