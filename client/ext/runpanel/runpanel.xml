@@ -88,7 +88,9 @@
                     <!--a:divider span="2" skin="c9-divider-hor" /-->
                     <a:model id="mdlRunnerSelector">
                         <data>
-                            <element caption="Node.js 0.4" value="js" />
+                            <element caption="Auto" value="auto" />
+                            <element caption="Node.js 0.4.x" value="0.4.x" />
+                            <element caption="Node.js 0.6.x" value="0.6.x" />
                             <!--element caption="Python" value="py" /-->
                         </data>
                     </a:model>
@@ -99,7 +101,7 @@
                         flex      = "1"
                         disabled  = "{!lstRunCfg.selected}"
                         value     = "[{lstRunCfg.selected}::@value]"
-                        default   = "js"
+                        default   = "auto"
                         each      = "[element]"
                         caption   = "[@caption]"
                         eachvalue = "[@value]" />
