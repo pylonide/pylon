@@ -333,7 +333,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         this.overlay.setAttribute("style", "display:none;position:fixed;left: 0px;top: 0px;width:100%;height:100%;opacity:0.3;background:#000;opacity:0");
         document.body.appendChild(this.overlay);
 
-        this.hlElement.setAttribute("style", "z-index:99998;display:none;position:absolute;box-shadow:0px 0px 15px #000;");
+        this.hlElement.setAttribute("style", "z-index:9998;display:none;position:absolute;box-shadow:0px 0px 15px #000;");
         document.body.appendChild(this.hlElement);
 
         winTourGuide.addEventListener("hide", this.shutdown(this.hlElement));
@@ -615,16 +615,16 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             var zIndex;
             var pNode = this.currentEl;
             if(pNode) {
-                while (pNode.tagName != "body" && (!zIndex || zIndex <= 99998)) {
-                    zIndex = pNode.$ext.style && (pNode.$ext.style.zIndex || 99997) + 1; 
+                while (pNode.tagName != "body" && (!zIndex || zIndex <= 9998)) {
+                    zIndex = pNode.$ext.style && parseInt(pNode.$ext.style.zIndex || 9997) + 1; 
                     pNode = pNode.parentNode;
                 }
             }
             else
-                zIndex = 99998;
+                zIndex = 9998;
         }
         else
-            zIndex = this.currentEl.style && (this.currentEl.style.zIndex || 99997) + 1;
+            zIndex = this.currentEl.style && parseInt(this.currentEl.style.zIndex || 9997) + 1;
             
         this.hlElement.style.zIndex = zIndex;
     },
