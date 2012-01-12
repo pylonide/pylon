@@ -14,6 +14,7 @@ var panels = require("ext/panels/panels");
 var markup = require("text!ext/issuesmgr/issuesmgr.xml");
 var skin = require("text!ext/issuesmgr/skin.xml");
 var markdown = require("ext/issuesmgr/pagedown-js");
+var markedRet = require("ext/issuesmgr/marked");
 
 module.exports = ext.register("ext/issuesmgr/issuesmgr", {
     name     : "Issues Manager",
@@ -24,6 +25,7 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
     markup   : markup,
     appendedColumn : false,
     converter : new Markdown.Converter(),
+    savedScroll : -1,
     
     normalDate : "MMMM dd, yyyy hh:mm tt",
     updatedDate : "MMMM dd, yyyy hh:mm:ss tt",
@@ -170,8 +172,29 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
         }
     },
 
+    sanitizeHtml : function(html) {
+        return html.replace(/<[^>]*>/gi, this.sanitizeTag);
+    },
+
+    sanitizeTag : function(tag) {
+        if (tag.match(/^(<\/?(a|b|blockquote|code|del|dd|dl|dt|em|h1|h2|h3|i|kbd|li|ol|p|pre|s|sup|sub|strong|strike|ul)(\s.*)?>|<(br|hr)\s?\/?>)$/i) ||
+            tag.match(/<a\s[^>]*>/i) ||
+            tag.match(/^(<img\ssrc="(https?:\/\/|\/)[-A-Za-z0-9+&@#\/%?=~_|!:,.;\(\)]+"(\swidth="\d{1,3}")?(\sheight="\d{1,3}")?(\salt="[^"<>]*")?(\stitle="[^"<>]*")?\s?\/?>)$/i))
+            return tag;
+        else
+            return "";
+    },
+
     formulateBody : function(text) {
-        return this.converter.makeHtml(text);
+        // First find issue numbers
+        //console.log(text);
+        text = text.replace(/#([\d]+)[^\w]/g, "<a href=\"#\" rel=\"$1\" class=\"issuelink\">&#35;$1</a> ");
+        //text = this.converter.makeHtml(text);
+        text = marked(text);
+        text = this.sanitizeHtml(text);
+        var usernamesRegex = /(^|\s|>|\(|\))@([\w\.\d\-\_]+)/g;
+        return text.replace(usernamesRegex,
+            "$1<a class=\"remote\" target=\"_blank\" href=\"http://github.com/$2\">@$2</a>");
     },
 
     formulateCommentHTML : function(comment) {
@@ -189,7 +212,7 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
 
         var htmlArr = ['<div class="comment"><div class="comment_user">',
             '<img class="user_image" src="http://www.gravatar.com/avatar/',
-            comment.gravatar_id, '?s=120&d=mm" width="30" height="30" /></div>',
+            comment.gravatar_id, '?s=30&d=mm" width="30" height="30" /></div>',
             '<div class="comment_details"><div class="comment_body"><strong>',
             comment.user, ':</strong> ', this.formulateBody(comment.body),
             '</div><p class="created_at">', dateStr,'</p></div></div>'
@@ -210,6 +233,8 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
 
         var clistDiv = window["issue" + message.body.issue_num].$ext.getElementsByClassName("issue_comments_list")[0];
         clistDiv.innerHTML = allHtml.join("");
+
+        this.setIssueNumListeners(clistDiv);
     },
 
     onListMessage : function(message) {
@@ -230,14 +255,11 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
         tbIssuesSearch.enable();
         btnIssuesSort.enable();
     },
-
-    openSelectedIssue : function() {
-        if (!lstIssues.selected)
-            return;
-
+    
+    openIssue : function(number) {
         this.issues_back.style.display = "block";
+        this.savedScroll = lstIssues.$ext.scrollTop;
 
-        var number = lstIssues.selected.getAttribute("number");
         winIssuesMgr.setTitle("#" + number);
         var pageId = "issue" + number;
         if (window[pageId]) {
@@ -249,8 +271,9 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
         if (num_comments > 0)
             this.sendRequest("getcomments", number);
 
-        var title = lstIssues.selected.getAttribute("title");
-        var author = lstIssues.selected.getAttribute("user");
+        //console.log(this.issuesList[number]);
+        var title = this.issuesList[number].title;//getAttribute("title");
+        var author = this.issuesList[number].user;//.getAttribute("user");
         var body = this.formulateBody(this.issuesList[number].body);
         var created_at = this.issuesList[number].created_at;
         var updated_at = this.issuesList[number].updated_at;
@@ -272,13 +295,12 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
         }
 
         var htmlArr = ['<div class="issue_header"><img src="http://www.gravatar.com/avatar/',
-            this.issuesList[number].gravatar_id, '?s=120&d=mm" width="30" height="30" /><h1>',
+            this.issuesList[number].gravatar_id, '?s=30&d=mm" width="30" height="30" /><h1>',
             apf.htmlentities(title), '</h1></div><div class="issue_body">', body,
             '</div><p class="author">by ',
             '<a class="remote" href="http://github.com/', author, 
-            '" target="_blank">', author, '</a> on <a target="_blank" class="remote" href="http://github.com/',
-            this.projectContext, '/', this.projectName, '/issues/', number, '">',
-            dateStr, '</a>', updatedDateStr, '</p>'
+            '" target="_blank">', author, '</a> on <a target="_blank" class="remote" href="',
+            html_url, '">', dateStr, '</a>', updatedDateStr, '</p>'
         ];
 
         if (labels_arr.length) {
@@ -294,27 +316,46 @@ module.exports = ext.register("ext/issuesmgr/issuesmgr", {
             ')</strong></p><div class="issue_comments_list"></div></div>'
         );
 
+        var _self = this;
         tabIssues.add("Issue" + number, pageId, null, null, function(page) {
             setTimeout(function() {
                 page.$ext.innerHTML = htmlArr.join("");
+                _self.setIssueNumListeners(page.$ext);
             });
         });
 
         tabIssues.set(pageId);
+    },
 
-        /*apf.tween.single(detailNode, {
-            type: "height",
-            from: 0,
-            to  : 300,
-            anim : apf.tween.EASEOUT,
-            steps : 20
-        });*/
+    openSelectedIssue : function() {
+        if (!lstIssues.selected)
+            return;
+
+        var number = lstIssues.selected.getAttribute("number");
+        this.openIssue(number);
+    },
+
+    setIssueNumListeners : function(el) {
+        var links = el.getElementsByClassName("issuelink");
+        var _self = this;
+        for (var i = 0, len = links.length; i < len; i++) {
+            links[i].addEventListener("click", function(e) {
+                e.preventDefault();
+                _self.openIssue(e.target.getAttribute("rel"));
+            });
+        }
     },
 
     showIssuesList : function() {
         this.issues_back.style.display = "none";
         winIssuesMgr.setTitle("Issues");
         tabIssues.set("pgIssuesList");
+        if (apf.isWebkit)
+            lstIssues.$ext.scrollTop = this.savedScroll;
+    },
+    
+    updateListCount: function() {
+        //console.log(lstIssues.getTraverseNodes().length);
     },
 
     enable : function(noButton){

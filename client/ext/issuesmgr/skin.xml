@@ -268,7 +268,17 @@
                 font-size: 16px;
                 margin: 0 0 0 45px;
             }
+            
+            .issuestab .page div.image {
+                overflow: auto;
+            }
 
+            .issuestab .page blockquote {
+                border-left: 3px solid #BBB;
+                padding-left: 15px;
+                margin: 5px 0 0 2px;
+            }
+            
             .issuestab .page pre {
                 background-color: #F8F8F8;
                 border: 1px solid #CCC;
@@ -279,22 +289,31 @@
                 border-radius: 5px;
             }
             
+            .issuestab .page p > code {
+                background-color: #F8F8F8;
+                border: 1px solid #CCC;
+                font-size: 13px;
+                line-height: 19px;
+                border-radius: 3px;
+                padding: 1px 5px;
+            }
+            
             .issuestab .page p.author {
                 color: #666;
                 line-height: 16px;
             }
-            
-            .issuestab .page a.remote {
+
+            .issuestab .page p.author a {
                 font-weight: bold;
             }
             
-            .issuestab .page p a {
+            .issuestab .page a {
                 text-decoration: none;
                 color: #666;
             }
             
             .issuestab .page p a:visited {
-                color: #666;
+                color: #777;
             }
             
             .issuestab .page p a:hover {
@@ -326,6 +345,10 @@
             
             .issuestab .page .issue_body p, .issue_comments_list .comment_body p {
                 white-space: pre-line;
+            }
+            
+            .issue_comments_list .comment_body {
+                white-space: normal;
             }
 
             .issue_comments_divider {
