@@ -170,11 +170,6 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             }
         };
         ide.send(JSON.stringify(command));
-
-        if (debug)
-            stDebugProcessRunning.activate();
-
-        stProcessRunning.activate();
     },
 
     stop : function() {
