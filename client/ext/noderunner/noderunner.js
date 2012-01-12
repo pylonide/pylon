@@ -33,6 +33,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     NODE_VERSION: "auto",
 
     init : function(amlNode){
+        var _self = this;
         ide.addEventListener("socketDisconnect", this.onDisconnect.bind(this));
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
@@ -56,6 +57,11 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             }));
             return false;
         });
+        
+        ide.addEventListener("loadsettings", function(e){
+            _self.NODE_VERSION = e.model.queryValue("auto/node-version/@version") || "auto";
+        });
+        //require('ext/settings/settings').model
     },
 
     $onDebugProcessActivate : function() {
@@ -153,7 +159,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         this.$run(true);
     },
 
-    run : function(path, args, debug) {      
+    run : function(path, args, debug, nodeVersion) {      
         if (stProcessRunning.active || !stServerConnected.active/* || (ddRunnerSelector.value=='gae' ? '' : !path)*/ || typeof path != "string")
             return false;
 
@@ -163,7 +169,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             "file"    : path.replace(/^\/+/, ""),
             "runner"  : "node", //ddRunnerSelector.value, // Explicit addition; trying to affect as less logic as possible for now...
             "args"    : args || "",
-            "version" : this.NODE_VERSION,
+            "version" : nodeVersion || this.NODE_VERSION,
             "env"     : {
                 "C9_SELECTED_FILE": page ? page.getAttribute("path").slice(ide.davPrefix.length) : ""
             }

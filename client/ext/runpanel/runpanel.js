@@ -16,6 +16,7 @@ var dock = require("ext/dockpanel/dockpanel");
 var save = require("ext/save/save");
 var markup = require("text!ext/runpanel/runpanel.xml");
 var buttonsMarkup = require("text!ext/runpanel/runbuttons.xml");
+var markupSettings = require("text!ext/runpanel/settings.xml");
 
 module.exports = ext.register("ext/runpanel/runpanel", {
     name    : "Run Panel",
@@ -74,15 +75,11 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         mdlRunConfigurations.addEventListener("afterload", function(e) {
             _self.$populateMenu();
         });
-        
-        ide.addEventListener("init.ext/settings/settings", function(e){
+
+        //Settings Support
+        ide.addEventListener("init.ext/settings/settings", function(e) {
             var heading = e.ext.getHeading("General");
-            heading.appendChild(new apf.checkbox({
-                "class" : "underlined first",
-                value : "[general/@saveallbeforerun]",
-                skin  : "checkbox_grey",
-                label : "Save All Files Before Running"
-            }))
+            heading.insertMarkup(markupSettings);
         });
 
         ide.addEventListener("loadsettings", function(e){
@@ -323,8 +320,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         if (lastNode)
             apf.xmldb.removeAttribute(lastNode, "last");
         apf.xmldb.setAttribute(config, "last", "true");
-
-        noderunner.run(config.getAttribute("path"), (config.getAttribute("args") || "").split(" "), debug);
+        
+        noderunner.run(config.getAttribute("path"), (config.getAttribute("args") || "").split(" "), debug, ddRunnerSelector.value);
     },
 
     stop : function() {
