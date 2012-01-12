@@ -25,8 +25,10 @@ var OLD_HANDLER;
 
 var onConsoleCommand = function onConsoleCommand(e) {
     var cmd = e.data.command;
-    var domEditor = editors.currentEditor.ceEditor;
-    if (cmd && typeof cmd === "string") {
+    if (editors && editors.currentEditor && editors.currentEditor.ceEditor &&
+        cmd && typeof cmd === "string") {
+
+        var domEditor = editors.currentEditor.ceEditor;
         if (cmd[0] === ":") {
             cmd = cmd.substr(1);
 
@@ -97,8 +99,8 @@ var enableVim = function enableVim() {
             commands.stop.exec(editor);
         }
         VIM_ENABLED = true;
-        
-        ide.dispatchEvent("track_action", {type: "vim", action: "enable"})
+
+        ide.dispatchEvent("track_action", {type: "vim", action: "enable"});
     }
 };
 
@@ -111,8 +113,8 @@ var disableVim = function() {
         commands.start.exec(editor);
         editor.renderer.container.removeEventListener("click", onCursorMove, false);
         VIM_ENABLED = false;
-        
-        ide.dispatchEvent("track_action", {type: "vim", action: "disable"})
+
+        ide.dispatchEvent("track_action", {type: "vim", action: "disable"});
     }
 };
 
