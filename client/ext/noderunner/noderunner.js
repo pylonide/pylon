@@ -7,8 +7,8 @@
  
 define(function(require, exports, module) {
 
-var debug = require("apf/elements/debugger");
-var debugHost = require("apf/elements/debughost");
+require("apf/elements/debugger");
+require("apf/elements/debughost");
 
 var ide = require("core/ide");
 var ext = require("core/ext");
@@ -138,14 +138,6 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
     onDisconnect : function() {
         stDebugProcessRunning.deactivate();
-    },
-
-    debugChrome : function() {
-        var command = {
-            "command" : "RunDebugChrome",
-            "file"    : ""
-        };
-        ide.send(JSON.stringify(command));
     },
 
     debug : function() {
