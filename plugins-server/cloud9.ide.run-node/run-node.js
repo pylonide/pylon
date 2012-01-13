@@ -95,35 +95,10 @@ util.inherits(NodeRuntimePlugin, Plugin);
                     }
                 });
                 break;
-            case "debugattachnode":
-                this.$attachDebugCient(message, client);
-                break;
             default:
                 res = false;
         }
         return res;
-    };
-
-    this.$attachDebugCient = function(message, client) {
-        var self = this;
-        this.workspace.getExt("state").getState(function(err, state) {
-            if (err)
-                return self.error(err, 1, message, client);
-                
-            if (state.debugClient) {
-                // we will only send out the debug ready information when
-                // the debugger is actually attached
-                // otherwise this will be sent from the node-debug-ready command
-                if (self.debugInitialized[state.debugClient] !== true) {
-                    return;
-                }
-
-                self.ide.broadcast(JSON.stringify({
-                    type: "node-debug-ready",
-                    pid: state.debugClient
-                }), self.name);
-            }
-        });
     };
 
     this.$run = function(file, args, env, version, message, client) {

@@ -5,6 +5,13 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
+/*global searchRow txtFind winSearchReplace hboxReplace txtReplace 
+            tooltipSearchReplace chkRegEx winSearchInFiles chkSearchSelection 
+            divSearchCount hboxFind chkHighlightMatches chkSearchBackwards 
+            chkWrapAround chkMatchCase chkWholeWords chkSearchSelection
+            chkPreserveCase
+*/
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
@@ -12,7 +19,6 @@ var ext = require("core/ext");
 var settings = require("core/settings");
 var util = require("core/util");
 var menus = require("ext/menus/menus");
-var search = require("ace/search");
 var editors = require("ext/editors/editors");
 var css = require("text!ext/searchreplace/searchreplace.css");
 var skin = require("text!ext/searchreplace/skin.xml");
@@ -46,15 +52,15 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
 
     hook : function(){
         var _self = this;
-        
+
         this.markupInsertionPoint = searchRow;
-        
+
         commands.addCommand({
             name: "replace",
             bindKey : {mac: "Option-Command-F", win: "Alt-Shift-F"},
             hint: "search for a string inside the active document and replace it",
             isAvailable : function(editor){
-                return editor && editor.ceEditor;
+                return editor && editor.path == "ext/code/code";
             },
             exec: function(env, args, request) {
                 _self.toggleDialog(1, true);
@@ -66,7 +72,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             bindKey : {mac: "", win: ""},
             hint: "search for a string inside the active document and replace all",
             isAvailable : function(editor){
-                return editor && editor.ceEditor;
+                return editor && editor.path == "ext/code/code";
             },
             exec: function(env, args, request) {
                 _self.replaceAll();//toggleDialog(1, true);
@@ -76,7 +82,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         commands.addCommand({
             name: "replacenext",
             isAvailable : function(editor){
-                return editor && editor.ceEditor;
+                return editor && editor.path == "ext/code/code";
             },
             exec: function(env, args, request) {
                 commands.exec("findnext");
@@ -87,7 +93,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         commands.addCommand({
             name: "replaceprevious",
             isAvailable : function(editor){
-                return editor && editor.ceEditor;
+                return editor && editor.path == "ext/code/code";
             },
             exec: function(env, args, request) {
                 commands.exec("findprevious");
@@ -107,7 +113,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             hint: "open the quicksearch dialog to quickly search for a phrase",
             bindKey: {mac: "Command-F", win: "Ctrl-F"},
             isAvailable : function(editor){
-                return editor && editor.ceEditor;
+                return editor && editor.path == "ext/code/code";
             },
             exec: function(env, args, request) {
                 _self.toggleDialog(1, false);
@@ -166,7 +172,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 return true;
 
             return isAvailable.apply(this, arguments);
-        }
+        };
 
         commands.addCommand({
             name: "hidesearchreplace",
@@ -194,7 +200,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         var blur = function(e) {
             if ( self.hboxReplace && !apf.isChildOf(winSearchReplace, e.toElement))
                 _self.toggleDialog(-1, null, true);
-        }
+        };
 
         winSearchReplace.addEventListener("blur", blur);
         txtFind.addEventListener("blur", blur);
@@ -263,8 +269,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         }
 
         if (increment && !this.$matchCountTimer) {
-            var iter = parseInt(oIter.innerHTML);
-            var total = parseInt(oTotal.innerHTML.substr(3))
+            var iter = parseInt(oIter.innerHTML, 10);
+            var total = parseInt(oTotal.innerHTML.substr(3), 10);
             if (!isNaN(iter) && !isNaN(total) && total) {
                 iter += increment;
                 oIter.innerHTML = iter > total ? 1 : iter < 0 ? total : iter;
@@ -293,7 +299,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         }
         var start = ace.selection.getCursor();
 
-        var updateCount = 0
+        var updateCount = 0;
         this.$countMatches(re, ace.session.doc.getAllLines(), start, function(total, current) {
             oIter.innerHTML = backwards ? total - current + 1: current;
             oTotal.innerHTML = "of " + total;
@@ -329,10 +335,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                     if (lines[i + j].search(re[j]) == -1)
                         return 0;
                 return 1;
-            }
+            };
         }
 
-        var count = function () {
+        var count = function() {
             var chunk = Math.min(len, startI + 500);
             for (var i = startI; i < chunk; i++) {
                 if (i == row)
@@ -342,12 +348,13 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             if (i == len) {
                 callback && callback(matchTotal, matchPos);
                 _self.$matchCountTimer = null;
-            } else {
+            }
+            else {
                 startI = chunk;
                 _self.$matchCountTimer = setTimeout(count, 100);
                 progress && progress(matchTotal, matchPos, startI/len);
             }
-        }
+        };
         count();
     },
 
@@ -360,8 +367,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         if (!editor || !editor.amlEditor)
             return;
 
-        var wasVisible  = !!winSearchReplace.parentNode;//visible;
-        var stateChange = isReplace != undefined && this.$lastState != isReplace;
+        var wasVisible  = winSearchReplace.visible;//visible;
+        var stateChange = isReplace !== undefined && this.$lastState != isReplace;
 
         tooltipSearchReplace.$ext.style.display = "none";
 
@@ -415,16 +422,16 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             var toHeight = 38;//winSearchReplace.$ext.scrollHeight;
             if (stateChange && !isReplace && wasVisible)
                 toHeight -= hboxReplace.$ext.scrollHeight + 4;
-            
+
             if (animate) {
                 anims.animateSplitBoxNode(winSearchReplace, {
-                    height: toHeight + "px", 
+                    height: toHeight + "px",
                     timingFunction: "cubic-bezier(.10, .10, .25, .90)",
                     duration : 0.2
                 }, function() {
                     if (stateChange && !isReplace && wasVisible)
                         _self.setupDialog(isReplace);
-                    
+
                     winSearchReplace.$ext.style.height = "";
 
                     divSearchCount.$ext.style.visibility = "";
@@ -463,10 +470,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                     winSearchReplace.visible = true;
                     winSearchReplace.hide();
                     winSearchReplace.parentNode.removeChild(winSearchReplace);
-                    
+
                     if (!noselect)
-                        editor.ceEditor.focus();
-                    
+                        editor.amlEditor.focus();
+
                     setTimeout(function(){
                         callback
                             ? callback()
@@ -479,7 +486,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 winSearchReplace.hide();
                 winSearchReplace.parentNode.removeChild(winSearchReplace);
                 if (!noselect)
-                    editor.ceEditor.focus();
+                    editor.amlEditor.focus();
 
                 callback
                     ? callback()
@@ -558,8 +565,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         };
 
         if (chkSearchSelection.checked)
-            var range = this.startPos && (this.startPos.searchRange || this.startPos.range);
-        options.range = range;
+            options.range = this.startPos && (this.startPos.searchRange || this.startPos.range);
 
         return options;
     },
@@ -640,7 +646,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             this.$crtSearch = searchTxt;
         } else {
             this.updateCounter(!reverseBackwards != !options.backwards,
-				null, reverseBackwards ? -1 : 1);
+                null, reverseBackwards ? -1 : 1);
         }
 
         if (chkHighlightMatches.checked)
@@ -695,8 +701,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             });
 
         var txt = this.$editor.getCopyText();
-        this.$editor.$search.set({preserveCase: chkPreserveCase.checked})
-        var strReplace = this.$editor.$search.replace(txt, strReplace);
+        this.$editor.$search.set({preserveCase: chkPreserveCase.checked});
+        strReplace = this.$editor.$search.replace(txt, strReplace);
         if (typeof strReplace != "string")
             return this.findNext(backwards);
 
@@ -728,11 +734,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
 
     $getAce: function() {
         var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
             return;
 
-        var ceEditor = editor.ceEditor;
-        return ceEditor.$editor;
+        return editor.amlEditor.$editor;
     },
 
     enable : function(){

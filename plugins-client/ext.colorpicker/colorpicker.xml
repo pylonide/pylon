@@ -1,8 +1,4 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:skin id="colorpicker" 
-      src        = "{require('ext/colorpicker/colorpicker').skin}" 
-      media-path = "{ide.staticPrefix}/ext/colorpicker/images/" />
-
     <a:menu id="mnuColorPicker" skin="dockwindowblack" class="left" width="366" height="205" animate="false" pinned="true" resizable="false" visible="false">
         <a:colorpicker id="clrCodeTools" skinset="colorpicker" />
         <div class="codetools_colorpicker_tools"/>

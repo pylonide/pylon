@@ -33,7 +33,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
                 _self.startBlame();
             },
             isAvailable : function(editor){
-                return editor && editor.ceEditor;
+                return editor && editor.path === "ext/code/code";
             }
         }), 500);
         
@@ -42,7 +42,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
                 _self.startBlame();
             },
             isAvailable : function(editor){
-                return editor && editor.ceEditor;
+                return editor && editor.path === "ext/code/code";
             }
         }), 909);
     },

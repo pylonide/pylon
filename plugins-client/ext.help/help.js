@@ -44,9 +44,14 @@ define(function(require, exports, module) {
 
             var c = 0;
             menus.addItemByPath("Help/About", new apf.item({ onclick : function(){ _self.showAbout(); }}), c += 100);
-            menus.addItemByPath("Help/~", new apf.divider(), c += 100);
-            menus.addItemByPath("Help/Documentation", new apf.item({ onclick : function(){ window.open('http://support.cloud9ide.com/forums') }}), c += 100);
+            menus.addItemByPath("Help/IDE Status", new apf.item({ onclick : function(){window.open('http://status.c9.io'); }}), c += 100);
             var mnuChangelog = menus.addItemByPath("Help/Changelog", new apf.item({ onclick : function(){ window.open('http://c9.io/site/tag/changelog/') }}), c += 100);
+
+            menus.addItemByPath("Help/~", new apf.divider(), c += 100);
+            menus.addItemByPath("Help/Documentation", new apf.item({ onclick : function(){ window.open('https://docs.c9.io') }}), c += 100);
+            ide.addEventListener("hook.ext/keybindings_default/keybindings_default", function(c, e) {
+                menus.addItemByPath("Help/Keyboard Shortcuts", new apf.item({ onclick : function(){ e.ext.keybindings(); }}), c);
+            }.bind(this, c += 100));
             ide.addEventListener("hook.ext/quickstart/quickstart", function(c, e) {
                 menus.addItemByPath("Help/Quick Start", new apf.item({ onclick : function(){ e.ext.launchQS(); }}), c);
             }.bind(this, c += 100));
@@ -54,10 +59,7 @@ define(function(require, exports, module) {
                 menus.addItemByPath("Help/Take a Guided Tour", new apf.item({ onclick : function(){ e.ext.launchGT(); }}), c);
             }.bind(this, c += 100));
             menus.addItemByPath("Help/~", new apf.divider(), c += 100);
-            ide.addEventListener("hook.ext/keybindings_default/keybindings_default", function(c, e) {
-                menus.addItemByPath("Help/Keyboard Shortcuts", new apf.item({ onclick : function(){ e.ext.keybindings(); }}), c);
-            }.bind(this, c += 100));
-            menus.addItemByPath("Help/~", new apf.divider(), c += 100);
+
             menus.addItemByPath("Help/Support/", null, c += 100);
             menus.addItemByPath("Help/~", new apf.divider(), c += 100);
             menus.addItemByPath("Help/Learning/", null, c += 100);
@@ -72,10 +74,10 @@ define(function(require, exports, module) {
             menus.addItemByPath("Help/Learning/YouTube Channel for Cloud9 IDE", new apf.item({ onclick : function(){ window.open('http://www.youtube.com/user/c9ide/videos?view=pl'); }}), c += 100);
 
             c = 0;
-            menus.addItemByPath("Help/Get in Touch/Blog for Cloud9", new apf.item({ onclick : function(){ window.open('http://cloud9ide.posterous.com/'); }}), c += 100);
+            menus.addItemByPath("Help/Get in Touch/Blog", new apf.item({ onclick : function(){ window.open('http://blog.c9.io/'); }}), c += 100);
             menus.addItemByPath("Help/Get in Touch/Twitter (for Cloud9 IDE support)", new apf.item({ onclick : function(){ window.open('https://twitter.com/#!/C9Support'); }}), c += 100);
             menus.addItemByPath("Help/Get in Touch/Twitter (for general Cloud9 tweets)", new apf.item({ onclick : function(){ window.open('https://twitter.com/#!/cloud9ide'); }}), c += 100);
-            menus.addItemByPath("Help/Get in Touch/Facebook for Cloud9", new apf.item({ onclick : function(){ window.open('https://www.facebook.com/Cloud9IDE'); }}), c += 100);
+            menus.addItemByPath("Help/Get in Touch/Facebook", new apf.item({ onclick : function(){ window.open('https://www.facebook.com/Cloud9IDE'); }}), c += 100);
 
             if (window.cloud9config.hosted || (ide.local && ide.onLine)) {
                 mnuHelp.addEventListener("prop.visible", function(e) {
@@ -116,7 +118,7 @@ define(function(require, exports, module) {
             ext.initExtension(this);
 
             aboutDialog.show();
-            document.getElementById("c9Version").innerHTML = "Version " + window.cloud9config.version;
+            document.getElementById("c9Version").innerHTML = apf.escapeXML("Version " + window.cloud9config.version);
         },
 
         launchTwitter: function() {

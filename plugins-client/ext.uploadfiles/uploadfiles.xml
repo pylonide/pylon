@@ -1,5 +1,5 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    
+
     <a:window id="winUploadFiles"
       onshow  = "require('ext/uploadfiles/uploadfiles').onShow()"
       onhide = "require('ext/uploadfiles/uploadfiles').onClose()"
@@ -28,25 +28,25 @@
         </a:vbox>
         <input id="fileUploadSelect" class="uploadWithFolders" type="file" multiple="multiple" />
         <input id="folderUploadSelect" type="file" webkitdirectory="" directory="" />
-        
+
         <a:hbox padding="10" pack="end" edge="6 10 10">
             <a:button onclick="winUploadFiles.hide()" skin="btn-default-css3">Close</a:button>
         </a:hbox>
     </a:window>
-    
+
     <a:model id="mdlUploadActivity">
         <data />
     </a:model>
-    
+
     <a:vbox id="boxUploadActivity" visible="false">
         <a:hbox class="uploadactivity-header" height="30" align="center" padding="3">
             <span class="header">Upload Activity</span>
             <span id="uploadactivityNumFiles"></span>
             <a:filler />
-            <a:button id="btnCancelUploads" 
-              caption="Cancel" 
-              skin="btn-cancel-upload" 
-              skinset="uploadfiles" 
+            <a:button id="btnCancelUploads"
+              caption="Cancel"
+              skin="btn-cancel-upload"
+              skinset="uploadfiles"
               margin="7 3 0 0"
               onclick="require('ext/uploadfiles/uploadfiles').cancelAll()"
             ></a:button>
@@ -67,13 +67,13 @@
                     }
                     else {
                         <div class="uploadactivity-caption">[@name]</div>
-                        <div class="uploadactivity-delete" onclick="require('ext/uploadfiles/uploadfiles').removeFromQueue('{[@name]}')"></div>
+                        <div class="uploadactivity-delete" onclick="require('ext/uploadfiles/uploadfiles').removeFromQueue(%[.].getAttribute('name'))"></div>
                     }
                 ?></a:caption>
             </a:each>
         </a:list>
     </a:vbox>
-    
+
     <a:window
       id        = "winUploadFileExists"
       title     = "File already exists"
@@ -90,43 +90,43 @@
             <h3>File already exists</h3>
             <div id="uploadFileExistsMsg" class="alertMsg">Do you want to overwrite this file?</div>
         </a:vbox>
-    
+
         <a:hbox edge="6 10 10" pack="end" padding="8">
-            <a:button id="btnUploadOverwriteAll" 
-                skin="btn-default-css3" 
-                class="btn-green" 
+            <a:button id="btnUploadOverwriteAll"
+                skin="btn-default-css3"
+                class="btn-green"
                 onclick="
                     winUploadFileExists.hide();
                     require('ext/uploadfiles/uploadfiles').overwriteAll()
-                " 
+                "
                 visible="false">Overwrite all</a:button>
-            <a:button id="btnUploadSkipAll" 
-                skin="btn-default-css3" 
-                class="btn-red" 
+            <a:button id="btnUploadSkipAll"
+                skin="btn-default-css3"
+                class="btn-red"
                 onclick="
                     winUploadFileExists.hide();
                     require('ext/uploadfiles/uploadfiles').skipAll()
                 "
                 visible="false">Skip all</a:button>
             <a:filler/>
-            <a:button id="btnUploadOverwrite" 
-                default="3" 
-                skin="btn-default-css3" 
-                class="btn-green" 
+            <a:button id="btnUploadOverwrite"
+                default="3"
+                skin="btn-default-css3"
+                class="btn-green"
                 onclick="
                     winUploadFileExists.hide();
                     require('ext/uploadfiles/uploadfiles').overwrite()
                 ">Overwrite</a:button>
-            <a:button id="btnUploadSkip" 
-                skin="btn-default-css3" 
-                class="btn-red" 
+            <a:button id="btnUploadSkip"
+                skin="btn-default-css3"
+                class="btn-red"
                 onclick="
                     winUploadFileExists.hide();
                     require('ext/uploadfiles/uploadfiles').skip()
                 ">Skip</a:button>
         </a:hbox>
     </a:window>
-    
+
     <a:window
       id        = "winNoFolderSupport"
       title     = "Browser limitations"
@@ -149,12 +149,12 @@
             </a:hbox>
 <!--            <a:divider skin="hordivider" />-->
             <a:hbox edge="6 10 10" pack="end" padding="8">
-                <a:button id="btnNoFolderSupportOpenDialog" 
+                <a:button id="btnNoFolderSupportOpenDialog"
                   onclick="
                     winNoFolderSupport.hide();
-                    if (!winUploadFiles.visible) 
+                    if (!winUploadFiles.visible)
                         winUploadFiles.show();
-                  " 
+                  "
                   skin="btn-default-css3"
                   class="btn-green">Open Upload Dialog</a:button>
                 <a:button id="btnNoFolderSupportClose" onclick="winNoFolderSupport.hide();" skin="btn-default-css3">Close</a:button>

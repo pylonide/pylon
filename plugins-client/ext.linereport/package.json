@@ -1,11 +1,11 @@
 {
-    "name": "ext.acebugs",
+    "name": "ext.linereport",
     "version": "0.0.1",
-    "main": "acebugs-ext.js",
+    "main": "linereport-ext.js",
     "private": true,
     "plugin": {
         "provides": [
-            "ext.acebugs"
+            "ext.linereport"
         ],
         "consumes": [
             "client-plugins"

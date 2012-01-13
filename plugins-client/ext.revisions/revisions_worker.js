@@ -106,7 +106,7 @@ self.onmessage = function(e) {
                 var counterBefore = extraCounter;
                 str += lines.map(function(line) {
                     extraCounter = extraCounter + 1; // Keep a count for current line
-                    return "\n" + startChar[type] + line;
+                    return (extraCounter === 1 ? "" : "\n") + startChar[type] + line;
                 }).join("");
 
                 // If this range of lines is unchanged, we don't need metadata.
@@ -166,14 +166,26 @@ self.onmessage = function(e) {
                     }
                 }
                 catch(err) {
-                    self.postMessage({
+                    return self.postMessage({
                         type: "newRevision.error",
                         path: e.data.path
                     });
                 }
             }
 
-            patch = self.dmp.patch_make(beforeRevision, lastContent);
+            try {
+                patch = self.dmp.patch_make(beforeRevision, lastContent);
+            }
+            catch (e) {
+                // Log the error. This is probably an instance of `Unknown call
+                // format to patch_make`. Passing types of `beforeRevision` and
+                // `lastContent` because it is likely that any of those is null.
+                debug(e, typeof beforeRevision, typeof lastContent);
+                return self.postMessage({
+                    type: "newRevision.error",
+                    path: e.data.path
+                });
+            }
             docContentsOnRev[e.data.path] = lastContent;
 
             // If there is no actual changes, let's return
@@ -201,7 +213,15 @@ self.onmessage = function(e) {
         case "recovery":
             var currentContent = e.data.lastContent;
             var realContent = e.data.realContent;
-            patch = self.dmp.patch_make(currentContent, realContent);
+            try {
+                patch = self.dmp.patch_make(currentContent, realContent);
+            }
+            catch (e) {
+                // Log the error. This is probably an instance of `Unknown call
+                // format to patch_make`. Passing types of `beforeRevision` and
+                // `lastContent` because it is likely that any of those is null.
+                return debug(e, typeof currentContent, typeof realContent);
+            }
 
             // If there is no actual changes, let's return
             if (patch.length === 0) {

@@ -59,7 +59,6 @@ function worker(project) {
                     'ace/lib/fixoldbrowsers',
                     'ace/lib/event_emitter',
                     'ace/lib/oop',
-                    'ace/narcissus/parser',
                     'ext/language/worker',
                     'ext/codecomplete/local_completer',
                     'ext/codecomplete/snippet_completer',
@@ -67,9 +66,15 @@ function worker(project) {
                     'ext/jslanguage/parse',
                     'ext/jslanguage/scope_analyzer',
                     'ext/jslanguage/jshint',
+                    'ext/jslanguage/jumptodef',
                     'ext/jslanguage/debugger',
                     'ext/jslanguage/outline',
-                    'ext/javalanguage/processor'
+                    'ext/csslanguage/css_handler',
+                    'ext/htmllanguage/html_completer',
+                    'ext/codecomplete/mode_completer',
+                    'ext/linereport/linereport_base',
+                    'ext/linereport_php/linereport_php_worker',
+                    'ext/javalanguage/processor',
                 ]
             })
         ],

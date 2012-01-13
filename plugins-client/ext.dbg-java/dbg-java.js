@@ -11,9 +11,10 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var oop = require("ace/lib/oop");
-var v8DebugClient = require("ext/dbg-node/dbg-node").v8DebugClient;
+var v8DebugClient = require("ext/dbg-node/dbg-node");
+var extDebugger = require("ext/debugger/debugger");
 
-var JavaV8DebugClient = exports.JavaV8DebugClient = function() {
+var JavaV8DebugClient = function() {
     this.runner = "java";
 };
 
@@ -57,28 +58,10 @@ oop.inherits(JavaV8DebugClient, v8DebugClient);
 
 }).call(JavaV8DebugClient.prototype);
 
+JavaV8DebugClient.handlesRunner = function(runner) {
+    return /java/.test(runner);
+};
 
-ide.addEventListener("dbg.ready", function(e) {
-    if (e.type == "node-debug-ready") {
-        if (!exports.dbgImpl) {
-            exports.dbgImpl = new JavaV8DebugClient();
-            exports.dbgImpl.attach();
-        }
-    }
-});
-
-ide.addEventListener("dbg.exit", function(e) {
-    if (exports.dbgImpl) {
-        exports.dbgImpl.detach();
-        exports.dbgImpl = null;
-    }
-});
-
-ide.addEventListener("dbg.state", function(e) {
-    if (e["node-debug"] && !exports.dbgImpl) {
-        exports.dbgImpl = new JavaV8DebugClient();
-        exports.dbgImpl.attach();
-    }
-});
+extDebugger.registerDebugHandler(JavaV8DebugClient);
 
 });

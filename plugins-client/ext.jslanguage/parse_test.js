@@ -6,7 +6,8 @@ if (typeof process !== "undefined") {
 define(function(require, exports, module) {
 
 var assert = require("ace/test/assertions");
-//var handler = require('ext/jslanguage/jshint');
+var handler = require("./parse");
+var scopeHandler = require("./scope_analyzer");
 var LanguageWorker = require('ext/language/worker').LanguageWorker;
 var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
 

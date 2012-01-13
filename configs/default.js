@@ -32,7 +32,7 @@ var config = [
         prefix: "/static/bundles",
         plugins: clientExtensions
     }, {
-        packagePath: "./cloud9.static",
+        packagePath: "connect-architect/connect.static",
         prefix: "/static"
     },
     "./cloud9.alive",
@@ -45,6 +45,11 @@ var config = [
     "./../plugins-client/lib.treehugger",
     "./../plugins-client/lib.v8debug",
     "./../plugins-client/lib.requirejs",
+    {
+        packagePath: "smith.io/server-plugin",
+        messagePath: "/smith.io/server",
+        debug: true
+    },
     // server plugins
     {
         packagePath: "./cloud9.sandbox",
@@ -57,8 +62,11 @@ var config = [
         packagePath: "./cloud9.core",
         debug: false,
         fsUrl: fsUrl,
+        smithIo: {
+            port: port,
+            prefix: "/smith.io/server"
+        },
         hosted: false,
-        socketIoTransports: ["websocket", "htmlfile", "xhr-multipart", "xhr-polling"],
         bundledPlugins: [
             "helloworld"
         ],
@@ -88,6 +96,8 @@ var config = [
             "ext/preview/preview",
             "ext/log/log",
             "ext/help/help",
+            "ext/linereport/linereport",
+            "ext/linereport_php/linereport_php",
             //"ext/ftp/ftp",
             "ext/code/code",
             "ext/statusbar/statusbar",
@@ -115,7 +125,7 @@ var config = [
             "ext/beautify/beautify",
             "ext/offline/offline",
             "ext/stripws/stripws",
-            "ext/testpanel/testpanel",
+            //"ext/testpanel/testpanel",
             "ext/nodeunit/nodeunit",
             "ext/zen/zen",
             "ext/codecomplete/codecomplete",
@@ -124,9 +134,11 @@ var config = [
             "ext/guidedtour/guidedtour",
             "ext/quickstart/quickstart",
             "ext/jslanguage/jslanguage",
+            "ext/csslanguage/csslanguage",
+            "ext/htmllanguage/htmllanguage",
             "ext/javalanguage/javalanguage",
             "ext/buildproject/buildproject",
-            //"ext/autotest/autotest",
+            "ext/autotest/autotest",
             "ext/closeconfirmation/closeconfirmation",
             "ext/codetools/codetools",
             "ext/colorpicker/colorpicker",
@@ -138,7 +150,6 @@ var config = [
             "ext/language/liveinspect"
             //"ext/splitview/splitview"
             //"ext/minimap/minimap"
-            //"ext/acebugs/acebugs"
         ]
     }, {
         packagePath: "vfs-architect/local",
@@ -156,7 +167,8 @@ var config = [
         packagePath: "connect-architect/connect.session",
         key: "cloud9.sid." + port,
         secret: "v1234"
-    }, {
+    },
+    {
         packagePath: "connect-architect/connect.session.file",
         sessionsPath: __dirname + "/../.sessions"
     },
@@ -167,6 +179,7 @@ var config = [
     },
     "./cloud9.eventbus",
     "./cloud9.process-manager",
+    "./cloud9.routes",
     "./cloud9.run.shell",
     {
         packagePath: "./cloud9.run.node",
@@ -190,6 +203,7 @@ var config = [
     "./cloud9.ide.gittools",
     "./cloud9.ide.hg",
     "./cloud9.ide.npm",
+    "./cloud9.ide.filelist",
     "./cloud9.ide.search",
     "./cloud9.ide.buildproject",
     "./cloud9.ide.run-auto",

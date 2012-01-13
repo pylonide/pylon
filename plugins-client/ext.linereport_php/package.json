@@ -1,0 +1,14 @@
+{
+    "name": "ext.linereport_php",
+    "version": "0.0.1",
+    "main": "linereport-php-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.linereport_php"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

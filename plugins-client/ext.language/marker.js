@@ -10,6 +10,7 @@ var Range = require("ace/range").Range;
 var Anchor = require('ace/anchor').Anchor;
 var tooltip = require('ext/language/tooltip');
 var Editors = require("ext/editors/editors");
+var Code = require("ext/code/code");
 
 module.exports = {
 
@@ -30,7 +31,7 @@ module.exports = {
     onHint: function(event) {
         var message = event.data.message;
         var pos = event.data.pos;
-        var cursorPos = ceEditor.$editor.getCursorPosition();
+        var cursorPos = Code.amlEditor.$editor.getCursorPosition();
         var displayPos = event.data.displayPos || cursorPos;
         if(cursorPos.column === pos.column && cursorPos.row === pos.row && message)
             tooltip.show(displayPos.row, displayPos.column, message);

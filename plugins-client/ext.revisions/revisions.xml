@@ -93,8 +93,7 @@
                 checked = "{require('ext/revisions/revisions').useCompactList == false ? 'true' : 'false'}"
                 label   = "Show all file changes"
                 onafterchange = "
-                    var model = tabEditors.getPage().$mdlRevisions;
-                    require('ext/revisions/revisions').toggleListView(model);
+                    require('ext/revisions/revisions').toggleListView();
             " />
         </a:hbox>
     </a:vbox>

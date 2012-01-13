@@ -14,7 +14,6 @@ var editors = require("ext/editors/editors");
 var save = require("ext/save/save");
 var ide = require("core/ide");
 
-
 var cliCmds = exports.cliCmds = {
     w: function(editor, data) {
         var page = tabEditors.getPage();
@@ -144,8 +143,9 @@ exports.addCommands = function(handler) {
 
 exports.onConsoleCommand = function(e) {
     var cmd = e.data.command, success;
-    if ((typeof ceEditor !== "undefined") && cmd && typeof cmd === "string") {
-        var ed = ceEditor.$editor;
+    var amlEditor = editors.currentEditor.amlEditor;
+    if (editors.currentEditor.path == "ext/code/code" && amlEditor && cmd && typeof cmd === "string") {
+        var ed = amlEditor.$editor;
         if (cmd[0] === ":") {
             cmd = cmd.substr(1);
 
@@ -178,7 +178,7 @@ exports.onConsoleCommand = function(e) {
         if (success !== false) {
             setTimeout(function(){ 
                 if (apf.activeElement == txtConsoleInput)
-                    ceEditor.focus();
+                    amlEditor.focus();
             });
         }
     }

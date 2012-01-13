@@ -27,9 +27,9 @@ module.exports = ext.register("ext/settings/settings", {
         data : skin,
         "media-path" : ide.staticPrefix + "/ext/settings/images/"
     },
-    
+
     defaultWidth : 250,
-    
+
     nodes : [],
 
     //Backwards compatible
@@ -40,21 +40,21 @@ module.exports = ext.register("ext/settings/settings", {
     addSection : function(tagName, name, xpath, cbCommit){
         var node = this.model.queryNode(xpath + "/" + tagName);
         if (!node)
-            this.model.appendXml('<' + tagName + ' name="' + name +'" />', xpath);
+            this.model.appendXml(apf.n("<" + apf.escapeXML(tagName) + "/>").attr("name", name).node(), xpath);
     },
 
     hook : function(){
         var _self = this;
-        
+
         this.markupInsertionPoint = colLeft;
-        
+
         panels.register(this, {
             position : 100000,
             caption: "Preferences",
             "class": "preferences",
             command: "opensettingspanel"
         });
-        
+
         commands.addCommand({
             name: "opensettingspanel",
             hint: "show the open settings panel",
@@ -63,49 +63,48 @@ module.exports = ext.register("ext/settings/settings", {
                 _self.show();
             }
         });
-        
+
         //Backwards compatible
         this.model = settings.model;
         this.setDefaults = settings.setDefaults;
     },
-    
+
     headings : {},
     getHeading : function(name){
         if (this.headings[name])
             return this.headings[name];
-        
+
         var heading = barSettings.appendChild(new apf.bar({
             skin: "basic"
         }));
-        heading.$int.innerHTML = '<div class="header"><span></span><div>' 
-            + name + '</div></div>';
-        
+        heading.$int.innerHTML = '<div class="header"><span></span><div>'
+            + apf.escapeXML(name) + '</div></div>';
+
         this.headings[name] = heading;
-        
+
         return heading;
     },
 
     init : function(amlNode){
         this.panel = winSettings;
         this.nodes.push(winSettings);
-        
+
         // this has to be done out here for some reason
         this.addSettings("General",  panelSettings );
     },
 
     addSettings : function(group, markup, callback) {
-        var _self = this;
         ide.addEventListener("init.ext/settings/settings", function(e) {
             var heading = e.ext.getHeading(group);
             var last    = heading.lastChild;
-            
+
             heading.insertMarkup(markup);
-            
+
             if (!heading.$map)
                 heading.$map = {};
-            
+
             var nodes = [];
-            
+
             if (!last) {
                 last = heading.firstChild
                 nodes.push(last);
@@ -113,20 +112,20 @@ module.exports = ext.register("ext/settings/settings", {
             while (!last) {
                 nodes.push(last = last.nextSibling);
             }
-            
+
             if (nodes.length == 0) {
                 nodes = heading.childNodes;
             }
 
-            for (var i = 0; i < nodes.length; i++) {
+            for (var nextSibling, i = 0; i < nodes.length; i++) {
                 if (nodes[i].nodeType == 1 && nodes[i].position) {
                     heading.$map[nodes[i].position] = nodes[i];
                     nextSibling = findNextSibling(nodes[i], heading);
-                    if (nextSibling !== undefined && nodes[i].nextSibling != nextSibling) 
+                    if (nextSibling !== undefined && nodes[i].nextSibling != nextSibling)
                         heading.insertBefore(nodes[i], nextSibling);
                 }
             }
-            
+
             function findNextSibling(node, heading){
                 var map = heading.$map, beforeNode, diff = 1000000;
                 for (var pos in map) {
@@ -138,35 +137,11 @@ module.exports = ext.register("ext/settings/settings", {
                 }
                 return beforeNode;
             }
-            
+
             callback && callback();
         });
-        
-        /*ide.addEventListener("init.ext/settings/settings", function(e) {
-            var heading = e.ext.getHeading(group);
-            var newGroup = (_self.headings[group].childNodes.length == 0);
-            heading.insertMarkup(content || content.markup, {
-                callback : function(inserted) {
-                    if (!newGroup) {
-                        _self.headings[group].childNodes.sort(function compare(a,b) {
-                            if (typeof a.getAttribute === 'function' && typeof b.getAttribute === 'function') { // commented XML code doesn't have function, comes back as [#comment Node]
-                                if (a.getAttribute("position") < b.getAttribute("position")) {
-                                    return -1;
-                                }
-                                else if (a.getAttribute("position") > b.getAttribute("position")) {
-                                    return 1;
-                                }
-                                else {
-                                    return 0;
-                                }
-                            }
-                        });
-                    }
-                }
-            });
-        });*/
     },
-        
+
     show : function(e) {
         if (!this.panel || !this.panel.visible) {
             panels.activate(this);
@@ -175,7 +150,7 @@ module.exports = ext.register("ext/settings/settings", {
         else {
             panels.deactivate(null, true);
         }
-        
+
         return false;
     },
 
@@ -184,7 +159,7 @@ module.exports = ext.register("ext/settings/settings", {
             item.enable();
         });
     },
-    
+
     disable : function(){
         this.nodes.each(function(item){
             item.disable();
@@ -193,12 +168,12 @@ module.exports = ext.register("ext/settings/settings", {
 
     destroy : function(){
         commands.removeCommandByName("opensettingspanel");
-        
+
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
         this.nodes = [];
-        
+
         panels.unregister(this);
     }
 });

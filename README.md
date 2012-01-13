@@ -36,7 +36,7 @@ We support the newer versions of Chrome, Firefox and Safari.
 
 Requirements:
 
-  * NodeJS `>= 0.6.16` (node 0.8.x will *not work* at the moment!)
+  * NodeJS `>= 0.6.16`
   * NPM `>= 1.1.16`
 
 Install:
@@ -133,7 +133,8 @@ Main projects that we use as building blocks:
   * [async.js] by [fjakobs]
   * [jsDAV] by [mikedeboer]
   * [connect] by [senchalabs](http://github.com/senchalabs)
-  * [socket.io] by [LearnBoost](http://github.com/LearnBoost)
+  * [engine.io] by [LearnBoost](http://github.com/LearnBoost)
+  * [smith.io](http://github.com/c9/smith.io) by [creationix](http://github.com/creationix) & [cadorn](http://github.com/cadorn)
   * [ace](http://github.com/ajaxorg/ace) by [fjakobs]
   * [apf](http://www.ajax.org) by [ajax.org]
   * and of course [Node.JS]!
@@ -147,7 +148,7 @@ Thanks to all developers and contributors of these projects!
 [async.js]: http://github.com/fjakobs/async.js
 [jsDAV]: http://github.com/mikedeboer/jsdav
 [connect]: http://github.com/senchalabs/connect
-[socket.io]: http://github.com/LearnBoost/Socket.IO-node.git
+[engine.io]: http://github.com/LearnBoost/engine.io
 [requireJS]: http://requirejs.org/
 [Node.JS]: http://nodejs.org/
 
@@ -162,13 +163,13 @@ Cloud9 wouldn't be where it is now without contributions. Feel free to fork and 
 1. [The Individual CLA](https://github.com/ajaxorg/cloud9/raw/master/doc/Contributor_License_Agreement-v2.pdf): use this version if you're working on an ajax.org project in your spare time, or can clearly claim ownership of copyright in what you'll be submitting.
 2. [The Corporate CLA](https://github.com/ajaxorg/cloud9/raw/master/doc/Corporate_Contributor_License_Agreement-v2.pdf): have your corporate lawyer review and submit this if your company is going to be contributing to ajax.org projects
 
-If you want to contribute to an ajax.org project please print the CLA and fill it out and sign it. Then either send it by snail mail or fax us or send it back scanned (or as a photo) by email.
+If you want to contribute to an ajax.org project please print the CLA and fill it out and sign it. Then either send it by snail mail or fax us or send it back scanned (or as a photo) by email. Please indicate a contact person or pull request your CLA relates to so we can quickly process and handle your agreement. Once you've submitted it, you no longer need to send one for subsequent submissions.
 
-Email: info@ajax.org
+Email: cla@c9.io
 
 Fax: +31 (0) 206388953
 
-Address: Ajax.org B.V.
+Address: Cloud9 IDE
   Keizersgracht 241
   1016 EA, Amsterdam
   the Netherlands

@@ -4,11 +4,12 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var markup = require("text!ext/log/log.xml");
 var menus = require("ext/menus/menus");
 
@@ -16,13 +17,13 @@ module.exports = ext.register("ext/log/log", {
     name   : "Log",
     dev    : "Ajax.org",
     alone  : true,
-    type   : ext.GENERAL, 
+    type   : ext.GENERAL,
     markup : markup,
     desp   : [],
     model  : new apf.model().load("<events />"),
-    
+
     nodes : [],
-    
+
     hook : function(){
         var _self = this;
         this.nodes.push(
@@ -33,11 +34,11 @@ module.exports = ext.register("ext/log/log", {
                 }
             }), 1500000)
         );
-        
+
         var send = ide.send;
         ide.send = function(msg){
             _self.log(null, "websocket", msg);
-                
+
             send.apply(ide, arguments);
         }
 
@@ -81,12 +82,12 @@ module.exports = ext.register("ext/log/log", {
                         state : state,
                         data : data
                     }));
-    
+
                 callback && callback.apply(this, arguments);
             }
-    
+
             var xmlNode = _self.log(url, type, options);
-    
+
             return get.apply(oHttp, arguments);
         }
     },
@@ -95,21 +96,18 @@ module.exports = ext.register("ext/log/log", {
         if (this.model.data.childNodes.length > 1000) {
             apf.xmldb.removeNode(this.model.data.firstChild);
         }
-        
-        var xmlNode = apf.getXml("<event/>");	
-            	
-        var attrs = {	
-            time: new Date().getTime(),	
-            url: url||"",	
-            type: type,	
-            response: (response && JSON.stringify(response)) || ""	
-        };	
-        Object.keys(attrs).forEach(function (k) {
-            xmlNode.setAttribute(k, attrs[k]);	
-        });	
-        	
-        xmlNode.appendChild(xmlNode.parentNode.createCDATASection(request ? JSON.stringify(request).replace("]]>", "]] >") : ""));
-        
+
+        var xmlNode = apf.n("<event/>")
+            .attr("time", new Date().getTime())
+            .attr("url", url || "")
+            .attr("type", type)
+            .attr("response", (response && JSON.stringify(response)) || "")
+            .node();
+
+        xmlNode.appendChild(xmlNode.parentNode.createCDATASection(request
+            ? JSON.stringify(request).replace("]]>", "]] >")
+            : ""));
+
         return apf.xmldb.appendChild(this.model.data, xmlNode);
     },
 
@@ -117,22 +115,22 @@ module.exports = ext.register("ext/log/log", {
 
     enable : function(){
         if (!this.disabled) return;
-        
+
         this.nodes.each(function(item){
             item.enable();
         });
         this.disabled = false;
     },
-    
+
     disable : function(){
         if (this.disabled) return;
-        
+
         this.nodes.each(function(item){
             item.disable();
         });
         this.disabled = true;
     },
-    
+
     destroy : function(){
         this.nodes.each(function(item){
             item.destroy(true, true);

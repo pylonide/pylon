@@ -2,10 +2,11 @@ define(function(require, exports, module) {
 
 var ID_REGEX = /[a-zA-Z_0-9\$]/;
 
-function retrievePreceedingIdentifier(text, pos) {
+function retrievePreceedingIdentifier(text, pos, regex) {
+    regex = regex || ID_REGEX;
     var buf = [];
     for (var i = pos-1; i >= 0; i--) {
-        if(ID_REGEX.test(text[i]))
+        if (regex.test(text[i]))
             buf.push(text[i]);
         else
             break;
@@ -13,16 +14,16 @@ function retrievePreceedingIdentifier(text, pos) {
     return buf.reverse().join("");
 }
 
-function retrieveFullIdentifier(text, pos) {
+function retrieveFullIdentifier(text, pos, regex) {
+    regex = regex || ID_REGEX;
     var buf = [];
     var i = pos >= text.length ? (text.length - 1) : pos;
-    while (i < text.length && ID_REGEX.test(text[i]))
+    while (i < text.length && regex.test(text[i]))
         i++;
     // e.g edge semicolon check
     i = pos == text.length ? i : i-1;
-    for (; i >= 0 && ID_REGEX.test(text[i]); i--) {
+    for (; i >= 0 && regex.test(text[i]); i--)
         buf.push(text[i]);
-    }
     i++;
     var text = buf.reverse().join("");
     if (text.length == 0)
@@ -31,6 +32,18 @@ function retrieveFullIdentifier(text, pos) {
         sc: i,
         text: text
     };
+}
+
+function retrieveFollowingIdentifier(text, pos, regex) {
+    regex = regex || ID_REGEX;
+    var buf = [];
+    for (var i = pos; i < text.length; i++) {
+        if (regex.test(text[i]))
+            buf.push(text[i]);
+        else
+            break;
+    }
+    return buf;
 }
 
 function prefixBinarySearch(items, prefix) {
@@ -63,8 +76,26 @@ function findCompletions(prefix, allIdentifiers) {
     return matches;
 }
 
+function fetchText(staticPrefix, path) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', staticPrefix + "/" + path, false);
+    try {
+        xhr.send();
+    }
+    // Likely we got a cross-script error (equivalent with a 404 in our cloud setup)
+    catch(e) {
+        return false;
+    }
+    if (xhr.status === 200)
+        return xhr.responseText;
+    else
+        return false;
+}
+
 exports.retrievePreceedingIdentifier = retrievePreceedingIdentifier;
 exports.retrieveFullIdentifier = retrieveFullIdentifier;
+exports.retrieveFollowingIdentifier = retrieveFollowingIdentifier;
 exports.findCompletions = findCompletions;
+exports.fetchText = fetchText;
 
 });

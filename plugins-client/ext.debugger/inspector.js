@@ -26,7 +26,7 @@ var MESSAGE_TYPES = {
 var numOutputSection = 0;
 function logToInspectorOutput(output, type, pre, post, existingDiv) {
     var outStr = MESSAGE_TYPES[type];
-    outStr = outStr.replace("__MSG__", output);
+    outStr = outStr.replace("__MSG__", apf.escapeXML(output));
 
     if (!existingDiv) {
         numOutputSection++;
@@ -123,7 +123,8 @@ exports.consoleTextHandler = function(e) {
                     refs.push(props[i].ref);
 
                 var pre = "<a class='xmlhl' href='javascript:void(0)' onclick='require(\"ext/debugger/inspector\").showObject(\""
-                    + apf.escapeXML(xmlNode.xml.replace(/"/g, "\\\"")) + "\", "
+                    // replace angle brackets by unicode equivalents because apf doesn't accept angle brackets in attribute values
+                    + apf.escapeXML(xmlNode.xml.replace(/"/g, "\\\"").replace(/&lt;/g, "\u3008").replace(/&gt;/, "\u3009")) + "\", "
                     + ref + ", \"" + apf.escapeXML((expression || "").trim().split(/;|\n/).pop().trim().replace(/"/g, "\\\"")) + "\")'>";
                 var post = " }</a>";
 

@@ -5,8 +5,7 @@ module.exports = function setup(options, imports, register) {
         path: base + "/lib",
         mount: "/ace/lib",
         rjs: {
-            ace: "/ace/lib/ace",
-            pilot: "/ace/lib/pilot"
+            ace: "/ace/lib/ace"
         }
     }, {
         path: base + "/build/src",

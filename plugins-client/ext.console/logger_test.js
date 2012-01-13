@@ -7,8 +7,8 @@
  */
 
 if (typeof process !== "undefined") {
-    require("../../../support/paths");
-    require.paths.unshift(__dirname + "/../..");
+    require("amd-loader");
+    require("../../test/setup_paths");
 }
 
 String.prototype.escapeHTML = function() { return this; };
@@ -48,7 +48,7 @@ define(function(require, exports, module) {
             assert.equal(line3Created, expected3);
 
             next();
-        },
+        }
     };
 });
 

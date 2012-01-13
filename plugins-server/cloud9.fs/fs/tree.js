@@ -39,9 +39,13 @@ exports.jsDAV_Tree_Filesystem = jsDAV_Tree_Filesystem;
     this.getNodeForPath = function(path, callback) {
         var self = this;
         path = this.getRealPath(path);
+        var nicePath = this.stripSandbox(path);
+        if (!this.insideSandbox(path))
+            return callback(new Exc.jsDAV_Exception_Forbidden("You are not allowed to access " + nicePath));
+
         this.vfs.stat(path, {}, function(err, stat) {
             if (err)
-                return callback(new Exc.jsDAV_Exception_FileNotFound("File at location " + path + " not found 1"));
+                return callback(new Exc.jsDAV_Exception_FileNotFound("File at location " + path + " not found"));
 
             callback(null, stat.mime == "inode/directory"
                 ? new jsDAV_FS_Directory(self.vfs, path, stat)
@@ -50,16 +54,20 @@ exports.jsDAV_Tree_Filesystem = jsDAV_Tree_Filesystem;
         });
     };
 
-        /**
+    /**
      * Returns the real filesystem path for a webdav url.
      *
      * @param string publicPath
      * @return string
      */
     this.getRealPath = function(publicPath) {
+        // if we already start with the basepath, let it go :-)
+        if (publicPath.indexOf(this.basePath) === 0) {
+            return publicPath;
+        }
+        
         return Path.join(this.basePath, publicPath);
     };
-
 
     /**
      * Copies a file or directory.
@@ -75,6 +83,10 @@ exports.jsDAV_Tree_Filesystem = jsDAV_Tree_Filesystem;
         var self = this;
         source = this.getRealPath(source);
         destination = this.getRealPath(destination);
+        if (!this.insideSandbox(destination)) {
+            return callback(new Exc.jsDAV_Exception_Forbidden("You are not allowed to copy to " +
+                this.stripSandbox(destination)));
+        }
 
         // first check if source exists
         this.vfs.stat(source, {}, function(err, stat) {
@@ -84,7 +96,7 @@ exports.jsDAV_Tree_Filesystem = jsDAV_Tree_Filesystem;
             // if destination exists try to delete it
             self.vfs.rmdir(destination, { recursive: true }, function(err) {
                 // ignore error because destination may not exists
-                self.vfs.exec("cp", {args: ["-R", source, destination]}, callback);
+                self.vfs.execFile("cp", {args: ["-R", source, destination]}, callback);
             });
         });
     };
@@ -101,6 +113,10 @@ exports.jsDAV_Tree_Filesystem = jsDAV_Tree_Filesystem;
     this.move = function(source, destination, callback) {
         source = this.getRealPath(source);
         destination = this.getRealPath(destination);
+        if (!this.insideSandbox(destination)) {
+            return callback(new Exc.jsDAV_Exception_Forbidden("You are not allowed to move to " +
+                this.stripSandbox(destination)));
+        }
 
         this.vfs.rename(destination, {from: source}, callback);
     };

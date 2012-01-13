@@ -4,17 +4,14 @@
     "main": "socket-ext.js",
     "private": true,
 
-    "dependencies": {
-        "socket.io": "0.8.x"
-    },
-
     "plugin": {
         "provides": ["workspace-socket"],
         "consumes": [
             "http",
             "ide",
             "session",
-            "workspace-permissions"
+            "workspace-permissions",
+            "smith.transport.server"
         ]
     }
 }

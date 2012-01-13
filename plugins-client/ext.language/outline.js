@@ -42,7 +42,7 @@ module.exports = {
             hint: "search for a definition and jump to it",
             bindKey: {mac: "Command-Shift-E", win: "Ctrl-Shift-E"},
             isAvailable : function(editor) {
-                return editor && editor.ceEditor;
+                return editor && editor.path == "ext/code/code";
             },
             exec: function () {
                 _self.updateOutline(true);
@@ -159,11 +159,11 @@ module.exports = {
         }
         
         var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
             return;
         
         this.fullOutline = event.data.body;
-        var ace = editor.ceEditor.$editor;
+        var ace = editor.amlEditor.$editor;
         var cursor = ace.getCursorPosition();
         this.$originalLine = cursor.row + 1;
         this.$originalColumn = cursor.column;
@@ -223,7 +223,7 @@ module.exports = {
     
     renderOutline: function(ignoreFilter) {
         var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        if (!editor || editor.path != "ext/code" || !editor.amlEditor)
             return;
             
         ext.initExtension(gotofile);
@@ -240,7 +240,7 @@ module.exports = {
             treeOutline.$removeClearMessage();
         */
 
-        var ace = editor.ceEditor.$editor;
+        var ace = editor.amlEditor.$editor;
         var selected = this.findCursorInOutline(outline, ace.getCursorPosition());
         mdlOutline.load(apf.getXml('<data>' + this.outlineJsonToXml(outline, selected, 'entries') + '</data>'));
         return selected;
@@ -260,7 +260,7 @@ module.exports = {
     },
     
     scrollToTop: function(selectFirstItem) {
-        if (selectFirstItem && mdlOutline.data.childNodes[0]) {
+        if (selectFirstItem && mdlOutline.data.childNodes[0] && mdlOutline.data.childNodes[0].nodeType === 1) {
             treeOutline.select(mdlOutline.data.childNodes[0]);
         }
         // HACK: Need to set to non-falsy values first
@@ -302,7 +302,7 @@ module.exports = {
         if (e.keyCode === 27) { // Escape
             if (this.$originalLine) {
                 var editor = editors.currentEditor;
-                var ace = editor.ceEditor.$editor;
+                var ace = editor.amlEditor.$editor;
                 ace.gotoLine(this.$originalLine, this.$originalColumn, apf.isTrue(settings.model.queryValue("editors/code/@animatedscroll")));
                 
                 delete this.$originalLine;

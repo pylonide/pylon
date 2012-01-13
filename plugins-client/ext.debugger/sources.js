@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var editors = require("ext/editors/editors");
 var dock = require("ext/dockpanel/dockpanel");
 var fs = require("ext/filesystem/filesystem");
@@ -44,7 +45,7 @@ module.exports = {
             if (!dbg.state)
                 return;
             var path = e.node.getAttribute("path");
-            var script = mdlDbgSources.queryNode("//file[@path='" + path + "']");
+            var script = mdlDbgSources.queryNode("//file[@path=" + util.escapeXpathString(path) + "]");
             if (!script)
                 return;
 
@@ -71,8 +72,11 @@ module.exports = {
         modelName = "mdlDbgStack";
         model = apf.nameserver.register("model", modelName, new apf.model());
         apf.setReference(modelName, model);
-        dbgCallStack.addEventListener("afterrender", function(){
+        dbgCallStack.addEventListener("afterrender", function() {
             dgStack.addEventListener("afterselect", function(e) {
+                // afterselect can be called after setting value, without user interaction
+                if (!dgStack.hasFocus())
+                    return;
                 e.selected && _self.showDebugFrame(e.selected);
                 updateMarker(e.selected);
             });
@@ -92,8 +96,8 @@ module.exports = {
         }
 
         function updateMarker(frame) {
-            var ceEditor = editors.currentEditor && editors.currentEditor.ceEditor;
-            var session = ceEditor && ceEditor.$editor.session;
+            var amlEditor = editors.currentEditor && editors.currentEditor.amlEditor;
+            var session = amlEditor && amlEditor.$editor.session;
             if (!session)
                 return;
 
@@ -101,18 +105,19 @@ module.exports = {
             session.$stepMarker && removeMarker(session, "step");
 
             if (frame) {
-                var path = ceEditor.xmlRoot.getAttribute("path");
+                var path = amlEditor.xmlRoot.getAttribute("path");
                 var framePath = frame.getAttribute("scriptPath");
-                var row = parseInt(frame.getAttribute("line"));
+                var row = parseInt(frame.getAttribute("line"), 10);
                 if (frame.hasAttribute("istop")) {
                     if (path == framePath)
                         addMarker(session, "step", row);
-                } else {
+                }
+                else {
                     if (path == framePath)
                         addMarker(session, "stack", row);
                     if (dbg.topframe) {
                         framePath = dbg.topframe.getAttribute("scriptPath");
-                        row = parseInt(dbg.topframe.getAttribute("line"));
+                        row = parseInt(dbg.topframe.getAttribute("line"), 10);
                         if (path == framePath)
                             addMarker(session, "step", row);
                     }
@@ -133,11 +138,11 @@ module.exports = {
 
     showDebugFrame: function(frame) {
         this.show({
-            row: parseInt(frame.getAttribute("line")),
-            column: parseInt(frame.getAttribute("column")),
+            row: parseInt(frame.getAttribute("line"), 10),
+            column: parseInt(frame.getAttribute("column"), 10),
             text: frame.getAttribute("name"),
             path: frame.getAttribute("scriptPath")
-        })
+        });
     },
 
     showDebugFile: function(scriptId, row, column, text) {
@@ -158,8 +163,9 @@ module.exports = {
         if (!path) {
             var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
             path = script && script.getAttribute("path");
-        } else {
-            var script = mdlDbgSources.queryNode("//file[@path='" + path + "']");
+        }
+        else {
+            var script = mdlDbgSources.queryNode("//file[@path=" + util.escapeXpathString(path) + "]");
             scriptId = script && script.getAttribute("scriptid");
         }
 
@@ -167,7 +173,7 @@ module.exports = {
             return console.log("Source not found " + name);
 
         if (path && path.substring(0, ide.davPrefix.length) == ide.davPrefix) {
-            var file = fs.model.queryNode("//file[@path='" + path + "']")
+            var file = fs.model.queryNode("//file[@path=" + util.escapeXpathString(path) + "]")
                 || fs.createFileNodeFromPath(path);
             editors.jump({
                 node    : file,
@@ -176,7 +182,8 @@ module.exports = {
                 text    : text,
                 animate : false
             });
-        } else if (scriptId) {
+        }
+        else if (scriptId) {
             var page = tabEditors.getPage(path);
 
             if (page) {
@@ -188,7 +195,8 @@ module.exports = {
                     text    : text,
                     animate : false
                 });
-            } else {
+            }
+            else {
                 var node = apf.n("<file />")
                     .attr("name", path.split("/").pop())
                     .attr("path", path)
@@ -197,7 +205,7 @@ module.exports = {
                     .attr("debug", "1")
                     .attr("lineoffset", "0").node();
 
-                dbg.main.loadScript(script, function(source) {
+                dbg.main.loadSource(script, function(source) {
                     var doc = ide.createDocument(node, source);
                     editors.jump({
                         node    : node,

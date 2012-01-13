@@ -55,7 +55,7 @@
                 <a:each match="[frame]">
                     <a:column caption="Function" value="[@name]" width="60%" icon2="debugger/stckframe_obj.gif" />
                     <a:column caption="Script" value="[@script]" width="40%" />
-                    <a:column caption="Ln" value="[@line]" width="30"/>
+                    <a:column caption="Ln" value="{parseInt([@line])+1}" width="30"/>
                     <a:column caption="Col" value="[@column]" width="30"/>
                 </a:each>
             </a:datagrid>
@@ -75,6 +75,7 @@
                       caption  = "Clear" 
                       onclick  = "
                         txtCode.clear();
+                        txtInteractiveOutput.clear();
                       " />
                     <a:divider skin2="c9-divider"/>
                     <a:dropdown id="lstScripts"
@@ -96,8 +97,8 @@
                   onkeydown         = "return require('ext/debugger/inspector').consoleTextHandler(event)" 
                   realtime          = "true"
                   syntax            = "javascript"
-                  border            = "0" 
-                  model             = "{require('core/settings').model}" 
+                  border            = "0"
+                  minheight         = "30"
                   value             = "[auto/console/input]"
                   softtabs          = "[editors/code/@softtabs]"
                   tabsize           = "[editors/code/@tabsize]"
@@ -109,14 +110,15 @@
                   animatedscroll    = "[editors/code/@animatedscroll]"
                   fontsize          = "[editors/code/@fontsize]"
                   showprintmargin   = "false"
+                  caching           = "false"
                   highlightselectedword = "[editors/code/@highlightselectedword]"
                   printmargincolumn = "0" />
                 <a:text id="txtInteractiveOutput"
                   class      = "interactive_output"
-                  height     = "150"
                   scrolldown = "true"
                   focussable = "true"
                   textselect = "true" 
+                  height     = "60"
                   scrollbar  = "sbShared 20 2 2" />
             </a:vsplitbox>
         </a:page>
@@ -135,7 +137,7 @@
                 <a:actions />
                 <a:each match="[item|globals]" sort="[@name]">
                     <a:insert match="[globals]" get="{adbg.loadFrame(dbg, {dbg.activeframe})}"/>
-                    <a:insert match="[item[@children='true']]" get="{adbg.loadObjects(dbg, %[.])}" />
+                    <a:insert match="[item[@children='true']]" get="{adbg.loadObject(dbg, %[.])}" />
                     <a:column caption="Property" value="{[@name] || 'Globals'}" width="40%" icon="debugger/genericvariable_obj.gif" tree="true" />
                     <a:column caption="Value" value="[@value]" width="60%" />
                     <a:column caption="Type" value="[@type]" width="50"/>

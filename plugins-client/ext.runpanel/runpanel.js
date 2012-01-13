@@ -21,6 +21,8 @@ var markupSettings = require("text!ext/runpanel/settings.xml");
 var cssString = require("text!ext/runpanel/style.css");
 var commands = require("ext/commands/commands");
 
+/*global stProcessRunning*/
+
 module.exports = ext.register("ext/runpanel/runpanel", {
     name    : "Run Panel",
     dev     : "Ajax.org",
@@ -37,6 +39,10 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
     nodes : [],
     model : new apf.model(),
+    
+    disableLut: {
+        "terminal": true
+    },
 
     hook : function(){
         if (ide.readonly)
@@ -53,13 +59,16 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         commands.addCommand({
             name: "run",
-            "hint": "run and debug a node program on the server",
+            "hint": "run or debug an application (stops the app if running)",
             "commands": {
                 "[PATH]": {"hint": "path pointing to an executable. Autocomplete with [TAB]"}
             },
             bindKey: {mac: "F5", win: "F5"},
             exec: function () {
-                _self.run();
+                if (stProcessRunning.active)
+                    _self.stop();
+                else
+                    _self.run();
             }
         });
 
@@ -99,7 +108,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 id       : "btnRun",
                 checked  : "[{require('ext/settings/settings').model}::auto/configurations/@debug]",
                 icon     : "{this.checked ? 'run.png' : 'run.png'}",
-                caption  : "{apf.isTrue(this.checked) ? 'debug' : 'run'}",
+                caption  : "{apf.isTrue(this.checked) ? 'Debug' : 'Run'}",
                 command  : "run",
                 visible  : "{!stProcessRunning.active and 1}",
                 disabled : "{!!!ide.onLine}",
@@ -141,7 +150,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         var c = 0;
         menus.addItemToMenu(this.mnuRunCfg, new apf.item({
             caption  : "no run history",
-            disabled : true,
+            disabled : true
         }), c += 100);
         menus.addItemToMenu(this.mnuRunCfg, new apf.divider(), c += 100);
         menus.addItemToMenu(this.mnuRunCfg, new apf.item({
@@ -177,7 +186,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             ]);
 
             settings.setDefaults("auto/configurations", [
-                ["debug", "true"],
+                ["debug", "false"],
                 ["autohide", "true"]
             ]);
 
@@ -222,6 +231,14 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
             ide.addEventListener("updatefile", function(e){
                 setActiveFile(tabEditors.getPage());
+            });
+            
+            ide.addEventListener("tab.afterswitch", function(e){
+                _self.enable();
+            });
+            ide.addEventListener("closefile", function(e){
+                if (tabEditors.getPages().length == 1)
+                    _self.disable();
             });
         });
 
@@ -276,6 +293,18 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         });
     },
 
+    saveSelection : function() {
+        var node = this.model.data.selectSingleNode('config[@last="true"]');
+        if (node)
+            node.removeAttribute("last");
+        if (lstRunCfg.selected) {
+            lstRunCfg.selected.setAttribute("last", "true");
+            settings.save();
+        }
+        else
+            lstRunCfg.select(lstRunCfg.$model.queryNode("//config"));
+    },
+
     checkAutoHide : function(){
         /*var value = settings.model.queryValue("auto/configurations/@autohide");
         var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
@@ -308,6 +337,11 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 if (_self.mnuRunCfg.populated && item.node == e.args[0].xmlNode)
                     item.destroy(true, true);
             });
+        });
+
+        setTimeout(function() {
+            if (lstRunCfg.$model)
+                lstRunCfg.select(lstRunCfg.$model.queryNode("config[@last='true']"));
         });
     },
 
@@ -419,7 +453,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 if (self.lstRunCfg)
                     lstRunCfg.select(this.node);
             }
-        }), divider)
+        }), divider);
     },
 
     runConfig : function(config, debug) {
@@ -437,13 +471,14 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             apf.xmldb.removeAttribute(lastNode, "last");
         apf.xmldb.setAttribute(config, "last", "true");
 
+        self["txtCmdArgs"] && txtCmdArgs.blur(); // fix the args cache issue #2763
         // dispatch here instead of in the implementation because the implementations
         // will vary over time
         ide.dispatchEvent("beforeRunning");
-
+        var args = config.getAttribute("args");
         noderunner.run(
             config.getAttribute("path"),
-            (config.getAttribute("args") || "").split(" "),
+            args ? args.split(" ") : [],
             debug,
             config.getAttribute("value")
         );
@@ -456,6 +491,11 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     },
 
     enable : function(){
+        var page = tabEditors.getPage();
+        var contentType = (page && page.getModel().data.getAttribute("contenttype")) || "";
+        if(this.disableLut[contentType])
+            return this.disable();
+        
         this.nodes.each(function(item){
             item.enable && item.enable();
         });

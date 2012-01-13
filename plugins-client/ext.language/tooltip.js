@@ -1,13 +1,14 @@
 define(function(require, exports, module) {
 
 var dom = require("ace/lib/dom");
+var code = require("ext/code/code");
 
 var tooltipEl = dom.createElement("div");
 tooltipEl.className = "language_tooltip";
 
 module.exports = {
     show: function(row, column, html) {
-        var editor = ceEditor.$editor;
+        var editor = code.amlEditor.$editor;
         if(!this.isVisible) {
             this.isVisible = true;
             
@@ -42,7 +43,7 @@ module.exports = {
     hide: function() {
         var tooltip = module.exports;
         if(tooltip.isVisible) {
-            var editor = ceEditor.$editor;
+            var editor = code.amlEditor.$editor;
             editor.renderer.scroller.removeChild(tooltipEl);
             //editor.selection.removeListener("changeCursor", this.hide);
             editor.session.removeListener("changeScrollTop", this.hide);

@@ -1,5 +1,9 @@
-var globalRequire = require;
-
+/**
+ * Cloud9 Language Foundation
+ *
+ * @copyright 2011, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
 define(function(require, exports, module) {
 
 var completeUtil = require("ext/codecomplete/complete_util");
@@ -10,17 +14,7 @@ var completer = module.exports = Object.create(baseLanguageHandler);
 var snippetCache = {}; // extension -> snippets
     
 completer.handlesLanguage = function(language) {
-    return language !== 'java';
-};
-
-completer.fetchText = function(staticPrefix, path) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', staticPrefix + "/" + path, false);
-    xhr.send();
-    if(xhr.status === 200)
-        return xhr.responseText;
-    else
-        return false;
+    return ["java", "javascript"].indexOf(language) !== -1;
 };
 
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
@@ -34,7 +28,7 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     if (snippets === undefined) {
         var text;
         if (this.language)
-            text = this.fetchText(this.staticPrefix, 'ext/codecomplete/snippets/' + this.language + '.json');
+            text = completeUtil.fetchText(this.staticPrefix, 'ext/codecomplete/snippets/' + this.language + '.json');
         snippets = text ? JSON.parse(text) : {};
         // Cache
         snippetCache[this.language] = snippets;
@@ -54,6 +48,5 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
         };
     }));
 };
-
 
 });

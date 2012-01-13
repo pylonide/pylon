@@ -119,6 +119,32 @@ module.exports = ext.register("ext/keybindings_default/keybindings_default", {
         winKeyBindings.show();
     },
 
+    // used by cloud9 ide documentation
+    generatePanelJson: function() {
+        var json = { mac: {}, win: {}};
+        var count = 0;
+        
+        Object.keys(commands.commands).forEach(function(name){
+            ++count;
+            
+            var command = commands.commands[name];
+            var key = (command.bindKey && command.bindKey["win"] || "").split("|")[0];
+            var mackey = (command.bindKey && command.bindKey["mac"] || "").split("|")[0];
+            
+            if (!key || !mackey)
+                return;
+            
+            mackey = apf.hotkeys.toMacNotation(mackey);
+            
+            var cmd = command.short ? command.short : command.name.uCaseFirst();
+            
+            json.mac[cmd] = mackey.replace(/\s+/g, "-");
+            json.win[cmd] = key.replace(/\s+/g, "-");
+        });
+        
+        return json;
+    },
+
     enable : function(){
         this.nodes.each(function(item){
             item.enable();

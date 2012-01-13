@@ -135,8 +135,8 @@ util.inherits(ShellPlugin, Plugin);
     };
 
     this["command-commandhints"] = function(message) {
-        var commands = {},
-            _self    = this;
+        var commands = {};
+        var _self = this;
 
         Async.list(Object.keys(this.workspace.plugins))
              .each(function(sName, next) {
@@ -212,7 +212,7 @@ util.inherits(ShellPlugin, Plugin);
             });
         });
     };
-
+    
     this["command-ps"] = function(message) {
         var self = this;
         this.pm.ps(function(err, procs) {

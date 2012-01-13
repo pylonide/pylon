@@ -32,6 +32,8 @@ var KIND_HIDDEN = module.exports.KIND_HIDDEN = "hidden";
 var KIND_DEFAULT = module.exports.KIND_DEFAULT = undefined;
 var IN_CALLBACK_DEF = 2;
 var IN_CALLBACK_BODY = 1;
+var IN_LOOP = 1;
+var IN_LOOP_ALLOWED = 2;
 
 // Based on https://github.com/jshint/jshint/blob/master/jshint.js#L331
 var GLOBALS = {
@@ -41,7 +43,6 @@ var GLOBALS = {
     "undefined"              : true,
     "null"                   : true,
     "arguments"              : true,
-    self                     : true,
     "Infinity"               : true,
     onmessage                : true,
     postMessage              : true,
@@ -411,11 +412,16 @@ handler.analyze = function(doc, ast, callback) {
         );
     }
     
-    function scopeAnalyzer(scope, node, parentLocalVars, inCallback) {
+    function scopeAnalyzer(scope, node, parentLocalVars, inCallback, inLoop) {
         preDeclareHoisted(scope, node);
         var mustUseVars = parentLocalVars || [];
         node.setAnnotation("scope", scope);
-        function analyze(scope, node, inCallback) {
+        function analyze(scope, node, inCallback, inLoop) {
+            var inLoopAllowed = false;
+            if (inLoop === IN_LOOP_ALLOWED) {
+                inLoop = IN_LOOP;
+                inLoopAllowed = true;
+            }
             node.traverseTopDown(
                 'VarDecl(x)', 'ConstDecl(x)', function(b) {
                     mustUseVars.push(scope.get(b.x.value));
@@ -441,7 +447,7 @@ handler.analyze = function(doc, ast, callback) {
                     else {
                         scope.get(b.x.value).addUse(node[0]);
                     }
-                    analyze(scope, b.e, inCallback);
+                    analyze(scope, b.e, inCallback, inLoop);
                     return node;
                 },
                 'ForIn(Var(x), e, stats)', function(b) {
@@ -454,8 +460,8 @@ handler.analyze = function(doc, ast, callback) {
                             message: "Using undeclared variable as iterator variable."
                         });
                     }
-                    analyze(scope, b.e, inCallback);
-                    analyze(scope, b.stats, inCallback);
+                    analyze(scope, b.e, inCallback, inLoop);
+                    analyze(scope, b.stats, inCallback, true);
                     return node;
                 },
                 'Var("this")', function(b, node) {
@@ -474,6 +480,15 @@ handler.analyze = function(doc, ast, callback) {
                         scope.get(b.x.value).addUse(node);
                     } else if(handler.isFeatureEnabled("undeclaredVars") &&
                         !GLOBALS[b.x.value] && !jshintGlobals[b.x.value]) {
+                        if (b.x.value === "self") {
+                            markers.push({
+                                pos: this.getPos(),
+                                level: 'warning',
+                                type: 'warning',
+                                message: "Use 'window.self' to refer to the 'self' global."
+                            });
+                            return;
+                        }
                         markers.push({
                             pos: this.getPos(),
                             level: 'warning',
@@ -484,6 +499,15 @@ handler.analyze = function(doc, ast, callback) {
                     return node;
                 },
                 'Function(x, fargs, body)', function(b, node) {
+                    if (inLoop && !inLoopAllowed) {
+                        markers.push({
+                            pos: { sl: this.getPos().sl, el: this.getPos().sl, sc: this.getPos().sc, ec: this.getPos().sc + "function".length },
+                            level: 'warning',
+                            type: 'warning',
+                            message: "Function created in a loop."
+                        });
+                    }
+                    
                     var newScope = new Scope(scope);
                     node.setAnnotation("localScope", newScope);
                     newScope.declare("this");
@@ -494,17 +518,33 @@ handler.analyze = function(doc, ast, callback) {
                             mustUseVars.push(v);
                     });
                     var inBody = inCallback === IN_CALLBACK_DEF || isCallback(node);
-                    scopeAnalyzer(newScope, b.body, null, inBody ? IN_CALLBACK_BODY : 0);
+                    scopeAnalyzer(newScope, b.body, null, inBody ? IN_CALLBACK_BODY : 0, inLoop);
                     return node;
                 },
                 'Catch(x, body)', function(b, node) {
                     var oldVar = scope.get(b.x.value);
                     // Temporarily override
                     scope.vars["_" + b.x.value] = new Variable(b.x);
-                    scopeAnalyzer(scope, b.body, mustUseVars, inCallback);
+                    scopeAnalyzer(scope, b.body, mustUseVars, inCallback, inLoop);
                     // Put back
                     scope.vars["_" + b.x.value] = oldVar;
                     return node;
+                },
+                /*
+                 * Catches errors like these:
+                 * if(err) callback(err);
+                 * which in 99% of cases is wrong: a return should be added:
+                 * if(err) return callback(err);
+                 */
+                'If(Var("err"), Call(fn, args), None())', function(b, node) {
+                    // Check if the `err` variable is used somewhere in the function arguments.
+                    if(b.args.collectTopDown('Var("err")').length > 0)
+                        markers.push({
+                            pos: b.fn.getPos(),
+                            type: 'warning',
+                            level: 'warning',
+                            message: "Did you forget a 'return' here?"
+                        });
                 },
                 'PropAccess(_, "lenght")', function(b, node) {
                     markers.push({
@@ -523,13 +563,17 @@ handler.analyze = function(doc, ast, callback) {
                     });
                 },
                 'Call(PropAccess(e1, "bind"), e2)', function(b) {
-                    analyze(scope, b.e1, 0);
-                    analyze(scope, b.e2, inCallback);
+                    analyze(scope, b.e1, 0, inLoop);
+                    analyze(scope, b.e2, inCallback, inLoop);
                     return this;
                 },
+                'Call(PropAccess(e1, cbm), args)', function(b, node) {
+                    inLoop = (inLoop && CALLBACK_METHODS.indexOf(b.cbm.value) > -1) ? IN_LOOP_ALLOWED : inLoop;
+                },
                 'Call(e, args)', function(b, node) {
-                    analyze(scope, b.e, inCallback);
-                    analyze(scope, b.args, inCallback || (isCallbackCall(node) ? IN_CALLBACK_DEF : 0));
+                    analyze(scope, b.e, inCallback, inLoop);
+                    var newInCallback = inCallback || (isCallbackCall(node) ? IN_CALLBACK_DEF : 0);
+                    analyze(scope, b.args, newInCallback, inLoop);
                     return node;
                 },
                 'Block(_)', function(b, node) {
@@ -538,14 +582,27 @@ handler.analyze = function(doc, ast, callback) {
                 'New(Var("require"), _)', function() {
                     markers.push({
                         pos: this[0].getPos(),
-                        type: 'warning',
-                        level: 'warning',
+                        type: 'info',
+                        level: 'info',
                         message: "Applying 'new' to require()."
                     });
+                },
+                'For(e1, e2, e3, body)', function(b) {
+                    analyze(scope, b.e1, inCallback, inLoop);
+                    analyze(scope, b.e2, inCallback, IN_LOOP);
+                    analyze(scope, b.body, inCallback, IN_LOOP);
+                    analyze(scope, b.e3, inCallback, IN_LOOP);
+                    return node;
+                },
+                'ForIn(e1, e2, body)', function(b) {
+                    analyze(scope, b.e2, inCallback, inLoop);
+                    analyze(scope, b.e1, inCallback, inLoop);
+                    analyze(scope, b.body, inCallback, IN_LOOP);
+                    return node;
                 }
             );
         }
-        analyze(scope, node, inCallback);
+        analyze(scope, node, inCallback, inLoop);
         if(!parentLocalVars) {
             for (var i = 0; i < mustUseVars.length; i++) {
                 if (mustUseVars[i].uses.length === 0) {
@@ -572,9 +629,13 @@ handler.analyze = function(doc, ast, callback) {
         jshintGlobals = jshint.getGlobals();
     }
     
-    var rootScope = new Scope();
-    scopeAnalyzer(rootScope, ast);
-    callback(markers.concat(jshintMarkers));
+    if (ast) {
+        var rootScope = new Scope();
+        scopeAnalyzer(rootScope, ast);
+        callback(markers.concat(jshintMarkers));
+    } else {
+        callback(jshintMarkers);
+    }
 };
 
 var isCallbackCall = function(node) {
@@ -593,6 +654,8 @@ var isCallbackCall = function(node) {
 };
 
 var isCallback = function(node) {
+    if (!node.parent || !node.parent.parent || !node.parent.parent.isMatch('Call(_, _)'))
+        return false;
     var result;
     node.rewrite(
         'Function("", fargs, _)', function(b) {
@@ -671,6 +734,8 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
 };
 
 handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, callback) {
+    if (!fullAst)
+        return callback();
     var v;
     var mainNode;
     currentNode.rewrite(
@@ -697,22 +762,31 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, ca
             mainNode = node;
         }
     );
+    
+    // no mainnode can be found then invoke callback wo value because then we've got no clue
+    // what were doing
+    if (!mainNode) {
+        return callback();
+    }
+    
     var pos = mainNode.getPos();
-    var others = [];
+    var declarations = [];
+    var uses = [];
 
     var length = pos.ec - pos.sc;
-
-    v.declarations.forEach(function(node) {
+    
+    // if the annotation cant be found we will skip this to avoid null ref errors
+    v && v.declarations.forEach(function(node) {
          if(node !== currentNode[0]) {
             var pos = node.getPos();
-            others.push({column: pos.sc, row: pos.sl});
+            declarations.push({column: pos.sc, row: pos.sl});
         }
     });
     
-    v.uses.forEach(function(node) {
+    v && v.uses.forEach(function(node) {
         if(node !== currentNode) {
             var pos = node.getPos();
-            others.push({column: pos.sc, row: pos.sl});
+            uses.push({column: pos.sc, row: pos.sl});
         }
     });
     callback({
@@ -721,7 +795,9 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, ca
             row: pos.sl,
             column: pos.sc
         },
-        others: others
+        others: declarations.concat(uses),
+        declarations: declarations,
+        uses: uses
     });
 };
 
