@@ -10,57 +10,40 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
 var menus = require("ext/menus/menus");
-var markup = require("text!ext/preview/preview.xml");
+var dock = require("ext/dockpanel/dockpanel");
 var editors = require("ext/editors/editors");
-var splits = require("ext/splitview/splits");
+var markup = require("text!ext/preview/preview.xml");
 var skin    = require("text!ext/preview/skin.xml");
 var css     = require("text!ext/preview/style/style.css");
 
-module.exports = ext.register("ext/preview/preview", {
+var _name = "ext/preview/preview";
+
+module.exports = ext.register(_name, {
     name    : "Preview",
     dev     : "Ajax.org",
-    fileExtensions : [ "#!preview" ],
-    type    : ext.EDITOR,
+    type    : ext.GENERAL,
     alone   : true,
     markup  : markup,
+    _name   : _name,
     skin    : {
         id   : "previewskin",
         data : skin,
         "media-path" : ide.staticPrefix + "/ext/preview/style/images/",
         "icon-path"  : ide.staticPrefix + "/ext/preview/style/icons/"
     },
-    css   : util.replaceStaticPrefix(css),
+    css     : util.replaceStaticPrefix(css),
     deps    : [editors],
     autodisable : ext.ONLINE | ext.LOCAL,
-    hidePage : true,
-    counter : 0,
-    nodes : [],
-    disableLut: {
-        "terminal": true
-    },
-    popups: [],
-    page: null,
-    splits: [],
+    nodes   : [],
 
-    setDocument : function(doc, actiontracker) {
-        var node = doc.getNode();
-        var page = this.page = doc.$page;
-        page.$button.style.display = "none";
-        doc.editor = this;
-        var path = node.getAttribute("path");
-        node.setAttribute("name", "Preview: " + apf.getFilename(path).split(".#!preview")[0]);
-        var url = path.substring(0, path.length - 10);
-        var frmPreview = this.getIframe();
-        if (frmPreview.$ext.src !== url)
-            this.refresh(url);
-        if (!doc.preview)
-            doc.preview = {fd: ++this.counter};
-        this.amlEditor.show();
+    _getDockButton: function() {
+        var buttons = dock.getButtons(this._name);
+        if (buttons)
+            return buttons[0].cache;
     },
 
     onLoad: function () {
-        if (this.page)
-            this.page.setAttribute("class", "");
+        
     },
 
     hook : function() {
@@ -74,7 +57,7 @@ module.exports = ext.register("ext/preview/preview", {
                 tooltip : "Preview in browser",
                 caption : "Preview",
                 disabled : true,
-                onclick : function(){
+                onclick : function() {
                     var page = tabEditors.getPage();
                     if (page.$editor === _self)
                         return;
@@ -85,115 +68,86 @@ module.exports = ext.register("ext/preview/preview", {
             }), 10)
         );
 
+        dock.addDockable({
+            expanded : -1,
+            width : 400,
+            "min-width" : 400,
+            barNum: 1,
+            sections : [{
+                width : 360,
+                height: 300,
+                buttons : [{
+                    caption: "Preview Apps",
+                    ext : [this._name, "pgPreview"],
+                    hidden : false
+                }]
+            }]
+        });
+
+        dock.register(this._name, "pgPreview", {
+            menu : "Preview Apps",
+            primary : {
+                backgroundImage: ide.staticPrefix + "/ext/preview/style/images/main_icon.png",
+                defaultState: { x: -6, y: 0 },
+                activeState:  { x: -6, y: -40 }
+            }
+        }, function() {
+            ext.initExtension(_self);
+            return pgPreview;
+        });
+
         ide.addEventListener("tab.afterswitch", function(e){
             _self.enable();
         });
+
         ide.addEventListener("closefile", function(e){
             if (tabEditors.getPages().length == 1)
                 _self.disable();
         });
 
-        ide.addEventListener("afterfilesave", function(e) {
-            if (!_self.popups.length)
-                return;
-            _self.popups = _self.popups.filter(function (popup) {
-                return !! popup.Array;
-            });
-            _self.popups.forEach(function(popup) {
-                popup.location.reload();
-            });
-        });
-
-        ide.addEventListener("splits.mutate", function(e) {
-            if (e.page.$editor !== _self) {
-                if (e.action === "remove")
-                    editors.close(e.split.pairs[0].page);
-                return;
-            }
-            if (e.action === "add")
-                _self.splits.push(e.split);
-            else if (e.action === "remove")
-                _self.splits.remove(e.split);
-        });
+        ext.initExtension(this);
     },
 
     preview : function (url) {
         // window.open(url, "_blank");
-        var page = tabEditors.getPage();
-        var path = url + ".#!preview";
-        editors.gotoDocument({
-            path: path,
-            type: "nofile",
-            active: false
-        });
-        setTimeout(function() {
-            splits.mutate(null, tabEditors.getPage(path));
-            splits.update(splits.getActive());
-        });
+        pgPreview.setCaption(apf.getFilename(url));
+        var frmPreview = this.getIframe();
+        if (frmPreview.$ext.src !== url)
+            this.refresh(url);
     },
 
     popup: function (url) {
         url = url || txtPreview.getValue();
         var w = window.open(url, "_blank");
-        this.popups.push(w);
     },
 
-    refresh: function (url, focus) {
+    refresh: function (url) {
         var frmPreview = this.getIframe();
-        if (!frmPreview || !this.page)
-            return;
         url = url || txtPreview.getValue();
-        this.page.setAttribute("class", "loading_active");
+        pgPreview.setAttribute("class", "loading_active");
         frmPreview.$ext.src = url;
         txtPreview.setValue(url);
-        if (focus)
-            tabEditors.set(this.page);
     },
 
     close: function () {
-        this.page && editors.close(this.page);
+        
     },
 
-    init : function(){
-        var editor = this.amlEditor = barPreview;
-        this.enabled = false;
+    init : function() {
         apf.importCssString(this.css || "");
     },
 
     getIframe: function(editor) {
-        editor = editor || this.amlEditor;
-        return editor.selectSingleNode("iframe");
-    },
-
-    getState : function(doc){
-        if (!doc.preview)
-            return;
-
-        return {
-            "fd": doc.preview.fd,
-            "width": this.amlEditor.lastWidth || this.amlEditor.getWidth(),
-            "height": this.amlEditor.lastHeight || this.amlEditor.getHeight(),
-            "type": "nofile"
-        };
+        return pgPreview.selectSingleNode("iframe");
     },
 
     enable : function() {
-        var page = tabEditors.getPage();
-        var contentType = (page && page.getModel().data.getAttribute("contenttype")) || "";
-        if(this.disableLut[contentType])
-            return this.disable();
-        if (this.enabled)
-            return;
-        this.enabled = true;
         this.nodes.each(function(item){
             item.enable && item.enable();
         });
     },
 
-    disable : function(){
-        if (!this.enabled)
-            return;
-        this.enabled = false;
+    disable : function() {
         this.nodes.each(function(item){
             item.disable && item.disable();
         });
