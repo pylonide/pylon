@@ -643,7 +643,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
 
     getElementPosition: function(el){
         if(!el)
-            return;
+            return [0, 0, 0, 0];
             
         var elExt = el.$ext;
         if (elExt === undefined) {
