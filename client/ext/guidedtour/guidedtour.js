@@ -91,10 +91,11 @@ var jsonTourIde = {
         before: function() {
             var helloWorldScript = "var http = require(\'http\');\nhttp.createServer(function (req, res) {\n\tres.writeHead(200, {\'Content-Type\': \'text/plain\'});\n\tres.end(\'Hello World\\n\');\n}).listen(1337, \"127.0.0.1\");\n\nconsole.log(\'Server running at http://127.0.0.1:1337/\');";
             tabEditors.getPage().$doc.setValue(helloWorldScript);
-            if (!save) save = require("ext/save/save");
+            if (!save) 
+                save = require("ext/save/save");
             var page = tabEditors.getPage();
             var file = page.$model.data;
-            save._saveAsNoUI(page, file.getAttribute("path"), "/workspace/helloWorld-quideTour.js");
+            save._saveAsNoUI(page, file.getAttribute("path"), ide.davPrefix + "/helloWorld-quideTour.js");
         },
         el: undefined,
         div: "ceEditor",
@@ -154,7 +155,7 @@ var jsonTourIde = {
         time: 5
     }, {
         before: function() {
-            ideConsole.enable();
+            //ideConsole.enable();
             ideConsole.show();
         },
         el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabConsole.$ext),
@@ -295,6 +296,9 @@ var jsonTourIde = {
                     keyCode: 13,
                     currentTarget: txtConsoleInput
                 });
+                trFiles.confirmed = true;
+                trFiles.remove(trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']"))
+                trFiles.confirmed = false;
             }
         },
         el: "winFilesViewer",
@@ -381,6 +385,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
                 keyCode: 13,
                 currentTarget: txtConsoleInput
             });
+            trFiles.confirmed = true;
+            trFiles.remove(trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']"))
+            trFiles.confirmed = false;
         }
     },
     
