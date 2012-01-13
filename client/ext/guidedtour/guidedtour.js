@@ -253,7 +253,8 @@ var jsonTourIde = {
         time: 4
     }, {
         before: function() {
-            dbgCallStack.parentNode.parentNode.hide();
+            
+            dbgCallStack && dbgCallStack.parentNode && dbgCallStack.parentNode.parentNode.hide();
             dbg.continueScript();
             txtConsoleInput.setValue("git status");
         },
@@ -538,8 +539,12 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             winTourText.setAttribute("right", "");
     
             var pos = _self.getElementPosition(_self.currentEl);
+            
+            if(!pos)
+                return;
+            
             winTourText.setAttribute("class", step.pos);
-    
+        
             _self.setPositions(step.pos, pos, winTourText);
             
             if(step.pos)
@@ -637,6 +642,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     },
 
     getElementPosition: function(el){
+        if(!el)
+            return;
+            
         var elExt = el.$ext;
         if (elExt === undefined) {
             var pos = apf.getAbsolutePosition(el[0]);
