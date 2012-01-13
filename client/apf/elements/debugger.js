@@ -131,6 +131,8 @@ apf.dbg = module.exports = function(struct, tagName){
                         }
                         else {
                             _self.$mdlStack.load(backtraceModel.data);
+                            // throw out a nice break statement so others know that it fired
+                            _self.dispatchEvent("break");
                         }
 
                         dbgImpl.addEventListener("afterCompile", _self.$onAfterCompile.bind(_self));
