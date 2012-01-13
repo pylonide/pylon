@@ -1524,6 +1524,11 @@
             padding-right: 11px;
         }
 
+        .with-arrow.c9-toolbarbutton .c9-label {
+            background:url(images/btn-arrow.png) no-repeat right 9px;
+            padding-right: 11px;
+        }
+
         .c9-toolbarbuttonEmpty .c9-icon {
             position:relative;
         }
@@ -2258,7 +2263,7 @@
             border-radius: 6px 6px 6px 6px;
         }
         .btn-default-css3.btn-default-css3Focus .border {
-            
+
         }
         /*-----------*/
 
@@ -8608,7 +8613,7 @@
 
         .textFocus{
         }
-        
+
         .text.modal_text {
             font-family: Arial;
             font-size: 12px;
@@ -8616,7 +8621,7 @@
             color: #202020;
             line-height: 18px;
         }
-        
+
         .console_text {
             font-family : menlo,courier new,fixed,swiss,sans-serif;
             background: none;
@@ -9086,19 +9091,19 @@
         }
 
         .textarea_ideFocus {
-            
+
         }
 
         .textarea_ideDisabled{
-            
+
         }
 
         .textarea_ideInitial{
-            
+
         }
 
         .textarea_ideError{
-            
+
         }
     ]]></a:style>
 

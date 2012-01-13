@@ -96,6 +96,21 @@ apf.dbg = module.exports = function(struct, tagName){
         this.autoAttachComingIn = false;
     };
 
+    /**
+     * If you are auto attaching, please announce yourself here
+     */
+    this.registerAutoAttach = function () {
+        this.autoAttachComingIn = true;
+    };
+
+    /**
+     * Manual click on the run button?
+     * Youll get special behavior!
+     */
+    this.registerManualAttach = function () {
+        this.autoAttachComingIn = false;
+    };
+
     this.attach = function(host, tab) {
         var _self = this;
 
@@ -129,7 +144,6 @@ apf.dbg = module.exports = function(struct, tagName){
                         dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));
 
                         _self.setProperty("activeframe", frame);
-
                         _self.autoAttachComingIn = false;
                     });
                 });
@@ -181,7 +195,6 @@ apf.dbg = module.exports = function(struct, tagName){
                 _self.continueScript();
                 return;
             }
-
             _self.dispatchEvent("break");
         });
     };
@@ -211,7 +224,6 @@ apf.dbg = module.exports = function(struct, tagName){
 
         return frame;
     };
-
     this.$onAfterCompile = function(e) {
         var id = e.script.getAttribute("id");
         var oldNode = this.$mdlSources.queryNode("//file[@id='" + id + "']");
@@ -222,8 +234,8 @@ apf.dbg = module.exports = function(struct, tagName){
 
     this.$onDetach = function() {
         if (this.$debugger) {
-	        this.$debugger.destroy();
-	        this.$debugger = null;
+            this.$debugger.destroy();
+            this.$debugger = null;
         }
 
         this.$host = null;
@@ -252,6 +264,7 @@ apf.dbg = module.exports = function(struct, tagName){
             this.$host.$detach(this.$debugger, function () {
                 if (typeof callback === "function")
                     callback();
+
 
                 // always detach, so we won't get into limbo state
                 _self.$onDetach();
