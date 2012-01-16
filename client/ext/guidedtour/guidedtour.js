@@ -621,18 +621,18 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         if(this.currentEl.$ext) {
             var zIndex;
             var pNode = this.currentEl;
-            if(pNode) {
-                while (pNode.tagName != "body" && (!zIndex || zIndex <= 9998)) {
-                    zIndex = pNode.$ext.style && parseInt(pNode.$ext.style.zIndex || 9997) + 1; 
-                    pNode = pNode.parentNode;
-                }
+            while (pNode && pNode.tagName != "body" && (!zIndex || zIndex <= 9998)) {
+                zIndex = pNode.$ext.style && parseInt(pNode.$ext.style.zIndex || 9997) + 1;
+                pNode = pNode.parentNode;
             }
-            else
+            else {
                 zIndex = 9998;
+            }
         }
-        else
+        else {
             zIndex = this.currentEl.style && parseInt(this.currentEl.style.zIndex || 9997) + 1;
-            
+        }
+
         this.hlElement.style.zIndex = zIndex;
     },
 
