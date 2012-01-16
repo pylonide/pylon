@@ -39,7 +39,7 @@ exports.init = function(splitView) {
                     
                     var config = previousEditor 
                         ? previousEditor.$editor.getKeyboardHandler() 
-                        : new HashHandler(bindings.code)
+                        : new HashHandler(bindings.code);
                     editor.$editor.setKeyboardHandler(config);
                 });
             }
@@ -322,7 +322,9 @@ exports.getActive = function() {
 };
 
 exports.setActivePage = function(split, activePage) {
-    var idx = activePage ? exports.indexOf(split, activePage) : split.activePage;
+    var idx = split.activePage = activePage 
+        ? exports.indexOf(split, activePage) 
+        : split.activePage;
     if (idx == -1)
         return;
     (split.pairs[idx] ? split.pairs[idx].editor : split.pairs[0].editor).focus();
@@ -339,7 +341,7 @@ exports.indexOf = function(split, obj) {
             return i;
     }
     return -1;
-}
+};
 
 function sortEditorsAndPages(split) {
     var pages = tabEditors.getPages();
@@ -481,7 +483,7 @@ function setSplitViewStyles(splitOrPage) {
     for (var i = 0, l = pages.length; i < l; ++i) {
         if (!pages[i])
             continue;
-        if (i == 0)
+        if (i === 0)
             apf.setStyleClass(pages[i].$button, null, [NPlusOneClass]);
         else
             apf.setStyleClass(pages[i].$button, NPlusOneClass, []);
@@ -501,7 +503,7 @@ function correctQuickSearchDialog(e) {
     var editorDims = {
         width: editor.$ext.offsetWidth,
         height: editor.$ext.offsetHeight
-    }
+    };
     var parentDims = {
         width: parent.$ext.offsetWidth,
         height: parent.$ext.offsetHeight
@@ -538,7 +540,7 @@ function correctGotoLineDialog(e) {
     var editorDims = {
         width: editor.$ext.offsetWidth,
         height: editor.$ext.offsetHeight
-    }
+    };
 
     if (!gotoLineWindow && self["winGotoLine"])
         gotoLineWindow = self["winGotoLine"];

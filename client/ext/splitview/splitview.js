@@ -29,7 +29,9 @@ module.exports = ext.register("ext/splitview/splitview", {
     
     commands : {
         "mergetableft": {hint: "Add the page on the left of the currently active page to a split view"},
-        "mergetabright": {hint: "Add the page on the right of the currently active page to a split view"}
+        "mergetabright": {hint: "Add the page on the right of the currently active page to a split view"},
+        "nexteditor": {hint: "Navigate to the next editor right or below the editor that is currently active in the current split view"},
+        "preveditor": {hint: "Navigate to the previous editor left or above the editor that is currently active in the current split view"}
     },
     hotitems : [],
     nodes    : [],
@@ -167,6 +169,31 @@ module.exports = ext.register("ext/splitview/splitview", {
         Splits.mutate(null, pages[idx]);
         Splits.update();
         this.save();
+        return false;
+    },
+    
+    nexteditor: function() {
+        this.cycleEditors("next");
+    },
+    
+    preveditor: function() {
+        this.cycleEditors("prev");
+    },
+    
+    cycleEditors: function(dir) {
+        var split = Splits.getActive();
+        if (!split)
+            return;
+
+        var bNext   = dir == "next";
+        var currIdx = split.activePage;
+        var idx     = currIdx + (bNext ? 1 : -1);
+        if (idx < 0)
+            idx = split.pairs.length - 1;
+        if (idx > split.pairs.length - 1)
+            idx = 0;
+
+        Splits.setActivePage(split, split.pairs[idx].page);
         return false;
     },
     

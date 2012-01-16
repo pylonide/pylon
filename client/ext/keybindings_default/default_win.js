@@ -102,7 +102,9 @@ return keys.onLoad({
         },
         "splitview" : {
             "mergetableft": "Ctrl-Alt-Meta-[",
-            "mergetabright": "Ctrl-Alt-Meta-]"
+            "mergetabright": "Ctrl-Alt-Meta-]",
+            "nexteditor": "Ctrl-]",
+            "preveditor": "Ctrl-["
         },
         "code" : {
             "selectall": "Ctrl-A",

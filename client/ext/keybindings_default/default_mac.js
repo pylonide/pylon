@@ -101,7 +101,9 @@ return keys.onLoad({
         },
         "splitview" : {
             "mergetableft": "Command-Option-Ctrl-[",
-            "mergetabright": "Command-Option-Ctrl-]"
+            "mergetabright": "Command-Option-Ctrl-]",
+            "nexteditor": "Ctrl-]",
+            "preveditor": "Ctrl-["
         },
         "code" : {
             "selectall": "Command-A",
