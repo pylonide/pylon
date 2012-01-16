@@ -98,7 +98,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             case "state":
                 this.nodePid = message.processRunning || 0;
                 
-                stDebugProcessRunning.setProperty("active", !!message.debugClient || message.nodeDebugClient);
+                stDebugProcessRunning.setProperty("active", !!message.debugClient);
                 stProcessRunning.setProperty("active", !!message.processRunning);
                 dbgNode.setProperty("strip", message.workspaceDir + "/");
                 ide.dispatchEvent("noderunnerready");
