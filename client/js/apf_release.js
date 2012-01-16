@@ -6747,8 +6747,9 @@ delete _self.$btnControl[aml.$uniqueId];if(div&&div.parentNode){div.parentNode.i
 }_self.$lastPosition=_self.$lastLeft=undefined;}});}});apf.addListener(document,"mouseup",mUp=function(e){if(!e){e=event;
 }var aml=_self.$lastPosition!==null?apf.findHost(_self.$lastPosition||div.nextSibling):null;
 if(started&&aml!=_self.nextSibling){apf.tween.single(_self.$button,{steps:20,interval:10,from:_self.$button.offsetLeft,to:_self.$lastLeft||div.offsetLeft,type:"left",control:_self.$btnControl[_self.$uniqueId]={},anim:apf.tween.easeInOutCubic,onstop:function(){},onfinish:function(){oHtml.style.position=oHtml.style.zIndex=oHtml.style.top=oHtml.style.left="";
-_self.parentNode.insertBefore(_self,aml);div.parentNode.removeChild(div);delete _self.$btnControl[_self.$uniqueId];
-}});}else{oHtml.style.position=oHtml.style.zIndex=oHtml.style.top=oHtml.style.left="";
+var reorder=_self.nextSibling!=aml;_self.parentNode.insertBefore(_self,aml);div.parentNode.removeChild(div);
+if(reorder){_self.parentNode.dispatchEvent("reorder",{page:_self.localName!="page"?_self.parentNode.$activepage:_self});
+}delete _self.$btnControl[_self.$uniqueId];}});}else{oHtml.style.position=oHtml.style.zIndex=oHtml.style.top=oHtml.style.left="";
 div.parentNode.removeChild(div);}apf.removeListener(document,"mouseup",mUp);apf.removeListener(document,"mousemove",mMove);
 });}}};this.$btnUp=function(oHtml){this.parentNode.$setStyleClass(oHtml,"",["down"],true);
 if(this.disabled){return;}if(this.parentNode.$order&&this.$btnPressed){this.$dragging=false;
