@@ -322,12 +322,16 @@ exports.getActive = function() {
 };
 
 exports.setActivePage = function(split, activePage) {
+    var old = split.activePage;
     var idx = split.activePage = activePage 
         ? exports.indexOf(split, activePage) 
         : split.activePage;
     if (idx == -1)
         return;
-    (split.pairs[idx] ? split.pairs[idx].editor : split.pairs[0].editor).focus();
+    var pair = split.pairs[idx] ? split.pairs[idx] : split.pairs[0];
+    pair.editor.focus();
+    if (idx !== old)
+        ide.dispatchEvent("pageswitch", { page: pair.page });
 };
 
 /*
@@ -458,6 +462,8 @@ function onEditorFocus(editor) {
         for (var page, i = 0, l = split.pairs.length; i < l; ++i) {
             page = split.pairs[i].page;
             if (page === activePage) {
+                if (split.activePage !== i)
+                    ide.dispatchEvent("pageswitch", { page: page });
                 split.activePage = i;
                 apf.setStyleClass(page.$button, ActiveClass, [InactiveClass]);
             }

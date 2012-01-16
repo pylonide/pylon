@@ -119,30 +119,28 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             mdlRunConfigurations.load(runConfigs);
         });
         
-        var page = tabEditors.getPage();
-        if (page) {
+        function pageSwitch(page) {
+            if (!page)
+                return;
+
             var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
             mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
             mdlRunConfigurations.setQueryValue("config[@curfile]/@name", 
                 path.split("/").pop() + " (active file)");
         }
         
+        pageSwitch(tabEditors.getPage());
+        
         tabEditors.addEventListener("afterswitch", function(e){
-            var page = e.nextPage;
-            var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
-            mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
-            mdlRunConfigurations.setQueryValue("config[@curfile]/@name", 
-                path.split("/").pop() + " (active file)");
+            pageSwitch(e.nextPage);
         });
         
         ide.addEventListener("afterfilesave", function(e){
-            var page = tabEditors.getPage();
-            if (page) {
-                var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
-                mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
-                mdlRunConfigurations.setQueryValue("config[@curfile]/@name", 
-                    path.split("/").pop() + " (active file)");
-            }
+            pageSwitch(tabEditors.getPage());
+        });
+        
+        ide.addEventListener("pageswitch", function(e) {
+            pageSwitch(e.page);
         });
         
         var hasBreaked = false;
