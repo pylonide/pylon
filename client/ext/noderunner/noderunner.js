@@ -162,7 +162,10 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     run : function(path, args, debug, nodeVersion) {      
         if (stProcessRunning.active || !stServerConnected.active/* || (ddRunnerSelector.value=='gae' ? '' : !path)*/ || typeof path != "string")
             return false;
-
+        
+        if(nodeVersion == 'default')
+            nodeVersion = this.NODE_VERSION;
+        
         var page = ide.getActivePageModel();
         var command = {
             "command" : apf.isTrue(debug) ? "RunDebugBrk" : "Run",
