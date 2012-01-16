@@ -609,8 +609,16 @@ apf.page = function(struct, tagName){
                             oHtml.style.top      = 
                             oHtml.style.left     = "";
                             
+                            var reorder = _self.nextSibling != aml;
                             _self.parentNode.insertBefore(_self, aml);
                             div.parentNode.removeChild(div);
+                            if (reorder) {
+                                _self.parentNode.dispatchEvent("reorder", {
+                                    page: _self.localName != "page"
+                                        ? _self.parentNode.$activepage
+                                        : _self
+                                });
+                            }
                             
                             delete _self.$btnControl[_self.$uniqueId];
                         }
