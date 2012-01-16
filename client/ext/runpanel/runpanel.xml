@@ -88,6 +88,7 @@
                     <!--a:divider span="2" skin="c9-divider-hor" /-->
                     <a:model id="mdlRunnerSelector">
                         <data>
+                            <element caption="Default" value="default" />
                             <element caption="Auto" value="auto" />
                             <element caption="Node.js 0.4.x" value="0.4.x" />
                             <element caption="Node.js 0.6.x" value="0.6.x" />
@@ -101,7 +102,7 @@
                         flex      = "1"
                         disabled  = "{!lstRunCfg.selected}"
                         value     = "[{lstRunCfg.selected}::@value]"
-                        default   = "auto"
+                        default   = "default"
                         each      = "[element]"
                         caption   = "[@caption]"
                         eachvalue = "[@value]" />
