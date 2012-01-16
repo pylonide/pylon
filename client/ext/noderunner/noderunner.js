@@ -54,6 +54,8 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             }));
             return false;
         });
+        
+        this.nodePid = null;
     },
 
     $onDebugProcessActivate : function() {
@@ -94,9 +96,10 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 break;
 
             case "state":
+                this.nodePid = message.processRunning || 0;
                 
-                stDebugProcessRunning.setProperty("active", message.debugClient || message.nodeDebugClient);
-                stProcessRunning.setProperty("active", message.processRunning || message.nodeProcessRunning || message.pythonProcessRunning);
+                stDebugProcessRunning.setProperty("active", !!message.debugClient || message.nodeDebugClient);
+                stProcessRunning.setProperty("active", !!message.processRunning);
                 dbgNode.setProperty("strip", message.workspaceDir + "/");
                 ide.dispatchEvent("noderunnerready");
                 break;
@@ -170,7 +173,8 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
         ide.send(JSON.stringify({
             "command": "kill",
-            "runner"  : "node" //ddRunnerSelector.value // Explicit addition; trying to affect as less logic as possible for now...
+            "runner" : "node",
+            "pid"    : this.nodePid
         }));
     },
 
