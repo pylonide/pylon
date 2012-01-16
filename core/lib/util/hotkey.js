@@ -133,9 +133,10 @@ apf.hotkeys = {};
     };
 
     this.$exec = function(eInfo) {
+        var handler
         var hashId = 0 | (eInfo.ctrlKey ? 1 : 0) | (eInfo.altKey ? 2 : 0)
-            | (eInfo.shiftKey ? 4 : 0) | (eInfo.metaKey ? 8 : 0),
-            code   = eInfo.keyCode;
+            | (eInfo.shiftKey ? 4 : 0) | (eInfo.metaKey ? 8 : 0);
+        var code   = eInfo.keyCode;
 
         var key = _self.keyNames[code] 
             || (code && code > 46 && code != 91 ? String.fromCharCode(code) : null);
