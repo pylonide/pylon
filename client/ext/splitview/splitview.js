@@ -106,19 +106,21 @@ module.exports = ext.register("ext/splitview/splitview", {
         });
         
         tabs.addEventListener("reorder", function(e) {
-            var split = Splits.get(e.page);
-            console.log("got split",split,Splits.getActive())
-            if (Splits.isActive(split)) {
-                console.log("UPDATING!!");
-                Splits.show(split);
-            }
+            Splits.get(e.page).forEach(function(split) {
+                if (Splits.isActive(split))
+                    Splits.update(split);
+            });
+            _self.save();
         });
         
         ide.addEventListener("loadsettings", function(e) {
             if (!e.model || !e.model.data)
                 return;
-            setTimeout(function() {
-                _self.restore(e.model.data);
+            var data = e.model.data;
+            ide.addEventListener("extload", function(){
+                setTimeout(function() {
+                    _self.restore(data);
+                }, 50);
             });
         });
         
@@ -435,7 +437,7 @@ module.exports = ext.register("ext/splitview/splitview", {
     restore: function(settings) {
         // no tabs open... don't bother ;)
         var tabs = tabEditors;
-        if (tabs.childNodes.length <= 1)
+        if (tabs.getPages().length <= 1)
             return;
         
         var nodes = settings.selectNodes("splits/split");
