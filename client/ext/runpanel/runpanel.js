@@ -339,6 +339,10 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         if (lastNode)
             apf.xmldb.removeAttribute(lastNode, "last");
         apf.xmldb.setAttribute(config, "last", "true");
+        
+        // dispatch here instead of in the implementation because the implementations
+        // will vary over time
+        ide.dispatchEvent("beforeRunning");
 
         noderunner.run(config.getAttribute("path"), (config.getAttribute("args") || "").split(" "), debug);
     },

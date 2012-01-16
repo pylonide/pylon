@@ -604,12 +604,16 @@ module.exports = ext.register("ext/console/console", {
         apf.importCssString((this.css || "") + " .console_date{display:inline}");
 
         stProcessRunning.addEventListener("activate", function() {
-            _self.clear();
             _self.showOutput();
             
             if (_self.autoOpen 
               && apf.isTrue(settings.model.queryValue("auto/console/@autoshow")))
                 _self.show();
+        });
+        
+        // before the actual run target gets called we clear the console
+        ide.addEventListener("beforeRunning", function () {
+            _self.clear();
         });
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
