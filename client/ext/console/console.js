@@ -604,7 +604,6 @@ module.exports = ext.register("ext/console/console", {
         apf.importCssString((this.css || "") + " .console_date{display:inline}");
 
         stProcessRunning.addEventListener("activate", function() {
-            _self.clear();
             _self.showOutput();
             
             if (_self.autoOpen 
