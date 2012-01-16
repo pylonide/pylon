@@ -617,13 +617,15 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         this.hlElement.style.height = (pos[3] - 4) + "px";
         this.hlElement.style.display = "block";
         this.hlElement.style.border = "solid 2px #bee82c";
-        
-        if(this.currentEl.$ext) {
+
+        if (this.currentEl.$ext) {
             var zIndex;
             var pNode = this.currentEl;
-            while (pNode && pNode.tagName != "body" && (!zIndex || zIndex <= 9998)) {
-                zIndex = pNode.$ext.style && parseInt(pNode.$ext.style.zIndex || 9997) + 1;
-                pNode = pNode.parentNode;
+            if (pNode) {
+                while (pNode && pNode.tagName != "body" && (!zIndex || zIndex <= 9998)) {
+                    zIndex = pNode.$ext.style && parseInt(pNode.$ext.style.zIndex || 9997) + 1;
+                    pNode = pNode.parentNode;
+                }
             }
             else {
                 zIndex = 9998;
