@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var Grids = require("ext/splitview/grids");
+var ZManager = require("ext/splitview/zmanager");
 var Editors = require("ext/editors/editors");
 var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
 var Splits = [];
@@ -46,7 +47,7 @@ exports.init = function(splitView) {
     });
     
     ide.addEventListener("ext.quicksearch.correctpos", function(e) {
-        e.returnValue = correctQuickSearchDialog();
+        e.returnValue = correctQuickSearchDialog(e);
     });
     
     ide.addEventListener("ext.gotoline.correctpos", function(e) {
@@ -95,7 +96,8 @@ exports.create = function(page, gridLayout) {
             editor: editor
         }],
         activePage: 0,
-        gridLayout: gridLayout
+        gridLayout: gridLayout,
+        zManager: new ZManager()
     };
     Splits.push(split);
     
@@ -177,6 +179,8 @@ exports.update = function(split, gridLayout) {
         amlPage.appendChild(editor);
         editor.show();
         
+        split.zManager.clear(editor.$ext);
+        
         clearSplitViewStyles(page);
         Grids.hide(split.gridLayout);
         
@@ -197,6 +201,9 @@ exports.update = function(split, gridLayout) {
     Grids.update(gridLayout, split);
     // make sure visual styles are OK
     setSplitViewStyles(split);
+    split.zManager.resetAll(split.pairs.map(function(pair) {
+        return pair.editor.$ext;
+    }).reverse());
     
     exports.setActivePage(split);
     
@@ -232,6 +239,7 @@ exports.mutate = function(split, page) {
         page.$deactivateButton();
         clearSplitViewStyles(page);
         editor.hide();
+        split.zManager.clear(editor.$ext);
         if (tabEditors.getPage() !== split.pairs[0].page)
             tabEditors.set(split.pairs[0].page);
 
@@ -274,6 +282,7 @@ exports.mutate = function(split, page) {
         });
         //console.log("setting model of ", editorToUse.id, "to", page.$model.data.xml);
         exports.consolidateEditorSession(page, editorToUse);
+        split.zManager.set(editorToUse.$ext);
 
         this.show(split);
     }
@@ -333,31 +342,12 @@ exports.indexOf = function(split, obj) {
 }
 
 function sortEditorsAndPages(split) {
-    // lstOpenFiles.$model.data.selectNodes("//file")
     var pages = tabEditors.getPages();
-    var p = [];
-    var e = [];
-    var index;
     split.pairs.sort(function(pair1, pair2) {
         var idx1 = pages.indexOf(pair1.page);
         var idx2 = pages.indexOf(pair2.page);
         return idx1 > idx2 ? 1 : idx1 < idx2 ? -1 : 0;
     });
-    return;
-    //console.log("before sort: ", [].concat(split.pages).map(function(p) { return p.name; }), 
-    //  [].concat(split.editors).map(function(e) { return e.id; }));
-    for (var i = 0, c = 0, l = pages.length, l2 = split.pages.length; i < l && c < l2; ++i) {
-        if ((index = exports.indexOf(split, pages[i])) > -1) {
-            //console.log("pushing page at index " + i + " which is in the split at " 
-            //  + index + ", names " + pages[i].name + ", " + split.pages[index].name);
-            p.push(split.pages[index]);
-            e.push(split.editors[index]);
-            ++c;
-        }
-    }
-    //console.log("after sort:", p.map(function(p) { return p.name; }), e.map(function(e) { return e.id; }));
-    split.pages = p;
-    split.editors = e;
 }
 
 function createEditorClones(editor) {
@@ -500,7 +490,7 @@ function setSplitViewStyles(splitOrPage) {
 
 var searchWindow, gotoLineWindow, searchPos;
 
-function correctQuickSearchDialog() {
+function correctQuickSearchDialog(e) {
     var editor = Editors.currentEditor.amlEditor;
     var pos = !ActiveSplit ? -1 : exports.indexOf(ActiveSplit, editor);
     if (pos == -1)
@@ -527,9 +517,12 @@ function correctQuickSearchDialog() {
         var right = parentDims.width - editorPos[0] - editorDims.width + 30;
         var top =  editorPos[1];
         //console.log("editorPos", editorPos,"editorDims",JSON.stringify(editorDims),"parentDims",JSON.stringify(parentDims),"right",right,"top",top);
+        var to = Math.max(top, 0);
         return {
             right: Math.max(right, 30),
-            top: Math.max(top, 0)
+            zIndex: parseInt(editor.$ext.style.zIndex, 10) + 1,
+            from: !e || e.anim == "out" ? to - 27 : 0,
+            to: !e || e.anim == "out" ? to : (to - 30)
         };
     }
 }
@@ -551,13 +544,15 @@ function correctGotoLineDialog(e) {
         gotoLineWindow = self["winGotoLine"];
 
     if (gotoLineWindow) {
-        var pos = e.pos;
-        var maxTop = editorPos[1] + editorDims.height - 100;
         var left = editorPos[0];
-        var top = Math.min(maxTop, pos.pageY - 70);
+        var to = Math.max(left, 0);
+        var maxTop = editorPos[1] + editorDims.height - 100;
+        var top = e.pos ? Math.min(maxTop, e.pos.pageY - 70) : undefined;
         return {
             top: top,
-            left: Math.max(left, 0)
+            zIndex: parseInt(editor.$ext.style.zIndex, 10) + 1,
+            from: e.anim == "out" ? to - 60 : 0,
+            to: e.anim == "out" ? to : (to - 60)
         };
     }
 }

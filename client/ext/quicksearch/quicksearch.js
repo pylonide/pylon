@@ -205,7 +205,9 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             var doc   = editor.getDocument();
             var range = sel.getRange();
             var value = doc.getTextRange(range);
-            var corrected = ide.dispatchEvent("ext.quicksearch.correctpos");
+            var corrected = ide.dispatchEvent("ext.quicksearch.correctpos", {
+                anim: "out"
+            });
 
             if (!value && editor.amlEditor)
                 value = editor.amlEditor.getLastSearchOptions().needle;
@@ -221,14 +223,18 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             if (corrected) {
                 if (typeof corrected.right != "undefined")
                     winQuickSearch.$ext.style.right = corrected.right + "px";
+                winQuickSearch.$ext.style.zIndex = corrected.zIndex || winQuickSearch.zindex;
+            }
+            else {
+                winQuickSearch.$ext.style.zIndex = winQuickSearch.zindex;
             }
 
             //Animate
             apf.tween.single(winQuickSearch, {
                 type     : "top",
                 anim     : apf.tween.easeInOutCubic,
-                from     : -27,
-                to       : (corrected && typeof corrected.top != "undefined") ? corrected.top : 2,
+                from     : corrected ? corrected.from : -27,
+                to       : corrected ? corrected.to : 2,
                 steps    : 8,
                 interval : 10,
                 control  : (this.control = {}),
@@ -238,6 +244,10 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             });
         }
         else if (winQuickSearch.visible) {
+            var corrected = ide.dispatchEvent("ext.quicksearch.correctpos", {
+                anim: "in"
+            });
+            
             txtQuickSearch.focus();
             txtQuickSearch.select();
 
@@ -246,7 +256,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                 type     : "top",
                 anim     : apf.tween.NORMAL,
                 from     : winQuickSearch.$ext.offsetTop,
-                to       : -30,
+                to       : corrected ? corrected.to : -30,
                 steps    : 8,
                 interval : 10,
                 control  : (this.control = {}),

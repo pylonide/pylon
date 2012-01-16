@@ -141,7 +141,8 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             var epos = apf.getAbsolutePosition(aceHtml);
             var maxTop = aceHtml.offsetHeight - 100;
             var corrected = ide.dispatchEvent("ext.gotoline.correctpos", {
-                pos: pos
+                pos: pos,
+                anim: "out"
             });
 
             //editor.amlEditor.parentNode.appendChild(winGotoLine);
@@ -155,26 +156,33 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             if (corrected) {
                 if (typeof corrected.top != "undefined")
                     winGotoLine.$ext.style.top = corrected.top + "px";
+                winGotoLine.$ext.style.zIndex = corrected.zIndex || winGotoLine.zindex;
+            }
+            else {
+                winGotoLine.$ext.style.zIndex = winGotoLine.zindex;
             }
 
             //Animate
             apf.tween.single(winGotoLine, {
                 type     : "left",
                 anim     : apf.tween.easeInOutCubic,
-                from     : -60,
-                to       : (corrected && typeof corrected.left != "undefined") ? corrected.left : 0,
+                from     : corrected ? corrected.from : -60,
+                to       : corrected ? corrected.to : 0,
                 steps    : 8,
                 interval : 10,
                 control  : (this.control = {})
             });
         }
         else if (winGotoLine.visible) {
+            var corrected = ide.dispatchEvent("ext.gotoline.correctpos", {
+                anim: "in"
+            });
             //Animate
             apf.tween.single(winGotoLine, {
                 type     : "left",
                 anim     : apf.tween.EASEOUT,
                 from     : winGotoLine.$ext.offsetLeft,
-                to       : -60,
+                to       : corrected ? corrected.to : -60,
                 steps    : 8,
                 interval : 10,
                 control  : (this.control = {}),
