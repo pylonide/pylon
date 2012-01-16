@@ -1,8 +1,5 @@
+<?xml version='1.0'?>
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:skin id="gotoline" 
-      src        = "{require('ext/gotoline/gotoline').skin}" 
-      media-path = "/static/ext/gotoline/images/" />
-
     <a:bar id="winGotoLine"
       skinset = "gotoline"
       visible = "false"
@@ -10,8 +7,7 @@
       height  = "90"
       left    = "-100"
       top     = "-100"
-      zindex  = "10000"
-    >
+      zindex  = "10000">
         <a:vbox anchors="0 0 0 0" padding="0" edge="5">
             <a:textbox id="txtLineNr"
               focusselect="true" />
@@ -19,7 +15,7 @@
               model   = "{tabEditors.getPage(tabEditors.activepagenr).$model}"
               flex    = "1"
               caption = "[@nr]"
-              each    = "[gotoline/line]" 
+              each    = "[gotoline/line]"
               autoselect    = "false"
               multiselect   = "false"
               empty-message = "empty" />

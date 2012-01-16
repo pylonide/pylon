@@ -1,47 +1,39 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:bar id="tbDebug">
-        <!--a:button
-          icon="chromium_16.png"
-          caption="Debug Chrome"
-          onclick="require('ext/run/run').debugChrome()"
-          disabled="{stConnected.active}" /-->      
-        <a:splitbutton id="btnDebug"
-          icon     = "bug.png"
-          caption  = "debug"
-          onclick  = "require('ext/run/run').run(true)"
-          disabled = "{stProcessRunning.active and 1}"
-          submenu  = "mnuDebugCfg" />
-        <a:divider skin="c9-divider" />
-        <a:button id="btnResume" tooltip="Resume"
-          icon     = "play.png"
-          onclick  = "dbg.continueScript();"
-          skin     = "c9-toolbarbutton"
-          disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
-        <a:button  tooltip="Suspend"
-          skin     = "c9-toolbarbutton"
-          icon     = "pause.png"
-          onclick  = "dbg.suspend();"
-          disabled = "{!stDebugProcessRunning.active or !stRunning.active}"/>
-        <a:divider skin="c9-divider" />
-        <a:button id="btnStepInto" tooltip="Step Into"
-          icon     = "stepinto.png" 
-          skin     = "c9-toolbarbutton"
-          onclick  = "dbg.stepInto();" 
-          disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
-        <a:button id="btnStepOver" tooltip="Step Over"
-          icon     = "step.png"
-          skin     = "c9-toolbarbutton"
-          onclick  = "dbg.stepNext();"
-          disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
-        <a:button id="btnStepOut" tooltip="Step Out"
-          icon     = "stepback.png" 
-          skin     = "c9-toolbarbutton"
-          onclick  = "dbg.stepOut();"
-          disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
-    </a:bar>
-    
-    <a:tab id="tabDebug" skin="docktab" visible="false" activepage="-1">
-        <a:page id="dbgCallStack" caption="Call Stack" prerender="true">
+    <a:tab id="tabDebugButtons" skin="dockbar" visible="false">
+        <a:page id="pgDebugNav" render="runtime">
+            <a:hbox padding="3" edge="4 3 5">
+                <div class="expand-panel-bg"></div>
+                <a:button id="btnResume" tooltip="Resume"
+                  icon     = "play.png"
+                  onclick  = "dbg.continueScript();"
+                  skin     = "c9-sidepanelsbutton"
+                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+                <a:button  tooltip="Suspend"
+                  skin     = "c9-sidepanelsbutton"
+                  icon     = "pause.png"
+                  onclick  = "dbg.suspend();"
+                  disabled = "{!stDebugProcessRunning.active or !stRunning.active}"/>
+                <a:divider skin="c9-divider" />
+                <a:button id="btnStepOver" tooltip="Step Over"
+                  icon     = "step.png"
+                  skin     = "c9-sidepanelsbutton"
+                  onclick  = "dbg.stepNext();"
+                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+                <a:button id="btnStepInto" tooltip="Step Into"
+                  icon     = "stepinto.png" 
+                  skin     = "c9-sidepanelsbutton"
+                  onclick  = "dbg.stepInto();" 
+                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+                <a:button id="btnStepOut" tooltip="Step Out"
+                  icon     = "stepback.png" 
+                  skin     = "c9-sidepanelsbutton"
+                  onclick  = "dbg.stepOut();"
+                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+            </a:hbox>
+        </a:page>
+    </a:tab>
+    <a:tab id="tabDebug" skin="docktab" visible="false" activepage="0" buttons="close">
+        <a:page id="dbgCallStack" caption="Call Stack" render="runtime" prerender="true">
             <a:datagrid
               id         = "dgStack"
               anchors    = "0 0 0 0"
@@ -49,14 +41,16 @@
               options    = "size|move"
               caching    = "false"
               model      = "mdlDbgStack"
+              class      = "noscrollbar"
+              scrollbar  = "sbShared 20 2 2"
               disabled   = "{!stDebugProcessRunning.active or stRunning.active}"
               selected   = "{dbg.activeframe}">
                 <a:actions />
                 <a:each match="[frame]">
-                    <a:column caption="Function" value="[@name]" width="100%" icon2="debugger/stckframe_obj.gif" />
-                    <a:column caption="Script" value="[@script]" width="50" />
-                    <a:column caption="Ln" value="[@line]" width="25"/>
-                    <a:column caption="Col" value="[@column]" width="25"/>
+                    <a:column caption="Function" value="[@name]" width="60%" icon2="debugger/stckframe_obj.gif" />
+                    <a:column caption="Script" value="[@script]" width="40%" />
+                    <a:column caption="Ln" value="[@line]" width="30"/>
+                    <a:column caption="Col" value="[@column]" width="30"/>
                 </a:each>
             </a:datagrid>
         </a:page>
@@ -114,6 +108,8 @@
             <a:datagrid id="dgVars"
               anchors    = "0 0 0 0" 
               border     = "0"
+              class      = "noscrollbar"
+              scrollbar  = "sbShared 20 2 2"
               options    = "size|move"
               prerender  = "false"
               caching    = "false"
@@ -130,11 +126,13 @@
                 </a:each>
             </a:datagrid>
         </a:page>
-        <a:page id="dbgBreakpoints" caption="Breakpoints" prerender="true">
+        <a:page id="dbgBreakpoints" caption="Breakpoints" render="runtime" prerender="true">
             <a:list id="lstBreakpoints"
               autoselect = "false"
               reselectable = "true"
               anchors    = "0 0 0 0"
+              class      = "noscrollbar"
+              scrollbar  = "sbShared 2 2 2"
               border     = "0"
               model      = "mdlDbgBreakpoints"
               each       = "[breakpoint]"
@@ -149,6 +147,8 @@
               anchors    = "0 0 0 0" 
               border     = "0"
               options    = "size|move"
+              class      = "noscrollbar"
+              scrollbar  = "sbShared 20 2 2"
               prerender  = "false"
               caching    = "false"
               onafterchoose = "require('ext/debugger/debugger').goToAnnotation()"

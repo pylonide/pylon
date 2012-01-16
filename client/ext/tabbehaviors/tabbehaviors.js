@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var save = require("ext/save/save");
 var panels = require("ext/panels/panels");
+var openfiles = require("ext/openfiles/openfiles");
 
 module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     name       : "Tab Behaviors",
@@ -23,7 +24,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     $tabAccessCycle : 2,
     sep        : null,
     more       : null,
-    menuOffset : 4,
+    menuOffset : 4, //This is fucking stupid
     commands   : {
         "closetab": {hint: "close the tab that is currently active", msg: "Closing active tab."},
         "closealltabs": {hint: "close all opened tabs", msg: "Closing all tabs."},
@@ -380,7 +381,14 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         if (!page)
             return false;
 
-        var node = trFiles.queryNode('//file[@path="' + page.name + '"]');
+        this.revealfile(page.$doc.getNode());
+    },
+
+    revealfile : function(docNode) {
+        var path = docNode.getAttribute('path');
+        var node = trFiles.queryNode('//file[@path="' + path + '"]');
+
+        require("ext/panels/panels").activate(require("ext/tree/tree"));
 
         if (node) {
             trFiles.expandAndSelect(node);
@@ -388,7 +396,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             scrollToFile();
         }
         else {
-            var parts = page.name.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
+            var parts = path.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
             var file = parts.pop();
             var pathList = ["folder[1]"];
             var str = "";
@@ -407,7 +415,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             });
         }
 
-        var parts = page.name.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
+        var parts = path.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
         var file = parts.pop();
         var pathList = ["folder[1]"];
         var str = "";
@@ -418,7 +426,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
 
         var xpath = pathList[pathList.length - 1];
-        var docNode = page.$doc.getNode();
+        //var docNode = page.$doc.getNode();
         // Show spinner in active tab the file is being looked up
         apf.xmldb.setAttribute(docNode, "lookup", "1");
 
@@ -482,11 +490,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 keyId = "tab" + (idx == 10 ? 0 : idx);
                 if (this.commands[keyId] && typeof this.commands[keyId].hotkey != "undefined")
                     apf.hotkeys.remove(this.commands[keyId].hotkey);
-                
+
                 setTimeout(function(){
                     _self.updateState();
                 });
-
                 return;
             }
         }
@@ -499,7 +506,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.sep = null;
         }
         else if (!this.sep && (len || force)) {
-            this.sep = mnuTabs.insertBefore(new apf.divider(), mnuTabs.childNodes[8]);
+            this.sep = mnuTabs.insertBefore(new apf.divider(), mnuTabs.childNodes[this.menuOffset]);
         }
 
         if (len < (force ? 19 : 20)) { // we already have 9 other menu items
@@ -512,7 +519,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.more = mnuTabs.appendChild(new apf.item({
                 caption : "More...",
                 onclick : function() {
-                    require("ext/openfiles/openfiles").show();
+                    panels.activate(openfiles);
                 }
             }));
         }

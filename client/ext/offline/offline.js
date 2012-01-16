@@ -54,7 +54,7 @@ module.exports = ext.register("ext/offline/offline", {
         
         // preload the offline image programmatically:
         var img = new Image();
-        img.src = "/static/style/images/offline.png";
+        img.src = ide.staticPrefix + "/style/images/offline.png";
 
         //Replace http checking because we already have a socket
         //offline.isSiteAvailable = function(){};
@@ -152,20 +152,23 @@ module.exports = ext.register("ext/offline/offline", {
         // not available
         var fIdent = "cloud9.files." + ide.workspaceId;
         
-        // If we don't have the real webdav, we need to use the offline one
-        if (!fs.realWebdav)
-            fs.realWebdav = fs.webdav;
-            
-        // Now we create a fake webdav object
-        var fakeWebdav = new WebdavWrapper(fs.realWebdav, sync, fIdent, function(){
-            // We need to set if we have offline file system support, and if we
-            // do we don't need to disable plugins like tree, save, etc
-            ide.offlineFileSystemSupport = fakeWebdav && fakeWebdav.hasFileSystem;
-        });
         
-        // Finally set the objects we need to make the calls on
-        fs.webdav = fakeWebdav;
-        davProject = fakeWebdav;
+        ide.addEventListener("init.ext/filesystem/filesystem", function(){
+            // If we don't have the real webdav, we need to use the offline one
+            if (!fs.realWebdav)
+                fs.realWebdav = fs.webdav;
+                
+            // Now we create a fake webdav object
+            var fakeWebdav = new WebdavWrapper(fs.realWebdav, sync, fIdent, function(){
+                // We need to set if we have offline file system support, and if we
+                // do we don't need to disable plugins like tree, save, etc
+                ide.offlineFileSystemSupport = fakeWebdav && fakeWebdav.hasFileSystem;
+            });
+            
+            // Finally set the objects we need to make the calls on
+            fs.webdav = fakeWebdav;
+            davProject = fakeWebdav; //intended global
+        });
         
         /**
          * Handler for syncing, wedav-write.  This is used when we go back online
@@ -300,46 +303,24 @@ module.exports = ext.register("ext/offline/offline", {
         fs.model.addEventListener("update", saveModel);
         fs.model.addEventListener("afterload", saveModel);
         
-        /**** Settings ****/
-        
-        var settings = require("ext/settings/settings");
-        var sIdent = "cloud9.settings." + ide.workspaceId;
-        
-        settings.$saveToFile = settings.saveToFile;
-        settings.saveToFile = function(){
-            if (settings.model.data)
-                localStorage[sIdent] = apf.xmldb.cleanXml(settings.model.data.xml) || "";
-            
-            if (ide.onLine)
-                settings.$saveToFile();
-        };
-        
-        ide.addEventListener("beforeonline", function(){
-            if (localStorage[sIdent] && !settings.model.data) {
-                ide.settings = localStorage[sIdent];
-                settings.load();
-            }
-            delete localStorage[sIdent];
-        });
-        
-        ide.addEventListener("afteroffline", function(){
-            if (localStorage[sIdent] && !settings.model.data) {
-                ide.settings = localStorage[sIdent];
-                settings.load();
-            }
-        });
-        
         //File contents
         /**
          * This is where we save the files if we have offline support
          */
-        function saveFiles(e){
+        function saveFiles(e) {
             // Check for offline support
             if (!ide.offlineFileSystemSupport) {
-                var pages = tabEditors.getPages(), files = {};
-                if (pages.length) {
-                    for (var node, i = 0, l = pages.length; i < l; i++) {
-                        node = pages[i].$model.data;
+                var pages = tabEditors.getPages();
+                var files = {};
+                var len = pages.length;
+                if (len) {
+                    for (var i = 0; i < len; i++) {
+                        var node;
+                        // Sometimes there is no model for the page, and this
+                        // could cause Cloud9 to lose data
+                        if (pages[i].$model && pages[i].$model.data)
+                            node = pages[i].$model.data;
+
                         if (node)
                             files[node.getAttribute("path")] = pages[i].$doc.getValue();
                     }

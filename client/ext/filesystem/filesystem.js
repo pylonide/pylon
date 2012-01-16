@@ -122,7 +122,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     createFile: function(filename, newFile) {
         var node;
 
-        if(!newFile) {
+        if (!newFile) {
             node = trFiles.selected;
             if (!node)
                 node = trFiles.xmlRoot.selectSingleNode("folder");
@@ -251,7 +251,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         }
         ide.dispatchEvent("updatefile", {
             path: path,
-            name: name.input,
+            filename: name && name.input,
             xmlNode: node
         });
     },
@@ -360,6 +360,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         ide.addEventListener("openfile", function(e){
             var doc  = e.doc;
             var node = doc.getNode();
+            var editor = e.doc.$page && e.doc.$page.$editor;
 
             apf.xmldb.setAttribute(node, "loading", "true");
             ide.addEventListener("afteropenfile", function(e) {
@@ -370,14 +371,14 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             });
 
             if (doc.hasValue()) {
-                ide.dispatchEvent("afteropenfile", {doc: doc, node: node});
+                ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
                 return;
             }
 
             if (doc.cachedValue) {
                 doc.setValue(doc.cachedValue);
                 delete doc.cachedValue;
-                ide.dispatchEvent("afteropenfile", {doc: doc, node: node});
+                ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
             }
             else if ((!e.type || e.type != "newfile") && node.getAttribute("newfile") != 1) {
                 // add a way to hook into loading of files
@@ -408,7 +409,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                     }
                     else {
                         doc.setValue(data);
-                        ide.dispatchEvent("afteropenfile", {doc: doc, node: node});
+                        ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
                     }
                 };
 
@@ -416,7 +417,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             }
             else {
                 doc.setValue("");
-                ide.dispatchEvent("afteropenfile", {doc: doc, node: node});
+                ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
             }
         });
 

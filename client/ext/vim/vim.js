@@ -14,7 +14,6 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var handler = require("ext/vim/keyboard").handler;
-var settings = require("text!ext/vim/settings.xml");
 var extSettings = require("ext/settings/settings");
 var cmdModule = require("ext/vim/commands");
 var commands = cmdModule.commands;
@@ -26,8 +25,10 @@ var OLD_HANDLER;
 
 var onConsoleCommand = function onConsoleCommand(e) {
     var cmd = e.data.command;
-    var domEditor = editors.currentEditor.amlEditor;
-    if (cmd && typeof cmd === "string") {
+    if (editors && editors.currentEditor && editors.currentEditor.amlEditor &&
+        cmd && typeof cmd === "string") {
+
+        var domEditor = editors.currentEditor.amlEditor;
         if (cmd[0] === ":") {
             cmd = cmd.substr(1);
 
@@ -98,8 +99,8 @@ var enableVim = function enableVim() {
             commands.stop.exec(editor);
         }
         VIM_ENABLED = true;
-        
-        ide.dispatchEvent("track_action", {type: "vim", action: "enable"})
+
+        ide.dispatchEvent("track_action", {type: "vim", action: "enable"});
     }
 };
 
@@ -112,8 +113,8 @@ var disableVim = function() {
         commands.start.exec(editor);
         editor.renderer.container.removeEventListener("click", onCursorMove, false);
         VIM_ENABLED = false;
-        
-        ide.dispatchEvent("track_action", {type: "vim", action: "disable"})
+
+        ide.dispatchEvent("track_action", {type: "vim", action: "disable"});
     }
 };
 
@@ -149,7 +150,13 @@ module.exports = ext.register("ext/vim/vim", {
         };
 
         ide.addEventListener("init.ext/settings/settings", function (e) {
-            setTimeout(function() { barSettings.insertMarkup(settings); }, 0);
+            var heading = e.ext.getHeading("Code Editor");
+            heading.appendChild(new apf.checkbox({
+                "class" : "underlined",
+                skin  : "checkbox_grey",
+                value : "[editors/code/@vimmode]",
+                label : "Vim mode"
+            }))
         });
 
         ide.addEventListener("code.ext:defaultbindingsrestored", function(e) {

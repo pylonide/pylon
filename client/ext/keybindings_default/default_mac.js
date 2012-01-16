@@ -28,7 +28,11 @@ return keys.onLoad({
         "quickwatch": {
             "quickwatch": "Option-Q"
         },
-        "run": {
+        "runpanel": {
+            "run" : "F5",
+            "stop" : "Shift-F5"
+        },
+        "debugger": {
             "resume": "F8",
             "stepinto": "F11",
             "stepover": "F10",
@@ -91,7 +95,7 @@ return keys.onLoad({
             "previoustab": "Command-Shift-Tab|Option-Shift-Tab"
         },
         "tabsessions" : {
-            "savetabsession": "Command-Alt-S",
+            "savetabsession": "Command-Alt-S"
         },
         "splitview" : {
             "mergetableft": "Command-Option-[",

@@ -27,26 +27,21 @@ module.exports = (function () {
                 expression: currentExpression || "no expression available yet."
             });
         });
-    };
-    
-    var hook = function(_ext, worker) {
-        if (typeof stRunning === "undefined")
-            return;
-
-        ext.initExtension(this);
         
-        // listen to the worker's response
-        worker.on("inspect", function(event) {
-            if (!event || !event.data) {
-                winLiveInspect.hide();
-                return;
-            }
-            
-            // create an expression that the debugger understands
-            var expression = event.data;
-            if (expression) {
-                liveWatch(expression);
-            }
+        ide.addEventListener("language.worker", function(e){
+            // listen to the worker's response
+            e.worker.on("inspect", function(event) {
+                if (!event || !event.data) {
+                    winLiveInspect.hide();
+                    return;
+                }
+                
+                // create an expression that the debugger understands
+                var expression = event.data;
+                if (expression) {
+                    liveWatch(expression);
+                }
+            });
         });
         
         // bind mous events to all open editors
@@ -62,15 +57,17 @@ module.exports = (function () {
             }
         });
         
-        // listen to changes that affect the debugger, so we can toggle the visibility based on this
-        stRunning.addEventListener("prop.active", checkDebuggerActive);
-        stDebugProcessRunning.addEventListener("prop.active", checkDebuggerActive);
-        
-        // when hovering over the inspector window we should ignore all further listeners
-        apf.addListener(datagridHtml, "mouseover", function() {
-            if (activeTimeout) {
-                clearTimeout(activeTimeout);
-            }
+        ide.addEventListener("init.ext/debugger/debugger", function(){
+            // listen to changes that affect the debugger, so we can toggle the visibility based on this
+            stRunning.addEventListener("prop.active", checkDebuggerActive);
+            stDebugProcessRunning.addEventListener("prop.active", checkDebuggerActive);
+            
+            // when hovering over the inspector window we should ignore all further listeners
+            apf.addListener(datagridHtml, "mouseover", function() {
+                if (activeTimeout) {
+                    clearTimeout(activeTimeout);
+                }
+            });
         });
         
         // we should track mouse movement over the whole window
@@ -235,7 +232,7 @@ module.exports = (function () {
                 winLiveInspect.hide();
                 windowHtml.style.left = ev.pageX + "px";
                 windowHtml.style.top = (ev.pageY + 8) + "px";
-            }, 400);
+            }, 750);
         }
     };
     
@@ -278,7 +275,7 @@ module.exports = (function () {
             // otherwise hide it
             activeTimeout = setTimeout(function () {
                 winLiveInspect.hide();
-            }, 400);
+            }, 750);
         }
         else {
             // if not visible? then just clear the timeout
@@ -343,16 +340,18 @@ module.exports = (function () {
     };
     
     // public interfaces
-    return {
+    return ext.register("ext/language/liveinspect", {
         init    : init,
-        hook    : hook,
         name    : "Live inspect",
         dev     : "Ajax.org",
         type    : ext.GENERAL,
         alone   : true,
         markup  : markup,
-        skin    : skin
-    };
+        skin    : {
+            id   : "inlinedg",
+            data : skin
+        }
+    });
 } ());
 
 });

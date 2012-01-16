@@ -1,45 +1,37 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <div id="barConsoleHints" class="barConsoleHints"/>
 
-    <a:bar id="winDbgConsole" skin="basic" height="41">
-        <a:vbox height="{winDbgConsole.height}">
-            <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false">
-                <a:button skin="btn_icon_only" icon="console_max.png" top="4" right="5" state="true" visible="false"
-                  onprop.value = "
-                    if (event.value) {
-                        document.body.appendChild(winDbgConsole.$ext);
-                        winDbgConsole.$ext.style.position = 'absolute';
-                        winDbgConsole.$ext.style.left = 0;
-                        winDbgConsole.$ext.style.top = 0;
-                        winDbgConsole.$ext.style.right = 0;
-                        winDbgConsole.$ext.style.bottom = 0;
-                        winDbgConsole.$ext.style.width = 'auto';
-                        winDbgConsole.lastHeight = winDbgConsole.height;
-                        winDbgConsole.setAttribute('height', '100%');
-                        winDbgConsole.$ext.style.zIndex = 9999;
-                    }
-                    else {
-                        winDbgConsole.parentNode.$int.appendChild(winDbgConsole.$ext);
-                        winDbgConsole.$ext.style.position = 'relative';
-                        winDbgConsole.$ext.style.width = '1px';
-                        winDbgConsole.setAttribute('height', winDbgConsole.lastHeight);
-                        winDbgConsole.$ext.style.zIndex = 1;
-                    }
-                  "/>
-                <a:button id="btnConsoleClear" skin="btn_icon_only" icon="console_clear.png" top="4" right="32"
-                  onclick  = "
-                    if (tabConsole.activepagenr == 0)
-                        txtConsole.clear();
-                    else if (tabConsole.activepagenr == 1)    
-                        txtOutput.clear();
-                  "/>
-                <a:divider skin="divider_console" top="2" right="26"></a:divider>
-                <a:button 
-                  skin="btn_icon_only"
-                  icon="console_close_btn.png"
-                  class="dim22-22"
-                  top="3" right="3"
-                  onclick  = "require('ext/console/console').disable()"/>
+    <a:bar id="winDbgConsole" height="41">
+        <a:vbox anchors="0 0 0 0">
+            <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false" render2="runtime">
+                <a:hbox pack="end" top="2" right="3" height="24" align="center" padding="0">
+                    <a:button id="btnConsoleClear" skin="btn_icon_only" icon="console_clear.png" margin="2 2 0 0"
+                      onclick  = "
+                        if (tabConsole.activepagenr == 0)
+                            txtConsole.clear();
+                        else if (tabConsole.activepagenr == 1)    
+                            txtOutput.clear();
+                      "/>
+                    <a:button id="btnConsoleSettings" skin="btn_icon_only" 
+                      icon    = "console_settings.png" 
+                      margin  = "2 4 0 0"
+                      submenu = "mnuConsoleSettings" />
+                    <a:button id="btnConsoleMax" skin="btn_icon_only" icon="console_max.png" state="true" margin="2 2 0 0"
+                      onclick = "
+                        var console = require('ext/console/console');
+                        if (this.value)
+                            console.maximize();
+                        else
+                            console.restore();
+                      "/>
+                    <a:divider skin="divider_console"></a:divider>
+                    <a:button 
+                      skin="btn_icon_only"
+                      icon="console_close_btn.png"
+                      class="dim22-22"
+                      margin = "1 0 0 1"
+                      onclick  = "require('ext/console/console').hide()"/>
+                </a:hbox>
                 <a:page id="pgConsole" caption="Console" name="console">
                     <a:text id="txtConsole"
                       margin     = "3 0 0 0"
@@ -75,7 +67,13 @@
                       width     = "17" />
                 </a:page>
             </a:tab>
-
+            
+            <a:menu id="mnuConsoleSettings">
+                <a:item type="check" 
+                  checked = "[{require('core/settings').model}::auto/console/@autoshow]" 
+                  caption = "Auto-show console when running" />
+            </a:menu>
+    
             <a:hbox class="consoleInputBox" edge="1" padding="4" pack="end">
                 <a:textbox id="txtConsoleInput"
                   margin    = "4 0 0"
@@ -84,10 +82,10 @@
                   onkeydown = "return require('ext/console/console').keydownHandler(event)"
                   onkeyup   = "return require('ext/console/console').keyupHandler(event)" />
                 <a:button id="btnCollapseConsole" skin="btn_console_open" icon="console-btn.png" state="true" height="38"
-                    value = "{tabConsole.visible}"
+                    value = "{!!tabConsole.visible}"
                     onprop.value="
                         try {
-                            require('ext/console/console')[event.value ? 'enable' : 'disable']();
+                            require('ext/console/console')[event.value ? 'show' : 'hide']();
                         }catch(e){}
                     " />
             </a:hbox>

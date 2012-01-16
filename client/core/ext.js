@@ -1,17 +1,6 @@
 /**
  * Extension manager for the Ajax.org Cloud IDE
  *
- * Modules that extend the functionality of the editing environment
- * - Add menubuttons/menus
- * - Add items to menus (optional show/hide toggle)
- * - Add toolbar (optional show/hide toggle)
- * - Add buttons to toolbar (optional show/hide toggle)
- * - Add custom non-file tree items
- * - Register an editor to the application for file extensions
- * - Add features to existing editors
- * - Add AML elements
- * - Add layout modes
- *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
@@ -84,8 +73,18 @@ module.exports = ext = {
         this.extLut[path] = oExtension;
         this.extensions.push(oExtension);
 
-        if (oExtension.hook)
+        if (oExtension.hook) {
             oExtension.hook();
+            
+            ide.dispatchEvent("hook." + oExtension.path, {
+                ext : oExtension
+            });
+            ide.addEventListener("$event.hook." + oExtension.path, function(callback){
+                callback.call(this, {ext : oExtension});
+            });
+        }
+        
+        ide.dispatchEvent("ext.register", {ext: oExtension});
 
         return oExtension;
     },
@@ -152,11 +151,18 @@ module.exports = ext = {
         if (oExtension.inited)
             return;
 
+        var skin = oExtension.skin;
+        if (skin && typeof skin == "object") {
+            var data = oExtension.skin.data;
+            oExtension.skinNode = new apf.skin(apf.extend({}, oExtension.skin, {data: null}));
+            oExtension.skinNode.setProperty("src", data);
+            apf.document.body.appendChild(oExtension.skinNode);
+        }
+
         //Load markup
         var markup = oExtension.markup;
-        if (markup) {
+        if (markup) 
             apf.document.body.insertMarkup(markup);
-        }
 
         var deps = oExtension.deps;
         if (deps) {
@@ -178,8 +184,13 @@ module.exports = ext = {
 
         oExtension.init(amlParent);
         oExtension.inited = true;
-
-        ide.dispatchEvent("init." + oExtension.path, { ext : oExtension });
+        
+        ide.dispatchEvent("init." + oExtension.path, {
+            ext : oExtension
+        });
+        ide.addEventListener("$event.init." + oExtension.path, function(callback){
+            callback.call(this, {ext : oExtension});
+        });
     },
 
     execCommand: function(cmd, data) {

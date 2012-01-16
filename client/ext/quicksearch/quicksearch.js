@@ -22,7 +22,11 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
-    skin    : skin,
+    skin     : {
+        id   : "quicksearch",
+        data : skin,
+        "icon-path" : ide.staticPrefix + "/ext/quicksearch/icons/"
+    },
     markup  : markup,
     commands : {
         "quicksearch": {hint: "quickly search for a string inside the active document, without further options (see 'search')"},
@@ -195,7 +199,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         var _self = this;
 
         if (!force && !winQuickSearch.visible || force > 0) {
-            this.position = 0;
+            this.position = -1;
 
             var sel   = editor.getSelection();
             var doc   = editor.getDocument();

@@ -22,6 +22,7 @@ var EditSession = require("ace/edit_session").EditSession;
 var mnuCloneView, mnuSplitAlign;
 
 module.exports = ext.register("ext/splitview/splitview", {
+    name     : "Split View",
     dev      : "Ajax.org",
     alone    : true,
     type     : ext.GENERAL,

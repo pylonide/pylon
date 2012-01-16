@@ -65,27 +65,29 @@ module.exports = ext.register("ext/newresource/newresource", {
         this.hotitems.newfolder = [this.nodes[1]];
     },
 
-    newfile: function(type, value) {
-        if (!type)
-            type = "";
+    newfile: function(type, value, path) {
+        if (!type) type = "";
 
         var node = apf.getXml("<file />");
-        var path = "/workspace/";
-        var sel = trFiles.selected;
-
-        if (!sel) {
-            trFiles.select(trFiles.$model.queryNode('folder'));
-            sel = trFiles.selected;
+        
+        if (!path && self.trFiles) {
+            var sel = trFiles.selected;
+    
+            if (!sel) {
+                trFiles.select(trFiles.$model.queryNode('folder'));
+                sel = trFiles.selected;
+            }
+    
+            if (sel) {
+                path = sel.getAttribute("path");
+                if (trFiles.selected.getAttribute("type") == "file" || trFiles.selected.tagName == "file")
+                    path = path.replace(/\/[^\/]*$/, "/");
+                else
+                    path = path + "/";
+            }
         }
-
-        if (!sel)
-            return;
-
-        path = sel.getAttribute("path");
-        if (trFiles.selected.getAttribute("type") == "file" || trFiles.selected.tagName == "file")
-            path = path.replace(/\/[^\/]*$/, "/");
-        else
-            path = path + "/";
+        if (!path)
+            path = ide.davPrefix + "/";
 
         var name = "Untitled", count = 1;
         while (tabEditors.getPage(path + name + count + type))

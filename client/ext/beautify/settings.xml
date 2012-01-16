@@ -1,16 +1,13 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <div class="header">
-        <span></span><div>JS Beautify</div>
-    </div>
     <a:checkbox class="underlined" label="Preserve Empty Lines"
         checked="{[beautify/jsbeautify/@preserveempty] != '' ? [beautify/jsbeautify/@preserveempty] : 'true'}"
-        value="[beautify/jsbeautify/@preserveempty]" />
+        value="[beautify/jsbeautify/@preserveempty]" skin="checkbox_grey" />
     <a:checkbox class="underlined" label="Keep Array Indentation"
         checked="{[beautify/jsbeautify/@keeparrayindentation] != '' ? [beautify/jsbeautify/@keeparrayindentation] : 'true'}"
-        value="[beautify/jsbeautify/@keeparrayindentation]" />
+        value="[beautify/jsbeautify/@keeparrayindentation]" skin="checkbox_grey" />
     <a:checkbox class="underlined" label="JSLint Strict Whitespace"
         checked="{[beautify/jsbeautify/@jslinthappy] != '' ? [beautify/jsbeautify/@jslinthappy] : 'false'}"
-        value="[beautify/jsbeautify/@jslinthappy]" />
+        value="[beautify/jsbeautify/@jslinthappy]" skin="checkbox_grey" />
     <a:hbox edge="5 5 2 5" align="center">
         <a:label flex="1">Braces</a:label>
         <a:dropdown default="end-expand" value="[{require('ext/settings/settings').model}::beautify/jsbeautify/@braces]" width="185" height="21">

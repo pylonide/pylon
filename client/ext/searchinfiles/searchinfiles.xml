@@ -1,16 +1,14 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-	<a:skin id="searchinfiles"
-  	src        = "{require('ext/searchinfiles/searchinfiles').skin}" 
-  	media-path = "/static/ext/searchinfiles/images/" />
-	
     <a:window id="winSearchInFiles"
-      onhide="require('ext/searchinfiles/searchinfiles').onHide()"
-      title="Search in Files"
-      buttons="close" 
-      modal="false" 
-      center="true" 
-      width="350" 
-      kbclose="true">
+      onhide  = "require('ext/searchinfiles/searchinfiles').onHide()"
+      title   = "Search in Files"
+      buttons = "close"
+      skin    = "bk-window"
+      class   = "relative"
+      modal   = "false"
+      center  = "true"
+      width   = "350"
+      kbclose = "true">
         <a:vbox edge="10" padding="5">
             <a:hbox align="center">
                 <a:label width="95">Containing Text</a:label>
@@ -79,28 +77,43 @@
                 <a:label width="75">Replace With</a:label>
                 <a:textbox id="txtReplace" flex="1" />
             </a:hbox-->
-            <a:hbox align="center" padding="5">
-                <a:fieldset flex="1" caption="Options">
-                    <a:checkbox id="chkSFMatchCase" height="20" checked="false" label="Match Case" />
+            <a:hbox edge="10 0 5">
+                <a:fieldset flex="1" caption="Options" margin="0 0 1">
+                    <a:checkbox id="chkSFMatchCase"
+                      checked = "false"
+                      skin    = "checkbox_grey"
+                      margin  = "0 0 2"
+                      label   = "Match Case" />
                     <!--a:checkbox id="chkSFWholeWords" label="Whole Words" /-->
-                    <a:checkbox id="chkSFRegEx" height="20" label="Regular Expressions" />
+                    <a:checkbox id="chkSFRegEx"
+                      skin  = "checkbox_grey"
+                      label = "Regular Expressions" />
                 </a:fieldset>
-                <a:fieldset flex="1" caption="Scope">
-                    <a:radiobutton group="grpSFScope" skin="classic" checked="false" value="projects" label="Project" />
-                    <a:radiobutton group="grpSFScope" id="rbSFSelection" skin="classic" checked="true" value="selection" label="Selection" />
+                <a:fieldset flex="1" caption="Scope" margin="0 0 1 5">
+                    <a:radiobutton
+                      group  = "grpSFScope"
+                      skin   = "radio_grey"
+                      value  = "projects"
+                      margin = "0 0 2"
+                      label  = "Project" />
+                    <a:radiobutton id="rbSFSelection"
+                      group  = "grpSFScope"
+                      skin   = "radio_grey"
+                      value  = "selection"
+                      label  = "Selection"
+                      selected = "true" />
                 </a:fieldset>
             </a:hbox>
         </a:vbox>
-        <a:divider />
-        <a:hbox padding="5" pack="end" edge="10 10 5 10">
+        <a:hbox padding="10" pack="end" edge="6 10 10">
             <!--a:button id="btnReplace">Replace</a:button>
             <a:button id="btnReplaceAll">Replace All</a:button-->
-            <a:button id="btnSFFind" default="2" class="ui-btn-green">Find</a:button>
-            <a:button onclick="winSearchInFiles.hide()">Close</a:button>
+            <a:button id="btnSFFind" default="2" class="btn-green" skin="btn-default-css3">Find</a:button>
+            <a:button onclick="winSearchInFiles.hide()" skin="btn-default-css3">Close</a:button>
         </a:hbox>
     </a:window>
 
-    <a:hbox id="trSFHbox" anchors="0 0 0 0">
+    <a:hbox id="trSFHbox" anchors="0 0 0 0" visible="false" render="runtime">
         <a:tree id        = "trSFResult"
           skinset         = "searchinfiles"
           border          = "0"

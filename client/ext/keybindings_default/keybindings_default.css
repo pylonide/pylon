@@ -1,0 +1,113 @@
+.keybindings_default .bg-bk-content {
+    background: url(/static/style/images/gitui_menu_backg.png);
+}
+
+/*.keybindings_default_vbox {
+    background: url(/static/style/images/gitui_menu_backg.png);
+}*/
+
+.keybindings_default_bar {
+    background: url(/static/ext/keybindings_default/res/divider.png) repeat-y top left;
+    position: relative;
+    left: 0px;
+    right: 7px;
+    top: 0px;
+    bottom: 25px;
+    height: 400px;
+    padding: 20px 10px 0 24px;
+    overflow: hidden;
+}
+
+.keybindings_default .sbios {
+    height: 408px;
+}
+
+.keybindings_default_block,
+.keybindings_default_block_border {
+    float: left;
+    width: 188px;
+    margin: 0 0 18px 0;
+    padding: 0;
+}
+
+.keybindings_default_block h3,
+.keybindings_default_block_border h3 {
+    color: #fff;
+    size: 14px;
+    font-weight: bold;
+    text-shadow: rgba(0, 0, 0, 1) 0px 2px 2px;
+    margin: 0 0 18px 0;
+    padding: 0;
+}
+
+.keybindings_default_command {
+    margin: 0 0 8px 0;
+    padding: 0;
+    line-height: 25px;
+}
+
+.keybindings_default_cmdname {
+    color: #ffd354;
+    size: 12px;
+    font-weight: bold;
+    text-shadow: rgba(0, 0, 0, 1) 0px 2px 2px;
+    margin: 0 0 4px 0;
+    padding: 0;
+}
+
+.keybindings_default_cmdkey {
+    background-color: #e2e4e7;
+    color: #444444;
+    size: 12px;
+    text-shadow: rgba(255, 255, 255, 1) 0px 1px 0px;
+    border: 1px solid #424242;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-box-shadow: 0px 1px 0px #000;
+    -moz-box-shadow: 0px 1px 0px #000;
+    box-shadow: 0px 1px 0px #000;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    vertical-align: middle;
+    margin: 0;
+    padding: 7px 5px 7px 5px;
+}
+
+.keybindings_default_cmdop {
+    color: #fff;
+    font-weight: bold;
+    size: 15px;
+    margin: 0 4px 0 4px;
+}
+
+.keybindings_default_bottom {
+    position: relative;
+    height: 47px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+}
+
+/*.keybindings_default_bottom .btn-default-css3 {
+    margin-top: 8px;
+    float: right;
+}*/
+
+.keybindings_default_bottom a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.keybindings_default_bottom a:hover {
+    text-decoration: underline;
+}
+
+.keybindings_default_bottom a.selected {
+    color: #ffd354;
+}
+
+.keybindings_default_bottom_divider {
+    color: #fff;
+}

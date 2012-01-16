@@ -19,7 +19,11 @@ module.exports = ext.register("ext/gotoline/gotoline", {
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
-    skin    : skin,
+    skin     : {
+        id   : "gotoline",
+        data : skin,
+        "media-path" : ide.staticPrefix + "/ext/gotoline/images/"
+    },
     markup  : markup,
     commands : {
         "gotoline": {hint: "enter a linenumber and jump to it in the active document"}
@@ -33,7 +37,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         this.nodes.push(
             mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
-                caption : "Go to Line",
+                caption : "Go to Line...",
                 onclick : function(){
                     _self.gotoline(1);
                 }

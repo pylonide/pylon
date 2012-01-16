@@ -1,0 +1,69 @@
+<a:application xmlns:a="http://ajax.org/2005/aml"> 
+    <a:menu id="mnuHelp">
+        <a:item id="mnuAbout" onclick="require('ext/help/help').showAbout();">About</a:item>
+        <a:divider />
+        <a:item id="mnuDocumentation" onclick="window.open('http://support.cloud9ide.com/forums')">Documentation</a:item>
+        <a:item id="mnuQuickStart" onclick="require('ext/quickstart/quickstart').launchQS();">Quick Start</a:item>
+        <a:item id="mnuGuidedTour" onclick="require('ext/guidedtour/guidedtour').launchGT();">Take a Guided Tour</a:item>
+        <a:divider />
+        <a:item id="mnuKeybindings" onclick="require('ext/keybindings_default/keybindings_default').keybindings();">Keyboard Shortcuts</a:item>
+        <a:divider />
+        <a:item submenu="mnuSupport">Support</a:item>
+        <a:divider />
+        <a:item submenu="mnuLearning">Learning</a:item>
+        <a:divider />
+        <a:item submenu="mnuContact">Get in Touch</a:item>
+    </a:menu>
+  
+    <a:menu id="mnuSupport">
+        <a:item id="mnuFAQ" onclick="window.open('http://support.cloud9ide.com/forums/20346041-frequently-asked-questions')">FAQ</a:item>
+        <a:item id="mnuTroubleshooting" onclick="window.open('http://support.cloud9ide.com/forums/20329737-troubleshooting')">Troubleshooting Tips</a:item>
+        <a:divider />
+        <a:item id="mnuLogAnIssue" onclick="window.open('https://github.com/ajaxorg/cloud9/issues?milestone=1')">Report a bug</a:item>     
+    </a:menu>
+    
+    <a:menu id="mnuLearning">
+        <a:item id="mnuVimeo" onclick="window.open('http://vimeo.com/user5080429')">Vimeo Channel for Cloud9 IDE</a:item>
+    </a:menu>
+
+    <a:menu id="mnuContact">
+        <a:item id="mnuBlog" onclick="window.open('http://cloud9ide.posterous.com/')">Blog for Cloud9</a:item>
+        <a:item id="mnuTwitterSupport" onclick="window.open('https://twitter.com/#!/C9Support')">Twitter (for Cloud9 IDE support)</a:item>
+        <a:item id="mnuTwitterGeneral" onclick="window.open('https://twitter.com/#!/cloud9ide')">Twitter (for general Cloud9 tweets)</a:item>
+        <a:item id="mnuFacebook" onclick="window.open('https://www.facebook.com/Cloud9IDE')">Facebook for Cloud9</a:item>     
+    </a:menu>
+      
+    <a:window
+      id        = "aboutDialog"
+      icon      = ""
+      kbclose   = "true"
+      center    = "true"
+      width     = "512"
+      skinset   = "help-skin"
+      buttons   = "close"
+      skin      = "win-help-about"
+      class     = "aboutDialogBox">
+        <div class="aboutImage">
+            <div id="c9Version"><?lm
+                Version {cloud9config.version}
+            ?></div>
+             <!-- <div class="c9Legal">
+            <p><a href="http://www.bettercallsaul.com/">Click here for legal notices.</p>
+            </div> -->
+            <div class="c9StaffHeader">
+                <p>Cloud9 IDE is brought to you by:</p>
+            </div>
+            <div class="c9Staff">
+                <p>
+                    Ruben Daniels, Rik Arends, David van Ballegooijen, Chrissy Welsh, Lieke Arends,
+                    Mike de Boer, Fabian Jakobs, Sergi Mansilla, Matt Pardee, Linh Nguyen, Zef Hemel,
+                    Giannis Panagiotou, Bert Belder, Jan Jongboom, Daniela Gavidia, Detmar ter Huurne,
+                    Garen Torikian, Tim Caswell, Erin Lockhart, Jos Uijterwaal, Esther Visser, Pippa
+                </p>
+            </div>
+            <div class="c9Copyright">
+                <p>&#169; 2010 — 2012 Cloud9 IDE Inc. All rights reserved</p>
+            </div>
+        </div>
+    </a:window>
+</a:application>

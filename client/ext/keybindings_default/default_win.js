@@ -29,11 +29,15 @@ return keys.onLoad({
         "quickwatch": {
             "quickwatch": "Ctrl-Q"
         },
-        "run": {
+        "runpanel": {
+            "run" : "Ctrl-F5",
+            "stop" : "Shift-F5"
+        },
+        "debugger": {
             "resume": "F8",
-            "stepinto": "F9",
+            "stepinto": "F11",
             "stepover": "F10",
-            "stepout": "Shift-F9"
+            "stepout": "Shift-F11"
         },
         "zen": {
             "zen": "Ctrl-E",
@@ -92,7 +96,7 @@ return keys.onLoad({
             "previoustab": "Ctrl-Shift-Tab"
         },
         "tabsessions" : {
-            "savetabsession": "Ctrl-Alt-S",
+            "savetabsession": "Ctrl-Alt-S"
         },
         "splitview" : {
             "mergetableft": "Ctrl-Alt-[",

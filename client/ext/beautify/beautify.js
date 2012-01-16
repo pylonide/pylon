@@ -46,12 +46,12 @@ module.exports = ext.register("ext/beautify/beautify", {
         var value = doc.getTextRange(range);
 
         // Load up current settings data
-        var preserveEmpty = extSettings.model.queryValue("beautify/jsbeautify/@preserveempty") == "true" ? true : false;
-        var keepIndentation = extSettings.model.queryValue("beautify/jsbeautify/@keeparrayindentation") == "true" ? true : false;
-        var jsLintHappy = extSettings.model.queryValue("beautify/jsbeautify/@jslinthappy") == "true" ? true : false;
+        var preserveEmpty = apf.isTrue(extSettings.model.queryValue("beautify/jsbeautify/@preserveempty"));
+        var keepIndentation = apf.isTrue(extSettings.model.queryValue("beautify/jsbeautify/@keeparrayindentation"));
+        var jsLintHappy = apf.isTrue(extSettings.model.queryValue("beautify/jsbeautify/@jslinthappy"));
         var braces = extSettings.model.queryValue("beautify/jsbeautify/@braces") || "end-expand";
-        var indentSize = extSettings.model.queryValue("editors/code/@tabsize") || "4";
-        var indentTab = extSettings.model.queryValue("editors/code/@softtabs") == "true" ? " " : "\t";
+        var indentSize = extSettings.model.queryValue("editors/code/@tabsize");
+        var indentTab = apf.isTrue(extSettings.model.queryValue("editors/code/@softtabs")) == "true" ? " " : "\t";
 
         if (indentTab == "\t") indentSize = 1;
 
@@ -86,7 +86,7 @@ module.exports = ext.register("ext/beautify/beautify", {
     },
 
     init: function () {
-
+        
     },
 
     hook: function () {
@@ -109,8 +109,21 @@ module.exports = ext.register("ext/beautify/beautify", {
         });
 
         ide.addEventListener("init.ext/settings/settings", function (e) {
-            e.ext.addSection("jsbeautify", _self.name, "beautify", function () {});
-            barSettings.insertMarkup(settings);
+            var heading = e.ext.getHeading("JS Beautify");
+            heading.insertMarkup(settings);
+        });
+        
+        ide.addEventListener("loadsettings", function(e){
+            var model = e.model;
+            
+            if (!model.queryNode("beautify/jsbeautify")) {
+                model.setQueryValue("beautify/jsbeautify/@preserveempty", "true");
+                model.setQueryValue("beautify/jsbeautify/@keeparrayindentation", "false");
+                model.setQueryValue("beautify/jsbeautify/@jslinthappy", "false");
+                model.setQueryValue("beautify/jsbeautify/@braces", "end-expand");
+                model.setQueryValue("editors/code/@tabsize", "4");
+                model.setQueryValue("editors/code/@softtabs", "true");
+            }
         });
     },
 

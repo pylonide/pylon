@@ -18,7 +18,7 @@
       scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
       
       fontsize          = "[{require('ext/settings/settings').model}::editors/code/@fontsize]"
-      wrapmode          = "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
+      wrapmode          = "[@wrapmode]"
       wraplimitmin      = "80"
       wraplimitmax      = "80"
       gutter            = "[{require('ext/settings/settings').model}::editors/code/@gutter]"
