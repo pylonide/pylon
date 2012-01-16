@@ -610,6 +610,11 @@ module.exports = ext.register("ext/console/console", {
               && apf.isTrue(settings.model.queryValue("auto/console/@autoshow")))
                 _self.show();
         });
+        
+        // before the actual run target gets called we clear the console
+        ide.addEventListener("beforeRunning", function () {
+            _self.clear();
+        });
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
         ide.addEventListener("consoleresult.internal-isfile", function(e) {
