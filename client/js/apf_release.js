@@ -414,8 +414,9 @@ this.$keys={};var _self=this,trace=0;function register(hotkey,handler,remove){va
 for(;i<l;++i){if(keyMods[keys[i]]){hashId=hashId|keyMods[keys[i]];}else{key=keys[i]||"-";
 }}if(!key){return;}if(!_self.$keys[hashId]){_self.$keys[hashId]={};}if(remove){if(handler==_self.$keys[hashId][key]){_self.$keys[hashId][key]=null;
 }}else{_self.$keys[hashId][key]=handler;}}apf.registerHotkey=this.register=function(hotkey,handler){var parts=hotkey.split("|"),i=0,l=parts.length;
-for(;i<l;++i){register(parts[i],handler);}};this.$exec=function(eInfo){var hashId=0|(eInfo.ctrlKey?1:0)|(eInfo.altKey?2:0)|(eInfo.shiftKey?4:0)|(eInfo.metaKey?8:0),code=eInfo.keyCode;
-var key=_self.keyNames[code]||(code&&code>46&&code!=91?String.fromCharCode(code):null);
+for(;i<l;++i){register(parts[i],handler);}};this.$exec=function(eInfo){var handler;
+var hashId=0|(eInfo.ctrlKey?1:0)|(eInfo.altKey?2:0)|(eInfo.shiftKey?4:0)|(eInfo.metaKey?8:0);
+var code=eInfo.keyCode;var key=_self.keyNames[code]||(code&&code>46&&code!=91?String.fromCharCode(code):null);
 if(!hashId&&(!key||!key.match(/^F\d{1,2}$/))||!key){return;}if(_self.$keys[hashId]&&(handler=_self.$keys[hashId][key.toLowerCase()])){handler(eInfo.htmlEvent);
 eInfo.returnValue=false;apf.queue.empty();}return eInfo.returnValue;};apf.removeHotkey=this.remove=this.unregister=function(hotkey,handler){var parts=hotkey.split("|"),i=0,l=parts.length;
 for(;i<l;++i){register(parts[i],handler,true);}};function toMacNotation(hotkey,bHtml){var t,keys=hotkey.splitSafe("\\-"),i=0,l=keys.length;
