@@ -157,18 +157,18 @@ grids.get = function(name) {
 grids.update = function(gridLayout, split) {
     var grid = GridLayouts[gridLayout];
     
-    //console.log("update: ", split.pages[0].$pHtmlNode, grid.node, grid.node.parentNode, grid.node.$pHtmlNode);
+    //console.log("update: ", split.pairs[0].page.$pHtmlNode, grid.node, grid.node.parentNode, grid.node.$pHtmlNode);
     grid.node.show();
     // attach the grid layout to the first page of the splitview...
-    var page = split.pages[0];
+    var page = split.pairs[0].page;
     var amlPage = page.fake ? page.relPage : page;
     amlPage.appendChild(grid.node);
     
-    //console.log(split.editors.map(function(editor){return editor.$ext;}), grid.insertPoints);
+    //console.log(split.pairs.map(function(pair){return pair.editor.$ext;}), grid.insertPoints);
     var i = 0;
-    var l = split.editors.length;
+    var l = split.pairs.length;
     for (; i < l; ++i)
-        insertEditorAt(grid.node, split.editors[i], [].concat(grid.insertPoints[i]));
+        insertEditorAt(grid.node, split.pairs[i].editor, [].concat(grid.insertPoints[i]));
     
     // hide splitters that we don't need to see anymore
     var splitters = grid.splitters || grid.node.selectNodes("splitter");

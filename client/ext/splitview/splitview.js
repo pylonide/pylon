@@ -90,7 +90,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             var idx = Splits.indexOf(split, editor);
             if (idx == -1)
                 return;
-            e.returnValue = split.pages[idx];
+            e.returnValue = split.pairs[idx].page;
         });
         
         tabs.addEventListener("tabselectclick", function(e) {
@@ -102,6 +102,15 @@ module.exports = ext.register("ext/splitview/splitview", {
             var split = Splits.get(page)[0];
             if (split)
                 Splits.update(split);
+        });
+        
+        tabs.addEventListener("reorder", function(e) {
+            var split = Splits.get(e.page);
+            console.log("got split",split,Splits.getActive())
+            if (Splits.isActive(split)) {
+                console.log("UPDATING!!");
+                Splits.show(split);
+            }
         });
         
         ide.addEventListener("loadsettings", function(e) {
@@ -129,9 +138,9 @@ module.exports = ext.register("ext/splitview/splitview", {
         var pages    = tabs.getPages();
         var curr     = tabs.getPage();
         var split    = Splits.getActive();
-        var splitLen = split ? split.pages.length : 0;
+        var splitLen = split ? split.pairs.length : 0;
         if (split && Splits.indexOf(split, curr) > -1)
-            curr = split.pages[bRight ? splitLen - 1 : 0];
+            curr = split.pairs[bRight ? splitLen - 1 : 0].page;
         if (!curr || pages.length == 1)
             return;
         
@@ -139,7 +148,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         if (splitLen == 3) {
             // if the max amount of tabs has been reached inside a split view,
             // then the user may remove the last or first tab from it.
-            idx = pages.indexOf(split.pages[bRight ? splitLen - 1 : 0]);
+            idx = pages.indexOf(split.pairs[bRight ? splitLen - 1 : 0].page);
         }
         else {
             var currIdx = pages.indexOf(curr);
@@ -187,8 +196,8 @@ module.exports = ext.register("ext/splitview/splitview", {
         var split = Splits.get(activePage)[0];
 
         if (split && !shiftKey) {
-            for (var i = 0, l = split.pages.length; i < l; ++i) {
-                if (split.pages[i] !== activePage)
+            for (var i = 0, l = split.pairs.length; i < l; ++i) {
+                if (split.pairs[i].page !== activePage)
                     continue;
                 ret = false;
                 break;
@@ -197,14 +206,14 @@ module.exports = ext.register("ext/splitview/splitview", {
             // only the first tab in the split view is the trigger to select all
             // other tabs as well (because only the page of the first tab is 
             // REALLY shown)
-            if (ret !== false && page !== split.pages[0]) {
-                tabs.set(split.pages[0]);
+            if (ret !== false && page !== split.pairs[0].page) {
+                tabs.set(split.pairs[0].page);
                 ret = false;
             }
             
             if (!shiftKey)
                 return true;
-            
+
             return ret;
         }
         else if (shiftKey) {
@@ -231,12 +240,12 @@ module.exports = ext.register("ext/splitview/splitview", {
         var split = Splits.getActive();
         if (!split)
             return;
-        if (split.pages.length == pages.length)
+        if (split.pairs.length == pages.length)
             return (e.returnValue = false);
         
         var maxIdx = pages.length - 1;
         var bRight = e.dir == "right";
-        var idx = pages.indexOf(split.pages[bRight ? split.pages.length - 1 : 0]) + (bRight ? 1 : -1);
+        var idx = pages.indexOf(split.pairs[bRight ? split.pairs.length - 1 : 0].page) + (bRight ? 1 : -1);
         idx = idx < 0 ? maxIdx : idx > maxIdx ? 0 : idx;
         if (Splits.indexOf(split, pages[idx]) > -1)
             return (e.returnValue = false);
@@ -244,7 +253,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         // check if the next tab is inside a split as well:
         split = Splits.get(pages[idx])[0];
         if (split)
-            e.returnValue = pages.indexOf(split.pages[0]);
+            e.returnValue = pages.indexOf(split.pairs[0].page);
         else
             e.returnValue = idx;
     },
@@ -412,8 +421,8 @@ module.exports = ext.register("ext/splitview/splitview", {
         var splitEl;
         for (i = 0, l = splits.length; i < l; ++i) {
             splitEl = apf.getXml("<split />");
-            splitEl.setAttribute("pages", splits[i].pages.map(function(page) {
-                return page.id;
+            splitEl.setAttribute("pages", splits[i].pairs.map(function(pair) {
+                return pair.page.id;
             }).join(","));
             splitEl.setAttribute("active", Splits.isActive(splits[i]) ? "true" : "false");
             splitEl.setAttribute("layout", splits[i].gridLayout);
