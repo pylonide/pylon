@@ -81,6 +81,8 @@ return keys.onLoad({
             "closeallbutme": "Ctrl-Alt-W",
             "gototabright": "Ctrl-]",
             "gototableft": "Ctrl-[",
+            "movetableft": "Ctrl-Alt-[",
+            "movetabright": "Ctrl-Alt-]",
             "tab1": "Ctrl-1",
             "tab2": "Ctrl-2",
             "tab3": "Ctrl-3",
@@ -99,8 +101,8 @@ return keys.onLoad({
             "savetabsession": "Ctrl-Alt-S"
         },
         "splitview" : {
-            "mergetableft": "Ctrl-Alt-[",
-            "mergetabright": "Ctrl-Alt-]"
+            "mergetableft": "Ctrl-Alt-Meta-[",
+            "mergetabright": "Ctrl-Alt-Meta-]"
         },
         "code" : {
             "selectall": "Ctrl-A",

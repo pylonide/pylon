@@ -31,6 +31,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         "closeallbutme": {hint: "close all opened tabs, but the tab that is currently active", msg: "Closing tabs."},
         "gototabright": {hint: "navigate to the next tab, right to the tab that is currently active", msg: "Switching to right tab."},
         "gototableft": {hint: "navigate to the next tab, left to the tab that is currently active", msg: "Switching to left tab."},
+        "movetabright": {hint: "move the tab that is currently active to the left", msg: "Moving tab to the left."},
+        "movetableft": {hint: "move the tab that is currently active to the left", msg: "Moving tab to the left."},
         "tab1": {hint: "navigate to the first tab", msg: "Switching to tab 1."},
         "tab2": {hint: "navigate to the second tab", msg: "Switching to tab 2."},
         "tab3": {hint: "navigate to the third tab", msg: "Switching to tab 3."},
@@ -321,17 +323,17 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     cycleTab: function(dir) {
-        var bRight  = dir == "right",
-            tabs    = tabEditors,
-            pages   = tabs.getPages(),
-            curr    = tabs.getPage(),
-            currIdx = pages.indexOf(curr);
+        var bRight  = dir == "right";
+        var tabs    = tabEditors;
+        var pages   = tabs.getPages();
+        var curr    = tabs.getPage();
+        var currIdx = pages.indexOf(curr);
         if (!curr || pages.length == 1)
             return;
         var idx = currIdx + (bRight ? 1 : -1);
         if (idx < 0)
             idx = pages.length - 1;
-        if (idx > pages.length -1)
+        if (idx > pages.length - 1)
             idx = 0;
 
         // other plugins may modify this behavior
@@ -346,6 +348,47 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             idx = res;
 
         tabs.set(pages[idx].id);
+        return false;
+    },
+    
+    movetabright: function() {
+        this.moveTab("right");
+    },
+    
+    movetableft: function() {
+        this.moveTab("left");
+    },
+    
+    moveTab: function(dir) {
+        var bRight  = dir == "right";
+        var tabs    = tabEditors;
+        var pages   = tabs.getPages();
+        var curr    = tabs.getPage();
+        var currIdx = pages.indexOf(curr);
+        var append  = false;
+        if (!curr || pages.length == 1)
+            return;
+        var idx = currIdx + (bRight ? 2 : -1);
+        if (idx < 0 || idx === pages.length)
+            append = true;
+        if (idx > pages.length - 1)
+            idx = 0;
+
+        // other plugins may modify this behavior
+        var res = ide.dispatchEvent("beforemovetab", {
+            index: idx,
+            dir: dir,
+            pages: pages
+        });
+        if (res === false)
+            return;
+        if (typeof res == "number")
+            idx = res;
+
+        if (append)
+            tabs.appendChild(curr)
+        else
+            tabs.insertBefore(curr, pages[idx]);
         return false;
     },
 

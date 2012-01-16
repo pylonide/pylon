@@ -80,6 +80,8 @@ return keys.onLoad({
             "closeallbutme": "Command-Option-W",
             "gototabright": "Command-]",
             "gototableft": "Command-[",
+            "movetableft": "Command-Option-[",
+            "movetabright": "Command-Option-]",
             "tab1": "Command-1",
             "tab2": "Command-2",
             "tab3": "Command-3",
@@ -98,8 +100,8 @@ return keys.onLoad({
             "savetabsession": "Command-Alt-S"
         },
         "splitview" : {
-            "mergetableft": "Command-Option-[",
-            "mergetabright": "Command-Option-]"
+            "mergetableft": "Command-Option-Ctrl-[",
+            "mergetabright": "Command-Option-Ctrl-]"
         },
         "code" : {
             "selectall": "Command-A",
