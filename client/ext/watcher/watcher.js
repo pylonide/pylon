@@ -25,28 +25,14 @@ module.exports = ext.register("ext/watcher/watcher", {
     init : function() {
         // console.log("Initializing watcher");
         
-        var removedPaths        = {},
-            removedPathCount    = 0,
-            changedPaths        = {},
-            changedPathCount    = 0,
-            expandedPaths       = {},
-            _self               = this;
-            
-        function sendWatchFile(path) {
-            ide.send(JSON.stringify({
-                "command"     : "watcher",
-                "type"        : "watchFile",
-                "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
-            }));
-        }
+        this.expandedPaths = {};
         
-        function sendUnwatchFile(path) {
-            ide.send(JSON.stringify({
-                "command"     : "watcher",
-                "type"        : "unwatchFile",
-                "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
-            }));
-        }           
+        var removedPaths = {};
+        var removedPathCount = 0;
+        var changedPaths = {};
+        var changedPathCount = 0;
+        var _self = this;
+            
        
         function checkPage() {
             var page = tabEditors.getPage(),
@@ -134,29 +120,18 @@ module.exports = ext.register("ext/watcher/watcher", {
             }
         }
         
-        stServerConnected.addEventListener("activate", function() {
-            if (_self.disabled) return;
-            
-            var pages = tabEditors.getPages();
-            pages.forEach(function (page) {
-                sendWatchFile(page.$model.data.getAttribute("path"));
-            });
-            for (var path in expandedPaths)
-                sendWatchFile(path);
-        });
-        
         ide.addEventListener("openfile", function(e) {
             var path = e.doc.getNode().getAttribute("path");
 
             // console.log("Opened file " + path);
-            sendWatchFile(path);
+            _self.sendWatchFile(path);
         });        
 
         ide.addEventListener("closefile", function(e) {
             if (_self.disabled) return;
             
             var path = e.xmlNode.getAttribute("path");
-            sendUnwatchFile(path);
+            _self.sendUnwatchFile(path);
         });
         
         ide.addEventListener("socketMessage", function(e) {
@@ -167,9 +142,11 @@ module.exports = ext.register("ext/watcher/watcher", {
             if ((message.type && message.type != "watcher") || !message.path)
                 return;
                 
+            console.log(message)
+                
             var path = ide.davPrefix + message.path.slice(ide.workspaceDir.length);
 
-            if (expandedPaths[path])
+            if (_self.expandedPaths[path])
                 return ide.dispatchEvent("treechange", {
                     path    : path,
                     files   : message.files
@@ -218,8 +195,8 @@ module.exports = ext.register("ext/watcher/watcher", {
                 if (node && (node.getAttribute("type") == "folder" || node.tagName == "folder")) {
                     var path = node.getAttribute("path");
                     
-                    expandedPaths[path] = path;
-                    sendWatchFile(path);
+                    _self.expandedPaths[path] = path;
+                    _self.sendWatchFile(path);
                 }
             });
             
@@ -230,24 +207,46 @@ module.exports = ext.register("ext/watcher/watcher", {
                 if (node && (node.getAttribute("type") == "folder" || node.tagName == "folder")) {
                     var path = node.getAttribute("path");
                     
-                    delete expandedPaths[path];
-                    sendUnwatchFile(path);
+                    delete _self.expandedPaths[path];
+                    _self.sendUnwatchFile(path);
                 }
             });
         });
     },
-    
-    enable : function(){
-        this.disabled = false;
         
-        //@todo add code here to set watchers again based on the current state
+    sendWatchFile : function(path) {
+        ide.send(JSON.stringify({
+            "command"     : "watcher",
+            "type"        : "watchFile",
+            "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
+        }));
     },
     
-    disable : function(){
+    sendUnwatchFile : function(path) {
+        ide.send(JSON.stringify({
+            "command"     : "watcher",
+            "type"        : "unwatchFile",
+            "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
+        }));
+    },
+    
+    enable : function() {
+        this.disabled = false;
+        
+        var _self = this;
+        var pages = tabEditors.getPages();
+        pages.forEach(function (page) {
+            _self.sendWatchFile(page.$model.data.getAttribute("path"));
+        });
+        for (var path in this.expandedPaths)
+            this.sendWatchFile(path);
+    },
+    
+    disable : function() {
         this.disabled = true;
     },
     
-    destroy : function(){
+    destroy : function() {
         
     }
 });
