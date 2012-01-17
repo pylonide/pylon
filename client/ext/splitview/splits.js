@@ -54,6 +54,10 @@ exports.init = function(splitView) {
         e.returnValue = correctGotoLineDialog(e);
     });
     
+    ide.addEventListener("ext.vim.toggle", function(e) {
+        e.returnValue = correctVimMode(e);
+    });
+    
     Grids.addEventListener("resize", function(e, node) {
         var correct;
         if (searchWindow && searchWindow.visible) {
@@ -166,9 +170,9 @@ exports.update = function(split, gridLayout) {
     //  split.editors.length,page.name,split.pages.map(function(page){return page.name}));
     if (split.pairs.length === 1) {
         var editor = page.$editor.amlEditor;
-        if (EditorClones[editor.tagName]) {
-            for (var clone, i = 0, l = EditorClones[editor.tagName].length; i < l; ++i) {
-                clone = EditorClones[editor.tagName][i];
+        if (EditorClones[editor.localName]) {
+            for (var clone, i = 0, l = EditorClones[editor.localName].length; i < l; ++i) {
+                clone = EditorClones[editor.localName][i];
                 clone.hide();
                 apf.document.body.appendChild(clone);
             }
@@ -218,7 +222,8 @@ exports.update = function(split, gridLayout) {
 
 exports.mutate = function(split, page) {
     split = split || split === null ? ActiveSplit : null;
-    var activePage = tabEditors.getPage();
+    var tabs = tabEditors;
+    var activePage = tabs.getPage();
     var pairIdx = split ? exports.indexOf(split, page) : -1;
 
     // Remove an editor from the split view
@@ -240,8 +245,8 @@ exports.mutate = function(split, page) {
         clearSplitViewStyles(page);
         editor.hide();
         split.zManager.clear(editor.$ext);
-        if (tabEditors.getPage() !== split.pairs[0].page)
-            tabEditors.set(split.pairs[0].page);
+        if (tabs.getPage() !== split.pairs[0].page)
+            tabs.set(split.pairs[0].page);
 
         this.update(split);
     }
@@ -321,10 +326,10 @@ exports.getActive = function() {
     return ActiveSplit || null;
 };
 
-exports.setActivePage = function(split, activePage) {
+exports.setActivePage = function(split, page) {
     var old = split.activePage;
-    var idx = split.activePage = activePage 
-        ? exports.indexOf(split, activePage) 
+    var idx = split.activePage = page
+        ? exports.indexOf(split, page) 
         : split.activePage;
     if (idx == -1)
         return;
@@ -339,7 +344,7 @@ exports.setActivePage = function(split, activePage) {
  * instead of '==='!
  */
 exports.indexOf = function(split, obj) {
-    var type = obj.tagName.indexOf("page") > -1 ? "page" : "editor";
+    var type = obj.localName.indexOf("page") > -1 ? "page" : "editor";
     for (var i = 0, l = split.pairs.length; i < l; ++i) {
         if (split.pairs[i][type] === obj)
             return i;
@@ -357,7 +362,7 @@ function sortEditorsAndPages(split) {
 }
 
 function createEditorClones(editor) {
-    var id = editor.tagName;
+    var id = editor.localName;
     var isCodeEditor = id.indexOf("codeeditor") > -1;
 
     if (!EditorClones.cloneEditor && isCodeEditor) {
@@ -369,6 +374,21 @@ function createEditorClones(editor) {
         apf.document.body.appendChild(EditorClones.cloneEditor);
         
         addEditorListeners.call(this, EditorClones.cloneEditor);
+        
+        // add listeners to ceEditor properties that also need to be applied to
+        // other editor instances:
+        function setProp(which, value) {
+            if (EditorClones[id] && EditorClones[id].length) {
+                EditorClones[id].forEach(function(o) {
+                    o.setAttribute(which, value);
+                });
+            }
+            if (EditorClones.cloneEditor)
+                EditorClones.cloneEditor.setAttribute(which, value);
+        }
+        editor.addEventListener("prop.wrapmode", function(e) {
+            setProp("wrapmode", e.value);
+        });
     }
     
     if (EditorClones[id] && EditorClones[id].length) {
@@ -474,7 +494,7 @@ function onEditorFocus(editor) {
 }
 
 function clearSplitViewStyles(splitOrPage) {
-    var pages = (typeof splitOrPage.tagName != "undefined") 
+    var pages = (typeof splitOrPage.localName != "undefined") 
         ? [splitOrPage] 
         : splitOrPage.pairs.map(function(pair) { return pair.page; });
     pages.forEach(function(page) {
@@ -483,7 +503,7 @@ function clearSplitViewStyles(splitOrPage) {
 }
 
 function setSplitViewStyles(splitOrPage) {
-    var pages = (typeof splitOrPage.tagName != "undefined") 
+    var pages = (typeof splitOrPage.localName != "undefined") 
         ? [null, splitOrPage] 
         : splitOrPage.pairs.map(function(pair) { return pair.page; });
     for (var i = 0, l = pages.length; i < l; ++i) {
@@ -566,6 +586,12 @@ function correctGotoLineDialog(e) {
             to: e.anim == "out" ? to + (to === 0 ? 2 : -1) : (to - 60)
         };
     }
+}
+
+function correctVimMode(e) {
+    e.editors.push.apply(e.editors, EditorClones[e.editors[0].localName]);
+    if (EditorClones.cloneEditor)
+        e.editors.push(EditorClones.cloneEditor);
 }
 
 });

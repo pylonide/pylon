@@ -468,8 +468,9 @@ module.exports = ext.register("ext/code/code", {
         if (typeof ext === "string") {
             node = settings.model.queryNode('auto/customtypes/mime[@ext="' + ext + '"]');
             if (!node)
-                settings.model.appendXml('<mime name="' + mime + '" ext="' + ext + '" />', "auto/customtypes");
-        } else {
+                node = settings.model.appendXml('<mime name="' + mime + '" ext="' + ext + '" />', "auto/customtypes");
+        }
+        else {
             var name = ext.getAttribute("name") || "";
             node = settings.model.queryNode('auto/customtypes/mime[@filename="' + name + '"]');
             if (node)

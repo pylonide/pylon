@@ -266,7 +266,13 @@ define(function(require, exports, module) {
         if (!page)
             return null;
 
-        return page.$model.data;
+        var corrected = this.dispatchEvent("activepagemodel", {
+            model: page.$model
+        });
+        
+        return corrected && corrected.data 
+            ? corrected.data 
+            : page.$model.data;
     };
     
     ide.getAllPageModels = function() {

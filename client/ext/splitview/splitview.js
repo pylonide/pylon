@@ -122,8 +122,17 @@ module.exports = ext.register("ext/splitview/splitview", {
             ide.addEventListener("extload", function(){
                 setTimeout(function() {
                     _self.restore(data);
-                }, 50);
+                });
             });
+        });
+        
+        ide.addEventListener("activepagemodel", function(e) {
+            var page = tabEditors.getPage();
+            var split = Splits.get(page)[0];
+            if (!split || !Splits.isActive(split))
+                return;
+            
+            e.returnValue = split.pairs[split.activePage || 0].page.$model;
         });
         
         Splits.init(this);

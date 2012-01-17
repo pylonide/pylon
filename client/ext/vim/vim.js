@@ -12,7 +12,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var editors = require("ext/editors/editors");
+var Editors = require("ext/editors/editors");
 var handler = require("ext/vim/keyboard").handler;
 var extSettings = require("ext/settings/settings");
 var cmdModule = require("ext/vim/commands");
@@ -25,10 +25,10 @@ var OLD_HANDLER;
 
 var onConsoleCommand = function onConsoleCommand(e) {
     var cmd = e.data.command;
-    if (editors && editors.currentEditor && editors.currentEditor.amlEditor &&
+    if (Editors && Editors.currentEditor && Editors.currentEditor.amlEditor &&
         cmd && typeof cmd === "string") {
 
-        var domEditor = editors.currentEditor.amlEditor;
+        var domEditor = Editors.currentEditor.amlEditor;
         if (cmd[0] === ":") {
             cmd = cmd.substr(1);
 
@@ -82,10 +82,17 @@ var onCursorMove = function() {
 };
 
 var enableVim = function enableVim() {
-    if (editors.currentEditor && editors.currentEditor.amlEditor) {
-        ext.initExtension(this);
+    if (!(Editors.currentEditor && Editors.currentEditor.amlEditor))
+        return;
+    var editors = [Editors.currentEditor.amlEditor];
+    ide.dispatchEvent("ext.vim.toggle", {
+        editors: editors,
+        enable: true
+    });
 
-        var editor = editors.currentEditor.amlEditor.$editor;
+    ext.initExtension(this);
+    editors.forEach(function(amlEditor) {
+        var editor = amlEditor.$editor;
         addCommands(editor, commands);
         editor.renderer.container.addEventListener("click", onCursorMove, false);
 
@@ -95,33 +102,42 @@ var enableVim = function enableVim() {
         // Set Vim's own keyboard handle
         editor.setKeyboardHandler(handler);
 
-        if (util.currentMode !== "insert") {
+        if (util.currentMode !== "insert")
             commands.stop.exec(editor);
-        }
+
         VIM_ENABLED = true;
 
         ide.dispatchEvent("track_action", {type: "vim", action: "enable"});
-    }
+    });
 };
 
 var disableVim = function() {
-    if (editors.currentEditor && editors.currentEditor.amlEditor) {
-        var editor = editors.currentEditor.amlEditor.$editor;
+    if (!(Editors.currentEditor && Editors.currentEditor.amlEditor))
+        return;
+    var editors = [Editors.currentEditor.amlEditor];
+    ide.dispatchEvent("ext.vim.toggle", {
+        editors: editors,
+        enable: true
+    });
+
+    editors.forEach(function(amlEditor) {
+        var editor = amlEditor.$editor;
 
         removeCommands(editor, commands);
         editor.setKeyboardHandler(OLD_HANDLER);
         commands.start.exec(editor);
         editor.renderer.container.removeEventListener("click", onCursorMove, false);
+
         VIM_ENABLED = false;
 
         ide.dispatchEvent("track_action", {type: "vim", action: "disable"});
-    }
+    });
 };
 
 var cliKeyDown = function(e) {
     if (e.keyCode === 27) { // ESC is pressed in the CLI
         txtConsoleInput.blur();
-        editors.currentEditor.amlEditor.focus();
+        Editors.currentEditor.amlEditor.focus();
     }
 };
 
@@ -129,7 +145,7 @@ module.exports = ext.register("ext/vim/vim", {
     name    : "Vim mode",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
-    deps    : [editors],
+    deps    : [Editors],
     nodes   : [],
     alone   : true,
 
