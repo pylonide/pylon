@@ -530,7 +530,10 @@ function correctQuickSearchDialog(e) {
             right: Math.max(right, 30),
             zIndex: parseInt(editor.$ext.style.zIndex, 10) + 1,
             from: !e || e.anim == "out" ? to - 27 : 0,
-            to: !e || e.anim == "out" ? to : (to - 30)
+            to: !e || e.anim == "out" ? to : (to - 30),
+            onfinish: function() {
+                searchWindow.$ext.style.zIndex = searchWindow.zindex;
+            }
         };
     }
 }
@@ -560,7 +563,7 @@ function correctGotoLineDialog(e) {
             top: top,
             zIndex: parseInt(editor.$ext.style.zIndex, 10) + 1,
             from: e.anim == "out" ? to - 60 : 0,
-            to: e.anim == "out" ? to : (to - 60)
+            to: e.anim == "out" ? to + (to === 0 ? 2 : -1) : (to - 60)
         };
     }
 }

@@ -240,6 +240,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                 control  : (this.control = {}),
                 onfinish : function() {
                     _self.updateCounter();
+                    if (corrected && corrected.onfinish)
+                        corrected.onfinish();
                 }
             });
         }

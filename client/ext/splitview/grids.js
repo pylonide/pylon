@@ -219,6 +219,7 @@ function createNodes(struct, splitters, parent) {
         else if (nodeName == "splitter") {
             options.visible = false;
             options.skin = "darksplitter";
+            options.zindex = 1;
         }
         
         var node = parent.appendChild(new apf[nodeName](options));
