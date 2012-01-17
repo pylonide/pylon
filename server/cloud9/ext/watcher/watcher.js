@@ -29,14 +29,14 @@ var cloud9WatcherPlugin = module.exports = function(ide, workspace) {
     this.name = "watcher";
     this.filenames = {};
     this.basePath  = ide.workspaceDir + "/";
-}
+};
 
 sys.inherits(cloud9WatcherPlugin, Plugin);
 
 (function() {
     this.unwatchFile = function(filename) {
         // console.log("No longer watching file " + filename);
-        if (--this.filenames[filename] == 0) {
+        if (--this.filenames[filename] === 0) {
             delete this.filenames[filename];
             fs.unwatchFile(filename);
         }
@@ -50,17 +50,21 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
     };
 
     this.command = function(user, message, client) {
-        var filename, that, subtype, files;
+        var that, subtype, files;
 
         if (!message || message.command != "watcher") 
             return false;
-        with (message) {
-            if (command != "watcher")
-                return false;
             
-            path = this.basePath + path;
+        var command = message.command;
+        var path = message.path;
+        var type = message.type;
             
-            switch (type) {
+        if (command != "watcher")
+            return false;
+        
+        path = this.basePath + path;
+        
+        switch (type) {
             case "watchFile":
                 if (this.filenames[path]) 
                     ++this.filenames[path]; // console.log("Already watching file " + path);
@@ -72,7 +76,7 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                         if (ignoredPaths[path]) {
                             clearTimeout(ignoreTimers[path]);
                             ignoreTimers[path] = setTimeout(function() {
-                                delete ignoreTimers[path]
+                                delete ignoreTimers[path];
                                 delete ignoredPaths[path];
                             }, IGNORE_TIMEOUT);
                             return;
@@ -91,7 +95,7 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                             // TODO don't use sync calls
                             fs.readdirSync(path).forEach(function (file) {
                                 var stat = fs.statSync(path + "/" + file);
-
+    
                                 if (file.charAt(0) != '.') {
                                     files[file] = {
                                         type : stat.isDirectory() ? "folder" : "file",
@@ -116,12 +120,11 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                 return this.unwatchFile(path);
             default:
                 return false;
-            }
         }
     };
     
     this.dispose = function(callback) {
-        for (filename in this.filenames)
+        for (var filename in this.filenames)
             this.unwatchFile(this.filenames[filename]);
         callback();
     };

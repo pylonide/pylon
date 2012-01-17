@@ -142,9 +142,8 @@ module.exports = ext.register("ext/watcher/watcher", {
             if ((message.type && message.type != "watcher") || !message.path)
                 return;
                 
-            console.log(message)
-                
             var path = ide.davPrefix + message.path.slice(ide.workspaceDir.length);
+            path = path.replace(/\/$/, "");
 
             if (_self.expandedPaths[path])
                 return ide.dispatchEvent("treechange", {
