@@ -1,6 +1,0 @@
-{
-    "name": "node_runtime",
-    "description": "Provides the server-side face of the NodeJS and Chrome debugger.",
-    "version": "0.1",
-    "author": "Ajax.org B.V. <info@ajax.org>"
-}
