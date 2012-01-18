@@ -209,8 +209,14 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     closetab: function(page) {
-        if (!page)
+        if (!page) {
             page = tabEditors.getPage();
+            var corrected = ide.dispatchEvent("beforeclosetab", {
+                page: page
+            });
+            if (corrected)
+                page = corrected;
+        }
 
         if (page)
             tabEditors.remove(page);
@@ -222,7 +228,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         this.closeallbutme(1, callback);
     },
 
-    // ignore is the page that shouldn't be closed, null to close all tabs
+    // ignore is the page that shouldn't be closed.
     closeallbutme: function(ignore, callback) {
         ignore = ignore || tabEditors.getPage();
         this.changedPages = [];

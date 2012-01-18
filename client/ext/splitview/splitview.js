@@ -98,6 +98,13 @@ module.exports = ext.register("ext/splitview/splitview", {
             return onAccessTabbing(e);
         });
         
+        ide.addEventListener("beforeclosetab", function(e) {
+            var split = Splits.get(e.page)[0];
+            if (!Splits.isActive(split))
+                return;
+            e.returnValue = split.pairs[split.activePage].page;
+        });
+        
         ide.addEventListener("correctactivepage", function(e) {
             var split = Splits.getActive();
             var editor = Editors.currentEditor && Editors.currentEditor.amlEditor;
