@@ -149,9 +149,11 @@ module.exports = ext.register("ext/editors/editors", {
         });
         
         apf.document.body.appendChild(tab);
+        
+        var tabs = tabEditors;
 
-        tabEditors.$buttons.appendChild(btn.$ext);
-        tabEditors.addEventListener("DOMNodeInserted",function(e){
+        tabs.$buttons.appendChild(btn.$ext);
+        tabs.addEventListener("DOMNodeInserted",function(e){
             if (e.$isMoveWithinParent) {
                 //record position in settings
 
@@ -163,15 +165,15 @@ module.exports = ext.register("ext/editors/editors", {
             }
 
             if (e.relatedNode == this && e.currentTarget.localName == "page") {
-                tabEditors.appendChild(btn);
-                tabEditors.$buttons.appendChild(btn.$ext);
+                tabs.appendChild(btn);
+                tabs.$buttons.appendChild(btn.$ext);
                 btn.$ext.style.position = "";
                 btn.$ext.style.right = "";
                 btn.$ext.style.top = "";
             }
         });
 
-        tabEditors.addEventListener("DOMNodeRemoved",function(e){
+        tabs.addEventListener("DOMNodeRemoved",function(e){
             if (e.relatedNode == this && this.getPages().length == 1) {
                 btn.$ext.style.position = "absolute";
                 btn.$ext.style.right = "5px";
@@ -284,10 +286,11 @@ module.exports = ext.register("ext/editors/editors", {
     openEditor : function(doc, init, active) {
         var xmlNode  = doc.getNode();
         var filepath = xmlNode.getAttribute("path");
+        var tabs = tabEditors;
 
-        var page = tabEditors.getPage(filepath);
+        var page = tabs.getPage(filepath);
         if (page) {
-            tabEditors.set(page);
+            tabs.set(page);
             return;
         }
 
@@ -312,10 +315,10 @@ module.exports = ext.register("ext/editors/editors", {
 
         //Create Fake Page
         if (init)
-            tabEditors.setAttribute("buttons", "close");
+            tabs.setAttribute("buttons", "close");
 
         var model = new apf.model();
-        var fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
+        var fake = tabs.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
             page.$at     = new apf.actiontracker();
             page.$doc    = doc;
             doc.$page    = page;
@@ -330,7 +333,7 @@ module.exports = ext.register("ext/editors/editors", {
         });
 
         if (init)
-            tabEditors.setAttribute("buttons", "close,scale,order");
+            tabs.setAttribute("buttons", "close,scale,order");
 
         doc.addEventListener("setnode", function(e) {
             fake.$model.load(e.node);
@@ -343,7 +346,7 @@ module.exports = ext.register("ext/editors/editors", {
             return;
 
         //Set active page
-        tabEditors.set(filepath);
+        tabs.set(filepath);
 
         //if (editorPage.model != model)
             //this.beforeswitch({nextPage: fake});
@@ -450,8 +453,8 @@ module.exports = ext.register("ext/editors/editors", {
     },
 
     beforeswitch : function(e) {
-        var page       = e.nextPage,
-            editorPage = tabEditors.getPage(page.type);
+        var page       = e.nextPage;
+        var editorPage = tabEditors.getPage(page.type);
         if (!editorPage) return;
 
         if (editorPage.model != page.$model)
@@ -766,7 +769,9 @@ module.exports = ext.register("ext/editors/editors", {
 
     jump : function(fileEl, row, column, text, doc, page) {
         var path    = fileEl.getAttribute("path");
-        var hasData = page && (tabEditors.getPage(path) || { }).$doc ? true : false;
+        var tabs    = tabEditors;
+        var hasData = page && (tabs.getPage(path) || { }).$doc ? true : false;
+        var _self   = this;
 
         if (row !== undefined) {
             var editor = _self.currentEditor.amlEditor;
@@ -781,7 +786,7 @@ module.exports = ext.register("ext/editors/editors", {
             };
 
             if (hasData) {
-                tabEditors.set(path);
+                tabs.set(path);
                 jumpTo();
             }
             else
@@ -800,7 +805,7 @@ module.exports = ext.register("ext/editors/editors", {
                 doc: doc || ide.createDocument(fileEl)
             });
         else
-            tabEditors.set(path);
+            tabs.set(path);
     },
 
     enable : function(){
