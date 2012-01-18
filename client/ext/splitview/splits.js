@@ -12,6 +12,7 @@ var ide = require("core/ide");
 var Grids = require("ext/splitview/grids");
 var ZManager = require("ext/splitview/zmanager");
 var Editors = require("ext/editors/editors");
+var SearchReplace = require("ext/searchreplace/searchreplace");
 var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
 var Splits = [];
 var EditorClones = {};
@@ -149,8 +150,11 @@ exports.hide = function(split, notGrid) {
     if (split === ActiveSplit)
         ActiveSplit = null;
     
-    if (previousEditor)
+    if (previousEditor) {
         Editors.currentEditor.amlEditor = previousEditor;
+        // invalidate search-replace's cache of the editor object
+        delete SearchReplace.$editor;
+    }
 
     return this;
 };
@@ -475,6 +479,8 @@ function onEditorFocus(editor) {
         if (!previousEditor)
             previousEditor = Editors.currentEditor.amlEditor;
         Editors.currentEditor.amlEditor = editor;
+        // invalidate search-replace's cache of the editor object
+        delete SearchReplace.$editor;
     }
 
     splits.forEach(function(split) {

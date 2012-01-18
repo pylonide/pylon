@@ -254,7 +254,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
     },
 
     replaceAll: function() {
-        if (!this.editor)
+        if (!this.$editor)
             this.setEditor();
         if (!this.$editor)
             return;
