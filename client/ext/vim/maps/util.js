@@ -18,15 +18,17 @@ module.exports = {
             // Switch editor to insert mode
             editor.unsetStyle('insert-mode');
 
-            var cursor = document.getElementsByClassName("ace_cursor")[0];
-            if (cursor) {
-                cursor.style.display = null;
-                cursor.style.backgroundColor = null;
-                cursor.style.opacity = null;
-                cursor.style.border = null;
-                cursor.style.borderLeftColor = isDarkTheme? "#eeeeee" : "#333333";
-                cursor.style.borderLeftStyle = "solid";
-                cursor.style.borderLeftWidth = "2px";
+            var cursors = document.getElementsByClassName("ace_cursor");
+            if (cursors && cursors.length) {
+                for (var i = 0, l = cursors.length; i < l; ++i) {
+                    cursors[i].style.display = null;
+                    cursors[i].style.backgroundColor = null;
+                    cursors[i].style.opacity = null;
+                    cursors[i].style.border = null;
+                    cursors[i].style.borderLeftColor = isDarkTheme? "#eeeeee" : "#333333";
+                    cursors[i].style.borderLeftStyle = "solid";
+                    cursors[i].style.borderLeftWidth = "2px";
+                }
             }
 
             editor.setOverwrite(false);
