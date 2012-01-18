@@ -644,6 +644,9 @@ module.exports = ext.register("ext/editors/editors", {
 
                 pNode = apf.createNodeFromXpath(e.model.data, "auto/files");
                 for (var i = 0, l = pages.length; i < l; i++) {
+                    if(!pages[i] || !pages[i].$model)
+                        continue;
+                        
                     var file = pages[i].$model.data;
                     if (!file || file.getAttribute("debug"))
                         continue;
