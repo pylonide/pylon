@@ -35,7 +35,6 @@ module.exports = ext.register("ext/html/html", {
         var tabs = tabEditors;
 
         tabs.addEventListener("afterswitch", function(e){
-            console.log("gettin here?");
             if (e.nextPage) {
             /*var ext = e.nextPage.id.split(".").pop();
 
