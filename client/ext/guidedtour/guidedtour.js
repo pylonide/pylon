@@ -89,7 +89,7 @@ var jsonTourIde = {
         time: 4
     }, {
         before: function() {
-            var helloWorldScript = "var http = require(\'http\');\nhttp.createServer(function (req, res) {\n\tres.writeHead(200, {\'Content-Type\': \'text/plain\'});\n\tres.end(\'Hello World\\n\');\n}).listen(1337, \"127.0.0.1\");\n\nconsole.log(\'Server running at http://127.0.0.1:1337/\');";
+            var helloWorldScript = "var http = require(\'http\');\nhttp.createServer(function (req, res) {\n\tres.writeHead(200, {\'Content-Type\': \'text/plain\'});\n\tres.end(\'Hello World\\n\');\n}).listen(process.env.PORT, \"0.0.0.0\");\n\nconsole.log(\'Server running/\');";
             tabEditors.getPage().$doc.setValue(helloWorldScript);
             if (!save) 
                 save = require("ext/save/save");
@@ -298,7 +298,9 @@ var jsonTourIde = {
                     currentTarget: txtConsoleInput
                 });
                 trFiles.confirmed = true;
-                trFiles.remove(trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']"))
+                var demoFile = trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']");
+                if(demoFile)
+                    trFiles.remove(demoFile);
                 trFiles.confirmed = false;
             }
         },
@@ -520,19 +522,11 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         winTourButtonClose.hide();
         winTourButtonDone.show();
     },
-
+    
     // These are common o02022perations we do for step
     // forwards and back, so we DRY
     commonStepOps: function(step){
-        var _self = this;
-        if(step.notAvailable) {
-            this.stepForward();
-            return;
-        }
-        if (step.before) 
-            step.before();
-        
-        setTimeout(function(){
+        function getCurrentEl(){
             if (step.el !== undefined) {
                 if(typeof step.el == "string")
                     step.el = self[step.el];
@@ -557,9 +551,19 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             }
             else {
                 // fixes issue with no zen button existing
-                _serlf.currentEl = btnZenFullscreen;
+                _self.currentEl = btnZenFullscreen;
             }
-            
+        }
+        var _self = this;
+        if(step.notAvailable) {
+            this.stepForward();
+            return;
+        }
+        if (step.before) 
+            step.before();
+        
+        setTimeout(function(){   
+            getCurrentEl();
             if(!_self.currentEl)
                 return;
                 
@@ -636,7 +640,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             var pNode = this.currentEl;
             if (pNode) {
                 while (pNode && pNode.tagName != "body" && (!zIndex || zIndex <= 9998)) {
-                    zIndex = pNode.$ext.style && parseInt(pNode.$ext.style.zIndex || 9997) + 1;
+                    zIndex = pNode.$ext && pNode.$ext.style && parseInt(pNode.$ext.style.zIndex || 9997) + 1;
                     pNode = pNode.parentNode;
                 }
             }
