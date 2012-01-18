@@ -359,6 +359,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     
     hideMenus: function(){
         var buttons = dockpanel.getButtons("ext/debugger/debugger");
+        if(!buttons)
+            return;
+            
         for(var i = 0, button; i < buttons.length; i++) {
             button = buttons[i];
             if(!button.showMenu || !button.cache)
@@ -387,7 +390,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
                 currentTarget: txtConsoleInput
             });
             trFiles.confirmed = true;
-            trFiles.remove(trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']"))
+            var demoFile = trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']");
+            if(demoFile)
+                trFiles.remove(demoFile);
             trFiles.confirmed = false;
         }
     },
@@ -528,7 +533,37 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             step.before();
         
         setTimeout(function(){
-            _self.highlightElement(step);
+            if (step.el !== undefined) {
+                if(typeof step.el == "string")
+                    step.el = self[step.el];
+                if(typeof step.el == "function")
+                    step.el = step.el();
+                _self.currentEl = step.el;
+            }
+            // AL of these fix issues with elements not being available when this plugin loads
+            else if (step.div == "ceEditor"){
+                _self.currentEl = ceEditor;
+            }
+            else if (step.div == "expandedDbg") {
+                _self.currentEl = expandedDbg;
+            }
+            else if (step.div !== undefined) {
+                if (step.node !== undefined) {
+                    _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes(step.div, apf.document.selectSingleNode(step.node).$ext);
+                }
+                else {
+                    _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes(step.div, ceEditor.$ext);
+                }
+            }
+            else {
+                // fixes issue with no zen button existing
+                _serlf.currentEl = btnZenFullscreen;
+            }
+            
+            if(!_self.currentEl)
+                return;
+                
+            _self.highlightElement();
     
             textTourDesc.setValue(step.desc);
     
@@ -576,34 +611,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     /**
      * Element methods
      */
-    highlightElement: function(step){
-        if (step.el !== undefined) {
-            if(typeof step.el == "string")
-                step.el = self[step.el];
-            if(typeof step.el == "function")
-                step.el = step.el();
-            this.currentEl = step.el;
-        }
-        // AL of these fix issues with elements not being available when this plugin loads
-        else if (step.div == "ceEditor"){
-            this.currentEl = ceEditor;
-        }
-        else if (step.div == "expandedDbg") {
-            this.currentEl = expandedDbg;
-        }
-        else if (step.div !== undefined) {
-            if (step.node !== undefined) {
-                this.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes(step.div, apf.document.selectSingleNode(step.node).$ext);
-            }
-            else {
-                this.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes(step.div, ceEditor.$ext);
-            }
-        }
-        else {
-            // fixes issue with no zen button existing
-            this.currentEl = btnZenFullscreen;
-        }
-        
+    highlightElement: function(){        
         //this.currentEl.addEventListener("resize", this.$celResize = function() {
         //_self.resizeHighlightedEl();
         //});
