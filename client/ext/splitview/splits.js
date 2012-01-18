@@ -175,8 +175,9 @@ exports.update = function(split, gridLayout) {
     if (split.pairs.length === 1) {
         var editor = page.$editor.amlEditor;
         if (EditorClones[editor.localName]) {
-            for (var clone, i = 0, l = EditorClones[editor.localName].length; i < l; ++i) {
-                clone = EditorClones[editor.localName][i];
+            var editors = [EditorClones[editor.localName].original].concat(EditorClones[editor.localName]);
+            for (var clone, i = 0, l = editors.length; i < l; ++i) {
+                clone = editors[i];
                 clone.hide();
                 apf.document.body.appendChild(clone);
             }
