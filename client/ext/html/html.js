@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var code = require("ext/code/code");
+var Editors = require("ext/editors/editors");
 var markup = require("text!ext/html/html.xml");
 
 var mimeTypes = [
@@ -31,7 +32,10 @@ module.exports = ext.register("ext/html/html", {
 
     hook : function(){
         var _self = this;
-        tabEditors.addEventListener("afterswitch", function(e){
+        var tabs = tabEditors;
+
+        tabs.addEventListener("afterswitch", function(e){
+            console.log("gettin here?");
             if (e.nextPage) {
             /*var ext = e.nextPage.id.split(".").pop();
 
@@ -39,7 +43,6 @@ module.exports = ext.register("ext/html/html", {
               || ext == ".js" || ext == ".txt"
               || ext == ".xml") {*/
                 ext.initExtension(_self);
-                _self.page = e.nextPage;
                 _self.enable();
             /*}
             else {
@@ -49,6 +52,15 @@ module.exports = ext.register("ext/html/html", {
             else {
                 _self.disable();
             }
+        });
+
+        tabs.addEventListener("DOMNodeRemoved", function(){
+            // use a timeout to wait for the 'close tab' code flow to end,
+            // the amount of pages will be correct by then.
+            setTimeout(function() {
+                if (!tabs.getPages().length)
+                    _self.disable();
+            });
         });
     },
 
@@ -68,7 +80,11 @@ module.exports = ext.register("ext/html/html", {
     },
 
     onOpenPage : function() {
-        var file = this.page.$model.data;
+        var editor = Editors.currentEditor && Editors.currentEditor.amlEditor
+            ? Editors.currentEditor.amlEditor : null;
+        if (!editor)
+            return;
+        var file = editor.$model.data;
         window.open(location.protocol + "//" + location.host + file.getAttribute("path"), "_blank");
     },
 
