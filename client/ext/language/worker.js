@@ -434,9 +434,11 @@ function asyncParForEach(array, fn, callback) {
         }, function() {
             var matches = [];
             
-            asyncParForEach(_self.handlers, function(handler, next) {
+            console.log("Results to get: " + _self.handlers.length);
+            asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
                     handler.complete(_self.doc, ast, pos, currentNode, function(completions) {
+                        console.log("Got some results");
                         if (completions)
                             matches = matches.concat(completions);
                         next();
@@ -445,6 +447,8 @@ function asyncParForEach(array, fn, callback) {
                 else
                     next();
             }, function() {
+                console.log("Matches:");
+                console.log(matches);
                 removeDuplicateMatches(matches);
                 // Sort by priority, score
                 matches.sort(function(a, b) {

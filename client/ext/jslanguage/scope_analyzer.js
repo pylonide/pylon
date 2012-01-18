@@ -523,6 +523,7 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
             });
         });
     }
+    console.log(""+currentNode);
     currentNode.rewrite(
         'Var(x)', function(b) {
             var scope = this.getAnnotation("scope");
