@@ -85,6 +85,19 @@ module.exports = ext.register("ext/splitview/splitview", {
             _self.onCycleTab(e);
         });
         
+        function onAccessTabbing(e) {
+            var split = Splits.get(e.page)[0];
+            return !Splits.isActive(split);
+        }
+        
+        ide.addEventListener("beforenexttab", function(e) {
+            return onAccessTabbing(e);
+        });
+        
+        ide.addEventListener("beforeprevioustab", function(e) {
+            return onAccessTabbing(e);
+        });
+        
         ide.addEventListener("correctactivepage", function(e) {
             var split = Splits.getActive();
             var editor = Editors.currentEditor && Editors.currentEditor.amlEditor;

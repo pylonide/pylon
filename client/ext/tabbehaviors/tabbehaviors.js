@@ -293,11 +293,14 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.$tabAccessCycle = 2;
         }
 
+        var tabs = tabEditors;
         var next = this.accessed[n];
-        if (next == tabEditors.getPage())
+        if (next == tabs.getPage() || ide.dispatchEvent("beforenexttab", {
+            page: next
+        }) === false)
             return this.nexttab();
 
-        tabEditors.set(next);
+        tabs.set(next);
     },
 
     previoustab : function(){
@@ -307,11 +310,14 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.$tabAccessCycle = this.accessed.length;
         }
 
+        var tabs = tabEditors;
         var next = this.accessed[n];
-        if (next == tabEditors.getPage())
+        if (next == tabs.getPage() || ide.dispatchEvent("beforeprevioustab", {
+            page: next
+        }) === false)
             return this.previoustab();
-
-        tabEditors.set(next);
+            
+        tabs.set(next);
     },
 
     gototabright: function() {
