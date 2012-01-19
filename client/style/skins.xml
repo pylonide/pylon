@@ -6993,7 +6993,11 @@
         .darksplitter {
             position : relative;
             z-index  : 90000;
-            background-color: #8c8c8c;
+            background-color: #e4e4e4;
+            
+            display  : -moz-box;
+            display  : -webkit-box;
+            display  : -ms-box;
         }
 
         .darksplitterFocus {
@@ -7017,47 +7021,52 @@
 
         .darksplitter span {
             position: absolute;
-            width: 11px;
-            height: 3px;
-            margin-left: 49%;
-            margin-top: 2px;
-            background: url(images/splitter_dark_grab.png) no-repeat 0 0;
+            background-image: url(images/splitter_dark_grab.png);
+            background-repeat: no-repeat;
+            background-position: 0 0;
         }
 
         .darksplitter.vertical {
-            display  : -moz-box;
-            display  : -webkit-box;
-            display  : -ms-box;
-
-            border-top: 0px;
-            border-right: 1px solid #fff;
-            border-bottom: 0px;
-            border-left: 1px solid #eaeaea;
+            border-right: 1px solid #c7c7c7;
 
             vertical-align: middle;
-            width: 3px;
+            width: 6px;
+            
+            background: -moz-linear-gradient(left, #e4e4e4 0%, #d6d5d5 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, right top, color-stop(0%,#e4e4e4), color-stop(100%,#d6d5d5)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(left, #e4e4e4 0%,#d6d5d5 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(left, #e4e4e4 0%,#d6d5d5 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(left, #e4e4e4 0%,#d6d5d5 100%); /* IE10+ */
+            background: linear-gradient(left, #e4e4e4 0%,#d6d5d5 100%); /* W3C */
         }
 
         .darksplitter.vertical span {
-            display: none;
+            width: 3px;
+            height: 11px;
+            background-position: 0 -3px;
+            margin-top: 49%;
+            margin-left: 2px;
         }
 
         .darksplitter.horizontal {
             position: relative;
             margin : -2px 0 0 0;
-
-            border: 0;
-            /*border-top: 1px solid #3d3d3d;
-            border-right: 0px;
-            border-bottom: 1px solid #3d3d3d;
-            border-left: 0px;*/
-
             height: 6px;
-            background: url(images/splitter_dark_bg.png) repeat-x 0 0;
+            
+            border-top: 1px solid #c7c7c7;
+            background: -moz-linear-gradient(top, #d6d5d5 0%, #e4e4e4 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d6d5d5), color-stop(100%,#e4e4e4)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top, #d6d5d5 0%,#e4e4e4 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top, #d6d5d5 0%,#e4e4e4 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top, #d6d5d5 0%,#e4e4e4 100%); /* IE10+ */
+            background: linear-gradient(top, #d6d5d5 0%,#e4e4e4 100%); /* W3C */
         }
 
         .darksplitter.horizontal span {
-            display: inline;
+            width: 11px;
+            height: 3px;
+            margin-left: 49%;
+            margin-top: 1px;
         }
     ]]></a:style>
 
