@@ -1,0 +1,46 @@
+.codetools_colorpicker {
+    position: absolute;
+    opacity: 0.9;
+    border: 1px solid #d9cb89;
+    background-color: #fff8c8;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+    z-index: 2000;
+    padding: 0 2px 0 2px;
+}
+
+.codetools_colorpicker_tools {
+    position: absolute;
+    top: 182px;
+    left: 8px;
+    line-height: 16px;
+    font-size: 12px;
+    vertical-align: middle;
+    color: #fff;
+}
+
+.codetools_colorpicker_tools span {
+    float: left;
+    display: inline;
+    margin: 0 4px 0 0;
+}
+
+.codetools_colorpicker_tools span.color {
+    width: 15px;
+    height: 15px;
+    margin: 0 2px 0 2px;
+    border: 1px solid #fff;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    float: left;
+    cursor: pointer;
+    cursor: hand;
+}
+
+.codetools_colorpicker_tools span.color_hover {
+    -webkit-box-shadow: 0px 0px 6px #ffffff;
+    -moz-box-shadow: 0px 0px 6px #ffffff;
+    box-shadow: 0px 0px 6px #ffffff;
+}
