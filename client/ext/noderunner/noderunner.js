@@ -155,7 +155,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     run : function(path, args, debug, nodeVersion) {
         // this is a manual action, so we'll tell that to the debugger
         dbg.registerManualAttach();
-        if (stProcessRunning.active || !stServerConnected.active/* || (ddRunnerSelector.value=='gae' ? '' : !path)*/ || typeof path != "string")
+        if (stProcessRunning.active || !stServerConnected.active || typeof path != "string")
             return false;
         
         if(nodeVersion == 'default')
@@ -165,9 +165,9 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         var command = {
             "command" : apf.isTrue(debug) ? "RunDebugBrk" : "Run",
             "file"    : path.replace(/^\/+/, ""),
-            "runner"  : "node", //ddRunnerSelector.value, // Explicit addition; trying to affect as less logic as possible for now...
+            "runner"  : "node", 
             "args"    : args || "",
-            "version" : nodeVersion || this.NODE_VERSION,
+            "version" : nodeVersion || ddRunnerSelector.value || this.NODE_VERSION,
             "env"     : {
                 "C9_SELECTED_FILE": page ? page.getAttribute("path").slice(ide.davPrefix.length) : ""
             }

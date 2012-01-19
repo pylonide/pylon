@@ -11,7 +11,6 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
 var editors = require("ext/editors/editors");
-var noderunner = require("ext/noderunner/noderunner");
 
 var Parser = require("ext/console/parser");
 var Logger = require("ext/console/logger");
@@ -282,7 +281,7 @@ module.exports = ext.register("ext/console/console", {
                         };
                         
                         if (cmd.trim() == "npm")
-                            data.version = noderunner.NODE_VERSION;
+                            data.version = ddRunnerSelector.value;
 
                         ide.dispatchEvent("track_action", {type: "console", cmd: cmd});
                         if (ext.execCommand(cmd, data) !== false) {
