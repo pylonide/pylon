@@ -138,7 +138,9 @@ Ide.DEFAULT_PLUGINS = [
     "ext/jslanguage/jslanguage",
     "ext/autotest/autotest",
     "ext/splitview/splitview",
-    "ext/tabsessions/tabsessions"
+    "ext/tabsessions/tabsessions",
+    "ext/codetools/codetools",
+    "ext/colorpicker/colorpicker"
     //"ext/acebugs/acebugs"
 ];
 
