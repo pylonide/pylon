@@ -4,18 +4,15 @@
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
-
 // Maximum amount of buffer history
 var MAX_LINES = 512;
-// relative workspace files
-var wsrRe = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+(?:\.[\w\_\$]+))?(\:\d+)(\:\d+)*/g;
-// URL regexp
-var urlRe = /\b((?:(?:https?):(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()[\]{};:'".,<>?«»“”‘’]))/i;
+var RE_relWorkspace = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+(?:\.[\w\_\$]+))?(\:\d+)(\:\d+)*/g;
+var RE_URL = /\b((?:(?:https?):(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()[\]{};:'".,<>?«»“”‘’]))/i;
 var colors = {
+    colorRe: /\033\[(?:(\d+);)?(\d+)m/g,
     30: "#eee",
     31: "red",
     32: "green",
@@ -40,63 +37,55 @@ var balanceBuffer = function(elem, len) {
         elem.removeChild(elem.firstChild);
 };
 
-var stringRepeat = function(str, times) {
-    return new Array(times + 1).join(str);
-};
+var stringRepeat = function(s, t) { return new Array(t + 1).join(s); };
+var escapeRegExp = function(s) { return s.replace(/([.*+?^${}()|[\]\/\\])/g, '\\$1'); };
 
-var escapeRegExp = function(str) {
-    return str.replace(/([.*+?^${}()|[\]\/\\])/g, '\\$1');
+var createItem = function(line) {
+    if (!line) return "";
+
+    line = apf.htmlentities(line);
+    var workspaceDir = ide.workspaceDir;
+    var davPrefix = ide.davPrefix;
+    var wsRe = new RegExp(escapeRegExp(workspaceDir) + "\\/([^:]*)(:\\d+)(:\\d+)*", "g");
+
+    if (line.search(RE_relWorkspace) !== -1) {
+        line.replace(RE_relWorkspace,
+            "<a href='#' data-abWsp='" + davPrefix + "/$1\", \"$2\", \"$3'>$1$2$3</a>");
+    }
+    if (line.search(wsRe) !== -1) {
+        line.replace(wsRe,
+            "<a href='#' data-relWsp='" + davPrefix + "/$1\", \"$2\", \"$3'>" + workspaceDir + "/$1$2$3</a>");
+    }
+
+    line.replace(/\s{2,}/g, function(str) { return stringRepeat("&nbsp;", str.length); })
+        .replace(/(\u0007|\u001b)\[(K|2J)/g, "")
+        .replace(colors.colorRe, function(m, extra, color) {
+            var style = "color:" + (colors[color] || colors[30]);
+            if (extra === 1)
+                style += ";font-weight=bold";
+            else if (extra === 4)
+                style += ";text-decoration=underline";
+            return "</span><span style='" + style + "'>";
+        });
+
+    return "<div>" + line + "</div>";
 };
 
 exports.logNodeStream = function(data, stream, useOutput) {
-    var workspaceDir = ide.workspaceDir;
-    var davPrefix = ide.davPrefix;
-    var style = "color:#eee;";
-    var log = [];
-
     var parentEl = useOutput ? txtOutput : txtConsole;
     var lines = data.split("\n", MAX_LINES);
-
-    if (lines.length >= MAX_LINES) 
+    if (lines.length >= MAX_LINES)
         // If the stream coming in already contains more lines that our limit,
         // let's clear the console right away.
         parentEl.clear();
-    else 
+    else
         balanceBuffer(parentEl.$ext, lines.length);
 
-    // Probably nice to take this RegExp generation outside the function at
-    // some point
-    var wsRe = new RegExp(escapeRegExp(workspaceDir) + "\\/([^:]*)(:\\d+)(:\\d+)*", "g");
-    for (var i = 0, l = lines.length; i < l; i++) {
-        if (!lines[i])
-            continue;
-
-        // The following is heinous, feel free to refactor it properly, I 
-        // cleaned it up before but I didn't have the time or the heart to refactor.
-        log.push("<div class='item'><span style='" + style + "'>" + apf.htmlentities(lines[i])
-            .replace(urlRe, "<a href='$1' target='_blank'>$1</a>")
-            .replace(wsRe, "<a href='#' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>" + workspaceDir + "/$1$2$3</a>")
-            .replace(wsrRe, "<a href='#' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>$1$2$3</a>")
-            .replace(/\s{2,}/g, function(str) {
-                return stringRepeat("&nbsp;", str.length);
-            })
-            // tty escape sequences (http://ascii-table.com/ansi-escape-sequences.php)
-            .replace(/(\u0007|\u001b)\[(K|2J)/g, "")
-            .replace(/\033\[(?:(\d+);)?(\d+)m/g, function(m, extra, color) {
-                style = "color:" + (colors[color] || "#eee");
-                if (extra == 1)
-                    style += ";font-weight=bold";
-                else if (extra == 4)
-                    style += ";text-decoration=underline";
-                return "</span><span style='" + style + "'>";
-            }) + "</span></div>");
-    }
-    parentEl.addValue(log.join(""));
+    parentEl.$ext.innerHTML += lines.map(createItem).join("");
 };
 
 exports.log = function(msg, type, pre, post, otherOutput){
     msg = apf.htmlentities(msg.toString());
-
     if (!type)
         type = "log";
 
@@ -106,7 +95,9 @@ exports.log = function(msg, type, pre, post, otherOutput){
     var parentEl = otherOutput || txtConsole;
     balanceBuffer(parentEl.$ext, 1);
 
-    parentEl.addValue("<div class='item console_" + type + "'>" + (pre || "") + msg + (post || "") + "</div>");
+    parentEl.$ext.innerHTML +=
+        "<div class='item console_" + type + "'>" +
+            (pre || "") + msg + (post || "") +
+        "</div>";
 };
-
 });
