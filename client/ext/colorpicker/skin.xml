@@ -49,7 +49,7 @@
                 left     : 171px;
                 width    : 35px;
                 height   : 150px;
-                cursor   : n-resize;
+                cursor   : ns-resize;
             }
             
             .colorpicker_hue div {
