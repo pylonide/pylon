@@ -143,7 +143,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             if (range.start.row !== range.end.row || range.start.column !== range.end.column)
                 return;
 
-            var line = doc.getLine(pos.row);
+            line = doc.getLine(pos.row);
             var colors = detectColors(pos, line);
             if (colors[1])
                 _self.toggleColorPicker(pos, editor, line, colors[1]);
@@ -163,7 +163,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             // the tooltip DOM node is stored in the third element of the selection array
             if (!marker) {
                 var range = createColorRange(pos.row, line, color);
-                var marker = editor.session.addMarker(range, "codetools_colorpicker", function(stringBuilder, range, left, top, viewport) {
+                marker = editor.session.addMarker(range, "codetools_colorpicker", function(stringBuilder, range, left, top, viewport) {
                     stringBuilder.push(
                         "<span class='codetools_colorpicker' style='",
                         "left:", left - 3, "px;",
@@ -251,6 +251,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         });
 
         var id = "colorpicker" + color + pos.row;
+        delete this.$activeColor;
         this.hideColorTooltips(editor);
         this.showColorTooltip(pos, editor, line, [orig], id);
         menu.show();
