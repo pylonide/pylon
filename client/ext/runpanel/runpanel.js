@@ -276,7 +276,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     },
 
     run : function(debug) {
-        this.runConfig(self.winRunPanel && winRunPanel.visible
+        this.runConfig(window.winRunPanel && winRunPanel.visible
             ? lstRunCfg.selected
             : (mdlRunConfigurations.queryNode("node()[@last='true']")
                 || mdlRunConfigurations.queryNode("config[@curfile]")),
@@ -324,6 +324,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     },
 
     runConfig : function(config, debug) {
+        ext.initExtension(this);
         var model = settings.model;
         var saveallbeforerun = apf.isTrue(model.queryValue("general/@saveallbeforerun"));
         if (saveallbeforerun)
@@ -341,7 +342,12 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         // will vary over time
         ide.dispatchEvent("beforeRunning");
 
-        noderunner.run(config.getAttribute("path"), (config.getAttribute("args") || "").split(" "), debug, ddRunnerSelector.value);
+        noderunner.run(
+            config.getAttribute("path"),
+            (config.getAttribute("args") || "").split(" "),
+            debug,
+            ddRunnerSelector.value
+        );
     },
 
     stop : function() {

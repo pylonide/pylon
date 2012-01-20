@@ -159,8 +159,8 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         if (stProcessRunning.active || !stServerConnected.active || typeof path != "string")
             return false;
         
-        if(nodeVersion == 'default')
-            nodeVersion = this.NODE_VERSION;
+        if (nodeVersion == 'default')
+            nodeVersion = "";
         
         var page = ide.getActivePageModel();
         var command = {
