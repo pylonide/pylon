@@ -451,7 +451,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             var offset = (itemPos[1] / totalHeight) > 0.5 ? ~center : center;
             var y = itemPos[1] / (totalHeight + offset);
 
-            sbTrFiles.setPosition(y);
+            trFiles.$ext.scrollTop = trFiles.$ext.scrollHeight * y;
         }
     },
 
