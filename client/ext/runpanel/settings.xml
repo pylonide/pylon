@@ -9,7 +9,7 @@
     </a:model>
     <a:hbox edge="5 5 2 5" align="center">
         <a:label flex="1">Runtime:</a:label>        
-        <a:dropdown id="ddRunnerSelector"
+        <a:dropdown
           model     = "mdlRunnerSelector2"
           width="175"  height="21"
           disabled  = "{!lstRunCfg.selected}"

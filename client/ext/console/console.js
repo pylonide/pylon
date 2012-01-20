@@ -281,7 +281,7 @@ module.exports = ext.register("ext/console/console", {
                         };
                         
                         if (cmd.trim() == "npm")
-                            data.version = ddRunnerSelector.value;
+                            data.version = settings.model.queryValue("auto/node-version/@version") || "auto";
 
                         ide.dispatchEvent("track_action", {type: "console", cmd: cmd});
                         if (ext.execCommand(cmd, data) !== false) {

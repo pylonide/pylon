@@ -12,6 +12,7 @@ require("apf/elements/debughost");
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var settings = require("core/settings");
 var markup = require("text!ext/noderunner/noderunner.xml");
 
 module.exports = ext.register("ext/noderunner/noderunner", {
@@ -167,7 +168,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             "file"    : path.replace(/^\/+/, ""),
             "runner"  : "node", 
             "args"    : args || "",
-            "version" : nodeVersion || ddRunnerSelector.value || this.NODE_VERSION,
+            "version" : nodeVersion || settings.model.queryValue("auto/node-version/@version") || this.NODE_VERSION,
             "env"     : {
                 "C9_SELECTED_FILE": page ? page.getAttribute("path").slice(ide.davPrefix.length) : ""
             }
@@ -181,7 +182,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
         ide.send(JSON.stringify({
             "command": "kill",
-            "runner"  : "node" //ddRunnerSelector.value // Explicit addition; trying to affect as less logic as possible for now...
+            "runner"  : "node"
         }));
     },
 
