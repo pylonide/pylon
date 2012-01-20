@@ -33,7 +33,7 @@ module.exports = {
         var expected = ["this", "\"is\"", "'a really awesome'", "`test`"];
         assert.equal(parseLine("this \"is\" 'a really awesome' `test`").toString(), expected.toString());
         next();
-    },
+    }
 };
 
 if (typeof module !== "undefined" && module === require.main) {

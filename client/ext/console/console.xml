@@ -80,9 +80,7 @@
                 <a:button id="btnCollapseConsole" skin="btn_console_open" icon="console-btn.png" state="true" height="38"
                     value = "{!!tabConsole.visible}"
                     onprop.value="
-                        try {
-                            require('ext/console/console')[event.value ? 'show' : 'hide']();
-                        }catch(e){}
+                        try { require('ext/console/console')[event.value ? 'show' : 'hide'](); }catch(e){}
                     " />
             </a:hbox>
         </a:vbox>

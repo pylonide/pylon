@@ -7,17 +7,16 @@
 
 define(function(require, exports, module) {
 
+var editors, parseLine, predefinedCmds; // These modules are loaded on demand
 var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
-var editors = require("ext/editors/editors");
-var parseLine = require("ext/console/parser");
 var Logger = require("ext/console/logger");
 var css = require("text!ext/console/console.css");
 var markup = require("text!ext/console/console.xml");
 
 // Some constants used throughout the plugin
-var bandRE = /^\s*!/;
+var RE_band = /^\s*!/;
 var KEY_TAB = 9;
 var KEY_CR = 13;
 var KEY_UP = 38;
@@ -123,14 +122,6 @@ module.exports = ext.register("ext/console/console", {
                 this.write("Working directory changed.");
             }
         },
-        /*
-        mkdir: function(message) {
-            res = message.body;
-        }
-        rm: function(message) {
-            res = message.body;
-        },
-        */
         error: function(message) {
             Logger.log(message.body);
             Logger.log("", "divider");
@@ -180,7 +171,7 @@ module.exports = ext.register("ext/console/console", {
         return true;
     },
 
-    showOutput: function(){
+    showOutput: function() {
         tabConsole.set(1);
     },
 
@@ -207,6 +198,7 @@ module.exports = ext.register("ext/console/console", {
     },
 
     evalCmd: function(line) {
+        parseLine || (parseLine = require("ext/console/parser"));
         var argv = parseLine(line);
         if (argv.length === 0) // no commmand line input
             return;
@@ -217,19 +209,19 @@ module.exports = ext.register("ext/console/console", {
         Logger.log(this.getPrompt(line), "prompt");
         tabConsole.set("console");
 
-        // We want to expand the console after executing a command.
         var showConsole = true;
         var cmd = argv[0];
-        
-        var predefined = require("ext/console/output").getPredefinedOutput(argv);
-        if (predefined !== "") {
-            this.write(predefined);
+
+        predefinedCmds || (predefinedCmds = require("ext/console/output"));
+        var defCmd = predefinedCmds.getPredefinedOutput(argv);
+        if (defCmd !== "") {
+            this.write(defCmd);
         }
         else {
             if (cmd.trim().charAt(0) === "!") {
                 cmd = "bash";
-                argv[0] = argv[0].replace(bandRE, "");
-                line = line.replace(bandRE, "");
+                argv[0] = argv[0].replace(RE_band, "");
+                line = line.replace(RE_band, "");
             }
 
             showConsole = execAction(cmd, {
@@ -239,7 +231,7 @@ module.exports = ext.register("ext/console/console", {
                 cwd: this.getCwd()
             });
         }
-        if (showConsole)
+        if (showConsole === true)
             this.show();
     },
 
@@ -295,6 +287,8 @@ module.exports = ext.register("ext/console/console", {
         ide.addEventListener("consoleresult.internal-isfile", function(e) {
             var data = e.data;
             var path = data.cwd.replace(ide.workspaceDir, ide.davPrefix);
+            if (!editors)
+                editors = require("ext/editors/editors");
             if (data.isfile)
                 editors.showFile(path);
             else
@@ -380,7 +374,7 @@ module.exports = ext.register("ext/console/console", {
             _self.evalCmd(input.getValue());
             input.setValue("");
         };
-        
+
         apf.extend(this.allCommands, ext.commandsLut);
     },
 
@@ -488,22 +482,16 @@ module.exports = ext.register("ext/console/console", {
             finish();
         }
     },
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
+    enable: function(){
+        this.nodes.each(function(item){ item.enable(); });
     },
 
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
+    disable: function(){
+        this.nodes.each(function(item){ item.disable(); });
     },
 
-    destroy : function(){
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
+    destroy: function(){
+        this.nodes.each(function(item){ item.destroy(true, true); });
         this.nodes = [];
     }
 });
