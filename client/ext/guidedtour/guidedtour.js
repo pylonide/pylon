@@ -19,6 +19,7 @@ var zen = require("ext/zen/zen");
 var dockpanel = require("ext/dockpanel/dockpanel");
 var panels = require("ext/panels/panels");
 var settings = require("core/settings");
+var helloWorldScript = require("text!ext/guidedtour/hello-world-script.txt");
 
 var save;
 var madeNewFile = false;
@@ -89,7 +90,6 @@ var jsonTourIde = {
         time: 4
     }, {
         before: function() {
-            var helloWorldScript = "var http = require(\'http\');\nhttp.createServer(function (req, res) {\n\tres.writeHead(200, {\'Content-Type\': \'text/plain\'});\n\tres.end(\'Hello World\\n\');\n}).listen(process.env.PORT, \"0.0.0.0\");\n\nconsole.log(\'Server running/\');";
             tabEditors.getPage().$doc.setValue(helloWorldScript);
             if (!save) 
                 save = require("ext/save/save");
