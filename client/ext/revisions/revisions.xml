@@ -29,16 +29,85 @@
             width: 50px;
             background-color: rgb(232, 232, 232);
         }
+        
+        #slider_tooltip {
+            position: absolute;
+            top: 50px;
+            padding: 8px 10px;
+            background: #333;
+            border: 1px solid #000;
+            border-radius: 8px;
+            color: #fff;
+            text-shadow: 0em -0.1em 0em black;
+            font-weight: bold;
+            font-size: 12px;
+            z-index: 200;
+            -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.6);
+            -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.6);
+            -moz-transform: scale(0.1);
+            -webkit-transform: scale(0.1);
+            -o-transform: scale(0.1);
+            -ms-transform: scale(0.1);
+            transform: scale(0.1);
+        }
 
-        .historical_pages {
+        #slider_tooltip.disappear {
+        
+        }
+
+        #slider_tooltip table {
+            border: none;
+        }
+
+        #slider_tooltip td {
+            vertical-align: top;
+        }
+
+        #slider_tooltip .rev_header {
+            color: rgb(192, 220, 175);
+            text-align: right;
+            padding-right: 8px;
+        }
+
+        #history_graphics {
+            position: absolute;
+            top: 124px;
+            left: 11px;
+        }
+        #small_ghistory {
+            width: 4px;
+            height: 97%;
+            top: 1.5%;
+            left: 5px;
+            z-index: 1;
+        }
+
+        #medium_ghistory {
+            width: 6px;
+            height: 98%;
+            top: 1%;
+            left: 3px;
+            z-index: 2;
+        }
+
+        #large_ghistory {
+            width: 8px;
+            height: 99%;
+            top: 0.5%;
+            z-index: 3;
+        }
+
+        .history_graphic {
+            float: left;
+            position: relative;
             background: #666;
             border: 1px solid #999;
-            -webkit-border-top-left-radius: 5px;
-            -webkit-border-top-right-radius: 5px;
+            /*-webkit-border-top-left-radius: 5px;
+            -webkit-border-bottom-left-radius: 5px;
             -moz-border-radius-topleft: 5px;
-            -moz-border-radius-topright: 5px;
+            -moz-border-radius-bottomleft: 5px;
             border-top-left-radius: 5px;
-            border-top-right-radius: 5px;
+            border-bottom-left-radius: 5px;*/
             -webkit-box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.75);
             -moz-box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.75);
         }
@@ -74,7 +143,7 @@
         .versions_label table {
             border: none;
         }
-        
+
         .versions_label td {
             vertical-align: top;
         }
@@ -107,7 +176,7 @@
             box-shadow: rgba(0, 0, 0, 0.60) 0px 0px 6px inset;
             background-color: #555;
         }
-        
+
         .versions_search .sbtb_icon {
             background: url('/static/style/images/revisions_search.png') 0px -1px;
         }
@@ -123,65 +192,15 @@
         .versions_search .sbtb_middle input {
             color: #ddd;
         }
-        
+
         .versions_search .btnclose {
             background-image: url('/static/style/images/versions_search_close.png');
             background-position: 0px 0px;
         }
-
-        .versions_navigate {
-            /*border-radius: 5px;
-            -moz-border-radius: 5px;
-            -webkit-border-radius: 5px;*/
-            background: #222;
-            border: 1px solid #999;
-            height: 27px;
-            width: 15px;
-            opacity: 0.9;
-        }
-
-        .versions_navigate .left, .versions_navigate .right, .versions_navigate .lbl {
-            background: none;
-        }
-
-        .versions_navigate.btnOver {
-            background: #2f2f2f;
-        }
-
-        .versions_navigate.nav_backward {
-            /*right: 10px;*/
-            background-image: url('/static/style/images/versions_left_arrow.png');
-            background-position: 6px 5px;
-            background-repeat: no-repeat;
-            border-right: none;
-            -webkit-border-top-left-radius: 5px;
-            -webkit-border-bottom-left-radius: 5px;
-            -moz-border-radius-topleft: 5px;
-            -moz-border-radius-bottomleft: 5px;
-            border-top-left-radius: 5px;
-            border-bottom-left-radius: 5px;
-        }
-
-        .versions_navigate.nav_forward {
-            /*left: 10px;*/
-            border-left: none;
-            background-image: url('/static/style/images/versions_right_arrow.png');
-            background-position: 8px 5px;
-            background-repeat: no-repeat;
-            -webkit-border-top-right-radius: 5px;
-            -webkit-border-bottom-right-radius: 5px;
-            -moz-border-radius-topright: 5px;
-            -moz-border-radius-bottomright: 5px;
-            border-top-right-radius: 5px;
-            border-bottom-right-radius: 5px;
-        }
-
         #versionsHistoricalSlider {
             height: 10px;
-            margin: 10px 0px 0 0;
+            margin: 14px 34px 0 0;
             position: relative;
-            overflow-y: hidden;
-            overflow-x: visible;
             padding: 5px 0;
         }
 
@@ -189,7 +208,8 @@
             height: 3px;
             background: white;
             position: relative;
-            top: 21px;
+            top: 25px;
+            margin-right: 34px;
             border: 1px solid #333;
         }
 
@@ -222,12 +242,13 @@
             -moz-transition-property: opacity, top;
             -webkit-transition-property: opacity, top;
             -o-transition-property: opacity, top;
-            transition-duration: 0.7s;
-            -webkit-transition-duration: 0.7s;
-            -moz-transition-duration: 0.7s;
-            -o-transition-duration: 0.7s;
-            opacity: 0.0;
-            top: -17px;
+            transition-duration: 0.4s;
+            -webkit-transition-duration: 0.4s;
+            -moz-transition-duration: 0.4s;
+            -o-transition-duration: 0.4s;
+            top: -10px;
+            opacity: 0;
+            cursor: default;
         }
 
         #versionsHistoricalSlider u:hover, #versionsHistoricalSlider u.current {

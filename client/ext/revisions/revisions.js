@@ -1,9 +1,27 @@
 /**
  * Version history browser extension for Cloud9 IDE
  * 
+ * TODO:
+ * 
+ * Proper diff match patch implementation
+ * Implement state-holding for each file, or clear state upon re-enter
+ * Dropdown to right of slider to show all commits, descending
+ * On entering mode, animate IDE editor to right-side currentEditor
+ * On exiting mode, animate right-side currentEditor to IDE editor
+ * Implement "Restore" functionality
+ * Dialog warning about what Restore does
+ * Animate history pages when clicking history dot
+ * Update restore/done button styles to not have white bottom border
+ * Update "Current Document" indicator to not look like button
+ * When requesting a revision, display a spinner somewhere
+ * When loading in a revision, scroll back to the same position the user was at
+ * Bug: clicking around clears the syntax highlighting (wtf?)
+ * Bug: clearing search doesn't re-focus (no matter what I frickin' do)
+ * Ideal: Hover over history dots has OS X dock magnification effect
+ * 
  * @author Matt Pardee
  * 
- * @copyright 2011, Ajax.org B.V.
+ * @copyright 2012, Cloud9 IDE, Inc.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
  
@@ -11,6 +29,8 @@ define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var ide = require("core/ide");
+var Range = require("ace/range").Range;
+var Anchor = require('ace/anchor').Anchor;
 var editors = require("ext/editors/editors");
 var GitLogParser = require("ext/revisions/gitlogparser");
 var markup = require("text!ext/revisions/revisions.xml");
@@ -43,33 +63,18 @@ module.exports = ext.register("ext/revisions/revisions", {
                             childNodes : [
                                 new apf.vbox({
                                     height : "104",
-                                    //align : "center",
                                     id : "vbHistoricalHeader",
                                     childNodes : [
                                         new apf.hbox({
                                             childNodes : [
-                                                /*new apf.button({
-                                                    id : "versions_nav_back",
-                                                    "class" : "versions_navigate nav_backward",
-                                                    onclick : function() {
-                                                        _self.loadPreviousRevision();
-                                                    }
-                                                }),*/
                                                 new apf.text({
                                                     id : "versions_label",
                                                     "class" : "versions_label",
                                                     value : "",
                                                     flex : "1",
-                                                    height : "50",
+                                                    height : "46",
                                                     margin : "0 10 0 0"
                                                 }),
-                                                /*new apf.button({
-                                                    id : "versions_nav_fwd",
-                                                    "class" : "versions_navigate nav_forward",
-                                                    onclick : function() {
-                                                        _self.loadNextRevision();
-                                                    }
-                                                }),*/
                                                 new apf.textbox({
                                                     width : "100",
                                                     height : "25",
@@ -77,6 +82,9 @@ module.exports = ext.register("ext/revisions/revisions", {
                                                     "initial-message" : "Filter",
                                                     "class" : "versions_search",
                                                     margin: "0 30 0 0",
+                                                    onclear : function() {
+                                                        _self.applyFilter("");
+                                                    },
                                                     onkeyup : function() {
                                                         _self.applyFilter(this.getValue());
                                                     },
@@ -98,34 +106,26 @@ module.exports = ext.register("ext/revisions/revisions", {
                                                             steps : 20
                                                         });
                                                     }
+                                                }),
+                                                new apf.button({
+                                                    width : 17,
+                                                    height : 17,
+                                                    skin : "btn_icon_only",
+                                                    "class" : "tabmenubtn",
+                                                    background : "tabdropdown.png|horizontal|3|17",
+                                                    style : "position:relative;top:66px;right:-3px;"
                                                 })
                                             ]
                                         })
                                     ]
                                 }),
-                                /*new apf.vbox({
-                                    align : "center",
-                                    childNodes : [
-                                        new apf.bar({
-                                            width : "75%",
-                                            height : "6",
-                                            "class" : "historical_pages"
-                                        }),
-                                        new apf.bar({
-                                            width : "85%",
-                                            height : "8",
-                                            "class" : "historical_pages"
-                                        }),
-                                        new apf.bar({
-                                            width : "95%",
-                                            height : "10",
-                                            "class" : "historical_pages"
-                                        })
-                                    ]
-                                }),*/
                                 new apf.vbox({
                                     id : "historicalVersionHolder",
-                                    flex : "1"
+                                    flex : "1",
+                                    onresize : function(e) {
+                                        if (_self.historyGraphics)
+                                            _self.historyGraphics.style.height = this.getHeight() + "px";
+                                    }
                                 })
                             ]
                         }),
@@ -147,6 +147,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                                                     height : "80"
                                                 }),
                                                 new apf.text({
+                                                    id : "current_doc_label",
                                                     "class" : "current_label rounded",
                                                     value : "Current Document",
                                                     height : "30"
@@ -169,7 +170,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                     pack : "center",
                     childNodes : [
                         new apf.hbox({
-                            //width : "225",
                             height : "45",
                             padding : "4",
                             align : "center",
@@ -228,8 +228,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
             "debugger"        : "null",
             readonly          : "true",
-            style : "z-index : 99999; position: absolute"
-            //style : "-webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.75); -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.75)"
+            style : "z-index : 99999; position: absolute; background: #fff"
         });
 
         this.currentVersionEditor = new apf.codeeditor({
@@ -259,18 +258,41 @@ module.exports = ext.register("ext/revisions/revisions", {
 
             "debugger"        : "null",
             readonly          : "true",
-            style : "z-index : 99999; position: absolute"
-            //style : "-webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.75); -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.75)"
+            style : "z-index : 99999; position: absolute; background: #fff"
         })
 
         setTimeout(function() {
             vbMain.parentNode.appendChild(_self.historicalVersionEditor);
             vbMain.parentNode.appendChild(_self.currentVersionEditor);
 
+            _self.sliderTooltip = document.createElement("div");
+            _self.sliderTooltip.setAttribute("id", "slider_tooltip");
+            vbVersions.$ext.appendChild(_self.sliderTooltip);
+
+            _self.historyGraphics = document.createElement("div");
+            _self.historyGraphics.setAttribute("id", "history_graphics");
+
+            var smallGHistory = document.createElement("div");
+            smallGHistory.setAttribute("id", "small_ghistory");
+            smallGHistory.setAttribute("class", "history_graphic");
+            _self.historyGraphics.appendChild(smallGHistory);
+
+            var mediumGHistory = document.createElement("div");
+            mediumGHistory.setAttribute("id", "medium_ghistory");
+            mediumGHistory.setAttribute("class", "history_graphic");
+            _self.historyGraphics.appendChild(mediumGHistory);
+
+            var largeGHistory = document.createElement("div");
+            largeGHistory.setAttribute("id", "large_ghistory");
+            largeGHistory.setAttribute("class", "history_graphic");
+            _self.historyGraphics.appendChild(largeGHistory);
+
+            vbVersions.$ext.appendChild(_self.historyGraphics);
+
             var sliderBg = document.createElement("div");
             sliderBg.setAttribute("id", "versionsSliderBg");
             vbHistoricalHeader.$ext.appendChild(sliderBg);
-            
+
             _self.sliderEl = document.createElement("div");
             _self.sliderEl.setAttribute("id", "versionsHistoricalSlider");
             vbHistoricalHeader.$ext.appendChild(_self.sliderEl);
@@ -279,7 +301,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             _self.currentScrollbar = currentVersionEditor.$editor.renderer.scrollBar;
             _self.currentScrollbar.addEventListener("scroll", function(e) {
                 historicalVersionEditor.$editor.renderer.scrollBar.setScrollTop(e.data);
-                //_self.setRaphaelScroll(e.data);
             });
 
             historicalVersionEditor.$editor.getSession().setUseWrapMode(false);
@@ -299,7 +320,16 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     hook : function(){
         var _self = this;
+
         this.loadScript("/static/ext/revisions/diff_match_patch.js");
+        this.gitLogParser = new GitLogParser();
+
+        ide.addEventListener("socketMessage", this.onMessage.bind(this));
+
+        window.addEventListener("resize", function() {
+            if (_self.isFocused)
+                _self.resizeElements();
+        });
 
         this.nodes.push(
             ide.mnuEdit.appendChild(new apf.item({
@@ -310,24 +340,12 @@ module.exports = ext.register("ext/revisions/revisions", {
             }))
         );
 
-        this.gitLogParser = new GitLogParser();
-
-        ide.addEventListener("socketMessage", this.onMessage.bind(this));
-        
-        window.addEventListener("resize", function() {
-            if (_self.isFocused)
-                _self.resizeElements();
-        });
-
         ext.initExtension(this);
     },
-    
-    resizeElements : function() {
-        var height = (window.innerHeight - 195) + "px";
-        var width = (window.innerWidth - 60) + "px";
 
-        var ph;
-        var cPos = apf.getAbsolutePosition(ph = currentVersionHolder.$ext);
+    resizeElements : function() {
+        var ph = currentVersionHolder.$ext;
+        var cPos = apf.getAbsolutePosition(ph);
         currentVersionEditor.$ext.style.left = cPos[0] + "px";
         currentVersionEditor.$ext.style.top = cPos[1] + "px";
         var d = apf.getDiff(ext);
@@ -343,26 +361,16 @@ module.exports = ext.register("ext/revisions/revisions", {
         historicalVersionEditor.$ext.style.height = (ph.offsetHeight - d[1]) + "px";
     },
 
-    loadPreviousRevision : function() {
-        var fileData = this.gitLogs[this.getFilePath()];
-        var lastLog = fileData.lastLoadedGitLog;
-        this.loadRevision(lastLog-1);
-    },
-
-    loadNextRevision : function() {
-        var fileData = this.gitLogs[this.getFilePath()];
-        var lastLog = fileData.lastLoadedGitLog;
-        this.loadRevision(lastLog+1);
-    },
-    
-    formulateRevisionMetaData : function(data) {
+    formulateRevisionMetaData : function(data, includeMessage) {
         var timestamp = this.formulateVersionsLabelDate(data.author.timestamp);
         var output = '<table cellspacing="0" cellpadding="0" border="0"><tr>';
         output += '<tr><td class="rev_header">Author:</td><td>' + data.author.fullName
             + " " + apf.htmlentities(data.author.email) + '</td></tr>'
             + '<tr><td class="rev_header">Date:</td><td>' + timestamp + '</td></tr>'
-            + '<tr><td class="rev_header">Commit:</td><td>' + data.commit.substr(0, 10) + '</td></tr>'
-            + '<tr><td class="rev_header">Message:</td><td>' + data.message.join("<br />") + '</td></tr>';
+            + '<tr><td class="rev_header">Commit:</td><td>' + data.commit.substr(0, 10) + '</td></tr>';
+        if (includeMessage)
+            output += '<tr><td class="rev_header">Message:</td><td>' +
+                data.message.join("<br />") + '</td></tr>';
         output += '</table>';
         return output;
     },
@@ -375,21 +383,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             fileData.logData[fileData.lastLoadedGitLog].dotEl.setAttribute("class", "");
         fileData.logData[num].dotEl.setAttribute("class", "current");
         fileData.lastLoadedGitLog = num;
-        //fileData.lastTimeString = this.formulateVersionsLabelDate(fileData.logData[num].author.timestamp);
 
-        var output = this.formulateRevisionMetaData(fileData.logData[num]);
+        var output = this.formulateRevisionMetaData(fileData.logData[num], true);
         versions_label.setValue(output);
-
-        /*if (num == 0) {
-            versions_nav_back.disable();
-            versions_nav_fwd.enable();
-        } else if (num == (fileData.logData.length-1)) {
-            versions_nav_fwd.disable();
-            versions_nav_back.enable();
-        } else {
-            versions_nav_back.enable();
-            versions_nav_fwd.enable();
-        }*/
 
         this.requestGitShow(hash);
     },
@@ -404,6 +400,11 @@ module.exports = ext.register("ext/revisions/revisions", {
      */
     enterVersionMode : function() {
         var _self = this;
+
+        var file = this.getFilePath();
+        var filename = file.split("/").pop();
+        current_doc_label.setValue(filename);
+
         this.requestGitLog();
 
         var currentSession = ceEditor.$editor.getSession();
@@ -423,6 +424,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         Firmin.animate(vbVersions.$ext, {
             opacity: "1"
         }, 0.5, function() {
+            historicalVersionEditor.show();
+            currentVersionEditor.show();
             _self.resizeElements();
             apf.layout.forceResize(document.body);
         });
@@ -432,12 +435,13 @@ module.exports = ext.register("ext/revisions/revisions", {
     
     escapeVersionMode : function() {
         vbVersions.hide();
+        historicalVersionEditor.hide();
+        currentVersionEditor.hide();
+
         this.isFocused = false;
         Firmin.animate(vbVersions.$ext, {
             opacity: "0"
         }, 0.5, function() {
-            historicalVersionEditor.hide();
-            currentVersionEditor.hide();
             apf.layout.forceResize(document.body);
         });
     },
@@ -455,7 +459,12 @@ module.exports = ext.register("ext/revisions/revisions", {
             hash : hash
         };
 
-        ide.dispatchEvent("track_action", {type: "gittools", cmd: this.command, subcommand: data.subcommand});
+        ide.dispatchEvent("track_action", {
+            type: "gittools",
+            cmd: this.command,
+            subcommand: data.subcommand
+        });
+
         if (ext.execCommand(this.command, data) !== false) {
             if (ide.dispatchEvent("consolecommand." + this.command, {
               data: data
@@ -483,7 +492,12 @@ module.exports = ext.register("ext/revisions/revisions", {
             file : this.getFilePath()
         };
 
-        ide.dispatchEvent("track_action", {type: "gittools", cmd: this.command, subcommand: data.subcommand});
+        ide.dispatchEvent("track_action", {
+            type: "gittools",
+            cmd: this.command,
+            subcommand: data.subcommand
+        });
+
         if (ext.execCommand(this.command, data) !== false) {
             if (ide.dispatchEvent("consolecommand." + this.command, {
               data: data
@@ -554,7 +568,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.gitLogParser.parseLog(message.body.out);
 
         var logData = this.gitLogParser.getLogData();
-
         var logDataLength = logData.length;
         for (var gi = 0; gi < logDataLength; gi++) {
             logData[gi].commitLower = logData[gi].commit.toLowerCase();
@@ -567,22 +580,17 @@ module.exports = ext.register("ext/revisions/revisions", {
             logData[gi].committer.fullNameLower = logData[gi].committer.fullName.toLowerCase();
         }
 
-        this.gitLogs[message.body.file].logData = logData;
+        var file = message.body.file;
+        this.gitLogs[file].logData = logData;
+        this.gitLogs[file].lastLoadedGitLog = logDataLength -1;
 
-        this.gitLogs[message.body.file].lastLoadedGitLog = logDataLength -1;
-            //this.gitLogs[message.body.file].lastSliderValue = logDataLength;
-
-        /*this.gitLogs[message.body.file].lastTimeString =
-            this.formulateVersionsLabelDate(logData[logDataLength-1].author.timestamp);
-        versions_label.setValue(this.gitLogs[message.body.file].lastTimeString);*/
-        
-        var output = this.formulateRevisionMetaData(logData[logDataLength-1]);
+        var output = this.formulateRevisionMetaData(logData[logDataLength-1], true);
         versions_label.setValue(output);
         current_versions_label.setValue(output);
 
-        this.setupSliderEl(this.gitLogs[message.body.file].logData);
+        this.setupSliderEl(this.gitLogs[file].logData);
 
-        this.gitLogs[message.body.file].logData[logDataLength-1].dotEl.setAttribute("class", "current");
+        this.gitLogs[file].logData[logDataLength-1].dotEl.setAttribute("class", "current");
     },
 
     /**
@@ -591,76 +599,71 @@ module.exports = ext.register("ext/revisions/revisions", {
      * @param {JSON} message Details about the message & output from git show
      */
     onGitShowMessage : function(message) {
+        var fileText = message.body.out;
         this.gitLogs[message.body.file].revisions[message.body.hash] =
-            message.body.out;
+            fileText;
 
         var hveSession = historicalVersionEditor.$editor.getSession();
-        hveSession.setValue(message.body.out);
+        hveSession.setValue(fileText);
 
         if (!this.dmp)
             this.dmp = new diff_match_patch();
 
-        // set the raphael svg container to the height of the tallest doc
-        var lines = this.getTallestDocumentLines();
-        var lineHeight = currentVersionEditor.$editor.renderer.lineHeight;
-        var height = lines * lineHeight;
-
         this.resizeElements();
 
-        // diff_match_patch
-        var diff = this.dmp.diff_main(message.body.out, currentVersionEditor.$editor.getSession().getValue());
-        // @TODO remove this and only use regular diff
+        var diff = this.dmp.diff_main(fileText,
+            currentVersionEditor.$editor.getSession().getValue());
         this.dmp.diff_cleanupSemantic(diff);
-        console.log(this.dmp.diff_prettyHtml(diff));
         //console.log(diff);
 
-        var numLeftLines = 0, numRightLines = 0;
-        var leftLinesAdded = 0;
-        var d, tLines;
-        /*for (var i = 0; i < diff.length; i++) {
+        var numLeftLines = 0, numRightLines = 0,
+            numLeftChars = 0, numRightChars = 0,
+            leftLinesAdded = 0, d, tLines;
+
+        for (var i = 0; i < diff.length; i++) {
             d = diff[i];
             tLines = d[1].split("\n").length;
             if (d[0] != 1) {
                 if (d[0] == -1) {
-                    //console.log(numLeftLines, numRightLines);
                     console.log("this was REMOVED: ", d[1]);
-                    //var removedLines = this.raphaelPaper.rect(50, (numLeftLines*lineHeight)+2, 450, (tLines*lineHeight)+1);
-                    //removedLines.attr("fill", "rgba(255, 77, 64, 0.5)");
-                    //removedLines.attr("stroke-width", "0");
                 }
                 else {
                     console.log("this stayed the SAME: ", d[1]);
                     numRightLines += (tLines-1);
+                    numRightChars += d[1].length;
                 }
                 numLeftLines += (tLines-1);
+                numLeftChars += d[1].length;
             }
 
             else {
                 console.log("this was ADDED: ", d[1]);
-                //var addedLines = this.raphaelPaper.rect(611, (numRightLines*lineHeight)+2, 450, (tLines*lineHeight)+1);
-                //addedLines.attr("fill", "rgba(80, 140, 60, 0.5)");
-                //addedLines.attr("stroke-width", "0");
                 numRightLines += (tLines-1);
+                numRightChars += d[1].length;
             }
-            if ((numLeftLines + leftLinesAdded) < numRightLines) {
+            
+            /*if ((numLeftLines + leftLinesAdded) < numRightLines) {
                 var numAddLines = numRightLines - (numLeftLines+leftLinesAdded);
                 historicalVersionEditor.$editor.moveCursorTo((numLeftLines+leftLinesAdded), 0);
                 historicalVersionEditor.$editor.insert("\r\n\r\n");
                 leftLinesAdded += numAddLines;
-            }
+            }*/
             //console.log(diff[i][1]);
             console.log(numLeftLines, numRightLines);
             //console.log(diff[i][1].split("\n"));
-        }*/
+        }
         //console.log(diff);
     },
-
-    getTallestDocumentLines : function() {
-        var hLength = historicalVersionEditor.$editor.getSession().getLength();
-        var cLength = currentVersionEditor.$editor.getSession().getLength();
-        return hLength > cLength ? hLength : cLength;
-    },
     
+    addCodeMarker : function(editor) {
+        var mySession = editor.$editor.session;
+        var range = Range.fromPoints(anchor.getPosition(), {
+            row: anchor.row + rowDiff,
+            column: anchor.column + colDiff
+        });
+        markerId = mySession.addMarker(range, "language_highlight_" + (anno.type ? anno.type : "default"));
+    },
+
     formulateVersionsLabelDate : function(ts) {
         var date = new Date(ts*1000);
         var ds = date.toString().split(" ");
@@ -682,20 +685,43 @@ module.exports = ext.register("ext/revisions/revisions", {
             var ts = logData[i].author.timestamp;
             var tsDiff = ts - tsBegin;
             var percentage = (tsDiff / timeSpan) * 100;
+
             var dotEl = document.createElement("u");
             dotEl.setAttribute("style", "left: " + percentage + "%");
             dotEl.setAttribute("rel", i);
             dotEl.setAttribute("hash", logData[i].commit);
             dotEl.addEventListener("mouseover", function() {
+                var dotClass = this.getAttribute("class");
+                if(dotClass && dotClass.split(" ")[0] == "pop")
+                    return;
                 var it = this.getAttribute("rel");
-                var ts = logData[it].author.timestamp;
-                //var dateStr = _self.formulateVersionsLabelDate(ts);
-                var output = _self.formulateRevisionMetaData(logData[it]);
-                versions_label.setValue(output);
-                //versions_label.setValue(dateStr);
+                var output = _self.formulateRevisionMetaData(logData[it], false);
+                _self.sliderTooltip.innerHTML = output;
+
+                var pos = apf.getAbsolutePosition(this);
+
+                var sttWidth = apf.getHtmlInnerWidth(_self.sliderTooltip);
+                var leftPos = pos[0] - (sttWidth/2);
+                if (leftPos < 0)
+                    leftPos = 5;
+
+                Firmin.animate(_self.sliderTooltip, {
+                    left: leftPos+"px"
+                }, 0, function() {
+                    Firmin.animate(_self.sliderTooltip, {
+                        translateY: -30,
+                        scale: 1,
+                        opacity: 1
+                    }, 0.3);
+                });
             });
+
             dotEl.addEventListener("mouseout", function() {
-                //versions_label.setValue(_self.gitLogs[_self.getFilePath()].lastTimeString);
+                _self.sliderTooltip.setAttribute("class", "disappear");
+                Firmin.animate(_self.sliderTooltip, {
+                    scale: 0.1,
+                    opacity: 0
+                }, 0.4);
             });
             dotEl.addEventListener("click", function() {
                 _self.loadRevision(this.getAttribute("rel"));
@@ -777,7 +803,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
             if (this.gitLogs[currentFile].explodedPoints[i]) {
                 if (isCurrent)
-                    logs[i].dotEl.setAttribute("class", "current pop");
+                    logs[i].dotEl.setAttribute("class", "pop current");
                 else
                     logs[i].dotEl.setAttribute("class", "pop");
             } else {
@@ -787,11 +813,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                     logs[i].dotEl.setAttribute("class", "");
             }
         }
-
-        //console.log(this.gitLogs[currentFile].currentLogData);
-
-        //this.setGitLogState(currentFile);
-        //this.gitLogSliderChange(this.gitLogs[currentFile].currentLogData.length);
     },
 
     enable : function(){
