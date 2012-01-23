@@ -3,7 +3,7 @@
       src        = "{require('ext/colorpicker/colorpicker').skin}" 
       media-path = "/static/ext/colorpicker/images/" />
 
-    <a:menu id="mnuColorPicker" skin="dockwindowblack" class="left" width="366" height="205" animate="false" resizable="false" visible="false">
+    <a:menu id="mnuColorPicker" skin="dockwindowblack" class="left" width="366" height="205" animate="false" pinned="true" resizable="false" visible="false">
         <a:colorpicker id="clrCodeTools" skinset="colorpicker" />
         <div class="codetools_colorpicker_tools"/>
     </a:menu>
