@@ -369,6 +369,11 @@ function sortEditorsAndPages(split) {
 function createEditorClones(editor) {
     var id = editor.localName;
     var isCodeEditor = id.indexOf("codeeditor") > -1;
+    var CodeTools = null;
+    try {
+        CodeTools = require("ext/codetools/codetools");
+    }
+    catch(ex){}
 
     if (!EditorClones.cloneEditor && isCodeEditor) {
         if (!previousEditor)
@@ -377,6 +382,8 @@ function createEditorClones(editor) {
         EditorClones.cloneEditor.removeAttribute("id");
         EditorClones.cloneEditor.setAttribute("visible", "false");
         apf.document.body.appendChild(EditorClones.cloneEditor);
+        if (CodeTools)
+            CodeTools.attachEditorEvents(EditorClones.cloneEditor);
         
         addEditorListeners.call(this, EditorClones.cloneEditor);
         
@@ -418,6 +425,8 @@ function createEditorClones(editor) {
         apf.document.body.appendChild(editor);
         addEditorListeners.call(this, editor);
         if (isCodeEditor) {
+            if (CodeTools)
+                CodeTools.attachEditorEvents(editor);
             editor.$editor.commands = previousEditor.$editor.commands;
             if (previousEditor.$editor.getKeyboardHandler())
                 editor.$editor.setKeyboardHandler(previousEditor.$editor.getKeyboardHandler());
