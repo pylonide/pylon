@@ -4912,6 +4912,10 @@
             right: auto;
             left: -22px;
         }
+        
+        .dockwindowblack.noarrow .arrow {
+            display: none;
+        }
 
         .dockwindowblack .noise_top {
             background : url(images/glossy-header.png) 0 0;
