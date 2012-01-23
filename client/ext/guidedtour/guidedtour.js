@@ -277,11 +277,14 @@ var jsonTourIde = {
     }, {
         before: function() {
             require('ext/runpanel/runpanel').stop();
-            require("ext/console/console").commandTextHandler({
-                keyCode: 13,
-                currentTarget: txtConsoleInput
-            });
-            txtConsoleInput.setValue("rm helloWorld-quideTour.js");
+            
+            if(trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']")) {
+                require("ext/console/console").commandTextHandler({
+                    keyCode: 13,
+                    currentTarget: txtConsoleInput
+                });
+                txtConsoleInput.setValue("rm helloWorld-quideTour.js");
+            }
         },
         el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabConsole.$ext),
         desc: "As expected, there's been a new file added to git. We're done testing it, and don't want to keep it around, so let's remove it with 'rm helloWorld-quideTour.js'.",
@@ -289,8 +292,9 @@ var jsonTourIde = {
         time: 4
     }, {
         before: function() {
-            panels.activate(require("ext/tree/tree"))
-            if (!deletedFile) {
+            panels.activate(require("ext/tree/tree"));
+            var demoFile = trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']");
+            if(demoFile && !deletedFile) {
                 deletedFile = true;
                 tabEditors.remove(tabEditors.getPage());
                 require("ext/console/console").commandTextHandler({
@@ -298,9 +302,7 @@ var jsonTourIde = {
                     currentTarget: txtConsoleInput
                 });
                 trFiles.confirmed = true;
-                var demoFile = trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']");
-                if(demoFile)
-                    trFiles.remove(demoFile);
+                trFiles.remove(demoFile);
                 trFiles.confirmed = false;
             }
         },
@@ -383,8 +385,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         });*/
         
         !self["winFilesViewer"] && panels.activate(require("ext/tree/tree"));
-        
-        if (!deletedFile) {
+        alert(1)
+        var demoFile = trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']");
+        if (demoFile && !deletedFile) {
             txtConsoleInput.setValue("rm helloWorld-quideTour.js");
             deletedFile = true;
             require("ext/console/console").commandTextHandler({
@@ -392,9 +395,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
                 currentTarget: txtConsoleInput
             });
             trFiles.confirmed = true;
-            var demoFile = trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']");
-            if(demoFile)
-                trFiles.remove(demoFile);
+            trFiles.remove(demoFile);
             trFiles.confirmed = false;
         }
     },
