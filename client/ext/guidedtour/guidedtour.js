@@ -385,7 +385,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         });*/
         
         !self["winFilesViewer"] && panels.activate(require("ext/tree/tree"));
-        alert(1)
+
         var demoFile = trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']");
         if (demoFile && !deletedFile) {
             txtConsoleInput.setValue("rm helloWorld-quideTour.js");
