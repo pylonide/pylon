@@ -90,8 +90,8 @@
                         <data>
                             <element caption="Default" value="default" />
                             <element caption="Auto" value="auto" />
-                            <element caption="Node.js 0.4.x" value="0.4.x" />
                             <element caption="Node.js 0.6.x" value="0.6.x" />
+                            <element caption="Node.js 0.4.x" value="0.4.x" />
                         </data>
                     </a:model>
                     <a:label width="100" skin="black_label">Runtime</a:label>

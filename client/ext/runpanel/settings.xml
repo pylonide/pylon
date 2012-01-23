@@ -2,8 +2,8 @@
     <a:model id="mdlRunnerSelector2">
         <data>
             <element caption="Auto" value="auto" />
-            <element caption="Node.js 0.4.x" value="0.4.x" />
             <element caption="Node.js 0.6.x" value="0.6.x" />
+            <element caption="Node.js 0.4.x" value="0.4.x" />
             <!--element caption="Python" value="py" /-->
         </data>
     </a:model>
