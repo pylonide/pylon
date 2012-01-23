@@ -289,7 +289,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$propHandlers["syntax"] = function(value) {
         var _self = this;
         this.$getMode(value, function(mode) {
-            _self.$editor.getSession().setMode(mode);
+            setTimeout(function() {
+                _self.$editor.getSession().setMode(mode);
+            });
         });
     };
 
