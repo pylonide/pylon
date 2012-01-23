@@ -100,7 +100,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         
         ide.addEventListener("beforeclosetab", function(e) {
             var split = Splits.get(e.page)[0];
-            if (!Splits.isActive(split))
+            if (!split || !Splits.isActive(split))
                 return;
             e.returnValue = split.pairs[split.activePage].page;
         });
