@@ -4894,14 +4894,22 @@
             -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
             box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
         }
-
+        
         .dockwindowblack .arrow {
-            background: url(images/black-panel_arrow.png) no-repeat 0 0;
+            background-image: url(images/black-panel_arrow.png);
+            background-repeat: no-repeat;
+            background-position: 0 0;
             position: absolute;
             top: 39px;
-            right: -17px;
-            width: 17px;
-            height: 21px;
+            right: -22px;
+            width: 22px;
+            height: 22px;
+        }
+        
+        .dockwindowblack.left .arrow {
+            background-position: 0 -22px;
+            right: auto;
+            left: -22px;
         }
 
         .dockwindowblack .noise_top {
