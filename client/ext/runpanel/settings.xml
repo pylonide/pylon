@@ -1,0 +1,22 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:model id="mdlRunnerSelector2">
+        <data>
+            <element caption="Auto" value="auto" />
+            <element caption="Node.js 0.6.x" value="0.6.x" />
+            <element caption="Node.js 0.4.x" value="0.4.x" />
+            <!--element caption="Python" value="py" /-->
+        </data>
+    </a:model>
+    <a:hbox edge="5 5 2 5" align="center">
+        <a:label flex="1">Runtime:</a:label>        
+        <a:dropdown
+          model     = "mdlRunnerSelector2"
+          width="175"  height="21"
+          disabled  = "{!lstRunCfg.selected}"
+          value     = "[{require('ext/settings/settings').model}::auto/node-version/@version]"
+          default   = "auto"
+          each      = "[element]"
+          caption   = "[@caption]"
+          eachvalue = "[@value]" />
+    </a:hbox>
+</a:application>
