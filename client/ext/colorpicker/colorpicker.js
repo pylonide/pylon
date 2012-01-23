@@ -80,7 +80,13 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             var el = e.srcElement || e.element;
             if (el.nodeType != 1 || el.className.indexOf("color") == -1)
                 return;
-            _self.colorpicker.setAttribute("value", el.getAttribute("data-color"));
+            
+            var c = apf.color;
+            var cp = _self.colorpicker;
+            var hsb = c.hexToHSB(c.fixHex(el.getAttribute("data-color")));
+            cp.setAttribute("hue", hsb.h);
+            cp.setAttribute("saturation", hsb.s);
+            cp.setAttribute("brightness", hsb.b);
         });
 
         this.colorpicker.addEventListener("prop.hex", function(e) {
@@ -361,6 +367,9 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
     },
     
     resize: function(color) {
+        if (!this.menu.visible)
+            return;
+
         color = color || this.$activeColor;
         var pos = color.pos;
         var orig = color.orig;
