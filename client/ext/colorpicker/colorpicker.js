@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var Editors = require("ext/editors/editors");
 
 var Range = require("ace/range").Range;
 
@@ -267,6 +268,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             color: color,
             markerNode: id,
             orig: orig,
+            line: line,
             current: orig,
             type: type,
             pos: pos,
@@ -282,44 +284,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         
         this.updateColorTools(editor);
         
-        // calculate the x and y (top and left) position of the colorpicker
-        var coords = ceEditor.$editor.renderer.textToScreenCoordinates(pos.row, line.indexOf(orig) + orig.length);
-        var origX, origY;
-        var y = origY = coords.pageY - 24;
-        var x = origX = coords.pageX + 60;
-        var pOverflow = apf.getOverflowParent(cp.$ext);
-        var height = cp.$ext.offsetHeight;
-        var width = cp.$ext.offsetWidth;
-        var edgeY = (pOverflow == document.documentElement
-            ? (apf.isIE 
-                ? pOverflow.offsetHeight 
-                : (window.innerHeight + window.pageYOffset)) + pOverflow.scrollTop
-            : pOverflow.offsetHeight + pOverflow.scrollTop);
-        var edgeX = (pOverflow == document.documentElement
-            ? (apf.isIE 
-                ? pOverflow.offsetWidth
-                : (window.innerWidth + window.pageXOffset)) + pOverflow.scrollLeft
-            : pOverflow.offsetWidth + pOverflow.scrollLeft);
-        
-        if (y + height > edgeY) {
-            y = edgeY - height;
-            if (y < 0)
-                y = 0;
-        }
-        if (x + width > edgeX) {
-            x = edgeX - width;
-            if (x < 0)
-                x = 0;
-        }
-        if (!origArrowTop)
-            origArrowTop = parseInt(apf.getStyle(this.arrow, "top"), 10);
-        if (y != origY)
-            this.arrow.style.top = (origArrowTop + (origY - y)) + "px"
-        else
-            this.arrow.style.top = origArrowTop + "px";
-        menu.$ext.style.zIndex = 2002;
-        menu.$ext.style.top = y + "px";
-        menu.$ext.style.left = x + "px";
+        this.resize();
     },
     
     updateColorTools: function(editor) {
@@ -393,6 +358,77 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             doc.replace(a.marker[0], newColor);
             a.current = newColor;
         }, 200);
+    },
+    
+    resize: function(color) {
+        color = color || this.$activeColor;
+        var pos = color.pos;
+        var orig = color.orig;
+        var line = color.line;
+        var renderer = Editors.currentEditor.amlEditor.$editor.renderer;
+        var cp = this.colorpicker;
+        var menu = this.menu;
+        
+        //default to arrow on the left side:
+        menu.setProperty("class", "left");
+
+        // calculate the x and y (top and left) position of the colorpicker
+        var coordsStart = renderer.textToScreenCoordinates(pos.row, line.indexOf(orig) - 1);
+        var coordsEnd = renderer.textToScreenCoordinates(pos.row, line.indexOf(orig) + orig.length);
+        var origX, origY;
+        var y = origY = coordsEnd.pageY - 24;
+        var x = origX = coordsEnd.pageX + 30;
+        var pOverflow = apf.getOverflowParent(cp.$ext);
+        // we take a margin of 20px on each side of the window:
+        var height = menu.$ext.offsetHeight + 10;
+        var width = menu.$ext.offsetWidth + 10;
+
+        var edgeY = (pOverflow == document.documentElement
+            ? (apf.isIE 
+                ? pOverflow.offsetHeight 
+                : (window.innerHeight + window.pageYOffset)) + pOverflow.scrollTop
+            : pOverflow.offsetHeight + pOverflow.scrollTop);
+        var edgeX = (pOverflow == document.documentElement
+            ? (apf.isIE 
+                ? pOverflow.offsetWidth
+                : (window.innerWidth + window.pageXOffset)) + pOverflow.scrollLeft
+            : pOverflow.offsetWidth + pOverflow.scrollLeft);
+        
+        if (y + height > edgeY) {
+            y = edgeY - height;
+            if (y < 0)
+                y = 10;
+        }
+        if (x + width > edgeX) {
+            x = edgeX - width;
+            // check if the menu will be positioned on top of the text
+            if (coordsEnd.pageX > x && coordsEnd.pageX < x + width) {
+                // take 20px for the arrow...
+                x = coordsStart.pageX - width - 20;
+                menu.setProperty("class", "right");
+            }
+            if (x < 10) {
+                menu.setProperty("class", "noarrow");
+                if (coordsStart.pageY > height)
+                    y = coordsStart.pageY - height + 10;
+                else
+                    y = coordsStart.pageY + 40;
+                
+                x = 10;
+            }
+        }
+        
+        // position the arrow
+        if (!origArrowTop)
+            origArrowTop = parseInt(apf.getStyle(this.arrow, "top"), 10);
+        if (y != origY)
+            this.arrow.style.top = (origArrowTop + (origY - y)) + "px"
+        else
+            this.arrow.style.top = origArrowTop + "px";
+
+        menu.$ext.style.zIndex = 10002;
+        menu.$ext.style.top = y + "px";
+        menu.$ext.style.left = x + "px";
     },
     
     enable : function(){
