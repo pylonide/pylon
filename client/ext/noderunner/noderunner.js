@@ -4,7 +4,7 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
 require("apf/elements/debugger");
@@ -12,6 +12,7 @@ require("apf/elements/debughost");
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var settings = require("core/settings");
 var markup = require("text!ext/noderunner/noderunner.xml");
 
 module.exports = ext.register("ext/noderunner/noderunner", {
@@ -30,7 +31,10 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         }
     },
 
+    NODE_VERSION: "auto",
+
     init : function(amlNode){
+        var _self = this;
         ide.addEventListener("socketDisconnect", this.onDisconnect.bind(this));
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
@@ -54,8 +58,12 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             }));
             return false;
         });
-        
+
         this.nodePid = null;
+
+        ide.addEventListener("loadsettings", function(e){
+            _self.NODE_VERSION = e.model.queryValue("auto/node-version/@version") || "auto";
+        });
     },
 
     $onDebugProcessActivate : function() {
@@ -85,21 +93,22 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 stProcessRunning.deactivate();
                 stDebugProcessRunning.deactivate();
                 break;
-                
+
             case "node-exit-with-error":
                 stProcessRunning.deactivate();
                 stDebugProcessRunning.deactivate();
 
                 // TODO: is this the way to report an errror?
-                txtOutput.addValue("<div class='item console_log' style='font-weight:bold;color:#ff0000'>[C9 Server Exception: " 
+                txtOutput.addValue("<div class='item console_log' style='font-weight:bold;color:#ff0000'>[C9 Server Exception: "
                         + message.errorMessage + "</div>");
                 break;
 
             case "state":
                 this.nodePid = message.processRunning || 0;
-                
+
                 stDebugProcessRunning.setProperty("active", !!message.debugClient);
                 stProcessRunning.setProperty("active", !!message.processRunning);
+
                 dbgNode.setProperty("strip", message.workspaceDir + "/");
                 ide.dispatchEvent("noderunnerready");
                 break;
@@ -115,12 +124,12 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                         + message.message + "</div>");
                 }
                 else if (message.code !== 6 && message.code != 401 && message.code != 455 && message.code != 456) {
-                    //util.alert("Server Error", "Server Error " 
+                    //util.alert("Server Error", "Server Error "
                     //    + (message.code || ""), message.message);
 
-                    txtConsole.addValue("<div class='item console_log' style='font-weight:bold;color:#ff0000'>[C9 Server Exception " 
+                    txtConsole.addValue("<div class='item console_log' style='font-weight:bold;color:#ff0000'>[C9 Server Exception "
                         + (message.code || "") + "] " + message.message.message + "</div>");
-                    
+
                     apf.ajax("/debug", {
                         method      : "POST",
                         contentType : "application/json",
@@ -133,7 +142,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                         })
                     });
                 }
-                
+
                 ide.send('{"command": "state"}');
                 break;
         }
@@ -147,19 +156,22 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         this.$run(true);
     },
 
-    run : function(path, args, debug) {
+    run : function(path, args, debug, nodeVersion) {
         // this is a manual action, so we'll tell that to the debugger
         dbg.registerManualAttach();
-        
-        if (stProcessRunning.active || !stServerConnected.active/* || (ddRunnerSelector.value=='gae' ? '' : !path)*/ || typeof path != "string")
+        if (stProcessRunning.active || !stServerConnected.active || typeof path != "string")
             return false;
+
+        if (nodeVersion == 'default')
+            nodeVersion = "";
 
         var page = ide.getActivePageModel();
         var command = {
             "command" : apf.isTrue(debug) ? "RunDebugBrk" : "Run",
             "file"    : path.replace(/^\/+/, ""),
-            "runner"  : "node", //ddRunnerSelector.value, // Explicit addition; trying to affect as less logic as possible for now...
+            "runner"  : "node",
             "args"    : args || "",
+            "version" : nodeVersion || settings.model.queryValue("auto/node-version/@version") || this.NODE_VERSION,
             "env"     : {
                 "C9_SELECTED_FILE": page ? page.getAttribute("path").slice(ide.davPrefix.length) : ""
             }
