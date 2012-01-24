@@ -16,7 +16,7 @@ if (parseInt(process.version.split(".")[1], 10) < 2) {
 
 var options = Parser.parse([
     {short: "w", long: "workspace", description: "Path to the workspace that will be loaded in Cloud9 (may be relative or absolute).", value: true, def: "." },
-    {short: "p", long: "port", parser: parseInt, description: "Port number where Cloud9 will serve from.", value: true, def: process.env.C9_PORT || 3000 },
+    {short: "p", long: "port", parser: parseInt, description: "Port number where Cloud9 will serve from.", value: true, def: process.env.PORT || 3000 },
     {short: "l", long: "ip", description: "IP address where Cloud9 will serve from.", value: true, def: process.env.C9_PORT ? "0.0.0.0" : "127.0.0.1" },
     {short: "a", long: "action", description: "Define an action to execute after the Cloud9 server is started.", value: true, def: null, parser: function(value) {
         return value.split(/\s+/g);
