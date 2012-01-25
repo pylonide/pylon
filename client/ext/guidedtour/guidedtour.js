@@ -510,7 +510,6 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     },
 
     finalStep: function() {
-        require("ext/console/console").disable();
         winTourText.close();
         tourControlsDialog.hide();
         this.closeTG();
