@@ -121,10 +121,13 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         
         var page = tabEditors.getPage();
         if (page) {
-            var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
-            mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
-            mdlRunConfigurations.setQueryValue("config[@curfile]/@name", 
-                path.split("/").pop() + " (active file)");
+            var path = page.$model.queryValue("@path");
+            if(path) {
+                path = path.replace(ide.davPrefix, "");
+                mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
+                mdlRunConfigurations.setQueryValue("config[@curfile]/@name", 
+                    path.split("/").pop() + " (active file)");
+            }
         }
         
         tabEditors.addEventListener("afterswitch", function(e){
