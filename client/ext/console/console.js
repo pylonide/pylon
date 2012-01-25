@@ -239,6 +239,13 @@ module.exports = ext.register("ext/console/console", {
         var code = e.keyCode;
         if (this.keyEvents[code])
             this.keyEvents[code](e.currentTarget);
+        else {
+            ide.send(JSON.stringify({
+                command: "commandhints",
+                argv: e.currentTarget.value,
+                cwd: this.getCwd()
+            }));
+        }
     },
 
     onMessage: function(e) {

@@ -26,7 +26,7 @@ var mouseHandler = function(e) {
     var el = e.target || e.srcElement;
     while (el && el.nodeType === 3 && el.tagName != "A" && el != winHints)
         el = el.parentNode;
-        
+
     if (el.tagName != "A")
         return;
 
@@ -91,7 +91,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         Console.messages.commandhints = function(message) {
             var cmds = message.body;
             for (var cmd in cmds)
-                console.commands[cmd] = cmds[cmd];
+                Console.allCommands[cmd] = cmds[cmd];
         };
 
         var self = this;
@@ -102,13 +102,30 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         txtConsoleInput.addEventListener("keyup", function(e) {
             var cli = e.currentTarget;
             var cliValue = e.currentTarget.getValue();
-            if (cliValue) {
-                var keys = Object.keys(Console.allCommands);
-                var filtered = filterCommands(keys, cliValue);
+
+            var getCmdMatches = function(obj, value) {
+                var keys = Object.keys(obj);
+                var filtered = filterCommands(keys, value);
                 if (filtered.length)
                     self.show(cli, "", filtered, 0);
                 else
                     self.hide();
+            };
+
+            if (cliValue) {
+                var fullCmd = cliValue.match(/(\w+)\s+(.*)$/);
+                if (fullCmd) {
+                    // If we don't recognize the root command
+                    var rootCmd = Console.allCommands[fullCmd[1]];
+                    if (!rootCmd) return;
+
+                    var subCommands = rootCmd.commands;
+                    if (subCommands)
+                        getCmdMatches(subCommands, fullCmd[2]);
+                }
+                else {
+                    getCmdMatches(Console.allCommands, cliValue);
+                }
             }
             else {
                 self.hide();

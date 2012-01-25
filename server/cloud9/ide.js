@@ -117,6 +117,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/debugger/debugger", //Add location rule
     "ext/noderunner/noderunner", //Add location rule
     "ext/console/console",
+    "ext/consolehints/consolehints",
     "ext/tabbehaviors/tabbehaviors",
     "ext/tabsessions/tabsessions",
     "ext/keybindings/keybindings",
@@ -126,7 +127,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/offline/offline",
     "ext/stripws/stripws",
     "ext/testpanel/testpanel",
-    "ext/nodeunit/nodeunit", 
+    "ext/nodeunit/nodeunit",
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",
     //"ext/autosave/autosave",
