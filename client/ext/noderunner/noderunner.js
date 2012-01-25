@@ -35,6 +35,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
     init : function(amlNode){
         var _self = this;
+        ide.addEventListener("socketConnect", this.onConnect.bind(this));
         ide.addEventListener("socketDisconnect", this.onDisconnect.bind(this));
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
@@ -146,6 +147,10 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 ide.send('{"command": "state"}');
                 break;
         }
+    },
+
+    onConnect : function() {
+        ide.send('{"command": "state"}');
     },
 
     onDisconnect : function() {
