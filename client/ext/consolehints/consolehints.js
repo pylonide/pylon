@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 "use strict";
 
+var ide = require("core/ide");
 var ext = require("core/ext");
 var markup = require("text!ext/consolehints/consolehints.xml");
 var css = require("text!ext/consolehints/consolehints.css");
@@ -17,7 +18,7 @@ var Console = require("ext/console/console");
 var winHints, selectedHint, animControl, hintsTimer;
 var filterCommands = function(commands, word) {
     return commands.filter(function(cmd) {
-        return cmd.search("^" + word) !== -1;
+        return cmd !== word && cmd.search("^" + word) !== -1;
     }).sort();
 };
 
@@ -94,24 +95,24 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 Console.allCommands[cmd] = cmds[cmd];
         };
 
+        setTimeout(function() {
+            ide.send(JSON.stringify({
+                command: "commandhints",
+                cwd: Console.getCwd()
+            }));
+        }, 1000);
+
         var self = this;
-        txtConsoleInput.addEventListener("blur", function(e) {
-            //self.hide();
-        });
-
         txtConsoleInput.addEventListener("keyup", function(e) {
-            var cli = e.currentTarget;
-            var cliValue = e.currentTarget.getValue();
-
             var getCmdMatches = function(obj, value) {
-                var keys = Object.keys(obj);
-                var filtered = filterCommands(keys, value);
+                var filtered = filterCommands(Object.keys(obj), value);
                 if (filtered.length)
-                    self.show(cli, "", filtered, 0);
+                    self.show(e.currentTarget, "", filtered, 0);
                 else
                     self.hide();
             };
 
+            var cliValue = e.currentTarget.getValue();
             if (cliValue) {
                 var fullCmd = cliValue.match(/(\w+)\s+(.*)$/);
                 if (fullCmd) {
