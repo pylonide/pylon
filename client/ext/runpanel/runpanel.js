@@ -120,7 +120,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         });
         
         var page = tabEditors.getPage();
-        if (page) {
+        if (page && page.$model) {
             var path = page.$model.queryValue("@path");
             if(path) {
                 path = path.replace(ide.davPrefix, "");
