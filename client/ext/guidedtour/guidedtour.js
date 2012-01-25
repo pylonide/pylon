@@ -96,6 +96,7 @@ var jsonTourIde = {
             var page = tabEditors.getPage();
             var file = page.$model.data;
             save._saveAsNoUI(page, file.getAttribute("path"), ide.davPrefix + "/helloWorld-quideTour.js");
+            require("ext/tree/tree").refresh();
         },
         el: undefined,
         div: "ceEditor",
@@ -304,6 +305,7 @@ var jsonTourIde = {
                 trFiles.confirmed = true;
                 trFiles.remove(demoFile);
                 trFiles.confirmed = false;
+                require("ext/tree/tree").refresh();
             }
         },
         el: "winFilesViewer",
@@ -397,6 +399,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             trFiles.confirmed = true;
             trFiles.remove(demoFile);
             trFiles.confirmed = false;
+            require("ext/tree/tree").refresh();
         }
     },
     
