@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
 var editors = require("ext/editors/editors");
+
 var Parser = require("ext/console/parser");
 var Logger = require("ext/console/logger");
 var Trie = require("ext/console/trie");
@@ -278,6 +279,9 @@ module.exports = ext.register("ext/console/console", {
                             line: line,
                             cwd: this.getCwd()
                         };
+                        
+                        if (cmd.trim() == "npm")
+                            data.version = settings.model.queryValue("auto/node-version/@version") || "auto";
 
                         ide.dispatchEvent("track_action", {type: "console", cmd: cmd});
                         if (ext.execCommand(cmd, data) !== false) {
