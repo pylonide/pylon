@@ -3,21 +3,27 @@
  * 
  * TODO:
  * 
- * Proper diff match patch implementation
+ * Historical version should show up with the latest committed value instead?
+ *  - If so, do an auto diffmatchpatch
  * Implement state-holding for each file, or clear state upon re-enter
- * Dropdown to right of slider to show all commits, descending
- * On entering mode, animate IDE editor to right-side currentEditor
- * On exiting mode, animate right-side currentEditor to IDE editor
+ * Re-disable restore if goes to most recent point
  * Implement "Restore" functionality
  * Dialog warning about what Restore does
- * Animate history pages when clicking history dot
- * Update restore/done button styles to not have white bottom border
- * Update "Current Document" indicator to not look like button
  * When requesting a revision, display a spinner somewhere
- * When loading in a revision, scroll back to the same position the user was at
+ * Update restore/done button styles to not have white bottom border
+ * Refresh (button next to dropdown button?)
+ * Highlight the selected item in the dropdown list
+ * 
+ * Lower Prio:
+ * 
+ * Animate history pages when clicking history dot
+ * On entering mode, animate IDE editor to right-side currentEditor
+ * On exiting mode, animate right-side currentEditor to IDE editor
  * Bug: clicking around clears the syntax highlighting (wtf?)
- * Bug: clearing search doesn't re-focus (no matter what I frickin' do)
+ * Bug: focus() on search after clear doesn't work. Fix APF
  * Ideal: Hover over history dots has OS X dock magnification effect
+ * Ideal: Searching "zooms" in on timeline so earliest and latest results
+ *  show up on left and right side of timeline
  * 
  * @author Matt Pardee
  * 
@@ -33,6 +39,9 @@ var Range = require("ace/range").Range;
 var Anchor = require('ace/anchor').Anchor;
 var editors = require("ext/editors/editors");
 var GitLogParser = require("ext/revisions/gitlogparser");
+var marker = require("ext/language/marker");
+
+var skin = require("text!ext/revisions/skin.xml");
 var markup = require("text!ext/revisions/revisions.xml");
 
 module.exports = ext.register("ext/revisions/revisions", {
@@ -41,6 +50,10 @@ module.exports = ext.register("ext/revisions/revisions", {
     alone    : true,
     type     : ext.GENERAL,
     markup   : markup,
+    skin     : {
+        id   : "skin_revisions",
+        data : skin
+    },
     command  : "gittools",
     gitLogs  : {},
 
@@ -59,7 +72,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                     childNodes : [
                         new apf.vbox({
                             flex : "1",
-                            margin : "20 30 0 30",
+                            margin : "20 20 0 30",
                             childNodes : [
                                 new apf.vbox({
                                     height : "104",
@@ -78,10 +91,11 @@ module.exports = ext.register("ext/revisions/revisions", {
                                                 new apf.textbox({
                                                     width : "100",
                                                     height : "25",
+                                                    id : "tbRevisionsSearch",
                                                     skin : "searchbox_textbox",
                                                     "initial-message" : "Filter",
                                                     "class" : "versions_search",
-                                                    margin: "0 30 0 0",
+                                                    margin: "0 20 0 0",
                                                     onclear : function() {
                                                         _self.applyFilter("");
                                                     },
@@ -111,6 +125,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                                                     width : 17,
                                                     height : 17,
                                                     skin : "btn_icon_only",
+                                                    submenu : "menuCommits",
                                                     "class" : "tabmenubtn",
                                                     background : "tabdropdown.png|horizontal|3|17",
                                                     style : "position:relative;top:66px;right:-3px;"
@@ -131,7 +146,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                         }),
                         new apf.vbox({
                             flex : "1",
-                            margin : "20 30 0 30",
+                            margin : "20 20 0 30",
                             childNodes : [
                                 new apf.vbox({
                                     height : "104", // 80 + 24 (24 == height of right-side zoom effect)
@@ -177,12 +192,14 @@ module.exports = ext.register("ext/revisions/revisions", {
                             "class" : "current_label black",
                             childNodes : [
                                 new apf.button({
+                                    id : "btnRestore",
                                     caption : "Restore",
                                     "class" : "ui-btn-red",
+                                    disabled : true,
                                     margin : "0 10 0 10",
                                     width : "125",
                                     onclick : function() {
-                                        
+                                        _self.restoreRevision();
                                     }
                                 }),
                                 new apf.button({
@@ -259,7 +276,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             "debugger"        : "null",
             readonly          : "true",
             style : "z-index : 99999; position: absolute; background: #fff"
-        })
+        });
 
         setTimeout(function() {
             vbMain.parentNode.appendChild(_self.historicalVersionEditor);
@@ -309,6 +326,11 @@ module.exports = ext.register("ext/revisions/revisions", {
                 currentVersionEditor.$editor.renderer.scrollBar.setScrollTop(e.data);
             });
         }, 100);
+        
+        lstCommits.addEventListener("click", function() {
+            _self.loadRevisionFromList();
+            menuCommits.hide();
+        });
     },
 
     loadScript : function(src) {
@@ -375,6 +397,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         return output;
     },
 
+    loadRevisionFromList : function() {
+        this.loadRevision(lstCommits.selected.getAttribute("internal_counter"));
+    },
+
     loadRevision : function(num) {
         var fileData = this.gitLogs[this.getFilePath()];
         var hash = fileData.logData[num].commit;
@@ -388,6 +414,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         versions_label.setValue(output);
 
         this.requestGitShow(hash);
+    },
+    
+    restoreRevision : function() {
+        btnRestore.disable();
     },
     
     animatePage : function() {
@@ -558,6 +588,24 @@ module.exports = ext.register("ext/revisions/revisions", {
                 return;
         }
     },
+    
+    array2Xml : function(arr, elName) {
+        var out = [], attrMessage;
+        for (var i = 0, len = arr.length; i < len; i++) {
+            attrMessage = apf.xmlentities(apf.htmlentities(arr[i].messageJoinedLower));
+            attrMessage = attrMessage.replace(/(\r\n|\r|\n)/gm, " ").replace(/"/g, "&quot;");
+            out.push("<", elName, " ");
+            out.push('hash="', arr[i].commit, '" ');
+            out.push('authoremail="', apf.htmlentities(arr[i].author.email), '" ');
+            out.push('authorname="', arr[i].author.fullName, '" ');
+            out.push('timestamp="', arr[i].author.timestamp, '" ');
+            out.push('message="', attrMessage, '" ');
+            out.push('internal_counter="', i, '"');
+            out.push(' />');
+        }
+
+        return "<" + elName + "s>" + out.join("") + "</" + elName + "s>";
+    },
 
     /**
      * The server has sent back the results of a "git log" request
@@ -579,6 +627,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             logData[gi].committer.emailLower = logData[gi].committer.email.toLowerCase();
             logData[gi].committer.fullNameLower = logData[gi].committer.fullName.toLowerCase();
         }
+
+        var mdlOut = apf.getXml(this.array2Xml(logData, "commit"));
+        mdlCommits.load(mdlOut);
 
         var file = message.body.file;
         this.gitLogs[file].logData = logData;
@@ -603,8 +654,16 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.gitLogs[message.body.file].revisions[message.body.hash] =
             fileText;
 
+        var st = historicalVersionEditor.$editor.renderer.scrollBar.element.scrollTop;
         var hveSession = historicalVersionEditor.$editor.getSession();
         hveSession.setValue(fileText);
+
+        btnRestore.enable();
+
+        // Restore scroll position
+        setTimeout(function() {
+            historicalVersionEditor.$editor.renderer.scrollBar.setScrollTop(st);
+        });
 
         if (!this.dmp)
             this.dmp = new diff_match_patch();
@@ -616,52 +675,104 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.dmp.diff_cleanupSemantic(diff);
         //console.log(diff);
 
-        var numLeftLines = 0, numRightLines = 0,
-            numLeftChars = 0, numRightChars = 0,
-            leftLinesAdded = 0, d, tLines;
+        var historyDoc = historicalVersionEditor.$editor.session.getDocument();
+        var currentDoc = currentVersionEditor.$editor.session.getDocument();
 
+        var numLeftLines = 0, numRightLines = 0,
+            d, tLines, ll, lastLeftLine = "", lastRightLine = "";
         for (var i = 0; i < diff.length; i++) {
             d = diff[i];
-            tLines = d[1].split("\n").length;
+            ll = d[1].split("\n");
+            tLines = ll.length - 1;
             if (d[0] != 1) {
+                // Removed
                 if (d[0] == -1) {
-                    console.log("this was REMOVED: ", d[1]);
+                    this.addCodeMarker(historicalVersionEditor, "remove",
+                        numLeftLines, lastLeftLine.length, numLeftLines+tLines,
+                        ll[ll.length-1].length+lastLeftLine.length);
+                    if (tLines == 0)
+                        lastLeftLine += ll.pop();
+                    else
+                        lastLeftLine = ll.pop();
                 }
+                
+                // Stayed the same
                 else {
-                    console.log("this stayed the SAME: ", d[1]);
-                    numRightLines += (tLines-1);
-                    numRightChars += d[1].length;
+                    //console.log("this stayed the SAME: ", d[1]);
+                    numRightLines += tLines;
+                    var llPop = ll.pop();
+                    if (tLines == 0) {
+                        lastLeftLine += llPop;
+                        lastRightLine += llPop;
+                    }
+                    else {
+                        lastLeftLine = llPop;
+                        lastRightLine = llPop;
+                    }
                 }
-                numLeftLines += (tLines-1);
-                numLeftChars += d[1].length;
+                numLeftLines += tLines;
             }
 
+            // Added
             else {
-                console.log("this was ADDED: ", d[1]);
-                numRightLines += (tLines-1);
-                numRightChars += d[1].length;
+                this.addCodeMarker(currentVersionEditor, "add",
+                    numRightLines, lastRightLine.length, numRightLines+tLines,
+                    ll[ll.length-1].length+lastRightLine.length);
+                numRightLines += tLines;
+                if (tLines == 0)
+                    lastRightLine += ll.pop();
+                else
+                    lastRightLine = ll.pop();
             }
-            
-            /*if ((numLeftLines + leftLinesAdded) < numRightLines) {
-                var numAddLines = numRightLines - (numLeftLines+leftLinesAdded);
-                historicalVersionEditor.$editor.moveCursorTo((numLeftLines+leftLinesAdded), 0);
-                historicalVersionEditor.$editor.insert("\r\n\r\n");
-                leftLinesAdded += numAddLines;
-            }*/
-            //console.log(diff[i][1]);
-            console.log(numLeftLines, numRightLines);
-            //console.log(diff[i][1].split("\n"));
+
+            var lineDiff = numRightLines - numLeftLines;
+            if (lineDiff != 0) {
+                var newlines = "";
+                for (var j = 0; j < Math.abs(lineDiff); j++)
+                    newlines += "\r\n";
+
+                // Add newlines to history
+                if (lineDiff > 0) {
+                    var colEnd = historyDoc.getLine(numLeftLines).length;
+                    historicalVersionEditor.$editor.moveCursorTo((numLeftLines-1), colEnd);
+                    historicalVersionEditor.$editor.insert(newlines);
+                    numLeftLines += lineDiff;
+                }
+                // Add newlines to current
+                else {
+                    var colEnd = currentDoc.getLine(numRightLines).length;
+                    currentVersionEditor.$editor.moveCursorTo((numRightLines-1), colEnd);
+                    currentVersionEditor.$editor.insert(newlines);
+                    numRightLines += Math.abs(lineDiff);
+                }
+            }
         }
-        //console.log(diff);
     },
-    
-    addCodeMarker : function(editor) {
+
+    addCodeMarker : function(editor, type, fromRow, fromColumn, toRow, toColumn) {
+        if (fromRow == toRow && fromColumn == toColumn)
+            return;
+
+        var markerId;
         var mySession = editor.$editor.session;
-        var range = Range.fromPoints(anchor.getPosition(), {
-            row: anchor.row + rowDiff,
-            column: anchor.column + colDiff
+        var colDiff = toColumn - fromColumn;
+        var rowDiff = toRow - fromRow;
+        var anchor = new Anchor(mySession.getDocument(), fromRow, fromColumn);
+
+        function updateFloat(single) {
+            if (markerId)
+                mySession.removeMarker(markerId);
+            var range = Range.fromPoints(anchor.getPosition(), {
+                row: anchor.row + rowDiff,
+                column: anchor.column + colDiff
+            });
+            
+            markerId = mySession.addMarker(range, "revision_hl_" + type);
+        }
+        updateFloat();
+        anchor.on("change", function() {
+            updateFloat(true);
         });
-        markerId = mySession.addMarker(range, "language_highlight_" + (anno.type ? anno.type : "default"));
     },
 
     formulateVersionsLabelDate : function(ts) {

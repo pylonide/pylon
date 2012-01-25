@@ -1,0 +1,189 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+    <a:menu name="commitsmenu">
+        <a:style><![CDATA[
+            .commitmenu {
+                margin: -1px 0 0 0;
+                padding: 3px 0 3px 0;
+                z-index: 10000;
+                position: absolute;
+                overflow-y: auto;
+    
+                font-family   : Tahoma, Arial;
+                font-size     : 11px;
+                line-height   : 14px;
+                color         : #f1f1f1;
+                cursor:default;
+    
+                display : none;
+                border:1px solid rgba(255, 255, 255, 0.1);
+    
+                -moz-box-shadow    : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
+                -webkit-box-shadow : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
+                box-shadow         : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
+    
+                background-color   : #1c1c1c;
+                filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626');
+                -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626')";
+                background         : -webkit-gradient(linear, left top, left bottom, from(#1c1c1c), color-stop(0.9, #262626));
+                background         :-moz-linear-gradient(center bottom, #262626 0%, #1c1c1c 20%) repeat scroll 0 0 transparent;
+            }
+    
+            .commitmenu>div.menu_item{
+                padding: 3px 16px 5px 23px;
+                white-space: nowrap;
+                cursor : default;
+                z-index:1100000;
+            }
+            .commitmenu>div.menu_item{
+                height: 13px;
+            }
+            .commitmenu>div.menu_item.hover {
+                background-color : #393939;
+            }
+    
+            .commitmenu>div.menu_divider{
+                overflow: visible;
+                padding: 0;
+                font-size: 1px;
+    
+                margin:2px 3px;
+                border-top:1px solid #000000;
+                border-bottom:1px solid #313131;
+            }
+    
+            .commitmenu>div.menu_divider{
+                height: 0;
+            }
+    
+            .commitmenu>div.menu_item>span{
+                right: 15px;
+                margin-top: 0px;
+                z-index: 10;
+                text-align: right;
+                padding-left: 15px;
+                /*margin-right: -15px;
+                position : absolute;*/
+                float : right;
+            }
+    
+            .commitmenu>div.submenu>span{
+                background: url(images/submenu_arrow.gif) no-repeat right -15px;
+                width: 4px;
+                height: 7px;
+                display: block;
+                position: absolute;
+                right: 8px;
+                margin: 4px 0 0 0;
+                z-index: 10;
+            }
+    
+            .commitmenu>div.menu_item.hover>span{
+                background-position : right -15px;
+            }
+    
+            .commitmenu>div.menu_item.disabled{
+                color: gray;
+                /*text-shadow : rgba(255, 255, 255, .71) 1px 1px 1px;*/
+            }
+            .commitmenu>div.menu_item.disabled>span{
+                display : none;
+            }
+    
+            .commitmenu>div.menu_item>u{
+                width: 16px;
+                height: 16px;
+                position: absolute;
+                left: 3px;
+                margin-top : -1px;
+            }
+    
+            .commitmenu>div.menu_item.selected>u{
+                background-image: url(images/radio.gif);
+                background-repeat: no-repeat;
+                background-position: 0 -16px;
+            }
+    
+            .commitmenu>div.menu_item.checked>u{
+                background-image: url(images/check.gif);
+                background-repeat: no-repeat;
+                background-position: 0 -16px;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main container="." overlay="strong">
+                <blockquote class='commitmenu'>
+    
+                </blockquote>
+            </a:main>
+            <a:item caption="text()" icon="u" hotkey="span" inherit="true">
+                <div class="menu_item"><span> </span><u> </u>-</div>
+            </a:item>
+            <a:divider inherit="true">
+                <div class='menu_divider'></div>
+            </a:divider>
+        </a:presentation>
+    </a:menu>
+    <a:list name="commitlist">
+        <a:style><![CDATA[
+            .commitlist{
+                overflow: auto;
+                position: relative;
+                background-color: #fff;
+                color: #000;
+                margin: 0;
+                outline: none;
+                font-family: Tahoma, Arial;
+                font-size: 12px;
+                cursor: default;
+            }
+            .commitlist p {
+                margin: 2px 0;
+            }
+            .commitlist > div.empty.message {
+                border: none;
+                font-size: 13px;
+                color: #666;
+                padding-top: 20px;
+            }
+            .commitlist > div.empty.message:hover {
+                background: none;
+            }
+            .commitlist > div:hover, .commitlist > div.odd:hover {
+                background-color: #ffc; /*#e7e7e7;*/
+            }
+            .commitlist > .selected{
+                background-color: #e0e0e0;
+            }
+            .commitlistFocus > .selected{
+                
+            }
+            .commitlist .empty, .commitlist .offline, .commitlist .loading{
+                text-align: center;
+                padding: 8px 0 0 0;
+                color: #777;
+                font-size : 8pt;
+                font-weight : normal;
+            }
+            .commitlist > div {
+                padding: 6px 12px;
+                line-height: 16px;
+                border-bottom: 1px solid #ddd;
+            }
+        ]]></a:style>
+
+        <a:presentation>
+            <a:main container=".">
+                <div class="commitlist">
+                </div>
+            </a:main>
+            <a:item class="." caption="." select="." container=".">
+                <div>
+                </div>
+            </a:item>
+            <a:empty caption=".">
+                <div class="message">-</div>
+            </a:empty>
+        </a:presentation>
+    </a:list>
+</a:skin>

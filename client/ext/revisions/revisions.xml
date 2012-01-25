@@ -1,35 +1,15 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:style><![CDATA[
-        #raphaelContainer {
+        .revision_hl_add {
             position: absolute;
-            top: 122px;
-            margin: 0 30px 0 30px;
-            overflow: hidden;
-            z-index: 99999;
+            background: #0b3;
         }
 
-        #rbgelems {
-            z-index: 99999;
-            top: 122px;
-            margin: 0 30px 0 30px;
-            overflow: hidden;
+        .revision_hl_remove {
             position: absolute;
+            background: #b30;
         }
 
-        #rbgelems div {
-            position: absolute;
-            height: 3000px;
-        }
-
-        #rbgelems div.ace_bg {
-            background-color: rgb(50, 50, 50);
-        }
-
-        #rbgelems div.gutter {
-            width: 50px;
-            background-color: rgb(232, 232, 232);
-        }
-        
         #slider_tooltip {
             position: absolute;
             top: 50px;
@@ -113,7 +93,7 @@
         }
 
         .current_label {
-            background: #575757;
+            background: #404040;
             color: #fff;
             text-shadow: 0.0em -0.1em 0.1em #000;
             -webkit-box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.5);
@@ -264,4 +244,33 @@
             box-shadow: 0px 0px 5px rgba(0, 0, 0, 1);
         }
     ]]></a:style>
+    <a:script><![CDATA[
+        function formatDate(timestamp) {
+            var d = new Date(timestamp*1000);
+            return d.toString("MMMM dd, yyyy hh:mm tt");
+        }
+    ]]></a:script>
+    <a:model id="mdlCommits"></a:model>
+    <a:menu id="menuCommits" skinset="skin_revisions" skin="commitsmenu"
+      width="300" height="300" visible="false">
+        <a:list id="lstCommits" skinset="skin_revisions" skin="commitlist"
+          anchors="0 0 0 0" flex="1" border="0" multiselect="false"
+          autoselect="false" model="mdlCommits"
+          onselect="require('ext/revisions/revisions').loadRevisionFromList()">
+            <a:each
+              match         = "[commit]"
+              filter        = "{tbRevisionsSearch.value}"
+              filter-fields = "@authorname,@authoremail,@hash,@message"
+              sort          = "[@timestamp]"
+              data-type     = "number"
+              order         = "descending"
+            >
+                <a:caption><?lm
+                    <p class="date">{formatDate([@timestamp])}</p>
+                    <p class="author">[@authorname] {apf.htmlentities([@authoremail])}</p>
+                    <p class="hash">{[@hash].substr(0, 10)}</p>
+                ?></a:caption>
+            </a:each>
+        </a:list>
+    </a:menu>
 </a:application>
