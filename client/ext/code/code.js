@@ -94,6 +94,7 @@ var contentTypes = {
     "mml": "application/mathml+xml",
 
     "php": "application/x-httpd-php",
+    "phtml": "application/x-httpd-php",
     "html": "text/html",
     "xhtml": "application/xhtml+xml",
     "coffee": "text/x-script.coffeescript",
@@ -147,17 +148,17 @@ module.exports = ext.register("ext/code/code", {
     deps    : [editors],
 
     nodes : [],
-    
+
     fileExtensions : Object.keys(contentTypes),
     commandManager : new CommandManager(useragent.isMac ? "mac" : "win", defaultCommands),
-    
+
     getState : function(doc) {
         doc = doc ? doc.acesession : this.getDocument();
         if (!doc || typeof doc.getSelection != "function")
             return;
-        
-        var folds = doc.getAllFolds().map(function(fold) { 
-            return { 
+
+        var folds = doc.getAllFolds().map(function(fold) {
+            return {
                 start: fold.start,
                 end: fold.end,
                 placeholder: fold.placeholder
@@ -182,7 +183,7 @@ module.exports = ext.register("ext/code/code", {
 
         //are those 3 lines set the values in per document base or are global for editor
         sel.setSelectionRange(state.selection, false);
-        
+
         aceDoc.setScrollTop(state.scrolltop);
         aceDoc.setScrollLeft(state.scrollleft);
 
@@ -240,7 +241,7 @@ module.exports = ext.register("ext/code/code", {
 
     setDocument : function(doc, actiontracker){
         var _self = this;
-        
+
         if (!doc.acesession) {
             doc.isInited = doc.hasValue();
             doc.acedoc = doc.acedoc || new ProxyDocument(new Document(doc.getValue() || ""));
@@ -255,7 +256,7 @@ module.exports = ext.register("ext/code/code", {
             doc.addEventListener("prop.value", function(e) {
                 if (this.editor != _self)
                     return;
-                    
+
                 doc.acesession.setValue(e.value || "");
                 if (doc.state)
                     _self.setState(doc, doc.state);
@@ -265,22 +266,22 @@ module.exports = ext.register("ext/code/code", {
             doc.addEventListener("retrievevalue", function(e) {
                 if (this.editor != _self)
                     return;
-                    
-                if (!doc.isInited) 
+
+                if (!doc.isInited)
                     return e.value;
                 else
                     return doc.acesession.getValue();
             });
-            
+
             doc.addEventListener("close", function(){
                 if (this.editor != _self)
                     return;
-                
+
                 //??? destroy doc.acesession
             });
         }
         ceEditor.setProperty("value", doc.acesession);
-        
+
         if (doc.editor && doc.editor != this) {
             var value = doc.getValue();
             if (doc.acesession.getValue() !== value) {
@@ -288,13 +289,13 @@ module.exports = ext.register("ext/code/code", {
                 doc.dispatchEvent("prop.value", {value : value});
             }
         }
-        
+
         doc.editor = this;
     },
 
     hook: function() {
         var _self      = this;
-        
+
         //Settings Support
         ide.addEventListener("init.ext/settings/settings", function(e) {
             var heading = e.ext.getHeading("Code Editor");
@@ -321,11 +322,11 @@ module.exports = ext.register("ext/code/code", {
                   .attr("gutter", "true")
                   .attr("highlightselectedword", "true")
                   .attr("autohidehorscrollbar", "true").node();
-                
+
                 var editors = apf.createNodeFromXpath(model.data, "editors");
                 apf.xmldb.appendChild(editors, node);
             }
-            
+
             // pre load theme
             var theme = e.model.queryValue("editors/code/@theme");
             if (theme)
@@ -333,14 +334,16 @@ module.exports = ext.register("ext/code/code", {
             // pre load custom mime types
             _self.getCustomTypes(e.model);
         });
-        
+
         ide.addEventListener("afteropenfile", function(e) {
             if (_self.setState)
                 _self.setState(e.doc, e.doc.state);
-                
+
             if (e.doc && e.doc.editor && e.doc.editor.ceEditor) {
                 // check if there is a scriptid, if not check if the file is somewhere in the stack
-                if (!e.node.getAttribute("scriptid") && mdlDbgStack && mdlDbgStack.data) {
+                if (mdlDbgStack && mdlDbgStack.data && e.node
+                  && (!e.node.hasAttribute("scriptid") || !e.node.getAttribute("scriptid"))
+                  && e.node.hasAttribute("scriptname") && e.node.getAttribute("scriptname")) {
                     var nodes = mdlDbgStack.data.selectNodes("//frame[@script='" + e.node.getAttribute("scriptname").replace(ide.workspaceDir + "/", "") + "']");
                     if (nodes.length) {
                         e.node.setAttribute("scriptid", nodes[0].getAttribute("scriptid"));
@@ -349,11 +352,11 @@ module.exports = ext.register("ext/code/code", {
                 e.doc.editor.ceEditor.afterOpenFile(e.doc.editor.ceEditor.getSession());
             }
         });
-        
+
         tabEditors.addEventListener("afterswitch", function(e) {
             ceEditor.afterOpenFile(ceEditor.getSession());
         });
-        
+
         // preload common language modes
         require(["ace/mode/javascript", "ace/mode/html", "ace/mode/css"], function() {});
     },

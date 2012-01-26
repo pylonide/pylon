@@ -1,0 +1,194 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+<a:window name="qsImage">
+        <a:style><![CDATA[
+            .qsProjectBar {
+                position:absolute;
+                width: 167px;
+                height: 117px;
+                background: url(images/your_project_bar.png) no-repeat 0 0;
+                z-index  : 999999;
+            }
+            
+            .qsMenuBar {
+                position:absolute;
+                width: 167px;
+                height: 117px;
+                background: url(images/your_top_menu.png) no-repeat 0 0;
+                z-index  : 999999;
+            }
+            
+            .qsToolbar {
+                position:absolute;
+                width: 167px;
+                height: 117px;
+                background: url(images/your_toolbar.png) no-repeat 0 0;
+                z-index  : 999999;
+            }
+            
+             .qsCLI {
+                position:absolute;
+                width: 167px;
+                height: 200px;
+                background: url(images/your_command_line.png) no-repeat 0 0;
+                z-index  : 999999;
+            }
+        ]]></a:style>
+    
+        <a:presentation>
+        <a:main
+              collapsed-height = "30"
+              minheight        = "30"
+              minwidth         = "60"
+              container        = "div[2]"
+              drag             = "div[2]"
+              title            = "div[1]/div[1]/text()">
+                <div>
+                    <div>
+                    </div>
+                    <div class="image"> </div>
+                </div>
+            </a:main>
+        </a:presentation>
+    </a:window>
+    
+    <a:window name="win-quickstart">
+        <a:style><![CDATA[
+            .win-quickstart {
+                position : relative;
+                overflow : visible;
+                z-index  : 999999;
+                border-radius: 4px;
+            }
+            
+            .win-quickstart .header {
+                background: #000;
+                position: relative;
+                border-bottom: 1px solid #7d7d7d;
+                font-size: 24px;
+                font-weight: normal;
+                padding: 15px 20px 10px;
+                color: #ffffff;
+            }
+            
+            .win-quickstart .buttons {
+                position: absolute;
+                right: 0;
+                top: -23px;
+                padding: 4px;
+                background-color: #000000;
+                
+            }
+            
+            .win-quickstart .buttons .close {
+                width: 13px;
+                height: 13px;
+                background: url(images/close.png) no-repeat 0 0;
+            }
+            
+            .win-quickstart .buttons .close.hover {
+                background-position: -18px 0;
+            }
+            
+            .win-quickstart .buttons .close.down {
+                background-position: -35px 0;
+            }
+            
+            .win-quickstart .content {
+                
+            }
+            
+            .win-quickstart p {
+                padding: 0;
+                margin: 0;
+            }
+            .tgLink {
+                background : #000;
+                color: #fff;
+                padding: 0 5px 0 5px;
+                font-family: Tahoma, Arial;
+                margin-bottom: -16px;
+                text-decoration: none;
+            }
+            
+            .tgLink:hover {
+                text-decoration: underline;
+            }
+            
+            .win-quickstart .container {
+                padding: 10px 20px;
+                background : #000;
+                margin-top: 2px;
+                border-bottom: 1px solid #7d7d7d;
+            }
+            
+            .tgtext, .tgtext a {
+                color: #ffc02a;
+                font-size: 16px;
+                text-decoration: none;
+            }
+            
+            .win-quickstart .qsSupportText {
+                font-size: 12px;
+                color: #eeeeee;
+                padding: 18px 20px;
+            }
+            
+            .supportLink {
+                color: #b1dfff;
+                text-decoration: none;
+            }
+            
+            .supportLink:hover {
+                text-decoration: underline;
+            }
+            
+            .cbcontainer {
+                color: white;
+                margin-left: 12px;
+            }
+            
+            .qsCBContainer { 
+            }
+            .checkboxDiv    {
+                width: 243px;
+                padding: 17px 20px 15px 5px;
+                border-bottom: 1px solid #7d7d7d;
+                background: black;
+            }
+
+            .buttonDiv {
+                width: 255px;
+                padding: 15px 0;
+                border-bottom: 1px solid #7d7d7d;
+                background: black;
+            }
+            
+            .btnclosetour {
+                margin: 0 auto;
+            }
+        ]]></a:style>
+
+    
+        <a:presentation>
+        <a:main
+              collapsed-height = "30"
+              minheight        = "30"
+              minwidth         = "60"
+              container        = "div[2]"
+              drag             = "div[2]"
+              title            = "div[1]/text()"
+              buttons          = "div[1]/div">
+                <div class="win-quickstart">
+                    <div class="header">
+                        <div class="buttons"> </div>
+                    </div>
+                    <div class="content"> </div>
+                </div>      
+            </a:main>
+            <a:button>
+                <div> </div>
+            </a:button>
+        </a:presentation>
+    </a:window>
+</a:skin>

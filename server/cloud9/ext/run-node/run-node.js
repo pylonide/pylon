@@ -44,7 +44,7 @@ sys.inherits(NodeRuntimePlugin, Plugin);
                 
         switch (cmd) {
             case "run":
-                this.$run(message, client);
+                this.$run(message);
                 break;
             case "rundebug":
                 netutil.findFreePort(this.NODE_DEBUG_PORT, this.NODE_DEBUG_PORT + 1000, "localhost", function(err, port) {
@@ -53,7 +53,7 @@ sys.inherits(NodeRuntimePlugin, Plugin);
 
                     message.preArgs = ["--debug=" + port];
                     message.debug = true;
-                    _self.$run(message, client);
+                    _self.$run(message);
 
                     _self.$startDebug(null, port);
                 });
@@ -65,7 +65,7 @@ sys.inherits(NodeRuntimePlugin, Plugin);
 
                     message.preArgs = ["--debug-brk=" + port];
                     message.debug = true;
-                    _self.$run(message, client);
+                    _self.$run(message);
 
                     // in parallel (both operations translate to async processes):
                     // * execute a node process that executes the source file (with debug)
@@ -135,7 +135,7 @@ sys.inherits(NodeRuntimePlugin, Plugin);
         catch(e) {}
     };
 
-    this.$run = function(message, client) {
+    this.$run = function(message) {
         var _self = this;
 
         if (this.child)

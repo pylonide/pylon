@@ -721,6 +721,7 @@ fu.mime = {
           , ".psd"   : "image/vnd.adobe.photoshop"
           , ".py"    : "text/x-script.python"
           , ".php"   : "application/x-httpd-php"
+          , ".phtml"   : "application/x-httpd-php"
           , ".qt"    : "video/quicktime"
           , ".ra"    : "audio/x-pn-realaudio"
           , ".rake"  : "text/x-script.ruby"

@@ -1,0 +1,53 @@
+<?xml version='1.0'?>
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window
+      id        = "winKeyBindings"
+      title     = "Default Keybindings"
+      icon      = ""
+      center    = "true"
+      visible   = "false"
+      kbclose   = "true"
+      skin      = "bk-window"
+      width     = "793"
+      height    = "500"
+      buttons   = "close"
+      class     = "relative keybindings_default"
+      draggable = "false">
+        <a:bar id="barKeyBindingsMac"
+          skin="basic"
+          class="keybindings_default_bar"
+          visible="{apf.isMac}"/>
+        <a:scrollbar
+          for      = "barKeyBindingsMac"
+          id       = "sbKeyBindingsMac"
+          margin   = "2"
+          skin     = "sbios"
+          width    = "7"
+          overflow2 = "auto"
+          top      = "0"
+          right    = "0"
+          visible  = "{barKeyBindingsMac.visible}"/>
+        <a:bar id="barKeyBindingsWin"
+          skin="basic"
+          class="keybindings_default_bar"
+          visible="{!apf.isMac}"/>
+        <a:scrollbar
+          for      = "barKeyBindingsWin"
+          id       = "sbKeyBindingsWin"
+          margin   = "2"
+          skin     = "sbios"
+          width    = "7"
+          overflow2 = "auto"
+          top      = "0"
+          right    = "0"
+          visible  = "{barKeyBindingsWin.visible}"/>
+
+        <a:bar class="keybindings_default_bottom" skin="basic">
+            <!--a:divider skin="hordivider" /-->
+            <a href="javascript:void(0);" bottom="16" left="28" onclick="barKeyBindingsMac.hide();barKeyBindingsWin.show()" class="{barKeyBindingsWin.visible ? 'selected' : ''}">Windows</a>
+            <span class="keybindings_default_bottom_divider" bottom="16" left="82" >&#160;|&#160;</span>
+            <a href="javascript:void(0);" bottom="16" left="97" onclick="barKeyBindingsWin.hide();barKeyBindingsMac.show()" class="{barKeyBindingsMac.visible ? 'selected' : ''}">Mac</a> 
+            <!--a:button default="3" bottom="10" right="10" skin="btn-default-css3" onclick="winKeyBindings.hide()">Done</a:button-->
+        </a:bar>
+    </a:window>
+</a:application>

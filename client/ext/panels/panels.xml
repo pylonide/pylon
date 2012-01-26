@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:menu id="mnuWindows">
-    	<a:item submenu="mnuProjectBar">Project bar</a:item>
+        <a:item submenu="mnuProjectBar">Project bar</a:item>
     	<a:item submenu="mnuTabs">Tabs</a:item>
     	<a:item submenu="mnuToolbar">Toolbar</a:item>
     	<a:divider />

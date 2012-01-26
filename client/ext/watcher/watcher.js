@@ -139,7 +139,8 @@ module.exports = ext.register("ext/watcher/watcher", {
             
             var pages = tabEditors.getPages();
             pages.forEach(function (page) {
-                sendWatchFile(page.$model.data.getAttribute("path"));
+                if(page.$model)
+                    sendWatchFile(page.$model.data.getAttribute("path"));
             });
             for (var path in expandedPaths)
                 sendWatchFile(path);

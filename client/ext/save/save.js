@@ -58,7 +58,7 @@ module.exports = ext.register("ext/save/save", {
                             var page;
                             if (!(page=winCloseConfirm.page))
                                 return;
-                            
+
                             tabEditors.remove(page, true, page.noAnim);
                             delete page.noAnim;
                             if (resetUndo)
@@ -75,7 +75,7 @@ module.exports = ext.register("ext/save/save", {
                     }
                     else
                         tabEditors.dispatchEvent("aftersavedialogcancel");
-                    
+
                     winCloseConfirm.removeEventListener("hide", arguments.callee);
                 });
 
@@ -230,10 +230,10 @@ module.exports = ext.register("ext/save/save", {
         var doc  = page.$doc;
         var node = doc.getNode();
         var path = node.getAttribute("path");
-        
+
         if (node.getAttribute("debug"))
             return;
-            
+
         if (ide.dispatchEvent("beforefilesave", {node: node, doc: doc }) === false)
             return;
 
@@ -241,7 +241,7 @@ module.exports = ext.register("ext/save/save", {
             this.saveas(page, callback);
             return;
         }
-            
+
         if (callback) {
             ide.addEventListener("afterfilesave", function(e){
                 if (e.node == node) {
@@ -257,7 +257,7 @@ module.exports = ext.register("ext/save/save", {
             this.saveBuffer[path] = page;
             return;
         }
-        
+
         apf.xmldb.setAttribute(node, "saving", "1");
 
         var _self = this, panel = sbMain.firstChild;
@@ -279,8 +279,8 @@ module.exports = ext.register("ext/save/save", {
             panel.setAttribute("caption", "Saved file " + path);
             ide.dispatchEvent("afterfilesave", {node: node, doc: doc, value: value});
             ide.dispatchEvent("track_action", {
-                type: "save as filetype", 
-                fileType: node.getAttribute("name").split(".").pop(), 
+                type: "save as filetype",
+                fileType: node.getAttribute("name").split(".").pop(),
                 success: state != apf.SUCCESS ? "false" : "true"
             });
 
@@ -329,7 +329,7 @@ module.exports = ext.register("ext/save/save", {
             var model = page.$model;
             var node = model.getXml();
             var doc = page.$doc;
-            
+
             if (path !== newPath || parseInt(node.getAttribute("newfile") || 0, 10) === 1) {
                 model.load(node);
                 file = model.data;
@@ -431,6 +431,7 @@ module.exports = ext.register("ext/save/save", {
             this.saveBuffer[path] = page;
             return;
         }
+
         //apf.xmldb.setAttribute(file, "saving", "1");
 
         var self = this;
