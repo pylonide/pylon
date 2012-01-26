@@ -242,6 +242,15 @@ module.exports = ext.register("ext/console/console", {
         if (message.type === "node-data")
             return Logger.logNodeStream(message.data, message.stream, true);
 
+        if (message.type == "node-exit")
+            return Logger.log("", "divider", true);
+
+        if (message.type.match(/-data$/))
+            return Logger.logNodeStream(message.data, message.stream, false);
+
+        if (message.type.match(/-exit$/))
+            return Logger.log("", "divider", false);
+
         if (message.type !== "result")
             return;
 
@@ -271,12 +280,16 @@ module.exports = ext.register("ext/console/console", {
         mainRow.appendChild(winDbgConsole);
 
         stProcessRunning.addEventListener("activate", function() {
-            _self.clear();
             _self.showOutput();
 
             var autoshow = settings.model.queryValue("auto/console/@autoshow");
             if (_self.autoOpen && apf.isTrue(autoshow))
                 _self.show();
+        });
+
+        // before the actual run target gets called we clear the console
+        ide.addEventListener("beforeRunning", function () {
+            _self.clear();
         });
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));

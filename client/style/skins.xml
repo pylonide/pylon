@@ -278,11 +278,11 @@
             box-shadow: 0 1px 0 #404042;
             margin-bottom: 1px;
         }
-        
+
         .docksection {
             background       : url(images/debug-panel_bg.png) 0 0;
         }
-        
+
         .docksection div:nth-child(2) {
             padding-top: 0;
         }
@@ -910,22 +910,22 @@
         .btn_console_openOver {
             background-position: 0 -76px;
         }
-        
+
         .btn_console_openDown {
             background-position: 0 -152px;
         }
-        
+
         .btn_console_openOpen.btn_console_openOver {
             background-position: 0 -114px;
         }
         .btn_console_openOpen.btn_console_openDown {
             background-position: 0 -190px;
         }
-        
+
         .btn_console_openOpen {
             background-position: 0 -38px;
         }
-        
+
         .btn_console_openDown:hover {
         }
 
@@ -951,7 +951,7 @@
             height             : 21px;
             width              : 22px;
         }
-        
+
         .btn_icon_onlyDown.tabmenubtn {
             z-index : 10000000;
         }
@@ -1056,7 +1056,7 @@
         .dockButtonDown.btn-runcommands {
             background-image: none;
         }
-        
+
         .dockButton .icon {
             width                 : 31px;
             height                : 32px;
@@ -1322,7 +1322,7 @@
         .toolbar .subbar .toolbarbuttonIcon.width_20 span {
             width: 20px;
         }
-        
+
         .toolbar .subbar .toolbarbuttonIcon.toolbarbuttonOver span{
             background-position: 0 -16px;
         }
@@ -1462,11 +1462,11 @@
             line-height        : 17px;
             border:1px solid transparent;
         }
-        
+
         .with-arrow.c9-toolbarbutton {
             padding-right: 5px;
         }
-        
+
         .hbox > .c9-toolbarbutton {
             height: 23px;
         }
@@ -1481,11 +1481,11 @@
             background-position : 0 0;
             background-repeat   : no-repeat;
         }
-        
+
         .c9-toolbarbuttonIcon .c9-icon{
             display : block;
         }
-        
+
         .c9-toolbarbuttonOver {
             -moz-border-radius    : 5px;
             -webkit-border-radius : 5px;
@@ -1513,7 +1513,17 @@
             height:15px;
             padding:4px 6px 0 6px;
         }
-        
+
+        .with-arrow.c9-toolbarbutton .c9-label {
+            background:url(images/btn-arrow.png) no-repeat right 9px;
+            padding-right: 11px;
+        }
+
+        .with-arrow.c9-toolbarbutton .c9-label {
+            background:url(images/btn-arrow.png) no-repeat right 9px;
+            padding-right: 11px;
+        }
+
         .with-arrow.c9-toolbarbutton .c9-label {
             background:url(images/btn-arrow.png) no-repeat right 9px;
             padding-right: 11px;
@@ -1598,7 +1608,7 @@
             border:1px solid transparent;
             padding-bottom: 1px;
             padding-top: 1px;
-            
+
             -moz-border-radius    : 5px;
             -webkit-border-radius : 5px;
             border-radius : 5px;
@@ -1613,7 +1623,7 @@
             -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#282828', endColorstr='#2e2e2e')";
             background         : -webkit-gradient(linear, left top, left bottom, from(#282828), color-stop(1, #2e2e2e));
             background         :-moz-linear-gradient(center bottom, #2e2e2e 0%, #282828 100%) repeat scroll 0 0 transparent;
-            
+
             width: 25px;
         }
 
@@ -1649,7 +1659,7 @@
             background         : -webkit-gradient(linear, left top, left bottom, from(#3a3a3a), color-stop(1, #333333));
             background         :-moz-linear-gradient(center bottom, #333333 0%, #3a3a3a 100%) repeat scroll 0 0 transparent;
         }
-        
+
         .c9-sidepanelsbutton.active {
             background-image: linear-gradient(bottom, rgb(70,94,58) 0%, rgb(74,98,62) 100%);
             background-image: -o-linear-gradient(bottom, rgb(70,94,58) 0%, rgb(74,98,62) 100%);
@@ -1657,7 +1667,7 @@
             background-image: -webkit-linear-gradient(bottom, rgb(70,94,58) 0%, rgb(74,98,62) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(70,94,58) 0%, rgb(74,98,62) 100%);
          }
-         
+
         .c9-sidepanelsbutton .c9-label {
             position:relative;
             overflow:hidden;
@@ -1692,7 +1702,7 @@
         .c9-sidepanelsbuttonDisabled {
 
         }
-        
+
         .c9-sidepanelsbuttonDisabled .c9-icon {
             background-position : 0 -38px;
         }
@@ -1853,7 +1863,7 @@
             background-repeat   : no-repeat;
             background-image    : url(images/browser_button.png);
         }
-        
+
         .browser-btn span{
             display : block;
             width : 17px;
@@ -1895,8 +1905,9 @@
             height : 10px;
             cursor : pointer;
             border-bottom: 1px solid #38393b;
+            border-top: 1px solid #4f5052;
         }
-        
+
         .dockcol .dockheader {
             border-bottom: 1px solid #38393b;
         }
@@ -1923,7 +1934,7 @@
             background-position : 0 -10px;
             right : 3px;
         }
-        
+
         .dockheader .dockheader-footer {
             border-bottom: 1px solid #1D1E1F;
             bottom: 0;
@@ -2036,7 +2047,7 @@
         .mnubtn.open_files .icon {
             background-image:url(images/open_files.png);
         }
-        
+
         .mnubtn.testing .icon {
             background-image:url(images/testing.png);
         }
@@ -2159,27 +2170,27 @@
             background-image: -moz-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
             background-image: -webkit-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
-            
+
             -moz-border-radius    : 6px;
             -webkit-border-radius : 6px;
             border-radius         : 6px;
-            
+
             text-shadow   : #383838 0px 1px 0px;
             color: #ffffff;
             font-weight: bold;
             font-size: 14px;
-            
+
             -webkit-box-shadow: 0 0px 3px 0 #000000;
             -moz-box-shadow: 0 0px 3px 0 #000000;
-            box-shadow: 0 0px 3px 0 #000000; 
-            
+            box-shadow: 0 0px 3px 0 #000000;
+
             position: relative;
         }
-        
+
         .win-deploy-target .btn-default-css3 {
             font-size: 13px;
         }
-        
+
         .btn-default-css3Over {
             background-image: linear-gradient(bottom, rgb(92,92,98) 0%, rgb(116,116,119) 100%);
             background-image: -o-linear-gradient(bottom, rgb(92,92,98) 0%, rgb(116,116,119) 100%);
@@ -2187,7 +2198,7 @@
             background-image: -webkit-linear-gradient(bottom, rgb(92,92,98) 0%, rgb(116,116,119) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(92,92,98) 0%, rgb(116,116,119) 100%);
         }
-        
+
         .btn-default-css3Focus {
             background-image: linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
             background-image: -o-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
@@ -2195,7 +2206,7 @@
             background-image: -webkit-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
         }
-        
+
         .btn-default-css3Down {
             background-image: linear-gradient(bottom, rgb(100,100,104) 0%, rgb(73,73,80) 100%);
             background-image: -o-linear-gradient(bottom, rgb(100,100,104) 0%, rgb(73,73,80) 100%);
@@ -2203,32 +2214,33 @@
             background-image: -webkit-linear-gradient(bottom, rgb(100,100,104) 0%, rgb(73,73,80) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(100,100,104) 0%, rgb(73,73,80) 100%);
         }
-        
+
         .btn-default-css3Disabled {
             background-image: linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
             background-image: -o-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
             background-image: -moz-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
             background-image: -webkit-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(73,73,80) 0%, rgb(100,100,104) 100%);
-            
+
             text-shadow   : #626267 0px 1px 0px;
             color: #38383d;
         }
-        
+
         .btn-default-css3 .caption {
             border-top: 1px solid #93939B;
             padding: 3px 18px 4px;
             -moz-border-radius    : 6px;
             -webkit-border-radius : 6px;
             border-radius         : 6px;
-            
+
             cursor: default;
+            text-align: center;
         }
-        
+
         .btn-default-css3.btn-default-css3Over .caption {
             border-top: 1px solid #ababb1;
         }
-        
+
         .btn-default-css3.btn-default-css3Focus .caption {
             border-top: 1px solid #6c6c74;
         }
@@ -2238,12 +2250,12 @@
         .btn-default-css3.btn-default-css3Disabled .caption {
             border-top: 1px solid #93939b;
         }
-        
+
         .btn-default-css3 .border {
             display: none;
-            
+
             border: 1px solid #ffffff;
-            
+
             position: absolute;
             top: 0;
             bottom: 0;
@@ -2252,10 +2264,10 @@
             border-radius: 6px 6px 6px 6px;
         }
         .btn-default-css3.btn-default-css3Focus .border {
-            display: block;
+
         }
         /*-----------*/
-        
+
         /*-- GREEN --*/
         .btn-default-css3.btn-green {
             background-image: linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
@@ -2263,7 +2275,7 @@
             background-image: -moz-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
             background-image: -webkit-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
-            
+
             text-shadow   : #068e02 0px 1px 0px;
         }
 
@@ -2274,7 +2286,7 @@
             background-image: -webkit-linear-gradient(bottom, rgb(53,164,51) 0%, rgb(109,183,67) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(53,164,51) 0%, rgb(109,183,67) 100%);
         }
-        
+
         .btn-default-css3Focus.btn-green {
             background-image: linear-gradient(bottom, rgb(2,141,0) 0%, rgb(70,165,19) 100%);
             background-image: -o-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(70,165,19) 100%);
@@ -2282,7 +2294,7 @@
             background-image: -webkit-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(70,165,19) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(70,165,19) 100%);
         }
-        
+
         .btn-default-css3Down.btn-green {
             background-image: linear-gradient(bottom, rgb(73,165,20) 0%, rgb(2,141,0) 100%);
             background-image: -o-linear-gradient(bottom, rgb(73,165,20) 0%, rgb(2,141,0) 100%);
@@ -2290,26 +2302,26 @@
             background-image: -webkit-linear-gradient(bottom, rgb(73,165,20) 0%, rgb(2,141,0) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(73,165,20) 0%, rgb(2,141,0) 100%);
         }
-        
+
         .btn-default-css3Disabled.btn-green {
             background-image: linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
             background-image: -o-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
             background-image: -moz-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
             background-image: -webkit-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
-            
+
             text-shadow   : #3da110 0px 1px 0px;
             color: #037a01;
         }
-        
+
         .btn-default-css3.btn-green .caption {
             border-top: 1px solid #88c464;
         }
-        
+
         .btn-default-css3.btn-default-css3Over.btn-green .caption {
             border-top: 1px solid #57b357;
         }
-        
+
         .btn-default-css3.btn-default-css3Focus.btn-green .caption {
             border-top: 1px solid #88c464;
         }
@@ -2327,7 +2339,7 @@
             background-image: -moz-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
             background-image: -webkit-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
-            
+
             text-shadow   : #b60000 0px 1px 0px;
         }
 
@@ -2338,7 +2350,7 @@
             background-image: -webkit-linear-gradient(bottom, rgb(197,51,51) 0%, rgb(213,51,51) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(197,51,51) 0%, rgb(213,51,51) 100%);
         }
-        
+
         .btn-default-css3Focus.btn-red {
             background-image: linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
             background-image: -o-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
@@ -2346,7 +2358,7 @@
             background-image: -webkit-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
         }
-        
+
         .btn-default-css3Down.btn-red {
             background-image: linear-gradient(bottom, rgb(203,0,0) 0%, rgb(182,0,0) 100%);
             background-image: -o-linear-gradient(bottom, rgb(203,0,0) 0%, rgb(182,0,0) 100%);
@@ -2354,26 +2366,26 @@
             background-image: -webkit-linear-gradient(bottom, rgb(203,0,0) 0%, rgb(182,0,0) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(203,0,0) 0%, rgb(182,0,0) 100%);
         }
-        
+
         .btn-default-css3Disabled.btn-red {
             background-image: linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
             background-image: -o-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
             background-image: -moz-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
             background-image: -webkit-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
-            
+
             text-shadow   : #db0000 0px 1px 0px;
             color: #9c0000;
         }
-        
+
         .btn-default-css3.btn-red .caption {
             border-top: 1px solid #e47979;
         }
-        
+
         .btn-default-css3.btn-default-css3Over.btn-red .caption {
             border-top: 1px solid #dd5757;
         }
-        
+
         .btn-default-css3.btn-default-css3Focus.btn-red .caption {
             border-top: 1px solid #dd5757;
         }
@@ -2408,11 +2420,11 @@
             position: relative;
             cursor: default;
         }
-        
+
         .btn-default-simpleOver {
             color: #bfbfbf;
         }
-        
+
         .win-deploy-target .btn-default-simple {
             font-size          : 11px;
         }
@@ -2522,11 +2534,11 @@
             height     : 17px;
             background : url("images/checkbox_black.png") no-repeat 0 0;
         }
-        
+
         .cbblack.cbcontainerOver .checkbox{
             background-position : 0 -85px;
         }
-        
+
         .cbblack.cbcontainerDown .checkbox{
             background-position : 0 -17px;
         }
@@ -2534,11 +2546,11 @@
         .cbblack.cbcontainerChecked .checkbox {
             background-position : 0 -34px;
         }
-        
+
         .cbblack.cbcontainerOver.cbcontainerChecked .checkbox{
             background-position : 0 -102px;
         }
-        
+
         .cbblack.cbcontainerChecked.cbcontainerDown .checkbox {
             background-position : 0 -51px;
         }
@@ -2582,11 +2594,11 @@
             height     : 17px;
             background : url("images/checkbox_grey.png") no-repeat 0 0;
         }
-        
+
         .cbgrey.cbcontainerOver .checkbox{
             background-position : 0 -85px;
         }
-        
+
         .cbgrey.cbcontainerDown .checkbox{
             background-position : 0 -17px;
         }
@@ -2594,11 +2606,11 @@
         .cbgrey.cbcontainerChecked .checkbox {
             background-position : 0 -34px;
         }
-        
+
         .cbgrey.cbcontainerOver.cbcontainerChecked .checkbox{
             background-position : 0 -102px;
         }
-        
+
         .cbgrey.cbcontainerChecked.cbcontainerDown .checkbox {
             background-position : 0 -51px;
         }
@@ -2880,7 +2892,7 @@
             color: #333;
             border-bottom: 1px solid #BFBFBF;
         }
-        
+
         .docktab .datagrid .headings div {
             background-image: linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 49%, rgb(244,246,248) 50%, rgb(250,252,254) 100%);
             background-image: -o-linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 49%, rgb(244,246,248) 50%, rgb(250,252,254) 100%);
@@ -2889,7 +2901,7 @@
             background-image: -ms-linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 49%, rgb(244,246,248) 50%, rgb(250,252,254) 100%);
             border-bottom: 1px solid #e1e5ea;
         }
-        
+
         .datagrid .headings div u{
             padding : 2px 4px 1px 3px;
             display : block;
@@ -2899,13 +2911,13 @@
             border-right : 1px solid #bfbfbf;
             border-top : 1px solid white;
         }
-        
+
         .docktab .datagrid .headings div u{
             border-top: 1px solid #fafcfe;
             border-left : 1px solid #fafbfc;
             border-right : 1px solid #c8c8c8;
         }
-        
+
         .datagrid .headings div.hover,
         .datagrid .headings div.down,
         .datagrid .headings div.drag{
@@ -2948,11 +2960,11 @@
             border-style:solid;
             border-width:1px 0 0;
         }
-        
+
         .with-noise .records {
             background: #E1E1E1 url(images/dg_noise.png) repeat 0 0;
         }
-        
+
         .noscrollbar .records{
             overflow-y : hidden;
         }
@@ -2974,11 +2986,11 @@
             border-right:1px solid #D6D6D6;
             border-left : 1px solid white;
         }
-        
+
         .with-noise .records .row span u {
             border-left: 1px solid #D1D1D1;
         }
-        
+
         .with-noise .records .row span {
             background-image: url(images/dg_noise.png);
             background-repeat: repeat;
@@ -3026,16 +3038,16 @@
         .datagrid .records .testhead{
             height : 22px;
         }
-        
+
         .datagrid .records .testhead span {
             border-top : 4px solid #c3c3c3;
             /*background : #ddd;*/
         }
-        
+
         .datagrid .records .current_execution span {
             background : #d4e0c6;
         }
-        
+
         .datagrid .records .selected, .datagrid .records .selected span{
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #CECECE),color-stop(1, #DEDEDE));
             background: -moz-linear-gradient(center bottom,#CECECE 0%,#DEDEDE 100%);
@@ -3053,7 +3065,7 @@
         .datagridFocus .records .selected span u{
             border-left : 1px solid #8bc0ed;
         }
-        
+
         .datagrid .move_pointer{
             height : 100px;
             width : 2px;
@@ -3335,7 +3347,7 @@
             display:block;
             margin:0;
         }
-        
+
         .noscrollbar .records{
             overflow-y : hidden;
         }
@@ -3864,7 +3876,7 @@
         <a:checkcell caption="u" check="b"><span class="checkcell"><b> </b><u>-</u></span></a:checkcell>
 
         <a:treecell caption="u" check="b" openclose="strong"><span class="treecell"><strong> </strong><b> </b><u>-</u></span></a:treecell>
-        
+
         <a:treecheckcell caption="u" check="b" openclose="strong"><span class="treecell"><strong> </strong><b> </b><u>-</u></span></a:treecheckcell>
 
         <a:container container=".">
@@ -3913,7 +3925,7 @@
         .table .divider, .vbox .divider, .hbox .divider{
             margin : 0;
         }
-        
+
         .modal-divider {
             border-color : #b0b2b4 #E6E6E6 #E6E6E6 #b0b2b4;
         }
@@ -3960,12 +3972,12 @@
             border-top    : 1px dotted #000000;
             border-bottom : 1px dotted #39393b;
         }
-        
+
         .divider-debugpanel .inner_container {
             border-bottom : 1px dotted #000000;
             border-top    : 1px dotted #39393b;
         }
-        
+
         .divider-debugpanel:hover {
             position      : relative;
             overflow      : hidden;
@@ -3975,7 +3987,7 @@
             border-top    : 1px dotted #737373;
             border-bottom : 1px dotted #040404;
         }
-        
+
         .divider-debugpanel:hover .inner_container {
             border-bottom : 1px dotted #737373;
             border-top    : 1px dotted #040404;
@@ -4011,7 +4023,7 @@
         .expandedpanel .c9-divider.runcommandsdivider {
             display: none;
         }
-        
+
         .expandedpanel .c9-divider,
         .dockbar .c9-divider {
             border-left:1px solid #1d1e1f;
@@ -4033,7 +4045,7 @@
             border-top:1px solid #000000;
             border-bottom:1px solid #404040;
         }
-        
+
         .c9-divider-hor span{
             color : #606060;
             text-shadow: rgba(0, 0, 0, 1) 0px 1px 0px;
@@ -4045,7 +4057,7 @@
             padding : 0 3px 0 3px;
             display :none;
         }
-        
+
         .c9-divider-horCaption span{
             display : block;
         }
@@ -4415,7 +4427,7 @@
     <a:alias>fieldset</a:alias>
     <a:style><![CDATA[
         .frame{
-            
+
             border: 1px solid #bbbbbb;
             color: #333;
             font-family: Tahoma, Arial;
@@ -4531,7 +4543,7 @@
             min-height : 37px;
             padding : 3px 0 0 45px;
         }
-        
+
         .modal-label {
             text-shadow: #f0f0f0 0px 1px 0px;
             padding: 0px 2px 2px;
@@ -4566,7 +4578,7 @@
 
             cursor: default;
         }
-        
+
         .runconfig.lineselect {
             border-color: #ffffff;
             border-width: 1px 0 0;
@@ -4580,17 +4592,17 @@
             background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
             color : white;
         }
-        
+
         .runconfig.lineselect>.selected{
             background-image: linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
             background-image: -o-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
             background-image: -moz-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
             background-image: -webkit-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
-            
+
             border-top: 1px solid #3783c4;
             border-bottom: 1px solid #383838;
-            
+
             color : white;
         }
         .lineselect .empty, .lineselect .offline, .lineselect .loading{
@@ -4708,7 +4720,7 @@
         .list.emptyLeft .empty {
             text-align: left;
         }
-        
+
         .shortlist{
             border : 0;
             overflow-y : auto;
@@ -4873,12 +4885,12 @@
             background            : -webkit-gradient(linear,left bottom,left top,color-stop(0, #202020),color-stop(1, #2f2f2f));
             background            : -moz-linear-gradient(center bottom,#202020 0%, #2f2f2f 100%);
             padding               : 5px 4px 4px;
-            
-            
+
+
             /*margin-left : -42px;*/
             margin-top : -20px;
             border : 1px solid #000;
-            
+
             -webkit-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
             -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
             box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
@@ -4892,7 +4904,7 @@
             width: 17px;
             height: 21px;
         }
-        
+
         .dockwindowblack .noise_top {
             background : url(images/glossy-header.png) 0 0;
             height: 13px;
@@ -4904,7 +4916,7 @@
             -webkit-border-radius : 8px 8px 0px 0px;
             border-radius         : 8px 8px 0px 0px;
         }
-        
+
         .dockwindowblack .noise_bg {
             background: url(images/noise_pattern_transparent.png) 0 0;
             bottom: 0;
@@ -4914,7 +4926,7 @@
             right: 0;
             top: 0;
         }
-        
+
         .dockwindowblack .page {
             overflow: hidden;
         }
@@ -4938,13 +4950,13 @@
             margin-left : -42px;
             margin-top : 6px;
         }
-        
+
         .dockwin_runbtns .dockwin_runbtns-bg {
             border-top : 1px solid #606166;
             -moz-border-radius    : 5px;
             -webkit-border-radius : 5px;
             border-radius         : 5px;
-            
+
             background-image: linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
             background-image: -o-linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
             background-image: -moz-linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
@@ -4958,18 +4970,18 @@
                 color-stop(0, rgb(50,51,54)),
                 color-stop(1, rgb(68,69,72))
             );
-            
+
             -webkit-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
             -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
             box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
-            
+
             bottom: -2px;
             position: absolute;
             right: -39px;
             top: 1px;
             width: 184px;
         }
-        
+
         .dockwin_runbtns .dockwin_runbtns-bg .dockwin_runbtns-icon {
             background: url(images/play-button-active.png) no-repeat 0 0;
             height: 19px;
@@ -5614,35 +5626,35 @@
             overflow : hidden;
             z-index  : 10000;
             padding  : 33px 0 0 0;
-            
+
             -moz-border-radius    : 6px 6px 6px 6px;
             -webkit-border-radius : 6px 6px 6px 6px;
             border-radius         : 6px 6px 6px 6px;
-            
+
             -webkit-box-shadow: 0 2px 10px 1px #000000;
             -moz-box-shadow: 0 2px 10px 1px #000000;
-            box-shadow: 0 2px 10px 1px #000000; 
+            box-shadow: 0 2px 10px 1px #000000;
         }
-        
+
         .win-deploy-target.bk-window {
             overflow: visible;
         }
-        
+
         .bk-window.relative {
             padding-top: 0;
         }
-        
+
         .bk-window .bk-header {
             position : relative;
             overflow : hidden;
             height   : 33px;
             top      : -33px;
         }
-        
+
         .bk-window.relative .bk-header {
             top: 0;
         }
-        
+
         .bk-window .bk-header .hcontent {
             background    : url(images/bk-win-header.png)  repeat-x 0 0;
             position      : relative;
@@ -5655,31 +5667,31 @@
             font-weight   : bold;
             color         : #ffffff;
             cursor        : default;
-            
+
             -moz-border-radius    : 6px 6px 0 0;
             -webkit-border-radius : 6px 6px 0 0;
             border-radius         : 6px 6px 0 0;
         }
-        
+
         .bk-window .bk-header .hcontent .buttons {
             position: absolute;
             right: 7px;
             top: 9px;
         }
-        
+
         .bk-window .bk-header .hcontent .buttons .close {
             background: url(images/bk-close-btn.png)  no-repeat 0 0;
             width: 13px;
             height: 15px;
         }
-        
+
         .bk-window .bk-header .hcontent .buttons .close.hover {
             background-position: 0 -19px;
         }
         .bk-window .bk-header .hcontent .buttons .close.down {
             background-position: 0 -39px;
         }
-        
+
         .bk-window .bk-container {
             position:absolute;
             overflow:visible;
@@ -5694,7 +5706,7 @@
             top: 0;
             position: relative;
         }
-        
+
         .bg-bk-content {
             background:url(images/modalbg.png) repeat 0 0;
             position: absolute;
@@ -5704,11 +5716,11 @@
             left: 0;
             z-index: 0;
         }
-        
+
         .bk-window.nofooter .bg-bk-content {
             bottom: 0;
         }
-        
+
         .bk-window .bk-win-footer {
             background:url(images/bk-win-footer.png) repeat-x 0 0;
             bottom: 0;
@@ -5716,22 +5728,22 @@
             right: 0;
             height: 46px;
             position: absolute;
-            
+
             -moz-border-radius    : 0 0 6px 6px;
             -webkit-border-radius : 0 0 6px 6px;
             border-radius         : 0 0 6px 6px;
             z-index: 0;
         }
-        
+
         .bk-window.nofooter .bk-win-footer {
             display: none;
         }
-        
+
         .bk-window-cover {
             background:url(images/bg-overlay.png) repeat 0 0;
             opacity: 1;
         }
-        
+
         .bk-window-cover .header {
             background: url(images/cover-heaeder.png) repeat-x 0 0;
             height: 12px;
@@ -5769,7 +5781,7 @@
                     </div>
                 </div>
                 <div class="bg-bk-content"></div>
-                <div class="bk-container"> 
+                <div class="bk-container">
                     <div class="bk-win-footer"></div>
                 </div>
             </div>
@@ -5805,7 +5817,7 @@
                     </div>
                 </div>
                 <div class="bg-bk-content"></div>
-                <div class="bk-container"> 
+                <div class="bk-container">
                     <div class="bk-win-footer"></div>
                 </div>
             </div>
@@ -6015,11 +6027,11 @@
         .rb_greyFocus span {
 
         }
-        
+
         .rb_greyOver .radio{
             background-position: 0 -119px;
         }
-        
+
         .rb_greyDown .radio{
             background-position: 0 -17px;
         }
@@ -6027,23 +6039,23 @@
         .rb_greySelected .radio{
             background-position: 0 -34px;
         }
-        
+
         .rb_greyOver.rb_greySelected .radio{
             background-position: 0 -102px;
         }
-        
+
         .rb_greyChecked.rb_greyDown .radio{
             background-position: 0 -51px;
         }
-        
+
         .rb_greyDisabled .radio{
             background-position: 0 -68px;
         }
-        
+
         .rb_greyDisabled.rb_greySelected .radio{
             background-position: 0 -85px;
         }
-        
+
         .rb_greyDisabled span{
             color: #bebebe;
         }
@@ -6078,7 +6090,7 @@
             width      : 16px;
             height     : 17px;
             position   : absolute;
-            background : url("images/radio-grey.png") no-repeat 0 0px;
+            background : url("images/radio-black.png") no-repeat 0 0px;
             overflow: hidden;
             left: 2px;
             top: 2px;
@@ -6101,11 +6113,11 @@
 
         .rb_blackFocus span {
         }
-        
+
         .rb_blackOver .radio{
             background-position: 0 -119px;
         }
-        
+
         .rb_blackDown .radio{
             background-position: 0 -17px;
         }
@@ -6113,23 +6125,23 @@
         .rb_blackSelected .radio{
             background-position: 0 -34px;
         }
-        
+
         .rb_blackOver.rb_greySelected .radio{
             background-position: 0 -102px;
         }
-        
+
         .rb_blackChecked.rb_greyDown .radio{
             background-position: 0 -51px;
         }
-        
+
         .rb_blackDisabled .radio{
             background-position: 0 -68px;
         }
-        
+
         .rb_blackDisabled.rb_greySelected .radio{
             background-position: 0 -85px;
         }
-        
+
         .rb_blackDisabled span{
             color: #bebebe;
         }
@@ -6862,7 +6874,7 @@
             padding : 4px 3px 0 7px;
             margin  : 0;
         }
-        
+
         .c9-dropdown-btnIcon.c9-dropdown-btnOver .c9-label,
         .c9-dropdown-btnIcon.c9-dropdown-btnDown.main .c9-label {
             padding : 4px 3px 0 26px;
@@ -6953,16 +6965,16 @@
             border-bottom: 1px solid #393A3B;
             border-top: 1px solid black;
         }
-        
+
         .dockcol .splitter.horizontal div{
             height : 4px;
         }
-        
+
         .splitter-editor-right {
             background: url(images/editor_header.png) repeat-x 0 0;
             border-right: 1px solid #1E1E1E;
         }
-        
+
         .splitter-editor-right.panelsplitter {
             border-left: 1px solid #1E1E1E;
             border-right: 1px solid #38393B;
@@ -7003,7 +7015,7 @@
         .darksplitterRealtime {
             background-image : url(images/spacer.gif);
         }
-        
+
         .darksplitter span {
             position: absolute;
             width: 11px;
@@ -7017,12 +7029,12 @@
             display  : -moz-box;
             display  : -webkit-box;
             display  : -ms-box;
-            
+
             border-top: 0px;
             border-right: 1px solid #fff;
             border-bottom: 0px;
             border-left: 1px solid #eaeaea;
-            
+
             vertical-align: middle;
             width: 3px;
         }
@@ -7034,13 +7046,13 @@
         .darksplitter.horizontal {
             position: relative;
             margin : -2px 0 0 0;
-            
+
             border: 0;
             /*border-top: 1px solid #3d3d3d;
             border-right: 0px;
             border-bottom: 1px solid #3d3d3d;
             border-left: 0px;*/
-            
+
             height: 6px;
             background: url(images/splitter_dark_bg.png) repeat-x 0 0;
         }
@@ -7343,11 +7355,11 @@
         margin-top:-1px;
         text-align: center;
     }
-    
+
     .tab_console .btncontainer .btntab.btnclose {
         padding      : 4px 15px 2px 15px;
     }
-    
+
     .tab_console .btncontainer .btntab .tab_console_icon {
         height:16px;
         left:1px;
@@ -7392,11 +7404,11 @@
         padding     : 2px 20px 2px 20px;
         text-shadow : rgba(0, 0, 0, 1) 0px 1px 0px;
     }
-    
+
     .tab_console .btncontainer div.curbtn.btnclose {
         padding     : 2px 15px 2px 15px;
     }
-    
+
     .tab_console .scale .btntab .tab_console_middle {
         display : block;
         overflow : hidden;
@@ -7431,7 +7443,7 @@
     .tab_console .btncontainer .curbtn.btnclose strong {
         background-position : 0 0;
         top: 4px;
-        right: 6px; 
+        right: 6px;
     }
 
     .tab_console .btncontainer .curbtn.btnclose strong:hover {
@@ -7571,39 +7583,39 @@
         background-repeat: no-repeat;
         background-position: 0 0;
     }
-    
+
     .editor_tab .btnsesssioncontainer .sessiontab_saving {
         position: absolute;
         right: 0;
         top: 7px;
         z-index: 10;
     }
-    
+
     .editor_tab .btnsesssioncontainer .loading_active .sessiontab_saving,
     .editor_tab .btnsesssioncontainer .saving_active .sessiontab_saving {
         height: 15px;
         width: 15px;
         background-image: url(images/tab-save-spinner-active.gif);
     }
-    
+
     .editor_tab .btnsesssioncontainer .loading .sessiontab_saving,
     .editor_tab .btnsesssioncontainer .saving .sessiontab_saving {
         height: 13px;
         width: 13px;
         background-image: url(images/tab-save-spinner-inactive.gif);
     }
-    
+
     .editor_tab .btnsesssioncontainer .over .sessiontab_saving {
         display: none;
     }
 
     /*.editor_tab .btnsesssioncontainer .saving_active .sessiontab_icon {
-        background-image: url(images/save-indicator-active-tab.gif);  
+        background-image: url(images/save-indicator-active-tab.gif);
     }
     .editor_tab .btnsesssioncontainer .saving .sessiontab_icon {
         background-image: url(images/save-indicator-inactive-tab.gif);
     }*/
-    
+
     /*.editor_tab .btnsesssioncontainer .loading_active .sessiontab_icon {
 
         background-image: url(images/load-indicator-active-tab.gif);
@@ -7760,11 +7772,11 @@
         text-shadow : rgba(255, 255, 255, .71) 1px 1px 1px;
         font-size: 18px;
     }
-    
+
     .infraeditor.editor_tab .editor_bg .editor_bg_content {
         margin-top: 0;
     }
-    
+
     .editor_tab .editor_bg .editor_bg_content .editor_bg_message2 {
         background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(237,237,237)),color-stop(1, rgb(255,255,255)));
         background: -moz-linear-gradient(center bottom,rgb(237,237,237) 0%,rgb(255,255,255) 100%);
@@ -7801,11 +7813,11 @@
         text-align: center;
         display: none;
     }
-    
+
     .infraeditor.editor_tab .editor_bg .editor_bg_message-top {
         display: block;
     }
-    
+
     .editor_tab .editor_bg .editor_bg_message-top span {
         color: #a1a1a1;
         font-size: 12px;
@@ -7817,7 +7829,7 @@
         width: 430px;
         margin-top: 20px;
     }
-    
+
     .editor_tab .session_page {
         display : none;
         position : absolute;
@@ -8207,17 +8219,17 @@
             position:relative;
             overflow: visible;
         }
-        
+
         .expandedpanel .dockbar {
             /*border-bottom: 1px solid #000000;
             box-shadow: 0 1px 0 #505053;*/
             border-bottom: 1px solid #38393b;
         }
-        
+
         .dockcol .dockbar {
-            
+
         }
-        
+
         .dockbar .btncontainer{
             display: none;
         }
@@ -8227,7 +8239,7 @@
         }
 
         .dockcol .dockbar .page {
-            
+
         }
 
         .dockbar .page.curpage{
@@ -8235,7 +8247,7 @@
         }
     ]]></a:style>
     <a:style condition="apf.isWebkit"><![CDATA[
-        
+
     ]]></a:style>
     <a:presentation>
         <a:main pages="." buttons="div[1]">
@@ -8266,21 +8278,21 @@
             margin : 0 auto;
             overflow: hidden;
             position:relative;
-            
+
             -webkit-border-radius: 4px;
             -moz-border-radius: 4px;
             border-radius: 4px;
-            
+
             /*-webkit-border-bottom-left-radius: 4px;
             -webkit-border-bottom-right-radius: 4px;
             -moz-border-radius-bottomleft: 4px;
             -moz-border-radius-bottomright: 4px;
             border-bottom-left-radius: 4px;
             border-bottom-right-radius: 4px;*/
-            
+
             /*border-bottom: 1px solid white;*/
         }
-        
+
         .dockcol .docktab,
         .dragging.docktab {
             -webkit-border-radius: 0;
@@ -8290,7 +8302,7 @@
             -moz-box-shadow: 0 2px 10px 1px #6d6d6d;
             box-shadow: 0 2px 10px 1px #6d6d6d;*/
         }
-        
+
         .docktab .btncontainer{
             padding : 0;
             z-index : 100;
@@ -8307,12 +8319,12 @@
             padding-left: 3px;
             padding-right: 5px;
         }
-        
+
         .dragging.docktab .btncontainer {
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #202020),color-stop(1, #2f2f2f));
             background: -moz-linear-gradient(center bottom,#202020 0%, #2f2f2f 100%);
         }
-        
+
         .docktab .btncontainer>div {
             display: block;
             display : inline-block;
@@ -8330,17 +8342,17 @@
             text-align    : center;
             border-right  : 1px solid #464646;
             border-bottom : 1px solid #464646;
-            
+
             -moz-box-shadow: 0 1px 0 rgba(100, 100, 100, 0.26) inset;
             -webkit-box-shadow: 0 1px 0 rgba(100, 100, 100, 0.26) inset;
-            
+
             background: url(images/black-tab_btn_bg.png) 0 0;
-            
+
             /*background : -moz-linear-gradient(top, #d6d6d6, #c7c7c7 );
             background : -webkit-gradient(linear, 0% 0%, 0% 100%, from(#d6d6d6), to(#c7c7c7));
             -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
             -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;*/
-            
+
             /*-webkit-border-top-left-radius: 4px;
             -webkit-border-top-right-radius: 4px;
             -moz-border-radius-topleft: 4px;
@@ -8348,7 +8360,7 @@
             border-top-left-radius: 4px;
             border-top-right-radius: 4px;*/
         }
-        
+
         .docktab .btncontainer .btntab.firstbtn {
             -webkit-border-top-left-radius : 4px;
             -moz-border-radius-topleft     : 4px;
@@ -8359,14 +8371,14 @@
             -moz-border-radius-topright     : 4px;
             border-top-right-radius: 4px;
         }
-        
+
         .expandedpanel .docktab .btncontainer .btntab {
             padding-top: 2px;
             -webkit-border-radius: 0;
             -moz-border-radius: 0;
             border-radius: 0;
         }
-        
+
         .dragging.docktab .btncontainer .btntab {
             -webkit-border-radius: 0;
             -moz-border-radius: 0;
@@ -8405,7 +8417,7 @@
         .docktab .btncontainer div.over {
             /*background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
             background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);*/
-            
+
             background: url(images/black-tab_btn_bg.png) 0 -22px;
             cursor: default;
         }
@@ -8422,7 +8434,7 @@
             border-right : 1px solid #8c8c8c;
             border-bottom: 1px solid #FAFCFE;
         }
-        
+
         .docktab .btncontainer .btntab.curbtn .tab_title {
             color: #373d43;
             text-shadow : rgba(255,255,255,0.7) 0px 1px 0px;
@@ -8450,11 +8462,11 @@
             background-repeat   : no-repeat;
             background-position : 0 -14px;
         }
-        
+
         .docktab .btncontainer .btnclose:hover strong {
             display: block;
         }
-        
+
         .docktab .btncontainer .btnclose strong:hover {
             background-position : -14px -14px;
         }
@@ -8467,7 +8479,7 @@
             background-position : 0 0;
             top: 4px;
         }
-        
+
         .docktab .btncontainer .curbtn.btnclose strong:hover {
             background-position : -14px 0;
         }
@@ -8475,15 +8487,15 @@
         .docktab .btncontainer .curbtn.btnclose strong:active {
             background-position : -28px 0;
         }
-        
+
         .expandedpanel .docktab .btncontainer .btnclose strong {
             top: 4px;
         }
-        
+
         .expandedpanel .docktab .btncontainer .curbtn.btnclose strong {
             top: 3px;
         }
-        
+
         .dockcol .docktab .noise_bg {
             background: url(images/noise_pattern_transparent.png) 0 0;
             bottom: 0;
@@ -8498,7 +8510,7 @@
         .dockcol .docktab .noise_bg {
             display: block;
         }
-        
+
         .docktab .page {
             display : none;
             position : absolute;
@@ -8518,16 +8530,16 @@
         .docktab .page > div {
             border-radius: 0 0 4px 4px;
         }
-        
+
         .docktab .page .ace_gutter {
             border-radius: 0 0 0 4px;
         }
-        
+
         .expandedpanel .docktab .page > div,
         .expandedpanel .docktab .page .ace_gutter {
             border-radius: 0;
         }
-        
+
         .dockcol .docktab .page {
             top: 23px;
             right: 4px;
@@ -8543,11 +8555,11 @@
         .docktab .btncontainer .btntab {
             padding : 2px 2px 3px 2px;
         }
-        
+
         .docktab .btncontainer .btnclose strong {
             top: 4px;
         }
-        
+
         .docktab .btncontainer .curbtn.btnclose strong {
             top: 3px;
         }
@@ -8601,6 +8613,14 @@
         }
 
         .textFocus{
+        }
+
+        .text.modal_text {
+            font-family: Arial;
+            font-size: 12px;
+            background-color: transparent;
+            color: #202020;
+            line-height: 18px;
         }
 
         .console_text {
@@ -8780,7 +8800,7 @@
             font-family : Tahoma, Arial;
             outline : none;
         }
-        
+
         .tbsimple.tbtree{
             margin : -1px 0 0 -2px;
         }
@@ -8870,7 +8890,7 @@
             background-image: -moz-linear-gradient(bottom, rgb(92,92,92) 0%, rgb(105,105,105) 75%, rgb(92,92,92) 100%);
             background-image: -webkit-linear-gradient(bottom, rgb(92,92,92) 0%, rgb(105,105,105) 75%, rgb(92,92,92) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(92,92,92) 0%, rgb(105,105,105) 75%, rgb(92,92,92) 100%);
-            
+
             padding          : 1px;
             color: #ffffff;
             margin: 0;
@@ -8890,21 +8910,21 @@
             background-color : transparent;
             width: 100%;
         }
-        
+
         .btextboxFocus {
             background-color: #96a28f;
             background-image: none;
         }
-        
+
         .btextboxInitial INPUT {
             color : #777777;
         }
-        
+
         .btextboxError {
             background-color: #9f3636;
             background-image: none;
         }
-        
+
         .btextboxDisabled INPUT {
             color : #fff;
         }
@@ -9052,12 +9072,55 @@
     </a:presentation>
 </a:textbox>
 
+<a:textarea name="textarea_ide">
+    <a:style><![CDATA[
+        .textarea_ide {
+            font-family: Arial;
+            font-size: 10px;
+            color: #202020;
+            padding: 5px;
+            word-wrap: break-word;
+            line-height: 14px;
+            margin-left: 70px;
+            border-top: 1px solid #737373;
+            border-bottom: 1px solid #999999;
+            border-left: 1px solid #999999;
+            border-right: 1px solid #999999;
+            overflow    : auto;
+            outline     : none;
+            background-color: #ffffff;
+        }
+
+        .textarea_ideFocus {
+
+        }
+
+        .textarea_ideDisabled{
+
+        }
+
+        .textarea_ideInitial{
+
+        }
+
+        .textarea_ideError{
+
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input=".">
+            <textarea type='text' class="textarea_ide" />
+        </a:main>
+    </a:presentation>
+</a:textarea>
+
 <a:textbox name="textbox-modal">
     <a:style><![CDATA[
         .textbox-modal {
             position : relative;
             height   : 29px;
-            
+
             border-bottom: 1px solid #E3E3E3;
             border-radius: 0 0px 6px 6px;
         }
@@ -9069,28 +9132,28 @@
             font-size: 11px;
             text-overflow: ellipsis;
             color: #333333;
-            
+
             height           : 22px;
             padding          : 2px 5px;
             background-color: #ffffff;
-            
+
             -webkit-box-shadow: inset 0px 1px 1px 0px #cccccc;
             -moz-box-shadow: inset 0px 1px 1px 0px #cccccc;
-            box-shadow: inset 0px 1px 1px 0px #cccccc; 
-            
+            box-shadow: inset 0px 1px 1px 0px #cccccc;
+
             border-width: 1px;
             border-style: solid;
             border-color: #8d8d8e #9e9e9c #a5a5a5;
-            
+
             -webkit-border-radius: 6px;
             -moz-border-radius: 6px;
             border-radius: 6px;
         }
-        
+
         .textbox-modal.required-tb .sbtb_middle {
             background-color: #e9f3d0;
         }
-        
+
         .textbox-modal .sbtb_middle INPUT {
             border           : 0;
             height           : 21px;
@@ -9106,23 +9169,23 @@
             color : #bdbdbd;
             text-shadow : #ffffff 0px 1px 0px;
         }
-        
+
         .textbox-modalInitial.required-tb .sbtb_middle INPUT {
             color : #9fa987;
             text-shadow : #fbfff1 0px 1px 0px;
         }
-        
+
         .textbox-modalDisabled.required-tb .sbtb_middle INPUT {
             color : #CCC;
         }
-        
+
         .textbox-modalDisabled .sbtb_middle{
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(235,235,235)),color-stop(0.4, rgb(255,255,255)));
             background: -moz-linear-gradient(center bottom,rgb(235,235,235) 0%,rgb(255,255,255) 40%);
             cursor : default;
             box-shadow: none;
         }
-        
+
         .textbox-modalDisabled .sbtb_middle INPUT {
             color : #CCC;
         }
@@ -9148,7 +9211,7 @@
         .docktab .toolbar {
             border-bottom: 1px solid #e1e5ea;
         }
-    
+
         .toolbar .menubar {
             background: url(images/menubar_row.png) repeat-x top left;
             height: 22px;
@@ -9161,15 +9224,15 @@
         .toolbar .subbar {
             /*background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(222,224,227)),color-stop(1, rgb(239,241,244)));
             background: -moz-linear-gradient(center bottom,rgb(222,224,227) 0%,rgb(239,241,244) 100%);*/
-            
+
             background-image: linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 50%, rgb(243,246,248) 51%, rgb(249,251,254) 100%);
             background-image: -o-linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 50%, rgb(243,246,248) 51%, rgb(249,251,254) 100%);
             background-image: -moz-linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 50%, rgb(243,246,248) 51%, rgb(249,251,254) 100%);
             background-image: -webkit-linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 50%, rgb(243,246,248) 51%, rgb(249,251,254) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 50%, rgb(243,246,248) 51%, rgb(249,251,254) 100%);
-            
-            
-            
+
+
+
             font-family: Arial;
             font-size: 12px;
             /*border-bottom: 1px solid #b2b2b2;*/
@@ -9180,18 +9243,18 @@
             overflow : hidden;
             height : 27px;
         }
-        
+
         .docktab .toolbar .subbar {
             border-bottom: 1px solid #e8ecef;
         }
-        
+
         .toolbar.modal-toolbar .subbar {
             background-image: linear-gradient(bottom, rgb(217,217,217) 0%, rgb(237,237,237) 100%);
             background-image: -o-linear-gradient(bottom, rgb(217,217,217) 0%, rgb(237,237,237) 100%);
             background-image: -moz-linear-gradient(bottom, rgb(217,217,217) 0%, rgb(237,237,237) 100%);
             background-image: -webkit-linear-gradient(bottom, rgb(217,217,217) 0%, rgb(237,237,237) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(217,217,217) 0%, rgb(237,237,237) 100%);
-            
+
             border-top: 1px solid #f6f6f6;
             border-bottom: 1px solid #bfbfbf;
         }
@@ -9374,7 +9437,7 @@
             color: white;
             margin-right: 5px;
         }
-        
+
         .filemgr-dragtree .item .caption,
         .filemgr-tree .item-fix.dragAppend .label-content {
             -webkit-border-radius: 10px;
@@ -9385,7 +9448,7 @@
             background : -webkit-gradient(linear, left top, left bottom, from(#2890e5), color-stop(1, #1f82d2));
             background : -moz-linear-gradient(center bottom, #1f82d2 0%, #2890e5 100%) repeat scroll 0 0 transparent;
         }
-        
+
         .filemgr-tree .item-fix.dragDenied {
 
         }
@@ -9833,7 +9896,7 @@
             .img{
                 overflow: auto;
             }
-            
+
             .img div {
                 width : 100%;
                 height : 100%;
@@ -9849,16 +9912,16 @@
                 -webkit-box-align: center;
                 box-align: center;
             }
-            
+
             .img IMG {
                 display: block;
             }
-            
+
             .img span{
                 display:block;
             }
         ]]></a:style>
-            
+
         <a:presentation>
             <a:main image="div/span/img/@src">
                 <div class="img">

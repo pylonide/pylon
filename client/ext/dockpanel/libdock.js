@@ -271,7 +271,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
      * Destroy full state
      */
     this.clearState = function(){
-        state && state.bars.each(function(b) {
+        state && state.bars && state.bars.each(function(b) {
             var bar = b.cache;
             if (!bar) return;
             

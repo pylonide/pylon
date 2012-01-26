@@ -107,6 +107,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/quicksearch/quicksearch",
     "ext/gotoline/gotoline",
     "ext/html/html",
+    "ext/help/help",
     //"ext/ftp/ftp",
     "ext/code/code",
     "ext/imgview/imgview",
@@ -121,6 +122,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/tabbehaviors/tabbehaviors",
     "ext/tabsessions/tabsessions",
     "ext/keybindings/keybindings",
+    "ext/keybindings_default/keybindings_default",
     "ext/watcher/watcher",
     "ext/dragdrop/dragdrop",
     "ext/beautify/beautify",
@@ -132,8 +134,11 @@ Ide.DEFAULT_PLUGINS = [
     "ext/codecomplete/codecomplete",
     //"ext/autosave/autosave",
     "ext/vim/vim",
-    "ext/jslanguage/jslanguage"
-    //"ext/autotest/autotest"
+    "ext/guidedtour/guidedtour",
+    "ext/quickstart/quickstart",
+    "ext/jslanguage/jslanguage",
+    "ext/autotest/autotest",
+    "ext/tabsessions/tabsessions"
     //"ext/acebugs/acebugs"
 ];
 

@@ -95,7 +95,7 @@ return keys.onLoad({
             "previoustab": "Command-Shift-Tab|Option-Shift-Tab"
         },
         "tabsessions" : {
-            "savetabsession": "Command-Alt-S",
+            "savetabsession": "Command-Alt-S"
         },
         "splitview" : {
             "mergetableft": "Command-Option-[",

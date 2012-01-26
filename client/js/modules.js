@@ -4044,6 +4044,7 @@ module.exports = ext.register("ext/debugger/debugger", {
         "css" : "text/css",
         "xml" : "application/xml",
         "php" : "application/x-httpd-php",
+        "phtml" : "application/x-httpd-php",
         "html" : "text/html",
         "xhtml" : "application/xhtml+xml"
     },

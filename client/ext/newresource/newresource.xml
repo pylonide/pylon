@@ -1,7 +1,7 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:window 
+    <a:window
       id        = "winNewFileTemplate"
-      title     = "Choose a file template"
+      title     = "New from Template"
       icon      = ""
       center    = "true"
       render    = "runtime"
@@ -13,23 +13,24 @@
       buttons   = "close"
       draggable = "true">
         <a:vbox padding="10" anchors="0 0 0 0">
+
             <a:list id="lstFileTemplates"
-              model     = "mdlFileTemplates" 
-              flex      = "1" 
+              model     = "mdlFileTemplates"
+              flex      = "1"
               margin    = "10 10 10 10"
-              caption   = "[@caption]" 
-              icon      = "[@icon]" 
+              caption   = "[@caption]"
+              icon      = "[@icon]"
               class     = "noscrollbar"
               scrollbar = "sbShared 12 12 55"
               each      = "item"
-              eachvalue = "[@value]" 
+              eachvalue = "[@value]"
               style     = "overflow:hidden"
               onafterchoose = "
                 btnFileTemplateSave.dispatchEvent('click');
               " />
             <a:hbox pack="end" padding="7" edge="10">
-                <a:button id="btnFileTemplateSave" width="80" default="2" 
-                  class="btn-green" skin="btn-default-css3" caption="Create" 
+                <a:button id="btnFileTemplateSave" width="80" default="2"
+                  class="btn-green" skin="btn-default-css3" caption="Create"
                   onclick="
                     require('ext/newresource/newresource').newfile(
                         '.' + lstFileTemplates.value,
@@ -42,7 +43,7 @@
             </a:hbox>
         </a:vbox>
     </a:window>
-    
+
     <a:model id="mdlFileTemplates">
         <templates>
             <item value="txt" icon="page_white_text.png" caption="Text file"><![CDATA[]]></item>
@@ -54,7 +55,7 @@ var assert = require("assert");
 //var module = require("./module");
 
 module.exports = {
-    
+
     "test untitled 1" : function() {
         //assert.equal(!true, false);
     }
@@ -67,12 +68,12 @@ if (typeof module !== "undefined" && module === require.main) {
             <item value="stest" icon="page_white_code.png" caption="Selenium Test"><![CDATA[{}]]></item>
             <item value="coffee" icon="page_white_code.png" caption="CoffeeScript file"><![CDATA[]]></item>
             <item value="html" icon="html.png" caption="HTML file"><![CDATA[<!DOCTYPE html>
-<html  xmlns="http://www.w3.org/1999/xhtml">
-    <head profile="http://www.w3.org/2005/10/profile">
+<html>
+    <head>
         <title> </title>
     </head>
     <body>
-        
+
     </body>
 </html>
 ]]></item>
@@ -88,6 +89,38 @@ if (typeof module !== "undefined" && module === require.main) {
             <item value="mli" icon="page_white_code.png" caption="OCaml file"><![CDATA[]]></item>
             <item value="clj" icon="page_white_code.png" caption="Clojure file"><![CDATA[]]></item>
             <item value="md" icon="page_white_text.png" caption="Markdown"><![CDATA[]]></item>
+            <item value="js" icon="page_white_code.png" caption="Express file"><![CDATA[// *******************************************************
+// expressjs template
+//
+// assumes: npm install express
+// defaults to jade engine, install others as needed
+//
+// assumes these subfolders:
+//   public/
+//   public/javascripts/
+//   public/stylesheets/
+//   views/
+//
+var express = require('express');
+var app = module.exports = express.createServer();
+var viewEngine = 'jade'; // modify for your view engine
+// Configuration
+app.configure(function(){
+  app.set('views', __dirname + '/views');
+  app.set('view engine', viewEngine);
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(app.router);
+  app.use(express.static(__dirname + '/public'));
+});
+app.configure('development', function(){
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+});
+app.configure('production', function(){
+  app.use(express.errorHandler());
+});
+// *******************************************************
+]]></item>
         </templates>
     </a:model>
 </a:application>

@@ -6,6 +6,7 @@
       buttons  = "close" 
       skin     = "fm-window"
       flex     = "1" 
+      optimize = "true"
       modal    = "false">
         <a:bar skin="c9-header-bar" top="-30" right="28" height="30">
             <a:hbox id="barTestTools" height="23">
@@ -88,8 +89,10 @@
                     <!--a:divider span="2" skin="c9-divider-hor" /-->
                     <a:model id="mdlRunnerSelector">
                         <data>
-                            <element caption="Node.js 0.4" value="js" />
-                            <!--element caption="Python" value="py" /-->
+                            <element caption="Default" value="default" />
+                            <element caption="Auto" value="auto" />
+                            <element caption="Node.js 0.6.x" value="0.6.x" />
+                            <element caption="Node.js 0.4.x" value="0.4.x" />
                         </data>
                     </a:model>
                     <a:label width="100" skin="black_label">Runtime</a:label>
@@ -99,7 +102,7 @@
                         flex      = "1"
                         disabled  = "{!lstRunCfg.selected}"
                         value     = "[{lstRunCfg.selected}::@value]"
-                        default   = "js"
+                        default   = "default"
                         each      = "[element]"
                         caption   = "[@caption]"
                         eachvalue = "[@value]" />
