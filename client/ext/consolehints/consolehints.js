@@ -16,6 +16,7 @@ var css = require("text!ext/consolehints/consolehints.css");
 var Console = require("ext/console/console");
 
 var winHints, selectedHint, animControl, hintsTimer;
+var lastWord = /(\w+)$/;
 var filterCommands = function(commands, word) {
     return commands.filter(function(cmd) {
         return cmd !== word && cmd.search("^" + word) !== -1;
@@ -95,6 +96,8 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 Console.allCommands[cmd] = cmds[cmd];
         };
 
+        // Asynchronously retrieve commands that other plugins may have
+        // registered, hence the (relatively) long timeout.
         setTimeout(function() {
             ide.send(JSON.stringify({
                 command: "commandhints",
@@ -104,6 +107,9 @@ module.exports = ext.register("ext/consolehints/consolehints", {
 
         var self = this;
         txtConsoleInput.addEventListener("keyup", function(e) {
+            // Ignore up/down cursor arrows here
+            if (e.keyCode === 38 || e.keyCode === 40) return;
+
             var getCmdMatches = function(obj, value) {
                 var filtered = filterCommands(Object.keys(obj), value);
                 if (filtered.length)
@@ -130,6 +136,25 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             }
             else {
                 self.hide();
+            }
+        });
+
+        // Below we are overwriting the Console default key events in function of
+        // whether the hints are being displayed or not.
+        var redefinedKeys = {
+            38: "selectUp",
+            40: "selectDown",
+            27: "hide",
+            13: "onEnterKey"
+        };
+
+        Object.keys(redefinedKeys).forEach(function(keyCode) {
+            var previousKey = Console.keyEvents[keyCode];
+            Console.keyEvents[keyCode] = function(target) {
+                if (winHints.style.display === "none")
+                    previousKey && previousKey(target);
+                else
+                    self[redefinedKeys[keyCode]].call(self);
             }
         });
     },
@@ -174,23 +199,35 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             node = node.parentNode;
 
         var parts = node.getAttribute("data-hint").split(",");
-        var base = parts[0];
         var cmdName = parts[1];
-        var insertPoint = parseInt(parts[2], 10);
         var isCmd = (parts[3] === "true");
 
         if (isCmd)
             cmdName += " "; // for commands we suffix with whitespace
 
-        var input = txtConsoleInput.$ext.getElementsByTagName("input")[0];
-        var val = txtConsoleInput.getValue();
-        var before = val.substr(0, (insertPoint + 1 - base.length)) + cmdName;
+        var cliValue = txtConsoleInput.getValue();
+        var index = cliValue.search(/(\w+)$/);
+        cliValue = cliValue.replace(lastWord, cmdName);
 
-        txtConsoleInput.setValue(before + val.substr(insertPoint + 1));
+        txtConsoleInput.setValue(cliValue);
         txtConsoleInput.focus();
-        // set cursor position at the end of the text just inserted:
-        input.selectionStart = input.selectionEnd = before.length;
+
+        var input = txtConsoleInput.querySelector("input");
+        if (input)
+            input.selectionStart = input.selectionEnd = index + cmdName.length;
+
         this.hide();
+    },
+
+    onEnterKey: function() {
+        var hintNodes = winHints.childNodes;
+
+        for (var i = 0, l = hintNodes.length; i < l; ++i) {
+            if (hintNodes[i].className === "selected") {
+                this.click({ target: hintNodes[i] });
+                break;
+            }
+        }
     },
 
     selectUp: function() {

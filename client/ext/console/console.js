@@ -17,11 +17,7 @@ var markup = require("text!ext/console/console.xml");
 
 // Some constants used throughout the plugin
 var RE_band = /^\s*!/;
-var KEY_TAB = 9;
-var KEY_CR = 13;
-var KEY_UP = 38;
-var KEY_ESC = 27;
-var KEY_DOWN = 40;
+var KEY_TAB = 9, KEY_CR = 13, KEY_UP = 38, KEY_ESC = 27, KEY_DOWN = 40;
 var actionCodes = [KEY_TAB, KEY_CR, KEY_UP, KEY_ESC, KEY_DOWN];
 
 // Executes a command (presumably coming from the CLI).
