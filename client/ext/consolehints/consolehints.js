@@ -3,6 +3,7 @@
  *
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ * @contributor Sergi Mansilla <sergi AT c9 DOT io>
  */
 
 define(function(require, exports, module) {
@@ -16,7 +17,7 @@ var css = require("text!ext/consolehints/consolehints.css");
 var Console = require("ext/console/console");
 
 var winHints, selectedHint, animControl, hintsTimer;
-var lastWord = /(\w+)$/;
+var RE_lastWord = /(\w+)$/;
 var filterCommands = function(commands, word) {
     return commands.filter(function(cmd) {
         return cmd !== word && cmd.search("^" + word) !== -1;
@@ -37,6 +38,7 @@ var mouseHandler = function(e) {
 };
 
 var fontSize;
+// This function is not accurate, but we don't care since we don't need precision.
 var getFontSize = function(txtNode) {
     if (fontSize)
         return fontSize;
@@ -44,7 +46,7 @@ var getFontSize = function(txtNode) {
     var font = apf.getStyle(txtNode, "font");
     var el = document.createElement("span");
     el.style.font = font;
-    el.innerHTML = "W";
+    el.innerHTML = "m";
     document.body.appendChild(el);
     fontSize = {
         width: el.offsetWidth,
@@ -66,7 +68,6 @@ var hintLink = function(data) {
         spanHotkey = '<span class="hints_hotkey">' + notation + '</span>';
     }
     var cmdText = '<span>' + data.cmd.hint + '</span>' + spanHotkey;
-
     return '<a href="#" data-hint="'+ dataAttr + '">' + data.cmdName + cmdText + '</a>';
 };
 
@@ -80,7 +81,6 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     deps   : [Console],
     hidden : true,
     nodes  : [],
-
     autoOpen : true,
     excludeParent : true,
 
@@ -113,7 +113,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             var getCmdMatches = function(obj, value) {
                 var filtered = filterCommands(Object.keys(obj), value);
                 if (filtered.length)
-                    self.show(e.currentTarget, "", filtered, 0);
+                    self.show(e.currentTarget, "", filtered, e.currentTarget.getValue().length - 1);
                 else
                     self.hide();
             };
@@ -134,9 +134,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                     getCmdMatches(Console.allCommands, cliValue);
                 }
             }
-            else {
-                self.hide();
-            }
+            else { self.hide(); }
         });
 
         // Below we are overwriting the Console default key events in function of
@@ -158,12 +156,9 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             }
         });
     },
-
     show: function(textbox, base, hints, cursorPos) {
         if (animControl && animControl.stop)
             animControl.stop();
-
-        winHints.innerHTML = "";
 
         var content = hints.map(function(hint) {
             var cmdName = base ? base + hint.substr(1) : hint;
@@ -184,15 +179,13 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         }
 
         var size = getFontSize(textbox.$ext);
-        winHints.style.left = Math.max(cursorPos * (size.width - 1.6) + 5, 5) + "px";
+        winHints.style.left = parseInt(cursorPos * size.width, 10) + "px";
     },
-
     hide: function() {
         winHints.style.display = "none";
         winHints.visible = false;
         selectedHint = null;
     },
-
     click: function(e) {
         var node = e.target;
         if (node.parentNode != winHints && node != winHints)
@@ -206,8 +199,11 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             cmdName += " "; // for commands we suffix with whitespace
 
         var cliValue = txtConsoleInput.getValue();
-        var index = cliValue.search(/(\w+)$/);
-        cliValue = cliValue.replace(lastWord, cmdName);
+        var index = cliValue.search(RE_lastWord);
+        if (index !== -1) // If the command is partially there or not
+            cliValue = cliValue.replace(RE_lastWord, cmdName);
+        else
+            cliValue += cmdName;
 
         txtConsoleInput.setValue(cliValue);
         txtConsoleInput.focus();
@@ -218,7 +214,6 @@ module.exports = ext.register("ext/consolehints/consolehints", {
 
         this.hide();
     },
-
     onEnterKey: function() {
         var hintNodes = winHints.childNodes;
 
@@ -229,27 +224,20 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             }
         }
     },
-
     selectUp: function() {
-        var hintNodes = winHints.childNodes;
         var newHint = selectedHint - 1;
-
         if (newHint < 0)
-            newHint = hintNodes.length - 1;
+            newHint = winHints.childNodes.length - 1;
 
         this.select(newHint);
     },
-
     selectDown: function() {
-        var hintNodes = winHints.childNodes;
-
         var newHint = selectedHint + 1;
-        if (newHint > hintNodes.length)
+        if (newHint > winHints.childNodes.length)
             newHint = 0;
 
-        return this.select(newHint);
+        this.select(newHint);
     },
-
     select: function(hint) {
         clearTimeout(hintsTimer);
         var hintNodes = winHints.childNodes;
@@ -268,11 +256,9 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         if (hint)
             hint.className = "selected";
     },
-
     visible: function() {
         return winHints && !!winHints.visible;
     },
-
     selected: function() {
         return selectedHint && winHints.childNodes
             ? winHints.childNodes[selectedHint]
