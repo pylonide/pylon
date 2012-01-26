@@ -4,7 +4,7 @@ IF EXIST support\ace\LICENSE goto skip
 
 echo --- Initializing submodules for first launch, this can take a few minutes ---
 
-cmd /c git submodule update --init --recursive
+start cmd /c git submodule update --init --recursive
 
 IF %ERRORLEVEL% NEQ 0 goto exit
 
