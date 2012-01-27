@@ -621,16 +621,17 @@
         <!--p:define name="__AMLAUDIO" value="1" /-->
         <!--p:define name="__AMLFLOWCHART" value="1" /-->
         <!-- include all available Offline mode objects -->
-        <!--p:define name="__WITH_OFFLINE" value="1" />
-        <p:define name="__WITH_OFFLINE_TRANSACTIONS" value="1" />
-        <p:define name="__WITH_OFFLINE_MODELS" value="1" />
-        <p:define name="__WITH_OFFLINE_MODEL" value="1" />
-        <p:define name="__WITH_OFFLINE_STATE" value="1" />
-        <p:define name="__WITH_OFFLINE_QUEUE" value="1" />
-        <p:define name="__WITH_OFFLINE_DETECTOR" value="1" />
-        <p:define name="__WITH_OFFLINE_APPLICATION" value="1" />
-        <p:define name="__WITH_OFFLINE_GEARS" value="1" />
-        <p:define name="__WITH_OFFLINE_STATE_REALTIME" value="1" /-->
+        <p:define name="__WITH_OFFLINE" value="0" />
+        <!--p:define name="__WITH_OFFLINE" value="0" />
+        <p:define name="__WITH_OFFLINE_TRANSACTIONS" value="0" />
+        <p:define name="__WITH_OFFLINE_MODELS" value="0" />
+        <p:define name="__WITH_OFFLINE_MODEL" value="0" />
+        <p:define name="__WITH_OFFLINE_STATE" value="0" />
+        <p:define name="__WITH_OFFLINE_QUEUE" value="0" />
+        <p:define name="__WITH_OFFLINE_DETECTOR" value="0" />
+        <p:define name="__WITH_OFFLINE_APPLICATION" value="0" />
+        <p:define name="__WITH_OFFLINE_GEARS" value="0" />
+        <p:define name="__WITH_OFFLINE_STATE_REALTIME" value="0" /-->
         <!--p:define name="__WITH_SILVERLIGHT" value="1" /-->
         <!--p:define name="__WITH_TASKBAR_FLASHING" value="1" /-->
 
