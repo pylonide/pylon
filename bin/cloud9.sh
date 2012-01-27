@@ -1,13 +1,13 @@
 #!/bin/sh -e
 # lets check if we have the submodules initialized
 cd `dirname $0`
-./install_npm_dependencies.sh
 cd ..
 if [ ! -e support/ace/LICENSE ]; then
     echo "--------------------------- Please wait, initializing submodules for first launch ------------------------"
     git submodule update --init --recursive
     echo "--------------------------- Submodules installed ------------------------"
 fi
+./bin/install_npm_dependencies.sh
 
 case `uname -a` in
 Linux*x86_64*)  echo "Linux 64 bit"   
