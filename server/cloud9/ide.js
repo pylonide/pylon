@@ -38,6 +38,7 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
         mountDir: options.mountDir || this.workspaceDir,
         socketIoUrl: options.socketIoUrl || "socket.io",
         davPrefix: options.davPrefix || (baseUrl + "/workspace"),
+        davPlugins: options.davPlugins || exports.DEFAULT_DAVPLUGINS,
         baseUrl: baseUrl,
         debug: options.debug === true,
         staticUrl: staticUrl,
@@ -59,6 +60,7 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
     var davOptions = {
         node: this.options.mountDir,
         mount: this.options.davPrefix,
+        plugins: this.options.davPlugins,
         server: this.httpServer,
         standalone: false
     };
@@ -141,6 +143,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/tabsessions/tabsessions"
     //"ext/acebugs/acebugs"
 ];
+
+exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
 
 (function () {
 
