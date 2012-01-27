@@ -178,7 +178,7 @@ apf.htmlCleaner = (function() {
             }
 
             // Fix some issues
-            html = (apf.xmlentities ? apf.xmlentities(html) : html)
+            html = (apf.escapeXML ? apf.escapeXML(html) : html)
                        .replace(prepareRE[6], "<a$1$2></a>");
 
             return html;
@@ -219,7 +219,7 @@ apf.htmlCleaner = (function() {
             else if (html == "<br>")
                 html = "";
 
-            html = (!noEntities && apf.xmlentities ? apf.xmlentities(html) : html)
+            html = (!noEntities && apf.escapeXML ? apf.escapeXML(html) : html)
                        .replace(exportRE[0], "</li>")
                        .replace(exportRE[1], "")
                        .replace(exportRE[2], "")

@@ -29,7 +29,7 @@ apf.AmlText = function(isPrototype){
     this.nodeName = "#text";
     
     this.serialize = function(){
-        return apf.xmlentities(this.nodeValue).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        return apf.escapeXML(this.nodeValue);
     };
     
     //#ifdef __ENABLE_LIVETEXT

@@ -38,7 +38,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
     this.target = null;
     
     this.serialize = function(){
-        return "<?" + this.target + "\n" + apf.xmlentities(this.nodeValue) + "\n?>";
+        return "<?" + this.target + "\n" + apf.escapeXML(this.nodeValue) + "\n?>";
     };
     
     this.reload = function(){
