@@ -1,14 +1,6 @@
 .console_date {
     display:inline
 }
-.color_31 { color: "red"; }
-.color_32 { color: "green"; }
-.color_33 { color: "yellow"; }
-.color_34 { color: "blue"; }
-.color_35 { color: "magenta"; }
-.color_36 { color: "cyan"; }
-.bold { font-weight: bold; }
-.uline { text-decoration: underline;}
 .cli_divider {
     display: block;
     border-top: 1px solid #444;
