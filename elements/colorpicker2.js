@@ -229,6 +229,7 @@ apf.colorpicker = function(struct, tagName){
             childNodes: [
                 new apf.vbox({
                     padding: 3,
+                    edge: "0 10 0 0",
                     childNodes: [
                         new apf.hbox({
                             childNodes: [
