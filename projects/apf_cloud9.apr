@@ -442,7 +442,7 @@
         <p:define name="__AMLCODEEDITOR" value="1" />
         <p:define name="__AMLDEBUGGER" value="1" />
         <p:define name="__AMLNOTIFIER" value="1" />
-
+        <p:define name="__WITH_COOKIE" value="1" />
 
         <!-- NOT USED DEFINES -->
 
@@ -455,7 +455,6 @@
 
         <p:define name="__WITH_AUTH" value="1" />
         <p:define name="__WITH_OFFSET" value="1" />
-        <p:define name="__WITH_COOKIE" value="1" />
 
         <p:define name="__TP_PERSIST" value="1" />
         <p:define name="__TP_SOCKET" value="1" />
