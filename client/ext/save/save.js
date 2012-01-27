@@ -40,6 +40,9 @@ module.exports = ext.register("ext/save/save", {
 
         tabEditors.addEventListener("close", this.$close = function(e) {
             var at = e.page.$at;
+            if(!at)
+                return;
+            
             if (!at.undo_ptr)
                 at.undo_ptr = at.$undostack[0];
             var node = e.page.$doc.getNode();

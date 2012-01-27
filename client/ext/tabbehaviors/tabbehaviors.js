@@ -231,7 +231,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         for (var i = 0, l = pages.length; i < l; i++) {
             page = pages[i];
 
-            if (ignore && page == ignore)
+            if ((ignore && page == ignore) || !page.$doc)
                 continue;
 
             if (page.$doc.getNode().getAttribute("changed") == "1") {

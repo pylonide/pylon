@@ -61,7 +61,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     init : function(amlNode){   
         this.overlay = document.createElement("div");
         this.overlay.setAttribute("style",
-            "z-index:9016;display:none;position:fixed;left: 0px;top: 0px;width:100%;height:100%;opacity:0.3;background:#000;");
+            "z-index:9016;display:none;position:fixed;left: 0px;top: 0px;width:100%;height:100%;opacity:0.5;background:#000;");
         document.body.appendChild(this.overlay);
     },
     
