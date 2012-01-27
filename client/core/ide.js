@@ -58,7 +58,7 @@ define(function(require, exports, module) {
             && (loc.indexOf("cloud9ide.com") > -1 || loc.indexOf("c9.io") > -1))
         {
             window.onerror = function(m, u, l) {
-                if (self.console)
+                if (window.console)
                     console.log("An error occurred, the Cloud9 system admin has been notified.");
                 apf.ajax("/debug", {
                     method      : "POST",
@@ -93,10 +93,10 @@ define(function(require, exports, module) {
         }
         else {
 //                window.onerror = function(m, u, l) {
-//                    self.console && console.error("An error occurred", m, u, l);
+//                    window.console && console.error("An error occurred", m, u, l);
 //                }
             apf.addEventListener("error", function(e){
-                self.console && console.error("An APF error occurred", e);
+                window.console && console.error("An APF error occurred", e);
             });
         }
     };
@@ -171,7 +171,7 @@ define(function(require, exports, module) {
                 message = JSON.parse(message);
             }
             catch(e) {
-                console.error(e, message)
+                window.console && console.error("Error parsing socket message", e, message);
                 return;
             }
 
@@ -185,7 +185,6 @@ define(function(require, exports, module) {
 
         // for unknown reasons io is sometimes undefined
         try {
-            console.log(options)
             ide.socket = io.connect(null, options);
         }
         catch (e) {
@@ -240,12 +239,6 @@ define(function(require, exports, module) {
             // pass a lambda to enable socket.io ACK
             _oldsend.call(ide.socket, msg, function() {});
         };
-        var _oldJsonSend = ide.socket.json.send;
-        ide.socket.json.send = function(msg) {
-            // pass a lambda to enable socket.io ACK
-            _oldJsonSend.call(ide.socket.json, msg, function() {});
-        };
-
         this.inited = true;
     });
 
