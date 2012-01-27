@@ -8,6 +8,7 @@
 
 define(function(require, exports, module) {
 
+var ide = require("core/ide");
 var ext = require("core/ext");
 var markup = require("text!ext/imgview/imgview.xml");
 var editors = require("ext/editors/editors");
@@ -47,10 +48,21 @@ module.exports = ext.register("ext/imgview/imgview", {
     hook : function() {},
 
     init : function(amlPage) {
-        amlPage.appendChild(imgEditor);
-        imgEditor.show();
+        var editor = imgEditor;
+        
+        ide.addEventListener("beforefilesave", function(e) {
+            var path = e.node && e.node.getAttribute("path");
+            if (!path)
+                return;
+            // don't save images for now.
+            if (editor.value == path)
+                return false;
+        });
+        
+        amlPage.appendChild(editor);
+        editor.show();
 
-        this.imgEditor = this.amlEditor = imgEditor;
+        this.imgEditor = this.amlEditor = editor;
         //this.nodes.push();
     },
 
