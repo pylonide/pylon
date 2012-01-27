@@ -1,6 +1,10 @@
 /**
  * Console for the Cloud9 IDE
  *
+ * The console plugin takes care of rendering a CLI at the bottom of the IDE and
+ * of sending user input and parsing and outputting stdout in the
+ * console.
+ *
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  * @contributor Sergi Mansilla <sergi AT c9 DOT io>
@@ -32,7 +36,6 @@ var execAction = function(cmd, data) {
     if (ext.execCommand(cmd, data) !== false) {
         var commandEvt = "consolecommand." + cmd;
         var consoleEvt = "consolecommand";
-
         var commandEvResult = ide.dispatchEvent(commandEvt, { data: data });
         var consoleEvResult = ide.dispatchEvent(consoleEvt, { data: data });
 
@@ -51,6 +54,8 @@ var execAction = function(cmd, data) {
     return true;
 };
 
+// This object is a simple FIFO queue that keeps track of the list of commands
+// introduced by the user at any given time and allows the console to go back and forward.
 var cmdHistory = {
     _history: [],
     _index: 0,
@@ -126,12 +131,9 @@ module.exports = ext.register("ext/console/console", {
         __default__: function(message) {
             var res = message.body;
             if (res) {
-                if (res.out)
-                    Logger.logNodeStream(res.out);
-                if (res.err)
-                    Logger.logNodeStream(res.err);
-                if (res.code) // End of command
-                    Logger.log("", "divider");
+                res.out && Logger.logNodeStream(res.out, null, null, ide);
+                res.err && Logger.logNodeStream(res.err, null, null, ide);
+                res.code && Logger.log("", "divider"); // End of command
             }
         }
     },
@@ -143,7 +145,8 @@ module.exports = ext.register("ext/console/console", {
         Logger.logNodeStream(
             words
                 .map(function(w) { return w + tabs + this.allCommands[w].hint; })
-                .join("\n")
+                .join("\n"),
+                null, null, ide
         );
     },
 
@@ -220,7 +223,6 @@ module.exports = ext.register("ext/console/console", {
                 argv[0] = argv[0].replace(RE_band, "");
                 line = line.replace(RE_band, "");
             }
-
             showConsole = execAction(cmd, {
                 command: cmd,
                 argv: argv,
@@ -241,13 +243,13 @@ module.exports = ext.register("ext/console/console", {
     onMessage: function(e) {
         var message = e.message;
         if (message.type === "node-data")
-            return Logger.logNodeStream(message.data, message.stream, true);
+            return Logger.logNodeStream(message.data, message.stream, true, ide);
 
-        if (message.type == "node-exit")
+        if (message.type === "node-exit")
             return Logger.log("", "divider", true);
 
         if (message.type.match(/-data$/))
-            return Logger.logNodeStream(message.data, message.stream, false);
+            return Logger.logNodeStream(message.data, message.stream, false, ide);
 
         if (message.type.match(/-exit$/))
             return Logger.log("", "divider", false);
