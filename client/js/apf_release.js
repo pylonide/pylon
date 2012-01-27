@@ -414,8 +414,9 @@ this.$keys={};var _self=this,trace=0;function register(hotkey,handler,remove){va
 for(;i<l;++i){if(keyMods[keys[i]]){hashId=hashId|keyMods[keys[i]];}else{key=keys[i]||"-";
 }}if(!key){return;}if(!_self.$keys[hashId]){_self.$keys[hashId]={};}if(remove){if(handler==_self.$keys[hashId][key]){_self.$keys[hashId][key]=null;
 }}else{_self.$keys[hashId][key]=handler;}}apf.registerHotkey=this.register=function(hotkey,handler){var parts=hotkey.split("|"),i=0,l=parts.length;
-for(;i<l;++i){register(parts[i],handler);}};this.$exec=function(eInfo){var hashId=0|(eInfo.ctrlKey?1:0)|(eInfo.altKey?2:0)|(eInfo.shiftKey?4:0)|(eInfo.metaKey?8:0),code=eInfo.keyCode;
-var key=_self.keyNames[code]||(code&&code>46&&code!=91?String.fromCharCode(code):null);
+for(;i<l;++i){register(parts[i],handler);}};this.$exec=function(eInfo){var handler;
+var hashId=0|(eInfo.ctrlKey?1:0)|(eInfo.altKey?2:0)|(eInfo.shiftKey?4:0)|(eInfo.metaKey?8:0);
+var code=eInfo.keyCode;var key=_self.keyNames[code]||(code&&code>46&&code!=91?String.fromCharCode(code):null);
 if(!hashId&&(!key||!key.match(/^F\d{1,2}$/))||!key){return;}if(_self.$keys[hashId]&&(handler=_self.$keys[hashId][key.toLowerCase()])){handler(eInfo.htmlEvent);
 eInfo.returnValue=false;apf.queue.empty();}return eInfo.returnValue;};apf.removeHotkey=this.remove=this.unregister=function(hotkey,handler){var parts=hotkey.split("|"),i=0,l=parts.length;
 for(;i<l;++i){register(parts[i],handler,true);}};function toMacNotation(hotkey,bHtml){var t,keys=hotkey.splitSafe("\\-"),i=0,l=keys.length;
@@ -6747,8 +6748,9 @@ delete _self.$btnControl[aml.$uniqueId];if(div&&div.parentNode){div.parentNode.i
 }_self.$lastPosition=_self.$lastLeft=undefined;}});}});apf.addListener(document,"mouseup",mUp=function(e){if(!e){e=event;
 }var aml=_self.$lastPosition!==null?apf.findHost(_self.$lastPosition||div.nextSibling):null;
 if(started&&aml!=_self.nextSibling){apf.tween.single(_self.$button,{steps:20,interval:10,from:_self.$button.offsetLeft,to:_self.$lastLeft||div.offsetLeft,type:"left",control:_self.$btnControl[_self.$uniqueId]={},anim:apf.tween.easeInOutCubic,onstop:function(){},onfinish:function(){oHtml.style.position=oHtml.style.zIndex=oHtml.style.top=oHtml.style.left="";
-_self.parentNode.insertBefore(_self,aml);div.parentNode.removeChild(div);delete _self.$btnControl[_self.$uniqueId];
-}});}else{oHtml.style.position=oHtml.style.zIndex=oHtml.style.top=oHtml.style.left="";
+var reorder=_self.nextSibling!=aml;_self.parentNode.insertBefore(_self,aml);div.parentNode.removeChild(div);
+if(reorder){_self.parentNode.dispatchEvent("reorder",{page:_self.localName!="page"?_self.parentNode.$activepage:_self});
+}delete _self.$btnControl[_self.$uniqueId];}});}else{oHtml.style.position=oHtml.style.zIndex=oHtml.style.top=oHtml.style.left="";
 div.parentNode.removeChild(div);}apf.removeListener(document,"mouseup",mUp);apf.removeListener(document,"mousemove",mMove);
 });}}};this.$btnUp=function(oHtml){this.parentNode.$setStyleClass(oHtml,"",["down"],true);
 if(this.disabled){return;}if(this.parentNode.$order&&this.$btnPressed){this.$dragging=false;
