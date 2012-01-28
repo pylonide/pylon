@@ -2,12 +2,17 @@
     <a:style><![CDATA[
         .revision_hl_add {
             position: absolute;
-            background: #0b3;
+            background: rgb(168, 232, 166);
         }
 
         .revision_hl_remove {
             position: absolute;
-            background: #b30;
+            background: rgb(243, 207, 207);
+        }
+        
+        .revision_hl_newlines {
+            position: absolute;
+            background: #ccc;
         }
 
         #slider_tooltip {

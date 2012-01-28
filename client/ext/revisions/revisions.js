@@ -13,6 +13,9 @@
  * Update restore/done button styles to not have white bottom border
  * Refresh (button next to dropdown button?)
  * Highlight the selected item in the dropdown list
+ * Match horizontal scrolling
+ * Convert slider dots to be a list attached to the model
+ *  - Not sure if bubble animations will work though
  * 
  * Lower Prio:
  * 
@@ -39,7 +42,6 @@ var Range = require("ace/range").Range;
 var Anchor = require('ace/anchor').Anchor;
 var editors = require("ext/editors/editors");
 var GitLogParser = require("ext/revisions/gitlogparser");
-var marker = require("ext/language/marker");
 
 var skin = require("text!ext/revisions/skin.xml");
 var markup = require("text!ext/revisions/revisions.xml");
@@ -695,10 +697,9 @@ module.exports = ext.register("ext/revisions/revisions", {
                     else
                         lastLeftLine = ll.pop();
                 }
-                
+
                 // Stayed the same
                 else {
-                    //console.log("this stayed the SAME: ", d[1]);
                     numRightLines += tLines;
                     var llPop = ll.pop();
                     if (tLines == 0) {
@@ -716,8 +717,8 @@ module.exports = ext.register("ext/revisions/revisions", {
             // Added
             else {
                 this.addCodeMarker(currentVersionEditor, "add",
-                    numRightLines, lastRightLine.length, numRightLines+tLines,
-                    ll[ll.length-1].length+lastRightLine.length);
+                    numRightLines, lastRightLine.length, numRightLines + tLines,
+                    ll[tLines].length + lastRightLine.length);
                 numRightLines += tLines;
                 if (tLines == 0)
                     lastRightLine += ll.pop();
@@ -726,24 +727,41 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
 
             var lineDiff = numRightLines - numLeftLines;
+            var lineDiffAbs = Math.abs(lineDiff);
+
             if (lineDiff != 0) {
                 var newlines = "";
-                for (var j = 0; j < Math.abs(lineDiff); j++)
+                for (var j = 0; j < lineDiffAbs; j++)
                     newlines += "\r\n";
 
                 // Add newlines to history
                 if (lineDiff > 0) {
-                    var colEnd = historyDoc.getLine(numLeftLines).length;
-                    historicalVersionEditor.$editor.moveCursorTo((numLeftLines-1), colEnd);
+                    var nll;
+                    
+                    nll = numLeftLines - 1;
+
+                    var colEnd = historyDoc.getLine(nll).length;
+                    historicalVersionEditor.$editor.moveCursorTo(nll, colEnd);
                     historicalVersionEditor.$editor.insert(newlines);
+
+                    // Now insert grayspace
+                    this.addCodeMarker(historicalVersionEditor, "newlines",
+                        numLeftLines, 0, numLeftLines+lineDiff, 0);
+
                     numLeftLines += lineDiff;
                 }
                 // Add newlines to current
                 else {
-                    var colEnd = currentDoc.getLine(numRightLines).length;
-                    currentVersionEditor.$editor.moveCursorTo((numRightLines-1), colEnd);
+                    var nrr = numRightLines;// - 1;
+                    var colEnd = currentDoc.getLine(nrr).length;
+                    currentVersionEditor.$editor.moveCursorTo(nrr, colEnd);
                     currentVersionEditor.$editor.insert(newlines);
-                    numRightLines += Math.abs(lineDiff);
+
+                    // Now insert grayspace
+                    this.addCodeMarker(currentVersionEditor, "newlines",
+                        numRightLines, 0, numRightLines+lineDiff, 0);
+
+                    numRightLines += lineDiffAbs;
                 }
             }
         }
