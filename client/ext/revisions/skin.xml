@@ -1,5 +1,138 @@
 <?xml version='1.0'?>
 <a:skin xmlns:a="http://ajax.org/2005/aml">
+    <a:button name="revisionsbutton">
+        <a:style><![CDATA[
+            .revisions_btn {
+                height             : 27px;
+                overflow           : hidden;
+                cursor             : default;
+                position           : relative;
+                -moz-user-select   : none;
+                -khtml-user-select : none;
+                user-select        : none;
+                line-height        : 17px;
+            }
+
+            .revisions_btn .lbl {
+                height              : 23px;
+                padding             : 4px 8px 0 8px;
+                margin              : 0 4px;
+                white-space         : nowrap;
+                overflow            : hidden;
+                -moz-border-radius  : 3px;
+                border-radius       : 3px;
+                background: #fafafa;
+                background: -moz-linear-gradient(top,  #fafafa 0%, #e6e6e6 100%);
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fafafa), color-stop(100%,#e6e6e6));
+                background: -webkit-linear-gradient(top,  #fafafa 0%,#e6e6e6 100%);
+                background: -o-linear-gradient(top,  #fafafa 0%,#e6e6e6 100%);
+                background: -ms-linear-gradient(top,  #fafafa 0%,#e6e6e6 100%);
+                background: linear-gradient(top,  #fafafa 0%,#e6e6e6 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fafafa', endColorstr='#e6e6e6',GradientType=0 );
+                position            : relative;
+                text-align          : center;
+                color               : #474747;
+                text-shadow         : rgba(255, 255, 255, .71) 0px 1px 0px;
+                font-family         : Arial;
+                font-size           : 14px;
+                font-weight         : bold;
+            }
+            
+            .revisions_btnOver .lbl {
+                background: #fdfdfd;
+                background: -moz-linear-gradient(top,  #fdfdfd 0%, #f6f6f6 100%);
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fdfdfd), color-stop(100%,#f6f6f6));
+                background: -webkit-linear-gradient(top,  #fdfdfd 0%,#f6f6f6 100%);
+                background: -o-linear-gradient(top,  #fdfdfd 0%,#f6f6f6 100%);
+                background: -ms-linear-gradient(top,  #fdfdfd 0%,#f6f6f6 100%);
+                background: linear-gradient(top,  #fdfdfd 0%,#f6f6f6 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fdfdfd', endColorstr='#f6f6f6',GradientType=0 );
+
+            }
+            .revisions_btnDown .lbl {
+                background: #e6e6e6;
+                background: -moz-linear-gradient(top,  #e6e6e6 0%, #f7f7f7 100%);
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#e6e6e6), color-stop(100%,#f7f7f7));
+                background: -webkit-linear-gradient(top,  #e6e6e6 0%,#f7f7f7 100%);
+                background: -o-linear-gradient(top,  #e6e6e6 0%,#f7f7f7 100%);
+                background: -ms-linear-gradient(top,  #e6e6e6 0%,#f7f7f7 100%);
+                background: linear-gradient(top,  #e6e6e6 0%,#f7f7f7 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e6e6e6', endColorstr='#f7f7f7',GradientType=0 );
+            }
+
+            /* Additional styles - RED */
+            .revisions_btn.ui-btn-red .lbl {
+                color            : white;
+                text-shadow      : rgba(209, 2, 0, .71) 0px 1px 0px;
+                background: #fa1511;
+                background: -moz-linear-gradient(top,  #fa1511 0%, #ce000b 100%);
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fa1511), color-stop(100%,#ce000b));
+                background: -webkit-linear-gradient(top,  #fa1511 0%,#ce000b 100%);
+                background: -o-linear-gradient(top,  #fa1511 0%,#ce000b 100%);
+                background: -ms-linear-gradient(top,  #fa1511 0%,#ce000b 100%);
+                background: linear-gradient(top,  #fa1511 0%,#ce000b 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fa1511', endColorstr='#ce000b',GradientType=0 );
+            }
+
+            .revisions_btn.ui-btn-red.revisions_btnOver .lbl {
+                background: #fc5244;
+                background: -moz-linear-gradient(top,  #fc5244 0%, #da4042 100%);
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fc5244), color-stop(100%,#da4042));
+                background: -webkit-linear-gradient(top,  #fc5244 0%,#da4042 100%);
+                background: -o-linear-gradient(top,  #fc5244 0%,#da4042 100%);
+                background: -ms-linear-gradient(top,  #fc5244 0%,#da4042 100%);
+                background: linear-gradient(top,  #fc5244 0%,#da4042 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fc5244', endColorstr='#da4042',GradientType=0 );
+            }
+
+            .revisions_btnDown.ui-btn-red .lbl {
+                background: #cd000b;
+                background: -moz-linear-gradient(top,  #cd000b 0%, #fb1511 100%);
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#cd000b), color-stop(100%,#fb1511));
+                background: -webkit-linear-gradient(top,  #cd000b 0%,#fb1511 100%);
+                background: -o-linear-gradient(top,  #cd000b 0%,#fb1511 100%);
+                background: -ms-linear-gradient(top,  #cd000b 0%,#fb1511 100%);
+                background: linear-gradient(top,  #cd000b 0%,#fb1511 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cd000b', endColorstr='#fb1511',GradientType=0 );
+            }
+
+            .revisions_btnDisabled.ui-btn-red .lbl {
+                color               : #bd0502;
+                text-shadow         : rgba(255, 255, 255, .31) 0px 1px 0px;
+            }
+
+            .revisions_btnDisabled {
+                cursor: default;
+            }
+        ]]></a:style>
+        <a:style condition="apf.isSafari || apf.isChrome"><![CDATA[
+            .revisions_btn .lbl {
+                margin  : 0;
+                height  : 22px;
+                padding : 5px 8px 0 8px;
+            }
+
+            .revisions_btnIcon .lbl {
+                overflow : hidden;
+            }
+        ]]></a:style>
+        <a:style condition="apf.isIE"><![CDATA[
+            .revisions_btn .lbl {
+                line-height : 19px;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main caption="div[1]/text()" label="div[1]/text()" background="." icon="div[1]/span" minwidth="30">
+                <div class="revisions_btn">
+                    <div class="lbl">-
+                        <span/>
+                        <div class="btnArrow"> </div>
+                    </div>
+
+                 </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
     <a:menu name="commitsmenu">
         <a:style><![CDATA[
             .commitmenu {
@@ -152,7 +285,7 @@
             .commitlist > div:hover, .commitlist > div.odd:hover {
                 background-color: #ffc; /*#e7e7e7;*/
             }
-            .commitlist > .selected{
+            .commitlist > .selected, .commitlist > div.selected:hover{
                 background-color: #e0e0e0;
             }
             .commitlistFocus > .selected{
