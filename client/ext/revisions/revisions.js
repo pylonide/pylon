@@ -1,31 +1,36 @@
 /**
- * Version history browser extension for Cloud9 IDE
+ * File history browser for Cloud9 IDE
  * 
  * TODO:
  * 
- * Historical version should show up with the latest committed value instead?
- *  - If so, do an auto diffmatchpatch
- * Implement state-holding for each file, or clear state upon re-enter
- * Re-disable restore if goes to most recent point
+ * Historical version should show up with the latest committed value
+ * Current version should show "uncommited" if changes have been made
  * Implement "Restore" functionality
- * Dialog warning about what Restore does
+ * On restore animate history page to current page
+ * On restore set ceEditor's content
+ * Clear markers on restore
  * When requesting a revision, display a spinner somewhere
- * Update restore/done button styles to not have white bottom border
  * Refresh (button next to dropdown button?)
- * Highlight the selected item in the dropdown list
  * Match horizontal scrolling
- * Convert slider dots to be a list attached to the model
- *  - Not sure if bubble animations will work though
+ * ? On hover of meta-data, pop-out to show commit message
+ * Use dmp's fuzzy matching method to decide on gray-line placement
+ * Get APF-filtered list instead of doing our own filtering
+ * Make the history so it floats in from left if after current revision view
  * 
- * Lower Prio:
+ * Bugs:
  * 
- * Animate history pages when clicking history dot
- * On entering mode, animate IDE editor to right-side currentEditor
- * On exiting mode, animate right-side currentEditor to IDE editor
- * Bug: clicking around clears the syntax highlighting (wtf?)
- * Bug: focus() on search after clear doesn't work. Fix APF
- * Ideal: Hover over history dots has OS X dock magnification effect
- * Ideal: Searching "zooms" in on timeline so earliest and latest results
+ * Load run.js, see log commits run past most recent commit. Hmm...
+ * clicking around clears the syntax highlighting (wtf?)
+ * focus() on search after clear doesn't work. Fix APF
+ * 
+ * Ideal:
+ * 
+ * Higher performance scroll match - how'd Mike do it?
+ * Undo Restore
+ * Dialog warning about what Restore does
+ *  - But only when we have global settings
+ * Hover over history dots has OS X dock magnification effect
+ * Searching "zooms" in on timeline so earliest and latest results
  *  show up on left and right side of timeline
  * 
  * @author Matt Pardee
@@ -38,6 +43,7 @@ define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var ide = require("core/ide");
+var util = require("core/util");
 var Range = require("ace/range").Range;
 var Anchor = require('ace/anchor').Anchor;
 var editors = require("ext/editors/editors");
@@ -61,7 +67,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     nodes : [],
 
-    init : function(amlNode) {
+    init : function() {
         var _self = this;
         vbMain.parentNode.appendChild(new apf.vbox({
             anchors: "0 0 0 0",
@@ -99,10 +105,10 @@ module.exports = ext.register("ext/revisions/revisions", {
                                                     "class" : "versions_search",
                                                     margin: "0 20 0 0",
                                                     onclear : function() {
-                                                        _self.applyFilter("");
+                                                        _self.filterTimeline("");
                                                     },
                                                     onkeyup : function() {
-                                                        _self.applyFilter(this.getValue());
+                                                        _self.filterTimeline(this.getValue());
                                                     },
                                                     onfocus : function() {
                                                         apf.tween.single(this.$ext, {
@@ -189,6 +195,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                         new apf.hbox({
                             height : "45",
                             padding : "4",
+                            margin : "0 0 0 10",
                             align : "center",
                             pack : "center",
                             "class" : "current_label black",
@@ -196,6 +203,8 @@ module.exports = ext.register("ext/revisions/revisions", {
                                 new apf.button({
                                     id : "btnRestore",
                                     caption : "Restore",
+                                    skinset : "skin_revisions",
+                                    skin : "revisionsbutton",
                                     "class" : "ui-btn-red",
                                     disabled : true,
                                     margin : "0 10 0 10",
@@ -206,6 +215,8 @@ module.exports = ext.register("ext/revisions/revisions", {
                                 }),
                                 new apf.button({
                                     caption : "Done",
+                                    skinset : "skin_revisions",
+                                    skin : "revisionsbutton",
                                     "class" : "",
                                     margin : "0 10 0 10",
                                     width : "125",
@@ -219,7 +230,37 @@ module.exports = ext.register("ext/revisions/revisions", {
                 })
             ]
         }));
-        
+
+        this.historicalPlaceholder = new apf.codeeditor({
+            id                : "historicalPlaceholder",
+            visible           : "true",
+            syntax            : "{require('ext/code/code').getSyntax(%[.])}",
+            theme             : "ace/theme/textmate",
+            folding           : "false",
+            overwrite         : "[{require('ext/settings/settings').model}::editors/code/@overwrite]",
+            behaviors         : "[{require('ext/settings/settings').model}::editors/code/@behaviors]",
+            selectstyle       : "[{require('ext/settings/settings').model}::editors/code/@selectstyle]",
+            activeline        : "false",
+            showinvisibles    : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]",
+            showprintmargin   : "false",
+            printmargincolumn : "[{require('ext/settings/settings').model}::editors/code/@printmargincolumn]",
+            softtabs          : "[{require('ext/settings/settings').model}::editors/code/@softtabs]",
+            tabsize           : "[{require('ext/settings/settings').model}::editors/code/@tabsize]",
+            scrollspeed       : "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]",
+
+            fontsize          : "[{require('ext/settings/settings').model}::editors/code/@fontsize]",
+            wrapmode          : "false",
+            wraplimitmin      : "80",
+            wraplimitmax      : "80",
+            gutter            : "[{require('ext/settings/settings').model}::editors/code/@gutter]",
+            highlightselectedword : "false",
+            autohidehorscrollbar  : "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]",
+
+            "debugger"        : "null",
+            readonly          : "true",
+            style : "z-index : 99998; position: absolute; top: -10000px; background: #fff"
+        });
+
         this.historicalVersionEditor = new apf.codeeditor({
             id                : "historicalVersionEditor",
             visible           : "true",
@@ -248,6 +289,42 @@ module.exports = ext.register("ext/revisions/revisions", {
             "debugger"        : "null",
             readonly          : "true",
             style : "z-index : 99999; position: absolute; background: #fff"
+        });
+
+        this.animateEditorClone = new apf.vbox({
+            id : "animateEditorClone",
+            style : "z-index : 99999; position: absolute; background: #fff; overflow: hidden",
+            childNodes: [
+                new apf.codeeditor({
+                    flex : "1",
+                    id                : "currentEditorClone",
+                    visible           : "true",
+                    syntax            : "{require('ext/code/code').getSyntax(%[.])}",
+                    theme             : "[{require('ext/settings/settings').model}::editors/code/@theme]",
+                    folding           : "false",
+                    overwrite         : "[{require('ext/settings/settings').model}::editors/code/@overwrite]",
+                    behaviors         : "[{require('ext/settings/settings').model}::editors/code/@behaviors]",
+                    selectstyle       : "[{require('ext/settings/settings').model}::editors/code/@selectstyle]",
+                    activeline        : "false",
+                    showinvisibles    : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]",
+                    showprintmargin   : "false",
+                    printmargincolumn : "[{require('ext/settings/settings').model}::editors/code/@printmargincolumn]",
+                    softtabs          : "[{require('ext/settings/settings').model}::editors/code/@softtabs]",
+                    tabsize           : "[{require('ext/settings/settings').model}::editors/code/@tabsize]",
+                    scrollspeed       : "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]",
+        
+                    fontsize          : "[{require('ext/settings/settings').model}::editors/code/@fontsize]",
+                    wrapmode          : "false",
+                    wraplimitmin      : "80",
+                    wraplimitmax      : "80",
+                    gutter            : "[{require('ext/settings/settings').model}::editors/code/@gutter]",
+                    highlightselectedword : "false",
+                    autohidehorscrollbar  : "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]",
+        
+                    "debugger"        : "null",
+                    readonly          : "true"
+                })
+            ]
         });
 
         this.currentVersionEditor = new apf.codeeditor({
@@ -282,7 +359,9 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         setTimeout(function() {
             vbMain.parentNode.appendChild(_self.historicalVersionEditor);
+            vbMain.parentNode.appendChild(_self.historicalPlaceholder);
             vbMain.parentNode.appendChild(_self.currentVersionEditor);
+            vbMain.parentNode.appendChild(_self.animateEditorClone);
 
             _self.sliderTooltip = document.createElement("div");
             _self.sliderTooltip.setAttribute("id", "slider_tooltip");
@@ -319,16 +398,18 @@ module.exports = ext.register("ext/revisions/revisions", {
             currentVersionEditor.$editor.getSession().setUseWrapMode(false);
             _self.currentScrollbar = currentVersionEditor.$editor.renderer.scrollBar;
             _self.currentScrollbar.addEventListener("scroll", function(e) {
-                historicalVersionEditor.$editor.renderer.scrollBar.setScrollTop(e.data);
+                if (!_self.loadingRevision)
+                    historicalVersionEditor.$editor.renderer.scrollBar.setScrollTop(e.data);
             });
 
             historicalVersionEditor.$editor.getSession().setUseWrapMode(false);
             _self.historicalScrollbar = historicalVersionEditor.$editor.renderer.scrollBar;
             _self.historicalScrollbar.addEventListener("scroll", function(e) {
-                currentVersionEditor.$editor.renderer.scrollBar.setScrollTop(e.data);
+                if (!_self.loadingRevision)
+                    currentVersionEditor.$editor.renderer.scrollBar.setScrollTop(e.data);
             });
         }, 100);
-        
+
         lstCommits.addEventListener("click", function() {
             _self.loadRevisionFromList();
             menuCommits.hide();
@@ -357,12 +438,21 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         this.nodes.push(
             ide.mnuEdit.appendChild(new apf.item({
-                caption : "View File History",
+                caption : "Compare File History",
                 onclick : function(){
                     _self.enterVersionMode();
                 }
             }))
         );
+
+        ide.addEventListener("editorswitch", function(e) {
+            var fileName = _self.getFilePath(e.previousPage.name);
+            var fileLog = _self.gitLogs[fileName];
+            if (fileLog) {
+                _self.removeTimelinePoints(fileLog.logData);
+                fileLog.logData = [];
+            }
+        });
 
         ext.initExtension(this);
     },
@@ -387,16 +477,17 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     formulateRevisionMetaData : function(data, includeMessage) {
         var timestamp = this.formulateVersionsLabelDate(data.author.timestamp);
-        var output = '<table cellspacing="0" cellpadding="0" border="0"><tr>';
-        output += '<tr><td class="rev_header">Author:</td><td>' + data.author.fullName
-            + " " + apf.htmlentities(data.author.email) + '</td></tr>'
-            + '<tr><td class="rev_header">Date:</td><td>' + timestamp + '</td></tr>'
-            + '<tr><td class="rev_header">Commit:</td><td>' + data.commit.substr(0, 10) + '</td></tr>';
+        var output = ['<table cellspacing="0" cellpadding="0" border="0">',
+            '<tr><td class="rev_header">Author:</td><td>', data.author.fullName,
+            " ", apf.htmlentities(data.author.email), '</td></tr>',
+            '<tr><td class="rev_header">Date:</td><td>', timestamp, '</td></tr>',
+            '<tr><td class="rev_header">Commit:</td><td>', data.commit.substr(0, 10),
+            '</td></tr>'];
         if (includeMessage)
-            output += '<tr><td class="rev_header">Message:</td><td>' +
-                data.message.join("<br />") + '</td></tr>';
-        output += '</table>';
-        return output;
+            output.push('<tr><td class="rev_header">Message:</td><td>',
+                data.message.join("<br />"), '</td></tr>');
+        output.push('</table>');
+        return output.join("");
     },
 
     loadRevisionFromList : function() {
@@ -404,8 +495,14 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     loadRevision : function(num) {
+        this.loadingRevision = true;
+
         var fileData = this.gitLogs[this.getFilePath()];
         var hash = fileData.logData[num].commit;
+
+        var node = lstCommits.queryNode("commit[@internal_counter='" +num + "']");
+        if (node && !lstCommits.isSelected(node))
+            lstCommits.select(node);
 
         if (fileData.logData[fileData.lastLoadedGitLog])
             fileData.logData[fileData.lastLoadedGitLog].dotEl.setAttribute("class", "");
@@ -415,15 +512,33 @@ module.exports = ext.register("ext/revisions/revisions", {
         var output = this.formulateRevisionMetaData(fileData.logData[num], true);
         versions_label.setValue(output);
 
-        this.requestGitShow(hash);
+        var cveSession = currentVersionEditor.$editor.getSession();
+        cveSession.setValue(ceEditor.$editor.getSession().getValue());
+        this.removeMarkers(cveSession);
+
+        var _self = this;
+        var hveLeftMovement = -1 * (historicalVersionEditor.getWidth() + 300);
+
+        var hvePos = apf.getAbsolutePosition(historicalVersionEditor.$ext);
+        historicalPlaceholder.$ext.style.left = hvePos[0] + "px";
+        historicalPlaceholder.$ext.style.top = hvePos[1] + "px";
+        historicalPlaceholder.$ext.style.width = historicalVersionEditor.getWidth() + "px";
+        historicalPlaceholder.$ext.style.height = historicalVersionEditor.getHeight() + "px";
+
+        Firmin.animate(historicalVersionEditor.$ext, {
+            translateX: "15px"
+        }, 0.3, function() {
+            Firmin.animate(historicalVersionEditor.$ext, {
+                translateX: hveLeftMovement + "px"
+            }, 0.6, function() {
+                historicalPlaceholder.$ext.style.zIndex = "99999";
+                _self.requestGitShow(hash);
+            });
+        });
     },
-    
+
     restoreRevision : function() {
         btnRestore.disable();
-    },
-    
-    animatePage : function() {
-        
     },
 
     /**
@@ -448,6 +563,30 @@ module.exports = ext.register("ext/revisions/revisions", {
         hveSession.setValue(currentDocText);
         cveSession.setValue(currentDocText);
 
+        var cecSession = currentEditorClone.$editor.getSession();
+        cecSession.setValue(currentDocText);
+
+        var cePos = apf.getAbsolutePosition(ceEditor.$ext);
+        animateEditorClone.$ext.style.left = cePos[0] + "px";
+        animateEditorClone.$ext.style.top = cePos[1] + "px";
+        animateEditorClone.$ext.style.width = ceEditor.getWidth() + "px";
+        animateEditorClone.$ext.style.height = ceEditor.getHeight() + "px";
+        animateEditorClone.show();
+
+        var moveToLeft = (window.innerWidth/2 + 30);
+        var moveToWidth = ((window.innerWidth - moveToLeft) - 18);
+        var moveToHeight = (window.innerHeight - 199);
+        
+        animateEditorClone.$ext.setAttribute("class", "bounce_into_current");
+
+        Firmin.animate(animateEditorClone.$ext, {
+            left : moveToLeft + "px",
+            width : moveToWidth + "px",
+            height : moveToHeight + "px"
+        }, 3.0, function() {
+            animateEditorClone.hide();
+        });
+
         // Set the document mode for syntax highlighting
         cveSession.setMode(currentSession.getMode());
         hveSession.setMode(currentSession.getMode());
@@ -455,7 +594,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         vbVersions.show();
         Firmin.animate(vbVersions.$ext, {
             opacity: "1"
-        }, 0.5, function() {
+        }, 3.0, function() {
             historicalVersionEditor.show();
             currentVersionEditor.show();
             _self.resizeElements();
@@ -464,18 +603,46 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         this.isFocused = true;
     },
-    
+
     escapeVersionMode : function() {
-        vbVersions.hide();
+        var currentSession = ceEditor.$editor.getSession();
+        var currentDocText = currentSession.getValue();
+        var cecSession = currentEditorClone.$editor.getSession();
+        cecSession.setValue(currentDocText);
+
+        var cvePos = apf.getAbsolutePosition(currentVersionEditor.$ext);
+        animateEditorClone.$ext.style.left = cvePos[0] + "px";
+        animateEditorClone.$ext.style.top = cvePos[1] + "px";
+        animateEditorClone.$ext.style.width = ceEditor.getWidth() + "px";
+        animateEditorClone.$ext.style.height = ceEditor.getHeight() + "px";
+        animateEditorClone.show();
+
+        var cePos = apf.getAbsolutePosition(ceEditor.$ext);
+        var moveToLeft = cePos[0];
+        var moveToWidth = ceEditor.getWidth();
+        var moveToHeight = ceEditor.getHeight();
+        
+        animateEditorClone.$ext.setAttribute("class", "bounce_outta_current");
+
+        Firmin.animate(animateEditorClone.$ext, {
+            left : moveToLeft + "px",
+            width : moveToWidth + "px",
+            height : moveToHeight + "px"
+        }, 2.0, function() {
+            animateEditorClone.hide();
+        });
+
         historicalVersionEditor.hide();
         currentVersionEditor.hide();
 
-        this.isFocused = false;
         Firmin.animate(vbVersions.$ext, {
             opacity: "0"
-        }, 0.5, function() {
+        }, 2.0, function() {
+            vbVersions.hide();
             apf.layout.forceResize(document.body);
         });
+
+        this.isFocused = false;
     },
 
     /**
@@ -501,15 +668,10 @@ module.exports = ext.register("ext/revisions/revisions", {
             if (ide.dispatchEvent("consolecommand." + this.command, {
               data: data
             }) !== false) {
-                if (!ide.onLine) {
-                    util.alert(
-                        "Currently Offline",
-                        "Currently Offline",
-                        "This operation could not be completed because you are offline."
-                    );
-                } else {
+                if (!ide.onLine)
+                    util.alert("Currently Offline", "Currently Offline", "This operation could not be completed because you are offline.");
+                else
                     ide.socket.send(JSON.stringify(data));
-                }
             }
         }
     },
@@ -531,17 +693,11 @@ module.exports = ext.register("ext/revisions/revisions", {
         });
 
         if (ext.execCommand(this.command, data) !== false) {
-            if (ide.dispatchEvent("consolecommand." + this.command, {
-              data: data
-            }) !== false) {
+
+            if (ide.dispatchEvent("consolecommand." + this.command, { data: data}) !== false) {
                 if (!ide.onLine) {
-                    util.alert(
-                        "Currently Offline",
-                        "Currently Offline",
-                        "This operation could not be completed because you are offline."
-                    );
-                }
-                else {
+                    util.alert("Currently Offline", "Currently Offline", "This operation could not be completed because you are offline.");
+                } else {
                     if (!this.gitLogs[data.file]) {
                         this.gitLogs[data.file] = {
                             logData : [],
@@ -551,6 +707,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                             revisions : {}
                         };
                     }
+
                     ide.socket.send(JSON.stringify(data));
                 }
             }
@@ -570,12 +727,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             return;
 
         if (message.body.err) {
-            util.alert(
-                "Error", 
-                "There was an error returned from the server:",
-                message.body.err
-            );
-
+            util.alert("Error",  "There was an error returned from the server:", message.body.err);
             return;
         }
 
@@ -590,23 +742,26 @@ module.exports = ext.register("ext/revisions/revisions", {
                 return;
         }
     },
-    
-    array2Xml : function(arr, elName) {
-        var out = [], attrMessage;
+
+    arrCommits2Xml : function(arr, elName) {
+        var out = ["<", elName, "s>"], attrMessage;
+
         for (var i = 0, len = arr.length; i < len; i++) {
+            // Clean up the comit message
             attrMessage = apf.xmlentities(apf.htmlentities(arr[i].messageJoinedLower));
             attrMessage = attrMessage.replace(/(\r\n|\r|\n)/gm, " ").replace(/"/g, "&quot;");
-            out.push("<", elName, " ");
-            out.push('hash="', arr[i].commit, '" ');
-            out.push('authoremail="', apf.htmlentities(arr[i].author.email), '" ');
-            out.push('authorname="', arr[i].author.fullName, '" ');
-            out.push('timestamp="', arr[i].author.timestamp, '" ');
-            out.push('message="', attrMessage, '" ');
-            out.push('internal_counter="', i, '"');
-            out.push(' />');
+            out.push("<", elName, " ",
+                'hash="', arr[i].commit, '" ',
+                'authoremail="', apf.htmlentities(arr[i].author.email), '" ',
+                'authorname="', arr[i].author.fullName, '" ',
+                'timestamp="', arr[i].author.timestamp, '" ',
+                'message="', attrMessage, '" ',
+                'internal_counter="', i, '"',
+            ' />');
         }
 
-        return "<" + elName + "s>" + out.join("") + "</" + elName + "s>";
+        out.push("</", elName, "s>");
+        return out.join("");
     },
 
     /**
@@ -618,8 +773,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.gitLogParser.parseLog(message.body.out);
 
         var logData = this.gitLogParser.getLogData();
-        var logDataLength = logData.length;
-        for (var gi = 0; gi < logDataLength; gi++) {
+        for (var gi = 0, logDataLength = logData.length; gi < logDataLength; gi++) {
             logData[gi].commitLower = logData[gi].commit.toLowerCase();
             logData[gi].parentLower = logData[gi].parent.toLowerCase();
             logData[gi].treeLower = logData[gi].tree.toLowerCase();
@@ -630,7 +784,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             logData[gi].committer.fullNameLower = logData[gi].committer.fullName.toLowerCase();
         }
 
-        var mdlOut = apf.getXml(this.array2Xml(logData, "commit"));
+        var mdlOut = apf.getXml(this.arrCommits2Xml(logData, "commit"));
         mdlCommits.load(mdlOut);
 
         var file = message.body.file;
@@ -641,7 +795,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         versions_label.setValue(output);
         current_versions_label.setValue(output);
 
-        this.setupSliderEl(this.gitLogs[file].logData);
+        this.setupTimeline(this.gitLogs[file].logData);
 
         this.gitLogs[file].logData[logDataLength-1].dotEl.setAttribute("class", "current");
     },
@@ -652,30 +806,31 @@ module.exports = ext.register("ext/revisions/revisions", {
      * @param {JSON} message Details about the message & output from git show
      */
     onGitShowMessage : function(message) {
+        this.loadingRevision = false;
+
         var fileText = message.body.out;
         this.gitLogs[message.body.file].revisions[message.body.hash] =
             fileText;
 
-        var st = historicalVersionEditor.$editor.renderer.scrollBar.element.scrollTop;
+        var st = currentVersionEditor.$editor.session.getScrollTop();
+        var sl = currentVersionEditor.$editor.session.getScrollLeft();
+
         var hveSession = historicalVersionEditor.$editor.getSession();
         hveSession.setValue(fileText);
 
-        btnRestore.enable();
-
-        // Restore scroll position
-        setTimeout(function() {
-            historicalVersionEditor.$editor.renderer.scrollBar.setScrollTop(st);
-        });
+        var gLogs = this.gitLogs[message.body.file];
+        var logDataLen = gLogs.logData.length;
+        if (message.body.hash == gLogs.logData[logDataLen-1].commit)
+            btnRestore.disable();
+        else
+            btnRestore.enable();
 
         if (!this.dmp)
             this.dmp = new diff_match_patch();
 
-        this.resizeElements();
-
         var diff = this.dmp.diff_main(fileText,
             currentVersionEditor.$editor.getSession().getValue());
         this.dmp.diff_cleanupSemantic(diff);
-        //console.log(diff);
 
         var historyDoc = historicalVersionEditor.$editor.session.getDocument();
         var currentDoc = currentVersionEditor.$editor.session.getDocument();
@@ -736,9 +891,9 @@ module.exports = ext.register("ext/revisions/revisions", {
 
                 // Add newlines to history
                 if (lineDiff > 0) {
+                    // @TODO: DMP fuzzy logic to see if nll = numLeftLines-1 or not
                     var nll;
-                    
-                    nll = numLeftLines - 1;
+                    nll = numLeftLines;
 
                     var colEnd = historyDoc.getLine(nll).length;
                     historicalVersionEditor.$editor.moveCursorTo(nll, colEnd);
@@ -752,7 +907,9 @@ module.exports = ext.register("ext/revisions/revisions", {
                 }
                 // Add newlines to current
                 else {
-                    var nrr = numRightLines;// - 1;
+                    // @TODO: DMP fuzzy logic to see if nll = numLeftLines-1 or not
+                    var nrr;
+                    nrr = numRightLines;
                     var colEnd = currentDoc.getLine(nrr).length;
                     currentVersionEditor.$editor.moveCursorTo(nrr, colEnd);
                     currentVersionEditor.$editor.insert(newlines);
@@ -765,6 +922,34 @@ module.exports = ext.register("ext/revisions/revisions", {
                 }
             }
         }
+
+        Firmin.animate(historicalVersionEditor.$ext, {
+            translateX: "0px"
+        }, 0, function() {
+            historicalVersionEditor.$editor.session.setScrollLeft(sl);
+            currentVersionEditor.$editor.session.setScrollLeft(sl);
+            historicalVersionEditor.$editor.session.setScrollTop(st);
+            currentVersionEditor.$editor.session.setScrollTop(st);
+
+            historicalPlaceholder.$ext.style.zIndex = "99998";
+            historicalPlaceholder.$ext.style.top = "-10000px";
+        });
+    },
+
+    removeMarkers: function(session) {
+        if (!session.revisionAnchors)
+            return;
+
+        var markers = session.getMarkers(false);
+        for (var id in markers) {
+            if (markers[id].clazz.indexOf('revision_hl_') === 0) {
+                session.removeMarker(id);
+            }
+        }
+        for (var i = 0; i < session.revisionAnchors.length; i++) {
+            session.revisionAnchors[i].detach();
+        }
+        session.revisionAnchors = [];
     },
 
     addCodeMarker : function(editor, type, fromRow, fromColumn, toRow, toColumn) {
@@ -773,11 +958,15 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var markerId;
         var mySession = editor.$editor.session;
+
+        if (!mySession.revisionAnchors) mySession.revisionAnchors = [];
+
         var colDiff = toColumn - fromColumn;
         var rowDiff = toRow - fromRow;
         var anchor = new Anchor(mySession.getDocument(), fromRow, fromColumn);
+        mySession.revisionAnchors.push(anchor);
 
-        function updateFloat(single) {
+        function updateFloat() {
             if (markerId)
                 mySession.removeMarker(markerId);
             var range = Range.fromPoints(anchor.getPosition(), {
@@ -799,7 +988,16 @@ module.exports = ext.register("ext/revisions/revisions", {
         return ds[1] + " " + ds[2] + " " + ds[3] + " " + ds[4];
     },
 
-    setupSliderEl : function(logData) {
+    removeTimelinePoints : function(logData) {
+        for (var i = 0, len = logData.length; i < len; i++) {
+            logData[i].dotEl.removeEventListener("mouseover", logData[i].dotElMouseOver);
+            logData[i].dotEl.removeEventListener("mouseout", logData[i].dotElMouseOut);
+            logData[i].dotEl.removeEventListener("click", logData[i].dotElClick);
+            this.sliderEl.removeChild(logData[i].dotEl);
+        }
+    },
+
+    setupTimeline : function(logData) {
         if (!logData.length)
             return;
 
@@ -809,17 +1007,17 @@ module.exports = ext.register("ext/revisions/revisions", {
         var tsBegin = logData[0].author.timestamp;
         var timeSpan = logData[len-1].author.timestamp - tsBegin;
 
-        // Create all the child elements along the timeline
+        // Create all the points in time
         for (var i = 0; i < len; i++) {
             var ts = logData[i].author.timestamp;
             var tsDiff = ts - tsBegin;
             var percentage = (tsDiff / timeSpan) * 100;
 
-            var dotEl = document.createElement("u");
-            dotEl.setAttribute("style", "left: " + percentage + "%");
-            dotEl.setAttribute("rel", i);
-            dotEl.setAttribute("hash", logData[i].commit);
-            dotEl.addEventListener("mouseover", function() {
+            logData[i].dotEl = document.createElement("u");
+            logData[i].dotEl.setAttribute("style", "left: " + percentage + "%");
+            logData[i].dotEl.setAttribute("rel", i);
+            logData[i].dotEl.setAttribute("hash", logData[i].commit);
+            logData[i].dotEl.addEventListener("mouseover", logData[i].dotElMouseOver = function() {
                 var dotClass = this.getAttribute("class");
                 if(dotClass && dotClass.split(" ")[0] == "pop")
                     return;
@@ -845,18 +1043,18 @@ module.exports = ext.register("ext/revisions/revisions", {
                 });
             });
 
-            dotEl.addEventListener("mouseout", function() {
-                _self.sliderTooltip.setAttribute("class", "disappear");
+            logData[i].dotEl.addEventListener("mouseout", logData[i].dotElMouseOut = function() {
                 Firmin.animate(_self.sliderTooltip, {
                     scale: 0.1,
                     opacity: 0
                 }, 0.4);
             });
-            dotEl.addEventListener("click", function() {
+
+            logData[i].dotEl.addEventListener("click", logData[i].dotElClick = function() {
                 _self.loadRevision(this.getAttribute("rel"));
             });
-            this.sliderEl.appendChild(dotEl);
-            logData[i].dotEl = dotEl;
+
+            this.sliderEl.appendChild(logData[i].dotEl);
         }
     },
 
@@ -874,9 +1072,11 @@ module.exports = ext.register("ext/revisions/revisions", {
         return filePath;
     },
 
-    applyFilter : function(filter) {
+    filterTimeline : function(filter) {
         var currentFile = this.getFilePath();
 
+        // @TODO Why are we allowing user to search w/out log data?
+        // Search should be disabled until the logData is loaded
         var logs = this.gitLogs[currentFile].logData;
         if (!logs)
             return;
