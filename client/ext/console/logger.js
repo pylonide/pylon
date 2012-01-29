@@ -73,7 +73,7 @@ var createItem = module.exports.test.createItem = function(line, ide) {
             return "<span style='" + styles.join("").trim() + "'>";
         });
 
-    return "<pre>" + line + "</pre>";
+    return "<div>" + line + "</div>";
 };
 
 var setBufferInterval = function(el) {
