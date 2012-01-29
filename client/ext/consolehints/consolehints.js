@@ -107,33 +107,21 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         var self = this;
         txtConsoleInput.addEventListener("keyup", function(e) {
             // Ignore up/down cursor arrows here
-            if (e.keyCode === 38 || e.keyCode === 40) return;
+            if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 9) return;
 
-            var getCmdMatches = function(obj, value) {
-                var filtered = filterCommands(Object.keys(obj), value);
+            var getCmdMatches = function(filtered) {
+                var cli = e.currentTarget;
                 if (filtered.length)
-                    self.show(e.currentTarget, "", filtered, e.currentTarget.getValue().length - 1);
+                    self.show(cli, "", filtered, cli.getValue().length - 1);
                 else
                     self.hide();
             };
 
             var cliValue = e.currentTarget.getValue();
-            if (cliValue) {
-                var fullCmd = cliValue.match(/(\w+)\s+(.*)$/);
-                if (fullCmd) {
-                    // If we don't recognize the root command
-                    var rootCmd = Console.allCommands[fullCmd[1]];
-                    if (!rootCmd) return;
-
-                    var subCommands = rootCmd.commands;
-                    if (subCommands)
-                        getCmdMatches(subCommands, fullCmd[2]);
-                }
-                else {
-                    getCmdMatches(Console.allCommands, cliValue);
-                }
-            }
-            else { self.hide(); }
+            if (cliValue) 
+                self.getCmdCompletion(cliValue, getCmdMatches);
+            else 
+                self.hide(); 
         });
 
         // Below we are overwriting the Console default key events in function of
@@ -142,14 +130,15 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             38: "selectUp",
             40: "selectDown",
             27: "hide",
-            13: "onEnterKey"
+            13: "onEnterKey",
+            9: "onTabKey"
         };
 
         Object.keys(redefinedKeys).forEach(function(keyCode) {
             var previousKey = Console.keyEvents[keyCode];
             Console.keyEvents[keyCode] = function(target) {
-                if (winHints.style.display === "none")
-                    previousKey && previousKey(target);
+                if (winHints.style.display === "none" && previousKey)
+                    previousKey(target);
                 else
                     self[redefinedKeys[keyCode]].call(self);
             };
@@ -213,6 +202,39 @@ module.exports = ext.register("ext/consolehints/consolehints", {
 
         this.hide();
     },
+    // Given a value and a function for subCommands `fn1` and a function for one
+    // command `fn2`, calls the functions with the proper array of completions, 
+    // if any.
+    getCmdCompletion: function(value, fn1, fn2) {
+        var fullCmd = value.match(/(\w+)\s+(.*)$/);
+        if (fullCmd) {
+            // If we don't recognize the root command
+            var rootCmd = Console.allCommands[fullCmd[1]];
+            if (!rootCmd) return;
+
+            var subCommands = rootCmd.commands;
+            if (subCommands) 
+                fn1(filterCommands(Object.keys(subCommands), fullCmd[2]));
+        }
+        else {
+            (fn2 || fn1)(filterCommands(Object.keys(Console.allCommands), value));
+        }
+    },
+    onTabKey: function() {
+        this.hide();
+        
+        var cliValue = txtConsoleInput.getValue();
+        if (!cliValue) return;
+
+        this.getCmdCompletion(cliValue,
+            function(cmds) { cliValue = cliValue.replace(RE_lastWord, cmds[0]); },
+            function(cmds) { cliValue = cmds[0]; }
+        );
+
+        txtConsoleInput.setValue(cliValue);
+        // In order to avoid default blurring behavior for TAB
+        setTimeout(function() { txtConsoleInput.focus(); }, 50);
+    },
     onEnterKey: function() {
         var hintNodes = winHints.childNodes;
         for (var i = 0, l = hintNodes.length; i < l; ++i) {
@@ -251,8 +273,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             hintNodes[i].className = "";
         }
 
-        if (hint)
-            hint.className = "selected";
+        hint && (hint.className = "selected");
     },
     visible: function() {
         return winHints && !!winHints.visible;
