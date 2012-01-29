@@ -141,10 +141,11 @@ module.exports = ext.register("ext/console/console", {
     help: function() {
         var words = Object.keys(this.allCommands);
         var tabs = "\t\t\t\t";
+        var self = this;
 
         Logger.logNodeStream(
             words
-                .map(function(w) { return w + tabs + this.allCommands[w].hint; })
+                .map(function(w) { return w + tabs + self.allCommands[w].hint; })
                 .join("\n"),
                 null, null, ide
         );
