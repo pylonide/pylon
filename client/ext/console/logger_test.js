@@ -39,7 +39,7 @@ define(function(require, exports, module) {
 
             var line2Created = createItem(line2, ide);
             assert.equal(line2Created, expected2);
-            
+
             var line3 = "This one with a little bit of [32mcolor [31mand even a red bit";
             var expected3 = "<div>This one with a little bit of <span style='color: green'>color "
                 + "<span style='color: red'>and even a red bit</div>";
@@ -48,10 +48,10 @@ define(function(require, exports, module) {
             assert.equal(line3Created, expected3);
 
             next();
-        }
+        },
     };
 });
 
 if (typeof module !== "undefined" && module === require.main) {
-    require("asyncjs").test.testcase(module.exports).exec()
+    require("asyncjs").test.testcase(module.exports).exec();
 }

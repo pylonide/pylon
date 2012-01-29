@@ -147,7 +147,7 @@ module.exports = ext.register("ext/console/console", {
             words
                 .map(function(w) { return w + tabs + self.allCommands[w].hint; })
                 .join("\n"),
-                null, null, ide
+            null, null, ide
         );
     },
 
@@ -231,8 +231,7 @@ module.exports = ext.register("ext/console/console", {
                 cwd: this.getCwd()
             });
         }
-        if (showConsole === true)
-            this.show();
+        if (showConsole === true) this.show();
     },
 
     commandTextHandler: function(e) {
@@ -391,7 +390,7 @@ module.exports = ext.register("ext/console/console", {
         apf.extend(this.allCommands, ext.commandsLut);
     },
 
-    maximize : function(){
+    maximize: function(){
         if (this.maximized)
             return;
         this.maximized = true;
@@ -409,7 +408,6 @@ module.exports = ext.register("ext/console/console", {
     restore : function(){
         if (!this.maximized)
             return;
-
         this.maximized = false;
 
         mainRow.appendChild(winDbgConsole);
@@ -496,15 +494,15 @@ module.exports = ext.register("ext/console/console", {
         }
     },
     enable: function(){
-        this.nodes.each(function(item){ item.enable(); });
+        this.nodes.each(function(item) { item.enable(); });
     },
 
     disable: function(){
-        this.nodes.each(function(item){ item.disable(); });
+        this.nodes.each(function(item) { item.disable(); });
     },
 
     destroy: function(){
-        this.nodes.each(function(item){ item.destroy(true, true); });
+        this.nodes.each(function(item) { item.destroy(true, true); });
         this.nodes = [];
     }
 });

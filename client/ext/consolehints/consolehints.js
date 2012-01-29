@@ -27,11 +27,10 @@ var filterCommands = function(commands, word) {
 var mouseHandler = function(e) {
     clearTimeout(hintsTimer);
     var el = e.target || e.srcElement;
-    while (el && el.nodeType === 3 && el.tagName != "A" && el != winHints)
+    while (el && el.nodeType === 3 && el.tagName !== "A" && el !== winHints)
         el = el.parentNode;
 
-    if (el.tagName != "A")
-        return;
+    if (el.tagName !== "A") return;
 
     var self = this;
     hintsTimer = setTimeout(function() { self.select(el); }, 5);
@@ -153,7 +152,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                     previousKey && previousKey(target);
                 else
                     self[redefinedKeys[keyCode]].call(self);
-            }
+            };
         });
     },
     show: function(textbox, base, hints, cursorPos) {
@@ -216,7 +215,6 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     },
     onEnterKey: function() {
         var hintNodes = winHints.childNodes;
-
         for (var i = 0, l = hintNodes.length; i < l; ++i) {
             if (hintNodes[i].className === "selected") {
                 this.click({ target: hintNodes[i] });
