@@ -10,17 +10,11 @@ define(function(require, exports, module) {
 exports.test = {};
 
 // Maximum amount of buffer history
+var bufferInterval;
 var MAX_LINES = 512;
 var RE_relWorkspace = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+(?:\.[\w\_\$]+))?(\:\d+)(\:\d+)*/g;
 var RE_URL = /\b((?:(?:https?):(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()[\]{};:'".,<>?«»“”‘’]))/i;
 var RE_COLOR = /\[(?:(\d+);)?(\d+)m/g;
-
-var messages = {
-    divider: "<span class='cli_divider'></span>",
-    prompt: "<span style='color:#86c2f6'>__MSG__</span>",
-    command: "<span style='color:#86c2f6'><span>&gt;&gt;&gt;</span><div>__MSG__</div></span>"
-};
-
 var colors = {
     0:  "#eee",
     31: "red",
@@ -34,13 +28,18 @@ var colors = {
 // Remove as many elements in the console output area so that between
 // the existing buffer and the stream coming in we have the right
 // amount of lines according to MAX_LIMIT.
-var balanceBuffer = function(elem, len) {
-    while (elem.firstChild && (elem.childNodes.length + len) > MAX_LINES)
+var balanceBuffer = function(elem) {
+    var len = elem.childNodes.length;
+    if (len <= MAX_LINES)
+        return;
+
+    len = len - MAX_LINES;
+    for (var i = 0; i < len; i++)
         elem.removeChild(elem.firstChild);
 };
 
-var stringRepeat = function(s, t) { return new Array(t + 1).join(s); };
-var escapeRegExp = function(s) { return s.replace(/([.*+?^${}()|[\]\/\\])/g, '\\$1'); };
+var strRepeat = function(s, t) { return new Array(t + 1).join(s); };
+var escRegExp = function(s) { return s.replace(/([.*+?^${}()|[\]\/\\])/g, '\\$1'); };
 
 var createItem = module.exports.test.createItem = function(line, ide) {
     if (!line) return "";
@@ -53,7 +52,7 @@ var createItem = module.exports.test.createItem = function(line, ide) {
             "<a href='#' data-abWsp='" + davPrefix + "/$1\", \"$2\", \"$3'>$1$2$3</a>");
     }
 
-    var wsRe = new RegExp(escapeRegExp(workspaceDir) + "\\/([^:]*)(:\\d+)(:\\d+)*", "g");
+    var wsRe = new RegExp(escRegExp(workspaceDir) + "\\/([^:]*)(:\\d+)(:\\d+)*", "g");
     if (line.search(wsRe) !== -1) {
         line = line.replace(wsRe,
             "<a href='#' data-relWsp='" + davPrefix + "/$1\", \"$2\", \"$3'>" + workspaceDir + "/$1$2$3</a>");
@@ -63,7 +62,7 @@ var createItem = module.exports.test.createItem = function(line, ide) {
         line = line.replace(RE_URL, "");
     }
 
-    line = line.replace(/\s{2,}/g, function(str) { return stringRepeat("&nbsp;", str.length); })
+    line = line.replace(/\s{2,}/g, function(str) { return strRepeat("&nbsp;", str.length); })
         .replace(/(\u0007|\u001b)\[(K|2J)/g, "")
         .replace(RE_COLOR, function(m, extra, color) {
             var styles = [
@@ -74,39 +73,50 @@ var createItem = module.exports.test.createItem = function(line, ide) {
             return "<span style='" + styles.join("").trim() + "'>";
         });
 
-    return "<div>" + line + "</div>";
+    return "<pre>" + line + "</pre>";
 };
 
-module.exports.logNodeStream = function(data, stream, useOutput, ide) {
-    var parentEl = useOutput ? txtOutput : txtConsole;
-    var lines = data.split("\n", MAX_LINES);
-    if (lines.length >= MAX_LINES)
-        // If the stream coming in already contains more lines that our limit,
-        // let's clear the console right away.
-        parentEl.clear();
-    else
-        balanceBuffer(parentEl.$ext, lines.length);
+var setBufferInterval = function(el) {
+    bufferInterval = setInterval(function() {
+        balanceBuffer(el);
+    }, 1000);
+}
 
-    parentEl.$ext.innerHTML += lines.map(function(line) {
+module.exports.logNodeStream = function(data, stream, useOutput, ide) {
+    var parentEl = (useOutput ? txtOutput : txtConsole).$ext;
+    if (!bufferInterval) {
+        setBufferInterval(parentEl);
+    }
+
+    var lines = data.split("\n", MAX_LINES);
+    parentEl.innerHTML += lines.map(function(line) {
         return createItem(line, ide);
     }).join("");
 };
 
-module.exports.log = function(msg, type, pre, post, otherOutput){
+var messages = {
+    divider: "<span class='cli_divider'></span>",
+    prompt: "<span style='color:#86c2f6'>__MSG__</span>",
+    command: "<span style='color:#86c2f6'><span>&gt;&gt;&gt;</span><div>__MSG__</div></span>"
+};
+
+module.exports.log = function(msg, type, pre, post, otherOutput) {
     msg = msg.toString().escapeHTML();
     if (!type)
         type = "log";
 
-    if (messages[type])
+    if (messages[type]) {
         msg = messages[type].replace("__MSG__", msg);
+    }
 
-    var parentEl = otherOutput || txtConsole;
-    balanceBuffer(parentEl.$ext, 1);
+    var parentEl = (otherOutput || txtConsole).$ext;
+    if (!bufferInterval) {
+        setBufferInterval(parentEl);
+    }
 
-    parentEl.$ext.innerHTML +=
+    parentEl.innerHTML +=
         "<div class='item console_" + type + "'>" +
             (pre || "") + msg + (post || "") +
         "</div>";
 };
-
 });
