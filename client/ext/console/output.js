@@ -3,6 +3,7 @@
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ * @contributor Sergi Mansilla <sergi AT c9 DOT io>
  */
 
 define(function(require, exports, module) {

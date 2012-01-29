@@ -1,5 +1,5 @@
 /**
- * Console for the Cloud9 IDE
+ * Console hints and autcompletion for the Cloud9 IDE
  *
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>

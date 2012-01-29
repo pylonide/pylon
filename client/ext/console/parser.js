@@ -1,5 +1,6 @@
 define(function(require, exports, module) {
-
+// Parses a CLI instruction line and returns an array of its arguments, respecting
+// quotes and special cases.
 module.exports = function(lineBuffer) {
     var argv = [];
     var cursor = 0;
@@ -44,5 +45,4 @@ module.exports = function(lineBuffer) {
 
     return argv;
 };
-
 });
