@@ -39,7 +39,7 @@ var strip = module.exports.strip = function () {
     }
 
     // Set the new trimmed buffer contents
-    session.setValue(result);
+    session.getDocument().setValue(result);
 
     if (lead && anchor) {
         selection = session.getSelection();
