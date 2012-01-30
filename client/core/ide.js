@@ -4,11 +4,11 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
     var Document = require("core/document");
     var util = require("core/util");
-    
+
     var ide = new apf.Class().$init();
 
     ide.createDocument = function(node, value){
@@ -58,7 +58,7 @@ define(function(require, exports, module) {
             && (loc.indexOf("cloud9ide.com") > -1 || loc.indexOf("c9.io") > -1))
         {
             window.onerror = function(m, u, l) {
-                if (self.console)
+                if (window.console)
                     console.log("An error occurred, the Cloud9 system admin has been notified.");
                 apf.ajax("/debug", {
                     method      : "POST",
@@ -93,10 +93,10 @@ define(function(require, exports, module) {
         }
         else {
 //                window.onerror = function(m, u, l) {
-//                    self.console && console.error("An error occurred", m, u, l);
+//                    window.console && console.error("An error occurred", m, u, l);
 //                }
             apf.addEventListener("error", function(e){
-                self.console && console.error("An APF error occurred", e);
+                window.console && console.error("An APF error occurred", e);
             });
         }
     };
@@ -104,7 +104,7 @@ define(function(require, exports, module) {
     apf.addEventListener("load", function(){
         ide.start();
     });
-    
+
     //@todo this doesnt work
     apf.addEventListener("exit", function(){
         //return "Are you sure you want to close Cloud9? Your state will be saved and will be loaded next time you start Cloud9";
@@ -116,7 +116,8 @@ define(function(require, exports, module) {
             "remember transport": false,
             transports:  ["websocket", "htmlfile", "xhr-multipart", "xhr-polling"],
             reconnect: false,
-            "connect timeout": 5000,
+            resource: window.cloud9config.socketIoUrl,
+            "connect timeout": 500,
             "try multiple transports": true,
             "transport options": {
                 "xhr-polling": {
@@ -127,17 +128,17 @@ define(function(require, exports, module) {
                 }
             }
         };
-        
+
         ide.socketConnect = function() {
             clearInterval(ide.$retryTimer);
 
-            ide.socket.send(JSON.stringify({
+            ide.socket.json.send({
                 command: "attach",
                 sessionId: ide.sessionId,
                 workspaceId: ide.workspaceId
-            }));
+            });
         };
-        
+
         ide.socketReconnect = function() {
             // on a reconnect of the socket.io connection, the server may have
             // lost our session. Now we do an HTTP request to fetch the current
@@ -153,7 +154,7 @@ define(function(require, exports, module) {
 
         ide.socketDisconnect = function() {
             clearTimeout(ide.$retryTimer);
-            
+
             var retries = 0;
             ide.$retryTimer = setInterval(function() {
                 if (++retries == 3)
@@ -170,6 +171,7 @@ define(function(require, exports, module) {
                 message = JSON.parse(message);
             }
             catch(e) {
+                window.console && console.error("Error parsing socket message", e, message);
                 return;
             }
 
@@ -180,7 +182,7 @@ define(function(require, exports, module) {
                 message: message
             });
         };
-        
+
         // for unknown reasons io is sometimes undefined
         try {
             ide.socket = io.connect(null, options);
@@ -193,13 +195,13 @@ define(function(require, exports, module) {
                     window.location.reload();
                 }
             );
-            
+
             var socketIoScriptEl = Array.prototype.slice.call(
                 document.getElementsByTagName("script")).filter(function(script) {
                     return script.src && script.src.indexOf("socket.io.js") >= 0;
                 }
             )[0];
-            
+
             var status;
             if (socketIoScriptEl) {
                 apf.ajax(socketIoScriptEl.src, {
@@ -226,7 +228,7 @@ define(function(require, exports, module) {
             }
             return;
         }
-        
+
         ide.socket.on("message",    ide.socketMessage);
         ide.socket.on("connect",    ide.socketConnect);
         ide.socket.on("reconnect",  ide.socketReconnect);
@@ -237,30 +239,29 @@ define(function(require, exports, module) {
             // pass a lambda to enable socket.io ACK
             _oldsend.call(ide.socket, msg, function() {});
         };
-        
         this.inited = true;
     });
-    
+
     ide.$msgQueue = [];
     ide.addEventListener("socketConnect", function() {
         while(ide.$msgQueue.length) {
             var q = ide.$msgQueue;
             ide.$msgQueue = [];
             q.forEach(function(msg) {
-                ide.socket.send(msg);
+                ide.socket.json.send(msg);
             });
         }
     });
-    
+
     ide.send = function(msg) {
         if (!ide.socket || !ide.socket.socket.connected) {
             ide.$msgQueue.push(msg);
             return;
         }
-        
-        ide.socket.send(msg);
+
+        ide.socket.json.send(msg);
     };
-    
+
     ide.getActivePageModel = function() {
         var page = tabEditors.getPage();
         if (!page)
@@ -268,7 +269,7 @@ define(function(require, exports, module) {
 
         return page.$model.data;
     };
-    
+
     ide.getAllPageModels = function() {
         return tabEditors.getPages().map(function(page) {
             return page.$model.data;
