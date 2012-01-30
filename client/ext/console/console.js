@@ -273,7 +273,7 @@ module.exports = ext.register("ext/console/console", {
         return "[" + u + "@cloud9]:" + this.$cwd + "$" + ((" " + suffix) || "");
     },
 
-    init : function(amlNode){
+    init: function(amlNode){
         var _self = this;
         this.panel = tabConsole;
         this.$cwd  = "/workspace"; // code smell
@@ -381,6 +381,8 @@ module.exports = ext.register("ext/console/console", {
             var newVal = cmdHistory.getNext();
             if (newVal)
                 input.setValue(newVal);
+            else
+                input.setValue("");
         };
         this.keyEvents[KEY_CR] = function(input) {
             _self.evalCmd(input.getValue());

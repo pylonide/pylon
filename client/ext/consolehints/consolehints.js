@@ -105,10 +105,10 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         }, 1000);
 
         var self = this;
+        txtConsoleInput.addEventListener("blur", function(e) { self.hide(); });
         txtConsoleInput.addEventListener("keyup", function(e) {
             // Ignore up/down cursor arrows here
             if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 9) return;
-
             var getCmdMatches = function(filtered) {
                 var cli = e.currentTarget;
                 if (filtered.length)
@@ -210,11 +210,11 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         if (fullCmd) {
             // If we don't recognize the root command
             var rootCmd = Console.allCommands[fullCmd[1]];
-            if (!rootCmd) return;
+            if (!rootCmd) 
+                return fn1([]);
 
             var subCommands = rootCmd.commands;
-            if (subCommands) 
-                fn1(filterCommands(Object.keys(subCommands), fullCmd[2]));
+            fn1(subCommands ? filterCommands(Object.keys(subCommands), fullCmd[2]) : []);
         }
         else {
             (fn2 || fn1)(filterCommands(Object.keys(Console.allCommands), value));

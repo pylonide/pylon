@@ -33,7 +33,7 @@
     background-color: #f0f0f0;
     background: -webkit-gradient(linear,left bottom,left top,rgb(55,56,58),rgb(41,42,43));
     background: -moz-linear-gradient(center bottom,rgb(55,56,58),rgb(41,42,43));
-
+    color: #333;
     border: 1px solid #505051;
     border-bottom: 1px solid #1d1e1f;
 }

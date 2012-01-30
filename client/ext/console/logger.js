@@ -10,8 +10,6 @@
 define(function(require, exports, module) {
 exports.test = {};
 
-// Maximum amount of buffer history
-var bufferInterval;
 var MAX_LINES = 512;
 var RE_relWorkspace = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+(?:\.[\w\_\$]+))?(\:\d+)(\:\d+)*/g;
 var RE_URL = /\b((?:(?:https?):(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()[\]{};:'".,<>?«»“”‘’]))/i;
@@ -39,6 +37,14 @@ var balanceBuffer = function(elem) {
         elem.removeChild(elem.firstChild);
 };
 
+// Maximum amount of buffer history
+var bufferInterval;
+var setBufferInterval = function(el) {
+    bufferInterval = setInterval(function() {
+        balanceBuffer(el);
+    }, 1000);
+};
+
 var strRepeat = function(s, t) { return new Array(t + 1).join(s); };
 var escRegExp = function(s) { return s.replace(/([.*+?^${}()|[\]\/\\])/g, '\\$1'); };
 
@@ -60,7 +66,7 @@ var createItem = module.exports.test.createItem = function(line, ide) {
     }
 
     if (line.search(RE_URL) !== -1) {
-        line = line.replace(RE_URL, "");
+        line = line.replace(RE_URL, "<a href='$1'>$1</a>");
     }
 
     line = line.replace(/\s{2,}/g, function(str) { return strRepeat("&nbsp;", str.length); })
@@ -74,25 +80,38 @@ var createItem = module.exports.test.createItem = function(line, ide) {
             return "<span style='" + styles.join("").trim() + "'>";
         });
 
-    return "<div>" + line + "</div>";
+    return line;
 };
 
-var setBufferInterval = function(el) {
-    bufferInterval = setInterval(function() {
-        balanceBuffer(el);
-    }, 1000);
-}
-
+var childBuffer;
+var childBufferInterval;
 module.exports.logNodeStream = function(data, stream, useOutput, ide) {
     var parentEl = (useOutput ? txtOutput : txtConsole).$ext;
     if (!bufferInterval) {
         setBufferInterval(parentEl);
     }
+    
+    // This is a bit cumbersome, but it solves the issue in which logging stuff
+    // in the console at a high speed keeps the browser incredibly busy, and
+    // sometimes it even crashes. An interval is created in which every 100ms
+    // The lines stored in the document fragment are appended in the actual console
+    // output.
+    if (!childBuffer) {
+        childBuffer = document.createDocumentFragment();
+        childBufferInterval = setInterval(function() {
+            parentEl.appendChild(childBuffer);
+            childBuffer = document.createDocumentFragment();
+        }, 100);
+    }
 
     var lines = data.split("\n", MAX_LINES);
-    parentEl.innerHTML += lines.map(function(line) {
-        return createItem(line, ide);
-    }).join("");
+    var fragment = document.createDocumentFragment();
+    for (var i=0, l = lines.length; i<l; i++) {
+        var div = document.createElement("div");
+        div.innerHTML = createItem(lines[i], ide);
+        fragment.appendChild(div);
+    }
+    childBuffer.appendChild(fragment);
 };
 
 var messages = {
