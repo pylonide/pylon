@@ -1,0 +1,46 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:bar id="barIdeStatus" 
+      skin    = "bar-status" 
+      skinset = "statusbar"
+      height  = "28"
+      bottom  = "3"
+      right   = "17">
+        <a:hbox padding="5" height="23">
+            <a:label caption="{ceEditor.line}:{ceEditor.col}" margin="3 0 0 0"/>
+            <a:divider class="divider-status-bar" margin="2 0 2 0"/>
+            <a:button 
+              skin    = "btn-expand-statusbar" 
+              skinset = "statusbar"
+              icon    = "statusbar-arrow.png" 
+              onclick = "require('ext/statusbar/statusbar').toggleStatusBar()"/>
+            <a:hbox id="hboxStatusBarSettings" padding="5" edge="0 2 0 0" width="0" visible="false">
+                <a:button 
+                  skin    = "btn-statusbar-icon" 
+                  skinset = "statusbar"
+                  height  = "23"
+                  icon    = "tool-ico.png"
+                  submenu = "mnuStatusBarTools"/>
+                <a:button 
+                  skin    = "btn-statusbar-icon" 
+                  skinset = "statusbar"
+                  height  = "23"
+                  icon    = "pref-ico.png" 
+                  submenu = "mnuStatusBarPrefs"/>
+            </a:hbox>
+        </a:hbox>
+    </a:bar>
+    <a:menu id="mnuStatusBarPrefs"
+      width = "100" 
+      skin  = "menu-bk">
+        <a:item>test</a:item>
+        <a:item>test2</a:item>
+        <a:item>test3</a:item>
+    </a:menu>
+    <a:menu id="mnuStatusBarTools"
+      width = "100"
+      skin  = "menu-bk">
+        <a:item>popa</a:item>
+        <a:item>test2</a:item>
+        <a:item>test3</a:item>
+    </a:menu>
+</a:application>

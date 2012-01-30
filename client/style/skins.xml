@@ -3928,6 +3928,10 @@
         .modal-divider {
             border-color : #b0b2b4 #E6E6E6 #E6E6E6 #b0b2b4;
         }
+        
+        .divider-status-bar {
+            border-color : #b0b2b4 #E6E6E6 #E6E6E6 #b0b2b4;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -4870,6 +4874,82 @@
         </a:item>
         <a:divider inherit="true">
             <div class='menu_divider'></div>
+        </a:divider>
+    </a:presentation>
+</a:menu>
+<a:menu name="menu-bk">
+    <a:style><![CDATA[
+        .menu-bk {
+            margin   : 0;
+            z-index  : 10000;
+            position : absolute;
+            overflow : visible;
+            display  : none;
+            
+            position : absolute;
+            /* fallback (Older Opera) */
+            background: #272727;
+            /* Mozilla: */
+            background-image: -moz-linear-gradient(top, #2f2f2f, #202020);
+            /* Chrome, Safari:*/
+            background-image: -webkit-gradient(linear, left top, left bottom, from(#2f2f2f), to(#202020));
+            -moz-border-radius    : 9px;
+            -webkit-border-radius : 9px;
+            border-radius         : 9px;
+            -moz-box-shadow       : 0 1px 5px rgba(0,0,0,0.7), inset 0 1px 0px rgba(255,255,255,0.18);
+            -webkit-box-shadow    : 0 1px 5px rgba(0,0,0,0.7), inset 0 1px 0px rgba(255,255,255,0.21);
+            box-shadow            : 0 1px 5px rgba(0,0,0,0.7), inset 0 1px 0px rgba(255,255,255,0.18);
+            border: 1px solid #000000;
+        }
+        
+        .menu-bk.upward {
+            margin-top: -10px;
+        }
+        
+        .menu-bk .arrow {
+            position : absolute;
+            width: 24px;
+            height: 14px;
+            top: -13px;
+            left: 54px;
+            z-index: 10001;
+            background: url(images/flyout_arrows.png) no-repeat -20px 0;
+        }
+        
+        .menu-bk.upward .arrow {
+            top: auto;
+            bottom: -14px;
+            left: 54px;
+            width: 20px;
+            background-position: -22px -45px;
+        }
+        
+        
+        .menu-bk .menu-item {
+            padding: 5px 15px;
+            cursor: default;
+            color: #F1F1F1;
+        }
+        .menu-bk .menu-item.hover{
+            background-color: rgba(170, 170, 170, 0.14);
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="menu-bk">
+                <div class="arrow"> </div>
+            </div>
+        </a:main>
+        <a:item
+          caption = "text()"
+          icon    = "div"
+          hotkey  = "div"
+          inherit = "true">
+            <div class="menu-item">-<div class="icon"></div></div>
+        </a:item>
+        <a:divider inherit="true">
+            <div class="menu-divider"></div>
         </a:divider>
     </a:presentation>
 </a:menu>
