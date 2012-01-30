@@ -43,7 +43,7 @@ var execAction = function(cmd, data) {
             if (!ide.onLine)
                 this.write("Cannot execute command. You are currently offline.");
             else
-                ide.send(JSON.stringify(data));
+                ide.send(data);
         }
         else {
             // If any of the `consolecommand` events returns false, it means
@@ -167,11 +167,6 @@ module.exports = ext.register("ext/console/console", {
         }
     },
 
-    send: function(data) {
-        ide.send(data.line.replace(data.command,"").trim());
-        return true;
-    },
-
     showOutput: function() {
         tabConsole.set(1);
     },
@@ -224,12 +219,18 @@ module.exports = ext.register("ext/console/console", {
                 argv[0] = argv[0].replace(RE_band, "");
                 line = line.replace(RE_band, "");
             }
-            showConsole = execAction(cmd, {
+            
+            var data = {
                 command: cmd,
                 argv: argv,
                 line: line,
                 cwd: this.getCwd()
-            });
+            };
+            
+            if (cmd.trim() === "npm")
+                data.version = settings.model.queryValue("auto/node-version/@version") || "auto";
+                
+            showConsole = execAction(cmd, data);
         }
         if (showConsole === true) this.show();
     },
