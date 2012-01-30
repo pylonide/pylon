@@ -23,6 +23,7 @@
  * Load run.js, see log commits run past most recent commit. Hmm...
  * clicking around clears the syntax highlighting (wtf?)
  * focus() on search after clear doesn't work. Fix APF
+ * Server is sending data back to all clients. Thought I had fixed that...
  * 
  * Ideal:
  * 
@@ -292,6 +293,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         this.animateEditorClone = new apf.vbox({
             id : "animateEditorClone",
+            "class" : "animate_editor_clone",
             style : "z-index : 99999; position: absolute; background: #fff; overflow: hidden",
             childNodes: [
                 new apf.codeeditor({
@@ -592,25 +594,46 @@ module.exports = ext.register("ext/revisions/revisions", {
         var cecSession = currentEditorClone.$editor.getSession();
         cecSession.setValue(currentDocText);
 
+        var st = currentSession.getScrollTop();
+        var sl = currentSession.getScrollLeft();
+        hveSession.setScrollLeft(sl);
+        hveSession.setScrollTop(st);
+        cveSession.setScrollLeft(sl);
+        cveSession.setScrollTop(st);
+        cecSession.setScrollLeft(sl);
+        cecSession.setScrollTop(st);
+        
         var cePos = apf.getAbsolutePosition(ceEditor.$ext);
         animateEditorClone.$ext.style.left = cePos[0] + "px";
-        animateEditorClone.$ext.style.top = cePos[1] + "px";
+        animateEditorClone.$ext.style.top = "124px";//cePos[1] + "px";
         animateEditorClone.$ext.style.width = ceEditor.getWidth() + "px";
         animateEditorClone.$ext.style.height = ceEditor.getHeight() + "px";
+        animateEditorClone.$ext.style.opacity = "1";
         animateEditorClone.show();
+
+        ceEditor.hide();
 
         var moveToLeft = (window.innerWidth/2 + 30);
         var moveToWidth = ((window.innerWidth - moveToLeft) - 18);
         var moveToHeight = (window.innerHeight - 199);
-        
-        animateEditorClone.$ext.setAttribute("class", "bounce_into_current");
+
+        animateEditorClone.$ext.setAttribute("class", "animate_editor_clone bounce_into_current");
 
         Firmin.animate(animateEditorClone.$ext, {
             left : moveToLeft + "px",
             width : moveToWidth + "px",
-            height : moveToHeight + "px"
-        }, 1.5, function() {
-            animateEditorClone.hide();
+            height : moveToHeight + "px",
+            scale : 1.05
+        }, 1.3, function() {
+            Firmin.animate(animateEditorClone.$ext, {
+                scale : 1
+            }, 0.7, function() {
+                Firmin.animate(animateEditorClone.$ext, {
+                    opacity: 0
+                }, 0.3, function() {
+                    animateEditorClone.hide();
+                });
+            });
         });
 
         // Set the document mode for syntax highlighting
@@ -620,7 +643,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         vbVersions.show();
         Firmin.animate(vbVersions.$ext, {
             opacity: "1"
-        }, 1.5, function() {
+        }, 2.0, function() {
             historicalVersionEditor.show();
             currentVersionEditor.show();
             _self.resizeElements();
@@ -635,31 +658,55 @@ module.exports = ext.register("ext/revisions/revisions", {
      * Puts the "drop-in" animation in motion
      */
     escapeVersionMode : function() {
+        ceEditor.show();
+
         var currentSession = ceEditor.$editor.getSession();
         var currentDocText = currentSession.getValue();
         var cecSession = currentEditorClone.$editor.getSession();
+        var cveSession = currentVersionEditor.$editor.getSession();
         cecSession.setValue(currentDocText);
 
-        var cvePos = apf.getAbsolutePosition(currentVersionEditor.$ext);
-        animateEditorClone.$ext.style.left = cvePos[0] + "px";
-        animateEditorClone.$ext.style.top = cvePos[1] + "px";
-        animateEditorClone.$ext.style.width = ceEditor.getWidth() + "px";
-        animateEditorClone.$ext.style.height = ceEditor.getHeight() + "px";
-        animateEditorClone.show();
+        var st = cveSession.getScrollTop();
+        var sl = cveSession.getScrollLeft();
+        cecSession.setScrollLeft(sl);
+        cecSession.setScrollTop(st);
+        currentSession.setScrollLeft(sl);
+        currentSession.setScrollTop(st);
 
         var cePos = apf.getAbsolutePosition(ceEditor.$ext);
+        var cvePos = apf.getAbsolutePosition(currentVersionEditor.$ext);
+        animateEditorClone.$ext.style.left = cvePos[0] + "px";
+        animateEditorClone.$ext.style.top = cePos[1] + "px";
+        animateEditorClone.$ext.style.width = currentVersionEditor.getWidth() + "px";
+        animateEditorClone.$ext.style.height = currentVersionEditor.getHeight() + "px";
+        animateEditorClone.$ext.style.opacity = "1";
+        animateEditorClone.show();
+
+        apf.layout.forceResize(animateEditorClone.$ext);
+
         var moveToLeft = cePos[0];
         var moveToWidth = ceEditor.getWidth();
         var moveToHeight = ceEditor.getHeight();
-        
-        animateEditorClone.$ext.setAttribute("class", "bounce_outta_current");
 
+        animateEditorClone.$ext.setAttribute("class", "animate_editor_clone bounce_outta_current");
+
+        ceEditor.hide();
         Firmin.animate(animateEditorClone.$ext, {
             left : moveToLeft + "px",
             width : moveToWidth + "px",
-            height : moveToHeight + "px"
-        }, 1.5, function() {
-            animateEditorClone.hide();
+            height : moveToHeight + "px",
+            scale : 1.05
+        }, 1.3, function() {
+            Firmin.animate(animateEditorClone.$ext, {
+                scale : 1
+            }, 0.7, function() {
+                ceEditor.show();
+                Firmin.animate(animateEditorClone.$ext, {
+                    opacity: 0
+                }, 0.3, function() {
+                    animateEditorClone.hide();
+                });
+            });
         });
 
         historicalVersionEditor.hide();
@@ -668,11 +715,11 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         Firmin.animate(vbVersions.$ext, {
             opacity: "0"
-        }, 1.5, function() {
+        }, 1.3, function() {
             vbVersions.hide();
             apf.layout.forceResize(document.body);
         });
-
+        
         this.isFocused = false;
     },
 
