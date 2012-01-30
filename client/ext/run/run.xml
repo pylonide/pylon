@@ -4,7 +4,7 @@
         <configurations />
     </a:model>
 
-    <a:menu id="mnuRunCfg">	
+    <a:menu id="mnuRunCfg">    
         <a:item disabled="true" caption="no run history" />
         <a:divider></a:divider>
         <a:item onclick="require('ext/run/run').showRunConfigs(false)">Run Configurations ...</a:item>
@@ -111,26 +111,6 @@
                 <a:textbox id="txtRunCfgName" flex="1" value="[@path]" disabled="{!lstRunCfg.selected}" initial-message="Optional" skin="textbox-modal"/>
                 <a:button visible="false" icon="folder.png" disabled="true" tooltip="Browse ..."></a:button>
             </a:hbox>
-            <!--a:divider />
-            <a:hbox align="center" margin="5 10" padding="10">
-                <a:model id="mdlRunnerSelector">
-                    <data>
-                        <element caption="JavaScript" value="js" />
-                        <element caption="Python" value="py" />
-                    </data>
-                </a:model>
-                <a:label width="140" textalign="right">Runner</a:label>
-                <a:dropdown id="ddRunnerSelector"
-                    model="mdlRunnerSelector"
-                    flex="1"
-                    disabled="{!lstRunCfg.selected}"
-                    selected="{lstRunCfg.selected.attributes['extension'].value}">
-                    <a:each match="[element]">
-                        <a:caption match="[@caption]" />
-                        <a:value match="[@value]" />
-                    </a:each>
-                </a:dropdown>
-            </a:hbox-->
             <a:hbox align="center" margin="5 10 10" padding="5">
                 <a:label width="140" textalign="right" class="modal-label">Command line arguments</a:label>
                 <a:textbox id="txtRunCfgName" flex="1" value="[@args]" disabled="{!lstRunCfg.selected}" initial-message="Optional" skin="textbox-modal"/>
@@ -155,7 +135,7 @@
         
     <a:bar id="tbRun">
         <a:divider skin="c9-divider" />
-        <a:splitbutton
+        <!--a:splitbutton
           id       = "btnRun"
           icon     = "run.png"
           caption  = "run"
@@ -167,7 +147,7 @@
           caption  = "stop"
           skin     = "c9-toolbarbutton"
           onclick  = "require('ext/run/run').stop()"
-          disabled = "{!stProcessRunning.active and 1}" />
+          disabled = "{!stProcessRunning.active and 1}" /-->
     </a:bar>
 
 </a:application>

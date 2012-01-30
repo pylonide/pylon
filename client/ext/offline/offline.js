@@ -307,13 +307,20 @@ module.exports = ext.register("ext/offline/offline", {
         /**
          * This is where we save the files if we have offline support
          */
-        function saveFiles(e){
+        function saveFiles(e) {
             // Check for offline support
             if (!ide.offlineFileSystemSupport) {
-                var pages = tabEditors.getPages(), files = {};
-                if (pages.length) {
-                    for (var node, i = 0, l = pages.length; i < l; i++) {
-                        node = pages[i].$model.data;
+                var pages = tabEditors.getPages();
+                var files = {};
+                var len = pages.length;
+                if (len) {
+                    for (var i = 0; i < len; i++) {
+                        var node;
+                        // Sometimes there is no model for the page, and this
+                        // could cause Cloud9 to lose data
+                        if (pages[i].$model && pages[i].$model.data)
+                            node = pages[i].$model.data;
+
                         if (node)
                             files[node.getAttribute("path")] = pages[i].$doc.getValue();
                     }

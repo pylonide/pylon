@@ -37,6 +37,7 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
         workspaceDir: this.workspaceDir,
         mountDir: options.mountDir || this.workspaceDir,
         davPrefix: options.davPrefix || (baseUrl + "/workspace"),
+        davPlugins: options.davPlugins || exports.DEFAULT_DAVPLUGINS,
         baseUrl: baseUrl,
         debug: options.debug === true,
         staticUrl: staticUrl,
@@ -58,6 +59,7 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
     var davOptions = {
         node: this.options.mountDir,
         mount: this.options.davPrefix,
+        plugins: this.options.davPlugins,
         server: this.httpServer,
         standalone: false
     };
@@ -107,6 +109,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/quicksearch/quicksearch",
     "ext/gotoline/gotoline",
     "ext/html/html",
+    "ext/help/help",
     //"ext/ftp/ftp",
     "ext/code/code",
     "ext/imgview/imgview",
@@ -120,21 +123,27 @@ Ide.DEFAULT_PLUGINS = [
     "ext/tabbehaviors/tabbehaviors",
     "ext/tabsessions/tabsessions",
     "ext/keybindings/keybindings",
+    "ext/keybindings_default/keybindings_default",
     "ext/watcher/watcher",
     "ext/dragdrop/dragdrop",
     "ext/beautify/beautify",
     "ext/offline/offline",
     "ext/stripws/stripws",
     "ext/testpanel/testpanel",
-    "ext/nodeunit/nodeunit", 
+    "ext/nodeunit/nodeunit",
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",
     //"ext/autosave/autosave",
     "ext/vim/vim",
-    "ext/jslanguage/jslanguage"
-    //"ext/autotest/autotest"
+    "ext/guidedtour/guidedtour",
+    "ext/quickstart/quickstart",
+    "ext/jslanguage/jslanguage",
+    "ext/autotest/autotest",
+    "ext/tabsessions/tabsessions"
     //"ext/acebugs/acebugs"
 ];
+
+exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
 
 (function () {
 

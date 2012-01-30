@@ -1,0 +1,186 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+    <a:window name="guidetool">
+        <a:style><![CDATA[
+            .guidetool {
+                position : relative;
+                overflow : visible;
+                z-index  : 10000;
+                box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.25);
+                -moz-border-radius    : 8px;
+                -webkit-border-radius : 8px;
+                border-radius         : 8px;
+                -webkit-box-shadow: 0 1px 5px 1px #000000;
+                -moz-box-shadow: 0 1px 5px 1px #000000;
+                box-shadow: 0 1px 5px 1px #000000;
+            }
+            .guidetool .gt-header {
+                display : none;
+            }
+            .guidetool .gt-content {
+                background : url(images/tour-info-bg.png) repeat 0 0;
+                border : 1px solid #000101;
+                -webkit-box-shadow: inset 0px 1px 0px 0px #343434;
+                -moz-box-shadow: inset 0px 1px 0px 0px #343434;
+                box-shadow: inset 0px 1px 0px 0px #343434;
+                -moz-border-radius    : 8px;
+                -webkit-border-radius : 8px;
+                border-radius         : 8px;
+                padding: 15px 15px;
+                min-height: 25px;
+            }
+            .guidetool .gt-content .text {
+                color: #cee57f;
+                background : url(images/tour-info-bg.png) repeat 0 0;
+            }
+            .guidetool .gt-arrow {
+                position: absolute;
+                width: 25px;
+                height: 25px;
+                background : url(images/arrow.png) no-repeat 0 0;
+            }
+            .guidetool.top .gt-arrow {
+                left: 50%;
+                height: 17px;
+                bottom: -16px;
+                background-position : 0 -42px;
+            }
+            .guidetool.bottom .gt-arrow {
+                left: 50%;
+                top: -15px;
+                height: 17px;
+                background-position : 0 -25px;
+            }
+            .guidetool.left .gt-arrow {
+                right: -24px;    
+                top: 37%;
+                background-position : 0 -59px;
+            }
+            
+            .guidetool.right .gt-arrow {
+                left: -24px;	
+                top: 43%;
+                background-position : 0 0;
+            }
+            
+            .wn_cp_content .btnIcon .lbl span {
+                width: 40px;
+            }
+            
+            .tgDialog {
+                z-index: 99999;
+            }
+            .tgDialog, .guidetool {
+                z-index: 999999;
+            }
+             
+            .tgDialog > .bk-header {
+                padding-bottom: 10px;
+            }
+                
+            .tgDesc {
+            }
+             
+            .tgDesc a {
+                color: #20800a;
+                text-decoration: none;
+            }
+
+            .tgControlButton {
+                width: 85px;
+            }
+            
+            .tgPlayButton {
+                width: 40px;
+            }
+            
+            .tgPlayButton .caption {
+                height: 15px;
+                background: url(images/tg_button_play.png) no-repeat 14px 4px;
+            }
+            
+            .tgBackButton .caption {
+                height: 15px;
+                background: url(images/tg_button_back.png) no-repeat 20px -21px;
+            }
+            
+            .tgForwardButton .caption {
+                height: 15px;
+                background: url(images/tg_button_forward.png) no-repeat 27px 5px;
+            }
+        ]]></a:style>
+        <a:style condition="apf.isGecko"><![CDATA[
+            .tgDesc {
+                height: 130px;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main
+              collapsed-height = "30"
+              minheight        = "30"
+              minwidth         = "60"
+              container        = "div[2]"
+              drag             = "div[2]"
+              title            = "div[1]/div[1]/text()"
+              icon             = "div[1]/div[1]/div[1]"
+              buttons          = "div[1]/div[1]/div[2]">
+                <div class="guidetool">
+                    <div class="gt-header">
+                        <div class="hcontent">-<div class="icon"></div><div class="buttons"></div></div>
+                        <div class="right"></div>
+                    </div>
+                    <div class="gt-content"> </div>
+                    <div class="gt-arrow"></div>
+                </div>
+            </a:main>
+            <a:button>
+                <div> </div>
+            </a:button>
+        </a:presentation>
+    </a:window>
+    <a:modalwindow name="win-controls">
+        <a:style><![CDATA[
+            .win-controls {
+                position : relative;
+                overflow : hidden;
+                z-index  : 10000;
+                
+                -moz-border-radius    : 6px 6px 6px 6px;
+                -webkit-border-radius : 6px 6px 6px 6px;
+                border-radius         : 6px 6px 6px 6px;
+                
+                -webkit-box-shadow: 0 2px 10px 1px #000000;
+                -moz-box-shadow: 0 2px 10px 1px #000000;
+                box-shadow: 0 2px 10px 1px #000000;
+                border: 1px solid #000101;
+                background: url(images/controls-bg.png) repeat-x 0 0;
+            }
+
+            .win-controls .wc-container {
+                position:absolute;
+                overflow:visible;
+                left : 0;
+                top  : 0;
+                right : 0;
+                bottom : 0;
+                z-index: 1;
+            }
+        ]]></a:style>
+    
+        <a:presentation>
+            <a:main
+              collapsed-height = "26"
+              minheight        = "50"
+              minwidth         = "50"
+              container        = "div[1]"
+              title            = "div[1]/text()">
+                <div class="win-controls">
+                    <div class="wc-container"> </div>
+                </div>
+            </a:main>
+            <a:button>
+                <div/>
+            </a:button>
+        </a:presentation>
+    </a:modalwindow>
+</a:skin>

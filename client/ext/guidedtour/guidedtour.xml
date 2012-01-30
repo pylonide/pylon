@@ -1,0 +1,87 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">      
+    <a:window id = "winTourGuide"
+      title   = "Guided Tour"
+      center  = "true"
+      modal   = "true"
+      buttons = "close"
+      kbclose = "true"
+      width   = "360"
+      skin    = "bk-window"
+      class   = "relative">
+        <a:vbox padding="10" edge="15">
+            <a:text id="winTourDesc" class="tgDesc modal_text"/>
+        </a:vbox>
+        <a:hbox padding="10" pack="end" edge="10 10 10 20" align="center">
+            <a:button id="winTourButtonDone" 
+              default = "2"  
+              class   = "btn-green" 
+              skin    = "btn-default-css3"
+              visible = "false"
+              onclick = "winTourGuide.hide();" >Done</a:button>
+            <a:button id="winTourButtonClose" 
+              default = "2"  
+              skin    = "btn-default-simple" 
+              onclick = "winTourGuide.hide();" >Cancel</a:button>
+            <a:button id="winTourButtonStart" 
+              default = "2" 
+              class   = "btn-green" 
+              skin    = "btn-default-css3" 
+              onclick = "require('ext/guidedtour/guidedtour').startTour();">Let's start!</a:button>
+        </a:hbox>
+    </a:window>
+    <a:window id = "tourControlsDialog"
+      title   = ""
+      center  = "true"
+      modal   = "false"
+      kbclose = "false"
+      width   = "295"
+      zindex  = "99999"
+      height  = "58"
+      skinset = "guidedtour"
+      skin    = "win-controls"
+      class   = "tgDialog">
+        <a:vbox>
+            <a:hbox padding="10" pack="center" edge="16 15 10" align="center">
+                <!-- Play pause etc -->
+                <a:button id = "btnTourStepBack"
+                  class    = "tgControlButton tgBackButton"
+                  skin     = "btn-default-css3"
+                  width    = "75"
+                  height   = "25"
+                  disabled = "true"
+                  tooltip  = "Go Back"
+                  onclick  = "require('ext/guidedtour/guidedtour').stepBack();"/>
+                <a:button id = "btnTourPlay"
+                  class   = "btn-green tgPlayButton"
+                  tooltip = "Play"
+                  width   = "40"
+                  height  = "25"
+                  skin    = "btn-default-css3"
+                  onclick = "require('ext/guidedtour/guidedtour').togglePlay();" />
+                <a:button id = "btnTourStepForward"
+                  class   = "tgControlButton tgForwardButton"
+                  skin    = "btn-default-css3"
+                  tooltip = "Go Forward"
+                  width   = "75"
+                  height  = "25" 
+                  onclick = "require('ext/guidedtour/guidedtour').stepForward();" />
+                <a:divider skin="c9-divider" />
+                <a:button onclick="tourControlsDialog.hide();require('ext/guidedtour/guidedtour').closeTG()" skin="btn-default-simple">Quit</a:button>
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+        
+    <a:window id = "winTourText"
+      title     = ""
+      center    = "false"
+      modal     = "false"
+      buttons   = ""
+      kbclose   = "false"
+      width     = "160"
+      skinset   = "guidedtour"
+      skin      = "guidetool"
+      zindex    = "999999"
+      draggable = "false">
+        <a:text id="textTourDesc" flex="1" />     
+    </a:window>
+</a:application>

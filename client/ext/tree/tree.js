@@ -20,18 +20,18 @@ module.exports = ext.register("ext/tree/tree", {
     alone            : true,
     type             : ext.GENERAL,
     markup           : markup,
-    
+
     defaultWidth     : 200,
-    
+
     deps             : [fs],
-    
+
     currentSettings  : [],
     expandedList     : {},
     loading          : false,
     changed          : false,
     animControl      : {},
     nodes            : [],
-    
+
     "default"        : true,
 
     //@todo deprecated?
@@ -51,9 +51,9 @@ module.exports = ext.register("ext/tree/tree", {
         var _self = this;
 
         this.panel = winFilesViewer;
-        
+
         this.nodes.push(winFilesViewer);
-        
+
         colLeft.addEventListener("hide", function(){
             splitterPanelLeft.hide();
         });
@@ -72,7 +72,6 @@ module.exports = ext.register("ext/tree/tree", {
             checked : "[{require('ext/settings/settings').model}::auto/tree/@showhidden]",
             onclick : function(){
                 _self.changed = true;
-                
                 (davProject.realWebdav || davProject)
                     .setAttribute("showhidden", this.checked);
 
@@ -80,9 +79,10 @@ module.exports = ext.register("ext/tree/tree", {
                 settings.save();
             }
         }));
+
         ide.addEventListener("loadsettings", function(e) {
             var model = e.model;
-            (davProject.realWebdav || davProject).setAttribute("showhidden", 
+            (davProject.realWebdav || davProject).setAttribute("showhidden",
                 apf.isTrue(model.queryValue('auto/tree/@showhidden')));
         });
 
@@ -112,7 +112,7 @@ module.exports = ext.register("ext/tree/tree", {
 
         trFiles.addEventListener("afterchoose", this.$afterselect = function(e) {
             var node = this.selected;
-            if (!node || node.tagName != "file" || this.selection.length > 1 
+            if (!node || node.tagName != "file" || this.selection.length > 1
               || !ide.onLine && !ide.offlineFileSystemSupport) //ide.onLine can be removed after update apf
                     return;
 
@@ -205,7 +205,7 @@ module.exports = ext.register("ext/tree/tree", {
             //trFiles.enable();
             //mnuCtxTree.enable();
         });
-        
+
         ide.addEventListener("filecallback", function (e) {
             _self.refresh();
         });
@@ -424,13 +424,13 @@ module.exports = ext.register("ext/tree/tree", {
 
         }
     },
-    
+
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
         });
     },
-    
+
     disable : function(){
         this.nodes.each(function(item){
             item.disable();

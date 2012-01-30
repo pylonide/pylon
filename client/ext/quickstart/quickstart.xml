@@ -1,0 +1,106 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">    
+    <a:window
+        id = "quickStartDialog"
+        title     = "Here are a few pointers to get you started!"
+        center    = "true"
+        modal     = "false"
+        buttons   = "close"
+        kbclose   = ""
+        width     = "500"
+        height    = "210"
+        skinset   = "quickstart"
+        skin      = "win-quickstart"
+        onhide    = "require('ext/quickstart/quickstart').closeStart();"
+        draggable = "false">    
+        <div class="tgtext container">
+            <a href="javascript:void(0)" onclick="require('ext/quickstart/quickstart').shutdownQSStartGT();">For a detailed guided tour, <span class="tgLink">click here!</span></a>
+        </div>
+        
+         <div class="qsSupportText container">
+            <p>If you ever run into trouble, be sure to check out our support page on 
+            <a href="http://c9.io/support.html" class="supportLink" target="_blank">c9.io/support</a>, 
+            or talk to us on <a href="https://twitter.com/#!/C9Support" class="supportLink" target="_blank">Twitter</a>.</p>
+        </div>
+        
+        <a:hbox class="qsCBContainer" edge="2 0 0 0" padding="2">
+            <div class="checkboxDiv">
+                 <a:checkbox id="quickStartCheckbox" 
+                   skin    = "checkbox_black"
+                   checked = "[{require('ext/settings/settings').model}::auto/help/@show]"
+                   value   = "[{require('ext/settings/settings').model}::auto/help/@show]"
+                   onafterchange = "require('ext/quickstart/quickstart').setState(this.value);"
+                 >Show this quick start on startup</a:checkbox>
+            </div>
+            <div class="buttonDiv">
+                <a:button 
+                  default = "2" 
+                  width   = "200"
+                  skin    = "btn-default-css3" 
+                  class   = "btn-green btnclosetour" 
+                  onclick = "require('ext/quickstart/quickstart').closeStart();">
+                    Just the editor, please
+                </a:button>              
+            </div>
+        </a:hbox>
+    </a:window>
+    
+    <a:window
+        id = "qsProjectBar"
+        title = ""
+        center = "false"
+        modal = "false"
+        buttons = ""
+        kbclose   = "false"
+        width     = "200"
+        skinset   = "quickstart"
+        skin ="qsImage"
+        draggable = "false">
+        <a:vbox class="qsProjectBar">
+        </a:vbox>
+    </a:window>
+    
+    <a:window
+        id = "qsMenuBar"
+        title = ""
+        center = "false"
+        modal = "false"
+        buttons = ""
+        kbclose   = "false"
+        width     = "200"
+        skinset   = "quickstart"
+        skin ="qsImage"
+        draggable = "false">
+        <a:vbox class="qsMenuBar">
+        </a:vbox>
+    </a:window>
+    
+    <a:window
+        id = "qsToolbar"
+        title = ""
+        center = "false"
+        modal = "false"
+        buttons = ""
+        kbclose   = "false"
+        width     = "200"
+        skinset   = "quickstart"
+        skin ="qsImage"
+        draggable = "false">
+        <a:vbox class="qsToolbar">
+        </a:vbox>
+    </a:window>
+    
+    <a:window
+        id = "qsCLI"
+        title = ""
+        center = "false"
+        modal = "false"
+        buttons = ""
+        kbclose   = "false"
+        width     = "200"
+        skinset   = "quickstart"
+        skin ="qsImage"
+        draggable = "false">
+        <a:vbox class="qsCLI">
+        </a:vbox>
+    </a:window>
+</a:application>
