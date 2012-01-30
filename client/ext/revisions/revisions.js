@@ -1,5 +1,5 @@
 /**
- * File history browser for Cloud9 IDE
+ * File history browser & comparison tool for Cloud9 IDE
  * 
  * TODO:
  * 
@@ -16,6 +16,7 @@
  * Use dmp's fuzzy matching method to decide on gray-line placement
  * Get APF-filtered list instead of doing our own filtering
  * Make the history so it floats in from left if after current revision view
+ * Implement a Git Log State class, move everything over
  * 
  * Bugs:
  * 
@@ -44,6 +45,7 @@ define(function(require, exports, module) {
 var ext = require("core/ext");
 var ide = require("core/ide");
 var util = require("core/util");
+var rutil = require("ext/revisions/util");
 var Range = require("ace/range").Range;
 var Anchor = require('ace/anchor').Anchor;
 var editors = require("ext/editors/editors");
@@ -100,6 +102,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                                                     width : "100",
                                                     height : "25",
                                                     id : "tbRevisionsSearch",
+                                                    disabled : true,
                                                     skin : "searchbox_textbox",
                                                     "initial-message" : "Filter",
                                                     "class" : "versions_search",
@@ -247,7 +250,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             softtabs          : "[{require('ext/settings/settings').model}::editors/code/@softtabs]",
             tabsize           : "[{require('ext/settings/settings').model}::editors/code/@tabsize]",
             scrollspeed       : "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]",
-
             fontsize          : "[{require('ext/settings/settings').model}::editors/code/@fontsize]",
             wrapmode          : "false",
             wraplimitmin      : "80",
@@ -255,10 +257,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             gutter            : "[{require('ext/settings/settings').model}::editors/code/@gutter]",
             highlightselectedword : "false",
             autohidehorscrollbar  : "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]",
-
             "debugger"        : "null",
             readonly          : "true",
-            style : "z-index : 99998; position: absolute; top: -10000px; background: #fff"
+            style             : "z-index : 99998; position: absolute; top: -10000px; background: #fff"
         });
 
         this.historicalVersionEditor = new apf.codeeditor({
@@ -277,7 +278,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             softtabs          : "[{require('ext/settings/settings').model}::editors/code/@softtabs]",
             tabsize           : "[{require('ext/settings/settings').model}::editors/code/@tabsize]",
             scrollspeed       : "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]",
-
             fontsize          : "[{require('ext/settings/settings').model}::editors/code/@fontsize]",
             wrapmode          : "false",
             wraplimitmin      : "80",
@@ -285,10 +285,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             gutter            : "[{require('ext/settings/settings').model}::editors/code/@gutter]",
             highlightselectedword : "false",
             autohidehorscrollbar  : "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]",
-
             "debugger"        : "null",
             readonly          : "true",
-            style : "z-index : 99999; position: absolute; background: #fff"
+            style             : "z-index : 99999; position: absolute; background: #fff"
         });
 
         this.animateEditorClone = new apf.vbox({
@@ -312,7 +311,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                     softtabs          : "[{require('ext/settings/settings').model}::editors/code/@softtabs]",
                     tabsize           : "[{require('ext/settings/settings').model}::editors/code/@tabsize]",
                     scrollspeed       : "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]",
-        
                     fontsize          : "[{require('ext/settings/settings').model}::editors/code/@fontsize]",
                     wrapmode          : "false",
                     wraplimitmin      : "80",
@@ -320,7 +318,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                     gutter            : "[{require('ext/settings/settings').model}::editors/code/@gutter]",
                     highlightselectedword : "false",
                     autohidehorscrollbar  : "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]",
-        
                     "debugger"        : "null",
                     readonly          : "true"
                 })
@@ -343,7 +340,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             softtabs          : "[{require('ext/settings/settings').model}::editors/code/@softtabs]",
             tabsize           : "[{require('ext/settings/settings').model}::editors/code/@tabsize]",
             scrollspeed       : "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]",
-
             fontsize          : "[{require('ext/settings/settings').model}::editors/code/@fontsize]",
             wrapmode          : "false",
             wraplimitmin      : "80",
@@ -351,10 +347,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             gutter            : "[{require('ext/settings/settings').model}::editors/code/@gutter]",
             highlightselectedword : "false",
             autohidehorscrollbar  : "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]",
-
             "debugger"        : "null",
             readonly          : "true",
-            style : "z-index : 99999; position: absolute; background: #fff"
+            style             : "z-index : 99999; position: absolute; background: #fff"
         });
 
         setTimeout(function() {
@@ -363,36 +358,23 @@ module.exports = ext.register("ext/revisions/revisions", {
             vbMain.parentNode.appendChild(_self.currentVersionEditor);
             vbMain.parentNode.appendChild(_self.animateEditorClone);
 
-            _self.sliderTooltip = document.createElement("div");
-            _self.sliderTooltip.setAttribute("id", "slider_tooltip");
+            _self.sliderTooltip = rutil.createElement("div", { "id" : "slider_tooltip" });
             vbVersions.$ext.appendChild(_self.sliderTooltip);
 
-            _self.historyGraphics = document.createElement("div");
-            _self.historyGraphics.setAttribute("id", "history_graphics");
+            _self.historyGraphics = rutil.createElement("div", { "id" : "history_graphics" });
 
-            var smallGHistory = document.createElement("div");
-            smallGHistory.setAttribute("id", "small_ghistory");
-            smallGHistory.setAttribute("class", "history_graphic");
+            var smallGHistory = rutil.createElement("div",  { "id" : "small_ghistory",  "class" : "history_graphic" });
             _self.historyGraphics.appendChild(smallGHistory);
-
-            var mediumGHistory = document.createElement("div");
-            mediumGHistory.setAttribute("id", "medium_ghistory");
-            mediumGHistory.setAttribute("class", "history_graphic");
+            var mediumGHistory = rutil.createElement("div", { "id" : "medium_ghistory", "class" : "history_graphic" });
             _self.historyGraphics.appendChild(mediumGHistory);
-
-            var largeGHistory = document.createElement("div");
-            largeGHistory.setAttribute("id", "large_ghistory");
-            largeGHistory.setAttribute("class", "history_graphic");
+            var largeGHistory = rutil.createElement("div",  { "id" : "large_ghistory",  "class" : "history_graphic" });
             _self.historyGraphics.appendChild(largeGHistory);
-
             vbVersions.$ext.appendChild(_self.historyGraphics);
 
-            var sliderBg = document.createElement("div");
-            sliderBg.setAttribute("id", "versionsSliderBg");
+            var sliderBg = rutil.createElement("div", { "id": "versionsSliderBg"});
             vbHistoricalHeader.$ext.appendChild(sliderBg);
 
-            _self.sliderEl = document.createElement("div");
-            _self.sliderEl.setAttribute("id", "versionsHistoricalSlider");
+            _self.sliderEl = rutil.createElement("div", { "id": "versionsHistoricalSlider" });
             vbHistoricalHeader.$ext.appendChild(_self.sliderEl);
 
             currentVersionEditor.$editor.getSession().setUseWrapMode(false);
@@ -416,17 +398,19 @@ module.exports = ext.register("ext/revisions/revisions", {
         });
     },
 
-    loadScript : function(src) {
-        var dmp = document.createElement("script");
-        dmp.setAttribute("type", "text/javascript");
-        dmp.setAttribute("src", src);
-        document.body.appendChild(dmp);
-    },
-
+    /**
+     * Extension starting point. Set up listeners, etc.
+     */
     hook : function(){
         var _self = this;
 
-        this.loadScript("/static/ext/revisions/diff_match_patch.js");
+        document.body.appendChild(
+            rutil.createElement("script", {
+                "type" : "text/javascript",
+                "src" : ide.staticPrefix + "/ext/revisions/diff_match_patch.js"
+            })
+        );
+
         this.gitLogParser = new GitLogParser();
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
@@ -446,7 +430,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         );
 
         ide.addEventListener("editorswitch", function(e) {
-            var fileName = _self.getFilePath(e.previousPage.name);
+            var fileName = rutil.getFilePath(e.previousPage.name);
             var fileLog = _self.gitLogs[fileName];
             if (fileLog) {
                 _self.removeTimelinePoints(fileLog.logData);
@@ -457,32 +441,45 @@ module.exports = ext.register("ext/revisions/revisions", {
         ext.initExtension(this);
     },
 
+    /**
+     * Resizes the absolutely-positioned code editors
+     */
     resizeElements : function() {
         var ph = currentVersionHolder.$ext;
-        var cPos = apf.getAbsolutePosition(ph);
-        currentVersionEditor.$ext.style.left = cPos[0] + "px";
-        currentVersionEditor.$ext.style.top = cPos[1] + "px";
-        var d = apf.getDiff(ext);
-        currentVersionEditor.$ext.style.width = (ph.offsetWidth + 2 - d[0]) + "px";
-        currentVersionEditor.$ext.style.height = (ph.offsetHeight - d[1]) + "px";
+        var pos = apf.getAbsolutePosition(ph);
+        currentVersionEditor.$ext.style.left = pos[0] + "px";
+        currentVersionEditor.$ext.style.top  = pos[1] + "px";
 
-        var pos = apf.getAbsolutePosition(ph = historicalVersionHolder.$ext);
+        currentVersionEditor.$ext.style.width  = (ph.offsetWidth + 2) + "px";
+        currentVersionEditor.$ext.style.height = ph.offsetHeight + "px";
+
+        ph = historicalVersionHolder.$ext;
+        pos = apf.getAbsolutePosition(ph);
         historicalVersionEditor.$ext.style.left = pos[0] + "px";
-        historicalVersionEditor.$ext.style.top = pos[1] + "px";
-        var d = apf.getDiff(ext);
-        var hLeftWidth = ph.offsetWidth + 2 - d[0];
-        historicalVersionEditor.$ext.style.width = hLeftWidth + "px";
-        historicalVersionEditor.$ext.style.height = (ph.offsetHeight - d[1]) + "px";
+        historicalVersionEditor.$ext.style.top  = pos[1] + "px";
+
+        historicalVersionEditor.$ext.style.width  = (ph.offsetWidth + 2) + "px";
+        historicalVersionEditor.$ext.style.height = ph.offsetHeight + "px";
     },
 
+    /**
+     * Given commit data, returns a table-formatted HTML string
+     * 
+     * @param {object} data The commit data
+     * @param {boolean} includeMessage Whether to include the commit message
+     */
     formulateRevisionMetaData : function(data, includeMessage) {
-        var timestamp = this.formulateVersionsLabelDate(data.author.timestamp);
-        var output = ['<table cellspacing="0" cellpadding="0" border="0">',
+        var date = new Date(data.author.timestamp*1000);
+        var timestamp = date.toString("MMM dd, yyyy hh:mm:ss tt");
+
+        var output = [
+            '<table cellspacing="0" cellpadding="0" border="0">',
             '<tr><td class="rev_header">Author:</td><td>', data.author.fullName,
             " ", apf.htmlentities(data.author.email), '</td></tr>',
             '<tr><td class="rev_header">Date:</td><td>', timestamp, '</td></tr>',
             '<tr><td class="rev_header">Commit:</td><td>', data.commit.substr(0, 10),
-            '</td></tr>'];
+            '</td></tr>'
+        ];
         if (includeMessage)
             output.push('<tr><td class="rev_header">Message:</td><td>',
                 data.message.join("<br />"), '</td></tr>');
@@ -490,14 +487,22 @@ module.exports = ext.register("ext/revisions/revisions", {
         return output.join("");
     },
 
+    /**
+     * Loads the revision from the currently selected item in the dropdown
+     */
     loadRevisionFromList : function() {
         this.loadRevision(lstCommits.selected.getAttribute("internal_counter"));
     },
 
+    /**
+     * Loads a revision of the file
+     * 
+     * @param {number} num 0-based index of the revision requested
+     */
     loadRevision : function(num) {
         this.loadingRevision = true;
 
-        var fileData = this.gitLogs[this.getFilePath()];
+        var fileData = this.gitLogs[rutil.getFilePath()];
         var hash = fileData.logData[num].commit;
 
         var node = lstCommits.queryNode("commit[@internal_counter='" +num + "']");
@@ -517,14 +522,35 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.removeMarkers(cveSession);
 
         var _self = this;
-        var hveLeftMovement = -1 * (historicalVersionEditor.getWidth() + 300);
+        //var hveLeftMovement = -1 * (historicalVersionEditor.getWidth() + 300);
 
         var hvePos = apf.getAbsolutePosition(historicalVersionEditor.$ext);
+        Firmin.animate(historicalPlaceholder.$ext, {
+            opacity : 0,
+            zIndex  : 99999,
+            left    : hvePos[0] + "px",
+            top     : (hvePos[1]-40) + "px",
+            width   : historicalVersionEditor.getWidth() + "px",
+            height  : historicalVersionEditor.getHeight() + "px"
+        }, 0, function() {
+            Firmin.animate(historicalPlaceholder.$ext, {
+                top: hvePos[1] + "px",
+                opacity: 1
+                //timingFunction:  "ease-in"
+            }, 0.5, function() {
+                _self.requestGitShow(hash);
+            });
+        });
+        
+        /*historicalPlaceholder.$ext.style.opacity = 0;
+        historicalPlaceholder.$ext.style.zIndex = 99999;
         historicalPlaceholder.$ext.style.left = hvePos[0] + "px";
-        historicalPlaceholder.$ext.style.top = hvePos[1] + "px";
+        historicalPlaceholder.$ext.style.top = (hvePos[1]-40) + "px";//hvePos[1] + "px";
         historicalPlaceholder.$ext.style.width = historicalVersionEditor.getWidth() + "px";
         historicalPlaceholder.$ext.style.height = historicalVersionEditor.getHeight() + "px";
-
+        */
+        
+        /*
         Firmin.animate(historicalVersionEditor.$ext, {
             translateX: "15px"
         }, 0.3, function() {
@@ -534,7 +560,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 historicalPlaceholder.$ext.style.zIndex = "99999";
                 _self.requestGitShow(hash);
             });
-        });
+        });*/
     },
 
     restoreRevision : function() {
@@ -543,12 +569,12 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     /**
      * Transforms the interface into a side-by-side comparison
-     * of the current document and its historical revisions
+     * of the historical revisions and the current document
      */
     enterVersionMode : function() {
         var _self = this;
 
-        var file = this.getFilePath();
+        var file = rutil.getFilePath();
         var filename = file.split("/").pop();
         current_doc_label.setValue(filename);
 
@@ -583,7 +609,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             left : moveToLeft + "px",
             width : moveToWidth + "px",
             height : moveToHeight + "px"
-        }, 3.0, function() {
+        }, 1.5, function() {
             animateEditorClone.hide();
         });
 
@@ -594,7 +620,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         vbVersions.show();
         Firmin.animate(vbVersions.$ext, {
             opacity: "1"
-        }, 3.0, function() {
+        }, 1.5, function() {
             historicalVersionEditor.show();
             currentVersionEditor.show();
             _self.resizeElements();
@@ -604,6 +630,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.isFocused = true;
     },
 
+    /**
+     * Returns the IDE back to the default state
+     * Puts the "drop-in" animation in motion
+     */
     escapeVersionMode : function() {
         var currentSession = ceEditor.$editor.getSession();
         var currentDocText = currentSession.getValue();
@@ -628,16 +658,17 @@ module.exports = ext.register("ext/revisions/revisions", {
             left : moveToLeft + "px",
             width : moveToWidth + "px",
             height : moveToHeight + "px"
-        }, 2.0, function() {
+        }, 1.5, function() {
             animateEditorClone.hide();
         });
 
         historicalVersionEditor.hide();
+        historicalPlaceholder.hide();
         currentVersionEditor.hide();
 
         Firmin.animate(vbVersions.$ext, {
             opacity: "0"
-        }, 2.0, function() {
+        }, 1.5, function() {
             vbVersions.hide();
             apf.layout.forceResize(document.body);
         });
@@ -646,17 +677,19 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     /**
-     * Requests git show data from the server, based on the current file + hash
+     * Generic server request sender
      * 
-     * @param {string} hash The commit hash
+     * @param {string} subcommand What git operation we want to do
+     * @param {hash} extra Extra details to provide to the server-side ext
      */
-    requestGitShow : function(hash) {
+    sendServerRequest : function(subcommand, extra) {
         var data = {
             command : this.command,
-            subcommand : "show",
-            file : this.getFilePath(),
-            hash : hash
+            subcommand : subcommand,
+            file : rutil.getFilePath()
         };
+
+        apf.extend(data, extra);
 
         ide.dispatchEvent("track_action", {
             type: "gittools",
@@ -665,9 +698,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         });
 
         if (ext.execCommand(this.command, data) !== false) {
-            if (ide.dispatchEvent("consolecommand." + this.command, {
-              data: data
-            }) !== false) {
+            if (ide.dispatchEvent("consolecommand." + this.command, { data: data}) !== false) {
                 if (!ide.onLine)
                     util.alert("Currently Offline", "Currently Offline", "This operation could not be completed because you are offline.");
                 else
@@ -677,41 +708,32 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     /**
+     * Requests git show data from the server, based on the current file + hash
+     * 
+     * @param {string} hash The commit hash
+     */
+    requestGitShow : function(hash) {
+        this.sendServerRequest("show", { hash : hash });
+    },
+
+    /**
      * Requests git log data from the server, about the current file
      */
     requestGitLog : function() {
-        var data = {
-            command : this.command,
-            subcommand : "log",
-            file : this.getFilePath()
-        };
+        tbRevisionsSearch.disable();
 
-        ide.dispatchEvent("track_action", {
-            type: "gittools",
-            cmd: this.command,
-            subcommand: data.subcommand
-        });
-
-        if (ext.execCommand(this.command, data) !== false) {
-
-            if (ide.dispatchEvent("consolecommand." + this.command, { data: data}) !== false) {
-                if (!ide.onLine) {
-                    util.alert("Currently Offline", "Currently Offline", "This operation could not be completed because you are offline.");
-                } else {
-                    if (!this.gitLogs[data.file]) {
-                        this.gitLogs[data.file] = {
-                            logData : [],
-                            lastLoadedGitLog : 0,
-                            lastSliderValue : 0,
-                            currentRevision : editors.currentEditor ? editors.currentEditor.ceEditor.getSession().getValue() : "",
-                            revisions : {}
-                        };
-                    }
-
-                    ide.socket.send(JSON.stringify(data));
-                }
-            }
+        var file = rutil.getFilePath();
+        if (!this.gitLogs[file]) {
+            this.gitLogs[file] = {
+                logData : [],
+                lastLoadedGitLog : 0,
+                lastSliderValue : 0,
+                currentRevision : editors.currentEditor ? editors.currentEditor.ceEditor.getSession().getValue() : "",
+                revisions : {}
+            };
         }
+
+        this.sendServerRequest("log");
     },
 
     /**
@@ -743,29 +765,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
     },
 
-    arrCommits2Xml : function(arr, elName) {
-        var out = ["<", elName, "s>"], attrMessage;
-
-        for (var i = 0, len = arr.length; i < len; i++) {
-            // Clean up the comit message
-            attrMessage = apf.xmlentities(apf.htmlentities(arr[i].messageJoinedLower));
-            attrMessage = attrMessage.replace(/(\r\n|\r|\n)/gm, " ").replace(/"/g, "&quot;");
-            out.push("<", elName, " ",
-                'hash="', arr[i].commit, '" ',
-                'authoremail="', apf.htmlentities(arr[i].author.email), '" ',
-                'authorname="', arr[i].author.fullName, '" ',
-                'timestamp="', arr[i].author.timestamp, '" ',
-                'message="', attrMessage, '" ',
-                'internal_counter="', i, '"',
-            ' />');
-        }
-
-        out.push("</", elName, "s>");
-        return out.join("");
-    },
-
     /**
-     * The server has sent back the results of a "git log" request
+     * Process the results of a "git log" reply from the server
      * 
      * @param {JSON} message Details about the message & output from git log
      */
@@ -784,7 +785,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             logData[gi].committer.fullNameLower = logData[gi].committer.fullName.toLowerCase();
         }
 
-        var mdlOut = apf.getXml(this.arrCommits2Xml(logData, "commit"));
+        var mdlOut = apf.getXml(rutil.arrCommits2Xml(logData, "commit"));
         mdlCommits.load(mdlOut);
 
         var file = message.body.file;
@@ -796,12 +797,15 @@ module.exports = ext.register("ext/revisions/revisions", {
         current_versions_label.setValue(output);
 
         this.setupTimeline(this.gitLogs[file].logData);
+        tbRevisionsSearch.enable();
 
         this.gitLogs[file].logData[logDataLength-1].dotEl.setAttribute("class", "current");
     },
 
     /**
-     * The server has sent back the results of a "git show" request
+     * Process the results of a "git show" reply from the server
+     * 
+     * @TODO separate the marker functionality
      * 
      * @param {JSON} message Details about the message & output from git show
      */
@@ -893,7 +897,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 if (lineDiff > 0) {
                     // @TODO: DMP fuzzy logic to see if nll = numLeftLines-1 or not
                     var nll;
-                    nll = numLeftLines;
+                    nll = numLeftLines - 1;
 
                     var colEnd = historyDoc.getLine(nll).length;
                     historicalVersionEditor.$editor.moveCursorTo(nll, colEnd);
@@ -907,9 +911,9 @@ module.exports = ext.register("ext/revisions/revisions", {
                 }
                 // Add newlines to current
                 else {
-                    // @TODO: DMP fuzzy logic to see if nll = numLeftLines-1 or not
+                    // @TODO: DMP fuzzy logic to see if nrr = numberRightLines-1 or not
                     var nrr;
-                    nrr = numRightLines;
+                    nrr = numRightLines - 1;
                     var colEnd = currentDoc.getLine(nrr).length;
                     currentVersionEditor.$editor.moveCursorTo(nrr, colEnd);
                     currentVersionEditor.$editor.insert(newlines);
@@ -923,35 +927,52 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
         }
 
-        Firmin.animate(historicalVersionEditor.$ext, {
+        /*Firmin.animate(historicalVersionEditor.$ext, {
             translateX: "0px"
         }, 0, function() {
+        */
+        setTimeout(function() {
             historicalVersionEditor.$editor.session.setScrollLeft(sl);
             currentVersionEditor.$editor.session.setScrollLeft(sl);
             historicalVersionEditor.$editor.session.setScrollTop(st);
             currentVersionEditor.$editor.session.setScrollTop(st);
 
+            historicalPlaceholder.$ext.style.opacity = 0;
             historicalPlaceholder.$ext.style.zIndex = "99998";
-            historicalPlaceholder.$ext.style.top = "-10000px";
+            //});
         });
     },
 
+    /**
+     * Removes all markers from a code editor
+     * 
+     * @param {apf.codeeditor.session} Code editor session
+     */
     removeMarkers: function(session) {
         if (!session.revisionAnchors)
             return;
 
         var markers = session.getMarkers(false);
-        for (var id in markers) {
-            if (markers[id].clazz.indexOf('revision_hl_') === 0) {
+        for (var id in markers)
+            if (markers[id].clazz.indexOf('revision_hl_') === 0)
                 session.removeMarker(id);
-            }
-        }
-        for (var i = 0; i < session.revisionAnchors.length; i++) {
+
+        for (var i = 0; i < session.revisionAnchors.length; i++)
             session.revisionAnchors[i].detach();
-        }
+
         session.revisionAnchors = [];
     },
 
+    /**
+     * Adds code highlighting to emphasize differences from diff_match_patch
+     * 
+     * @param {apf.codeeditor} editor The code editor
+     * @param {string} type Essentially the CSS class suffix to apply (ex. "remove", "add")
+     * @param {number} fromRow Which row to start from
+     * @param {number} fromColumn Which column to start from
+     * @param {number} toRow Row to end on
+     * @param {number} toColumn Column to end on
+     */
     addCodeMarker : function(editor, type, fromRow, fromColumn, toRow, toColumn) {
         if (fromRow == toRow && fromColumn == toColumn)
             return;
@@ -973,21 +994,21 @@ module.exports = ext.register("ext/revisions/revisions", {
                 row: anchor.row + rowDiff,
                 column: anchor.column + colDiff
             });
-            
+
             markerId = mySession.addMarker(range, "revision_hl_" + type);
         }
+
         updateFloat();
         anchor.on("change", function() {
-            updateFloat(true);
+            updateFloat();
         });
     },
 
-    formulateVersionsLabelDate : function(ts) {
-        var date = new Date(ts*1000);
-        var ds = date.toString().split(" ");
-        return ds[1] + " " + ds[2] + " " + ds[3] + " " + ds[4];
-    },
-
+    /**
+     * Removes all the points along the timeline and their listeners
+     * 
+     * @param {array} logData Array holding all the points
+     */
     removeTimelinePoints : function(logData) {
         for (var i = 0, len = logData.length; i < len; i++) {
             logData[i].dotEl.removeEventListener("mouseover", logData[i].dotElMouseOver);
@@ -997,6 +1018,11 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
     },
 
+    /**
+     * Creates the points along the timeline
+     * 
+     * @param {array} logData Array of all the commits
+     */
     setupTimeline : function(logData) {
         if (!logData.length)
             return;
@@ -1013,10 +1039,12 @@ module.exports = ext.register("ext/revisions/revisions", {
             var tsDiff = ts - tsBegin;
             var percentage = (tsDiff / timeSpan) * 100;
 
-            logData[i].dotEl = document.createElement("u");
-            logData[i].dotEl.setAttribute("style", "left: " + percentage + "%");
-            logData[i].dotEl.setAttribute("rel", i);
-            logData[i].dotEl.setAttribute("hash", logData[i].commit);
+            logData[i].dotEl = rutil.createElement("u", {
+                "style" : "left: " + percentage + "%",
+                "rel" : i,
+                "hash" : logData[i].commit
+            });
+
             logData[i].dotEl.addEventListener("mouseover", logData[i].dotElMouseOver = function() {
                 var dotClass = this.getAttribute("class");
                 if(dotClass && dotClass.split(" ")[0] == "pop")
@@ -1059,27 +1087,14 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     /**
-     * Retrieves the file path for the currently selected file tab
+     * Given a search term, filter the timeline based on
+     * available commit data
      * 
-     * @param {string} filePath If we already have it and want to normalize it
+     * @param {string} filter The search term to filter with
      */
-    getFilePath : function(filePath) {
-        if (typeof filePath === "undefined")
-            filePath = tabEditors.getPage().$model.data.getAttribute("path");
-        if (filePath.indexOf("/workspace/") === 0)
-            filePath = filePath.substr(11);
-
-        return filePath;
-    },
-
     filterTimeline : function(filter) {
-        var currentFile = this.getFilePath();
-
-        // @TODO Why are we allowing user to search w/out log data?
-        // Search should be disabled until the logData is loaded
+        var currentFile = rutil.getFilePath();
         var logs = this.gitLogs[currentFile].logData;
-        if (!logs)
-            return;
 
         filter = filter.toLowerCase();
 

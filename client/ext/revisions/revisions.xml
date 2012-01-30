@@ -48,11 +48,11 @@
         .bounce_into_current {
             -webkit-animation-name: bouncein;
             -webkit-animation-iteration-count: 1;
-            -webkit-animation-duration: 3.0s;
+            -webkit-animation-duration: 1.5s;
 
             -moz-animation-name: bouncein;
             -moz-animation-iteration-count: 1;
-            -moz-animation-duration: 3.0s;
+            -moz-animation-duration: 1.5s;
         }
 
         @-webkit-keyframes bounceout {
@@ -88,11 +88,11 @@
         .bounce_outta_current {
             -webkit-animation-name: bounceout;
             -webkit-animation-iteration-count: 1;
-            -webkit-animation-duration: 2.0s;
+            -webkit-animation-duration: 1.5s;
 
             -moz-animation-name: bounceout;
             -moz-animation-iteration-count: 1;
-            -moz-animation-duration: 2.0s;
+            -moz-animation-duration: 1.5s;
         }
 
         #slider_tooltip {
