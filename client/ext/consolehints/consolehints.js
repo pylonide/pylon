@@ -227,10 +227,11 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         if (!cliValue) return;
 
         this.getCmdCompletion(cliValue,
-            function(cmds) { cliValue = cliValue.replace(RE_lastWord, cmds[0]); },
             function(cmds) {
-                if (cmds.length)
-                    cliValue = cmds[0];
+                if (cmds.length) cliValue = cliValue.replace(RE_lastWord, cmds[0]);
+            },
+            function(cmds) {
+                if (cmds.length) cliValue = cmds[0];
             }
         );
 
