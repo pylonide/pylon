@@ -1905,6 +1905,7 @@
             height : 10px;
             cursor : pointer;
             border-bottom: 1px solid #38393b;
+            border-top: 1px solid #4f5052;
         }
 
         .dockcol .dockheader {
@@ -6089,7 +6090,7 @@
             width      : 16px;
             height     : 17px;
             position   : absolute;
-            background : url("images/radio-grey.png") no-repeat 0 0px;
+            background : url("images/radio-black.png") no-repeat 0 0px;
             overflow: hidden;
             left: 2px;
             top: 2px;

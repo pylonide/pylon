@@ -54,6 +54,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     },
 
     init : function() {
+        var _self = this;
+        
         txtGoToFile.addEventListener("keydown", function(e){
             if (txtGoToFile.value == "") {
                 return;
@@ -85,18 +87,25 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         }, true);
 
         dgGoToFile.addEventListener("afterchoose", function(e) {
-            winGoToFile.hide();
-            
-            var nodes = dgGoToFile.getSelection();
-            for (var i = 0; i < nodes.length; i++) {
-                var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
-                    + apf.getTextNode(nodes[i]).nodeValue.replace(/^[\/]+/, "");
-                editors.showFile(path, 0, 0);
-                ide.dispatchEvent("track_action", {type: "fileopen"});
-            }
+            _self.openFile();
         });
 
         this.nodes.push(winGoToFile);
+    },
+    
+    openFile: function(){
+        var nodes = dgGoToFile.getSelection();
+        
+        if(nodes.length == 0)
+            return false;
+            
+        winGoToFile.hide();
+        for (var i = 0; i < nodes.length; i++) {
+            var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
+                + apf.getTextNode(nodes[i]).nodeValue.replace(/^[\/]+/, "");
+            editors.showFile(path, 0, 0);
+            ide.dispatchEvent("track_action", {type: "fileopen"});
+        }
     },
 
     gotofile : function(){

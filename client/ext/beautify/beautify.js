@@ -51,7 +51,7 @@ module.exports = ext.register("ext/beautify/beautify", {
         var jsLintHappy = apf.isTrue(extSettings.model.queryValue("beautify/jsbeautify/@jslinthappy"));
         var braces = extSettings.model.queryValue("beautify/jsbeautify/@braces") || "end-expand";
         var indentSize = extSettings.model.queryValue("editors/code/@tabsize");
-        var indentTab = apf.isTrue(extSettings.model.queryValue("editors/code/@softtabs")) == "true" ? " " : "\t";
+        var indentTab = apf.isTrue(extSettings.model.queryValue("editors/code/@softtabs")) ? " " : "\t";
 
         if (indentTab == "\t") indentSize = 1;
 

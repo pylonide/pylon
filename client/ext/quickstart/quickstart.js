@@ -71,9 +71,14 @@ module.exports = ext.register("ext/quickstart/quickstart", {
         ide.addEventListener("loadsettings", function(e) {
             var showQS = require("ext/settings/settings").model.queryValue("auto/help/@show");
             if(showQS === "" || showQS == "true") {
-                require("ext/settings/settings").model.setQueryValue("auto/help/@show", "true");
-                apf.xmldb.setAttribute(require("ext/settings/settings").model.queryNode("auto/help"), "show", "true");
-                _self.launchQS();
+                if(apf.getcookie("show-quick-start") == "false") {
+                    require("ext/settings/settings").model.setQueryValue("auto/help/@show", "false");   
+                }
+                else {
+                    require("ext/settings/settings").model.setQueryValue("auto/help/@show", "true");
+                    apf.xmldb.setAttribute(require("ext/settings/settings").model.queryNode("auto/help"), "show", "true");
+                    _self.launchQS();
+                }
              }
          });
     },
@@ -88,6 +93,10 @@ module.exports = ext.register("ext/quickstart/quickstart", {
             _self.arrangeQSImages();
             quickStartDialog.show();
         })
+    },
+    
+    setState: function(state){
+        apf.setcookie("show-quick-start", state, new Date().getTime() + 1000*3600*24*365*2);
     },
     
     hideMenus: function(){

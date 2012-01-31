@@ -247,8 +247,12 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
                 }
                 
                 var strXml = data.match(new RegExp(("(<file path='" + path +
-                    "/" + filename + "'.*?>)").replace(/\//g, "\\/")))[1];
-
+                    "/" + filename + "'.*?>)").replace(/\//g, "\\/")));
+                
+                if(!strXml)
+                    next();
+                    
+                strXml = strXml[1]
                 var oXml = apf.xmldb.appendChild(node, apf.getXml(strXml));
 
                 trFiles.select(oXml);

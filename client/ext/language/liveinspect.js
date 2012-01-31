@@ -6,6 +6,8 @@ var inspector = require("ext/debugger/inspector");
 var ext = require("core/ext");
 var markup = require("text!ext/language/liveinspect.xml");
 var skin = require("text!ext/language/liveinspect.skin.xml");
+// postfix plugin because debugger is restricted keyword
+var debuggerPlugin = require("ext/debugger/debugger"); 
 
 module.exports = (function () {
     
@@ -347,6 +349,7 @@ module.exports = (function () {
         type    : ext.GENERAL,
         alone   : true,
         markup  : markup,
+        deps    : [ debuggerPlugin ],
         skin    : {
             id   : "inlinedg",
             data : skin
