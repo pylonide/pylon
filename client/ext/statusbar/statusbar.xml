@@ -40,19 +40,19 @@
       <a:item type="check" caption="Highlight Selected Word" checked="[{require('ext/settings/settings').model}::editors/code/@highlightselectedword]" />
       <a:item type="check" caption="Auto-hide Horizontal Scrollbar" checked="[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]" />
       
-      <a:hbox edge="0 5 2 0" align="center">
+      <a:hbox edge="0 5 2 23" align="center">
           <a:label flex="1">Font Size</a:label>
           <a:spinner value="[{require('ext/settings/settings').model}::editors/code/@fontsize]" realtime="true" min="1" max="72" width="50" />
       </a:hbox>
-      <a:hbox edge="0 5 0 0" align="center">
-          <a:checkbox label="Show Print Margin" value="[{require('ext/settings/settings').model}::editors/code/@showprintmargin]" flex="1" />
+      <a:hbox edge="0 5 2 0" align="center">
+          <a:checkbox label="Show Print Margin" value="[{require('ext/settings/settings').model}::editors/code/@showprintmargin]" flex="1" skin="checkbox-menu" />
           <a:spinner value="[{require('ext/settings/settings').model}::editors/code/@printmargincolumn]" realtime="true" min="1" max="200" width="50" />
       </a:hbox>
-      <a:hbox edge="0 5 0 0" align="center">
-          <a:checkbox label="Soft Tabs" value="[{require('ext/settings/settings').model}::editors/code/@softtabs]" flex="1" />
+      <a:hbox edge="0 5 2 0" align="center">
+          <a:checkbox label="Soft Tabs" value="[{require('ext/settings/settings').model}::editors/code/@softtabs]" flex="1" skin="checkbox-menu"/>
           <a:spinner value="[{require('ext/settings/settings').model}::editors/code/@tabsize]" realtime="true" min="1" max="64" width="50" />
       </a:hbox>
-      <a:hbox edge="0 5 2 0" align="center">
+      <a:hbox edge="0 5 2 23" align="center">
           <a:label flex="1">Mouse Scroll Speed</a:label>
           <a:spinner value="[{require('ext/settings/settings').model}::editors/code/@scrollspeed]" min="1" max="8" width="50" />
       </a:hbox>

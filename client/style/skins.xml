@@ -2520,16 +2520,22 @@
 <a:checkbox name="checkbox-menu">
     <a:style><![CDATA[
         .cbmcontainer {
-            padding    : 2px 2px 2px 16px;
-            position   : relative;
-            overflow   : visible;
-            color      : #333;
+            padding: 3px 16px 5px 23px;
+            white-space: nowrap;
+            cursor : default;
+            z-index:1100000;
+            position: relative;
+            height: 13px;
         }
 
         .cbmcontainer span {
-            font-family : Tahoma, Arial;
-            font-size   : 11px;
-            cursor      : default;
+
+            font-family   : Tahoma, Arial;
+            font-size     : 11px;
+            line-height   : 14px;
+            color         : #f1f1f1;
+            cursor:default;
+            
             padding     : 1px 3px 2px 3px;
             position    : relative;
             top         : -2px;
@@ -2541,12 +2547,14 @@
         }
 
         .cbmcontainerFocus span {
-            padding : 0px 2px 1px 2px;
-            border  : 1px dotted #BBB;
         }
-
+        
+        .cbmcontainerOver  {
+            background-color : #393939;
+        }
+        
         .cbmcontainerChecked.cbmcontainerDown.cbmcontainerFocus .checkbox {
-            background-position : 0 -48px;
+            
         }
 
         .cbmcontainer .checkbox {
@@ -2555,25 +2563,33 @@
             overflow   : hidden;
             position   : absolute;
             left       : 2px;
-            top        : 2px;
-            background : url("images/checkbox.png") no-repeat 0 -12px;
+            top        : 1px;
+            background: none;
         }
         
         .cbmcontainerDown .checkbox {
-            background-position : 0 -36px;
+            
         }
 
         .cbmcontainerChecked .checkbox {
-            background-position : 0 -24px;
+            background-image: url(images/check.gif);
+            background-repeat: no-repeat;
+            background-position: 0 -16px;
         }
 
         .cbmcontainerError span {
-            background-color : #ffb500;
-            color            : #fbfbfb;
+            right: 15px;
+            margin-top: 0px;
+            z-index: 10;
+            text-align: right;
+            padding-left: 15px;
+            /*margin-right: -15px;
+            position : absolute;*/
+            float : right;
         }
 
         .cbmcontainerDisabled .checkbox {
-            background-position : 0 -0px;
+            background : none;
         }
 
         .cbmcontainerDisabled span {
@@ -4625,6 +4641,10 @@
             padding: 0px 2px 2px;
             color: #303030;
             font-size: 12px;
+        }
+        
+        .menu-bk .label {
+            color: #F1F1F1;
         }
     ]]></a:style>
 
