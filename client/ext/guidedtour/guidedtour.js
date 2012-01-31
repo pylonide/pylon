@@ -20,6 +20,7 @@ var dockpanel = require("ext/dockpanel/dockpanel");
 var panels = require("ext/panels/panels");
 var settings = require("core/settings");
 var helloWorldScript = require("text!ext/guidedtour/hello-world-script.txt");
+var helloWorldScriptStandAlone = require("text!ext/guidedtour/hello-world-script-standalone.txt");
 
 var save;
 var madeNewFile = false;
@@ -90,7 +91,7 @@ var jsonTourIde = {
         time: 4
     }, {
         before: function() {
-            tabEditors.getPage().$doc.setValue(helloWorldScript);
+            tabEditors.getPage().$doc.setValue(ide.davPrefix == "/workspace" ? helloWorldScriptStandAlone : helloWorldScript);
             if (!save) 
                 save = require("ext/save/save");
             var page = tabEditors.getPage();
