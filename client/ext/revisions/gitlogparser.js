@@ -40,10 +40,11 @@ module.exports = (function() {
             };
 
             var lines = log.split('\n');
-            //console.log(lines);
 
             for (var lineIt in lines)
                 this.parseLine(lines[lineIt]);
+
+            this.arrLogData.push(this.currentLine);
         },
 
         getLogData : function() {

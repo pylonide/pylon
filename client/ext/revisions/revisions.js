@@ -3,35 +3,32 @@
  * 
  * TODO:
  * 
- * Historical version should show up with the latest committed value
- * Current version should show "uncommited" if changes have been made
  * Implement "Restore" functionality
- * On restore animate history page to current page
- * On restore set ceEditor's content
- * Clear markers on restore
- * When requesting a revision, display a spinner somewhere
+ *  - Set ceEditor's content
+ *  - Animate history page to current page
+ *  - Clear markers
+ *  - Undo
  * Refresh (button next to dropdown button?)
  * ? On hover of meta-data, pop-out to show commit message
- * Use dmp's fuzzy matching method to decide on gray-line placement
  * Get APF-filtered list instead of doing our own filtering
- * Make the history so it floats in from left if after current revision view
  * Implement a Git Log State class, move everything over
  * Skip line numbers in gutter where gray areas exist
+ * Clean up the elements fading in & out upon entry and exit
  * 
  * Bugs:
  * 
  * Diff state isn't kept on re-entry
- * Load run.js, see log commits run past most recent commit. Hmm...
  * clicking around clears the syntax highlighting (wtf?)
  * focus() on search after clear doesn't work. Fix APF
- * Server is sending data back to all clients. Thought I had fixed that...
+ *  - Or get rid of X
  * UI and animations are totally messed up in FF
+ * Server is sending data back to all clients
+ *  - (fixed in githubissues)
  * 
  * Ideal:
  * 
  * In between the two editors, put a "minimap" of areas with diffs
- * Undo Restore
- * Dialog warning about what Restore does
+ * Unobstrusive popup warning about what Restore does
  *  - But only when we have global settings
  * Hover over history dots has OS X dock magnification effect
  * Searching "zooms" in on timeline so earliest and latest results
@@ -49,6 +46,7 @@ var ext = require("core/ext");
 var ide = require("core/ide");
 var util = require("core/util");
 var rutil = require("ext/revisions/util");
+var timeline = require("ext/revisions/timeline");
 var Range = require("ace/range").Range;
 var Anchor = require('ace/anchor').Anchor;
 var editors = require("ext/editors/editors");
@@ -69,8 +67,44 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
     command  : "gittools",
     gitLogs  : {},
+    currentFile : "",
 
     nodes : [],
+
+    hook : function(){
+        var _self = this;
+
+        document.body.appendChild(
+            rutil.createElement("script", {
+                "type" : "text/javascript",
+                "src" : ide.staticPrefix + "/ext/revisions/diff_match_patch.js"
+            })
+        );
+
+        this.gitLogParser = new GitLogParser();
+
+        ide.addEventListener("socketMessage", this.onMessage.bind(this));
+
+        window.addEventListener("resize", function() {
+            if (_self.isFocused)
+                _self.resizeElements();
+        });
+
+        ide.addEventListener("loadrevision", function(e) {
+            _self.loadRevision(e.num);
+        });
+
+        this.nodes.push(
+            ide.mnuEdit.appendChild(new apf.item({
+                caption : "Compare File History",
+                onclick : function(){
+                    _self.enterRevisionMode();
+                }
+            }))
+        );
+
+        ext.initExtension(this);
+    },
 
     init : function() {
         var _self = this;
@@ -111,10 +145,10 @@ module.exports = ext.register("ext/revisions/revisions", {
                                                     "class" : "versions_search",
                                                     margin: "0 20 0 0",
                                                     onclear : function() {
-                                                        _self.filterTimeline("");
+                                                        timeline.filterTimeline("", _self.gitLogs, _self.currentFile);
                                                     },
                                                     onkeyup : function() {
-                                                        _self.filterTimeline(this.getValue());
+                                                        timeline.filterTimeline(this.getValue(), _self.gitLogs, _self.currentFile);
                                                     },
                                                     onfocus : function() {
                                                         apf.tween.single(this.$ext, {
@@ -268,7 +302,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.historicalVersionEditor = new apf.codeeditor({
             id                : "historicalVersionEditor",
             visible           : "true",
-            syntax            : "{require('ext/code/code').getSyntax(%[.])}",
+            syntax            : "",//{require('ext/code/code').getSyntax(%[.])}",
             theme             : "ace/theme/textmate",
             folding           : "false",
             overwrite         : "[{require('ext/settings/settings').model}::editors/code/@overwrite]",
@@ -358,13 +392,15 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         // Wait for the elements to get loaded in...
         setTimeout(function() {
-            vbMain.parentNode.appendChild(_self.historicalVersionEditor);
+            /*vbMain.parentNode.appendChild(_self.historicalVersionEditor);
             vbMain.parentNode.appendChild(_self.historicalPlaceholder);
             vbMain.parentNode.appendChild(_self.currentVersionEditor);
-            vbMain.parentNode.appendChild(_self.animateEditorClone);
-
-            _self.sliderTooltip = rutil.createElement("div", { "id" : "slider_tooltip" });
-            vbVersions.$ext.appendChild(_self.sliderTooltip);
+            vbMain.parentNode.appendChild(_self.animateEditorClone);*/
+            
+            vbVersions.appendChild(_self.historicalVersionEditor);
+            vbVersions.appendChild(_self.historicalPlaceholder);
+            vbVersions.appendChild(_self.currentVersionEditor);
+            vbMain.appendChild(_self.animateEditorClone);
 
             _self.historyGraphics = rutil.createElement("div", { "id" : "history_graphics" });
 
@@ -376,34 +412,31 @@ module.exports = ext.register("ext/revisions/revisions", {
             _self.historyGraphics.appendChild(largeGHistory);
             vbVersions.$ext.appendChild(_self.historyGraphics);
 
-            var sliderBg = rutil.createElement("div", { "id": "versionsSliderBg"});
-            vbHistoricalHeader.$ext.appendChild(sliderBg);
-
-            _self.sliderEl = rutil.createElement("div", { "id": "versionsHistoricalSlider" });
-            vbHistoricalHeader.$ext.appendChild(_self.sliderEl);
+            _self.loading_div = rutil.createElement("div", { "id" : "revisions_loading" });
+            vbVersions.$ext.appendChild(_self.loading_div);
 
             currentVersionEditor.$editor.getSession().setUseWrapMode(false);
+            historicalVersionEditor.$editor.getSession().setUseWrapMode(false);
 
             var cveRenderer = currentVersionEditor.$editor.renderer;
+            var hveRenderer = historicalVersionEditor.$editor.renderer;
+
             cveRenderer.scrollBar.element.addEventListener("scroll", function(e) {
                 if (!_self.loadingRevision)
-                    historicalVersionEditor.$editor.renderer.scrollBar.element.scrollTop = e.srcElement.scrollTop;
+                    hveRenderer.scrollBar.element.scrollTop = e.srcElement.scrollTop;
             });
             cveRenderer.scroller.addEventListener("scroll", function(e) {
                 if (!_self.loadingRevision)
-                    historicalVersionEditor.$editor.renderer.scroller.scrollLeft = e.srcElement.scrollLeft;
+                    hveRenderer.scroller.scrollLeft = e.srcElement.scrollLeft;
             });
 
-            historicalVersionEditor.$editor.getSession().setUseWrapMode(false);
-
-            var hveRenderer = historicalVersionEditor.$editor.renderer;
             hveRenderer.scrollBar.element.addEventListener("scroll", function(e) {
                 if (!_self.loadingRevision)
-                    currentVersionEditor.$editor.renderer.scrollBar.element.scrollTop = e.srcElement.scrollTop;
+                    cveRenderer.scrollBar.element.scrollTop = e.srcElement.scrollTop;
             });
             hveRenderer.scroller.addEventListener("scroll", function(e) {
                 if (!_self.loadingRevision)
-                    currentVersionEditor.$editor.renderer.scroller.scrollLeft = e.srcElement.scrollLeft;
+                    cveRenderer.scroller.scrollLeft = e.srcElement.scrollLeft;
             });
         }, 100);
 
@@ -413,143 +446,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         });
     },
 
-    hook : function(){
-        var _self = this;
-
-        document.body.appendChild(
-            rutil.createElement("script", {
-                "type" : "text/javascript",
-                "src" : ide.staticPrefix + "/ext/revisions/diff_match_patch.js"
-            })
-        );
-
-        this.gitLogParser = new GitLogParser();
-
-        ide.addEventListener("socketMessage", this.onMessage.bind(this));
-
-        window.addEventListener("resize", function() {
-            if (_self.isFocused)
-                _self.resizeElements();
-        });
-
-        this.nodes.push(
-            ide.mnuEdit.appendChild(new apf.item({
-                caption : "Compare File History",
-                onclick : function(){
-                    _self.enterRevisionMode();
-                }
-            }))
-        );
-
-        ext.initExtension(this);
-    },
-
-    /**
-     * Resizes the absolutely-positioned code editors
-     */
-    resizeElements : function() {
-        var ph = currentVersionHolder.$ext;
-        var pos = apf.getAbsolutePosition(ph);
-        currentVersionEditor.$ext.style.left = pos[0] + "px";
-        currentVersionEditor.$ext.style.top  = pos[1] + "px";
-
-        currentVersionEditor.$ext.style.width  = (ph.offsetWidth + 2) + "px";
-        currentVersionEditor.$ext.style.height = ph.offsetHeight + "px";
-
-        ph = historicalVersionHolder.$ext;
-        pos = apf.getAbsolutePosition(ph);
-        historicalVersionEditor.$ext.style.left = pos[0] + "px";
-        historicalVersionEditor.$ext.style.top  = pos[1] + "px";
-
-        historicalVersionEditor.$ext.style.width  = (ph.offsetWidth + 2) + "px";
-        historicalVersionEditor.$ext.style.height = ph.offsetHeight + "px";
-    },
-
-    /**
-     * Given commit data, returns a table-formatted HTML string
-     * 
-     * @param {object} data The commit data
-     * @param {boolean} includeMessage Whether to include the commit message
-     */
-    formulateRevisionMetaData : function(data, includeMessage) {
-        var date = new Date(data.author.timestamp*1000);
-        var timestamp = date.toString("MMM dd, yyyy hh:mm:ss tt");
-
-        var output = [
-            '<table cellspacing="0" cellpadding="0" border="0">',
-            '<tr><td class="rev_header">Author:</td><td>', data.author.fullName,
-            " ", apf.htmlentities(data.author.email), '</td></tr>',
-            '<tr><td class="rev_header">Date:</td><td>', timestamp, '</td></tr>',
-            '<tr><td class="rev_header">Commit:</td><td>', data.commit.substr(0, 10),
-            '</td></tr>'
-        ];
-        if (includeMessage)
-            output.push('<tr><td class="rev_header">Message:</td><td>',
-                data.message.join("<br />"), '</td></tr>');
-        output.push('</table>');
-        return output.join("");
-    },
-
-    /**
-     * Loads the revision from the currently selected item in the dropdown
-     */
-    loadRevisionFromList : function() {
-        this.loadRevision(lstCommits.selected.getAttribute("internal_counter"));
-    },
-
-    /**
-     * Loads a revision of the file
-     * 
-     * @param {number} num 0-based index of the revision requested
-     */
-    loadRevision : function(num) {
-        this.loadingRevision = true;
-
-        var fileData = this.gitLogs[rutil.getFilePath()];
-        var hash = fileData.logData[num].commit;
-
-        var node = lstCommits.queryNode("commit[@internal_counter='" +num + "']");
-        if (node && !lstCommits.isSelected(node))
-            lstCommits.select(node);
-
-        if (fileData.logData[fileData.lastLoadedGitLog])
-            fileData.logData[fileData.lastLoadedGitLog].dotEl.setAttribute("class", "");
-        fileData.logData[num].dotEl.setAttribute("class", "current");
-        fileData.lastLoadedGitLog = num;
-
-        var output = this.formulateRevisionMetaData(fileData.logData[num], true);
-        versions_label.setValue(output);
-
-        var cveSession = currentVersionEditor.$editor.getSession();
-        cveSession.setValue(ceEditor.$editor.getSession().getValue());
-        this.removeMarkers(cveSession);
-
-        var _self = this;
-        //var hveLeftMovement = -1 * (historicalVersionEditor.getWidth() + 300);
-
-        var hvePos = apf.getAbsolutePosition(historicalVersionEditor.$ext);
-        Firmin.animate(historicalPlaceholder.$ext, {
-            opacity : 0,
-            zIndex  : 99999,
-            left    : hvePos[0] + "px",
-            top     : (hvePos[1]-40) + "px",
-            width   : historicalVersionEditor.getWidth() + "px",
-            height  : historicalVersionEditor.getHeight() + "px"
-        }, 0, function() {
-            Firmin.animate(historicalPlaceholder.$ext, {
-                top: hvePos[1] + "px",
-                opacity: 1
-                //timingFunction:  "ease-in"
-            }, 0.5, function() {
-                _self.requestGitShow(hash);
-            });
-        });
-    },
-
-    restoreRevision : function() {
-        btnRestore.disable();
-    },
-
     /**
      * Transforms the interface into a side-by-side comparison
      * of the historical revisions and the current document
@@ -557,8 +453,9 @@ module.exports = ext.register("ext/revisions/revisions", {
     enterRevisionMode : function() {
         var _self = this;
 
-        var file = rutil.getFilePath();
-        var filename = file.split("/").pop();
+        this.currentFile = rutil.getFilePath();
+
+        var filename = this.currentFile.split("/").pop();
         current_doc_label.setValue(filename);
 
         this.requestGitLog();
@@ -628,7 +525,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             historicalVersionEditor.show();
             currentVersionEditor.show();
             _self.resizeElements();
-            apf.layout.forceResize(document.body);
         });
 
         this.isFocused = true;
@@ -663,8 +559,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         animateEditorClone.$ext.style.opacity = "1";
         animateEditorClone.show();
 
-        apf.layout.forceResize(animateEditorClone.$ext);
-
         var moveToLeft = cePos[0];
         var moveToWidth = ceEditor.getWidth();
         var moveToHeight = ceEditor.getHeight();
@@ -698,10 +592,98 @@ module.exports = ext.register("ext/revisions/revisions", {
             opacity: "0"
         }, 1.3, function() {
             vbVersions.hide();
-            apf.layout.forceResize(document.body);
         });
         
         this.isFocused = false;
+    },
+
+    /**
+     * Resizes the absolutely-positioned code editors
+     */
+    resizeElements : function() {
+        var ph = currentVersionHolder.$ext;
+        var pos = apf.getAbsolutePosition(ph);
+        currentVersionEditor.$ext.style.left = pos[0] + "px";
+        currentVersionEditor.$ext.style.top  = pos[1] + "px";
+
+        currentVersionEditor.$ext.style.width  = (ph.offsetWidth + 2) + "px";
+        currentVersionEditor.$ext.style.height = ph.offsetHeight + "px";
+
+        ph = historicalVersionHolder.$ext;
+        pos = apf.getAbsolutePosition(ph);
+        historicalVersionEditor.$ext.style.left = pos[0] + "px";
+        historicalVersionEditor.$ext.style.top  = pos[1] + "px";
+
+        historicalVersionEditor.$ext.style.width  = (ph.offsetWidth + 2) + "px";
+        historicalVersionEditor.$ext.style.height = ph.offsetHeight + "px";
+    },
+
+    /**
+     * Loads the revision from the currently selected item in the dropdown
+     */
+    loadRevisionFromList : function() {
+        this.loadRevision(lstCommits.selected.getAttribute("internal_counter"));
+    },
+
+    /**
+     * Loads a revision of the file
+     * 
+     * @param {number} num 0-based index of the revision requested
+     */
+    loadRevision : function(num) {
+        this.loadingRevision = true;
+
+        var fileData = this.gitLogs[this.currentFile];
+        var hash = fileData.logData[num].commit;
+
+        var node = lstCommits.queryNode("commit[@internal_counter='" +num + "']");
+        if (node && !lstCommits.isSelected(node))
+            lstCommits.select(node);
+
+        if (fileData.logData[fileData.lastLoadedGitLog])
+            fileData.logData[fileData.lastLoadedGitLog].dotEl.setAttribute("class", "");
+        fileData.logData[num].dotEl.setAttribute("class", "current");
+        fileData.lastLoadedGitLog = num;
+
+        var output = rutil.formulateRevisionMetaData(fileData.logData[num], true);
+        versions_label.setValue(output);
+
+        var cveSession = currentVersionEditor.$editor.getSession();
+        cveSession.setValue(ceEditor.$editor.getSession().getValue());
+        this.removeMarkers(cveSession);
+
+        this.requestGitShow(hash);
+        /*var hvePos = apf.getAbsolutePosition(historicalVersionEditor.$ext);
+        Firmin.animate(historicalPlaceholder.$ext, {
+            opacity : 0,
+            zIndex  : 99999,
+            left    : hvePos[0] + "px",
+            top     : (hvePos[1]-40) + "px",
+            width   : historicalVersionEditor.getWidth() + "px",
+            height  : historicalVersionEditor.getHeight() + "px"
+        }, 0, function() {
+            Firmin.animate(historicalPlaceholder.$ext, {
+                top: hvePos[1] + "px",
+                opacity: 1
+            }, 0.3, function() {
+                
+            });
+        });*/
+    },
+
+    restoreRevision : function() {
+        btnRestore.disable();
+    },
+
+    setLoadingHtml : function(html, initialShow) {
+        this.loading_div.innerHTML = html;
+        if (initialShow)
+            this.loading_div.style.top = "-2000px";
+        var iw = apf.getHtmlInnerWidth(this.loading_div);
+        var ih = apf.getHtmlInnerHeight(this.loading_div);
+        if (initialShow)
+            this.loading_div.style.top = (window.innerHeight/2 - ih/2) + "px";
+        this.loading_div.style.left = (window.innerWidth/2 - iw/2) + "px";
     },
 
     /**
@@ -709,12 +691,13 @@ module.exports = ext.register("ext/revisions/revisions", {
      * 
      * @param {string} subcommand What git operation we want to do
      * @param {hash} extra Extra details to provide to the server-side ext
+     * @return {boolean} true if request sent, false otherwise
      */
     sendServerRequest : function(subcommand, extra) {
         var data = {
             command : this.command,
             subcommand : subcommand,
-            file : rutil.getFilePath()
+            file : this.currentFile
         };
 
         apf.extend(data, extra);
@@ -727,12 +710,17 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         if (ext.execCommand(this.command, data) !== false) {
             if (ide.dispatchEvent("consolecommand." + this.command, { data: data}) !== false) {
-                if (!ide.onLine)
+                if (!ide.onLine) {
                     util.alert("Currently Offline", "Currently Offline", "This operation could not be completed because you are offline.");
-                else
+                    return false;
+                } else {
                     ide.socket.send(JSON.stringify(data));
+                    return true;
+                }
             }
         }
+
+        return false;
     },
 
     /**
@@ -741,24 +729,27 @@ module.exports = ext.register("ext/revisions/revisions", {
      * @param {string} hash The commit hash
      */
     requestGitShow : function(hash) {
-        this.sendServerRequest("show", { hash : hash });
+        var sentSuccess = this.sendServerRequest("show", { hash : hash });
+        if (sentSuccess)
+            this.setLoadingHtml("<p>Loading...</p>", true);
     },
 
     /**
      * Requests git log data from the server, about the current file
      */
     requestGitLog : function() {
-        var file = rutil.getFilePath();
+        var file = this.currentFile;
 
         if (this.lastFileLoaded)
-            this.removeTimelinePoints(this.gitLogs[this.lastFileLoaded].logData);
+            timeline.removeTimelinePoints(this.gitLogs[this.lastFileLoaded].logData);
 
         if (!this.gitLogs[file]) {
             this.gitLogs[file] = {
                 logData : [],
-                lastLoadedGitLog : 0,
-                lastSliderValue : 0,
-                currentRevision : editors.currentEditor ? editors.currentEditor.ceEditor.getSession().getValue() : "",
+                lastLoadedGitLog : -1,
+                firstGitShow : true,
+                currentRevision : editors.currentEditor ?
+                    editors.currentEditor.ceEditor.getSession().getValue() : "",
                 revisions : {}
             };
 
@@ -820,21 +811,31 @@ module.exports = ext.register("ext/revisions/revisions", {
             logData[gi].committer.fullNameLower = logData[gi].committer.fullName.toLowerCase();
         }
 
-        this.gitLogs[message.body.file].logData = logData;
-        this.gitLogs[message.body.file].lastLoadedGitLog = logDataLength - 1;
+        var file = message.body.file;
+        if (this.gitLogs[file].lastLoadedGitLog == -1) {
+            // We've never loaded this before, so get the most recent
+            // commit from git show
+            this.gitLogs[file].firstGitShow = true;
+            this.requestGitShow(logData[logDataLength-1].commit);
+        }
 
-        this.restoreGitLogState(logData, message.body.file);
+        this.gitLogs[file].logData = logData;
+        this.gitLogs[file].lastLoadedGitLog = logDataLength - 1;
+
+        this.restoreGitLogState(logData, file);
     },
-    
+
     restoreGitLogState : function(logData, file) {
         var mdlOut = apf.getXml(rutil.arrCommits2Xml(logData, "commit"));
         mdlCommits.load(mdlOut);
 
-        var output = this.formulateRevisionMetaData(logData[this.gitLogs[file].lastLoadedGitLog], true);
+        var output = rutil.formulateRevisionMetaData(logData[this.gitLogs[file].lastLoadedGitLog], true);
         versions_label.setValue(output);
-        current_versions_label.setValue(output);
 
-        this.setupTimeline(logData);
+        if (!this.gitLogs[file].firstGitShow)
+            current_versions_label.setValue(this.gitLogs[file].metaDataOutput);
+
+        timeline.setupTimeline(logData);
         tbRevisionsSearch.enable();
 
         this.gitLogs[file].logData[this.gitLogs[file].lastLoadedGitLog].dotEl.setAttribute("class", "current");
@@ -850,27 +851,46 @@ module.exports = ext.register("ext/revisions/revisions", {
     onGitShowMessage : function(message) {
         this.loadingRevision = false;
 
+        var file = message.body.file, hash = message.body.hash;
         var fileText = message.body.out;
-        this.gitLogs[message.body.file].revisions[message.body.hash] =
-            fileText;
+        var gLogs = this.gitLogs[file];
 
-        var st = currentVersionEditor.$editor.session.getScrollTop();
-        var sl = currentVersionEditor.$editor.session.getScrollLeft();
+        gLogs.revisions[hash] = fileText;
+
+        if (gLogs.firstGitShow) {
+            var metaDataOutput;
+            if (fileText !== gLogs.currentRevision) {
+                // Show "uncommitted" message
+                metaDataOutput = rutil.formulateRevisionMetaData(null, false);
+            } else {
+                // Show commit data
+                var lastGitLog = this.gitLogs[file].logData[this.gitLogs[file].lastLoadedGitLog];
+                metaDataOutput = rutil.formulateRevisionMetaData(lastGitLog, true);
+            }
+
+            current_versions_label.setValue(metaDataOutput);
+            gLogs.metaDataOutput = metaDataOutput;
+            gLogs.firstGitShow = false;
+        }
 
         var hveSession = historicalVersionEditor.$editor.getSession();
         hveSession.setValue(fileText);
 
-        var gLogs = this.gitLogs[message.body.file];
         var logDataLen = gLogs.logData.length;
         if (message.body.hash == gLogs.logData[logDataLen-1].commit)
             btnRestore.disable();
         else
             btnRestore.enable();
 
+        this.setLoadingHtml("<p>Diffing files...</p>", false);
+        this.diffFiles();
+    },
+    
+    diffFiles : function() {
         if (!this.dmp)
             this.dmp = new diff_match_patch();
 
-        var diff = this.dmp.diff_main(fileText,
+        var diff = this.dmp.diff_main(historicalVersionEditor.$editor.getSession().getValue(),
             currentVersionEditor.$editor.getSession().getValue());
         this.dmp.diff_cleanupSemantic(diff);
 
@@ -933,9 +953,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
                 // Add newlines to history
                 if (lineDiff > 0) {
-                    // @TODO: DMP fuzzy logic to see if nll = numLeftLines-1 or not
-                    var nll;
-                    nll = numLeftLines - 1;
+                    // @TODO: Do we need DMP fuzzy logic?
+                    var nll = numLeftLines;
+                    if(historyDoc.getLine(nll) != currentDoc.getLine(numRightLines-lineDiff))
+                        nll--;
 
                     var colEnd = historyDoc.getLine(nll).length;
                     historicalVersionEditor.$editor.moveCursorTo(nll, colEnd);
@@ -943,22 +964,23 @@ module.exports = ext.register("ext/revisions/revisions", {
 
                     // Now insert grayspace
                     this.addCodeMarker(historicalVersionEditor, "newlines",
-                        numLeftLines, 0, numLeftLines+lineDiff, 0);
+                        numLeftLines, lastLeftLine.length, numLeftLines+lineDiff, 0);
 
                     numLeftLines += lineDiff;
                 }
                 // Add newlines to current
                 else {
-                    // @TODO: DMP fuzzy logic to see if nrr = numberRightLines-1 or not
-                    var nrr;
-                    nrr = numRightLines - 1;
+                    var nrr = numRightLines;
+                    if(currentDoc.getLine(nrr) != historyDoc.getLine(numLeftLines-lineDiffAbs))
+                        nrr--;
+
                     var colEnd = currentDoc.getLine(nrr).length;
                     currentVersionEditor.$editor.moveCursorTo(nrr, colEnd);
                     currentVersionEditor.$editor.insert(newlines);
 
                     // Now insert grayspace
                     this.addCodeMarker(currentVersionEditor, "newlines",
-                        numRightLines, 0, numRightLines+lineDiff, 0);
+                        numRightLines, lastRightLine.length, numRightLines+lineDiffAbs, 0);
 
                     numRightLines += lineDiffAbs;
                 }
@@ -966,14 +988,11 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         setTimeout(function() {
-            historicalVersionEditor.$editor.session.setScrollLeft(sl);
-            currentVersionEditor.$editor.session.setScrollLeft(sl);
-            historicalVersionEditor.$editor.session.setScrollTop(st);
-            currentVersionEditor.$editor.session.setScrollTop(st);
-
             historicalPlaceholder.$ext.style.opacity = 0;
             historicalPlaceholder.$ext.style.zIndex = "99998";
         });
+
+        this.loading_div.style.top = "-2000px";
     },
 
     /**
@@ -1035,161 +1054,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         anchor.on("change", function() {
             updateFloat();
         });
-    },
-
-    /**
-     * Removes all the points along the timeline and their listeners
-     * 
-     * @param {array} logData Array holding all the points
-     */
-    removeTimelinePoints : function(logData) {
-        for (var i = 0, len = logData.length; i < len; i++) {
-            logData[i].dotEl.removeEventListener("mouseover", logData[i].dotElMouseOver);
-            logData[i].dotEl.removeEventListener("mouseout", logData[i].dotElMouseOut);
-            logData[i].dotEl.removeEventListener("click", logData[i].dotElClick);
-            this.sliderEl.removeChild(logData[i].dotEl);
-        }
-    },
-
-    /**
-     * Creates the points along the timeline
-     * 
-     * @param {array} logData Array of all the commits
-     */
-    setupTimeline : function(logData) {
-        if (!logData.length)
-            return;
-
-        var _self = this;
-
-        var len = logData.length;
-        var tsBegin = logData[0].author.timestamp;
-        var timeSpan = logData[len-1].author.timestamp - tsBegin;
-
-        // Create all the points in time
-        for (var i = 0; i < len; i++) {
-            var ts = logData[i].author.timestamp;
-            var tsDiff = ts - tsBegin;
-            var percentage = (tsDiff / timeSpan) * 100;
-
-            logData[i].dotEl = rutil.createElement("u", {
-                "style" : "left: " + percentage + "%",
-                "rel" : i,
-                "hash" : logData[i].commit
-            });
-
-            logData[i].dotEl.addEventListener("mouseover", logData[i].dotElMouseOver = function() {
-                var dotClass = this.getAttribute("class");
-                if(dotClass && dotClass.split(" ")[0] == "pop")
-                    return;
-                var it = this.getAttribute("rel");
-                var output = _self.formulateRevisionMetaData(logData[it], false);
-                _self.sliderTooltip.innerHTML = output;
-
-                var pos = apf.getAbsolutePosition(this);
-
-                var sttWidth = apf.getHtmlInnerWidth(_self.sliderTooltip);
-                var leftPos = pos[0] - (sttWidth/2);
-                if (leftPos < 0)
-                    leftPos = 5;
-
-                Firmin.animate(_self.sliderTooltip, {
-                    left: leftPos+"px"
-                }, 0, function() {
-                    Firmin.animate(_self.sliderTooltip, {
-                        translateY: -30,
-                        scale: 1,
-                        opacity: 1
-                    }, 0.3);
-                });
-            });
-
-            logData[i].dotEl.addEventListener("mouseout", logData[i].dotElMouseOut = function() {
-                Firmin.animate(_self.sliderTooltip, {
-                    scale: 0.1,
-                    opacity: 0
-                }, 0.4);
-            });
-
-            logData[i].dotEl.addEventListener("click", logData[i].dotElClick = function() {
-                _self.loadRevision(this.getAttribute("rel"));
-            });
-
-            this.sliderEl.appendChild(logData[i].dotEl);
-        }
-    },
-
-    /**
-     * Given a search term, filter the timeline based on
-     * available commit data
-     * 
-     * @param {string} filter The search term to filter with
-     */
-    filterTimeline : function(filter) {
-        var currentFile = rutil.getFilePath();
-        var logs = this.gitLogs[currentFile].logData;
-
-        filter = filter.toLowerCase();
-
-        this.gitLogs[currentFile].currentLogData = [];
-        this.gitLogs[currentFile].explodedPoints = {};
-        for (var gi = 0; gi < logs.length; gi++) {
-            if (logs[gi].commitLower.indexOf(filter) >= 0) {
-                this.gitLogs[currentFile].currentLogData.push(logs[gi]);
-                continue;
-            }
-            if (logs[gi].parentLower.indexOf(filter) >= 0) {
-                this.gitLogs[currentFile].currentLogData.push(logs[gi]);
-                continue;
-            }
-            if (logs[gi].treeLower.indexOf(filter) >= 0) {
-                this.gitLogs[currentFile].currentLogData.push(logs[gi]);
-                continue;
-            }
-            if (logs[gi].messageJoinedLower.indexOf(filter) >= 0) {
-                this.gitLogs[currentFile].currentLogData.push(logs[gi]);
-                continue;
-            }
-            if (logs[gi].author.emailLower.indexOf(filter) >= 0) {
-                this.gitLogs[currentFile].currentLogData.push(logs[gi]);
-                continue;
-            }
-            if (logs[gi].author.fullNameLower.indexOf(filter) >= 0) {
-                this.gitLogs[currentFile].currentLogData.push(logs[gi]);
-                continue;
-            }
-            if (logs[gi].committer.emailLower.indexOf(filter) >= 0) {
-                this.gitLogs[currentFile].currentLogData.push(logs[gi]);
-                continue;
-            }
-            if (logs[gi].committer.fullNameLower.indexOf(filter) >= 0) {
-                this.gitLogs[currentFile].currentLogData.push(logs[gi]);
-                continue;
-            }
-
-            this.gitLogs[currentFile].explodedPoints[gi] = true;
-        }
-
-        var isCurrent = false;
-        for(var i = 0; i < logs.length; i++) {
-            var currClass = logs[i].dotEl.getAttribute("class");
-            if (currClass && currClass.length && currClass.indexOf("current") != -1)
-                isCurrent = true;
-            else
-                isCurrent = false;
-
-            if (this.gitLogs[currentFile].explodedPoints[i]) {
-                if (isCurrent)
-                    logs[i].dotEl.setAttribute("class", "pop current");
-                else
-                    logs[i].dotEl.setAttribute("class", "pop");
-            } else {
-                if (isCurrent)
-                    logs[i].dotEl.setAttribute("class", "current");
-                else
-                    logs[i].dotEl.setAttribute("class", "");
-            }
-        }
     },
 
     enable : function(){

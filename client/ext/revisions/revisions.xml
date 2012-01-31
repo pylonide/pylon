@@ -1,5 +1,27 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:style><![CDATA[
+        #revisions_loading {
+            position: absolute;
+            top: -2000px;
+            background: rgba(0, 0, 0, 0.75);
+            border: 1px solid #333;
+            border-radius: 8px;
+            -moz-border-radius: 8px;
+            padding: 20px 30px;
+            z-index: 99999;
+        }
+
+        #revisions_loading p {
+            font-size: 26px;
+            color: #fff;
+            padding: 0;
+            margin: 0;
+        }
+
+        #revisions_loading img {
+            float: left;
+        }
+        
         .revision_hl_add {
             position: absolute;
             background: rgb(168, 232, 166);
@@ -345,7 +367,7 @@
             <a:each
               match         = "[commit]"
               filter        = "{tbRevisionsSearch.value}"
-              filter-fields = "@authorname,@authoremail,@hash,@message"
+              filter-fields = "@committername,@committeremail,@authorname,@authoremail,@hash,@message"
               sort          = "[@timestamp]"
               data-type     = "number"
               order         = "descending"

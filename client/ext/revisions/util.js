@@ -54,7 +54,9 @@ module.exports = {
                 'hash="', arr[i].commit, '" ',
                 'authoremail="', apf.htmlentities(arr[i].author.email), '" ',
                 'authorname="', arr[i].author.fullName, '" ',
-                'timestamp="', arr[i].author.timestamp, '" ',
+                'committeremail="', apf.htmlentities(arr[i].committer.email), '" ',
+                'committername="', arr[i].committer.fullName, '" ',
+                'timestamp="', arr[i].committer.timestamp, '" ',
                 'message="', attrMessage, '" ',
                 'internal_counter="', i, '"',
             ' />');
@@ -62,6 +64,56 @@ module.exports = {
 
         out.push("</", elName, "s>");
         return out.join("");
+    },
+
+    /**
+     * Given commit data, returns a table-formatted HTML string
+     * 
+     * @param {object} data The commit data
+     * @param {boolean} includeMessage Whether to include the commit message
+     */
+    formulateRevisionMetaData : function(data, includeMessage, msgLen) {
+        var output, timestamp, fullName, commit, email = "";
+
+        if (data) {
+            var date = new Date(data.committer.timestamp*1000);
+            timestamp = date.toString("MMM dd, yyyy hh:mm:ss tt");
+            fullName = data.committer.fullName;
+            email = data.committer.email;
+            commit = data.commit.substr(0, 10);
+        } else {
+            timestamp = fullName = commit = "Uncommitted";
+        }
+
+        output = [
+            '<table cellspacing="0" cellpadding="0" border="0">',
+            '<tr><td class="rev_header">Committer:</td><td>',
+            fullName, " ", email, '</td></tr>',
+            '<tr><td class="rev_header">Date:</td><td>', timestamp,
+            '</td></tr>',
+            '<tr><td class="rev_header">Commit:</td><td>', commit,
+            '</td></tr>'
+        ];
+
+        if (includeMessage) {
+            var message;
+            if (msgLen) {
+                var msgJoined = data.message.join(" ");
+                message = msgJoined.substr(0, msgLen);
+                if (msgJoined.length > msgLen)
+                    message += "...";
+            }
+            
+            else {
+                message = data.message.join("<br />");
+            }
+
+            output.push('<tr><td class="rev_header">Message:</td><td>',
+                message, '</td></tr>');
+        }
+        output.push('</table>');
+
+        return output.join("");
     }
 };
 
