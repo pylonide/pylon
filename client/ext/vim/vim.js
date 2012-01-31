@@ -143,6 +143,7 @@ module.exports = ext.register("ext/vim/vim", {
         // in a code editor) we import it into the code plugin nodes instead of
         // ours.
         require("ext/code/code").nodes.push(mnuView.appendChild(menuItem));
+        require("ext/statusbar/statusbar").addPrefsItem(menuItem.cloneNode(true));
 
         var self = this;
         this.afterOpenFileFn = function() {

@@ -40,12 +40,12 @@ module.exports = ext.register("ext/themes/themes", {
 
     init : function(){
         var _self = this;
-
-        this.nodes.push(
-            mnuView.appendChild(new apf.item({
+        var menuItem = new apf.item({
                 caption : "Themes",
                 submenu : "mnuThemes"
-            })),
+            });
+        this.nodes.push(
+            mnuView.appendChild(menuItem),
             apf.document.body.appendChild(new apf.menu({
                 id : "mnuThemes",
                 onitemclick : function(e){
@@ -53,6 +53,8 @@ module.exports = ext.register("ext/themes/themes", {
                 }
             }))
         );
+        
+        require("ext/statusbar/statusbar").addPrefsItem(menuItem.cloneNode(true));
     },
 
     enable : function(){

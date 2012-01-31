@@ -369,7 +369,24 @@ module.exports = ext.register("ext/code/code", {
         ceEditor.$editor.commands = this.commandManager;
 
         var _self = this;
-
+        
+        var menuSyntaxHighlight = new apf.item({
+            caption : "Syntax Highlighting",
+            submenu : "mnuSyntax"
+        });
+        
+        var menuShowInvisibles = new apf.item({
+            type    : "check",
+            caption : "Show Invisibles",
+            checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
+        });
+        
+        var menuWrapLines = new apf.item({
+            type    : "check",
+            caption : "Wrap Lines",
+            checked : "{ceEditor.wrapmode}"
+        });
+        
         this.nodes.push(
             //Add a panel to the statusbar showing whether the insert button is pressed
             sbMain.appendChild(new apf.section({
@@ -381,26 +398,15 @@ module.exports = ext.register("ext/code/code", {
                 caption : "Length: {ceEditor.value.length}"
             })),
 
-            mnuView.appendChild(new apf.item({
-                caption : "Syntax Highlighting",
-                submenu : "mnuSyntax"
-            })),
-
+            mnuView.appendChild(menuSyntaxHighlight),
+            
             mnuView.appendChild(new apf.divider()),
 
-            mnuView.appendChild(new apf.item({
-                type    : "check",
-                caption : "Show Invisibles",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
-            })),
+            mnuView.appendChild(menuShowInvisibles),
 
-            mnuView.appendChild(new apf.item({
-                type    : "check",
-                caption : "Wrap Lines",
-                checked : "{ceEditor.wrapmode}"
-            }))
+            mnuView.appendChild(menuWrapLines)
         );
-
+        
         mnuSyntax.onitemclick = function(e) {
             var file = ide.getActivePageModel();
 
@@ -440,7 +446,11 @@ module.exports = ext.register("ext/code/code", {
                 }
             }
         };
-
+    
+        require("ext/statusbar/statusbar").addPrefsItem(menuSyntaxHighlight.cloneNode(true));
+        require("ext/statusbar/statusbar").addPrefsItem(menuShowInvisibles.cloneNode(true));
+        require("ext/statusbar/statusbar").addPrefsItem(menuWrapLines.cloneNode(true));
+    
         ide.addEventListener("keybindingschange", function(e) {
             if (typeof ceEditor == "undefined")
                 return;

@@ -91,15 +91,19 @@ module.exports = ext.register("ext/beautify/beautify", {
 
     hook: function () {
         var _self = this;
+        var menuItem = new apf.item({
+                            caption: "Beautify Selection",
+                            onclick: function () {
+                                ext.initExtension(_self);
+                                _self.beautify();
+                            }
+                        });
         this.nodes.push(
-        ide.mnuEdit.appendChild(new apf.divider()), ide.mnuEdit.appendChild(new apf.item({
-            caption: "Beautify Selection",
-            onclick: function () {
-                ext.initExtension(_self);
-                _self.beautify();
-            }
-        })));
-
+            ide.mnuEdit.appendChild(new apf.divider()), ide.mnuEdit.appendChild(menuItem)
+        );
+        
+        require("ext/statusbar/statusbar").addToolsItem(menuItem.cloneNode(true));
+        
         this.hotitems.beautify = [this.nodes[1]];
         code.commandManager.addCommand({
             name: "beautify",

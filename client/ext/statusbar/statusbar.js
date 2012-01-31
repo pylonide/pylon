@@ -28,7 +28,8 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     },
     expanded: false,
     nodes : [],
-
+    toolItems: [],
+    prefsItems: [],
     hook : function(){
         var _self = this;
         ide.addEventListener("openfile", function() {
@@ -63,7 +64,31 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             barIdeStatus.setAttribute("right", "34");
             
         hboxStatusBarSettings.$ext.style.overflow = "hidden";
+        
+        for(var i = 0, l = this.toolItems.length; i < l; i++) {
+            mnuStatusBarTools.appendChild(this.toolItems.shift());
+        }
+        
+        for(var i = 0, l = this.prefsItems.length; i < l; i++) {
+            mnuStatusBarPrefs.appendChild(this.prefsItems.shift());
+        }
     },
+    
+    addToolsItem: function(menuItem){
+        if(!self["mnuStatusBarTools"])
+            this.toolItems.push(menuItem);
+        else
+            mnuStatusBarTools.appendChild(menuItem);
+        
+    },
+    
+    addPrefsItem: function(menuItem){
+        if(!self["mnuStatusBarPrefs"])
+            this.prefsItems.push(menuItem);  
+        else
+            mnuStatusBarPrefs.appendChild(menuItem);
+    },
+    
     toggleStatusBar: function(){
         if(this.expanded) {
             this.expanded = false;
@@ -72,13 +97,12 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 type  : "width",
                 anim  : apf.tween.easeOutQuint,
                 from  : 49,
-                to    : 0,
+                to    : 1,
                 steps : 8,
                 interval : 5,
                 onfinish : function(){
                     hboxStatusBarSettings.hide();
-                },
-                oneach : function(){}
+                }
             });
         }
         else {
@@ -88,17 +112,22 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             apf.tween.single(hboxStatusBarSettings.$ext, {
                 type  : "width",
                 anim  : apf.tween.easeOutQuint,
-                from  : 0,
+                from  : 1,
                 to    : 49,
                 steps : 8,
-                interval : 5,
-                onfinish : function(){
-                    
-                },
-                oneach : function(){}
+                interval : 5
             });
         }
     },
+    
+    bytesLength: function(){
+        var sel = ceEditor.getSelection();
+        var doc = ceEditor.getDocument();
+        var range = sel.getRange();
+        var value = doc.getTextRange(range);
+        return value.length;    
+    },
+    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();

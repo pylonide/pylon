@@ -46,6 +46,8 @@ module.exports = {
         });
         nodes.push(ide.mnuEdit.appendChild(refactorItem));
         
+        require("ext/statusbar/statusbar").addToolsItem(refactorItem.cloneNode(true));
+        
         code.commandManager.addCommand({
             name: "renameVar",
             exec: function(editor) {
