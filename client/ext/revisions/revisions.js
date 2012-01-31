@@ -11,23 +11,25 @@
  * Clear markers on restore
  * When requesting a revision, display a spinner somewhere
  * Refresh (button next to dropdown button?)
- * Match horizontal scrolling
  * ? On hover of meta-data, pop-out to show commit message
  * Use dmp's fuzzy matching method to decide on gray-line placement
  * Get APF-filtered list instead of doing our own filtering
  * Make the history so it floats in from left if after current revision view
  * Implement a Git Log State class, move everything over
+ * Skip line numbers in gutter where gray areas exist
  * 
  * Bugs:
  * 
+ * Diff state isn't kept on re-entry
  * Load run.js, see log commits run past most recent commit. Hmm...
  * clicking around clears the syntax highlighting (wtf?)
  * focus() on search after clear doesn't work. Fix APF
  * Server is sending data back to all clients. Thought I had fixed that...
+ * UI and animations are totally messed up in FF
  * 
  * Ideal:
  * 
- * Higher performance scroll match - how'd Mike do it?
+ * In between the two editors, put a "minimap" of areas with diffs
  * Undo Restore
  * Dialog warning about what Restore does
  *  - But only when we have global settings
@@ -354,6 +356,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             style             : "z-index : 99999; position: absolute; background: #fff"
         });
 
+        // Wait for the elements to get loaded in...
         setTimeout(function() {
             vbMain.parentNode.appendChild(_self.historicalVersionEditor);
             vbMain.parentNode.appendChild(_self.historicalPlaceholder);
@@ -380,17 +383,27 @@ module.exports = ext.register("ext/revisions/revisions", {
             vbHistoricalHeader.$ext.appendChild(_self.sliderEl);
 
             currentVersionEditor.$editor.getSession().setUseWrapMode(false);
-            _self.currentScrollbar = currentVersionEditor.$editor.renderer.scrollBar;
-            _self.currentScrollbar.addEventListener("scroll", function(e) {
+
+            var cveRenderer = currentVersionEditor.$editor.renderer;
+            cveRenderer.scrollBar.element.addEventListener("scroll", function(e) {
                 if (!_self.loadingRevision)
-                    historicalVersionEditor.$editor.renderer.scrollBar.setScrollTop(e.data);
+                    historicalVersionEditor.$editor.renderer.scrollBar.element.scrollTop = e.srcElement.scrollTop;
+            });
+            cveRenderer.scroller.addEventListener("scroll", function(e) {
+                if (!_self.loadingRevision)
+                    historicalVersionEditor.$editor.renderer.scroller.scrollLeft = e.srcElement.scrollLeft;
             });
 
             historicalVersionEditor.$editor.getSession().setUseWrapMode(false);
-            _self.historicalScrollbar = historicalVersionEditor.$editor.renderer.scrollBar;
-            _self.historicalScrollbar.addEventListener("scroll", function(e) {
+
+            var hveRenderer = historicalVersionEditor.$editor.renderer;
+            hveRenderer.scrollBar.element.addEventListener("scroll", function(e) {
                 if (!_self.loadingRevision)
-                    currentVersionEditor.$editor.renderer.scrollBar.setScrollTop(e.data);
+                    currentVersionEditor.$editor.renderer.scrollBar.element.scrollTop = e.srcElement.scrollTop;
+            });
+            hveRenderer.scroller.addEventListener("scroll", function(e) {
+                if (!_self.loadingRevision)
+                    currentVersionEditor.$editor.renderer.scroller.scrollLeft = e.srcElement.scrollLeft;
             });
         }, 100);
 
@@ -400,9 +413,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         });
     },
 
-    /**
-     * Extension starting point. Set up listeners, etc.
-     */
     hook : function(){
         var _self = this;
 
@@ -426,19 +436,10 @@ module.exports = ext.register("ext/revisions/revisions", {
             ide.mnuEdit.appendChild(new apf.item({
                 caption : "Compare File History",
                 onclick : function(){
-                    _self.enterVersionMode();
+                    _self.enterRevisionMode();
                 }
             }))
         );
-
-        ide.addEventListener("editorswitch", function(e) {
-            var fileName = rutil.getFilePath(e.previousPage.name);
-            var fileLog = _self.gitLogs[fileName];
-            if (fileLog) {
-                _self.removeTimelinePoints(fileLog.logData);
-                fileLog.logData = [];
-            }
-        });
 
         ext.initExtension(this);
     },
@@ -543,26 +544,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                 _self.requestGitShow(hash);
             });
         });
-        
-        /*historicalPlaceholder.$ext.style.opacity = 0;
-        historicalPlaceholder.$ext.style.zIndex = 99999;
-        historicalPlaceholder.$ext.style.left = hvePos[0] + "px";
-        historicalPlaceholder.$ext.style.top = (hvePos[1]-40) + "px";//hvePos[1] + "px";
-        historicalPlaceholder.$ext.style.width = historicalVersionEditor.getWidth() + "px";
-        historicalPlaceholder.$ext.style.height = historicalVersionEditor.getHeight() + "px";
-        */
-        
-        /*
-        Firmin.animate(historicalVersionEditor.$ext, {
-            translateX: "15px"
-        }, 0.3, function() {
-            Firmin.animate(historicalVersionEditor.$ext, {
-                translateX: hveLeftMovement + "px"
-            }, 0.6, function() {
-                historicalPlaceholder.$ext.style.zIndex = "99999";
-                _self.requestGitShow(hash);
-            });
-        });*/
     },
 
     restoreRevision : function() {
@@ -573,7 +554,7 @@ module.exports = ext.register("ext/revisions/revisions", {
      * Transforms the interface into a side-by-side comparison
      * of the historical revisions and the current document
      */
-    enterVersionMode : function() {
+    enterRevisionMode : function() {
         var _self = this;
 
         var file = rutil.getFilePath();
@@ -602,7 +583,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         cveSession.setScrollTop(st);
         cecSession.setScrollLeft(sl);
         cecSession.setScrollTop(st);
-        
+
         var cePos = apf.getAbsolutePosition(ceEditor.$ext);
         animateEditorClone.$ext.style.left = cePos[0] + "px";
         animateEditorClone.$ext.style.top = "124px";//cePos[1] + "px";
@@ -767,9 +748,11 @@ module.exports = ext.register("ext/revisions/revisions", {
      * Requests git log data from the server, about the current file
      */
     requestGitLog : function() {
-        tbRevisionsSearch.disable();
-
         var file = rutil.getFilePath();
+
+        if (this.lastFileLoaded)
+            this.removeTimelinePoints(this.gitLogs[this.lastFileLoaded].logData);
+
         if (!this.gitLogs[file]) {
             this.gitLogs[file] = {
                 logData : [],
@@ -778,9 +761,14 @@ module.exports = ext.register("ext/revisions/revisions", {
                 currentRevision : editors.currentEditor ? editors.currentEditor.ceEditor.getSession().getValue() : "",
                 revisions : {}
             };
+
+            tbRevisionsSearch.disable();
+            this.sendServerRequest("log");
+        } else {
+            this.restoreGitLogState(this.gitLogs[file].logData, file);
         }
 
-        this.sendServerRequest("log");
+        this.lastFileLoaded = file;
     },
 
     /**
@@ -832,21 +820,24 @@ module.exports = ext.register("ext/revisions/revisions", {
             logData[gi].committer.fullNameLower = logData[gi].committer.fullName.toLowerCase();
         }
 
+        this.gitLogs[message.body.file].logData = logData;
+        this.gitLogs[message.body.file].lastLoadedGitLog = logDataLength - 1;
+
+        this.restoreGitLogState(logData, message.body.file);
+    },
+    
+    restoreGitLogState : function(logData, file) {
         var mdlOut = apf.getXml(rutil.arrCommits2Xml(logData, "commit"));
         mdlCommits.load(mdlOut);
 
-        var file = message.body.file;
-        this.gitLogs[file].logData = logData;
-        this.gitLogs[file].lastLoadedGitLog = logDataLength -1;
-
-        var output = this.formulateRevisionMetaData(logData[logDataLength-1], true);
+        var output = this.formulateRevisionMetaData(logData[this.gitLogs[file].lastLoadedGitLog], true);
         versions_label.setValue(output);
         current_versions_label.setValue(output);
 
-        this.setupTimeline(this.gitLogs[file].logData);
+        this.setupTimeline(logData);
         tbRevisionsSearch.enable();
 
-        this.gitLogs[file].logData[logDataLength-1].dotEl.setAttribute("class", "current");
+        this.gitLogs[file].logData[this.gitLogs[file].lastLoadedGitLog].dotEl.setAttribute("class", "current");
     },
 
     /**
@@ -974,10 +965,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
         }
 
-        /*Firmin.animate(historicalVersionEditor.$ext, {
-            translateX: "0px"
-        }, 0, function() {
-        */
         setTimeout(function() {
             historicalVersionEditor.$editor.session.setScrollLeft(sl);
             currentVersionEditor.$editor.session.setScrollLeft(sl);
@@ -986,7 +973,6 @@ module.exports = ext.register("ext/revisions/revisions", {
 
             historicalPlaceholder.$ext.style.opacity = 0;
             historicalPlaceholder.$ext.style.zIndex = "99998";
-            //});
         });
     },
 
