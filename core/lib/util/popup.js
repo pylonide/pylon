@@ -139,8 +139,9 @@ apf.popup = {
 
             popup.style.position = "absolute";
             
-            var pOverflow = apf.getOverflowParent(o.content);
-            var edgeY     = (pOverflow == document.documentElement
+            var parentMenu = this.cache[options.allowTogether];
+            var pOverflow  = apf.getOverflowParent(o.content);
+            var edgeY      = (pOverflow == document.documentElement
                 ? (apf.isIE 
                     ? pOverflow.offsetHeight 
                     : (window.innerHeight + window.pageYOffset)) + pOverflow.scrollTop
@@ -173,7 +174,12 @@ apf.popup = {
                     > edgeX;
                 
                 if (moveLeft) {
-                    var value = (edgeX - (options.width || o.width || o.content.offsetWidth));
+                    var value;
+                    if (options.ref)
+                        value = (pos[0] - (options.width || o.width || o.content.offsetWidth));
+                    else
+                        value = (edgeX - (options.width || o.width || o.content.offsetWidth) 
+                                - (parentMenu ? (parentMenu.width || parentMenu.content.offsetWidth) : 0));
                     popup.style.left = value < 0 ? x : value + "px";
                 }
                 else {
@@ -233,7 +239,11 @@ apf.popup = {
             if (!refNode) {
                 if (options.height || o.height)
                     popup.style.height = (options.height || o.height) + "px";
-                popup.style.top = y + "px";
+                value = (edgeY - (options.height || o.height || o.content.offsetHeight));
+                popup.style.top = y + (options.height || o.height || o.content.offsetHeight) < edgeY 
+                                    ? y 
+                                    : value 
+                                  + "px";
             }
             popup.style.display = "block";
             
