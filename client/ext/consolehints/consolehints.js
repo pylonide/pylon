@@ -118,10 +118,10 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             };
 
             var cliValue = e.currentTarget.getValue();
-            if (cliValue) 
+            if (cliValue)
                 self.getCmdCompletion(cliValue, getCmdMatches);
-            else 
-                self.hide(); 
+            else
+                self.hide();
         });
 
         // Below we are overwriting the Console default key events in function of
@@ -203,14 +203,14 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         this.hide();
     },
     // Given a value and a function for subCommands `fn1` and a function for one
-    // command `fn2`, calls the functions with the proper array of completions, 
+    // command `fn2`, calls the functions with the proper array of completions,
     // if any.
     getCmdCompletion: function(value, fn1, fn2) {
         var fullCmd = value.match(/(\w+)\s+(.*)$/);
         if (fullCmd) {
             // If we don't recognize the root command
             var rootCmd = Console.allCommands[fullCmd[1]];
-            if (!rootCmd) 
+            if (!rootCmd)
                 return fn1([]);
 
             var subCommands = rootCmd.commands;
@@ -222,13 +222,16 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     },
     onTabKey: function() {
         this.hide();
-        
+
         var cliValue = txtConsoleInput.getValue();
         if (!cliValue) return;
 
         this.getCmdCompletion(cliValue,
             function(cmds) { cliValue = cliValue.replace(RE_lastWord, cmds[0]); },
-            function(cmds) { cliValue = cmds[0]; }
+            function(cmds) {
+                if (cmds.length)
+                    cliValue = cmds[0];
+            }
         );
 
         txtConsoleInput.setValue(cliValue);
