@@ -372,17 +372,18 @@ module.exports = ext.register("ext/editors/editors", {
         settings.save();
     },
 
-    initEditorEvents: function(fake, model) {
-        fake.$at.addEventListener("afterchange", function(e) {
+    initEditorEvents: function(page, model) {
+        model = model || page.$model;
+        page.$at.addEventListener("afterchange", function(e) {
             if (e.action == "reset") {
                 delete this.undo_ptr;
                 return;
             }
 
             var val;
-            if (fake.$at.ignoreChange) {
+            if (page.$at.ignoreChange) {
                 val = undefined;
-                fake.$at.ignoreChange = false;
+                page.$at.ignoreChange = false;
             }
             else if(this.undolength === 0 && !this.undo_ptr) {
                 val = undefined;
@@ -393,11 +394,11 @@ module.exports = ext.register("ext/editors/editors", {
                     : undefined;
             }
 
-            if (fake.changed !== val) {
-                fake.changed = val;
+            if (page.changed !== val) {
+                page.changed = val;
                 model.setQueryValue("@changed", (val ? "1" : "0"));
                 
-                var node = fake.$doc.getNode();
+                var node = page.$doc.getNode();
                 ide.dispatchEvent("updatefile", {
                     changed : val ? 1 : 0,
                     xmlNode : node
@@ -462,6 +463,9 @@ module.exports = ext.register("ext/editors/editors", {
         if (editorPage.actiontracker != page.$at)
             editorPage.setAttribute("actiontracker", page.$at);
 
+        if (page.$editor && page.$editor.setDocument) {
+            page.$editor.setDocument(page.$doc, page.$at);
+        }
 
         if (ide.dispatchEvent("editorswitch", {
             previousPage: e.previousPage,
@@ -648,6 +652,9 @@ module.exports = ext.register("ext/editors/editors", {
 
                 pNode = apf.createNodeFromXpath(e.model.data, "auto/files");
                 for (var i = 0, l = pages.length; i < l; i++) {
+                    if(!pages[i] || !pages[i].$model)
+                        continue;
+                        
                     var file = pages[i].$model.data;
                     if (!file || file.getAttribute("debug"))
                         continue;

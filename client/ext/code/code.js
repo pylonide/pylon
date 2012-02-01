@@ -94,6 +94,7 @@ var contentTypes = {
     "mml": "application/mathml+xml",
 
     "php": "application/x-httpd-php",
+    "phtml": "application/x-httpd-php",
     "html": "text/html",
     "xhtml": "application/xhtml+xml",
     "coffee": "text/x-script.coffeescript",
@@ -341,20 +342,21 @@ module.exports = ext.register("ext/code/code", {
 
             if (e.doc && e.doc.editor && e.doc.editor.ceEditor) {
                 // check if there is a scriptid, if not check if the file is somewhere in the stack
-                if (mdlDbgStack && mdlDbgStack.data
-                    && !e.node.getAttribute("scriptid") && e.node.getAttribute("scriptname"))
-                {
+                if (mdlDbgStack && mdlDbgStack.data && e.node
+                  && (!e.node.hasAttribute("scriptid") || !e.node.getAttribute("scriptid"))
+                  && e.node.hasAttribute("scriptname") && e.node.getAttribute("scriptname")) {
                     var nodes = mdlDbgStack.data.selectNodes("//frame[@script='" + e.node.getAttribute("scriptname").replace(ide.workspaceDir + "/", "") + "']");
                     if (nodes.length) {
                         e.node.setAttribute("scriptid", nodes[0].getAttribute("scriptid"));
                     }
                 }
-                e.doc.editor.ceEditor.afterOpenFile(e.doc.editor.ceEditor.getSession());
+                e.doc.editor.amlEditor.afterOpenFile(e.doc.editor.amlEditor.getSession());
             }
         });
 
         tabEditors.addEventListener("afterswitch", function(e) {
-            ceEditor.afterOpenFile(ceEditor.getSession());
+            var editor = _self.amlEditor;
+            editor.afterOpenFile(editor.getSession());
         });
 
         // preload common language modes
@@ -419,11 +421,14 @@ module.exports = ext.register("ext/code/code", {
                         delete contentTypes["*" + fileName];
 
                     var mime = value.split(";")[0];
-                    var fileExt = (fileName.lastIndexOf(".") != -1) ?
-                        fileName.split(".").pop() : null;
+                    var fileExt = (fileName.lastIndexOf(".") != -1) 
+                        ? fileName.split(".").pop() 
+                        : null;
 
-                    if (fileExt && contentTypes[fileExt] !== mime)
-                        delete contentTypes[fileExt];
+                    // FIXME: WHY would you want to overwrite the default content
+                    //        types?!?!?!?
+                    //if (fileExt && value != "auto" && contentTypes[fileExt] !== mime)
+                    //    delete contentTypes[fileExt];
 
                     var customType = fileExt ?
                         contentTypes[fileExt] : contentTypes["*" + fileName];

@@ -570,7 +570,7 @@ module.exports = ext.register("ext/zen/zen", {
      * Called during the onmouseout event from the zen button
      */
     fadeZenButtonOut : function() {
-        if (self["btnZenFullScreen"]) {// for the guided tour
+        if (self["btnZenFullscreen"]) {// for the guided tour
             apf.tween.single(btnZenFullscreen, {
                 type     : "opacity",
                 anim     : apf.tween.easeInOutCubic,

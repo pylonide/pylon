@@ -232,9 +232,10 @@ var actions = {
     },
     ".": {
         fn: function(editor, range, count, param) {
-            var previous = inputBuffer.previous;
             util.onInsertReplaySequence = inputBuffer.lastInsertCommands;
-            inputBuffer.exec(editor, previous.action, previous.param);
+            var previous = inputBuffer.previous;
+            if (previous) // If there is a previous action
+                inputBuffer.exec(editor, previous.action, previous.param);
         }
     }
 };
@@ -337,7 +338,7 @@ var inputBuffer = exports.inputBuffer = {
         var o = action.operator;
         var a = action.action;
 
-        if(o) {
+        if (o) {
             this.previous = {
                 action: action,
                 param: param

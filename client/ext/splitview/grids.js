@@ -263,6 +263,20 @@ function createGridNodes(name) {
             if (timeout)
                 return;
             grids.dispatchEvent("resize", lastEvent, this);
+            // correct the positioning of the grabber of each splitter.
+            // use a setTimeout(..., 0) to make sure the repaint has happened and
+            // offset values are correct.
+            setTimeout(function() {
+                var splitter, grabber;
+                for (var i = 0, l = blueprint.splitters.length; i < l; ++i) {
+                    splitter = blueprint.splitters[i];
+                    grabber = splitter.$ext.getElementsByTagName("span")[0];
+                    if (splitter.$ext.className.indexOf("vertical") > -1)
+                        grabber.style.marginTop = ((splitter.$ext.offsetHeight / 2) - 20) + "px";
+                    else
+                        grabber.style.marginLeft = ((splitter.$ext.offsetWidth / 2) - 20) + "px";
+                }
+            });
             timeout = setTimeout(function(){ timeout = null; }, 100);
         });
     }

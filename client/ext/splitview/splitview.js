@@ -77,6 +77,12 @@ module.exports = ext.register("ext/splitview/splitview", {
             return _self.updateSplitView(e.previousPage, e.nextPage);
         });
         
+        ide.addEventListener("pageswitch", function(e) {
+            if (!Splits.getActive())
+                return;
+            _self.save();
+        });
+        
         ide.addEventListener("closefile", function(e) {
             _self.onFileClose(e);
         });
@@ -192,7 +198,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             return;
 
         // enable split view ONLY for code editors for now...
-        if (pages[idx].$editor.name.indexOf("Code Editor") == -1)
+        if (!this.isSupportedEditor(curr.$editor, pages[idx].$editor))
             return;
         // pass in null to mutate the active split view
         Splits.mutate(null, pages[idx]);
@@ -277,7 +283,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         }
         else if (shiftKey) {
             // enable split view ONLY for code editors for now...
-            if (page.$editor.name.indexOf("Code Editor") == -1)
+            if (!this.isSupportedEditor(activePage.$editor, page.$editor))
                 return;
             // tabs can be merged into and unmerged from a splitview by clicking a
             // tab while holding shift
@@ -333,7 +339,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         }
         
         // enable split view ONLY for code editors for now...
-        if (next.$editor.name.indexOf("Code Editor") > -1) {
+        if (this.isSupportedEditor(next.$editor)) {
             mnuCloneView.enable();
             mnuSplitAlign.enable();
         }
@@ -362,28 +368,8 @@ module.exports = ext.register("ext/splitview/splitview", {
         Splits.show(split);
         mnuSplitAlign.setAttribute("checked", split.gridLayout == "3rows");
         
-        if (split.clone) {
-            var _self = this;
-            var page = split.clone;
-            editor = page.$editor;
-            
+        if (split.clone)
             mnuCloneView.setAttribute("checked", true);
-            
-            if (!page.acesession) {
-                page.acesession = new EditSession(doc.acedoc);
-                page.acesession.setUndoManager(at);
-                
-                doc.addEventListener("prop.value", function(e) {
-                    page.acesession.setValue(e.value || "");
-                    editor.moveCursorTo(0, 0);
-                });
-                
-                doc.addEventListener("close", function(){
-                    _self.endCloneView(page);
-                });
-            }
-            editor.amlEditor.setProperty("value", page.acesession);
-        }
         
         apf.layout.forceResize();
         
@@ -412,34 +398,47 @@ module.exports = ext.register("ext/splitview/splitview", {
         if (split || !doc || !Splits.getEditorSession(page))
             return;
         
+        var _self = this;
         var fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", page.$model.data.getAttribute("path") 
           + "_clone", page.$editor.path, page.nextSibling || null);
-          
+
         fake.contentType = page.contentType;
         fake.$at     = page.$at;
         fake.$doc    = doc;
         fake.$editor = page.$editor;
+        fake.$model  = page.$model;
+        
+        
+        Splits.mutate(null, fake, "clone");
+          
+        fake.setAttribute("model", fake.$model);
         fake.setAttribute("tooltip", "[@path]");
         fake.setAttribute("class",
             "{parseInt([@saving], 10) || parseInt([@lookup], 10) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
             ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"
         );
-        fake.setAttribute("model", fake.$model = page.$model);
+        
+        Editors.initEditorEvents(fake, page.$model);
+        
+        var editor = Splits.getCloneEditor(page);
+        
+        fake.acesession = new EditSession(doc.acedoc);
+        fake.acesession.setUndoManager(fake.$at);
+        
+        doc.addEventListener("prop.value", function(e) {
+            fake.acesession.setValue(e.value || "");
+            editor.$editor.moveCursorTo(0, 0);
+        });
+
+        editor.setProperty("value", fake.acesession);
         
         page.addEventListener("DOMNodeRemovedFromDocument", function(e) {
             if (typeof tabEditors == "undefined" || !fake || !fake.parentNode)
                 return;
-            tabEditors.remove(fake);
+            tabEditors.remove(fake, null, true);
         });
         
-        Editors.initEditorEvents(fake, page.$model);
-        
-        Splits.mutate(null, fake);
-        
-        split = Splits.get(fake)[0];
-        split.clone = fake;
-        
-        Splits.update(split);
+        Splits.update();
         
         this.save();
         
@@ -447,12 +446,19 @@ module.exports = ext.register("ext/splitview/splitview", {
     },
     
     endCloneView: function(page) {
+        mnuCloneView.setAttribute("checked", false);
         var split = this.getCloneView(page);
         if (!split)
             return;
 
-        tabEditors.remove(split.clone);
+        var fake = split.clone;
         delete split.clone;
+        // use setTimeout(..., 0), or else we go into an infinite loop. There are
+        // three or more use cases to end a cloneView, this function is just one
+        // of 'em.
+        setTimeout(function() {
+            tabEditors.remove(fake, null, true);
+        });
     },
     
     getCloneView: function(page) {
@@ -484,6 +490,7 @@ module.exports = ext.register("ext/splitview/splitview", {
                 return pair.page.id;
             }).join(","));
             splitEl.setAttribute("active", Splits.isActive(splits[i]) ? "true" : "false");
+            splitEl.setAttribute("activepage", splits[i].activePage + "");
             splitEl.setAttribute("layout", splits[i].gridLayout);
             node.appendChild(splitEl);
         }
@@ -533,6 +540,8 @@ module.exports = ext.register("ext/splitview/splitview", {
             if (gridLayout)
                 Splits.update(null, gridLayout);
 
+            Splits.setActivePage(null, parseInt(nodes[i].getAttribute("activepage"), 10));
+            
             if (apf.isTrue(nodes[i].getAttribute("active")))
                 active = Splits.getActive();
         }
@@ -541,6 +550,16 @@ module.exports = ext.register("ext/splitview/splitview", {
             tabs.set(activePage);
         else
             Splits.show(active);
+    },
+    
+    isSupportedEditor: function() {
+        var editor;
+        for (var i = 0, l = arguments.length; i < l; ++i) {
+            editor = arguments[i];
+            if (!editor || !editor.name || editor.name.indexOf("Code Editor") == -1)
+                return false;
+        }
+        return true;
     },
     
     enable : function(){
