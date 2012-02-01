@@ -324,6 +324,8 @@ exports.is = function(amlNode) {
 };
 
 exports.isActive = function(split) {
+    if (!split)
+        return false;
     return split === ActiveSplit;
 };
 
@@ -332,12 +334,16 @@ exports.getActive = function() {
 };
 
 exports.setActivePage = function(split, page) {
+    split = split || ActiveSplit;
     var old = split.activePage;
-    var idx = split.activePage = page
-        ? exports.indexOf(split, page) 
-        : split.activePage;
+    var idx = split.activePage = (typeof page == "number" && !isNaN(page)
+        ? page 
+        : !!page
+            ? exports.indexOf(split, page) 
+            : split.activePage);
     if (idx == -1)
         return;
+
     var pair = split.pairs[idx] ? split.pairs[idx] : split.pairs[0];
     pair.editor.focus();
     if (idx !== old)
@@ -489,9 +495,10 @@ function onEditorFocus(editor) {
         for (var page, i = 0, l = split.pairs.length; i < l; ++i) {
             page = split.pairs[i].page;
             if (page === activePage) {
-                if (split.activePage !== i)
+                if (split.activePage !== i) {
+                    split.activePage = i;
                     ide.dispatchEvent("pageswitch", { page: page });
-                split.activePage = i;
+                }
                 apf.setStyleClass(page.$button, ActiveClass, [InactiveClass]);
             }
             else

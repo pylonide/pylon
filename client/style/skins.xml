@@ -7028,17 +7028,17 @@
         }
 
         .darksplitter.vertical {
-            border-right: 1px solid #c7c7c7;
+            border-left: 1px solid #c7c7c7;
 
             vertical-align: middle;
             width: 6px;
             
-            background: -moz-linear-gradient(left, #e4e4e4 0%, #d6d5d5 100%); /* FF3.6+ */
-            background: -webkit-gradient(linear, left top, right top, color-stop(0%,#e4e4e4), color-stop(100%,#d6d5d5)); /* Chrome,Safari4+ */
-            background: -webkit-linear-gradient(left, #e4e4e4 0%,#d6d5d5 100%); /* Chrome10+,Safari5.1+ */
-            background: -o-linear-gradient(left, #e4e4e4 0%,#d6d5d5 100%); /* Opera 11.10+ */
-            background: -ms-linear-gradient(left, #e4e4e4 0%,#d6d5d5 100%); /* IE10+ */
-            background: linear-gradient(left, #e4e4e4 0%,#d6d5d5 100%); /* W3C */
+            background: -moz-linear-gradient(left,  #d6d5d5 0%, #e4e4e4 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, right top, color-stop(0%,#d6d5d5), color-stop(100%,#e4e4e4)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(left,  #d6d5d5 0%,#e4e4e4 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(left,  #d6d5d5 0%,#e4e4e4 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(left,  #d6d5d5 0%,#e4e4e4 100%); /* IE10+ */
+            background: linear-gradient(left,  #d6d5d5 0%,#e4e4e4 100%); /* W3C */
         }
 
         .darksplitter.vertical span {
@@ -7046,7 +7046,7 @@
             height: 11px;
             background-position: 0 -3px;
             margin-top: 49%;
-            margin-left: 2px;
+            margin-left: 1px;
         }
 
         .darksplitter.horizontal {
