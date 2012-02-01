@@ -213,21 +213,21 @@ module.exports = ext.register("ext/editors/editors", {
         if (init)
             tabEditors.setAttribute("buttons", "close");
         
-        var model = new apf.model(), 
-            fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
-                page.contentType = contentType;
-                page.$at     = new apf.actiontracker();
-                page.$doc    = doc;
-                page.$editor = editor;
-                
-                page.setAttribute("model", page.$model = model);
-                page.$model.load(xmlNode);
-            });
+        var model = new apf.model();
+        var fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
+            page.contentType = contentType;
+            page.$at     = new apf.actiontracker();
+            page.$doc    = doc;
+            page.$editor = editor;
+            
+            page.setAttribute("model", page.$model = model);
+            page.$model.load(xmlNode);
+        });
 
         if (init)
             tabEditors.setAttribute("buttons", "close,scale");
 
-        fake.$at.addEventListener("afterchange", function() {
+        fake.$at.addEventListener("afterchange", function(e) {
             if (e.action == "reset") {
                 delete this.undo_ptr;
                 return;
@@ -237,7 +237,8 @@ module.exports = ext.register("ext/editors/editors", {
             if (fake.$at.ignoreChange) {
                 val = undefined;
                 fake.$at.ignoreChange = false;
-            } else if(this.undolength === 0 && !this.undo_ptr)
+            }
+            else if(this.undolength === 0 && !this.undo_ptr)
                 val = undefined;
             else
                 val = (this.$undostack[this.$undostack.length-1] !== this.undo_ptr) ? 1 : undefined;

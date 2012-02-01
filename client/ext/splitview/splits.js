@@ -130,7 +130,8 @@ exports.show = function(split) {
     for (i = 0, l = split.pairs.length; i < l; ++i) {
         split.pairs[i].page.$activateButton();
         split.pairs[i].editor.show();
-        exports.consolidateEditorSession(split.pairs[i].page, split.pairs[i].editor);
+        if (!(split.clone && split.pairs[i].page === split.clone))
+            exports.consolidateEditorSession(split.pairs[i].page, split.pairs[i].editor);
     }
     
     ActiveSplit = split;
@@ -225,7 +226,7 @@ exports.update = function(split, gridLayout) {
     return this;
 };
 
-exports.mutate = function(split, page) {
+exports.mutate = function(split, page, type) {
     split = split || split === null ? ActiveSplit : null;
     var tabs = tabEditors;
     var activePage = tabs.getPage();
@@ -265,7 +266,11 @@ exports.mutate = function(split, page) {
             if (page === activePage)
                 return true;
 
+            if (type && type == "clone")
+                activePage.$editor.amlEditor = clones.original;
             split = this.create(activePage);
+            if (type && type == "clone")
+                split.clone = page;
         }
         
         var editorToUse;
@@ -290,8 +295,9 @@ exports.mutate = function(split, page) {
             page: page,
             editor: editorToUse
         });
-        //console.log("setting model of ", editorToUse.id, "to", page.$model.data.xml);
-        exports.consolidateEditorSession(page, editorToUse);
+
+        if (!(split.clone && page === split.clone))
+            exports.consolidateEditorSession(page, editorToUse);
         split.zManager.set(editorToUse.$ext);
 
         this.show(split);
@@ -350,10 +356,6 @@ exports.setActivePage = function(split, page) {
         ide.dispatchEvent("pageswitch", { page: pair.page });
 };
 
-/*
- * Implemented this function, because Array.indexOf() compares objects with '=='
- * instead of '==='!
- */
 exports.indexOf = function(split, obj) {
     var type = obj.localName.indexOf("page") > -1 ? "page" : "editor";
     for (var i = 0, l = split.pairs.length; i < l; ++i) {
@@ -361,6 +363,13 @@ exports.indexOf = function(split, obj) {
             return i;
     }
     return -1;
+};
+
+
+exports.getCloneEditor = function(page) {
+    if (page && page.$editor.amlEditor)
+        createEditorClones.call(this, page.$editor.amlEditor);
+    return EditorClones.cloneEditor || null;
 };
 
 function sortEditorsAndPages(split) {

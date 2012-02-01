@@ -372,17 +372,18 @@ module.exports = ext.register("ext/editors/editors", {
         settings.save();
     },
 
-    initEditorEvents: function(fake, model) {
-        fake.$at.addEventListener("afterchange", function(e) {
+    initEditorEvents: function(page, model) {
+        model = model || page.$model;
+        page.$at.addEventListener("afterchange", function(e) {
             if (e.action == "reset") {
                 delete this.undo_ptr;
                 return;
             }
 
             var val;
-            if (fake.$at.ignoreChange) {
+            if (page.$at.ignoreChange) {
                 val = undefined;
-                fake.$at.ignoreChange = false;
+                page.$at.ignoreChange = false;
             }
             else if(this.undolength === 0 && !this.undo_ptr) {
                 val = undefined;
@@ -393,11 +394,11 @@ module.exports = ext.register("ext/editors/editors", {
                     : undefined;
             }
 
-            if (fake.changed !== val) {
-                fake.changed = val;
+            if (page.changed !== val) {
+                page.changed = val;
                 model.setQueryValue("@changed", (val ? "1" : "0"));
                 
-                var node = fake.$doc.getNode();
+                var node = page.$doc.getNode();
                 ide.dispatchEvent("updatefile", {
                     changed : val ? 1 : 0,
                     xmlNode : node
