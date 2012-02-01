@@ -95,6 +95,13 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 Console.allCommands[cmd] = cmds[cmd];
         };
 
+        var _self = this;
+        Console.messages["internal-autocomplete"] = function(message) {
+            var cmds = message.body;
+            console.log(cmds)
+            _self.show(txtConsoleInput, "", cmds.matches, txtConsoleInput.getValue().length - 1);
+        };
+
         // Asynchronously retrieve commands that other plugins may have
         // registered, hence the (relatively) long timeout.
         setTimeout(function() {
@@ -111,10 +118,11 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 9) return;
             var getCmdMatches = function(filtered) {
                 var cli = e.currentTarget;
-                if (filtered.length)
+                if (filtered.length && filtered[0] !== "[PATH]")
                     self.show(cli, "", filtered, cli.getValue().length - 1);
-                else
+                else {
                     self.hide();
+                }
             };
 
             var cliValue = e.currentTarget.getValue();
@@ -214,7 +222,15 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 return fn1([]);
 
             var subCommands = rootCmd.commands;
-            fn1(subCommands ? filterCommands(Object.keys(subCommands), fullCmd[2]) : []);
+            var filtered;
+            if (subCommands && subCommands["[PATH]"])
+                filtered = ["[PATH]"];
+            else if (subCommands)
+                filtered = filterCommands(Object.keys(subCommands), fullCmd[2]);
+            else
+                filtered = [];
+
+            fn1(filtered, fullCmd[1], fullCmd[2]);
         }
         else {
             (fn2 || fn1)(filterCommands(Object.keys(Console.allCommands), value));
@@ -227,8 +243,21 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         if (!cliValue) return;
 
         this.getCmdCompletion(cliValue,
-            function(cmds) {
-                if (cmds.length) cliValue = cliValue.replace(RE_lastWord, cmds[0]);
+            function(cmds, cmd1, cmd2) {
+                if (cmds.length) {
+                    // This is legacy. Not the best way to determine if a command
+                    // accepts filename inputs
+                    if (cmds[0] === "[PATH]") {
+                        ide.send({
+                            command: "internal-autocomplete",
+                            argv: [cmd1, cmd2],
+                            cwd: Console.getCwd()
+                        });
+                    }
+                    else {
+                        cliValue = cliValue.replace(RE_lastWord, cmds[0]);
+                    }
+                }
             },
             function(cmds) {
                 if (cmds.length) cliValue = cmds[0];
