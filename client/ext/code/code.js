@@ -350,12 +350,13 @@ module.exports = ext.register("ext/code/code", {
                         e.node.setAttribute("scriptid", nodes[0].getAttribute("scriptid"));
                     }
                 }
-                e.doc.editor.ceEditor.afterOpenFile(e.doc.editor.ceEditor.getSession());
+                e.doc.editor.amlEditor.afterOpenFile(e.doc.editor.amlEditor.getSession());
             }
         });
 
         tabEditors.addEventListener("afterswitch", function(e) {
-            ceEditor.afterOpenFile(ceEditor.getSession());
+            var editor = _self.amlEditor;
+            editor.afterOpenFile(editor.getSession());
         });
 
         // preload common language modes
@@ -420,11 +421,14 @@ module.exports = ext.register("ext/code/code", {
                         delete contentTypes["*" + fileName];
 
                     var mime = value.split(";")[0];
-                    var fileExt = (fileName.lastIndexOf(".") != -1) ?
-                        fileName.split(".").pop() : null;
+                    var fileExt = (fileName.lastIndexOf(".") != -1) 
+                        ? fileName.split(".").pop() 
+                        : null;
 
-                    if (fileExt && contentTypes[fileExt] !== mime)
-                        delete contentTypes[fileExt];
+                    // FIXME: WHY would you want to overwrite the default content
+                    //        types?!?!?!?
+                    //if (fileExt && value != "auto" && contentTypes[fileExt] !== mime)
+                    //    delete contentTypes[fileExt];
 
                     var customType = fileExt ?
                         contentTypes[fileExt] : contentTypes["*" + fileName];
