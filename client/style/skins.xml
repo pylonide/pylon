@@ -5135,6 +5135,11 @@
             bottom              : 0;
             z-index             : 1;
         }
+        
+        .deploy-sb.sbios .filler {
+            left: 2px;
+        }
+        
         .sbios .mainrail {
             height              : 100%;
             width               : 6px;
