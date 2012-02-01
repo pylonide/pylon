@@ -427,7 +427,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         
         doc.addEventListener("prop.value", function(e) {
             fake.acesession.setValue(e.value || "");
-            fake.acesession.moveCursorTo(0, 0);
+            editor.$editor.moveCursorTo(0, 0);
         });
 
         editor.setProperty("value", fake.acesession);
