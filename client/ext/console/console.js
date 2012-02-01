@@ -73,11 +73,11 @@ module.exports = ext.register("ext/console/console", {
     alone  : true,
     markup : markup,
     css    : css,
-    
+
     height : 200,
     hidden : true,
     nodes : [],
-    
+
     autoOpen : true,
     commandHistoryIndex : 0,
 
@@ -123,11 +123,6 @@ module.exports = ext.register("ext/console/console", {
         else {
             txtConsoleInput.focus()
         }
-    },
-
-    send : function(data) {
-        ide.send(data.line.replace(data.command,"").trim());
-        return true;
     },
 
     showOutput : function(){
@@ -217,9 +212,9 @@ module.exports = ext.register("ext/console/console", {
             this.write("Syntax error: first argument quoted.");
         }
         else {
-            // `showConsole` is true if we want to expand the console after 
+            // `showConsole` is true if we want to expand the console after
             // executing a command.
-            var showConsole = true;    
+            var showConsole = true;
 
             if (code === KEY_TAB) {
                 this.autoComplete(e, parser, 1);
@@ -279,7 +274,7 @@ module.exports = ext.register("ext/console/console", {
                             line: line,
                             cwd: this.getCwd()
                         };
-                        
+
                         if (cmd.trim() == "npm")
                             data.version = settings.model.queryValue("auto/node-version/@version") || "auto";
 
@@ -294,7 +289,7 @@ module.exports = ext.register("ext/console/console", {
                                 if (!ide.onLine)
                                     this.write("Cannot execute command. You are currently offline.");
                                 else
-                                    ide.send(JSON.stringify(data));
+                                    ide.send(data);
                             }
                             else {
                                 // If any of the `consolecommand` events returns
@@ -306,7 +301,7 @@ module.exports = ext.register("ext/console/console", {
                     }
                 }
             }
-            if (showConsole)    
+            if (showConsole)
                 this.show();
         }
     },
@@ -317,20 +312,20 @@ module.exports = ext.register("ext/console/console", {
 
         if (message.type == "node-data")
             return Logger.logNodeStream(message.data, message.stream, true);
-            
+
         if (message.type == "node-exit")
             return Logger.log("", "divider", true);
-        
+
         if (message.type.match(/-data$/))
             return Logger.logNodeStream(message.data, message.stream, false);
-            
+
         if (message.type.match(/-exit$/))
             return Logger.log("", "divider", false);
 
         if (message.type != "result")
             return;
 
-        switch (message.subtype) { 
+        switch (message.subtype) {
             case "commandhints":
                 var cmds = message.body;
                 this.initCommands();
@@ -469,11 +464,11 @@ module.exports = ext.register("ext/console/console", {
             // the 'commandhints' command retreives a list of available commands
             // from all the server plugins, to support git auto-completion, for
             // example.
-            ide.send(JSON.stringify({
+            ide.send({
                 command: "commandhints",
                 argv: parser.argv,
                 cwd: this.getCwd()
-            }));
+            });
         }
 
         var base = parser.argv[0];
@@ -573,14 +568,14 @@ module.exports = ext.register("ext/console/console", {
             if (ins.indexOf("PATH]") != -1 && lastSearch && lastSearch.line == val && lastSearch.matches.length == 1)
                 ins = lastSearch.matches[0].replace(lastSearch.base, "");
             if (ins.indexOf("PATH]") != -1) {
-                ide.send(JSON.stringify({
+                ide.send({
                     command: "internal-autocomplete",
                     line   : val,
                     textbox: textbox.id,
                     cursor : cursorPos,
                     argv   : parser.argv,
                     cwd    : this.getCwd()
-                }));
+                });
             }
             else {
                 if (!!(cmds || commands)[base + ins])
@@ -598,7 +593,7 @@ module.exports = ext.register("ext/console/console", {
 
     init : function(amlNode){
         var _self = this;
-        
+
         this.panel = tabConsole;
         this.$cwd  = "/workspace";
 
@@ -609,12 +604,12 @@ module.exports = ext.register("ext/console/console", {
 
         stProcessRunning.addEventListener("activate", function() {
             _self.showOutput();
-            
-            if (_self.autoOpen 
+
+            if (_self.autoOpen
               && apf.isTrue(settings.model.queryValue("auto/console/@autoshow")))
                 _self.show();
         });
-        
+
         // before the actual run target gets called we clear the console
         ide.addEventListener("beforeRunning", function () {
             _self.clear();
@@ -629,7 +624,7 @@ module.exports = ext.register("ext/console/console", {
             else
                 Logger.log("'" + path + "' is not a file.");
         });
-        
+
         function kdHandler(e){
             if (!e.ctrlKey && !e.metaKey && !e.altKey
               && !e.shiftKey && apf.isCharacter(e.keyCode))
@@ -639,7 +634,7 @@ module.exports = ext.register("ext/console/console", {
         tabConsole.addEventListener("afterrender", function(){
             txtOutput.addEventListener("keydown", kdHandler);
             txtConsole.addEventListener("keydown", kdHandler);
-            
+
             var activePage = settings.model.queryValue("auto/console/@active");
             if (activePage && !this.getPage(activePage))
                 activePage = null;
@@ -648,19 +643,19 @@ module.exports = ext.register("ext/console/console", {
 
             this.set(activePage);
         });
-        
+
         tabConsole.addEventListener("afterswitch", function(e){
             settings.model.setQueryValue("auto/console/@active", e.nextPage.name)
         });
-        
+
         winDbgConsole.previousSibling.addEventListener("dragdrop", function(e){
-            settings.model.setQueryValue("auto/console/@height", 
+            settings.model.setQueryValue("auto/console/@height",
                 _self.height = winDbgConsole.height)
         });
-        
+
         this.nodes.push(
             winDbgConsole,
-            
+
             mnuWindows.appendChild(new apf.item({
                 id : "chkConsoleExpanded",
                 caption : "Console",
@@ -673,13 +668,13 @@ module.exports = ext.register("ext/console/console", {
                 }
             }))
         );
-        
+
         ide.addEventListener("loadsettings", function(e){
             if (!e.model.queryNode("auto/console/@autoshow"))
                 e.model.setQueryValue("auto/console/@autoshow", true);
-            
+
             _self.height = e.model.queryValue("auto/console/@height") || _self.height;
-            
+
             if (apf.isTrue(e.model.queryValue("auto/console/@maximized"))) {
                 _self.show(true);
                 _self.maximize();
@@ -692,33 +687,33 @@ module.exports = ext.register("ext/console/console", {
             }
         });
     },
-    
+
     maximize : function(){
         if (this.maximized)
             return;
         this.maximized = true;
-        
+
         apf.document.body.appendChild(winDbgConsole);
         winDbgConsole.setAttribute('anchors', '0 0 0 0');
         //this.lastHeight = winDbgConsole.height;
         this.lastZIndex = winDbgConsole.$ext.style.zIndex;
         winDbgConsole.removeAttribute('height');
         winDbgConsole.$ext.style.zIndex = 900000;
-        
+
         settings.model.setQueryValue("auto/console/@maximized", true);
         btnConsoleMax.setValue(true);
     },
-    
+
     restore : function(){
         if (!this.maximized)
             return;
         this.maximized = false;
-        
+
         mainRow.appendChild(winDbgConsole);
         winDbgConsole.removeAttribute('anchors');
         winDbgConsole.setAttribute('height', this.height);
         winDbgConsole.$ext.style.zIndex = this.lastZIndex;
-        
+
         settings.model.setQueryValue("auto/console/@maximized", false);
         btnConsoleMax.setValue(false);
     },
@@ -726,27 +721,27 @@ module.exports = ext.register("ext/console/console", {
     show : function(immediate){
         if (!this.hidden)
             return;
-        
+
         this.hidden = false;
-        
+
         if (this.$control)
             this.$control.stop();
-        
+
         tabConsole.show();
         apf.setStyleClass(btnCollapseConsole.$ext, "btn_console_openOpen");
-        
+
         var _self = this;
         function finish() {
             winDbgConsole.height = _self.height + 1;
             winDbgConsole.setAttribute("height", _self.height);
             winDbgConsole.previousSibling.show();
-    
+
             apf.layout.forceResize();
-            
+
             settings.model.setQueryValue("auto/console/@expanded", true);
             chkConsoleExpanded.check();
         }
-        
+
         if (!immediate && apf.isTrue(settings.model.queryValue("general/@animateui"))) {
             apf.tween.single(winDbgConsole.$ext, {
                 control : this.$control = {},
@@ -770,30 +765,30 @@ module.exports = ext.register("ext/console/console", {
     hide : function(immediate) {
         if (this.hidden)
             return;
-            
+
         this.hidden = true;
-        
+
         if (this.$control)
             this.$control.stop();
 
         if (winDbgConsole.parentNode != mainRow)
             this.restore();
-        
+
         apf.setStyleClass(btnCollapseConsole.$ext, '' , ['btn_console_openOpen']);
 
         function finish(){
             tabConsole.hide();
-            
+
             winDbgConsole.height = 42;
             winDbgConsole.setAttribute("height", 41);
             winDbgConsole.previousSibling.hide();
-    
+
             apf.layout.forceResize();
-            
+
             settings.model.setQueryValue("auto/console/@expanded", false);
             chkConsoleExpanded.uncheck();
         }
-        
+
         if (!immediate && apf.isTrue(settings.model.queryValue("general/@animateui"))) {
             apf.tween.single(winDbgConsole.$ext, {
                 control : this.$control = {},
@@ -813,13 +808,13 @@ module.exports = ext.register("ext/console/console", {
             finish();
         }
     },
-    
+
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
         });
     },
-    
+
     disable : function(){
         this.nodes.each(function(item){
             item.disable();

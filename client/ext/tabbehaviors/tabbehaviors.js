@@ -443,15 +443,13 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             var bottom = top + trFiles.$container.offsetHeight;
 
             // No scrolling needed when item is between visible boundaries.
-            if (itemPos[1] > top && itemPos[1] < bottom)
+            if (itemPos[1] >= top && itemPos[1] <= bottom) {
                 return;
-
-            var totalHeight = trFiles.$container.scrollHeight;
-            var center = trFiles.getHeight() / 2;
-            var offset = (itemPos[1] / totalHeight) > 0.5 ? ~center : center;
-            var y = itemPos[1] / (totalHeight + offset);
-
-            sbTrFiles.setPosition(y);
+            }
+            
+            var center = (trFiles.$container.offsetHeight / 2) | 0;
+            var newTop = itemPos[1] - center;
+            trFiles.$ext.scrollTop = newTop;
         }
     },
 

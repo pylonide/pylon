@@ -1,6 +1,6 @@
 /**
  * Git Tools for the Cloud9 IDE client
- * 
+ *
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
@@ -125,7 +125,7 @@ module.exports = ext.register("ext/gittools/gittools", {
                             revisions : {}
                         };
                     }
-                    ide.send(JSON.stringify(data));
+                    ide.send(data);
                 }
             }
         }
@@ -157,7 +157,7 @@ module.exports = ext.register("ext/gittools/gittools", {
                     );
                 }
                 else {
-                    ide.send(JSON.stringify(data));
+                    ide.send(data);
                     if (!this.originalGutterWidth)
                         this.originalGutterWidth = editors.currentEditor.ceEditor.$editor.renderer.getGutterWidth();
 
@@ -188,7 +188,7 @@ module.exports = ext.register("ext/gittools/gittools", {
                         "This operation could not be completed because you are offline."
                     );
                 } else {
-                    ide.send(JSON.stringify(data));
+                    ide.send(data);
                 }
             }
         }
@@ -203,7 +203,7 @@ module.exports = ext.register("ext/gittools/gittools", {
 
         if (message.body.err) {
             util.alert(
-                "Error", 
+                "Error",
                 "There was an error returned from the server:",
                 message.body.err
             );
@@ -288,7 +288,7 @@ module.exports = ext.register("ext/gittools/gittools", {
         this.gitLogs[message.body.file].logData = this.gitLogParser.getLogData();
 
         var logDataLength = this.gitLogs[message.body.file].logData.length;
-        this.gitLogs[message.body.file].lastLoadedGitLog = 
+        this.gitLogs[message.body.file].lastLoadedGitLog =
             this.gitLogs[message.body.file].lastSliderValue = logDataLength;
         this.setupGitLogElements(message.body.file);
     },
@@ -304,7 +304,7 @@ module.exports = ext.register("ext/gittools/gittools", {
         }
         else {
             var tDate = new Date(parseInt(this.gitLogs[file].logData[index].author.timestamp, 10) * 1000);
-            gitLogOut = '<div style="color: #333"><span class="header">Commit:</span> ' 
+            gitLogOut = '<div style="color: #333"><span class="header">Commit:</span> '
                             + this.gitLogs[file].logData[index].commit //.substr(0, 10)
                             + '<br /><span class="header">Tree:</span> '
                             + this.gitLogs[file].logData[index].tree //.substr(0, 10)
@@ -314,7 +314,7 @@ module.exports = ext.register("ext/gittools/gittools", {
                             + this.gitLogs[file].logData[index].author.fullName + ' '
                             + this.gitLogs[file].logData[index].author.email.replace("<", "&lt;").replace(">", "&gt;")
                             + '<br /><span class="header">Time:</span> '
-                            + tDate.toLocaleDateString().split(" ").slice(1).join(" ") 
+                            + tDate.toLocaleDateString().split(" ").slice(1).join(" ")
                             + " " + tDate.toLocaleTimeString()
                             + '<br /><br /><span class="header">Commit Summary:</span><br /><br />'
                             + this.gitLogs[file].logData[index].message.join("<br />")
@@ -350,7 +350,7 @@ module.exports = ext.register("ext/gittools/gittools", {
             if (line_data[li].numLines != -1 && line_data[li].hash != lastHash) {
                 lastHash = line_data[li].hash;
                 var tempTime = new Date(parseInt(commit_data[line_data[li].hash].authorTime, 10) * 1000);
-                textHash[li-1] = { 
+                textHash[li-1] = {
                     text : commit_data[line_data[li].hash].author + " &raquo; " +
                         tempTime.getDate() + "/" + (tempTime.getMonth()+1) + "/" + tempTime.getFullYear(),
                         //+ line_data[li].hash.substr(0, 10)

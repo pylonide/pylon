@@ -36,6 +36,7 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
     this.options = {
         workspaceDir: this.workspaceDir,
         mountDir: options.mountDir || this.workspaceDir,
+        socketIoUrl: options.socketIoUrl || "socket.io",
         davPrefix: options.davPrefix || (baseUrl + "/workspace"),
         davPlugins: options.davPlugins || exports.DEFAULT_DAVPLUGINS,
         baseUrl: baseUrl,
@@ -216,6 +217,7 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
                 workspaceDir: _self.options.workspaceDir,
                 debug: _self.options.debug,
                 staticUrl: staticUrl,
+                socketIoUrl: _self.options.socketIoUrl,
                 sessionId: req.sessionID, // set by connect
                 workspaceId: _self.options.workspaceId,
                 plugins: Object.keys(plugins),

@@ -40,11 +40,13 @@ exports.main = function(options) {
         socketIo.set("polling duration", 5);
         socketIo.sockets.on("connection", function(client) {
             client.on("message", function(data) {
-                var message;
-                try {
-                    message = JSON.parse(data);
-                } catch(e) {
-                    return;
+                var message = data;
+                if (typeof data == "string") {
+                    try {
+                        message = JSON.parse(data);
+                    } catch(e) {
+                        return;
+                    }
                 }
                 if (message.command === "attach") {
                     sessionStore.get(message.sessionId, function(err, session) {
@@ -56,7 +58,7 @@ exports.main = function(options) {
                 }
             });
         });
-        
+
 
         var name = projectDir.split("/").pop();
         var serverOptions = {
@@ -74,7 +76,7 @@ exports.main = function(options) {
         return function(req, res, next) {
             if (!req.session.uid)
                 req.session.uid = "owner_" + req.sessionID;
-                
+
             ide.addUser(req.session.uid, User.OWNER_PERMISSIONS);
             ide.handle(req, res, next);
         };
@@ -89,7 +91,7 @@ exports.main = function(options) {
         store: sessionStore,
         key: "cloud9.sid"
     }));
-    
+
     server.use(ideProvider(projectDir, server, sessionStore));
     server.use(middleware.staticProvider(Path.normalize(__dirname + "/../../support"), "/static/support"));
     server.use(middleware.staticProvider(Path.normalize(__dirname + "/../../client"), "/static"));

@@ -1,10 +1,10 @@
 /**
  * Git Blame extension for the Cloud9 IDE client
- * 
+ *
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
 var ext     = require("core/ext");
@@ -71,7 +71,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
                     );
                 }
                 else {
-                    ide.send(JSON.stringify(data));
+                    ide.send(data);
                     // Set gutter width
                     editors.currentEditor.ceEditor.$editor.renderer.setGutterWidth("300px");
                 }
@@ -88,7 +88,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
         //console.log(message);
         if (message.body.err) {
             util.alert(
-                "Error", 
+                "Error",
                 "There was an error returned from the server:",
                 message.body.err
             );
@@ -119,9 +119,9 @@ module.exports = ext.register("ext/gitblame/gitblame", {
             if (line_data[li].numLines != -1 && line_data[li].hash != lastHash) {
                 lastHash = line_data[li].hash;
                 var tempTime = new Date(parseInt(commit_data[line_data[li].hash].authorTime, 10) * 1000);
-                textHash[li-1] = { 
-                    text : commit_data[line_data[li].hash].author + 
-                        " &raquo; " + 
+                textHash[li-1] = {
+                    text : commit_data[line_data[li].hash].author +
+                        " &raquo; " +
                         line_data[li].hash.substr(0, 10),
                     title : commit_data[line_data[li].hash].summary + "\n" +
                         tempTime.toUTCString()
