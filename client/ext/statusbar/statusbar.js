@@ -45,9 +45,15 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         });
 
         ide.addEventListener("savesettings", function(e){
+            
 //            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/statusbar/text()");
 //            xmlSettings.nodeValue = _self.initialWidth;
             return true;
+        });
+        
+        ide.addEventListener("theme_change", function(e){
+            var theme = e.theme || "ace/theme/textmate";
+            _self.checkTheme(theme);
         });
     },
 
@@ -72,6 +78,10 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         for(var i = 0, l = this.prefsItems.length; i < l; i++) {
             mnuStatusBarPrefs.appendChild(this.prefsItems.shift());
         }
+        
+        var editor = ceEditor.$editor;
+        var theme = editor && editor.getTheme() || "ace/theme/textmate";
+        this.checkTheme(theme);
     },
     
     addToolsItem: function(menuItem){
@@ -120,7 +130,24 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         }
     },
     
+    checkTheme: function(theme){
+        require(["require", theme], function (require) {
+            if(require(theme).isDark)
+                apf.setStyleClass(barIdeStatus.$ext, "ace_dark");
+            else
+                apf.setStyleClass(barIdeStatus.$ext, '', ["ace_dark"]);    
+        });
+    },
+    
     bytesLength: function(){
+        var editor = ceEditor.$editor;
+        var theme = editor && editor.getTheme() || "ace/theme/textmate";
+
+        require(["require", theme], function (require) {
+            var isDarkTheme = require(theme).isDark;
+            alert(isDarkTheme)
+        })
+        
         var sel = ceEditor.getSelection();
         var doc = ceEditor.getDocument();
         var range = sel.getRange();

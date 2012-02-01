@@ -4021,6 +4021,10 @@
         .divider-status-bar {
             border-color : rgba(193,193,193,0.4) #efefef #efefef rgba(193,193,193,0.4);
         }
+        
+        .ace_dark .divider-status-bar {
+            border-color : rgba(4,4,4,0.5) rgba(4,4,4,0.1) rgba(4,4,4,0.1) rgba(4,4,4,0.5);
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -5008,6 +5012,10 @@
         .menu-bk.upward {
             margin-top: -10px;
             margin-left: 49px;
+        }
+        
+        .menu-bk.upward.mnuSbPrefs {
+            margin-left: 39px;
         }
         
         .menu-bk.downward {

@@ -40,9 +40,31 @@
                 background-image: -ms-linear-gradient(bottom, rgba(0,0,0,0.06) 0%, rgba(255,255,255,0.06) 100%);
             }
             
+            .ace_dark.bar-status:hover,
+            .ace_dark.bar-status.active {
+                border-top: 1px solid #001736;
+                border-bottom: 1px solid #021834;
+                border-left: 1px solid #001634;
+                border-right: 1px solid #001634;
+                
+                -webkit-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
+                -moz-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
+                box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);                
+                
+                background-image: linear-gradient(bottom, rgba(0,0,0,0.06) 0%, rgba(255,255,255,0.06) 100%);
+                background-image: -o-linear-gradient(bottom, rgba(0,0,0,0.06) 0%, rgba(255,255,255,0.06) 100%);
+                background-image: -moz-linear-gradient(bottom, rgba(0,0,0,0.06) 0%, rgba(255,255,255,0.06) 100%);
+                background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.06) 0%, rgba(255,255,255,0.06) 100%);
+                background-image: -ms-linear-gradient(bottom, rgba(0,0,0,0.06) 0%, rgba(255,255,255,0.06) 100%);
+            }
+            
             .bar-status .label {
                 color: rgba(0, 0, 0, 0.4);
                 padding-left: 1px;
+            }
+            
+            .ace_dark.bar-status .label {
+                color: rgba(255, 255, 255, 0.4);
             }
         ]]></a:style>
     
@@ -83,6 +105,23 @@
             
             .btn-expand-statusbarDown {
             }
+            
+            .ace_dark .btn-expand-statusbar {
+                background-position : -30px 10px;
+            }
+            
+            .ace_dark.expanded .btn-expand-statusbar {
+                background-position : -45px -15px;
+            }
+            
+            .ace_dark .btn-expand-statusbarOver {
+                background-position : -30px -17px;
+            }
+            
+            .ace_dark.expanded .btn-expand-statusbarOver {
+                background-position : -45px 9px;
+                
+            }
         ]]></a:style>
     
         <a:presentation>
@@ -115,6 +154,18 @@
             
             .btn-statusbar-iconDown {
                 background-position : 0 -46px;
+            }
+            
+            .ace_dark .btn-statusbar-icon {
+                background-position : -22px 0;
+            }
+            
+            .ace_dark .btn-statusbar-iconOver {
+                background-position : -22px -23px;
+            }
+            
+            .ace_dark .btn-statusbar-iconDown {
+                background-position : -22px -46px;
             }
         ]]></a:style>
     

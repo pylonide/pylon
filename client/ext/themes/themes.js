@@ -35,6 +35,7 @@ module.exports = ext.register("ext/themes/themes", {
         //Save theme settings
         settings.model.setQueryValue("editors/code/@theme", path);
         settings.save();
+        ide.dispatchEvent("theme_change", {theme: path});
         ide.dispatchEvent("track_action", {type: "theme change", theme: path});
     },
 
