@@ -62,7 +62,7 @@ var cmdHistory = {
 
     push: function(cmd) {
         this._history.push(cmd);
-        this._index += 1;
+        this._index = this.length();
     },
     length: function() {
         return this._history.length;
@@ -70,18 +70,12 @@ var cmdHistory = {
     getNext: function() {
         this._index += 1;
         var cmd = this._history[this._index] || "";
-
-        var maxLen = this._history.length - 1;
-        if (this._index > maxLen)
-            this._index = maxLen;
+        this._index = Math.min(this.length(), this._index);
 
         return cmd;
     },
     getPrev: function() {
-        this._index -= 1;
-        if (this._index < 0)
-            this._index = 0;
-
+        this._index = Math.max(0, this._index - 1);
         return this._history[this._index];
     }
 };
@@ -141,18 +135,19 @@ module.exports = ext.register("ext/console/console", {
     help: function() {
         var words = Object.keys(this.allCommands);
         var tabs = "\t\t\t\t";
-        var self = this;
+        var _self = this;
 
         Logger.logNodeStream(
             words
-                .map(function(w) { return w + tabs + self.allCommands[w].hint; })
+                .map(function(w) { return w + tabs + _self.allCommands[w].hint; })
                 .join("\n"),
             null, null, ide
         );
     },
 
     clear: function() {
-        txtOutput && txtOutput.clear();
+        if (txtOutput)
+            txtOutput.clear();
     },
 
     switchconsole : function() {
