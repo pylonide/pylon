@@ -58,8 +58,27 @@ module.exports = ext.register("ext/codetools/codetools", {
                 doc: doc
             });
         });
+        
+        function cursorChange() {
+            var anchor = editor.session.selection.getSelectionAnchor();
+            ide.dispatchEvent("codetools.cursorchange", {
+                amlEditor: amlEditor,
+                editor: editor,
+                pos: {
+                    row: anchor.row,
+                    column: anchor.column
+                },
+                doc: editor.session.doc
+            });
+        }
+        
+        editor.addEventListener("changeSession", function(e) {
+            if (e.oldsession)
+                e.oldsession.removeEventListener("changeCursor", cursorChange);
+            e.session.selection.addEventListener("changeCursor", cursorChange);
+        });
     },
-
+    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();

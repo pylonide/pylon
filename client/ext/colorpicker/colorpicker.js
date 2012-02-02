@@ -92,6 +92,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         this.colorpicker.addEventListener("prop.hex", function(e) {
             _self.onColorPicked(e.oldvalue, e.value);
         });
+
         this.menu.addEventListener("prop.visible", function(e) {
             // when the the colorpicker hides, hide all tooltip markers
             if (!e.value) {
@@ -99,6 +100,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 if (a) {
                     apf.removeEventListener("keydown", a.listeners.onKeyDown);
                     a.editor.removeEventListener("mousewheel", a.listeners.onScroll);
+                    ide.removeEventListener("codetools.cursorchange", a.listeners.onCursorChange);
                     delete _self.$activeColor;
                     _self.hideColorTooltips(a.editor);
                 }
@@ -238,7 +240,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         
         // set appropriate event listeners, that will be removed when the colorpicker
         // hides.
-        var onKeyDown, onScroll;
+        var onKeyDown, onScroll, onCursorChange;
         var _self = this;
         apf.addEventListener("keydown", onKeyDown = function(e) {
             var a = _self.$activeColor;
@@ -254,6 +256,19 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 if (at.undolength > a.start)
                     at.undo(at.undolength - a.start);
             }
+        });
+        
+        ide.addEventListener("codetools.cursorchange", onCursorChange = function(e) {
+            var a = _self.$activeColor;
+
+            if (!cp || !a || !cp.visible) 
+                return;
+
+            var pos = e.pos;
+            var range = a.marker[0];
+            if (pos.row < range.start.row || pos.row > range.end.row 
+              || pos.column < range.start.column || pos.column > range.end.column)
+                menu.hide();
         });
         
         editor.addEventListener("mousewheel", onScroll = function(e) {
@@ -283,7 +298,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             start: editor.session.$undoManager.undolength,
             listeners: {
                 onKeyDown: onKeyDown,
-                onScroll: onScroll
+                onScroll: onScroll,
+                onCursorChange: onCursorChange
             }
         };
         cp.setProperty("value", color);
