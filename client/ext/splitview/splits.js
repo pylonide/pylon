@@ -230,6 +230,7 @@ exports.update = function(split, gridLayout) {
 
 exports.mutate = function(split, page, type) {
     split = split || split === null ? ActiveSplit : null;
+    type = type || "default";
     var tabs = tabEditors;
     var activePage = tabs.getPage();
     var pairIdx = split ? exports.indexOf(split, page) : -1;
@@ -271,9 +272,9 @@ exports.mutate = function(split, page, type) {
             if (type && type == "clone")
                 activePage.$editor.amlEditor = clones.original;
             split = this.create(activePage);
-            if (type && type == "clone")
-                split.clone = page;
         }
+        if (!split.clone && type == "clone")
+            split.clone = page;
         
         var editorToUse;
         if (split.clone && page === split.clone) {
