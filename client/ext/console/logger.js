@@ -90,12 +90,13 @@ var eventsAttached;
 module.exports.logNodeStream = function(data, stream, useOutput, ide) {
     var parentEl = (useOutput ? txtOutput : txtConsole).$ext;
 
-    if (!eventsAttached) {
+    if (eventsAttached !== true) {
         parentEl.addEventListener("click", function(e) {
             var node = e.target;
             if (node.hasAttribute("data-wsp"))
                 jump.apply(null, e.target.getAttribute("data-wsp").split(","));
         });
+        eventsAttached = true;
     }
 
     if (!bufferInterval) {
