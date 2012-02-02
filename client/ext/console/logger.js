@@ -1,6 +1,5 @@
 /**
  * Logger
- *
  * The logger outputs given messages into the console output, properly formatted.
  *
  * @copyright 2011, Ajax.org B.V.
@@ -8,10 +7,11 @@
  * @contributor Sergi Mansilla <sergi AT c9 DOT io>
  */
 define(function(require, exports, module) {
-exports.test = {};
+var editors = require("ext/editors/editors");
 
+exports.test = {};
 var MAX_LINES = 512;
-var RE_relWorkspace = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+(?:\.[\w\_\$]+))?(\:\d+)(\:\d+)*/g;
+var RE_relwsp = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+(?:\.[\w\_\$]+))?(\:\d+)(\:\d+)*/g;
 var RE_URL = /\b((?:(?:https?):(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()[\]{};:'".,<>?«»“”‘’]))/i;
 var RE_COLOR = /\[(?:(\d+);)?(\d+)m/g;
 var colors = {
@@ -37,6 +37,12 @@ var balanceBuffer = function(elem) {
         elem.removeChild(elem.firstChild);
 };
 
+var jump = function(path, row, column) {
+    row = parseInt(row.slice(1), 10);
+    column = column ? parseInt(column.slice(1), 10) : 0;
+    editors.showFile(path, row, column);
+};
+
 // Maximum amount of buffer history
 var bufferInterval;
 var setBufferInterval = function(el) {
@@ -53,23 +59,20 @@ var createItem = module.exports.test.createItem = function(line, ide) {
 
     var workspaceDir = ide.workspaceDir;
     var davPrefix = ide.davPrefix;
-
-    if (line.search(RE_relWorkspace) !== -1) {
-        line = line.replace(RE_relWorkspace,
-            "<a href='#' data-abWsp='" + davPrefix + "/$1\", \"$2\", \"$3'>$1$2$3</a>");
-    }
-
     var wsRe = new RegExp(escRegExp(workspaceDir) + "\\/([^:]*)(:\\d+)(:\\d+)*", "g");
-    if (line.search(wsRe) !== -1) {
-        line = line.replace(wsRe,
-            "<a href='#' data-relWsp='" + davPrefix + "/$1\", \"$2\", \"$3'>" + workspaceDir + "/$1$2$3</a>");
+
+    if ((line.search(RE_relwsp) !== -1) || (line.search(wsRe) !== -1)) {
+        var html = "<a href='#' data-wsp='" + davPrefix + "/$1,$2,$3'>___$1$2$3</a>";
+        line = line
+            .replace(RE_relwsp, html.replace("___", ""))
+            .replace(wsRe, html.replace("___", workspaceDir + "/"));
+    }
+    else if (line.search(RE_URL) !== -1) {
+        line = line.replace(RE_URL, "<a href='$1' target='_blank'>$1</a>");
     }
 
-    if (line.search(RE_URL) !== -1) {
-        line = line.replace(RE_URL, "<a href='$1'>$1</a>");
-    }
-
-    line = line.replace(/\s{2,}/g, function(str) { return strRepeat("&nbsp;", str.length); })
+    return line
+        .replace(/\s{2,}/g, function(str) { return strRepeat("&nbsp;", str.length); })
         .replace(/(\u0007|\u001b)\[(K|2J)/g, "")
         .replace(RE_COLOR, function(m, extra, color) {
             var styles = [
@@ -79,18 +82,26 @@ var createItem = module.exports.test.createItem = function(line, ide) {
             ];
             return "<span style='" + styles.join("").trim() + "'>";
         });
-
-    return line;
 };
 
 var childBuffer;
 var childBufferInterval;
+var eventsAttached;
 module.exports.logNodeStream = function(data, stream, useOutput, ide) {
     var parentEl = (useOutput ? txtOutput : txtConsole).$ext;
+
+    if (!eventsAttached) {
+        parentEl.addEventListener("click", function(e) {
+            var node = e.target;
+            if (node.hasAttribute("data-wsp"))
+                jump.apply(null, e.target.getAttribute("data-wsp").split(","));
+        });
+    }
+
     if (!bufferInterval) {
         setBufferInterval(parentEl);
     }
-    
+
     // This is a bit cumbersome, but it solves the issue in which logging stuff
     // in the console at a high speed keeps the browser incredibly busy, and
     // sometimes it even crashes. An interval is created in which every 100ms
