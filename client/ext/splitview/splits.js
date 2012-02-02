@@ -130,6 +130,8 @@ exports.show = function(split) {
     for (i = 0, l = split.pairs.length; i < l; ++i) {
         split.pairs[i].page.$activateButton();
         split.pairs[i].editor.show();
+        if (split.pairs[i].editor.$editor.onScrollLeftChange)
+            split.pairs[i].editor.$editor.onScrollLeftChange();
         if (!(split.clone && split.pairs[i].page === split.clone))
             exports.consolidateEditorSession(split.pairs[i].page, split.pairs[i].editor);
     }
