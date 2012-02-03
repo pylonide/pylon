@@ -398,6 +398,10 @@ function createEditorClones(editor) {
         
         addEditorListeners.call(this, EditorClones.cloneEditor);
         
+        EditorClones.cloneEditor.$editor.commands = previousEditor.$editor.commands;
+        if (previousEditor.$editor.getKeyboardHandler())
+            EditorClones.cloneEditor.$editor.setKeyboardHandler(previousEditor.$editor.getKeyboardHandler());
+        
         // add listeners to ceEditor properties that also need to be applied to
         // other editor instances:
         function setProp(which, value) {
