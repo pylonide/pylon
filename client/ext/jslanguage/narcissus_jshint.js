@@ -33,15 +33,18 @@ handler.analyze = function(doc) {
     catch (e) {
         var chunks = e.message.split(":");
         var message = chunks.pop().trim();
-        var lineNumber = parseInt(chunks.pop().trim(), 10) - 1;
-        markers = [{
-            pos: {
-                sl: lineNumber,
-                el: lineNumber
-            },
-            message: message,
-            type: "error"
-        }];
+        var numString = chunks.pop();
+        if(numString) {
+            var lineNumber = parseInt(numString.trim(), 10) - 1;
+            markers = [{
+                pos: {
+                    sl: lineNumber,
+                    el: lineNumber
+                },
+                message: message,
+                type: "error"
+            }];
+        }
         return markers;
     }
     finally {}

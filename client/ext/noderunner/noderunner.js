@@ -51,12 +51,12 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         stDebugProcessRunning.addEventListener("deactivate", this.$onDebugProcessDeactivate.bind(this));
 
         ide.addEventListener("consolecommand.run", function(e) {
-            ide.send(JSON.stringify({
+            ide.send({
                 command: "internal-isfile",
                 argv: e.data.argv,
                 cwd: e.data.cwd,
                 sender: "noderunner"
-            }));
+            });
             return false;
         });
 
@@ -144,13 +144,13 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                     });
                 }
 
-                ide.send('{"command": "state"}');
+                ide.send({"command": "state"});
                 break;
         }
     },
 
     onConnect : function() {
-        ide.send('{"command": "state"}');
+        ide.send({"command": "state"});
     },
 
     onDisconnect : function() {
@@ -181,18 +181,18 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 "C9_SELECTED_FILE": page ? page.getAttribute("path").slice(ide.davPrefix.length) : ""
             }
         };
-        ide.send(JSON.stringify(command));
+        ide.send(command);
     },
 
     stop : function() {
         if (!stProcessRunning.active)
             return;
 
-        ide.send(JSON.stringify({
+        ide.send({
             "command": "kill",
             "runner" : "node",
             "pid"    : this.nodePid
-        }));
+        });
     },
 
     enable : function(){

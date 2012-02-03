@@ -1905,6 +1905,7 @@
             height : 10px;
             cursor : pointer;
             border-bottom: 1px solid #38393b;
+            border-top: 1px solid #4f5052;
         }
 
         .dockcol .dockheader {
@@ -5134,6 +5135,11 @@
             bottom              : 0;
             z-index             : 1;
         }
+        
+        .deploy-sb.sbios .filler {
+            left: 2px;
+        }
+        
         .sbios .mainrail {
             height              : 100%;
             width               : 6px;

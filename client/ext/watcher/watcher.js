@@ -21,19 +21,19 @@ module.exports = ext.register("ext/watcher/watcher", {
     markup  : null,
     visible : true,
     deps    : [tree],
-    
+
     init : function() {
         // console.log("Initializing watcher");
-        
+
         this.expandedPaths = {};
-        
+
         var removedPaths = {};
         var removedPathCount = 0;
         var changedPaths = {};
         var changedPathCount = 0;
         var _self = this;
-            
-       
+
+
         function checkPage() {
             var page = tabEditors.getPage(),
                 data = page.$model.data;
@@ -54,7 +54,7 @@ module.exports = ext.register("ext/watcher/watcher", {
                     },
                     function() { // Yes to all
                         var pages = tabEditors.getPages();
-                        
+
                         pages.forEach(function(page) {
                            apf.xmldb.setAttribute(page.$model.data, "changed", "1");
                         });
@@ -70,7 +70,7 @@ module.exports = ext.register("ext/watcher/watcher", {
                     },
                     function() { // No to all
                         var pages = tabEditors.getPages();
-                        
+
                         pages.forEach(function(page) {
                             if (removedPaths[page.$model.data.getAttribute("path")])
                                 tabEditors.remove(page);
@@ -95,7 +95,7 @@ module.exports = ext.register("ext/watcher/watcher", {
                     },
                     function() { // Yes to all
                         var pages = tabEditors.getPages();
-                        
+
                         pages.forEach(function (page) {
                             if (changedPaths[page.$model.data.getAttribute("path")])
                                 ide.dispatchEvent("reload", {doc : page.$doc});
@@ -119,29 +119,29 @@ module.exports = ext.register("ext/watcher/watcher", {
                 btnQuestionNoToAll.setAttribute("visible", changedPathCount > 1);
             }
         }
-        
+
         ide.addEventListener("openfile", function(e) {
             var path = e.doc.getNode().getAttribute("path");
 
             // console.log("Opened file " + path);
             _self.sendWatchFile(path);
-        });        
+        });
 
         ide.addEventListener("closefile", function(e) {
             if (_self.disabled) return;
-            
+
             var path = e.xmlNode.getAttribute("path");
             _self.sendUnwatchFile(path);
         });
-        
+
         ide.addEventListener("socketMessage", function(e) {
             if (_self.disabled) return;
-            
+
             var pages = tabEditors.getPages();
             var message = e.message;
             if ((message.type && message.type != "watcher") || !message.path)
                 return;
-                
+
             var path = ide.davPrefix + message.path.slice(ide.workspaceDir.length);
             path = path.replace(/\/$/, "");
 
@@ -170,7 +170,7 @@ module.exports = ext.register("ext/watcher/watcher", {
                 }
                 break;
             case "change":
-                if (!changedPaths[path] && 
+                if (!changedPaths[path] &&
                     (new Date(message.lastmod).getTime() != new Date(tabEditors.getPage().$model.queryValue('@modifieddate')).getTime())) {
                     changedPaths[path] = path;
                     ++changedPathCount;
@@ -179,74 +179,75 @@ module.exports = ext.register("ext/watcher/watcher", {
                 break;
             }
         });
-        
+
         tabEditors.addEventListener("afterswitch", function(e) {
             if (_self.disabled) return;
-            
+
             checkPage();
         });
-        
+
         ide.addEventListener("init.ext/tree/tree", function(){
             trFiles.addEventListener("expand", function(e) {
                 if (_self.disabled) return;
-                
+
                 var node = e.xmlNode;
                 if (node && (node.getAttribute("type") == "folder" || node.tagName == "folder")) {
                     var path = node.getAttribute("path");
-                    
+
                     _self.expandedPaths[path] = path;
                     _self.sendWatchFile(path);
                 }
             });
-            
+
             trFiles.addEventListener("collapse", function (e) {
                 if (_self.disabled) return;
-    
+
                 var node = e.xmlNode;
                 if (node && (node.getAttribute("type") == "folder" || node.tagName == "folder")) {
                     var path = node.getAttribute("path");
-                    
+
                     delete _self.expandedPaths[path];
                     _self.sendUnwatchFile(path);
                 }
             });
         });
     },
-        
+
     sendWatchFile : function(path) {
-        ide.send(JSON.stringify({
+        ide.send({
             "command"     : "watcher",
             "type"        : "watchFile",
             "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
-        }));
+        });
     },
-    
+
     sendUnwatchFile : function(path) {
-        ide.send(JSON.stringify({
+        ide.send({
             "command"     : "watcher",
             "type"        : "unwatchFile",
             "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
-        }));
+        });
     },
-    
+
     enable : function() {
         this.disabled = false;
-        
+
         var _self = this;
         var pages = tabEditors.getPages();
         pages.forEach(function (page) {
-            _self.sendWatchFile(page.$model.data.getAttribute("path"));
+            if (page.$model)
+                _self.sendWatchFile(page.$model.data.getAttribute("path"));
         });
         for (var path in this.expandedPaths)
             this.sendWatchFile(path);
     },
-    
+
     disable : function() {
         this.disabled = true;
     },
-    
+
     destroy : function() {
-        
+
     }
 });
 
