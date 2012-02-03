@@ -564,20 +564,23 @@ function correctQuickSearchDialog(e) {
         width: parent.$ext.offsetWidth,
         height: parent.$ext.offsetHeight
     };
+    var minRight = 30;
 
     if (!searchWindow && self["winQuickSearch"]) {
         searchWindow = self["winQuickSearch"];
         searchPos = apf.getStyle(searchWindow.$ext, "right");
         if (searchPos == "auto")
-            searchPos = "30px";
+            searchPos = minRight + "px";
     }
     if (searchWindow) {
+        // hardcoded searchbox width (350px) and added 30px margin on the right
+        var maxRight = parentDims.width - 380;
         var right = parentDims.width - editorPos[0] - editorDims.width + 30;
         var top =  editorPos[1];
         //console.log("editorPos", editorPos,"editorDims",JSON.stringify(editorDims),"parentDims",JSON.stringify(parentDims),"right",right,"top",top);
         var to = Math.max(top, 0);
         return {
-            right: Math.max(right, 30),
+            right: Math.max(Math.min(right, maxRight), minRight),
             zIndex: parseInt(editor.$ext.style.zIndex, 10) + 1,
             from: !e || e.anim == "out" ? to - 27 : 0,
             to: !e || e.anim == "out" ? to : (to - 30),
