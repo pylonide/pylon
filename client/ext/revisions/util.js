@@ -23,6 +23,19 @@ module.exports = {
     },
 
     /**
+     * Given an element, calculates its absolute position, width and height
+     * 
+     * @param {DOMElement} el Element
+     * @return {hash} x, y, width, height
+     */
+    getAbsolutePositionDimension : function(el) {
+        var pos = apf.getAbsolutePosition(el);
+        var iw = apf.getHtmlInnerWidth(el);
+        var ih = apf.getHtmlInnerHeight(el);
+        return { x : pos[0], y : pos[1], width : iw, height : ih };
+    },
+
+    /**
      * Creates an HTML element
      * 
      * @param {string} type Type of element, e.g. "div" or "p"
@@ -34,36 +47,6 @@ module.exports = {
         for (var p in props)
             el.setAttribute(p, props[p]);
         return el;
-    },
-
-    /**
-     * Converts an array of commit data to XML
-     *
-     * @param {array} arr Array of commits
-     * @param {string} elName The name of each XML element
-     * @return {string} The formatted XML string
-     */
-    arrCommits2Xml : function(arr, elName) {
-        var out = ["<", elName, "s>"], attrMessage;
-
-        for (var i = 0, len = arr.length; i < len; i++) {
-            // Clean up the comit message
-            attrMessage = apf.xmlentities(apf.htmlentities(arr[i].messageJoinedLower));
-            attrMessage = attrMessage.replace(/(\r\n|\r|\n)/gm, " ").replace(/"/g, "&quot;");
-            out.push("<", elName, " ",
-                'hash="', arr[i].commit, '" ',
-                'authoremail="', apf.htmlentities(arr[i].author.email), '" ',
-                'authorname="', arr[i].author.fullName, '" ',
-                'committeremail="', apf.htmlentities(arr[i].committer.email), '" ',
-                'committername="', arr[i].committer.fullName, '" ',
-                'timestamp="', arr[i].committer.timestamp, '" ',
-                'message="', attrMessage, '" ',
-                'internal_counter="', i, '"',
-            ' />');
-        }
-
-        out.push("</", elName, "s>");
-        return out.join("");
     },
 
     /**

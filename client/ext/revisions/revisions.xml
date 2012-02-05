@@ -111,7 +111,7 @@
             -webkit-animation-timing-function: ease-out;
           }
         }
-        
+
         .bounce_outta_current {
             -webkit-animation-name: bounceout;
             -webkit-animation-iteration-count: 1;
@@ -120,6 +120,50 @@
             -moz-animation-name: bounceout;
             -moz-animation-iteration-count: 1;
             -moz-animation-duration: 2s;
+        }
+
+        @-webkit-keyframes restorerevision {
+          0%  {
+            top: 124px;
+            -webkit-animation-timing-function: ease-out;
+          }
+          50% {
+            top: 10px;
+            -webkit-animation-timing-function: ease-in;
+            -webkit-transform: scale(1.15);
+          }
+          100% {
+            top: 124px;
+            -webkit-animation-timing-function: ease-out;
+            -webkit-transform: scale(1.0);
+          }
+        }
+
+        @-moz-keyframes restorerevision {
+          0%  {
+            top: 124px;
+            -moz-animation-timing-function: ease-out;
+          }
+          50% {
+            top: 10px;
+            -moz-animation-timing-function: ease-in;
+            -moz-transform: scale(1.15);
+          }
+          100% {
+            top: 124px;
+            -webkit-animation-timing-function: ease-out;
+            -moz-transform: scale(1.0);
+          }
+        }
+
+        .restore_revision {
+            -webkit-animation-name: restorerevision;
+            -webkit-animation-iteration-count: 1;
+            -webkit-animation-duration: 1.5s;
+
+            -moz-animation-name: restorerevision;
+            -moz-animation-iteration-count: 1;
+            -moz-animation-duration: 1.5s;
         }
 
         #slider_tooltip {

@@ -4,6 +4,7 @@
  * TODO:
  * 
  * Implement "Restore" functionality
+ *  - Popup about what just happened ("Changes have not been committed")
  *  - Set ceEditor's content
  *  - Animate history page to current page
  *  - Clear markers
@@ -11,25 +12,30 @@
  * Refresh (button next to dropdown button?)
  * ? On hover of meta-data, pop-out to show commit message
  * Get APF-filtered list instead of doing our own filtering
- * Implement a Git Log State class, move everything over
+ * Store and Re-set the state of each file upon entry
  * Skip line numbers in gutter where gray areas exist
  * Clean up the elements fading in & out upon entry and exit
+ *  - If history pages stay on left, have them shift out one by one
+ * Beginning and end date below the timeline
+ * ? Put all the initial UI code into revisions.xml
  * 
  * Bugs:
  * 
- * Diff state isn't kept on re-entry
  * clicking around clears the syntax highlighting (wtf?)
+ *  - This happen only the first time for each file, subsequent
+ *    re-entries and clicking around keeps the highlighting
  * focus() on search after clear doesn't work. Fix APF
  *  - Or get rid of X
+ * Hover on timeline dots don't register when focus is in search box
  * UI and animations are totally messed up in FF
  * Server is sending data back to all clients
  *  - (fixed in githubissues)
  * 
  * Ideal:
  * 
+ * Highlight which attribute the filtering was successful against when the user
+ *  either shows the dropdown or tooltip
  * In between the two editors, put a "minimap" of areas with diffs
- * Unobstrusive popup warning about what Restore does
- *  - But only when we have global settings
  * Hover over history dots has OS X dock magnification effect
  * Searching "zooms" in on timeline so earliest and latest results
  *  show up on left and right side of timeline
@@ -49,8 +55,8 @@ var rutil = require("ext/revisions/util");
 var timeline = require("ext/revisions/timeline");
 var Range = require("ace/range").Range;
 var Anchor = require('ace/anchor').Anchor;
-var editors = require("ext/editors/editors");
 var GitLogParser = require("ext/revisions/gitlogparser");
+var RState = require("ext/revisions/rstate");
 
 var skin = require("text!ext/revisions/skin.xml");
 var markup = require("text!ext/revisions/revisions.xml");
@@ -66,8 +72,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         data : skin
     },
     command  : "gittools",
-    gitLogs  : {},
-    currentFile : "",
 
     nodes : [],
 
@@ -81,6 +85,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             })
         );
 
+        this.revisionState = new RState();
         this.gitLogParser = new GitLogParser();
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
@@ -145,10 +150,16 @@ module.exports = ext.register("ext/revisions/revisions", {
                                                     "class" : "versions_search",
                                                     margin: "0 20 0 0",
                                                     onclear : function() {
-                                                        timeline.filterTimeline("", _self.gitLogs, _self.currentFile);
+                                                        timeline.filterTimeline(
+                                                            "",
+                                                            _self.revisionState
+                                                        );
                                                     },
                                                     onkeyup : function() {
-                                                        timeline.filterTimeline(this.getValue(), _self.gitLogs, _self.currentFile);
+                                                        timeline.filterTimeline(
+                                                            this.getValue(),
+                                                            _self.revisionState
+                                                        );
                                                     },
                                                     onfocus : function() {
                                                         apf.tween.single(this.$ext, {
@@ -293,7 +304,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             wraplimitmax      : "80",
             gutter            : "[{require('ext/settings/settings').model}::editors/code/@gutter]",
             highlightselectedword : "false",
-            autohidehorscrollbar  : "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]",
+            autohidehorscrollbar  : "true",
             "debugger"        : "null",
             readonly          : "true",
             style             : "z-index : 99998; position: absolute; top: -10000px; background: #fff"
@@ -321,10 +332,10 @@ module.exports = ext.register("ext/revisions/revisions", {
             wraplimitmax      : "80",
             gutter            : "[{require('ext/settings/settings').model}::editors/code/@gutter]",
             highlightselectedword : "false",
-            autohidehorscrollbar  : "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]",
+            autohidehorscrollbar  : "true",
             "debugger"        : "null",
             readonly          : "true",
-            style             : "z-index : 99999; position: absolute; background: #fff"
+            style             : "z-index : 99998; position: absolute; background: #fff"
         });
 
         this.animateEditorClone = new apf.vbox({
@@ -355,7 +366,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                     wraplimitmax      : "80",
                     gutter            : "[{require('ext/settings/settings').model}::editors/code/@gutter]",
                     highlightselectedword : "false",
-                    autohidehorscrollbar  : "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]",
+                    autohidehorscrollbar  : "true",
                     "debugger"        : "null",
                     readonly          : "true"
                 })
@@ -384,10 +395,10 @@ module.exports = ext.register("ext/revisions/revisions", {
             wraplimitmax      : "80",
             gutter            : "[{require('ext/settings/settings').model}::editors/code/@gutter]",
             highlightselectedword : "false",
-            autohidehorscrollbar  : "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]",
+            autohidehorscrollbar  : "true",
             "debugger"        : "null",
             readonly          : "true",
-            style             : "z-index : 99999; position: absolute; background: #fff"
+            style             : "z-index : 99998; position: absolute; background: #fff"
         });
 
         // Wait for the elements to get loaded in...
@@ -396,7 +407,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             vbMain.parentNode.appendChild(_self.historicalPlaceholder);
             vbMain.parentNode.appendChild(_self.currentVersionEditor);
             vbMain.parentNode.appendChild(_self.animateEditorClone);*/
-            
+
             vbVersions.appendChild(_self.historicalVersionEditor);
             vbVersions.appendChild(_self.historicalPlaceholder);
             vbVersions.appendChild(_self.currentVersionEditor);
@@ -453,21 +464,18 @@ module.exports = ext.register("ext/revisions/revisions", {
     enterRevisionMode : function() {
         var _self = this;
 
-        this.currentFile = rutil.getFilePath();
+        var file = rutil.getFilePath();
+        this.revisionState.setCurrentFile(file);
 
-        var filename = this.currentFile.split("/").pop();
+        var filename = file.split("/").pop();
         current_doc_label.setValue(filename);
 
         this.requestGitLog();
 
         var currentSession = ceEditor.$editor.getSession();
+        var currentDocText = currentSession.getValue();
         var cveSession = currentVersionEditor.$editor.getSession();
         var hveSession = historicalVersionEditor.$editor.getSession();
-
-        // Copy the current document to the new ones
-        var currentDocText = currentSession.getValue();
-        hveSession.setValue(currentDocText);
-        cveSession.setValue(currentDocText);
 
         var cecSession = currentEditorClone.$editor.getSession();
         cecSession.setValue(currentDocText);
@@ -633,19 +641,23 @@ module.exports = ext.register("ext/revisions/revisions", {
     loadRevision : function(num) {
         this.loadingRevision = true;
 
-        var fileData = this.gitLogs[this.currentFile];
-        var hash = fileData.logData[num].commit;
+        var session = this.revisionState.getSession();
+        var logData = session.getGitLog();
+        var hash = logData[num].commit;
 
-        var node = lstCommits.queryNode("commit[@internal_counter='" +num + "']");
+        // Select the corresponding item in the dropdown list
+        var node = lstCommits.queryNode("commit[@internal_counter='" + num + "']");
         if (node && !lstCommits.isSelected(node))
             lstCommits.select(node);
 
-        if (fileData.logData[fileData.lastLoadedGitLog])
-            fileData.logData[fileData.lastLoadedGitLog].dotEl.setAttribute("class", "");
-        fileData.logData[num].dotEl.setAttribute("class", "current");
-        fileData.lastLoadedGitLog = num;
+        var lastLog = session.getLastLoadedGitLog();
+        if (logData[lastLog])
+            logData[lastLog].dotEl.setAttribute("class", "");
 
-        var output = rutil.formulateRevisionMetaData(fileData.logData[num], true);
+        logData[num].dotEl.setAttribute("class", "current");
+        session.setLastLoadedGitLog(num);
+
+        var output = rutil.formulateRevisionMetaData(logData[num], true);
         versions_label.setValue(output);
 
         var cveSession = currentVersionEditor.$editor.getSession();
@@ -673,17 +685,46 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     restoreRevision : function() {
         btnRestore.disable();
+        this.animateRevisionToCurrent();
+    },
+
+    animateRevisionToCurrent : function() {
+        var hvePos = rutil.getAbsolutePositionDimension(historicalVersionEditor.$ext);
+        var cvePos = rutil.getAbsolutePositionDimension(currentVersionEditor.$ext);
+
+        historicalPlaceholder.show();
+
+        Firmin.animate(historicalPlaceholder.$ext, {
+            zIndex  : 99999,
+            left    : hvePos.x + "px",
+            top     : hvePos.y + "px",
+            width   : hvePos.width + "px",
+            height  : hvePos.height + "px"
+        }, 0, function() {
+            historicalPlaceholder.$ext.setAttribute("class", "restore_revision");
+            Firmin.animate(historicalPlaceholder.$ext, {
+                left: cvePos.x + "px"
+            }, 1.5, function() {
+                historicalPlaceholder.$ext.setAttribute("class", "");
+                Firmin.animate(historicalPlaceholder.$ext, {
+                    opacity : 0
+                }, 0.7, function() {
+                    historicalPlaceholder.hide();
+                });
+            });
+        });
     },
 
     setLoadingHtml : function(html, initialShow) {
         this.loading_div.innerHTML = html;
         if (initialShow)
             this.loading_div.style.top = "-2000px";
+
         var iw = apf.getHtmlInnerWidth(this.loading_div);
         var ih = apf.getHtmlInnerHeight(this.loading_div);
+        this.loading_div.style.left = (window.innerWidth/2 - iw/2) + "px";
         if (initialShow)
             this.loading_div.style.top = (window.innerHeight/2 - ih/2) + "px";
-        this.loading_div.style.left = (window.innerWidth/2 - iw/2) + "px";
     },
 
     /**
@@ -697,7 +738,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         var data = {
             command : this.command,
             subcommand : subcommand,
-            file : this.currentFile
+            file : this.revisionState.getCurrentFile()
         };
 
         apf.extend(data, extra);
@@ -711,7 +752,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (ext.execCommand(this.command, data) !== false) {
             if (ide.dispatchEvent("consolecommand." + this.command, { data: data}) !== false) {
                 if (!ide.onLine) {
-                    util.alert("Currently Offline", "Currently Offline", "This operation could not be completed because you are offline.");
+                    util.alert("Currently Offline",
+                        "Currently Offline",
+                        "This operation could not be completed because you are offline.");
                     return false;
                 } else {
                     ide.socket.send(JSON.stringify(data));
@@ -735,31 +778,35 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     /**
-     * Requests git log data from the server, about the current file
+     * Requests git log data on the current file
      */
     requestGitLog : function() {
-        var file = this.currentFile;
+        var file = this.revisionState.getCurrentFile();
+        var session = this.revisionState.getSession(file);
 
-        if (this.lastFileLoaded)
-            timeline.removeTimelinePoints(this.gitLogs[this.lastFileLoaded].logData);
-
-        if (!this.gitLogs[file]) {
-            this.gitLogs[file] = {
-                logData : [],
-                lastLoadedGitLog : -1,
-                firstGitShow : true,
-                currentRevision : editors.currentEditor ?
-                    editors.currentEditor.ceEditor.getSession().getValue() : "",
-                revisions : {}
-            };
-
-            tbRevisionsSearch.disable();
-            this.sendServerRequest("log");
-        } else {
-            this.restoreGitLogState(this.gitLogs[file].logData, file);
+        var lastFile = this.revisionState.getLastFileLoaded();
+        if (lastFile.length) {
+            var lastSession = this.revisionState.getSession(lastFile);
+            timeline.removeTimelinePoints(lastSession.getGitLog());
         }
 
-        this.lastFileLoaded = file;
+        if (session) {
+            this.revisionState.restoreState(session);
+        } else {
+            session = this.revisionState.addSession(file);
+
+            var currentDocText = ceEditor.$editor.getSession().getValue();
+            var cveSession = currentVersionEditor.$editor.getSession();
+            cveSession.setValue(currentDocText);
+
+            session.setCurrentText(currentDocText);
+
+            // Disable search until git log loads
+            tbRevisionsSearch.disable();
+            this.sendServerRequest("log");
+        }
+
+        this.revisionState.setLastFileLoaded(file);
     },
 
     /**
@@ -769,13 +816,13 @@ module.exports = ext.register("ext/revisions/revisions", {
      */
     onMessage: function(e) {
         var message = e.message;
-        //console.log(message);
 
         if (message.type != "result" && message.subtype != "gittools")
             return;
 
         if (message.body.err) {
-            util.alert("Error",  "There was an error returned from the server:", message.body.err);
+            util.alert("Error",  "There was an error returned from the server:",
+                message.body.err);
             return;
         }
 
@@ -797,48 +844,17 @@ module.exports = ext.register("ext/revisions/revisions", {
      * @param {JSON} message Details about the message & output from git log
      */
     onGitLogMessage: function(message) {
-        this.gitLogParser.parseLog(message.body.out);
-
-        var logData = this.gitLogParser.getLogData();
-        for (var gi = 0, logDataLength = logData.length; gi < logDataLength; gi++) {
-            logData[gi].commitLower = logData[gi].commit.toLowerCase();
-            logData[gi].parentLower = logData[gi].parent.toLowerCase();
-            logData[gi].treeLower = logData[gi].tree.toLowerCase();
-            logData[gi].messageJoinedLower = logData[gi].message.join("\n").toLowerCase();
-            logData[gi].author.emailLower = logData[gi].author.email.toLowerCase();
-            logData[gi].author.fullNameLower = logData[gi].author.fullName.toLowerCase();
-            logData[gi].committer.emailLower = logData[gi].committer.email.toLowerCase();
-            logData[gi].committer.fullNameLower = logData[gi].committer.fullName.toLowerCase();
-        }
-
         var file = message.body.file;
-        if (this.gitLogs[file].lastLoadedGitLog == -1) {
-            // We've never loaded this before, so get the most recent
-            // commit from git show
-            this.gitLogs[file].firstGitShow = true;
-            this.requestGitShow(logData[logDataLength-1].commit);
+        var session = this.revisionState.getSession(file);
+        var logData = session.parseGitLog(message.body.out);
+
+        if (session.getLastLoadedGitLog() === -1) {
+            session.setFirstGitShow(true);
+            this.requestGitShow(logData[logData.length-1].commit);
         }
 
-        this.gitLogs[file].logData = logData;
-        this.gitLogs[file].lastLoadedGitLog = logDataLength - 1;
-
-        this.restoreGitLogState(logData, file);
-    },
-
-    restoreGitLogState : function(logData, file) {
-        var mdlOut = apf.getXml(rutil.arrCommits2Xml(logData, "commit"));
-        mdlCommits.load(mdlOut);
-
-        var output = rutil.formulateRevisionMetaData(logData[this.gitLogs[file].lastLoadedGitLog], true);
-        versions_label.setValue(output);
-
-        if (!this.gitLogs[file].firstGitShow)
-            current_versions_label.setValue(this.gitLogs[file].metaDataOutput);
-
-        timeline.setupTimeline(logData);
-        tbRevisionsSearch.enable();
-
-        this.gitLogs[file].logData[this.gitLogs[file].lastLoadedGitLog].dotEl.setAttribute("class", "current");
+        session.setLastLoadedGitLog(logData.length - 1);
+        this.revisionState.restoreState(session);
     },
 
     /**
@@ -853,31 +869,32 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var file = message.body.file, hash = message.body.hash;
         var fileText = message.body.out;
-        var gLogs = this.gitLogs[file];
 
-        gLogs.revisions[hash] = fileText;
+        var session = this.revisionState.getSession(file);
+        var logData = session.getGitLog();
+        session.setRevisionText(hash, fileText);
 
-        if (gLogs.firstGitShow) {
+        if (session.isFirstGitShow()) {
             var metaDataOutput;
-            if (fileText !== gLogs.currentRevision) {
+            if (fileText !== session.getCurrentText()) {
                 // Show "uncommitted" message
                 metaDataOutput = rutil.formulateRevisionMetaData(null, false);
             } else {
                 // Show commit data
-                var lastGitLog = this.gitLogs[file].logData[this.gitLogs[file].lastLoadedGitLog];
+                var lastGitLog = logData[session.getLastLoadedGitLog()];
                 metaDataOutput = rutil.formulateRevisionMetaData(lastGitLog, true);
             }
 
             current_versions_label.setValue(metaDataOutput);
-            gLogs.metaDataOutput = metaDataOutput;
-            gLogs.firstGitShow = false;
+            session.setMetaDataOutput(metaDataOutput);
+            session.setFirstGitShow(false);
         }
 
-        var hveSession = historicalVersionEditor.$editor.getSession();
+        var hveSession = historicalVersionEditor.getSession();
         hveSession.setValue(fileText);
 
-        var logDataLen = gLogs.logData.length;
-        if (message.body.hash == gLogs.logData[logDataLen-1].commit)
+        var logDataLen = logData.length;
+        if (message.body.hash == logData[logDataLen-1].commit)
             btnRestore.disable();
         else
             btnRestore.enable();
@@ -885,7 +902,33 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.setLoadingHtml("<p>Diffing files...</p>", false);
         this.diffFiles();
     },
+
+    /*
+    computeLevenshtein : function(text1, text2) {
+        return this.dmp.diff_levenshtein(this.dmp.diff_main(text1, text2));
+    },
     
+    getBestMatch : function(levArr, lenArr) {//l1, l2, l3, len1, len2, len3
+        if (levArr[0] === 0)
+            return 0;
+        if (levArr[1] === 0)
+            return 1;
+        if (levArr[2] === 0)
+            return 2;
+
+        if (levArr[0] === -1 && levArr[1] === -1 && levArr[2] === -1)
+            return 0;
+
+        var bestMatch = 0;
+        if (levArr[1] !== -1 && levArr[1] != lenArr[1] && levArr[1] < levArr[bestMatch])
+            bestMatch = 1;
+        if (levArr[2] !== -1 && levArr[2] != lenArr[2] && levArr[2] < levArr[bestMatch])
+            bestMatch = 2;
+
+        return bestMatch;
+    },
+    */
+
     diffFiles : function() {
         if (!this.dmp)
             this.dmp = new diff_match_patch();
@@ -953,43 +996,106 @@ module.exports = ext.register("ext/revisions/revisions", {
 
                 // Add newlines to history
                 if (lineDiff > 0) {
-                    // @TODO: Do we need DMP fuzzy logic?
-                    var nll = numLeftLines;
-                    if(historyDoc.getLine(nll) != currentDoc.getLine(numRightLines-lineDiff))
-                        nll--;
+                    var nll = numLeftLines;// - lineDiff;
+                    /*var hdl1 = historyDoc.getLine(numLeftLines);
 
-                    var colEnd = historyDoc.getLine(nll).length;
-                    historicalVersionEditor.$editor.moveCursorTo(nll, colEnd);
+                    var cdl1 = currentDoc.getLine(numRightLines - lineDiff - 1);
+                    var cdl2 = currentDoc.getLine(numRightLines - lineDiff);
+                    var cdl3 = currentDoc.getLine(numRightLines - lineDiff + 1);
+
+                    var diffOne   = this.computeLevenshtein(hdl1, cdl1);
+                    var diffTwo   = this.computeLevenshtein(hdl1, cdl2);
+                    var diffThree = this.computeLevenshtein(hdl1, cdl3);
+
+                    var cdl1len = cdl1.length > hdl1.length ? cdl1.length : hdl1.length;
+                    var cdl2len = cdl2.length > hdl1.length ? cdl2.length : hdl1.length;
+                    var cdl3len = cdl3.length > hdl1.length ? cdl3.length : hdl1.length;
+
+                    var bestMatch = this.getBestMatch(
+                        [diffOne, diffTwo, diffThree],
+                        [cdl1len, cdl2len, cdl3len]
+                    );
+
+                    console.log("START");
+                    console.log(hdl1);
+                    console.log(cdl1);
+                    console.log(cdl2);
+                    console.log(cdl3);
+                    console.log("BEST MATCH", bestMatch, diffOne, diffTwo, diffThree, numLeftLines, numRightLines);
+                    console.log("END");
+                    // I'm thinking if bestMatch === 1 then we shouldn't be
+                    // putting any gray lines in at all.
+                    if (bestMatch === 0)
+                        nll++;
+                    else if (bestMatch === 2)
+                        nll--;*/
+
+                    var colEnd = historyDoc.getLine(nll - 1).length;
+                    historicalVersionEditor.$editor.moveCursorTo(nll - 1, colEnd);
                     historicalVersionEditor.$editor.insert(newlines);
 
                     // Now insert grayspace
+                    //this.addCodeMarker(historicalVersionEditor, "newlines",
+                    //    numLeftLines, lastLeftLine.length, numLeftLines+lineDiff, 0);
+                    
                     this.addCodeMarker(historicalVersionEditor, "newlines",
-                        numLeftLines, lastLeftLine.length, numLeftLines+lineDiff, 0);
+                        nll, lastLeftLine.length, nll+lineDiff, 0);
 
                     numLeftLines += lineDiff;
                 }
                 // Add newlines to current
                 else {
-                    var nrr = numRightLines;
-                    if(currentDoc.getLine(nrr) != historyDoc.getLine(numLeftLines-lineDiffAbs))
-                        nrr--;
+                    var nrr = numRightLines;// -1;
+                    /*var cdl1 = currentDoc.getLine(numRightLines);
+                    var hdl1 = historyDoc.getLine(numLeftLines - lineDiffAbs - 1);
+                    var hdl2 = historyDoc.getLine(numLeftLines - lineDiffAbs);
+                    var hdl3 = historyDoc.getLine(numLeftLines - lineDiffAbs + 1)
 
-                    var colEnd = currentDoc.getLine(nrr).length;
-                    currentVersionEditor.$editor.moveCursorTo(nrr, colEnd);
+                    var diffOne   = this.computeLevenshtein(cdl1, hdl1);
+                    var diffTwo   = this.computeLevenshtein(cdl1, hdl2);
+                    var diffThree = this.computeLevenshtein(cdl1, hdl3);
+
+                    var hdl1len = hdl1.length > cdl1.length ? hdl1.length : cdl1.length;
+                    var hdl2len = hdl2.length > cdl1.length ? hdl2.length : cdl1.length;
+                    var hdl3len = hdl3.length > cdl1.length ? hdl3.length : cdl1.length;
+
+                    var bestMatch = this.getBestMatch(
+                        [diffOne, diffTwo, diffThree],
+                        [hdl1len, hdl2len, hdl3len]
+                    );
+
+                    console.log("START");
+                    console.log(cdl1);
+                    console.log(hdl1);
+                    console.log(hdl2);
+                    console.log(hdl3);
+                    console.log("BEST MATCH", bestMatch);
+                    console.log("END");
+                    
+                    if (bestMatch === 0)
+                        nrr++;
+                    else(bestMatch === 2)
+                        nrr--;*/
+
+                    var colEnd = currentDoc.getLine(nrr - 1).length;
+                    currentVersionEditor.$editor.moveCursorTo(nrr - 1, colEnd);
                     currentVersionEditor.$editor.insert(newlines);
 
                     // Now insert grayspace
+                    /*this.addCodeMarker(currentVersionEditor, "newlines",
+                        numRightLines, lastRightLine.length,
+                        numRightLines+lineDiffAbs, 0);*/
+                        
                     this.addCodeMarker(currentVersionEditor, "newlines",
-                        numRightLines, lastRightLine.length, numRightLines+lineDiffAbs, 0);
-
+                        nrr, lastRightLine.length, nrr+lineDiffAbs, 0);
                     numRightLines += lineDiffAbs;
                 }
             }
         }
 
         setTimeout(function() {
-            historicalPlaceholder.$ext.style.opacity = 0;
-            historicalPlaceholder.$ext.style.zIndex = "99998";
+            //historicalPlaceholder.$ext.style.opacity = 0;
+            //historicalPlaceholder.$ext.style.zIndex = "99998";
         });
 
         this.loading_div.style.top = "-2000px";
@@ -1019,7 +1125,7 @@ module.exports = ext.register("ext/revisions/revisions", {
      * Adds code highlighting to emphasize differences from diff_match_patch
      * 
      * @param {apf.codeeditor} editor The code editor
-     * @param {string} type Essentially the CSS class suffix to apply (ex. "remove", "add")
+     * @param {string} type The CSS class suffix to apply (ex. "remove", "add")
      * @param {number} fromRow Which row to start from
      * @param {number} fromColumn Which column to start from
      * @param {number} toRow Row to end on

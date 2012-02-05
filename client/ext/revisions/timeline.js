@@ -10,7 +10,6 @@ var ide = require("core/ide");
 var rutil = require("ext/revisions/util");
 
 module.exports = {
-
     /**
      * Removes all the points along the timeline and their listeners
      * 
@@ -115,48 +114,49 @@ module.exports = {
      * 
      * @param {string} filter The search term to filter with
      */
-    filterTimeline : function(filter, gitLogs, currentFile) {
-        var logs = gitLogs[currentFile].logData;
+    filterTimeline : function(filter, rstate) {
+        var file = rstate.getCurrentFile();
+        var logs = rstate.getSession(file).getGitLog();
 
         filter = filter.toLowerCase();
 
-        gitLogs[currentFile].currentLogData = [];
-        gitLogs[currentFile].explodedPoints = {};
+        var filteredCommits = [], explodedPoints = {};
+
         for (var gi = 0; gi < logs.length; gi++) {
             if (logs[gi].commitLower.indexOf(filter) >= 0) {
-                gitLogs[currentFile].currentLogData.push(logs[gi]);
+                filteredCommits.push(logs[gi]);
                 continue;
             }
             if (logs[gi].parentLower.indexOf(filter) >= 0) {
-                gitLogs[currentFile].currentLogData.push(logs[gi]);
+                filteredCommits.push(logs[gi]);
                 continue;
             }
             if (logs[gi].treeLower.indexOf(filter) >= 0) {
-                gitLogs[currentFile].currentLogData.push(logs[gi]);
+                filteredCommits.push(logs[gi]);
                 continue;
             }
             if (logs[gi].messageJoinedLower.indexOf(filter) >= 0) {
-                gitLogs[currentFile].currentLogData.push(logs[gi]);
+                filteredCommits.push(logs[gi]);
                 continue;
             }
             if (logs[gi].author.emailLower.indexOf(filter) >= 0) {
-                gitLogs[currentFile].currentLogData.push(logs[gi]);
+                filteredCommits.push(logs[gi]);
                 continue;
             }
             if (logs[gi].author.fullNameLower.indexOf(filter) >= 0) {
-                gitLogs[currentFile].currentLogData.push(logs[gi]);
+                filteredCommits.push(logs[gi]);
                 continue;
             }
             if (logs[gi].committer.emailLower.indexOf(filter) >= 0) {
-                gitLogs[currentFile].currentLogData.push(logs[gi]);
+                filteredCommits.push(logs[gi]);
                 continue;
             }
             if (logs[gi].committer.fullNameLower.indexOf(filter) >= 0) {
-                gitLogs[currentFile].currentLogData.push(logs[gi]);
+                filteredCommits.push(logs[gi]);
                 continue;
             }
 
-            gitLogs[currentFile].explodedPoints[gi] = true;
+            explodedPoints[gi] = true;
         }
 
         var isCurrent = false;
@@ -167,7 +167,7 @@ module.exports = {
             else
                 isCurrent = false;
 
-            if (gitLogs[currentFile].explodedPoints[i]) {
+            if (explodedPoints[i]) {
                 if (isCurrent)
                     logs[i].dotEl.setAttribute("class", "pop current");
                 else
@@ -179,7 +179,7 @@ module.exports = {
                     logs[i].dotEl.setAttribute("class", "");
             }
         }
-    },
+    }
 };
 
 });
