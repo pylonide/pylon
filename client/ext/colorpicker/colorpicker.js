@@ -28,8 +28,23 @@ var css = require("text!ext/colorpicker/colorpicker.css");
 var markup = require("text!ext/colorpicker/colorpicker.xml");
 var skin = require("text!ext/colorpicker/skin.xml");
 
-function createColorRange(row, line, color) {
-    var col = line.indexOf(color);
+function createColorRange(row, col, line, color) {
+    if (col) {
+        var str = line;
+        var colorLen = color.length;
+        var lastIdx;
+        var atPos = false;
+        while ((lastIdx = str.indexOf(color)) != -1) {
+            str = str.substr(lastIdx + colorLen);
+            if (lastIdx <= col && lastIdx + colorLen >= col) {
+                atPos = true;
+                col = lastIdx;
+            }
+        }
+        if (!atPos)
+            return null;
+    }
+    col = line.indexOf(color);
     return Range.fromPoints({
         row: row,
         column: col
@@ -128,7 +143,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         
         var _self = this;
         
-        ide.addEventListener("codetools.rowchange", function(e) {
+        ide.addEventListener("codetools.columnchange", function(e) {
             var doc = e.doc;
             var pos = e.pos;
             var editor = e.editor;
@@ -173,11 +188,13 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
 
         var markers = [];
         colors.forEach(function(color) {
-            var id = markerId || color + pos.row;
+            var id = markerId || color + (pos.row + "") + pos.column;
             var marker = Colors[id];
             // the tooltip DOM node is stored in the third element of the selection array
             if (!marker) {
-                var range = createColorRange(pos.row, line, color);
+                var range = createColorRange(pos.row, pos.column, line, color);
+                if (!range)
+                    return;
                 marker = editor.session.addMarker(range, "codetools_colorpicker", function(stringBuilder, range, left, top, viewport) {
                     stringBuilder.push(
                         "<span class='codetools_colorpicker' style='",
@@ -376,7 +393,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         a.markerNode.innerHTML = newColor;
         
         this.$colorPickTimer = setTimeout(function() {
-            a.marker[0] = createColorRange(a.pos.row, line, a.current);
+            a.marker[0] = createColorRange(a.pos.row, a.pos.column, line, a.current);
             doc.replace(a.marker[0], newColor);
             a.current = newColor;
         }, 200);
