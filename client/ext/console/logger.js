@@ -7,6 +7,7 @@
  * @contributor Sergi Mansilla <sergi AT c9 DOT io>
  */
 define(function(require, exports, module) {
+var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 
 exports.test = {};
