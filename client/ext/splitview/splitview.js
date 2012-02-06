@@ -14,6 +14,7 @@ var css = require("text!ext/splitview/splitview.css");
 var Editors = require("ext/editors/editors");
 var Tabbehaviors = require("ext/tabbehaviors/tabbehaviors");
 var Settings = require("ext/settings/settings");
+var Code = require("ext/code/code");
 
 var Splits = require("ext/splitview/splits");
 
@@ -81,6 +82,22 @@ module.exports = ext.register("ext/splitview/splitview", {
             if (!Splits.getActive())
                 return;
             _self.save();
+            
+            if (typeof mnuSyntax == "undefined")
+                return;
+                
+            var item;
+            var syntax = mnuSyntax;
+            var value = Code.getContentType(e.page.$model.data);
+            for (var i = 0, l = syntax.childNodes.length; i < l; ++i) {
+                item = syntax.childNodes[i];
+                if (!item || !item.localName || item.localName != "item")
+                    continue;
+                if (item.value == value) {
+                    item.select();
+                    break;
+                }
+            }
         });
         
         ide.addEventListener("closefile", function(e) {

@@ -226,6 +226,14 @@ module.exports = ext.register("ext/code/code", {
 
         return "text";
     },
+    
+    getContentType : function(node) {
+        var syntax = this.getSyntax(node);
+        if (!syntax)
+            return "auto";
+        
+        return contentTypes[syntax] || (syntax == "text" ? "text/plain" : "auto");
+    },
 
     getSelection : function(){
         if (typeof this.amlEditor == "undefined")
