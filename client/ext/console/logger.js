@@ -121,8 +121,11 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
     var fragment = document.createDocumentFragment();
     for (var i=0, l = lines.length; i<l; i++) {
         var div = document.createElement("div");
-        div.innerHTML = createItem(lines[i], ide);
-        fragment.appendChild(div);
+        var divContent = createItem(lines[i], ide);
+        if (divContent.length) {
+            div.innerHTML = createItem(lines[i], ide);
+            fragment.appendChild(div);
+        }
     }
     childBuffer.appendChild(fragment);
 };
