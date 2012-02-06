@@ -28,23 +28,30 @@ module.exports = ext.register("ext/codetools/codetools", {
     
     attachEditorEvents: function(amlEditor) {
         var editor = amlEditor.$editor;
-        var prevRow;
-            
+        var prevRow, prevCol;
+
         editor.addEventListener("mousemove", function(e) {
             var pos = e.getDocumentPosition();
             var row = pos.row;
+            var col = pos.column;
             var doc = editor.session.doc;
-            
-            if (prevRow === row)
-                return;
-            prevRow = row;
-            
-            ide.dispatchEvent("codetools.rowchange", {
+            var evObj = {
                 amlEditor: amlEditor,
                 editor: editor,
                 pos: pos,
                 doc: doc
-            });
+            };
+            
+            if (prevRow !== row) {
+                prevRow = row;
+                ide.dispatchEvent("codetools.rowchange", evObj);
+                // a row change is also considered a column change.
+                ide.dispatchEvent("codetools.columnchange", evObj);
+            }
+            else if (prevCol !== col) {
+                prevCol = col;
+                ide.dispatchEvent("codetools.columnchange", evObj);
+            }
         });
         
         editor.addEventListener("click", function(e) {
