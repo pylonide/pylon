@@ -1,6 +1,4 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <div id="barConsoleHints" class="barConsoleHints"/>
-
     <a:bar id="winDbgConsole" height="41">
         <a:vbox anchors="0 0 0 0">
             <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false" render2="runtime">
@@ -9,11 +7,11 @@
                       onclick  = "
                         if (tabConsole.activepagenr == 0)
                             txtConsole.clear();
-                        else if (tabConsole.activepagenr == 1)    
+                        else if (tabConsole.activepagenr == 1)
                             txtOutput.clear();
                       "/>
-                    <a:button id="btnConsoleSettings" skin="btn_icon_only" 
-                      icon    = "console_settings.png" 
+                    <a:button id="btnConsoleSettings" skin="btn_icon_only"
+                      icon    = "console_settings.png"
                       margin  = "2 4 0 0"
                       submenu = "mnuConsoleSettings" />
                     <a:button id="btnConsoleMax" skin="btn_icon_only" icon="console_max.png" state="true" margin="2 2 0 0"
@@ -25,12 +23,12 @@
                             console.restore();
                       "/>
                     <a:divider skin="divider_console"></a:divider>
-                    <a:button 
+                    <a:button
                       skin="btn_icon_only"
                       icon="console_close_btn.png"
                       class="dim22-22"
-                      margin = "1 0 0 1"
-                      onclick  = "require('ext/console/console').hide()"/>
+                      margin="1 0 0 1"
+                      onclick="require('ext/console/console').hide()"/>
                 </a:hbox>
                 <a:page id="pgConsole" caption="Console" name="console">
                     <a:text id="txtConsole"
@@ -59,36 +57,31 @@
                       textselect = "true"
                       class      = "console_text" />
                     <a:scrollbar
-                      for       = "txtOutput"
-                      right     = "0"
-                      top       = "0"
-                      bottom    = "0"
-                      skin      = "console_scrollbar"
-                      width     = "17" />
+                      for    = "txtOutput"
+                      right  = "0"
+                      top    = "0"
+                      bottom = "0"
+                      skin   = "console_scrollbar"
+                      width  = "17" />
                 </a:page>
             </a:tab>
-            
+
             <a:menu id="mnuConsoleSettings">
-                <a:item type="check" 
-                  checked = "[{require('core/settings').model}::auto/console/@autoshow]" 
+                <a:item type="check"
+                  checked = "[{require('core/settings').model}::auto/console/@autoshow]"
                   caption = "Auto-show console when running" />
             </a:menu>
-    
+
             <a:hbox class="consoleInputBox" edge="1" padding="4" pack="end">
                 <a:textbox id="txtConsoleInput"
                   margin    = "4 0 0"
                   skin      = "tb_console"
-                  flex      = "1"
-                  onkeydown = "return require('ext/console/console').keydownHandler(event)"
-                  onkeyup   = "return require('ext/console/console').keyupHandler(event)" />
+                  flex      = "1" />
                 <a:button id="btnCollapseConsole" skin="btn_console_open" icon="console-btn.png" state="true" height="38"
                     value = "{!!tabConsole.visible}"
-                    onprop.value="
-                        try {
-                            require('ext/console/console')[event.value ? 'show' : 'hide']();
-                        }catch(e){}
-                    " />
+                    onprop.value="try { require('ext/console/console')[event.value ? 'show' : 'hide'](); } catch(e) {} " />
             </a:hbox>
         </a:vbox>
     </a:bar>
 </a:application>
+

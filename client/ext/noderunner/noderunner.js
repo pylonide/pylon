@@ -50,12 +50,12 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         stDebugProcessRunning.addEventListener("deactivate", this.$onDebugProcessDeactivate.bind(this));
 
         ide.addEventListener("consolecommand.run", function(e) {
-            ide.send(JSON.stringify({
+            ide.send({
                 command: "internal-isfile",
                 argv: e.data.argv,
                 cwd: e.data.cwd,
                 sender: "noderunner"
-            }));
+            });
             return false;
         });
 
@@ -140,7 +140,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                     });
                 }
 
-                ide.send('{"command": "state"}');
+                ide.send({"command": "state"});
                 break;
         }
     },
@@ -158,32 +158,32 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         dbg.registerManualAttach();
         if (stProcessRunning.active || !stServerConnected.active || typeof path != "string")
             return false;
-        
+
         if (nodeVersion == 'default')
             nodeVersion = "";
-        
+
         var page = ide.getActivePageModel();
         var command = {
             "command" : apf.isTrue(debug) ? "RunDebugBrk" : "Run",
             "file"    : path.replace(/^\/+/, ""),
-            "runner"  : "node", 
+            "runner"  : "node",
             "args"    : args || "",
             "version" : nodeVersion || settings.model.queryValue("auto/node-version/@version") || this.NODE_VERSION,
             "env"     : {
                 "C9_SELECTED_FILE": page ? page.getAttribute("path").slice(ide.davPrefix.length) : ""
             }
         };
-        ide.send(JSON.stringify(command));
+        ide.send(command);
     },
 
     stop : function() {
         if (!stProcessRunning.active)
             return;
 
-        ide.send(JSON.stringify({
+        ide.send({
             "command": "kill",
             "runner"  : "node"
-        }));
+        });
     },
 
     enable : function(){

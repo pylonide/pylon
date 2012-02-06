@@ -9,7 +9,6 @@
       resizable = "true"
       kbclose   = "true"
       skin      = "bk-window"
-      class     = "nofooter"
       zindex    = "999999"
       onshow    = "
         txtGoToFile.select();
@@ -18,7 +17,7 @@
             <a:textbox id="txtGoToFile" realtime="true" flex="1" skin="searchbox_textbox" focusselect="true" />
         </a:hbox>
         <a:datagrid id="dgGoToFile"
-          anchors = "34 0 0 0"
+          anchors = "34 0 46 0"
           border  = "1 0 0 0"
           class   = "searchresults noscrollbar"
           scrollbar = "sbShared 20 2 2"
@@ -31,7 +30,17 @@
             <a:column width="100" value="{apf.getFilename([text()])}" caption="Name" />
             <a:column width="100%" caption="Path" value="[text()]" />
         </a:datagrid>
-
+        <a:hbox edge="6 10 10" pack="end" bottom="0" right="0" left="0" padding="8">
+            <a:filler/>
+            <a:button onclick="winGoToFile.hide()" skin="btn-default-css3">Cancel</a:button>
+            <a:button 
+              default  = "2" 
+              skin     = "btn-default-css3" 
+              class    = "btn-green"
+              onclick  = "
+                require('ext/gotofile/gotofile').openFile();
+              ">Open</a:button>
+        </a:hbox>
         <a:model id="mdlGoToFile" />
     </a:window>
 </a:application>

@@ -345,12 +345,12 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         });
 
         function openHandler(e) {
-            ide.send(JSON.stringify({
+            ide.send({
                 command: "internal-isfile",
                 argv: e.data.argv,
                 cwd: e.data.cwd,
                 sender: "filesystem"
-            }));
+            });
             return false;
         }
         ide.addEventListener("consolecommand.open", openHandler);
@@ -375,12 +375,19 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 return;
             }
 
+            // do we have a value in cache, then use that one
             if (doc.cachedValue) {
                 doc.setValue(doc.cachedValue);
                 delete doc.cachedValue;
                 ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
             }
-            else if ((!e.type || e.type != "newfile") && node.getAttribute("newfile") != 1) {
+            // if we're creating a new file then we'll fill the doc with nah dah
+            else if ((e.type && e.type === "newfile") || Number(node.getAttribute("newfile") || 0) === 1) {
+                doc.setValue("");
+                ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
+            }
+            // otherwise go on loading
+            else {
                 // add a way to hook into loading of files
                 if (ide.dispatchEvent("readfile", {doc: doc, node: node}) === false)
                     return;
@@ -388,17 +395,12 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 var path = node.getAttribute("path");
 
                 /**
-                 * This callback is executed when the file is read, we need to check
-                 * the current state of online/offline
+                 * Callback function after we retrieve response from jsdav
                  */
                 var readfileCallback = function(data, state, extra) {
-                    if (state == apf.OFFLINE) {
-                        ide.addEventListener("afteronline", function(e) {
-                            fs.readFile(path, readfileCallback);
-                            ide.removeEventListener("afteronline", arguments.callee);
-                        });
-                    }
-                    else if (state != apf.SUCCESS) {
+                    // verify if the request succeeded
+                    if (state != apf.SUCCESS) {
+                        // 404's should give a file not found, but what about others?
                         if (extra.status == 404) {
                             ide.dispatchEvent("filenotfound", {
                                 node : node,
@@ -408,16 +410,24 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         }
                     }
                     else {
+                        // populate the document
                         doc.setValue(data);
-                        ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
+                        // fire event
+                        ide.dispatchEvent("afteropenfile", { doc: doc, node: node, editor: editor });
                     }
                 };
-
-                fs.readFile(path, readfileCallback);
-            }
-            else {
-                doc.setValue("");
-                ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
+                
+                // if we're not online, we'll add an event handler that listens to the socket connecting (or the ping or so)
+                if (!ide.onLine) {
+                    var afterOnlineHandler = function () {
+                        fs.readFile(path, readfileCallback);
+                        ide.removeEventListener("afteronline", afterOnlineHandler);
+                    };
+                    ide.addEventListener("afteronline", afterOnlineHandler);
+                }
+                else {
+                    fs.readFile(path, readfileCallback);
+                }
             }
         });
 

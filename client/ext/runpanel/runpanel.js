@@ -117,7 +117,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         });
 
         var page = tabEditors.getPage();
-        if (page) {
+        if (page && page.$model) {
             var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
             mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
             mdlRunConfigurations.setQueryValue("config[@curfile]/@name",
@@ -247,7 +247,10 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     addConfig : function() {
         var path, name, file = ide.getActivePageModel();
         var extension = "";
-
+        
+        if(!file)
+            return;
+            
         path  = file.getAttribute("path").slice(ide.davPrefix.length + 1); //@todo inconsistent
         name  = file.getAttribute("name").replace(/\.(js|py)$/,
             function(full, ext){ extension = ext; return ""; });

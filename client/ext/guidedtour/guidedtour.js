@@ -19,6 +19,7 @@ var zen = require("ext/zen/zen");
 var dockpanel = require("ext/dockpanel/dockpanel");
 var panels = require("ext/panels/panels");
 var settings = require("core/settings");
+var helloWorldScript = require("text!ext/guidedtour/hello-world-script.txt");
 
 var save;
 var madeNewFile = false;
@@ -89,13 +90,13 @@ var jsonTourIde = {
         time: 4
     }, {
         before: function() {
-            var helloWorldScript = "var http = require(\'http\');\nhttp.createServer(function (req, res) {\n\tres.writeHead(200, {\'Content-Type\': \'text/plain\'});\n\tres.end(\'Hello World\\n\');\n}).listen(1337, \"127.0.0.1\");\n\nconsole.log(\'Server running at http://127.0.0.1:1337/\');";
             tabEditors.getPage().$doc.setValue(helloWorldScript);
             if (!save) 
                 save = require("ext/save/save");
             var page = tabEditors.getPage();
             var file = page.$model.data;
             save._saveAsNoUI(page, file.getAttribute("path"), ide.davPrefix + "/helloWorld-quideTour.js");
+            require("ext/tree/tree").refresh();
         },
         el: undefined,
         div: "ceEditor",
@@ -253,7 +254,8 @@ var jsonTourIde = {
         time: 4
     }, {
         before: function() {
-            dbgCallStack.parentNode.parentNode.hide();
+            
+            dbgCallStack && dbgCallStack.parentNode && dbgCallStack.parentNode.parentNode.hide();
             dbg.continueScript();
             txtConsoleInput.setValue("git status");
         },
@@ -276,11 +278,14 @@ var jsonTourIde = {
     }, {
         before: function() {
             require('ext/runpanel/runpanel').stop();
-            require("ext/console/console").commandTextHandler({
-                keyCode: 13,
-                currentTarget: txtConsoleInput
-            });
-            txtConsoleInput.setValue("rm helloWorld-quideTour.js");
+            
+            if(trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']")) {
+                require("ext/console/console").commandTextHandler({
+                    keyCode: 13,
+                    currentTarget: txtConsoleInput
+                });
+                txtConsoleInput.setValue("rm helloWorld-quideTour.js");
+            }
         },
         el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabConsole.$ext),
         desc: "As expected, there's been a new file added to git. We're done testing it, and don't want to keep it around, so let's remove it with 'rm helloWorld-quideTour.js'.",
@@ -288,8 +293,9 @@ var jsonTourIde = {
         time: 4
     }, {
         before: function() {
-            panels.activate(require("ext/tree/tree"))
-            if (!deletedFile) {
+            panels.activate(require("ext/tree/tree"));
+            var demoFile = trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']");
+            if(demoFile && !deletedFile) {
                 deletedFile = true;
                 tabEditors.remove(tabEditors.getPage());
                 require("ext/console/console").commandTextHandler({
@@ -297,8 +303,9 @@ var jsonTourIde = {
                     currentTarget: txtConsoleInput
                 });
                 trFiles.confirmed = true;
-                trFiles.remove(trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']"))
+                trFiles.remove(demoFile);
                 trFiles.confirmed = false;
+                require("ext/tree/tree").refresh();
             }
         },
         el: "winFilesViewer",
@@ -358,6 +365,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     
     hideMenus: function(){
         var buttons = dockpanel.getButtons("ext/debugger/debugger");
+        if(!buttons)
+            return;
+            
         for(var i = 0, button; i < buttons.length; i++) {
             button = buttons[i];
             if(!button.showMenu || !button.cache)
@@ -377,8 +387,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         });*/
         
         !self["winFilesViewer"] && panels.activate(require("ext/tree/tree"));
-        
-        if (!deletedFile) {
+
+        var demoFile = trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']");
+        if (demoFile && !deletedFile) {
             txtConsoleInput.setValue("rm helloWorld-quideTour.js");
             deletedFile = true;
             require("ext/console/console").commandTextHandler({
@@ -386,8 +397,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
                 currentTarget: txtConsoleInput
             });
             trFiles.confirmed = true;
-            trFiles.remove(trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']"))
+            trFiles.remove(demoFile);
             trFiles.confirmed = false;
+            require("ext/tree/tree").refresh();
         }
     },
     
@@ -501,7 +513,6 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     },
 
     finalStep: function() {
-        require("ext/console/console").disable();
         winTourText.close();
         tourControlsDialog.hide();
         this.closeTG();
@@ -514,10 +525,38 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         winTourButtonClose.hide();
         winTourButtonDone.show();
     },
-
+    
     // These are common o02022perations we do for step
     // forwards and back, so we DRY
     commonStepOps: function(step){
+        function getCurrentEl(){
+            if (step.el !== undefined) {
+                if(typeof step.el == "string")
+                    step.el = self[step.el];
+                if(typeof step.el == "function")
+                    step.el = step.el();
+                _self.currentEl = step.el;
+            }
+            // AL of these fix issues with elements not being available when this plugin loads
+            else if (step.div == "ceEditor"){
+                _self.currentEl = ceEditor;
+            }
+            else if (step.div == "expandedDbg") {
+                _self.currentEl = expandedDbg;
+            }
+            else if (step.div !== undefined) {
+                if (step.node !== undefined) {
+                    _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes(step.div, apf.document.selectSingleNode(step.node).$ext);
+                }
+                else {
+                    _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes(step.div, ceEditor.$ext);
+                }
+            }
+            else {
+                // fixes issue with no zen button existing
+                _self.currentEl = btnZenFullscreen;
+            }
+        }
         var _self = this;
         if(step.notAvailable) {
             this.stepForward();
@@ -526,8 +565,12 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         if (step.before) 
             step.before();
         
-        setTimeout(function(){
-            _self.highlightElement(step);
+        setTimeout(function(){   
+            getCurrentEl();
+            if(!_self.currentEl)
+                return;
+                
+            _self.highlightElement();
     
             textTourDesc.setValue(step.desc);
     
@@ -538,8 +581,12 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             winTourText.setAttribute("right", "");
     
             var pos = _self.getElementPosition(_self.currentEl);
+            
+            if(!pos)
+                return;
+            
             winTourText.setAttribute("class", step.pos);
-    
+        
             _self.setPositions(step.pos, pos, winTourText);
             
             if(step.pos)
@@ -571,34 +618,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     /**
      * Element methods
      */
-    highlightElement: function(step){
-        if (step.el !== undefined) {
-            if(typeof step.el == "string")
-                step.el = self[step.el];
-            if(typeof step.el == "function")
-                step.el = step.el();
-            this.currentEl = step.el;
-        }
-        // AL of these fix issues with elements not being available when this plugin loads
-        else if (step.div == "ceEditor"){
-            this.currentEl = ceEditor;
-        }
-        else if (step.div == "expandedDbg") {
-            this.currentEl = expandedDbg;
-        }
-        else if (step.div !== undefined) {
-            if (step.node !== undefined) {
-                this.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes(step.div, apf.document.selectSingleNode(step.node).$ext);
-            }
-            else {
-                this.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes(step.div, ceEditor.$ext);
-            }
-        }
-        else {
-            // fixes issue with no zen button existing
-            this.currentEl = btnZenFullscreen;
-        }
-        
+    highlightElement: function(){        
         //this.currentEl.addEventListener("resize", this.$celResize = function() {
         //_self.resizeHighlightedEl();
         //});
@@ -623,7 +643,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             var pNode = this.currentEl;
             if (pNode) {
                 while (pNode && pNode.tagName != "body" && (!zIndex || zIndex <= 9998)) {
-                    zIndex = pNode.$ext.style && parseInt(pNode.$ext.style.zIndex || 9997) + 1;
+                    zIndex = pNode.$ext && pNode.$ext.style && parseInt(pNode.$ext.style.zIndex || 9997) + 1;
                     pNode = pNode.parentNode;
                 }
             }
@@ -639,6 +659,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     },
 
     getElementPosition: function(el){
+        if(!el)
+            return [0, 0, 0, 0];
+            
         var elExt = el.$ext;
         if (elExt === undefined) {
             var pos = apf.getAbsolutePosition(el[0]);
