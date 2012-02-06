@@ -405,9 +405,9 @@ module.exports = ext.register("ext/splitview/splitview", {
         fake.contentType = page.contentType;
         fake.$at     = page.$at;
         fake.$doc    = doc;
+        //doc.$page    = fake;
         fake.$editor = page.$editor;
         fake.$model  = page.$model;
-        
         
         Splits.mutate(null, fake, "clone");
           
@@ -417,6 +417,11 @@ module.exports = ext.register("ext/splitview/splitview", {
             "{parseInt([@saving], 10) || parseInt([@lookup], 10) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
             ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"
         );
+        
+        page.addEventListener("prop.caption", function(e) {
+            fake.setProperty("caption", e.value);
+        });
+        fake.setProperty("caption", page.caption);
         
         Editors.initEditorEvents(fake, page.$model);
         

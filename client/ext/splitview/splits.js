@@ -230,6 +230,7 @@ exports.update = function(split, gridLayout) {
 
 exports.mutate = function(split, page, type) {
     split = split || split === null ? ActiveSplit : null;
+    type = type || "default";
     var tabs = tabEditors;
     var activePage = tabs.getPage();
     var pairIdx = split ? exports.indexOf(split, page) : -1;
@@ -271,9 +272,9 @@ exports.mutate = function(split, page, type) {
             if (type && type == "clone")
                 activePage.$editor.amlEditor = clones.original;
             split = this.create(activePage);
-            if (type && type == "clone")
-                split.clone = page;
         }
+        if (!split.clone && type == "clone")
+            split.clone = page;
         
         var editorToUse;
         if (split.clone && page === split.clone) {
@@ -403,6 +404,10 @@ function createEditorClones(editor) {
             CodeTools.attachEditorEvents(EditorClones.cloneEditor);
         
         addEditorListeners.call(this, EditorClones.cloneEditor);
+        
+        EditorClones.cloneEditor.$editor.commands = previousEditor.$editor.commands;
+        if (previousEditor.$editor.getKeyboardHandler())
+            EditorClones.cloneEditor.$editor.setKeyboardHandler(previousEditor.$editor.getKeyboardHandler());
         
         // add listeners to ceEditor properties that also need to be applied to
         // other editor instances:
@@ -568,20 +573,23 @@ function correctQuickSearchDialog(e) {
         width: parent.$ext.offsetWidth,
         height: parent.$ext.offsetHeight
     };
+    var minRight = 30;
 
     if (!searchWindow && self["winQuickSearch"]) {
         searchWindow = self["winQuickSearch"];
         searchPos = apf.getStyle(searchWindow.$ext, "right");
         if (searchPos == "auto")
-            searchPos = "30px";
+            searchPos = minRight + "px";
     }
     if (searchWindow) {
+        // hardcoded searchbox width (350px) and added 30px margin on the right
+        var maxRight = parentDims.width - 380;
         var right = parentDims.width - editorPos[0] - editorDims.width + 30;
         var top =  editorPos[1];
         //console.log("editorPos", editorPos,"editorDims",JSON.stringify(editorDims),"parentDims",JSON.stringify(parentDims),"right",right,"top",top);
         var to = Math.max(top, 0);
         return {
-            right: Math.max(right, 30),
+            right: Math.max(Math.min(right, maxRight), minRight),
             zIndex: parseInt(editor.$ext.style.zIndex, 10) + 1,
             from: !e || e.anim == "out" ? to - 27 : 0,
             to: !e || e.anim == "out" ? to : (to - 30),
