@@ -43,7 +43,7 @@
       ref   = "{btnSbPrefs}"
       class = "mnuSbPrefs"
       skin  = "menu-bk">
-      <a:item type="check" caption="Auto-pair Quotes, Brackets, e.t.c." checked="[{require('ext/settings/settings').model}::editors/code/@behaviors]" />
+      <a:item type="check" caption="Auto-pair Quotes, Brackets, etc." checked="[{require('ext/settings/settings').model}::editors/code/@behaviors]" />
       <a:item type="check" caption="Code Folding" checked="[{require('ext/settings/settings').model}::editors/code/@folding]" />
       <a:item type="check" caption="Full Line Selection" checked="[{require('ext/settings/settings').model}::editors/code/@selectstyle]" values="line|text" />
       <a:item type="check" caption="Highlight Active Line" checked="[{require('ext/settings/settings').model}::editors/code/@activeline]" />

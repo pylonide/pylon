@@ -4,6 +4,7 @@
  * @BUGS
  * 
  * Menu alignment is off
+ * Right-clicking on bar shows the file tabs contextmenu
  * 
  * @copyright 2012, Cloud9 IDE, Inc.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
