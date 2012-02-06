@@ -35,7 +35,7 @@ sys.inherits(ShellGitPlugin, Plugin);
                     return callback();
 
                 githelp = {"git": {
-                    "hint": "the stupid content tracker",
+                    "hint": "Fast Version Control System",
                     "commands": {}
                 }};
 
@@ -67,7 +67,7 @@ sys.inherits(ShellGitPlugin, Plugin);
         var _self = this;
         var argv = message.argv || [];
 
-        this.spawnCommand(message.command, argv.slice(1), message.cwd, 
+        this.spawnCommand(message.command, argv.slice(1), message.cwd,
             function(err) { // Error
                 _self.sendResult(0, message.command, {
                     code: 0,
@@ -75,7 +75,7 @@ sys.inherits(ShellGitPlugin, Plugin);
                     err: err,
                     out: null
                 });
-            }, 
+            },
             function(out) { // Data
                 _self.sendResult(0, message.command, {
                     code: 0,
@@ -83,7 +83,7 @@ sys.inherits(ShellGitPlugin, Plugin);
                     err: null,
                     out: out
                 });
-            }, 
+            },
             function(code, err, out) {
                 _self.sendResult(0, message.command, {
                     code: code,
@@ -95,10 +95,10 @@ sys.inherits(ShellGitPlugin, Plugin);
 
         return true;
     };
-    
+
     this.dispose = function(callback) {
         // TODO kill all running processes!
         callback();
     };
-    
+
 }).call(ShellGitPlugin.prototype);
