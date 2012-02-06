@@ -4937,7 +4937,7 @@
             /*text-shadow : rgba(255, 255, 255, .71) 1px 1px 1px;*/
         }
         .menu>div.menu_item.disabled>span{
-            display : none;
+            /*display : none;*/
         }
 
         .menu>div.menu_item>u{
@@ -5099,7 +5099,7 @@
             /*text-shadow : rgba(255, 255, 255, .71) 1px 1px 1px;*/
         }
         .menu-bk>div.menu_item.disabled>span{
-            display : none;
+            /*display : none;*/
         }
 
         .menu-bk>div.menu_item>u{

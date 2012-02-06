@@ -6,68 +6,54 @@
                 position : absolute;
                 color: rgba(0, 0, 0, 0.4);
                 padding: 3px 3px 3px 3px;
-                bottom: 3px;
                 overflow: hidden;
                 border: 1px solid transparent;
-            }
-            
-            .bar-status:hover,
-            .bar-status.active {
+
                 -webkit-border-radius: 6px;
                 -moz-border-radius: 6px;
-                border-radius: 6px; 
+                border-radius: 6px;
+                
+                transition: background 0.3s ease, border 0.3s ease;
+                -webkit-transition: background 0.3s ease, border 0.3s ease;
+                -moz-transition: background 0.3s ease;
+                -o-transition: background 0.3s ease;
+                background: url('images/editor_bar_bg.png') 0px 0px repeat-x;
+            }
 
+            .bar-status:hover {
                 border-top: 1px solid #dcdcdc;
                 border-bottom: 1px solid #dddddd;
                 border-left: 1px solid #dedede;
                 border-right: 1px solid #dedede;
-                
+
                 -webkit-box-shadow: inset 0px 1px 0px 0px #f5f5f5;
                 -moz-box-shadow: inset 0px 1px 0px 0px #f5f5f5;
                 box-shadow: inset 0px 1px 0px 0px #f5f5f5;
-                
-               /* background-image: linear-gradient(bottom, rgb(227,227,227) 0%, rgb(240,240,240) 100%);
-                background-image: -o-linear-gradient(bottom, rgb(227,227,227) 0%, rgb(240,240,240) 100%);
-                background-image: -moz-linear-gradient(bottom, rgb(227,227,227) 0%, rgb(240,240,240) 100%);
-                background-image: -webkit-linear-gradient(bottom, rgb(227,227,227) 0%, rgb(240,240,240) 100%);
-                background-image: -ms-linear-gradient(bottom, rgb(227,227,227) 0%, rgb(240,240,240) 100%);*/
-                
-                
-                background-image: linear-gradient(bottom, rgba(0,0,0,0.06) 0%, rgba(255,255,255,0.06) 100%);
-                background-image: -o-linear-gradient(bottom, rgba(0,0,0,0.06) 0%, rgba(255,255,255,0.06) 100%);
-                background-image: -moz-linear-gradient(bottom, rgba(0,0,0,0.06) 0%, rgba(255,255,255,0.06) 100%);
-                background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.06) 0%, rgba(255,255,255,0.06) 100%);
-                background-image: -ms-linear-gradient(bottom, rgba(0,0,0,0.06) 0%, rgba(255,255,255,0.06) 100%);
+
+                background: url('images/editor_bar_bg.png') 0px -30px repeat-x;
             }
-            
-            .ace_dark.bar-status:hover,
-            .ace_dark.bar-status.active {
+
+            .ace_dark.bar-status:hover {
                 border-top: 1px solid #001736;
                 border-bottom: 1px solid #021834;
                 border-left: 1px solid #001634;
                 border-right: 1px solid #001634;
-                
+
                 -webkit-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
                 -moz-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
-                box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);                
-                
-                background-image: linear-gradient(bottom, rgba(0,0,0,0.06) 0%, rgba(255,255,255,0.06) 100%);
-                background-image: -o-linear-gradient(bottom, rgba(0,0,0,0.06) 0%, rgba(255,255,255,0.06) 100%);
-                background-image: -moz-linear-gradient(bottom, rgba(0,0,0,0.06) 0%, rgba(255,255,255,0.06) 100%);
-                background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.06) 0%, rgba(255,255,255,0.06) 100%);
-                background-image: -ms-linear-gradient(bottom, rgba(0,0,0,0.06) 0%, rgba(255,255,255,0.06) 100%);
+                box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             }
-            
+
             .bar-status .label {
                 color: rgba(0, 0, 0, 0.4);
                 padding-left: 1px;
             }
-            
+
             .ace_dark.bar-status .label {
                 color: rgba(255, 255, 255, 0.4);
             }
         ]]></a:style>
-    
+
         <a:presentation>
             <a:main container=".">
                 <div class="bar-status">
@@ -79,7 +65,7 @@
         <a:style><![CDATA[
             .btn-expand-statusbar {
                 height              : 16px;
-                width               : 6px;
+                width               : 10px;
                 overflow            : hidden;
                 cursor              : pointer;
                 position            : relative;
@@ -87,43 +73,43 @@
                 -moz-user-select    : none;
                 -khtml-user-select  : none;
                 user-select         : none;
-                background-position : 0 10px;
+                background-position : 2px 10px;
                 background-repeat   : no-repeat;
             }
-            
+
             .expanded .btn-expand-statusbar {
-                background-position : -15px 10px;
+                background-position : -13px 10px;
             }
-            
+
             .btn-expand-statusbarOver {
-                background-position : 0 -16px;
+                background-position : 2px -16px;
             }
-            
+
             .expanded .btn-expand-statusbarOver {
-                background-position : -15px -16px;
+                background-position : -13px -16px;
             }
-            
+
             .btn-expand-statusbarDown {
             }
-            
+
             .ace_dark .btn-expand-statusbar {
                 background-position : -30px 10px;
             }
-            
+
             .ace_dark.expanded .btn-expand-statusbar {
                 background-position : -45px -15px;
             }
-            
+
             .ace_dark .btn-expand-statusbarOver {
                 background-position : -30px -17px;
             }
-            
+
             .ace_dark.expanded .btn-expand-statusbarOver {
                 background-position : -45px 9px;
-                
+
             }
         ]]></a:style>
-    
+
         <a:presentation>
             <a:main
               caption      = "text()"
@@ -151,24 +137,24 @@
             .btn-statusbar-iconOver {
                 background-position : 0 -23px;
             }
-            
+
             .btn-statusbar-iconDown {
                 background-position : 0 -46px;
             }
-            
+
             .ace_dark .btn-statusbar-icon {
                 background-position : -22px 0;
             }
-            
+
             .ace_dark .btn-statusbar-iconOver {
                 background-position : -22px -23px;
             }
-            
+
             .ace_dark .btn-statusbar-iconDown {
                 background-position : -22px -46px;
             }
         ]]></a:style>
-    
+
         <a:presentation>
             <a:main
               caption      = "text()"
@@ -186,28 +172,28 @@
                 position : absolute;
                 overflow : visible;
                 display  : none;
-                
+
                 background-image: linear-gradient(bottom, rgba(65,65,65,0.14) 0%, rgba(255,255,255,0.14) 100%);
                 background-image: -o-linear-gradient(bottom, rgba(65,65,65,0.14) 0%, rgba(255,255,255,0.14) 100%);
                 background-image: -moz-linear-gradient(bottom, rgba(65,65,65,0.14) 0%, rgba(255,255,255,0.14) 100%);
                 background-image: -webkit-linear-gradient(bottom, rgba(65,65,65,0.14) 0%, rgba(255,255,255,0.14) 100%);
                 background-image: -ms-linear-gradient(bottom, rgba(65,65,65,0.14) 0%, rgba(255,255,255,0.14) 100%);
-                
+
                 position : absolute;
                 -moz-border-radius    : 9px;
                 -webkit-border-radius : 9px;
                 border-radius         : 9px;
                 -webkit-box-shadow: inset 0px 1px 2px 1px rgba(0, 0, 0, 0.25);
                 -moz-box-shadow: inset 0px 1px 2px 1px rgba(0, 0, 0, 0.25);
-                box-shadow: inset 0px 1px 2px 1px rgba(0, 0, 0, 0.25); 
+                box-shadow: inset 0px 1px 2px 1px rgba(0, 0, 0, 0.25);
                 border: 1px solid #e8e8e8;
-                
+
                 margin-top: -17px;
                 margin-left: -10px;
-                
+
                 padding: 3px 0;
             }
-            
+
             .statusbar-mnu .arrow {
                 position : absolute;
                 width: 19px;
@@ -217,7 +203,7 @@
                 z-index: 10001;
                 background: url(images/arrow-sb.png) no-repeat 0 0;
             }
-            
+
             .statusbar-mnu .menu-item {
                 padding: 5px 15px;
                 cursor: default;

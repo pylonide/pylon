@@ -42,9 +42,10 @@ module.exports = ext.register("ext/themes/themes", {
     init : function(){
         var _self = this;
         var menuItem = new apf.item({
-                caption : "Themes",
-                submenu : "mnuThemes"
-            });
+            caption : "Themes",
+            submenu : "mnuThemes"
+        });
+
         this.nodes.push(
             mnuView.appendChild(menuItem),
             apf.document.body.appendChild(new apf.menu({
@@ -54,8 +55,13 @@ module.exports = ext.register("ext/themes/themes", {
                 }
             }))
         );
-        
+
         require("ext/statusbar/statusbar").addPrefsItem(menuItem.cloneNode(true));
+
+        ide.addEventListener("init.ext/code/code", function() {
+            if (ceEditor && ceEditor.$editor)
+                mnuThemes.select(null, ceEditor.$editor.getTheme());
+        });
     },
 
     enable : function(){
