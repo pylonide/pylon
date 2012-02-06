@@ -1,0 +1,54 @@
+.barConsoleHints {
+    z-index: 10000;
+    padding: 4px 4px 0 4px;
+    position: absolute;
+    display: none;
+
+    bottom: 41px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border: 2px solid #656565;
+    border-width: 2px 2px 0 2px;
+
+    background-color: #000000;
+    background: -webkit-gradient(linear,left bottom,left top,rgb(46,48,52),rgb(31,31,31));
+    background: -moz-linear-gradient(center bottom,rgb(46,48,52),rgb(31,31,31));
+}
+
+.barConsoleHints a {
+    position: relative;
+    text-decoration: none;
+    font-weight: normal;
+    color: #eee;
+    padding: 3px 5px;
+    margin: 0 0 2px 0;
+    display: block;
+}
+
+.barConsoleHints a.selected {
+    padding: 2px 4px;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    background: -webkit-gradient(linear,left bottom,left top,rgb(55,56,58),rgb(41,42,43));
+    background: -moz-linear-gradient(center bottom,rgb(55,56,58),rgb(41,42,43));
+    color: #333;
+    border: 1px solid #505051;
+    border-bottom: 1px solid #1d1e1f;
+}
+
+.barConsoleHints a span {
+    color: #909090;
+    font-style: italic;
+    margin-left: 4px;
+    font-size: 11px;
+}
+
+.barConsoleHints a span.hints_hotkey {
+    color: #666;
+    font-weight: bold;
+    float: right;
+    margin-left : 20px;
+    margin-top : 1px;
+}
