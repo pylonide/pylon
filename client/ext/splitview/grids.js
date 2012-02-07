@@ -284,12 +284,14 @@ function createGridNodes(name) {
 
 function insertEditorAt(parent, editor, insertPoint) {
     //console.log("insertEditorAt",parent, editor, insertPoint);
+    var nextPoint;
     var inserted = false;
     //var count = 0;
     while (!inserted) {
         //console.log("round", ++count, "tags:",parent.tagName, insertPoint[0]);
-        if (parent.tagName.indexOf(insertPoint.shift()) == -1) {
-            console.log(parent.tagName, insertPoint);
+        nextPoint = insertPoint.shift();
+        if (parent.tagName.indexOf(nextPoint) == -1) {
+            console.log(parent.tagName, nextPoint, insertPoint);
             throw new Error("No valid insertion point found for editor");
         }
         
