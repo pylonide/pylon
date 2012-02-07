@@ -2537,7 +2537,7 @@
             color         : #f1f1f1;
             cursor:default;
             
-            padding     : 1px 3px 2px 3px;
+            padding     : 1px 3px 2px 0px;
             position    : relative;
             top         : -2px;
             overflow    : visible;
@@ -5015,8 +5015,8 @@
             margin-left: 49px;
         }
         
-        .menu-bk.upward.mnuSbPrefs {
-            margin-left: 39px;
+        .menu-bk.upward.mnuSbPrefs, .menu-bk.downward.mnuSbPrefs {
+            margin-left: 25px;
         }
         
         .menu-bk.downward {
@@ -5040,8 +5040,11 @@
             width: 20px;
             background-position: -22px -45px;
         }
-        
-        
+
+        .menu-bk.mnuSbPrefs .arrow {
+            right: 3%;
+        }
+
         .menu-bk>div.menu_item{
             padding: 3px 16px 5px 23px;
             white-space: nowrap;

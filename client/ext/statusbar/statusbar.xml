@@ -6,11 +6,9 @@
       bottom  = "5"
       right   = "17">
         <a:hbox padding="5" height="23">
-            <a:label id="lblInsertActive" caption="INS" visible="false" margin="3 0 0 0" />
-            <a:divider id="divInsertActive" visible="false" class="divider-status-bar" margin="0 0 1 0" />
-            <a:label id="lblSelectionLength" visible="false" margin="3 0 0 0" />
-            <a:divider id="divSelLength" visible="false" class="divider-status-bar" margin="0 0 1 0" />
-            <a:label caption="{ceEditor.line}:{ceEditor.col}" margin="3 0 0 0"/>
+            <a:label id="lblInsertActive" caption="INS" visible="false" margin="3 3 0 3" />
+            <a:label id="lblSelectionLength" visible="false" margin="3 3 0 3" />
+            <a:label caption="{ceEditor.line}:{ceEditor.col}" margin="3 3 0 3"/>
             <a:divider class="divider-status-bar" margin="0 0 1 0" />
             <a:button 
               skin    = "btn-expand-statusbar" 
@@ -43,16 +41,16 @@
       ref   = "{btnSbPrefs}"
       class = "mnuSbPrefs"
       skin  = "menu-bk">
-      <a:item type="check" caption="Auto-pair Quotes, Brackets, etc." checked="[{require('ext/settings/settings').model}::editors/code/@behaviors]" />
       <a:item type="check" caption="Code Folding" checked="[{require('ext/settings/settings').model}::editors/code/@folding]" />
       <a:item type="check" caption="Full Line Selection" checked="[{require('ext/settings/settings').model}::editors/code/@selectstyle]" values="line|text" />
       <a:item type="check" caption="Highlight Active Line" checked="[{require('ext/settings/settings').model}::editors/code/@activeline]" />
       <a:item type="check" caption="Show Gutter" checked="[{require('ext/settings/settings').model}::editors/code/@gutter]" />
       <a:item type="check" caption="Highlight Selected Word" checked="[{require('ext/settings/settings').model}::editors/code/@highlightselectedword]" />
+      <a:item type="check" caption="Auto-pair Quotes, Brackets, etc." checked="[{require('ext/settings/settings').model}::editors/code/@behaviors]" />
       <a:item type="check" caption="Auto-hide Horizontal Scrollbar" checked="[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]" />
-      
+      <a:divider />
       <a:hbox edge="0 5 2 23" align="center">
-          <a:label flex="1">Font Size</a:label>
+          <a:label flex="1" style="padding: 2px 2px 2px 0">Font Size</a:label>
           <a:spinner value="[{require('ext/settings/settings').model}::editors/code/@fontsize]" realtime="true" min="1" max="72" width="50" />
       </a:hbox>
       <a:hbox edge="0 5 2 0" align="center">
@@ -64,7 +62,7 @@
           <a:spinner value="[{require('ext/settings/settings').model}::editors/code/@tabsize]" realtime="true" min="1" max="64" width="50" />
       </a:hbox>
       <a:hbox edge="0 5 2 23" align="center">
-          <a:label flex="1">Mouse Scroll Speed</a:label>
+          <a:label flex="1" style="padding: 2px 2px 2px 0">Mouse Scroll Speed</a:label>
           <a:spinner value="[{require('ext/settings/settings').model}::editors/code/@scrollspeed]" min="1" max="8" width="50" />
       </a:hbox>
     </a:menu>

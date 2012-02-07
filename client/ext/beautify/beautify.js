@@ -86,6 +86,26 @@ module.exports = ext.register("ext/beautify/beautify", {
     },
 
     init: function () {
+        var _self = this;
+        tabEditors.addEventListener("afterswitch", function() {
+            if (_self.$selectionEvent) {
+                _self.editorSession.selection.removeEventListener("changeSelection",
+                    _self.$selectionEvent);
+            }
+
+            setTimeout(function() {
+                _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
+                _self.editorSession.selection.addEventListener("changeSelection",
+                    _self.$selectionEvent = function(e) {
+                        var range = ceEditor.$editor.getSelectionRange();
+                        if (range.start.row == range.end.row && range.start.column == range.end.column)
+                            beautify_selection.disable();
+                        else
+                            beautify_selection.enable();
+                    }
+                );
+            }, 200);
+        });
     },
 
     hook: function () {
@@ -95,7 +115,6 @@ module.exports = ext.register("ext/beautify/beautify", {
             disabled : "true",
             caption: "Beautify Selection",
             onclick: function () {
-                ext.initExtension(_self);
                 _self.beautify();
             }
         });
@@ -129,26 +148,8 @@ module.exports = ext.register("ext/beautify/beautify", {
                 model.setQueryValue("editors/code/@softtabs", "true");
             }
         });
-
-        tabEditors.addEventListener("afterswitch", function() {
-            if (_self.$selectionEvent) {
-                _self.editorSession.selection.removeEventListener("changeSelection",
-                    _self.$selectionEvent);
-            }
-
-            setTimeout(function() {
-                _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
-                _self.editorSession.selection.addEventListener("changeSelection",
-                    _self.$selectionEvent = function(e) {
-                        var range = ceEditor.$editor.getSelectionRange();
-                        if (range.start.row == range.end.row && range.start.column == range.end.column)
-                            beautify_selection.disable();
-                        else
-                            beautify_selection.enable();
-                    }
-                );
-            }, 200);
-        });
+        
+        ext.initExtension(this);
     },
 
     enable: function () {

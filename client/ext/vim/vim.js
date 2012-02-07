@@ -100,7 +100,7 @@ var enableVim = function enableVim() {
         }
         VIM_ENABLED = true;
 
-        ide.dispatchEvent("track_action", {type: "vim", action: "enable"});
+        ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: util.currentMode});
     }
 };
 

@@ -47,6 +47,7 @@
             .bar-status .label {
                 color: rgba(0, 0, 0, 0.4);
                 padding-left: 1px;
+                overflow: visible;
             }
 
             .ace_dark.bar-status .label {

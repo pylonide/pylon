@@ -23,6 +23,7 @@ var markup = require("text!ext/code/code.xml");
 var settings = require("ext/settings/settings");
 var markupSettings = require("text!ext/code/settings.xml");
 var editors = require("ext/editors/editors");
+var statusbar = require("ext/statusbar/statusbar");
 
 apf.actiontracker.actions.aceupdate = function(undoObj, undo){
     var q = undoObj.args;
@@ -447,9 +448,10 @@ module.exports = ext.register("ext/code/code", {
             }
         };
     
-        require("ext/statusbar/statusbar").addPrefsItem(menuSyntaxHighlight.cloneNode(true));
-        require("ext/statusbar/statusbar").addPrefsItem(menuShowInvisibles.cloneNode(true));
-        require("ext/statusbar/statusbar").addPrefsItem(menuWrapLines.cloneNode(true));
+        statusbar.addPrefsItem(menuSyntaxHighlight.cloneNode(true), 1);
+        statusbar.addPrefsItem(new apf.divider(), 2);
+        statusbar.addPrefsItem(menuShowInvisibles.cloneNode(true), 4);
+        statusbar.addPrefsItem(menuWrapLines.cloneNode(true), 5);
     
         ide.addEventListener("keybindingschange", function(e) {
             if (typeof ceEditor == "undefined")

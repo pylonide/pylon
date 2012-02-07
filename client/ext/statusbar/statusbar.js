@@ -3,8 +3,7 @@
  * 
  * @BUGS
  * 
- * Menu alignment is off
- * Right-clicking on bar shows the file tabs contextmenu
+ * Menu positioning calcs are broken; see especially in Zen Mode
  * 
  * @copyright 2012, Cloud9 IDE, Inc.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -34,6 +33,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     nodes : [],
     toolItems: [],
     prefsItems: [],
+    horScrollAutoHide : "false",
     hook : function(){
         var _self = this;
         ide.addEventListener("openfile", function() {
@@ -50,6 +50,8 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 else
                     _self.toggleOnInit = true;
             }
+
+            _self.horScrollAutoHide = e.model.queryNode("//editors/code").getAttribute("autohidehorscrollbar");
         });
 
         ide.addEventListener("savesettings", function(e){
@@ -62,15 +64,15 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             var theme = e.theme || "ace/theme/textmate";
             _self.checkTheme(theme);
         });
-        
+
         ide.addEventListener("vim.changeMode", function(e) {
-            if (e.mode === "insert") {
+            if (!window["lblInsertActive"])
+                return;
+
+            if (e.mode === "insert")
                 lblInsertActive.show();
-                divInsertActive.show();
-            } else {
+            else
                 lblInsertActive.hide();
-                divInsertActive.hide();
-            }
         });
 
         tabEditors.addEventListener("afterswitch", function() {
@@ -84,25 +86,41 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                     if (range.start.row != range.end.row || range.start.column != range.end.column) {
                         var doc = ceEditor.getDocument();
                         var value = doc.getTextRange(range);
-                        lblSelectionLength.setAttribute("caption", "(" + value.length + " B)");
+                        lblSelectionLength.setAttribute("caption", value.length + " Bytes");
                         lblSelectionLength.show();
-                        divSelLength.show();
                     } else {
                         lblSelectionLength.setAttribute("caption", "");
                         lblSelectionLength.hide();
-                        divSelLength.hide();
                     }
                 });
             }, 200);
         });
+
+        tabEditors.addEventListener("resize", function() {
+            if (ceEditor && ceEditor.$editor) {
+                var cw = ceEditor.$editor.renderer.scroller.clientWidth;
+                var sw = ceEditor.$editor.renderer.scroller.scrollWidth;
+                var bottom = 5;
+                if (cw < sw || _self.horScrollAutoHide === "false")
+                    bottom = _self.sbWidth + 5;
+
+                if (_self.$barMoveTimer)
+                    clearTimeout(_self.$barMoveTimer);
+                _self.$barMoveTimer = setTimeout(function() {
+                    barIdeStatus.setAttribute("bottom", bottom);
+                }, 50);
+            }
+        });
     },
 
     init : function(){
+        var _self = this;
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor) {
             editor.ceEditor.parentNode.appendChild(barIdeStatus);
-            var sbWidth = ceEditor.$editor.renderer.scrollBar.width;
-            barIdeStatus.setAttribute("right", sbWidth + 5);
+            this.sbWidth = ceEditor.$editor.renderer.scrollBar.width;
+            barIdeStatus.setAttribute("right", this.sbWidth + 5);
+            barIdeStatus.setAttribute("bottom", this.sbWidth + 5);
         }
 
         hboxStatusBarSettings.$ext.style.overflow = "hidden";
@@ -112,7 +130,11 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         }
 
         for(var i = 0, l = this.prefsItems.length; i < l; i++) {
-            mnuStatusBarPrefs.appendChild(this.prefsItems.shift());
+            var pItem = this.prefsItems[i];
+            if (typeof pItem.pos === "number")
+                mnuStatusBarPrefs.insertBefore(pItem.item, mnuStatusBarPrefs.childNodes[pItem.pos]);
+            else
+                mnuStatusBarPrefs.appendChild(pItem.item);
         }
 
         var editor = ceEditor.$editor;
@@ -121,6 +143,22 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 
         if (this.toggleOnInit)
             this.toggleStatusBar();
+
+        ceEditor.addEventListener("prop.autohidehorscrollbar", function(e) {
+            if (e.changed) {
+                _self.horScrollAutoHide = e.value ? "true" : "false";
+                apf.layout.forceResize(tabEditors.parentNode.$ext);
+            }
+        });
+
+        ide.addEventListener("track_action", function(e) {
+            if(e.type === "vim" && window["lblInsertActive"]) {
+                if(e.action === "disable")
+                    lblInsertActive.hide();
+                else if (e.mode === "insert")
+                    lblInsertActive.show();
+            }
+        });
 
         this.inited = true;
     },
@@ -132,11 +170,15 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             mnuStatusBarTools.appendChild(menuItem);
     },
 
-    addPrefsItem: function(menuItem){
+    addPrefsItem: function(menuItem, position){
         if(!self["mnuStatusBarPrefs"])
-            this.prefsItems.push(menuItem);
-        else
-            mnuStatusBarPrefs.appendChild(menuItem);
+            this.prefsItems.push({ item: menuItem, pos : position });
+        else {
+            if (typeof position === "number")
+                mnuStatusBarPrefs.insertBefore(menuItem, mnuStatusBarPrefs.childNodes[position]);
+            else
+                mnuStatusBarPrefs.appendChild(menuItem);
+        }
     },
 
     toggleStatusBar: function(){
