@@ -7038,12 +7038,12 @@
             vertical-align: middle;
             width: 6px;
             
-            background: -moz-linear-gradient(left,  #d6d5d5 0%, #e4e4e4 100%); /* FF3.6+ */
-            background: -webkit-gradient(linear, left top, right top, color-stop(0%,#d6d5d5), color-stop(100%,#e4e4e4)); /* Chrome,Safari4+ */
-            background: -webkit-linear-gradient(left,  #d6d5d5 0%,#e4e4e4 100%); /* Chrome10+,Safari5.1+ */
-            background: -o-linear-gradient(left,  #d6d5d5 0%,#e4e4e4 100%); /* Opera 11.10+ */
-            background: -ms-linear-gradient(left,  #d6d5d5 0%,#e4e4e4 100%); /* IE10+ */
-            background: linear-gradient(left,  #d6d5d5 0%,#e4e4e4 100%); /* W3C */
+            background: -moz-linear-gradient(left,  #dbdbdb 0%, #e8e8e8 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, right top, color-stop(0%,#d6d5d5), color-stop(100%,#e8e8e8)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(left,  #dbdbdb 0%,#e8e8e8 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(left,  #dbdbdb 0%,#e8e8e8 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(left,  #dbdbdb 0%,#e8e8e8 100%); /* IE10+ */
+            background: linear-gradient(left,  #dbdbdb 0%,#e8e8e8 100%); /* W3C */
         }
 
         .darksplitter.vertical span {
@@ -7060,12 +7060,12 @@
             height: 6px;
             
             border-top: 1px solid #c7c7c7;
-            background: -moz-linear-gradient(top, #d6d5d5 0%, #e4e4e4 100%); /* FF3.6+ */
-            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d6d5d5), color-stop(100%,#e4e4e4)); /* Chrome,Safari4+ */
-            background: -webkit-linear-gradient(top, #d6d5d5 0%,#e4e4e4 100%); /* Chrome10+,Safari5.1+ */
-            background: -o-linear-gradient(top, #d6d5d5 0%,#e4e4e4 100%); /* Opera 11.10+ */
-            background: -ms-linear-gradient(top, #d6d5d5 0%,#e4e4e4 100%); /* IE10+ */
-            background: linear-gradient(top, #d6d5d5 0%,#e4e4e4 100%); /* W3C */
+            background: -moz-linear-gradient(top, #d6d5d5 0%, #e8e8e8 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d6d5d5), color-stop(100%,#e8e8e8)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top, #d6d5d5 0%,#e8e8e8 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top, #d6d5d5 0%,#e8e8e8 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top, #d6d5d5 0%,#e8e8e8 100%); /* IE10+ */
+            background: linear-gradient(top, #d6d5d5 0%,#e8e8e8 100%); /* W3C */
         }
 
         .darksplitter.horizontal span {

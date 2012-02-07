@@ -287,6 +287,8 @@ module.exports = ext.register("ext/code/code", {
 
                 //??? destroy doc.acesession
             });
+            
+            doc.dispatchEvent("init");
         }
 
         this.amlEditor.setProperty("value", doc.acesession);

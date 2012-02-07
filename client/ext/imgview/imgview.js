@@ -43,6 +43,10 @@ module.exports = ext.register("ext/imgview/imgview", {
     setDocument : function(doc, actiontracker){
         doc.session = doc.getNode().getAttribute("path");
         imgEditor.setProperty("value", doc.session);
+        if (!doc.isInited) {
+            doc.isInited = true;
+            doc.dispatchEvent("init");
+        }
     },
 
     hook : function() {},

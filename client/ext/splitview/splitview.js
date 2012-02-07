@@ -170,12 +170,68 @@ module.exports = ext.register("ext/splitview/splitview", {
         });
         
         ide.addEventListener("activepagemodel", function(e) {
-            var page = tabEditors.getPage();
+            var page = tabs.getPage();
             var split = Splits.get(page)[0];
             if (!split || !Splits.isActive(split))
                 return;
             
             e.returnValue = split.pairs[split.activePage || 0].page.$model;
+        });
+        
+        ide.addEventListener("tab.create", function(e) {
+            var page = e.page;
+            var xmlNode = e.doc.getNode();
+            if (!apf.isTrue(xmlNode.getAttribute("clone")))
+                return;
+            
+            var id = page.id;
+            var pages = tabs.getPages();
+            var origPage;
+            // loop to find 2nd tab.
+            for (var i = 0, l = pages.length; i < l; ++i) {
+                if (pages[i] !== page && pages[i].id == id) {
+                    origPage = pages[i];
+                    break;
+                }
+            }
+            // if 2nd page found, join em!
+            if (!origPage)
+                return;
+            
+            page.$doc = origPage.$doc;
+            page.setAttribute("actiontracker", origPage.$at);
+            page.$at = origPage.$at;
+
+            if (!page.$doc.acedoc)
+                page.$doc.addEventListener("init", cont);
+            else
+                cont();
+            
+            function cont() {
+                var editor = Splits.getCloneEditor(page);
+                
+                page.acesession = new EditSession(page.$doc.acedoc);
+                page.acesession.setUndoManager(page.$at);
+                
+                page.$doc.addEventListener("prop.value", function(e) {
+                    page.acesession.setValue(e.value || "");
+                    editor.$editor.moveCursorTo(0, 0);
+                });
+                
+                editor.setProperty("value", page.acesession);
+                
+                Splits.mutate(null, page, "clone");
+                
+                page.addEventListener("DOMNodeRemovedFromDocument", function(e) {
+                    if (!tabs.parentNode || !page.parentNode)
+                        return;
+                    tabs.remove(page, null, true);
+                });
+                
+                Splits.update();
+                
+                _self.save();
+            }
         });
         
         Splits.init(this);
@@ -414,57 +470,9 @@ module.exports = ext.register("ext/splitview/splitview", {
         
         if (split || !doc || !Splits.getEditorSession(page))
             return;
-        
-        var _self = this;
-        var fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", page.$model.data.getAttribute("path") 
-          + "_clone", page.$editor.path, page.nextSibling || null);
 
-        fake.contentType = page.contentType;
-        fake.$at     = page.$at;
-        fake.$doc    = doc;
-        //doc.$page    = fake;
-        fake.$editor = page.$editor;
-        fake.$model  = page.$model;
-        
-        Splits.mutate(null, fake, "clone");
-          
-        fake.setAttribute("model", fake.$model);
-        fake.setAttribute("tooltip", "[@path]");
-        fake.setAttribute("class",
-            "{parseInt([@saving], 10) || parseInt([@lookup], 10) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
-            ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"
-        );
-        
-        page.addEventListener("prop.caption", function(e) {
-            fake.setProperty("caption", e.value);
-        });
-        fake.setProperty("caption", page.caption);
-        
-        Editors.initEditorEvents(fake, page.$model);
-        
-        var editor = Splits.getCloneEditor(page);
-        
-        fake.acesession = new EditSession(doc.acedoc);
-        fake.acesession.setUndoManager(fake.$at);
-        
-        doc.addEventListener("prop.value", function(e) {
-            fake.acesession.setValue(e.value || "");
-            editor.$editor.moveCursorTo(0, 0);
-        });
-
-        editor.setProperty("value", fake.acesession);
-        
-        page.addEventListener("DOMNodeRemovedFromDocument", function(e) {
-            if (typeof tabEditors == "undefined" || !fake || !fake.parentNode)
-                return;
-            tabEditors.remove(fake, null, true);
-        });
-        
-        Splits.update();
-        
-        this.save();
-        
-        return fake;
+        apf.xmldb.setAttribute(doc.getNode(), "clone", true);
+        Editors.openEditor(doc, false, false, true);
     },
     
     endCloneView: function(page) {
@@ -520,6 +528,7 @@ module.exports = ext.register("ext/splitview/splitview", {
     },
     
     restore: function(settings) {
+        return;
         // no tabs open... don't bother ;)
         var tabs = tabEditors;
         if (tabs.getPages().length <= 1)
@@ -538,25 +547,13 @@ module.exports = ext.register("ext/splitview/splitview", {
             pageSet = false;
             gridLayout = nodes[i].getAttribute("layout") || null;
             for (j = 0, l2 = ids.length; j < l2; ++j) {
-                if (ids[j].indexOf("_clone") > -1) {
-                    page = tabs.getPage(ids[j].replace("_clone", ""));
-                    if (page) {
-                        if (!pageSet) {
-                            tabs.set(page);
-                            pageSet = true;
-                        }
-                        this.startCloneView(page);
+                page = tabs.getPage(ids[j]);
+                if (page) {
+                    if (!pageSet) {
+                        tabs.set(page);
+                        pageSet = true;
                     }
-                }
-                else {
-                    page = tabs.getPage(ids[j]);
-                    if (page) {
-                        if (!pageSet) {
-                            tabs.set(page);
-                            pageSet = true;
-                        }
-                        Splits.mutate(null, page);
-                    }
+                    Splits.mutate(null, page);
                 }
             }
             if (gridLayout)
