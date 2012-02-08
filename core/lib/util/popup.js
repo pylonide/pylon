@@ -108,6 +108,7 @@ apf.popup = {
         var dp,
             popup  = o.content,
             moveUp = false,
+            moveLeft = false,
             fixed  = false;
 
         if (options.setZindex)
@@ -175,11 +176,14 @@ apf.popup = {
                 
                 if (moveLeft) {
                     var value;
-                    if (options.ref)
-                        value = (pos[0] - (options.width || o.width || o.content.offsetWidth));
-                    else
+                    if (options.ref) {
+                        value = (pos[0] - (options.width || o.width || o.content.offsetWidth))
+                                + (options.ref.offsetWidth);
+                    }
+                    else {
                         value = (edgeX - (options.width || o.width || o.content.offsetWidth) 
                                 - (parentMenu ? (parentMenu.width || parentMenu.content.offsetWidth) : 0));
+                    }
                     popup.style.left = value < 0 ? x : value + "px";
                 }
                 else {
@@ -202,6 +206,7 @@ apf.popup = {
         // set a className that specifies the direction, to help skins with
         // specific styling options.
         apf.setStyleClass(popup, moveUp ? "upward" : "downward", [moveUp ? "downward" : "upward"]);
+        apf.setStyleClass(popup, moveLeft ? "moveleft" : "moveright", [moveLeft ? "moveright" : "moveleft"]);
         // #endif
 
         if (options.animate) {
