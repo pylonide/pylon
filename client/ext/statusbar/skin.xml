@@ -5,18 +5,17 @@
             .bar-status {
                 position : absolute;
                 color: rgba(0, 0, 0, 0.4);
-                padding: 3px 3px 3px 3px;
+                padding: 3px 2px;
                 overflow: hidden;
                 border: 1px solid transparent;
 
                 -webkit-border-radius: 6px;
                 -moz-border-radius: 6px;
                 border-radius: 6px;
-                
-                transition: background 0.3s ease, border 0.3s ease;
-                -webkit-transition: background 0.3s ease, border 0.3s ease;
-                -moz-transition: background 0.3s ease, border 0.3s ease;
-                -o-transition: background 0.3s ease, border 0.3s ease;
+
+                -webkit-transition: background 0.1s linear, border 0.1s linear;
+                -moz-transition: background 0.1s linear, border 0.1s linear;
+                -o-transition: background 0.1s linear, border 0.1s linear;
                 background: url('images/editor_bar_bg.png') 0px 0px repeat-x;
             }
 
@@ -30,7 +29,7 @@
                 -moz-box-shadow: inset 0px 1px 0px 0px #f5f5f5;
                 box-shadow: inset 0px 1px 0px 0px #f5f5f5;
 
-                background: url('images/editor_bar_bg.png') 0px -30px repeat-x;
+                background-position: 0px -30px;
             }
 
             .ace_dark.bar-status:hover {
@@ -65,7 +64,7 @@
     <a:button name="btn-expand-statusbar">
         <a:style><![CDATA[
             .btn-expand-statusbar {
-                height              : 16px;
+                height              : 8px;
                 width               : 10px;
                 overflow            : hidden;
                 cursor              : pointer;
@@ -74,35 +73,39 @@
                 -moz-user-select    : none;
                 -khtml-user-select  : none;
                 user-select         : none;
-                background-position : 2px 10px;
+                background-position : 2px 8px;
                 background-repeat   : no-repeat;
-            }
-
-            .expanded .btn-expand-statusbar {
-                background-position : -13px 10px;
+                -webkit-border-radius: 3px;
+                -moz-border-radius: 3px;
+                border-radius: 3px;
             }
 
             .btn-expand-statusbarOver {
-                background-position : 2px -16px;
+                background-position : 1px -19px;
+                border: 1px solid rgba(160, 160, 160, 0.4);
+            }
+
+            .expanded .btn-expand-statusbar {
+                background-position : -11px 7px;
             }
 
             .expanded .btn-expand-statusbarOver {
-                background-position : -13px -16px;
+                background-position : -12px -20px;
             }
 
             .btn-expand-statusbarDown {
             }
 
             .ace_dark .btn-expand-statusbar {
-                background-position : -30px 10px;
+                background-position : -30px 9px;
             }
 
             .ace_dark.expanded .btn-expand-statusbar {
-                background-position : -45px -15px;
+                background-position : -45px -16px;
             }
 
             .ace_dark .btn-expand-statusbarOver {
-                background-position : -30px -17px;
+                background-position : -30px -18px;
             }
 
             .ace_dark.expanded .btn-expand-statusbarOver {

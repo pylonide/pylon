@@ -3,24 +3,26 @@
       skin    = "bar-status" 
       skinset = "statusbar"
       height  = "30"
-      bottom  = "5"
-      right   = "17">
-        <a:hbox padding="5" height="23">
+      bottom  = "3"
+      right   = "3">
+        <a:hbox height="23">
             <a:label id="lblInsertActive" caption="INS" visible="false" margin="3 3 0 3" />
             <a:label id="lblSelectionLength" visible="false" margin="3 3 0 3" />
-            <a:label caption="{ceEditor.line}:{ceEditor.col}" margin="3 3 0 3"/>
+            <a:label caption="{ceEditor.line}:{ceEditor.col}" minwidth="42" style="text-align:center" margin="3 6 0 3"/>
             <a:divider class="divider-status-bar" margin="0 0 1 0" />
             <a:button 
               skin    = "btn-expand-statusbar" 
               skinset = "statusbar"
               icon    = "statusbar-arrow.png" 
               onclick = "require('ext/statusbar/statusbar').toggleStatusBar()"
+              margin  = "2 4 2 6"
             />
-            <a:hbox id="hboxStatusBarSettings" padding="5" margin="0 2 0 0" width="0" visible="false">
+            <a:hbox id="hboxStatusBarSettings" visible="false">
                 <a:button id="btnSbTools"
                   skin    = "btn-statusbar-icon" 
                   skinset = "statusbar"
                   height  = "23"
+                  margin  = "0 3 0 3"
                   icon    = "tool-ico.png"
                   submenu = "mnuStatusBarTools"/>
                 <a:button id="btnSbPrefs"

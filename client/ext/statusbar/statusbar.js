@@ -34,6 +34,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     toolItems: [],
     prefsItems: [],
     horScrollAutoHide : "false",
+    edgeDistance : 3,
     hook : function(){
         var _self = this;
         ide.addEventListener("openfile", function() {
@@ -86,7 +87,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                     if (range.start.row != range.end.row || range.start.column != range.end.column) {
                         var doc = ceEditor.getDocument();
                         var value = doc.getTextRange(range);
-                        lblSelectionLength.setAttribute("caption", value.length + " Bytes");
+                        lblSelectionLength.setAttribute("caption", "(" + value.length + " Bytes)");
                         lblSelectionLength.show();
                     } else {
                         lblSelectionLength.setAttribute("caption", "");
@@ -100,9 +101,9 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             if (ceEditor && ceEditor.$editor) {
                 var cw = ceEditor.$editor.renderer.scroller.clientWidth;
                 var sw = ceEditor.$editor.renderer.scroller.scrollWidth;
-                var bottom = 5;
+                var bottom = _self.edgeDistance;
                 if (cw < sw || _self.horScrollAutoHide === "false")
-                    bottom = _self.sbWidth + 5;
+                    bottom += _self.sbWidth;
 
                 if (_self.$barMoveTimer)
                     clearTimeout(_self.$barMoveTimer);
@@ -120,8 +121,8 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         if (editor && editor.ceEditor) {
             editor.ceEditor.parentNode.appendChild(barIdeStatus);
             this.sbWidth = ceEditor.$editor.renderer.scrollBar.width;
-            barIdeStatus.setAttribute("right", this.sbWidth + 5);
-            barIdeStatus.setAttribute("bottom", this.sbWidth + 5);
+            barIdeStatus.setAttribute("right", this.sbWidth + this.edgeDistance);
+            barIdeStatus.setAttribute("bottom", this.sbWidth + this.edgeDistance);
         }
 
         hboxStatusBarSettings.$ext.style.overflow = "hidden";
@@ -189,7 +190,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             apf.tween.single(hboxStatusBarSettings.$ext, {
                 type  : "width",
                 anim  : apf.tween.easeOutQuint,
-                from  : 49,
+                from  : 50,
                 to    : 1,
                 steps : 8,
                 interval : 5,
@@ -206,7 +207,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 type  : "width",
                 anim  : apf.tween.easeOutQuint,
                 from  : 1,
-                to    : 49,
+                to    : 50,
                 steps : 8,
                 interval : 5
             });

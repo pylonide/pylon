@@ -86,7 +86,7 @@ module.exports = ext.register("ext/editors/editors", {
         var btn;
         var tab = new apf.bar({
             skin     : "basic",
-            style    : "padding : 0 0 33px 0;position:absolute;", //53px
+            style    : "padding : 0 0 32px 0;position:absolute;", //53px
             //htmlNode : document.body,
             childNodes: [
                 new apf.tab({
