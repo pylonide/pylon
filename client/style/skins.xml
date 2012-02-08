@@ -5010,18 +5010,22 @@
             cursor:default;
         }
         
+        .menu-bk.moveleft {
+            margin-left: 6px;
+        }
+
         .menu-bk.upward {
             margin-top: -10px;
-            margin-left: 49px;
-        }
-        
-        .menu-bk.upward.mnuSbPrefs, .menu-bk.downward.mnuSbPrefs {
-            margin-left: 25px;
+            margin-left: 6px;
         }
         
         .menu-bk.downward {
-            margin-left: 40px;
+            margin-left: 6px;
             margin-top: 30px;
+        }
+        
+        .menu-bk.moveright {
+            margin-left: -8px;
         }
         
         .menu-bk .arrow {
@@ -5029,9 +5033,12 @@
             width: 24px;
             height: 14px;
             top: -13px;
-            right: 13%;
+            right: 9px;
             z-index: 10001;
             background: url(images/flyout_arrows.png) no-repeat -20px 0;
+        }
+        .menu-bk.moveright .arrow {
+            left: 9px;
         }
         
         .menu-bk.upward .arrow {

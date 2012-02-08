@@ -1,9 +1,9 @@
 /**
- * The editor status bar for the Cloud9 IDE
+ * Editor status bar for Cloud9 IDE
  * 
- * @BUGS
+ * @TODO
  * 
- * Menu positioning calcs are broken; see especially in Zen Mode
+ * Error icon from acebugs
  * 
  * @copyright 2012, Cloud9 IDE, Inc.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -107,7 +107,8 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 if (_self.$barMoveTimer)
                     clearTimeout(_self.$barMoveTimer);
                 _self.$barMoveTimer = setTimeout(function() {
-                    barIdeStatus.setAttribute("bottom", bottom);
+                    if (typeof barIdeStatus !== "undefined")
+                        barIdeStatus.setAttribute("bottom", bottom);
                 }, 50);
             }
         });

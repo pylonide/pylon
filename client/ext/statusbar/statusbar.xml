@@ -16,7 +16,7 @@
               icon    = "statusbar-arrow.png" 
               onclick = "require('ext/statusbar/statusbar').toggleStatusBar()"
             />
-            <a:hbox id="hboxStatusBarSettings" padding="5" edge="0 2 0 0" width="0" visible="false">
+            <a:hbox id="hboxStatusBarSettings" padding="5" margin="0 2 0 0" width="0" visible="false">
                 <a:button id="btnSbTools"
                   skin    = "btn-statusbar-icon" 
                   skinset = "statusbar"
