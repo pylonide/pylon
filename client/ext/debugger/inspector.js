@@ -4,7 +4,7 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
 var Console = require("ext/console/console");
@@ -13,7 +13,7 @@ var Logger  = require("ext/console/logger");
 exports.evaluate = function(expression, callback){
     var _self = this;
     var frame = (self.dgStack && dgStack.selected && dgStack.selected.getAttribute("ref")) || null;
-    
+
     dbg.evaluate(expression, frame, null, null, callback || exports.showObject);
 };
 
@@ -51,14 +51,14 @@ exports.consoleTextHandler = function(e) {
         return;
 
     var _self = this;
-    
+
     var expression = txtCode.getValue().trim();
     if (!expression)
         return;
-    
+
     Console.showOutput();
-    Logger.log(expression, "command", null, null, txtOutput);
-    
+    Logger.log(expression, "command", null, null, true);
+
     this.evaluate(expression, function(xmlNode, body, refs, error){
         if (error) {
             Logger.log(error.message, "error");
@@ -76,7 +76,7 @@ exports.consoleTextHandler = function(e) {
                     + (expression || "").split(";").pop().replace(/"/g, "\\&quot;") + "\")'>";
                 var post = "</a>";
                 var name = body.name || body.inferredName || "function";
-                Logger.log(name + "()", "log", pre, post, txtOutput);
+                Logger.log(name + "()", "log", pre, post, true);
             }
             else if (className == "Array") {
                 var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/debugger/inspector\").showObject(\""
@@ -113,11 +113,11 @@ exports.consoleTextHandler = function(e) {
                     }
                     if (t) out.pop();
 
-                    Logger.log(out.join(" "), "log", pre, post, txtOutput);
+                    Logger.log(out.join(" "), "log", pre, post, true);
                 });
             }
             else
-                Logger.log(value, "log", null, null, txtOutput);
+                Logger.log(value, "log", null, null, true);
         }
     });
 
@@ -134,7 +134,7 @@ exports.showObject = function(xmlNode, ref, expression) {
     else {
         require(["ext/quickwatch/quickwatch"], function(quickwatch) {
             quickwatch.toggleDialog(1);
-            
+
             if (xmlNode && typeof xmlNode == "string")
                 xmlNode = apf.getXml(xmlNode);
 
@@ -179,13 +179,13 @@ exports.calcName = function(xmlNode, useDisplay){
 
         if (!name)
             break;
-        
+
         var xmlDecode = function (input) {
             var e = document.createElement('div');
             e.innerHTML = input;
             return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
         }
-        
+
         name = xmlDecode(name);
 
         path.unshift(!name.match(/^[a-z_\$][\w_\$]*$/i)
@@ -205,7 +205,7 @@ exports.calcName = function(xmlNode, useDisplay){
         return "";
     else if (path[0].charAt(0) == "[")
         path[0] = path[0].substr(2, path[0].length - 4);
-    
+
     return path.join(".").replace(/\.\[/g, "[");
 };
 
@@ -214,9 +214,9 @@ exports.calcName = function(xmlNode, useDisplay){
  */
 exports.isEditable = function(xmlNode) {
     if (!xmlNode) return false;
-    
+
     var type = xmlNode.getAttribute("type");
-    
+
     // we can edit these types
     switch (type) {
         case "string":
@@ -227,13 +227,13 @@ exports.isEditable = function(xmlNode) {
         default:
             return false;
     }
-    
-    // V8 debugger cannot change variables that are locally scoped, so we need at least 
+
+    // V8 debugger cannot change variables that are locally scoped, so we need at least
     // one parent property.
     if (exports.calcName(xmlNode, true).indexOf(".") === -1) {
         return false;
     }
-    
+
     // ok, move along
     return true;
 };
@@ -244,7 +244,7 @@ exports.isEditable = function(xmlNode) {
 exports.validateNewValue = function(xmlNode, value) {
     var type = xmlNode.getAttribute("type");
     var validator;
-    
+
     switch (type) {
         case "string":
         case "null":
@@ -259,7 +259,7 @@ exports.validateNewValue = function(xmlNode, value) {
         default:
             return false; // other types cannot be edited
     }
-    
+
     return validator.test(value);
 };
 
@@ -269,7 +269,7 @@ exports.validateNewValue = function(xmlNode, value) {
 exports.setNewValue = function(xmlNode, value, callback) {
     // find the prop plus its ancestors
     var expression = exports.calcName(xmlNode, true);
-      
+
     // build an instruction for the compiler
     var instruction;
     switch (xmlNode.getAttribute("type")) {
@@ -282,9 +282,9 @@ exports.setNewValue = function(xmlNode, value, callback) {
             instruction = expression + " = " + value;
             break;
     }
-    
+
     // dispatch it to the debugger
-    exports.evaluate(instruction, callback);    
+    exports.evaluate(instruction, callback);
 };
 
 });

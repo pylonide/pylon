@@ -214,17 +214,17 @@ module.exports = ext.register("ext/console/console", {
                 argv[0] = argv[0].replace(RE_band, "");
                 line = line.replace(RE_band, "");
             }
-            
+
             var data = {
                 command: cmd,
                 argv: argv,
                 line: line,
                 cwd: this.getCwd()
             };
-            
+
             if (cmd.trim() === "npm")
                 data.version = settings.model.queryValue("auto/node-version/@version") || "auto";
-                
+
             showConsole = execAction(cmd, data);
         }
         if (showConsole === true) this.show();
@@ -242,7 +242,7 @@ module.exports = ext.register("ext/console/console", {
             return Logger.logNodeStream(message.data, message.stream, true, ide);
 
         if (message.type === "node-exit")
-            return Logger.log("", "divider", true);
+            return Logger.log("", "divider", null, null, true);
 
         if (message.type.match(/-data$/))
             return Logger.logNodeStream(message.data, message.stream, false, ide);
