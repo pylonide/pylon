@@ -47,14 +47,14 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
 
     init : function() {
         var _self = this;
-        
+
         this.nodes.push(
             mnuFilter.insertBefore(new apf.item({
                 type    : "radio",
                 value   : "nodeunit",
                 caption : "Node Unit Tests"
             }), mnuFilter.getElementsByTagNameNS(apf.ns.aml, "divider")[1]),
-            
+
             mnuTestNew.appendChild(new apf.item({
                 caption : "Node Unit Test",
                 onclick : function(){
@@ -63,13 +63,13 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
             }))
         );
 
-        davProject.report(ide.davPrefix, 'filelist', {}, 
+        davProject.report(ide.davPrefix, 'filelist', {},
           function(data, state, extra){
             if (state == apf.ERROR) {
                 if (data && data.indexOf("jsDAV_Exception_FileNotFound") > -1) {
                     return;
                 }
-                
+
                 //@todo
                 return;
             }
@@ -79,7 +79,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
             var nodes = data.selectNodes("//d:href");
             for (var node, i = 0; i < nodes.length; i++) {
                 node = nodes[i];
-                
+
                 //@todo support for submodules
                 if (node.firstChild.nodeValue.match(/_test\.js$/)) {
                     var file = apf.getXml("<file />");
@@ -91,19 +91,19 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                 }
             }
         });
-        
+
         ide.addEventListener("afterfilesave", function(e){
             var node = e.node;
             var name = node.getAttribute("name");
             if (!name.match(/_test.js$/))
                 return;
-            
+
             var path = node.getAttribute("path");
             var fileNode = mdlTests.queryNode("//file[@path=" + escapeXpathString(path) + "]");
             if (!fileNode) {
                 fileNode = apf.xmldb.getCleanCopy(node);
                 fileNode.setAttribute("type", "nodeunit");
-                apf.xmldb.appendChild(testpanel.findParent(path), fileNode); 
+                apf.xmldb.appendChild(testpanel.findParent(path), fileNode);
             }
         });
 
@@ -111,17 +111,17 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
             var xmlNode = e.xmlNode;
             _self.reloadTestFile(xmlNode);
         });
-        
+
         ide.addEventListener("test.stop", function(e){
             if (!_self.running)
                 return;
             _self.stop();
         });
-        
+
         ide.addEventListener("test.icon.nodeunit", function(e){
             return "page_white_code.png";
         });
-        
+
         ide.addEventListener("test.run.nodeunit", function(e){
             var fileNode = e.xmlNode;
             var next    = e.next;
@@ -131,9 +131,9 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
             _self.stopping     = false;
             _self.running      = true;
             _self.lastTestNode = fileNode;
-            
+
             testpanel.setLog(fileNode, "running");
-            
+
             //@todo this should be loaded via file contents
             if (testpanel.expandTests) {
                 if (dgTestProject.$hasLoadStatus(fileNode, "potential"))
@@ -149,7 +149,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                     parseMessage({data: ""})
                 }
             }, 10);
-            
+
             var stack = [];
             ide.addEventListener("socketMessage", function(e){
                 //@todo testpanel.setLog(node, "started");
@@ -176,7 +176,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                     }
                 }
             });
-            
+
             function completed(){
                 var nodes = apf.queryNodes(fileNode, "test[@status=0 or error]");
 
@@ -185,13 +185,13 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                     return;
                 }
                 else if (nodes.length)
-                    testpanel.setError(fileNode, "Failed " + (nodes.length) 
+                    testpanel.setError(fileNode, "Failed " + (nodes.length)
                         + " tests of " + fileNode.selectNodes("test").length);
                 else
-                    testpanel.setPass(fileNode, 
+                    testpanel.setPass(fileNode,
                         "(" + fileNode.selectNodes("test").length + ")");
             }
-            
+
             function parseMessage(message){
                 var data;
                 if (stack.length) {
@@ -218,7 +218,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                         match = part.match(/^\[31m\[(\d+)\/(\d+)\]\s+(.*?)\s+FAIL.*([\S\s]*?)(?=\[\d+m|$)/);
                         if(!match)
                             continue;
-                        
+
                         var testNode = fileNode.selectSingleNode("test[@name=" + escapeXpathString(match[3]) + "]");
                         if (!testNode) {
                             var doc  = fileNode.ownerDocument;
@@ -229,12 +229,12 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                         //fileNode.addNode();
                         testpanel.setError(testNode, "Test Failed");
                         testpanel.setLog(fileNode, "completed test " + match[2] + " of " + match[1]);
-                        
+
                         var errorNode = testNode.ownerDocument
                             .createElement("error");
                         errorNode.setAttribute("name", match[4]);
                         apf.xmldb.appendChild(testNode, errorNode);
-                        
+
                         if (match[2] == match[1])
                             completed();
                     }
@@ -254,29 +254,29 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                         }
                         testpanel.setPass(testNode);
                         testpanel.setLog(fileNode, "completed test " + match[2] + " of " + match[1]);
-                        
+
                         if (match[2] == match[1])
                             completed();
                     }
                 }
             }
-            
+
             var path = fileNode.getAttribute("path")
                 .slice(ide.davPrefix.length + 1)
                 .replace("//", "/");
-                
+
             noderunner.run(path, [], false);
         });
-        
+
         ide.addEventListener("socketMessage", function(e) {
             if (_self.disabled) return;
-            
+
             var message = e.message;
             if ((message.type && message.type != "watcher") || !message.path)
                 return;
-                
+
             var path = message.path.slice(ide.workspaceDir.length);
-            
+
             if (path != _self.testpath)
                 return;
 
@@ -294,61 +294,61 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                     break;
             }
         });
-        
+
         this.enable();
     },
-    
+
     stop : function(){
         this.stopping = true;
-            
+
         if (this.lastTestNode) {
             testpanel.setLog(this.lastTestNode.tagName == "file"
                 ? this.lastTestNode
                 : this.lastTestNode.parentNode, "Stopping...");
         }
-        
+
         noderunner.stop();
     },
-    
+
     stopped : function(msg){
         this.stopping = false;
         this.running  = false;
-        
+
         testpanel.stopped();
-        
+
         console.autoOpen = true;
     },
-    
+
     createAndOpenTest : function(){
         var _self = this;
         var path  = (ide.davPrefix + "/" + this.testpath).split("/");
         var stack = [];
-        
+
         var recur = function(){
             stack.push(path.shift());
-            
+
             if (path.length == 0) {
-                newresource.newfile("_test.js", _self.template, 
+                newresource.newfile("_test.js", _self.template,
                   ide.davPrefix + "/");
                 return;
             }
-            
+
             fs.exists(stack.join("/") + "/" + path[0], function(data, state, extra){
                 if (data) {
                     recur();
                 }
                 else {
-                    fs.webdav.exec("mkdir", 
+                    fs.webdav.exec("mkdir",
                       [stack.join("/"), path[0]], function(data) {
                         recur();
                     });
                 }
             });
         }
-        
+
         recur();
     },
-    
+
     reloadTestFile : function(xmlNode) {
         fs.readFile(xmlNode.getAttribute("path"), function(data, state, extra){
             if (state == apf.SUCCESS) {
@@ -361,17 +361,17 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                         b.inits.forEach(function(init) {
                             // init now contains PropertyInit("name", value) nodes, first branch is the name node
                             var name = init[0].value;
-                            
-                            node = xmlNode.selectSingleNode("test[@name=" 
+
+                            node = xmlNode.selectSingleNode("test[@name="
                               + escapeXpathString(name) + "]");
-                                
+
                             if (!node) {
                                 node = doc.createElement("test");
                                 node.setAttribute("name", name);
-                                
+
                                 apf.xmldb.appendChild(xmlNode, node);
                             }
-                            
+
                             found.push(node);
                         });
                     }
@@ -385,19 +385,19 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
             }
         });
     },
-    
+
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
         });
 
 //@todo this is much more complex
-//        ide.send(JSON.stringify({
+//        ide.send({
 //            "command"     : "watcher",
 //            "type"        : "watchFile",
 //            "path"        : this.testpath
-//        }));
-        
+//        });
+
         this.disabled = false;
     },
 
@@ -405,13 +405,13 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
         this.nodes.each(function(item){
             item.disable();
         });
-        
-//        ide.send(JSON.stringify({
+
+//        ide.send({
 //            "command"     : "watcher",
 //            "type"        : "unwatchFile",
 //            "path"        : this.testpath
-//        }));
-        
+//        });
+
         this.disabled = true;
     },
 
@@ -420,7 +420,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
             item.destroy(true, true);
         });
         this.nodes = [];
-        
+
         testpanel.unregister(this);
     }
 });

@@ -10,7 +10,7 @@
 
         <link rel="stylesheet" type="text/css" href="[%staticUrl%]/style/style.css" />
 
-        <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="/[%socketIoUrl%]/socket.io.js"></script>
         <script type="text/javascript" src="/static/require.js"></script>
         [%scripts%]
         <script type="text/javascript">
@@ -21,14 +21,15 @@
                 workspaceDir: <%workspaceDir%>,
                 debug: <%debug%>,
                 sessionId: <%sessionId%>,
-                workspaceId: <%workspaceId%>,                
+                workspaceId: <%workspaceId%>,
                 name: <%name%>,
                 readonly: <%readonly%>,
                 projectName: <%projectName%>,
                 version: <%version%>,
-                staticUrl: <%staticUrl%>
+                staticUrl: <%staticUrl%>,
+                socketIoUrl: <%socketIoUrl%>
             };
-            
+
             // prevent console messages crash our app!
             if (typeof window["console"] == "undefined") {
                 var K = function() {};
@@ -38,7 +39,7 @@
             var RELEASE = "release";
             var DEBUG   = "debug";
             var FILES   = "files";
-            
+
             var VERSION = window.cloud9config.debug ? FILES : RELEASE;
 
             var apfLoc = VERSION == FILES
@@ -172,7 +173,7 @@
         <a:include src="/static/include/models.xml" />
         <a:include src="/static/include/menus.xml" />
         <a:include src="/static/include/windows.xml" />
-        
+
         <a:scrollbar
             id       = "sbShared"
             skin     = "sbios"
@@ -183,7 +184,7 @@
             showonscroll = "true"
             zindex   = "100000"
         />
-        
+
         <a:vbox anchors="0 0 0 0" id="vbMain">
             <a:bar skin="c9-menu-bar" id="logobar">
                 <a:hbox>
@@ -196,7 +197,7 @@
                         <a:divider skin="c9-divider-double" />
                     </a:hbox>
                     <a:filler />
-                    <a:hbox id="barExtras" edge="8 0 0 0" padding="3" align="center"> 
+                    <a:hbox id="barExtras" edge="8 0 0 0" padding="3" align="center">
                         <a:divider skin="c9-divider" visible="false" />
                     </a:hbox>
                 </a:hbox>
@@ -205,7 +206,7 @@
             <a:vbox id="mainRow" padding="0" flex="1" splitters="true">
                 <a:hbox id="hboxMain" padding="0" edge="0" flex="1">
                     <a:vbox id="navbar" class="black-menu-bar unselectable">
-                    
+
                     </a:vbox>
                     <a:vbox id="colLeft" width="200" visible="false" />
                     <a:splitter width="0" id="splitterPanelLeft" />
@@ -216,7 +217,7 @@
                     </a:vbox>
                 </a:hbox>
             </a:vbox>
-            
+
             <a:statusbar id="sbMain" visible="false">
                 <a:section />
             </a:statusbar>
