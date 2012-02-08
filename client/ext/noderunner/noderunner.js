@@ -161,6 +161,8 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
         if (nodeVersion == 'default')
             nodeVersion = "";
+        
+        path = path.trim();
 
         var page = ide.getActivePageModel();
         var command = {
