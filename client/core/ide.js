@@ -60,7 +60,7 @@ define(function(require, exports, module) {
             window.onerror = function(m, u, l) {
                 if (window.console)
                     console.log("An error occurred, the Cloud9 system admin has been notified.");
-                apf.ajax("/debug", {
+                apf.ajax("/api/debug", {
                     method      : "POST",
                     contentType : "application/json",
                     data        : apf.serialize({
@@ -75,7 +75,7 @@ define(function(require, exports, module) {
 
             //Catch all APF Routed errors
             apf.addEventListener("error", function(e){
-                apf.ajax("/debug", {
+                apf.ajax("/api/debug", {
                     method      : "POST",
                     contentType : "application/json",
                     data        : apf.serialize({
@@ -144,7 +144,7 @@ define(function(require, exports, module) {
             // lost our session. Now we do an HTTP request to fetch the current
             // session ID and update the Cloud9 config with it. Also, re-attach
             // with the backend.
-            apf.ajax("/reconnect", {
+            apf.ajax(window.location.pathname + "/reconnect", {
                 callback: function(data, state, extra) {
                     ide.sessionId = data;
                     ide.socketConnect();
