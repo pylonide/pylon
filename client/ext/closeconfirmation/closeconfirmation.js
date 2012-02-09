@@ -48,7 +48,8 @@ module.exports = ext.register("ext/closeconfirmation/closeconfirmation", {
     
     onBeforeUnloadHandler : function () {
         // see what's in the settings
-        if (apf.isTrue(settings.model.queryNode("general/@confirmexit").value)) {
+        var settingsNode = settings.model.queryNode("general/@confirmexit");
+        if (settingsNode && apf.isTrue(settingsNode.value)) {
             return "Are you sure you want to leave Cloud9?";
         }        
     },
