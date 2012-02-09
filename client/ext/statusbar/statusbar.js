@@ -108,8 +108,10 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 if (_self.$barMoveTimer)
                     clearTimeout(_self.$barMoveTimer);
                 _self.$barMoveTimer = setTimeout(function() {
-                    if (typeof barIdeStatus !== "undefined")
+                    if (typeof barIdeStatus !== "undefined") {
                         barIdeStatus.setAttribute("bottom", bottom);
+                        barIdeStatus.setAttribute("right", _self.sbWidth + _self.edgeDistance);
+                    }
                 }, 50);
             }
         });

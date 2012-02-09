@@ -8,7 +8,7 @@
         <a:hbox height="23">
             <a:label id="lblInsertActive" caption="INS" visible="false" margin="3 3 0 3" />
             <a:label id="lblSelectionLength" visible="false" margin="3 3 0 3" />
-            <a:label caption="{ceEditor.line}:{ceEditor.col}" minwidth="42" style="text-align:center" margin="3 6 0 3"/>
+            <a:label caption="{ceEditor.line}:{ceEditor.col}" style="text-align:center" margin="3 6 0 3"/>
             <a:divider class="divider-status-bar" margin="0 0 1 0" />
             <a:button 
               skin    = "btn-expand-statusbar" 
@@ -17,7 +17,7 @@
               onclick = "require('ext/statusbar/statusbar').toggleStatusBar()"
               margin  = "2 4 2 6"
             />
-            <a:hbox id="hboxStatusBarSettings" visible="false">
+            <a:hbox id="hboxStatusBarSettings" width="1">
                 <a:button id="btnSbTools"
                   skin    = "btn-statusbar-icon" 
                   skinset = "statusbar"
