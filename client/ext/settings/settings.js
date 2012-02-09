@@ -73,6 +73,10 @@ module.exports = ext.register("ext/settings/settings", {
         
         //Backwards compatible
         this.model = settings.model;
+        
+        var confirmExit = this.model.queryNode("general").getAttribute("confirmexit");
+        if (apf.isTrue(confirmExit))
+            ide.askToExit = true;
     },
     
     headings : {},
@@ -96,8 +100,17 @@ module.exports = ext.register("ext/settings/settings", {
 
         colLeft.appendChild(winSettings);
         
-        this.getHeading("General");
-        
+        var heading = this.getHeading("General");
+        heading.appendChild(new apf.checkbox({
+            "class" : "underlined",
+            skin  : "checkbox_grey",
+            value : "[general/@confirmexit]",
+            label : "Confirm when exiting",
+            onclick : function(e) {
+                ide.askToExit = this.checked;
+            }
+        }))
+
         this.nodes.push(winSettings);
     },
 
