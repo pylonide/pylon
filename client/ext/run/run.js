@@ -138,6 +138,8 @@ module.exports = ext.register("ext/run/run", {
             name  = file.getAttribute("name").replace(/\.(js|py)$/, function(full, ext){ extension = ext; return ""; });
         }
 
+        path = path.trim();
+        
         var cfg = apf.n("<config />")
             .attr("path", path)
             .attr("name", name)
