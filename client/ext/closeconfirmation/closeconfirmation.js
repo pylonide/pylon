@@ -1,9 +1,3 @@
-/*
-        var confirmExit = this.model.queryNode("general").getAttribute("confirmexit");
-        if (apf.isTrue(confirmExit))
-            ide.askToExit = true;
-*/
-
 /**
  * This plugin gives a 'close confirmation' when closing the IDE
  *
@@ -33,7 +27,7 @@ module.exports = ext.register("ext/closeconfirmation/closeconfirmation", {
             // see what's in the settings
             if (apf.isTrue(settings.model.queryNode("general/@confirmexit").value)) {
                 return "Are you sure you want to leave Cloud9?";
-            }
+            } 
         };
         
         // init extension, add html
