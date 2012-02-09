@@ -13,19 +13,19 @@ var code = require("ext/code/code");
 var markup = require("text!ext/html/html.xml");
 
 var previewExtensions = [
-    "htm", "html", "xhtml", 
+    "htm", "html", "xhtml",
     "conf", "log", "text", "txt",
     "xml", "xsl"
 ];
 
 module.exports = ext.register("ext/html/html", {
-    name    : "HTML Editor",
-    dev     : "Ajax.org",
-    type    : ext.GENERAL,
-    alone   : true,
-    deps    : [code],
-    markup  : markup,
-    nodes   : [],
+    name  : "HTML Editor",
+    dev   : "Ajax.org",
+    type  : ext.GENERAL,
+    alone : true,
+    deps  : [code],
+    markup: markup,
+    nodes : [],
 
     hook : function(){
         var _self = this;
@@ -65,8 +65,9 @@ module.exports = ext.register("ext/html/html", {
         var node;
         for (var i = nodes.length - 1; i >= 0; i--) {
             node = ide.barTools.appendChild(nodes[0]);
-            if (node.nodeType != 1)
+            if (node.nodeType != 1) {
                 continue;
+            }
             this.nodes.push(node);
         }
 
@@ -106,5 +107,4 @@ module.exports = ext.register("ext/html/html", {
         this.nodes = [];
     }
 });
-
 });
