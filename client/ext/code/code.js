@@ -341,7 +341,7 @@ module.exports = ext.register("ext/code/code", {
 
             if (e.doc && e.doc.editor && e.doc.editor.ceEditor) {
                 // check if there is a scriptid, if not check if the file is somewhere in the stack
-                if (mdlDbgStack && mdlDbgStack.data && e.node
+                if (typeof mdlDbgStack != "undefined" && mdlDbgStack.data && e.node
                   && (!e.node.hasAttribute("scriptid") || !e.node.getAttribute("scriptid"))
                   && e.node.hasAttribute("scriptname") && e.node.getAttribute("scriptname")) {
                     var nodes = mdlDbgStack.data.selectNodes("//frame[@script='" + e.node.getAttribute("scriptname").replace(ide.workspaceDir + "/", "") + "']");

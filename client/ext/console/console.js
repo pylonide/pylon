@@ -241,11 +241,8 @@ module.exports = ext.register("ext/console/console", {
         if (message.type === "node-data")
             return Logger.logNodeStream(message.data, message.stream, true, ide);
 
-        if (message.type == "node-data")
-            return Logger.logNodeStream(message.data, message.stream, true);
-
-        if (message.type == "node-exit")
-            return;
+        if (message.type === "node-exit")
+            return Logger.log("", "divider", null, null, true);
 
         if (message.type.match(/-data$/))
             return Logger.logNodeStream(message.data, message.stream, false, ide);
