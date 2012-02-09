@@ -410,10 +410,6 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         }
                     }
                     else {
-                        /*var contentType = (extra.http.getResponseHeader("content-type") || "").replace(/;.*$/, '');
-                        if (contentType) {
-                            node.setAttribute("contenttype", contentType);
-                        }*/
                         doc.setValue(data);
                         ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
                     }
