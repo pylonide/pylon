@@ -105,10 +105,10 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         // Asynchronously retrieve commands that other plugins may have
         // registered, hence the (relatively) long timeout.
         setTimeout(function() {
-            ide.send(JSON.stringify({
+            ide.send({
                 command: "commandhints",
                 cwd: Console.getCwd()
-            }));
+            });
         }, 1000);
 
         var self = this;
