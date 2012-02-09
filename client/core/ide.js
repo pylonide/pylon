@@ -33,7 +33,6 @@ define(function(require, exports, module) {
         this.readonly       = window.cloud9config.readonly;
         this.projectName    = window.cloud9config.projectName;
 
-        this.askToExit      = false;
         this.loggedIn       = true;
             //Set references to global elements - aka extension points
             //this.tbMain       = tbMain;
@@ -105,11 +104,6 @@ define(function(require, exports, module) {
     apf.addEventListener("load", function(){
         ide.start();
     });
-
-    window.onbeforeunload = function() {
-        if (ide.askToExit)
-            return "Are you sure you want to leave Cloud9?";
-    };
 
     ide.addEventListener("extload", function() {
         // fire up the socket connection:
