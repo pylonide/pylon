@@ -23,20 +23,13 @@ module.exports = ext.register("ext/closeconfirmation/closeconfirmation", {
     
     hook : function () {
         // when unloading the window
-        window.onbeforeunload = function () {
-            // see what's in the settings
-            if (apf.isTrue(settings.model.queryNode("general/@confirmexit").value)) {
-                return "Are you sure you want to leave Cloud9?";
-            } 
-        };
+        window.onbeforeunload = this.onBeforeUnloadHandler;
         
         // init extension, add html
         ext.initExtension(this);
     },
     
-    init : function () {
-        var _self = this;
-        
+    init : function () {        
         // this is the checkbox
         var warnBeforeExiting = new apf.checkbox({
             "class" : "underlined",
@@ -51,6 +44,13 @@ module.exports = ext.register("ext/closeconfirmation/closeconfirmation", {
 
         // add the checkbox to the node list of the plugin
         this.nodes.push(warnBeforeExiting);
+    },
+    
+    onBeforeUnloadHandler : function () {
+        // see what's in the settings
+        if (apf.isTrue(settings.model.queryNode("general/@confirmexit").value)) {
+            return "Are you sure you want to leave Cloud9?";
+        }        
     },
 
     enable : function() {
@@ -70,6 +70,11 @@ module.exports = ext.register("ext/closeconfirmation/closeconfirmation", {
             item.destroy(true, true);
         });
         this.nodes = [];
+        
+        // clean out the event handler
+        if (window.onbeforeunload === this.onBeforeUnloadHandler) {
+            window.onbeforeunload = null;
+        }
     }
 });
 
