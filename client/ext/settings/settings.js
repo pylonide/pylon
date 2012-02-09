@@ -105,7 +105,7 @@ module.exports = ext.register("ext/settings/settings", {
             "class" : "underlined",
             skin  : "checkbox_grey",
             value : "[general/@confirmexit]",
-            label : "Confirm when exiting",
+            label : "Warn before exiting",
             onclick : function(e) {
                 ide.askToExit = this.checked;
             }
