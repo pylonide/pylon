@@ -1,15 +1,14 @@
-var sys = require("sys");
 var util = require("./util");
 var EventEmitter = require("events").EventEmitter;
 
 var User = function (uid, permissions, data) {
     EventEmitter.call(this);
-    
+
     // TODO deprecated
     Object.defineProperty(this, "name",
        {get: function() { console.log("DEPRECATED: name use uid"); console.trace(); return uid; }}
     );
-    
+
     this.uid = uid;
     this.permissions = permissions;
     this.data = data;
@@ -18,7 +17,7 @@ var User = function (uid, permissions, data) {
     this.$server_exclude = {};
 };
 
-sys.inherits(User, EventEmitter);
+require("util").inherits(User, EventEmitter);
 
 User.OWNER_PERMISSIONS = {
     client_exclude: "",
@@ -45,7 +44,6 @@ User.VISITOR_PERMISSIONS = {
         "ext/noderunner/noderunner", //Add location rule
         "ext/watcher/watcher",
         "c9/ext/projectinfo/projectinfo",
-        
         "ext/tabbehaviors/tabbehaviors"
     ].join("|"),
     server_exclude: [
@@ -57,47 +55,60 @@ User.VISITOR_PERMISSIONS = {
     dav: "ro"
 };
 
+User.MAX_CLIENTS = 42;
+
 (function() {
-    
+
     this.setPermissions = function(permissions) {
         this.$server_exclude = util.arrayToMap(permissions.server_exclude.split("|"));
         if (this.permissions === permissions)
             return;
-        
+
         this.permissions = permissions;
         this.emit("changePermissions", this);
     };
-    
-    this.getPermissions = function(permissions) {
+
+    this.getPermissions = function() {
         return this.permissions;
     };
-    
+
     this.addClientConnection = function(client, message) {
-        var id = client.id;
-        if (this.clients[id] === client)
+        // client already in the list, ignore em!
+        if (this.clients.indexOf(client) > -1)
             return;
-            
-        this.clients[id] = client;
+
+        this.clients.push(client);
         this.onClientCountChange();
-        
+
         var _self = this;
         client.on("message", function(message) {
+            // pop the client to the front of the list:
+            var len = _self.clients.length;
+            var idx = _self.clients.indexOf(idx);
+            if (idx !== len - 1) {
+                this.clients.splice(idx, 1);
+                this.clients.push(client);
+            }
+            // handle message
             _self.onClientMessage(message, client);
         });
-        
+
         client.on("disconnect", function() {
-            _self.emit("disconnectClient", {
-                user: _self,
-                client: client
-            });
-            delete _self.clients[client.id];
-            _self.onClientCountChange();
+            _self.onClientDisconnect(client);
         });
-        
+
         if (message)
-            _self.onClientMessage(message, client);         
+            this.onClientMessage(message, client);
+
+        if (this.clients.length > User.MAX_CLIENTS) {
+            var rem = this.clients.slice(0, this.clients.length - User.MAX_CLIENTS);
+            this.clients = this.clients.slice(-User.MAX_CLIENTS);
+            rem.forEach(function(oldClient) {
+                _self.onClientDisconnect(oldClient);
+            });
+        }
     };
-    
+
     this.onClientMessage = function(message, client) {
         try {
             if (typeof message == "string")
@@ -113,17 +124,30 @@ User.VISITOR_PERMISSIONS = {
             client: client
         });
     };
-    
+
+    this.onClientDisconnect = function(client) {
+        var idx = this.clients.indexOf(client);
+        if (idx === -1)
+            return;
+
+        this.clients.splice(idx, 1);
+        this.emit("disconnectClient", {
+            user: this,
+            client: client
+        });
+        this.onClientCountChange();
+    };
+
     this.onClientCountChange = function() {
-        var count = Object.keys(this.clients).length;
+        var count = this.clients.length;
         this.emit("clientCountChange", count);
-        
-        if (count == 0) {
+
+        if (count === 0) {
             this.dconn_time = new Date().getTime();
             this.emit("disconnectUser", this);
         }
     };
-    
+
     this.error = function(description, code, message, client) {
         //console.log("Socket error: " + description, new Error().stack);
         var sid = (message || {}).sid || -1;
@@ -145,11 +169,11 @@ User.VISITOR_PERMISSIONS = {
         if (scope && this.$server_exclude[scope])
             return;
 
-        // pass a lambda to enable socket.io ACK
-        for (var id in this.clients)
-            this.clients[id].send(msg, function() {});
+        this.clients.forEach(function(client) {
+            client.send(msg);
+        });
     };
-    
+
 }).call(User.prototype);
 
 module.exports = User;
