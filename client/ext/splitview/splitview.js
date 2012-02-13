@@ -60,7 +60,7 @@ module.exports = ext.register("ext/splitview/splitview", {
                         if (this.checked)
                             _self.startCloneView(tabs.contextPage);
                         else
-                            _self.endCloneView(tabs.contextPage);
+                            tabs.contextPage.close();
                     }
                 }))
             ),
@@ -202,6 +202,8 @@ module.exports = ext.register("ext/splitview/splitview", {
             if (!origPage)
                 return;
             
+            
+            //Splits.consolidateEditorSession(origPage, origPage.$editor.amlEditor);
             page.$doc = origPage.$doc;
             page.setAttribute("actiontracker", origPage.$at);
             page.$at = origPage.$at;
@@ -212,7 +214,7 @@ module.exports = ext.register("ext/splitview/splitview", {
                 cont();
             
             function cont() {
-                tabs.set(origPage);
+                //tabs.set(origPage);
                 
                 var editor = Splits.getCloneEditor(page);
                 
@@ -227,24 +229,29 @@ module.exports = ext.register("ext/splitview/splitview", {
                 editor.setProperty("value", page.acesession);
                 
                 var split = Splits.create(origPage);
-                split.clone = page;
+                split.clone = true;
                 split.pairs.push({
                     page: page,
-                    editor: Splits.getEditor(split, page)
+                    editor: editor//Splits.getEditor(split, page)
                 });
-                Splits.update(split);
+                Splits.consolidateEditorSession(page, editor);
 
                 page.addEventListener("DOMNodeRemovedFromDocument", function() {
                     _self.endCloneView(page);
                 });
 
                 origPage.addEventListener("DOMNodeRemovedFromDocument", function() {
-                    _self.endCloneView(page);
+                    _self.endCloneView(origPage);
                 });
 
-                if (restoreQueue.length)
+                console.log("got restore lenght?",restoreQueue.length);
+                if (restoreQueue.length) {
                     _self.restore(restoreQueue);
-                //_self.save();
+                }
+                else {
+                    Splits.show(split);
+                    _self.save();
+                }
             }
         });
         
@@ -549,9 +556,8 @@ module.exports = ext.register("ext/splitview/splitview", {
             return;
         
         var nodes;
-        var splits = [];
+        var splits = Splits.get();
         if (apf.isArray(settings)) {
-            splits = Splits.get();
             //console.log('restoring from queue',splits,splits.map(function(split){return split.pairs.length;}), settings.map(function(n) {return n.xml;}));
             nodes = settings;
         }

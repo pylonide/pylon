@@ -116,7 +116,7 @@ exports.create = function(page, gridLayout) {
 exports.set = function(splits) {
     if (!apf.isArray(splits))
         return;
-    
+    console.log("SPLITS:",splits);
     Splits = [].concat(splits);
     for (var split, i = 0, l = Splits.length; i < l; ++i) {
         split = Splits[i];
@@ -150,7 +150,7 @@ exports.show = function(split) {
         split.pairs[i].editor.show();
         if (split.pairs[i].editor.$editor.onScrollLeftChange)
             split.pairs[i].editor.$editor.onScrollLeftChange();
-        if (!(split.clone && split.pairs[i].page === split.clone))
+        //if (!(split.clone && split.pairs[i].page === split.clone))
             exports.consolidateEditorSession(split.pairs[i].page, split.pairs[i].editor);
     }
     
@@ -241,7 +241,7 @@ exports.update = function(split, gridLayout) {
     if (split === ActiveSplit) {
         for (var i = 0, l = split.pairs.length; i < l; ++i) {
             split.pairs[i].page.$activateButton();
-            if (!(split.clone && split.pairs[i].page === split.clone))
+            //if (!(split.clone && split.pairs[i].page === split.clone))
                 exports.consolidateEditorSession(split.pairs[i].page, split.pairs[i].editor);
         }
     }
@@ -258,7 +258,7 @@ exports.mutate = function(split, page, type) {
 
     // Remove an editor from the split view
     if (pairIdx > -1) {
-        if (split.clone && split.clone === page)
+        if (exports.isClone(split, page))
             SplitView.endCloneView(page);
 
         var editor = split.pairs[pairIdx].editor;
@@ -295,8 +295,8 @@ exports.mutate = function(split, page, type) {
             split = this.create(activePage);
         }
         if (!split.clone && type == "clone")
-            split.clone = page;
-        
+            split.clone = true;
+
         var editorToUse = this.getEditor(split, page);
         if (!editorToUse)
             throw new Error("Splitview fatal error: no editor available to use.");
@@ -306,7 +306,7 @@ exports.mutate = function(split, page, type) {
             editor: editorToUse
         });
 
-        if (!(split.clone && page === split.clone))
+        //if (!(split.clone && page === split.clone))
             exports.consolidateEditorSession(page, editorToUse);
         split.zManager.set(editorToUse.$ext);
 
@@ -319,7 +319,7 @@ exports.mutate = function(split, page, type) {
 exports.getEditor = function(split, page) {
     var editorToUse;
     var clones = createEditorClones.call(this, page.$editor.amlEditor);
-    if (split.clone && page === split.clone) {
+    if (split.clone && exports.isClone(page)) {
         editorToUse = EditorClones.cloneEditor;
     }
     else {
@@ -398,6 +398,16 @@ exports.indexOf = function(split, obj) {
     return -1;
 };
 
+exports.isClone = function(split, page) {
+    if (!split.clone)
+        return false;
+    var id = page.id;
+    for (var i = 0, l = split.pairs.length; i < l; ++i) {
+        if (split.pairs[i].page !== page && split.pairs[i].page.id == id)
+            return true;
+    }
+    return false;
+};
 
 exports.getCloneEditor = function(page) {
     if (page && page.$editor.amlEditor)
@@ -538,13 +548,12 @@ function onEditorFocus(editor) {
 
     splits.forEach(function(split) {
         var activePage = split.pairs[exports.indexOf(split, editor)].page;
-        var isClone = !!split.clone && split.clone.id;
         for (var page, session, i = 0, l = split.pairs.length; i < l; ++i) {
             page = split.pairs[i].page;
             session = exports.getEditorSession(page);
             if (page === activePage) {
                 // for clone views, the UndoManagers need to be swapped.
-                if (session && isClone && page.id == isClone)
+                if (session && exports.isClone(split, page))
                     session.setUndoManager(page.$at);
                 if (split.activePage !== i) {
                     split.activePage = i;
@@ -554,7 +563,7 @@ function onEditorFocus(editor) {
             }
             else {
                 // for clone views, the UndoManagers need to be swapped.
-                if (session && isClone && page.id == isClone)
+                if (session && exports.isClone(split, page))
                     session.setUndoManager(CloneUndoManager);
                 apf.setStyleClass(page.$button, InactiveClass, [ActiveClass]);
             }
