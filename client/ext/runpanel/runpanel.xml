@@ -73,7 +73,8 @@
               " />
               
             <a:bar skin="basic" style="background:#323332;border-top:1px solid #111">
-                <a:table columns="90,*" padding="5" edge="10">
+                <a:vbox padding="5" edge="10">
+                  <a:hbox>
                     <a:label width="100" skin="black_label" >Name</a:label>
                     <a:textbox id="txtRunCfgName" 
                       skin = "black_textbox"
@@ -81,7 +82,8 @@
                       realtime="true"
                       value="[@name]"
                       disabled="{!lstRunCfg.selected or [{lstRunCfg.selected}::@curfile]}"/>
-                      
+                  </a:hbox>
+                  <a:hbox>
                     <a:label width="100" skin="black_label">File path</a:label>
                     <a:textbox skin = "black_textbox" id="txtRunCfgName" flex="1" value="[@path]" disabled="{!lstRunCfg.selected or [{lstRunCfg.selected}::@curfile]}"/>
                     <!--a:button icon="folder.png" disabled="true" tooltip="Browse ..."></a:button-->
@@ -95,21 +97,25 @@
                             <element caption="Node.js 0.4.x" value="0.4.x" />
                         </data>
                     </a:model>
-                    <a:label width="100" skin="black_label">Runtime</a:label>
-                    <a:dropdown id="ddRunnerSelector"
-                        model     = "mdlRunnerSelector"
-                        skin      = "black_dropdown"
-                        flex      = "1"
-                        disabled  = "{!lstRunCfg.selected}"
-                        value     = "[{lstRunCfg.selected}::@value]"
-                        default   = "default"
-                        each      = "[element]"
-                        caption   = "[@caption]"
-                        eachvalue = "[@value]" />
-                    
-                    <a:label width="100" skin="black_label">Cmd Line Args</a:label>
-                    <a:textbox skin = "black_textbox" id="txtRunCfgName" flex="1" value="[@args]" disabled="{!!!lstRunCfg.selected}"/>
-                </a:table>
+                  </a:hbox>
+                    <a:hbox>
+                      <a:label width="100" skin="black_label">Runtime</a:label>
+                      <a:dropdown id="ddRunnerSelector"
+                          model     = "mdlRunnerSelector"
+                          skin      = "black_dropdown"
+                          flex      = "1"
+                          disabled  = "{!lstRunCfg.selected}"
+                          value     = "[{lstRunCfg.selected}::@value]"
+                          default   = "default"
+                          each      = "[element]"
+                          caption   = "[@caption]"
+                          eachvalue = "[@value]" />
+                    </a:hbox>
+                    <a:hbox>
+                      <a:label width="100" skin="black_label">Cmd Line Args</a:label>
+                      <a:textbox skin = "black_textbox" id="txtRunCfgName" flex="1" value="[@args]" disabled="{!!!lstRunCfg.selected}"/>
+                    </a:hbox>
+                </a:vbox>
             </a:bar>
         </a:vbox>
     </a:window>
