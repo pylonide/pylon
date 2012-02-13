@@ -520,7 +520,7 @@ apf.item  = function(struct, tagName){
         var p = this.parentNode;
         while (p.$canLeechSkin == "item")
             p = p.parentNode;
-
+        
         //@todo apf3.0 rename doesnt work yet.
         //@todo apf3.0 implement DOM Mutation events for multiselect widgets
         //@todo apf3.0 implement attribute change triggers for icon, image, value, caption to updateNode this.$container
@@ -639,11 +639,22 @@ apf.item  = function(struct, tagName){
             $ext.setAttribute("onclick",     o + '.$click()');
         });
 
+        var _self = this;
+        apf.addListener(this.$ext, "mouseover", function(e) {
+            if (!_self.disabled)
+                _self.dispatchEvent("mouseover", {htmlEvent: e});
+        });
+        
+        apf.addListener(this.$ext, "mouseout", function(e) {
+            if (!_self.disabled)
+                _self.dispatchEvent("mouseout", {htmlEvent: e});
+        });
+        
         /*p.$getNewContext("item");
         var elItem = p.$getLayoutNode("item");*/
         
         //@todo if not elItem try using own skin
-
+        
         //this.$ext   = apf.insertHtmlNode(elItem, this.parentNode.$container);
         this.$caption = this.$getLayoutNode("item", "caption", this.$ext)
         this.$icon    = this.$getLayoutNode("item", "icon", this.$ext);
