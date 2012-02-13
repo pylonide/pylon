@@ -116,7 +116,7 @@ exports.create = function(page, gridLayout) {
 exports.set = function(splits) {
     if (!apf.isArray(splits))
         return;
-    console.log("SPLITS:",splits);
+    //console.log("SPLITS:",splits);
     Splits = [].concat(splits);
     for (var split, i = 0, l = Splits.length; i < l; ++i) {
         split = Splits[i];
@@ -144,7 +144,7 @@ exports.show = function(split) {
         for (i = 0, l = aSplit.pairs.length; i < l; ++i)
             aSplit.pairs[i].page.$deactivateButton();
     });
-    //console.log("pages",split.pairs.map(function(pair){return pair.page.name;}));
+
     for (i = 0, l = split.pairs.length; i < l; ++i) {
         split.pairs[i].page.$activateButton();
         split.pairs[i].editor.show();
@@ -191,8 +191,6 @@ exports.update = function(split, gridLayout) {
     split.gridLayout = gridLayout;
     
     // destroy the split view if it contains NOT more than 1 editor.
-    //console.log("number of pages in split view:", split.pairs.length,"vs editors:", 
-    //  split.editors.length,page.name,split.pages.map(function(page){return page.name}));
     if (split.pairs.length === 1) {
         var editor = page.$editor.amlEditor;
         if (EditorClones[editor.localName]) {
@@ -227,7 +225,7 @@ exports.update = function(split, gridLayout) {
     
     // sort the editors and pages before being added to the grid
     sortEditorsAndPages(split);
-    //console.log("split editors:", split.pairs.length, split.pairs.map(function(pair) { return pair.editor.id; }));
+
     Grids.update(gridLayout, split);
     // make sure visual styles are OK
     setSplitViewStyles(split);
@@ -404,7 +402,7 @@ exports.isClone = function(split, page) {
     var id = page.id;
     for (var i = 0, l = split.pairs.length; i < l; ++i) {
         if (split.pairs[i].page !== page && split.pairs[i].page.id == id)
-            return true;
+            return split.pairs[i];
     }
     return false;
 };
@@ -529,7 +527,6 @@ function addEditorListeners(editor) {
 function removeEditorListeners(editor) {
     if (!editor.$splitListener)
         return;
-    //console.log("removing event listeners!!");
     editor.removeEventListener("focus", editor.$splitListener);
     delete editor.$splitListener;
 }
@@ -551,9 +548,12 @@ function onEditorFocus(editor) {
         for (var page, session, i = 0, l = split.pairs.length; i < l; ++i) {
             page = split.pairs[i].page;
             session = exports.getEditorSession(page);
+            var isClone = session && exports.isClone(split, page);
+            if (isClone)
+                isClone = exports.getEditorSession(isClone);
             if (page === activePage) {
                 // for clone views, the UndoManagers need to be swapped.
-                if (session && exports.isClone(split, page))
+                if (isClone && isClone.getUndoManager() !== page.$at)
                     session.setUndoManager(page.$at);
                 if (split.activePage !== i) {
                     split.activePage = i;
@@ -563,7 +563,7 @@ function onEditorFocus(editor) {
             }
             else {
                 // for clone views, the UndoManagers need to be swapped.
-                if (session && exports.isClone(split, page))
+                if (isClone && isClone.getUndoManager() !== CloneUndoManager)
                     session.setUndoManager(CloneUndoManager);
                 apf.setStyleClass(page.$button, InactiveClass, [ActiveClass]);
             }
@@ -625,7 +625,6 @@ function correctQuickSearchDialog(e) {
         var maxRight = parentDims.width - 380;
         var right = parentDims.width - editorPos[0] - editorDims.width + 30;
         var top =  editorPos[1];
-        //console.log("editorPos", editorPos,"editorDims",JSON.stringify(editorDims),"parentDims",JSON.stringify(parentDims),"right",right,"top",top);
         var to = Math.max(top, 0);
         return {
             right: Math.max(Math.min(right, maxRight), minRight),
