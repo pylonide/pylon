@@ -283,15 +283,17 @@ module.exports = ext.register("ext/editors/editors", {
         this.afterswitch({nextPage: page, previousPage: {type: lastType}});
     },
 
-    openEditor : function(doc, init, active) {
+    openEditor : function(doc, init, active, forceOpen) {
         var xmlNode  = doc.getNode();
         var filepath = xmlNode.getAttribute("path");
         var tabs = tabEditors;
 
-        var page = tabs.getPage(filepath);
-        if (page) {
-            tabs.set(page);
-            return;
+        if (!forceOpen) {
+            var page = tabs.getPage(filepath);
+            if (page) {
+                tabs.set(page);
+                return;
+            }
         }
 
         var fileExtension = (xmlNode.getAttribute("path") || "").split(".").pop();
@@ -341,6 +343,12 @@ module.exports = ext.register("ext/editors/editors", {
         });
 
         this.initEditorEvents(fake, model);
+        
+        ide.dispatchEvent("tab.create", {
+            page: fake,
+            model: model,
+            doc: doc
+        });
 
         if (init && !active)
             return;
@@ -542,7 +550,7 @@ module.exports = ext.register("ext/editors/editors", {
           });
 
         ide.addEventListener("openfile", function(e){
-            _self.openEditor(e.doc, e.init, e.active);
+            _self.openEditor(e.doc, e.init, e.active, e.forceOpen);
         });
 
         ide.addEventListener("filenotfound", function(e) {
@@ -621,9 +629,10 @@ module.exports = ext.register("ext/editors/editors", {
                     }
 
                     ide.dispatchEvent("openfile", {
-                        doc    : doc,
-                        init   : true,
-                        active : active
+                        doc      : doc,
+                        init     : true,
+                        forceOpen: true,
+                        active   : active
                             ? active == node.getAttribute("path")
                             : i == l - 1
                     });

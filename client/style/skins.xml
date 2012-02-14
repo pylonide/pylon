@@ -7011,7 +7011,7 @@
         .darksplitter {
             position : relative;
             z-index  : 90000;
-            background-color: #e4e4e4;
+            background-color: #e8e8e8;
             
             display  : -moz-box;
             display  : -webkit-box;
@@ -7029,10 +7029,6 @@
             cursor : ns-resize;
         }
 
-        .darksplitterMoving {
-            background-color : #8c8c8c;
-        }
-
         .darksplitterRealtime {
             background-image : url(images/spacer.gif);
         }
@@ -7045,19 +7041,25 @@
         }
 
         .darksplitter.vertical {
-            border-left: 1px solid #c7c7c7;
+            border-right: 1px solid #e8e8e8;
+            border-left: 1px solid #d7d7d7;
 
             vertical-align: middle;
             width: 6px;
-            
-            background: -moz-linear-gradient(left,  #d6d5d5 0%, #e4e4e4 100%); /* FF3.6+ */
-            background: -webkit-gradient(linear, left top, right top, color-stop(0%,#d6d5d5), color-stop(100%,#e4e4e4)); /* Chrome,Safari4+ */
-            background: -webkit-linear-gradient(left,  #d6d5d5 0%,#e4e4e4 100%); /* Chrome10+,Safari5.1+ */
-            background: -o-linear-gradient(left,  #d6d5d5 0%,#e4e4e4 100%); /* Opera 11.10+ */
-            background: -ms-linear-gradient(left,  #d6d5d5 0%,#e4e4e4 100%); /* IE10+ */
-            background: linear-gradient(left,  #d6d5d5 0%,#e4e4e4 100%); /* W3C */
         }
-
+        
+        .darksplitterMoving.vertical,
+        .darksplitter.vertical:hover {
+            border-right: 1px solid #d7d7d7;
+            
+            background: -moz-linear-gradient(left,  #e8e8e8 50%, #f0f0f0 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, right top, color-stop(50%,#e8e8e8), color-stop(100%,#f0f0f0)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(left,  #e8e8e8 50%,#f0f0f0 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(left,  #e8e8e8 50%,#f0f0f0 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(left,  #e8e8e8 50%,#f0f0f0 100%); /* IE10+ */
+            background: linear-gradient(left,  #e8e8e8 50%,#f0f0f0 100%); /* W3C */
+        }
+        
         .darksplitter.vertical span {
             width: 3px;
             height: 11px;
@@ -7066,18 +7068,30 @@
             margin-left: 1px;
         }
 
+        .darksplitterMoving.vertical span,
+        .darksplitter.vertical:hover span {
+            background-position: 0 -18px;
+        }
+
         .darksplitter.horizontal {
             position: relative;
             margin : -2px 0 0 0;
             height: 6px;
             
             border-top: 1px solid #c7c7c7;
-            background: -moz-linear-gradient(top, #d6d5d5 0%, #e4e4e4 100%); /* FF3.6+ */
-            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d6d5d5), color-stop(100%,#e4e4e4)); /* Chrome,Safari4+ */
-            background: -webkit-linear-gradient(top, #d6d5d5 0%,#e4e4e4 100%); /* Chrome10+,Safari5.1+ */
-            background: -o-linear-gradient(top, #d6d5d5 0%,#e4e4e4 100%); /* Opera 11.10+ */
-            background: -ms-linear-gradient(top, #d6d5d5 0%,#e4e4e4 100%); /* IE10+ */
-            background: linear-gradient(top, #d6d5d5 0%,#e4e4e4 100%); /* W3C */
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .darksplitterMoving.horizontal,
+        .darksplitter.horizontal:hover {
+            border-bottom: 1px solid #d7d7d7;
+            
+            background: -moz-linear-gradient(top,  #e8e8e8 50%, #f2f2f2 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(50%,#e8e8e8), color-stop(100%,#f2f2f2)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  #e8e8e8 50%,#f2f2f2 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  #e8e8e8 50%,#f2f2f2 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  #e8e8e8 50%,#f2f2f2 100%); /* IE10+ */
+            background: linear-gradient(top,  #e8e8e8 50%,#f2f2f2 100%); /* W3C */
         }
 
         .darksplitter.horizontal span {
@@ -7085,6 +7099,11 @@
             height: 3px;
             margin-left: 49%;
             margin-top: 1px;
+        }
+        
+        .darksplitterMoving.horizontal span,
+        .darksplitter.horizontal:hover span {
+            background-position: 0 -15px;
         }
     ]]></a:style>
 

@@ -1,18 +1,20 @@
 /**
  * Shell Module for the Cloud9 IDE
  *
- * @copyright 2010, Ajax.org B.V.
+ * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+
+var sys = require("sys");
 var Plugin = require("cloud9/plugin");
-var Fs     = require("fs");
-var Path   = require("path");
-var Async  = require("asyncjs");
-var sys    = require("sys");
-var util   = require("cloud9/util");
+var Fs = require("fs");
+var Path = require("path");
+var Async = require("asyncjs");
+var util = require("cloud9/util");
 
 var ShellPlugin = module.exports = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
+    this.workspaceDir = workspace.workspaceDir;
     this.hooks = ["command"];
     this.name = "shell";
 };
@@ -20,20 +22,24 @@ var ShellPlugin = module.exports = function(ide, workspace) {
 sys.inherits(ShellPlugin, Plugin);
 
 (function() {
+    "use strict";
+
     this.command = function(user, message, client) {
-        if (!this[message.command])
+        if (!this[message.command]) {
             return false;
+        }
 
         this[message.command](message);
-
         return true;
     };
 
     this["internal-autocomplete"] = function(message) {
-        var argv  = [].concat(message.argv),
-            cmd   = argv.shift(),
-            _self = this;
-        this.getListing(argv.pop(), message.cwd, (cmd == "cd" || cmd == "ls"), function(tail, matches) {
+        var argv = [].concat(message.argv);
+        var cmd = argv.shift();
+        var _self = this;
+        var isDirCmd = cmd === "cd" || cmd === "ls";
+
+        this.getListing(argv.pop(), message.cwd, isDirCmd, function(tail, matches) {
             _self.sendResult(0, "internal-autocomplete", {
                 matches: matches,
                 line   : message.line,
@@ -46,20 +52,23 @@ sys.inherits(ShellPlugin, Plugin);
     };
 
     this["internal-isfile"] = function(message) {
-        var file  = message.argv.pop(),
-            path  = message.cwd || this.workspace.workspaceDir,
-            _self = this;
-        path = Path.normalize(path + "/" + file.replace(/^\//g, ""));
+        var file  = message.argv.pop();
+        var path  = message.cwd || this.workspaceDir;
+        var _self = this;
 
-        if (path.indexOf(this.workspace.workspaceDir) === -1) {
+        path = Path.normalize(Path.join(path, file.replace(/^\//g, "")));
+
+        if (path.indexOf(this.workspaceDir) === -1) {
             this.sendResult();
             return;
         }
+
         Fs.stat(path, function(err, stat) {
             if (err) {
                 return _self.sendResult(0, "error",
                     err.toString().replace("Error: ENOENT, ", ""));
             }
+
             _self.sendResult(0, "internal-isfile", {
                 cwd: path,
                 isfile: (stat && !stat.isDirectory()),
@@ -68,9 +77,9 @@ sys.inherits(ShellPlugin, Plugin);
         });
     };
 
-    this.commandhints = function(message) { 
-        var commands = {},
-            _self    = this;
+    this.commandhints = function(message) {
+        var commands = {};
+        var _self = this;
 
         Async.list(Object.keys(this.workspace.plugins))
              .each(function(sName, next) {
@@ -79,28 +88,29 @@ sys.inherits(ShellPlugin, Plugin);
                      oExt["$commandHints"](commands, message, next);
                  }
                  else {
-                     if (!oExt.metadata) {
-                         Fs.readFile(Path.normalize(__dirname + "/../" + sName + "/package.json"), function(err, data) {
-                             if (err)
-                                 return next();
-                             var o = JSON.parse(data);
-                             oExt.metadata = o;
+                     (function(afterMeta) {
+                         if (!oExt.metadata) {
+                             Fs.readFile(Path.normalize(__dirname + "/../" + sName + "/package.json"), function(err, data) {
+                                 if (err) {
+                                     return next();
+                                 }
+                                 var o = JSON.parse(data);
+                                 oExt.metadata = o;
+                                 afterMeta();
+                             });
+                         }
+                         else {
                              afterMeta();
-                         });
-                     }
-                     else {
-                         afterMeta();
-                     }
-
-                     function afterMeta() {
+                         }
+                     })(function() {
                          if (oExt.metadata && oExt.metadata.commands)
                              util.extend(commands, oExt.metadata.commands);
                          next();
-                     }
+                     });
                  }
              })
              .end(function() {
-                 _self.sendResult(0, message.command, commands)
+                 _self.sendResult(0, message.command, commands);
              });
     };
 
@@ -120,24 +130,28 @@ sys.inherits(ShellPlugin, Plugin);
     };
 
     this.cd = function(message) {
-        var to    = message.argv.pop(),
-            path  = message.cwd || this.workspace.workspaceDir,
-            _self = this;
-            
-        path = Path.normalize(path + "/" + to.replace(/^\//g, ""));
-        if (path.indexOf(this.workspace.workspaceDir) === -1)
+        var to    = message.argv.pop();
+        var path  = message.cwd || this.workspaceDir;
+        var _self = this;
+
+        path = Path.normalize(Path.join(path, to.replace(/^\//g, "")));
+        if (path.indexOf(this.workspaceDir) === -1) {
             return this.sendResult();
+        }
+
         Fs.stat(path, function(err, stat) {
             if (err) {
                 return _self.sendResult(0, "error",
                     err.toString().replace("Error: ENOENT, ", ""));
             }
-            if (!stat.isDirectory())
+
+            if (!stat.isDirectory()) {
                 return _self.sendResult(0, "error", "Not a directory.");
-            _self.sendResult(0, message.command, {cwd: path});
+            }
+            _self.sendResult(0, message.command, { cwd: path });
         });
     };
-    
+
     this.bash = function(message) {
         var _self = this;
         message.argv.unshift("-c");
@@ -152,24 +166,35 @@ sys.inherits(ShellPlugin, Plugin);
     };
 
     this.getListing = function(tail, path, dirmode, callback) {
-        var matches = [];
-        tail = (tail || "").replace(/^[\s]+/g, "").replace(/[\s]+$/g, "").split(/[\s]+/g).pop();
+        tail = tail || "";
+        // Trim spaces on both sides of the tail, then split by spaces and take
+        // the last 'word'.
+        tail = tail.trim().split(/\s+/g).pop();
         if (tail.indexOf("/") > -1) {
-            path = path.replace(/[\/]+$/, "") + "/" + tail.substr(0, tail.lastIndexOf("/")).replace(/^[\/]+/, "");
-            tail = tail.substr(tail.lastIndexOf("/") + 1).replace(/^[\/]+/, "").replace(/[\/]+$/, "");
+            // Replace slashes at the beginning of tail
+            path = path.replace(/\/+$/, "");
+            path = Path.join(path, tail);
+            tail = Path.basename(tail);
         }
-        Async.readdir(path).stat().each(function(file, next) {
-            if (file.name.indexOf(tail) === 0 && (!dirmode || file.stat.isDirectory()))
-                matches.push(file.name + (file.stat.isDirectory() ? "/" : ""));
-            next();
-        })
-        .end(function() {
-            callback(tail, matches);
-        });
+
+        var matches = [];
+        Async.readdir(path)
+            .stat().each(
+                function(file, next) {
+                    var startsWithTail = file.name.indexOf(tail) === 0;
+                    var isDir = file.stat.isDirectory();
+
+                    if (startsWithTail && (!dirmode || isDir)) {
+                        matches.push(file.name + (isDir ? "/" : ""));
+                    }
+                    next();
+                }
+            )
+            .end(function() { callback(tail, matches); });
     };
-    
+
     this.dispose = function(callback) {
-        // TODO kill all running processes!
+        // TODO kill all running processes! <-- WAT
         callback();
-    }
+    };
 }).call(ShellPlugin.prototype);
