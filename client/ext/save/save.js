@@ -50,6 +50,10 @@ module.exports = ext.register("ext/save/save", {
 
                 var filename = node.getAttribute("path").substring(node.getAttribute("path").indexOf("/", 1) + 1);
                 
+                var pages   = tabEditors.getPages(),
+                currIdx = pages.indexOf(e.page);
+                tabEditors.set(pages[currIdx].id); //jump to file
+                
                 winCloseConfirm.page = e.page;
                 winCloseConfirm.all  = -100;
                 winCloseConfirm.show();

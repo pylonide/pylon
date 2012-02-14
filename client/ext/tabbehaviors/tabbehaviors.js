@@ -317,18 +317,14 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         // therefore, not the end
         if (page.nextSibling.tagName == "page")
         {
+            var currIdx = pages.indexOf(page);
             var ignore = {};
-            var i = 0, l = pages.length;
-            for (; i < l; i++) {
-                if (page == pages[i])
-                    break;
-            }
             
-            for (var j = 0; j <= i; j++)
+            for (var j = 0; j <= currIdx; j++)
                 ignore[j] = page;
 
             this.closeallbutme(ignore);
-        }
+        } 
     },
 
     closealltotheleft : function() {
@@ -338,14 +334,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         // therefore, not the beginning
         if (page.previousSibling.tagName == "page")
         {
+            var currIdx = pages.indexOf(page);
             var ignore = {};
-            var i = 0, l = pages.length;
-            for (; i < l; i++) {
-                if (page == pages[i])
-                    break;
-            }
             
-           for (var j = l - 1; j >= i; j--)
+           for (var j = pages.length - 1; j >= currIdx; j--)
                 ignore[j] = page;
             
             this.closeallbutme(ignore);
