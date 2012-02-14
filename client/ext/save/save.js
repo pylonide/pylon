@@ -48,6 +48,7 @@ module.exports = ext.register("ext/save/save", {
               && e.page.$doc.getValue()) {
                 ext.initExtension(_self);
 
+                // strips out the leading dir name; for example, /workspace/blahblah/myfile
                 var filename = node.getAttribute("path").substring(node.getAttribute("path").indexOf("/", 1) + 1);
                 
                 var pages   = tabEditors.getPages(),

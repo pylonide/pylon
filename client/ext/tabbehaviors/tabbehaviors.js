@@ -259,8 +259,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         for (var i = 0, l = pages.length; i < l; i++) {
             page = pages[i];
 
-            if (ignore && (page == ignore || ignore.hasOwnProperty(i)))
+            if (ignore && (page == ignore || ignore.hasOwnProperty(i))) {
                 continue;
+            }
 
             if (page.$doc.getNode().getAttribute("changed") == "1") {
                 page.noAnim = true; // turn off animation on closing tab
@@ -315,7 +316,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         var pages = tabEditors.getPages();
     
         // therefore, not the end
-        if (page.nextSibling.tagName == "page")
+        if (page.nextSibling.localName === "page")
         {
             var currIdx = pages.indexOf(page);
             var ignore = {};
@@ -332,7 +333,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         var pages = tabEditors.getPages();
     
         // therefore, not the beginning
-        if (page.previousSibling.tagName == "page")
+        if (page.previousSibling.localName === "page")
         {
             var currIdx = pages.indexOf(page);
             var ignore = {};
