@@ -116,7 +116,6 @@ exports.create = function(page, gridLayout) {
 exports.set = function(splits) {
     if (!apf.isArray(splits))
         return;
-    //console.log("SPLITS:",splits);
     Splits = [].concat(splits);
     for (var split, i = 0, l = Splits.length; i < l; ++i) {
         split = Splits[i];
@@ -131,10 +130,10 @@ exports.show = function(split) {
     if (!split || split === ActiveSplit)
         return this;
 
-    this.update(split);
     if (ActiveSplit)
         this.hide(ActiveSplit, ActiveSplit.gridLayout == split.gridLayout);
-    Grids.show(split.gridLayout);
+    this.update(split);
+    //Grids.show(split.gridLayout);
     
     var i, l;
     // maintain page button styles
@@ -144,14 +143,12 @@ exports.show = function(split) {
         for (i = 0, l = aSplit.pairs.length; i < l; ++i)
             aSplit.pairs[i].page.$deactivateButton();
     });
-
     for (i = 0, l = split.pairs.length; i < l; ++i) {
         split.pairs[i].page.$activateButton();
         split.pairs[i].editor.show();
         if (split.pairs[i].editor.$editor.onScrollLeftChange)
             split.pairs[i].editor.$editor.onScrollLeftChange();
-        //if (!(split.clone && split.pairs[i].page === split.clone))
-            exports.consolidateEditorSession(split.pairs[i].page, split.pairs[i].editor);
+        exports.consolidateEditorSession(split.pairs[i].page, split.pairs[i].editor);
     }
     
     ActiveSplit = split;
@@ -239,8 +236,7 @@ exports.update = function(split, gridLayout) {
     if (split === ActiveSplit) {
         for (var i = 0, l = split.pairs.length; i < l; ++i) {
             split.pairs[i].page.$activateButton();
-            //if (!(split.clone && split.pairs[i].page === split.clone))
-                exports.consolidateEditorSession(split.pairs[i].page, split.pairs[i].editor);
+            exports.consolidateEditorSession(split.pairs[i].page, split.pairs[i].editor);
         }
     }
     
@@ -268,7 +264,6 @@ exports.mutate = function(split, page, type) {
         //removeEditorListeners(editor);
         editor.hide();
         apf.document.body.appendChild(editor);
-        
         page.$deactivateButton();
         clearSplitViewStyles(page);
         editor.hide();
@@ -506,8 +501,11 @@ exports.consolidateEditorSession = function(page, editor) {
     }
     if (!editor)
         console.trace();
-    editor.setAttribute("model", page.$model);
-    editor.setAttribute("actiontracker", page.$at);
+    
+    if (editor.model !== page.$model)
+        editor.setAttribute("model", page.$model);
+    if (editor.actiontracker !== page.$at)
+        editor.setAttribute("actiontracker", page.$at);
     if (editor.value !== session)
         editor.setProperty("value", session);
 };
@@ -553,7 +551,7 @@ function onEditorFocus(editor) {
                 isClone = exports.getEditorSession(isClone);
             if (page === activePage) {
                 // for clone views, the UndoManagers need to be swapped.
-                if (isClone && isClone.getUndoManager() !== page.$at)
+                if (isClone && editor.getUndoManager() !== page.$at)
                     session.setUndoManager(page.$at);
                 if (split.activePage !== i) {
                     split.activePage = i;
@@ -563,7 +561,7 @@ function onEditorFocus(editor) {
             }
             else {
                 // for clone views, the UndoManagers need to be swapped.
-                if (isClone && isClone.getUndoManager() !== CloneUndoManager)
+                if (isClone && editor.getUndoManager() !== CloneUndoManager)
                     session.setUndoManager(CloneUndoManager);
                 apf.setStyleClass(page.$button, InactiveClass, [ActiveClass]);
             }

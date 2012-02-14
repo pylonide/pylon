@@ -7030,6 +7030,7 @@
 
         .darksplitter.vertical {
             border-right: 1px solid #e8e8e8;
+            border-left: 1px solid #d7d7d7;
 
             vertical-align: middle;
             width: 6px;
@@ -7052,7 +7053,7 @@
             height: 11px;
             background-position: 0 -3px;
             margin-top: 49%;
-            margin-left: 2px;
+            margin-left: 1px;
         }
 
         .darksplitterMoving.vertical span,
