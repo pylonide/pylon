@@ -137,6 +137,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/codecomplete/codecomplete",
     //"ext/autosave/autosave",
     "ext/vim/vim",
+    "ext/docs/docs",
     "ext/guidedtour/guidedtour",
     "ext/quickstart/quickstart",
     "ext/jslanguage/jslanguage",

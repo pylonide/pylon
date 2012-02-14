@@ -1,5 +1,5 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:model id="mdlDocs" src="ext/docs/example.xml" />
+    <a:model id="mdlDocs" src="static/ext/docs/example.xml" />
     
     <a:window id="winDocViewer" skin="dockwin" title="Documentation" modal="false" flex="1" buttons="close" visible="false">
         <a:vbox anchors="0 0 0 0">

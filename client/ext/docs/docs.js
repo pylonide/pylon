@@ -10,33 +10,63 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var panels = require("ext/panels/panels")
 var markup = require("text!ext/docs/docs.xml");
+var content = require("text!ext/docs/example.xml");
 
 module.exports = ext.register("ext/docs/docs", {
-    name    : "Documentation",
+    name    : "Documentation Viewer",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
     markup  : markup,
-    
-    hook : function(){
+    nodes : [],
+
+    /*hook : function(){
         panels.register(this);
-    },
-
+    },*/
+    
     init : function(amlNode){
-        //Append the docs window at the right of the editor
-        ide.vbMain.selectSingleNode("a:hbox/a:vbox[3]").appendChild(winDocViewer);
+        var _self = this;
         
-        this.panel = winDocViewer;
-    },
+        //Append the docs window to the right of the editor
+        ide.vbMain.selectSingleNode("a:vbox[1]/a:hbox[1]").appendChild(winDocViewer);
+        
+        //this.panel = winDocViewer;
+        
+        this.nodes.push(
+            winDocViewer,
+            mnuWindows.appendChild(new apf.item({
+                id: "chkDocViewerOpen",
+                caption: "Documentation Viewer",
+                type: "check",
+                "onprop.checked" : function(e) {
+                    if (e.value)
+                        _self.enable();
+                    else
+                        _self.disable();
+                }
+            }))
+        );
+        
+        tbDocsSearch.addEventListener("keydown", function(e){
+            if (tbDocsSearch.value == "") {
+                return;
+            }
 
-    enable : function(){
+            if (e.keyCode == 13){
+                tbDocsSearch.load(this.example);
+            }
+        });
+        
+    },
+   
+   enable : function(){
         winDocViewer.show();
     },
 
     disable : function(fromParent){
         winDocViewer.hide();
     },
-
+ 
     destroy : function(){
         winDocViewer.destroy(true, true);
         panels.unregister(this);
