@@ -133,7 +133,7 @@ exports.show = function(split) {
     if (ActiveSplit)
         this.hide(ActiveSplit, ActiveSplit.gridLayout == split.gridLayout);
     this.update(split);
-    //Grids.show(split.gridLayout);
+    Grids.show(split.gridLayout);
     
     var i, l;
     // maintain page button styles

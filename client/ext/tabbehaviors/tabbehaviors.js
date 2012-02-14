@@ -401,6 +401,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             tabs.appendChild(curr)
         else
             tabs.insertBefore(curr, pages[idx]);
+        tabs.dispatchEvent("reorder", { page: curr });
         return false;
     },
 

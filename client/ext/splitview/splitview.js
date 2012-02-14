@@ -238,8 +238,6 @@ module.exports = ext.register("ext/splitview/splitview", {
                 cont();
             
             function cont() {
-                restoring = true;
-                
                 var editor = Splits.getCloneEditor(page);
                 
                 page.acesession = new EditSession(page.$doc.acedoc);
@@ -466,8 +464,8 @@ module.exports = ext.register("ext/splitview/splitview", {
     },
     
     updateSplitView: function(previous, next) {
-        if (restoring)
-            return;
+        //if (restoring)
+        //    return;
         var editor;
         var doc = next.$doc;
         var at  = next.$at;
@@ -667,7 +665,7 @@ module.exports = ext.register("ext/splitview/splitview", {
                 if (id == hasClone)
                     continue;
                 page = tabs.getPage(id);
-                if (Splits.indexOf(split, page) > -1)
+                if (!page || Splits.indexOf(split, page) > -1)
                     continue;
                 editor = Splits.getEditor(split, page);
                 split.pairs.push({
@@ -676,18 +674,20 @@ module.exports = ext.register("ext/splitview/splitview", {
                 });
             }
             
-            if (apf.isTrue(node.getAttribute("active")))
-                active = split;
-            if (splits.indexOf(split) == -1)
-                splits.push(split);
+            if (split.pairs.length > 1) {
+                if (apf.isTrue(node.getAttribute("active")))
+                    active = split;
+                if (splits.indexOf(split) == -1)
+                    splits.push(split);
+            }
         }
         Splits.set(splits);
         
         if (!active || Splits.indexOf(active, activePage) == -1) {
             tabs.set(activePage);
         }
-        else {
-            tabs.set(active.pairs[0].page);
+        else if (active) {
+            //tabs.set(active.pairs[0].page);
             Splits.update(active);
             Splits.show(active);
             mnuSplitAlign.setAttribute("checked", active.gridLayout == "3rows");
