@@ -79,6 +79,20 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 },
                 disabled : "{!!!tabEditors.activepage}"
             })),
+            mnuTabs.appendChild(new apf.item({
+                caption : "Close Tabs to the Right",
+                onclick : function() {
+                    _self.closealltotheright();
+                },
+                disabled : "{!!!tabEditors.activepage}"
+            })),
+            mnuTabs.appendChild(new apf.item({
+                caption : "Close Tabs to the Left",
+                onclick : function() {
+                    _self.closealltotheleft();
+                },
+                disabled : "{!!!tabEditors.activepage}"
+            })),
             //mnuTabs.appendChild(new apf.divider()),
             apf.document.body.appendChild(new apf.menu({
                 id : "mnuContextTabs",
@@ -104,6 +118,18 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                         onclick : function() {
                             _self.closeallbutme(tabEditors.contextPage);
                         }
+                    }),
+                    new apf.item({
+                        caption : "Close Tabs to the Right",
+                        onclick : function() {
+                            _self.closealltotheright();
+                        }
+                    }),
+                    new apf.item({
+                        caption : "Close Tabs to the Left",
+                        onclick : function() {
+                            _self.closealltotheleft();
+                        }
                     })
                 ]
             }))
@@ -113,7 +139,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         this.hotitems.closetab      = [this.nodes[1], mnuContextTabs.childNodes[1]];
         this.hotitems.closealltabs  = [this.nodes[2], mnuContextTabs.childNodes[2]];
         this.hotitems.closeallbutme = [this.nodes[3], mnuContextTabs.childNodes[3]];
-
+        this.hotitems.closealltotheright = [this.nodes[4], mnuContextTabs.childNodes[4]];
+        this.hotitems.closealltotheleftt = [this.nodes[5], mnuContextTabs.childNodes[5]];
+        
         tabEditors.setAttribute("contextmenu", "mnuContextTabs");
 
         tabEditors.addEventListener("close", function(e) {
@@ -231,7 +259,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         for (var i = 0, l = pages.length; i < l; i++) {
             page = pages[i];
 
-            if (ignore && page == ignore)
+            if (ignore && (page == ignore || ignore.hasOwnProperty(i)))
                 continue;
 
             if (page.$doc.getNode().getAttribute("changed") == "1") {
@@ -282,6 +310,48 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             callback();
     },
 
+    closealltotheright : function() {
+        var page = tabEditors.getPage();
+        var pages = tabEditors.getPages();
+    
+        // therefore, not the end
+        if (page.nextSibling.tagName == "page")
+        {
+            var ignore = {};
+            var i = 0, l = pages.length;
+            for (; i < l; i++) {
+                if (page == pages[i])
+                    break;
+            }
+            
+            for (var j = 0; j <= i; j++)
+                ignore[j] = page;
+
+            this.closeallbutme(ignore);
+        }
+    },
+
+    closealltotheleft : function() {
+        var page = tabEditors.getPage();
+        var pages = tabEditors.getPages();
+    
+        // therefore, not the beginning
+        if (page.previousSibling.tagName == "page")
+        {
+            var ignore = {};
+            var i = 0, l = pages.length;
+            for (; i < l; i++) {
+                if (page == pages[i])
+                    break;
+            }
+            
+           for (var j = l - 1; j >= i; j--)
+                ignore[j] = page;
+            
+            this.closeallbutme(ignore);
+        }
+    },
+    
     nexttab : function(){
         var n = this.accessed.length - this.$tabAccessCycle++;
         if (n < 0) {
