@@ -62,7 +62,7 @@ apf.colorpicker = function(struct, tagName){
     var c = apf.color;
 
     this.$supportedProperties.push("color", "red", "green", "blue", "hue",
-        "saturation", "brightness", "hex");
+        "saturation", "brightness", "hex", "skin-textbox", "skin-spinner");
 
     this.$propHandlers["red"]        =
     this.$propHandlers["green"]      =
@@ -240,6 +240,8 @@ apf.colorpicker = function(struct, tagName){
                                 }),
                                 new apf.spinner({
                                     id: this.id + "_red",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
                                     width: 45,
                                     min: 0,
                                     max: 255,
@@ -249,6 +251,7 @@ apf.colorpicker = function(struct, tagName){
                             ]
                         }),
                         new apf.hbox({
+                            edge: "0 0 3 0",
                             childNodes: [
                                 new apf.label({
                                     width: 14,
@@ -257,6 +260,8 @@ apf.colorpicker = function(struct, tagName){
                                 }),
                                 new apf.spinner({
                                     id: this.id + "_green",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
                                     width: 45,
                                     min: 0,
                                     max: 255,
@@ -266,6 +271,7 @@ apf.colorpicker = function(struct, tagName){
                             ]
                         }),
                         new apf.hbox({
+                            edge: "0 0 3 0",
                             childNodes: [
                                 new apf.label({
                                     width: 14,
@@ -274,6 +280,8 @@ apf.colorpicker = function(struct, tagName){
                                 }),
                                 new apf.spinner({
                                     id: this.id + "_blue",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
                                     width: 45,
                                     min: 0,
                                     max: 255,
@@ -296,6 +304,8 @@ apf.colorpicker = function(struct, tagName){
                                 }),
                                 new apf.spinner({
                                     id: this.id + "_hue",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
                                     width: 45,
                                     min: 0,
                                     max: 360,
@@ -305,6 +315,7 @@ apf.colorpicker = function(struct, tagName){
                             ]
                         }),
                         new apf.hbox({
+                            edge: "0 0 3 0",
                             childNodes: [
                                 new apf.label({
                                     width: 14,
@@ -313,6 +324,8 @@ apf.colorpicker = function(struct, tagName){
                                 }),
                                 new apf.spinner({
                                     id: this.id + "_saturation",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
                                     width: 45,
                                     min: 0,
                                     max: 100,
@@ -322,6 +335,7 @@ apf.colorpicker = function(struct, tagName){
                             ]
                         }),
                         new apf.hbox({
+                            edge: "0 0 3 0",
                             childNodes: [
                                 new apf.label({
                                     width: 14,
@@ -330,6 +344,8 @@ apf.colorpicker = function(struct, tagName){
                                 }),
                                 new apf.spinner({
                                     id: this.id + "_brightness",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
                                     width: 45,
                                     min: 0,
                                     max: 100,
@@ -347,7 +363,7 @@ apf.colorpicker = function(struct, tagName){
             htmlNode: this.oInputs,
             skinset: skin,
             left: 212,
-            top: 142,
+            top: 144,
             width: 14,
             caption: "#",
             "for": this.id + "_hex"
@@ -356,9 +372,10 @@ apf.colorpicker = function(struct, tagName){
         new apf.textbox({
             htmlNode: this.oInputs,
             skinset: skin,
+            skin: this["skin-textbox"],
             left: 222,
             top: 140,
-            width: 75,
+            width: 60,
             value: "{" + this.id + ".hex}",
             onafterchange: function(e) {
                 _self.hex = c.fixHex(e.value);
