@@ -55,7 +55,12 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
             _self.nodes.push(trFiles.$ext);
             decorateNode(trFiles.$ext);
         });
-        
+
+        ide.addEventListener("init.ext/uploadfiles/uploadfiles", function(){
+            _self.nodes.push(uploadDropArea.$ext);
+            decorateNode(uploadDropArea.$ext);
+        });
+
         this.dragStateEvent = {"dragenter": dragEnter};
         
         function dragLeave(e) {

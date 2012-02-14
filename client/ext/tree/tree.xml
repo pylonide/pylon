@@ -18,9 +18,9 @@
         <a:button
           top="-22"
           skin="header-btn"
-          right="5"
-          icon="panel_settings.png"
-          submenu="mnuFilesSettings"/>
+          right="56"
+          icon="panel_upload.png"
+          onclick="winUploadFiles.show()" />
         <a:button
           top="-22"
           skin="header-btn"
@@ -28,6 +28,12 @@
           icon="panel_refresh.png"
           visible = "{trFiles.visible}"
           onclick="require('ext/tree/tree').refresh()" />
+        <a:button
+          top="-22"
+          skin="header-btn"
+          right="5"
+          icon="panel_settings.png"
+          submenu="mnuFilesSettings"/>
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
         
         <a:menu id="mnuFilesSettings">
@@ -38,7 +44,7 @@
           contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
           onbeforeremove="return require('core/util').removeInteractive(this)" disabled="{{!stServerConnected.active}}"
           onbeforemove="this.disable();" autoselect="false"
-          flex="1" anchors="0 0 0 0" scrollbar="sbShared 2 2 2"
+          flex="1" anchors2="0 0 0 0" scrollbar="sbShared 2 2 2"
         >
             <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
                 <a:insert match="[folder]" get="{davProject.readdir([@path])}" />
@@ -65,6 +71,23 @@
                 action="insert-before" copy="{event.ctrlKey}" />    
         </a:tree>
         
+        <a:list id="lstOpenFiles2" 
+          canrename   = "true" 
+          anchors2     = "0 0 0 0" 
+          model       = "{require('ext/openfiles/openfiles').model}"
+          border      = "0"
+          scrollbar   = "sbShared 2 2 2"
+          multiselect = "true" 
+          autoselect  = "false"
+          skin        = "tree">
+            <a:each match="[file]" sort="[@name]" sort-method="filesort">
+                <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.] + (cbShowFiles.checked ? ' - ' + [../@path].split('/').slice(-2).join('/') : '')}" />
+                <a:icon match="[folder|project]" value="folder.png" />
+                <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
+            </a:each>
+            <a:remove match="[file|folder]" />
+        </a:list>
+        
         <a:menu id="mnuCtxTree" disabled="{!stServerConnected.active}">
             <a:item match="[file]" class="strong"  onclick="
                 require('core/ide').dispatchEvent('openfile', {doc: require('core/ide').createDocument(apf.activeElement.selected)})
@@ -84,6 +107,10 @@
                 apf.clipboard.pasteSelection(apf.activeElement);
             ">Paste</a:item>
             <a:divider />
+            <a:item id="mnuCtxTreeUpload" match="[folder]" visible="{trFiles.selected.getAttribute('type')=='folder'}" onclick="
+                winUploadFiles.show();
+            ">Upload to this folder</a:item>
+            <a:divider visible="{mnuCtxTreeUpload.visible}" />
             <a:item match="[file|folder|project]" onclick="
                 require('ext/filesystem/filesystem').createFile();
             ">New File</a:item>
