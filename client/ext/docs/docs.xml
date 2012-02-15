@@ -6,8 +6,8 @@
         </data>
     </a:model>
     
-    <a:window id="winDocViewer" skin="dockwin" title="Documentation" modal="false" flex="1" buttons="close" visible="false">
-        <a:vbox anchors="0 0 0 0">
+    <a:window id="winDocViewer" skin= "fm-window"  title="Documentation" modal="false" flex="1" buttons="close" visible="false" draggable="false">
+        <a:bar skin="c9-header-bar" top="-30" right="28" height="30">
             <a:dropdown id="docSelector"
                           model     = "mdlDocSelector"
                           skin      = "black_dropdown"
@@ -16,6 +16,8 @@
                           each      = "[element]"
                           caption   = "[@caption]"
                           eachvalue = "[@value]" />
+        </a:bar>
+        <a:vbox anchors="0 0 0 0">
             <a:toolbar>
                 <a:bar>
                     <a:hbox edge="4" padding="3">
@@ -30,21 +32,20 @@
                 <a:page id="search">
                     <a:datagrid model="{docSelector.value}"
                       anchors   = "0 0 0 0"
-                      class     = "noscrollbar"
+                      class     = "noscrollbar with-noise"
                       scrollbar = "sbShared 20 2 2"
-                      style="border:none;"
                       onafterchoose = "
                         pgDocs.getPage(1).setAttribute('model', this.selected);
                         pgDocs.set(1);
                       ">
                         <a:each match="[class[position() &lt; 20]]" filter="{tbDocsSearch.value}" filter-fields="@type,description">
-                            <a:column width="40%" value="[@type]" caption="Type" /> 
-                            <a:column width="60%" value="{[description].replace(/&lt;[^&gt;]*&gt;/g, '').substr(0,200)}" caption="Description" /> 
+                            <a:column width="20%" value="[@type]" caption="Type" /> 
+                            <a:column width="80%" value="{[description].replace(/&lt;[^&gt;]*&gt;/g, '').substr(0,200)}" caption="Description" /> 
                         </a:each>
                     </a:datagrid>
                 </a:page>
                 <a:page trans-in="push-right" trans-out="push-right">
-                    <div id="lmParent" anchors="0 0 0 0" style="overflow:auto;padding:10px"><?lm
+                    <div id="docHolder" anchors="0 0 0 0" style="overflow:auto;padding:10px"><?lm
                         <h1>[@type]</h1>
                         <p>[description]</p>
                     ?></div>

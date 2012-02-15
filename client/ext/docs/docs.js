@@ -10,6 +10,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var panels = require("ext/panels/panels")
 var markup = require("text!ext/docs/docs.xml");
+var css = require("text!ext/docs/docs.css");
 
 module.exports = ext.register("ext/docs/docs", {
     name    : "Documentation Viewer",
@@ -17,6 +18,7 @@ module.exports = ext.register("ext/docs/docs", {
     type    : ext.GENERAL,
     alone   : true,
     markup  : markup,
+    css     : css,
     nodes : [],
 
     /*hook : function(){
@@ -25,6 +27,8 @@ module.exports = ext.register("ext/docs/docs", {
     
     init : function(amlNode){
         var _self = this;
+        
+        apf.importCssString((this.css || ""));
         
         //Append the docs window to the right of the editor
         ide.vbMain.selectSingleNode("a:vbox[1]/a:hbox[1]").appendChild(winDocViewer);
