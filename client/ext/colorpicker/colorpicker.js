@@ -363,15 +363,6 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
               || pos.column < range.start.column || pos.column > range.end.column)
                 menu.hide();
         });
-        
-        ide.addEventListener("codetools.selectionchange", onSelectionChange = function() {
-            var a = _self.$activeColor;
-
-            if (!cp || !a || !cp.visible) 
-                return;
-
-            menu.hide();
-        });
 
         editor.addEventListener("mousewheel", onScroll = function(e) {
             var a = _self.$activeColor;
