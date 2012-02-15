@@ -134,7 +134,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 ]
             }))
         );
-
+        
         this.hotitems.revealtab     = [this.nodes[0], mnuContextTabs.childNodes[0]];
         this.hotitems.closetab      = [this.nodes[1], mnuContextTabs.childNodes[1]];
         this.hotitems.closealltabs  = [this.nodes[2], mnuContextTabs.childNodes[2]];
@@ -144,6 +144,24 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         
         tabEditors.setAttribute("contextmenu", "mnuContextTabs");
 
+        mnuContextTabs.addEventListener("prop.visible", function(e) {
+            var page = tabEditors.getPage();
+            var pages = tabEditors.getPages();
+            
+            // be optimistic, reset menu items to disabled
+            mnuContextTabs.childNodes[4].setAttribute('disabled', false);
+            mnuContextTabs.childNodes[5].setAttribute('disabled', false);
+                
+            // if last tab, remove "close to the right"
+            if (page.nextSibling.localName !== "page") {
+                mnuContextTabs.childNodes[4].setAttribute('disabled', true);
+            }
+            // if first tab, remove "close to the left"
+            else if (pages.indexOf(page) == 0) {
+                mnuContextTabs.childNodes[5].setAttribute('disabled', true);
+            }
+        });
+        
         tabEditors.addEventListener("close", function(e) {
             if (!e || !e.htmlEvent)
                 return;
@@ -315,34 +333,28 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         var page = tabEditors.getPage();
         var pages = tabEditors.getPages();
     
-        // therefore, not the end
-        if (page.nextSibling.localName === "page")
-        {
-            var currIdx = pages.indexOf(page);
-            var ignore = {};
+        var currIdx = pages.indexOf(page);
+        var ignore = {};
             
-            for (var j = 0; j <= currIdx; j++)
-                ignore[j] = page;
+        for (var j = 0; j <= currIdx; j++) {
+            ignore[j] = page;
+        }
 
-            this.closeallbutme(ignore);
-        } 
+        this.closeallbutme(ignore);
     },
 
     closealltotheleft : function() {
         var page = tabEditors.getPage();
         var pages = tabEditors.getPages();
     
-        // therefore, not the beginning
-        if (page.previousSibling.localName === "page")
-        {
-            var currIdx = pages.indexOf(page);
-            var ignore = {};
+        var currIdx = pages.indexOf(page);
+        var ignore = {};
             
-           for (var j = pages.length - 1; j >= currIdx; j--)
-                ignore[j] = page;
-            
-            this.closeallbutme(ignore);
+        for (var j = pages.length - 1; j >= currIdx; j--) {
+            ignore[j] = page;
         }
+        
+        this.closeallbutme(ignore);
     },
     
     nexttab : function(){

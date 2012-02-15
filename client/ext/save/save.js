@@ -47,9 +47,6 @@ module.exports = ext.register("ext/save/save", {
               || !at.undo_ptr && node.getAttribute("changed") == 1
               && e.page.$doc.getValue()) {
                 ext.initExtension(_self);
-
-                // strips out the leading dir name; for example, /workspace/blahblah/myfile
-                var filename = node.getAttribute("path").substring(node.getAttribute("path").indexOf("/", 1) + 1);
                 
                 var pages   = tabEditors.getPages(),
                 currIdx = pages.indexOf(e.page);
@@ -59,7 +56,7 @@ module.exports = ext.register("ext/save/save", {
                 winCloseConfirm.all  = -100;
                 winCloseConfirm.show();
 
-                winCloseConfirm.childNodes[0].$ext.innerHTML = "<h3>Save " + filename + "?</h3><div>This file has unsaved changes. Your changes will be lost if you don't save them.</div>";
+                winCloseConfirm.childNodes[0].$ext.innerHTML = "<h3>Save " + node.getAttribute("path") + "?</h3><div>This file has unsaved changes. Your changes will be lost if you don't save them.</div>";
                 
                 winCloseConfirm.addEventListener("hide", function(){
                     if (winCloseConfirm.all != -100) {
