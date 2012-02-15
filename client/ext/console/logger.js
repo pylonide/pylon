@@ -117,7 +117,7 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
         }, 100);
     }
 
-    var lines = data.split("\n", MAX_LINES);
+    var lines = (data.toString()).split("\n", MAX_LINES);
     var fragment = document.createDocumentFragment();
     for (var i=0, l = lines.length; i<l; i++) {
         var div = document.createElement("div");
