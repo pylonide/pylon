@@ -10,7 +10,6 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var panels = require("ext/panels/panels")
 var markup = require("text!ext/docs/docs.xml");
-var content = require("text!ext/docs/example.xml");
 
 module.exports = ext.register("ext/docs/docs", {
     name    : "Documentation Viewer",
