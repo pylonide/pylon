@@ -70,14 +70,12 @@ apf.colorpicker = function(struct, tagName){
     this.$propHandlers["hue"]        =
     this.$propHandlers["saturation"] = 
     this.$propHandlers["brightness"] = 
-    this.$propHandlers["hex"]        = function(val, doChange) {
+    this.$propHandlers["hex"]        = function(val, prop) {
         clearTimeout(this.changeTimer);
-        if (doChange) {
-            var _self = this;
-            this.changeTimer = $setTimeout(function() {
-                _self.$change();
-            });
-        }
+        var _self = this;
+        this.changeTimer = $setTimeout(function() {
+            _self.$change(prop);
+        });
     };
 
     this.$propHandlers["value"] = function(val) {
@@ -85,33 +83,39 @@ apf.colorpicker = function(struct, tagName){
     };
 
     this.$restoreOriginal = function() {
-        this.$change(c.hexToHSB(this.value));
+        var hsb = c.hexToHSB(this.value);
+        this.hue = hsb.h;
+        this.saturation = hsb.s;
+        this.brightness = hsb.b;
+        this.$change();
         this.oCustomColor.style.backgroundColor = 
             (this.value.substr(0, 1) != "#" ? "#" : "") + this.value;
     };
 
-    this.$change = function(hsb) {
-        if (!hsb) {
-            hsb = {
-                h: this.hue,
-                s: this.saturation,
-                b: this.brightness
-            };
-        }
-        hsb = c.fixHSB(hsb);
+    this.$change = function(prop) {
+        var hsb = c.fixHSB({
+            h: this.hue,
+            s: this.saturation,
+            b: this.brightness
+        });
         
-        var hex = c.HSBToHex(hsb),
-            rgb = c.HSBToRGB(hsb);
+        var hex = c.HSBToHex(hsb);
+        var rgb = c.HSBToRGB(hsb);
 
         this.oNewColor.style.backgroundColor = "#" + hex;
 
-        this.setProperty("red", rgb.r);
-        this.setProperty("green", rgb.g);
-        this.setProperty("blue", rgb.b);
-        this.setProperty("saturation", hsb.s);
-        this.setProperty("brightness", hsb.b);
-        this.setProperty("hue", hsb.h);
-        this.setProperty("hex", hex);
+        if (prop != "red" && prop != "green" && prop != "blue") {
+            this.setProperty("red", rgb.r);
+            this.setProperty("green", rgb.g);
+            this.setProperty("blue", rgb.b);
+        }
+        if (prop != "hue" && prop != "saturation" && prop != "brightness") {
+            this.setProperty("hue", hsb.h);
+            this.setProperty("saturation", hsb.s);
+            this.setProperty("brightness", hsb.b);
+        }
+        if (prop != "hex")
+            this.setProperty("hex", hex);
 
         this.oSelector.style.background = "#" + c.HSBToHex({h: hsb.h, s: 100, b: 100});
         this.oHue.style.top          = parseInt(150 - 150 * hsb.h / 360, 10) + "px";
@@ -192,29 +196,42 @@ apf.colorpicker = function(struct, tagName){
         };
 
         function spinnerChange(e) {
-            var o     = e.currentTarget,
-                isRGB = false;
-            if (o.id.indexOf("hue") > -1)
+            var o     = e.currentTarget;
+            var isRGB = false;
+            if (o.id.indexOf("hue") > -1) {
                 _self.hue = e.value;
-            else if (o.id.indexOf("saturation") > -1)
+            }
+            else if (o.id.indexOf("saturation") > -1) {
                 _self.saturation = e.value;
-            else if (o.id.indexOf("brightness") > -1)
+            }
+            else if (o.id.indexOf("brightness") > -1) {
                 _self.brightness = e.value;
-            else if (o.id.indexOf("red") > -1)
-                _self.red = e.value, isRGB = true;
-            else if (o.id.indexOf("green") > -1)
-                _self.green = e.value, isRGB = true;
-            else if (o.id.indexOf("blue") > -1)
-                _self.blue = e.value, isRGB = true;
+            }
+            else if (o.id.indexOf("red") > -1) {
+                _self.red = e.value;
+                isRGB = true;
+            }
+            else if (o.id.indexOf("green") > -1) {
+                _self.green = e.value;
+                isRGB = true;
+            }
+            else if (o.id.indexOf("blue") > -1) {
+                _self.blue = e.value;
+                isRGB = true;
+            }
 
             if (isRGB) {
                 var hsb = c.RGBToHSB({r: _self.red, g: _self.green, b: _self.blue});
+                _self.hex = c.HSBToHex(hsb);
                 _self.hue = hsb.h;
                 _self.saturation = hsb.s;
                 _self.brightness = hsb.b;
             }
+            else {
+                _self.hex = c.HSBToHex({h: _self.hue, s: _self.saturation, b: _self.brightness});
+            }
 
-            _self.$change();
+            _self.$change(isRGB ? "red" : "hue");
         }
 
         //append APF widgets for additional controls
@@ -373,7 +390,7 @@ apf.colorpicker = function(struct, tagName){
             htmlNode: this.oInputs,
             skinset: skin,
             skin: this["skin-textbox"],
-            mask: "XXXXXX;;_",
+            mask: "<XXXXXX;;_",
             left: 222,
             top: 140,
             width: 60,

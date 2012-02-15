@@ -138,6 +138,7 @@ apf.color = {
     },
 
     fixHex: function (hex, asBrowser) {
+        hex = hex.toLowerCase().replace(/[^a-f0-9]/g, "");
         var len = 6 - hex.length;
         if (len > 0) {
             var ch = "0";
