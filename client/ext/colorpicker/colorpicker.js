@@ -265,13 +265,21 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             if (!cp || !a || !cp.visible) 
                 return;
                 
-            menu.hide();
             // when ESC is pressed, undo all changes made by the colorpicker
             if (e.keyCode === 27) {
+                menu.hide();
                 clearTimeout(_self.$colorPickTimer);
                 var at = editor.session.$undoManager;
                 if (at.undolength > a.start)
                     at.undo(at.undolength - a.start);
+            }
+            else {
+                var parent = e.currentTarget.$ext.parentNode;
+                while (parent != document.body) {
+                    if (parent = cp.$ext)
+                        return;
+                    parent = parent.parentNode;
+                }
             }
         });
         
