@@ -120,7 +120,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                     break;
                 }
                 // debug process already running
-                else if (message.code == 1) {
+                else if (message.code == 5) {
                     stDebugProcessRunning.setProperty("active", true);
                     stProcessRunning.setProperty("active", true);
 
