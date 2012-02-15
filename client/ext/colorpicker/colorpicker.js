@@ -178,8 +178,10 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         }
 
         var _self = this;
+        var columnChangeTimer;
 
         ide.addEventListener("codetools.columnchange", function(e) {
+            clearTimeout(columnChangeTimer);
             var doc = e.doc;
             var pos = e.pos;
             var editor = e.editor;
@@ -190,10 +192,14 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
 
             line = doc.getLine(pos.row);
             var colors = detectColors(pos, line);
-            if (colors[0] && colors[0].length)
+            if (colors[0] && colors[0].length) {
                 _self.showColorTooltip(pos, editor, line, colors[0]);
-            else
-                _self.hideColorTooltips(editor);
+            }
+            else {
+                columnChangeTimer = setTimeout(function() {
+                    _self.hideColorTooltips(editor);
+                }, 100);
+            }
         });
 
         ide.addEventListener("codetools.codeclick", function(e) {
