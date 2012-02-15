@@ -62,7 +62,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
     skin   : skin,
 
     nodes : [],
-    
+
     init: function(amlNode) {
         apf.document.body.insertMarkup(markup);
         this.menu = mnuColorPicker;
@@ -90,12 +90,12 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                     apf.setStyleClass(spans[i], "color_hover", []);
             }
         });
-        
+
         apf.addListener(this.colortools, "mousedown", function(e) {
             var el = e.srcElement || e.element;
             if (el.nodeType != 1 || el.className.indexOf("color") == -1)
                 return;
-            
+
             var c = apf.color;
             var cp = _self.colorpicker;
             var hsb = c.hexToHSB(c.fixHex(el.getAttribute("data-color")));
@@ -122,7 +122,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             }
         });
     },
-    
+
     hook: function() {
         apf.importCssString(css || "");
 
@@ -140,14 +140,14 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             }
             return [colors];
         }
-        
+
         var _self = this;
-        
+
         ide.addEventListener("codetools.columnchange", function(e) {
             var doc = e.doc;
             var pos = e.pos;
             var editor = e.editor;
-            
+
             var line = doc.getLine(1);
             if (!(e.amlEditor.syntax == "css" || e.amlEditor.syntax == "svg" || (line && line.indexOf("<a:skin") > -1)))
                 return;
@@ -159,7 +159,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             else
                 _self.hideColorTooltips(editor);
         });
-        
+
         ide.addEventListener("codetools.codeclick", function(e) {
             var doc = e.doc;
             var pos = e.pos;
@@ -181,7 +181,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 _self.menu.hide();
         });
     },
-    
+
     showColorTooltip: function(pos, editor, line, colors, markerId) {
         if (this.menu && this.menu.visible && !markerId)
             return;
@@ -209,10 +209,10 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             }
             markers.push(marker);
         });
-        
+
         this.hideColorTooltips(editor, markers);
     },
-    
+
     hideColorTooltips: function(editor, exceptions) {
         if (this.$activeColor)
             return;
@@ -229,12 +229,12 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             delete Colors[mid];
         }
     },
-    
+
     toggleColorPicker: function(pos, editor, line, color) {
         ext.initExtension(this);
         var menu = this.menu;
         var cp = this.colorpicker;
-        
+
         var type = "hex";
         var orig = color;// = color.replace("#", "");
         if (namedColors[color])
@@ -251,20 +251,20 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         }
         else
             color = "#" + apf.color.fixHex(color.replace("#", ""));
-        
+
         if (menu.visible && color == this.$activeColor.color && pos.row == this.$activeColor.row)
             return menu.hide();
-        
+
         // set appropriate event listeners, that will be removed when the colorpicker
         // hides.
         var onKeyDown, onScroll, onCursorChange;
         var _self = this;
         apf.addEventListener("keydown", onKeyDown = function(e) {
             var a = _self.$activeColor;
-            
+
             if (!cp || !a || !cp.visible) 
                 return;
-                
+
             // when ESC is pressed, undo all changes made by the colorpicker
             if (e.keyCode === 27) {
                 menu.hide();
@@ -282,7 +282,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 }
             }
         });
-        
+
         ide.addEventListener("codetools.cursorchange", onCursorChange = function(e) {
             var a = _self.$activeColor;
 
@@ -295,13 +295,13 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
               || pos.column < range.start.column || pos.column > range.end.column)
                 menu.hide();
         });
-        
+
         editor.addEventListener("mousewheel", onScroll = function(e) {
             var a = _self.$activeColor;
-            
+
             if (!cp || !a || !cp.visible) 
                 return;
-                
+
             menu.hide();
         });
 
@@ -334,7 +334,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         
         this.resize();
     },
-    
+
     updateColorTools: function(editor) {
         var lines = editor.session.getLines(0, 2000);
         var m;
@@ -344,7 +344,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 continue;
             colors = colors.concat(m);
         }
-        
+
         var out = [];
         var color;
         for (i = 0, l = Math.min(colors.length, 11); i < l; ++i) {
@@ -365,7 +365,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         }
         this.colortools.innerHTML = "<span>Existing file colors:</span>" + out.join("");
     },
-    
+
     onColorPicked: function(old, color) {
         var a = this.$activeColor;
         if (!a)
@@ -374,7 +374,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             --a.ignore;
             return;
         }
-        
+
         clearTimeout(this.$colorPickTimer);
 
         var doc = a.editor.session.doc;
@@ -402,9 +402,9 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             });
         }
         a.color = color;
-        
+
         a.markerNode.innerHTML = newColor;
-        
+
         this.$colorPickTimer = setTimeout(function() {
             var range = createColorRange(a.pos.row, a.pos.column, line, a.current);
             if (!range)
@@ -414,7 +414,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             a.current = newColor;
         }, 200);
     },
-    
+
     resize: function(color) {
         if (!this.menu.visible)
             return;
@@ -426,7 +426,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         var renderer = Editors.currentEditor.amlEditor.$editor.renderer;
         var cp = this.colorpicker;
         var menu = this.menu;
-        
+
         //default to arrow on the left side:
         menu.setProperty("class", "left");
 
@@ -451,7 +451,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 ? pOverflow.offsetWidth
                 : (window.innerWidth + window.pageXOffset)) + pOverflow.scrollLeft
             : pOverflow.offsetWidth + pOverflow.scrollLeft);
-        
+
         if (y + height > edgeY) {
             y = edgeY - height;
             if (y < 0)
@@ -471,11 +471,11 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                     y = coordsStart.pageY - height + 10;
                 else
                     y = coordsStart.pageY + 40;
-                
+
                 x = 10;
             }
         }
-        
+
         // position the arrow
         if (!origArrowTop)
             origArrowTop = parseInt(apf.getStyle(this.arrow, "top"), 10);
@@ -488,7 +488,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         menu.$ext.style.top = y + "px";
         menu.$ext.style.left = x + "px";
     },
-    
+
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
@@ -502,6 +502,10 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
     },
 
     destroy : function(){
+        // hiding the menu also detaches all event listeners.
+        if (this.menu.visible)
+            this.menu.hide();
+
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
