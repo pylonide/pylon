@@ -563,13 +563,19 @@ apf.model = function(struct, tagName){
      * Removes xmlNode from this model 
      */
     this.removeXml = function(xmlNode){
-        if (typeof xmlNode == "string")
-            var xmlNodes = this.data.selectNodes(xmlNode);
-        else if (!xmlNode.length)
+        if (!this.data) return;
+
+        var xmlNodes;
+        if (typeof xmlNode === "string") {
+            xmlNodes = this.data.selectNodes(xmlNode);
+        }
+        else if (!xmlNode.length) {
             xmlNodes = [xmlNode];
+        }
         
-        if (xmlNodes.length)
+        if (xmlNodes.length) {
             apf.xmldb.removeNodeList(xmlNodes);
+        }
     };
 
     /**
