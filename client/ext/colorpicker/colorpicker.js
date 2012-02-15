@@ -28,6 +28,16 @@ var css = require("text!ext/colorpicker/colorpicker.css");
 var markup = require("text!ext/colorpicker/colorpicker.xml");
 var skin = require("text!ext/colorpicker/skin.xml");
 
+/**
+ * Creates an ACE range object that points to the start of the color (row, column)
+ * and the end of the color (row, column) inside the document.
+ * 
+ * @param {Number} row
+ * @param {Number} col
+ * @param {String} line
+ * @param {String} color
+ * @type {Range}
+ */
 function createColorRange(row, col, line, color) {
     if (col) {
         var str = line;
@@ -63,19 +73,29 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
 
     nodes : [],
 
-    init: function(amlNode) {
+    /**
+     * Initializes the plugin; inserts markup and adds event listeners to different
+     * areas of the UI.
+     * 
+     * @type {void}
+     */
+    init: function() {
         apf.document.body.insertMarkup(markup);
         this.menu = mnuColorPicker;
         this.colorpicker = clrCodeTools;
         var divs = this.menu.$ext.getElementsByTagName("div");
         var _self = this;
-        
+
+        // fetch the colortool DOM node and that of the arrow of the menu.
         for (var i = 0, l = divs.length; i < l; ++i) {
             if (divs[i].className.indexOf("arrow") > -1)
                 this.arrow = divs[i];
             else if (divs[i].className.indexOf("codetools_colorpicker_tools") > -1)
                 this.colortools = divs[i];
         }
+
+        // add listeners for interaction with the colortools element. This element
+        // is propagated with colors used inside a document, which can be selected.
         apf.addListener(this.colortools, "mousemove", function(e) {
             var el = e.srcElement || e.element;
             if (el.nodeType != 1 || el.className.indexOf("color") == -1)
@@ -104,10 +124,15 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             cp.setAttribute("brightness", hsb.b);
         });
 
+        // when a color was picked in the colorpicker, the 'hex' property changes.
+        // we listen to 'hex', because we use this as the base format to convert
+        // from and to.
         this.colorpicker.addEventListener("prop.hex", function(e) {
             _self.onColorPicked(e.oldvalue, e.value);
         });
 
+        // when the menu (that contains the colorpicker) hides, do some housekeeping
+        // like unregistering of event listeners.
         this.menu.addEventListener("prop.visible", function(e) {
             // when the the colorpicker hides, hide all tooltip markers
             if (!e.value) {
@@ -123,6 +148,14 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         });
     },
 
+    /**
+     * In the hook function we load the CSS for the markers that appear on hover
+     * and hook the event listeners of the codetools plugin.
+     * The codetools plugin emits events when the user moves her mouse and we then
+     * detect if the mouse pointer is hovering a color we recognize.
+     * 
+     * @type {void}
+     */
     hook: function() {
         apf.importCssString(css || "");
 
@@ -182,6 +215,17 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         });
     },
 
+    /**
+     * Show a marker/ tooltip on top of the code that is a color of the format
+     * we recognize.
+     * 
+     * @param {Range} pos
+     * @param {Editor} editor
+     * @param {String} line
+     * @param {Array} colors
+     * @param {String} markerId
+     * @type {void}
+     */
     showColorTooltip: function(pos, editor, line, colors, markerId) {
         if (this.menu && this.menu.visible && !markerId)
             return;
@@ -213,6 +257,14 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         this.hideColorTooltips(editor, markers);
     },
 
+    /**
+     * Hide all markers/ tooltips that are currently visible. Exceptions can be
+     * provided via the [exceptions] argument.
+     * 
+     * @param {Editor} editor
+     * @param {Array} exceptions
+     * @type {void}
+     */
     hideColorTooltips: function(editor, exceptions) {
         if (this.$activeColor)
             return;
@@ -230,6 +282,15 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         }
     },
 
+    /**
+     * Show or hide the colorpicker, depending on its current state (visible or not).
+     * 
+     * @param {Range} pos
+     * @param {Editor} editor
+     * @param {String} line
+     * @param {String} color
+     * @type {void}
+     */
     toggleColorPicker: function(pos, editor, line, color) {
         ext.initExtension(this);
         var menu = this.menu;
@@ -329,12 +390,19 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             }
         };
         cp.setProperty("value", color);
-        
+
         this.updateColorTools(editor);
-        
+
         this.resize();
     },
 
+    /**
+     * Scans the document for colors and generates the list as shown below the 
+     * color picker for quick access to colors that are already in use.
+     * 
+     * @param {Editor} editor
+     * @type {void}
+     */
     updateColorTools: function(editor) {
         var lines = editor.session.getLines(0, 2000);
         var m;
@@ -366,6 +434,17 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         this.colortools.innerHTML = "<span>Existing file colors:</span>" + out.join("");
     },
 
+    /**
+     * When a color is picked in the colorpicker, this function is called. It 
+     * updates the color value inside the ACE document with the newly picked color.
+     * Since the value change of the color picker is realtime and generates A LOT 
+     * of calls to this function, we filter the calls and only apply the change
+     * when no color was picked for 200ms.
+     * 
+     * @param {String} old
+     * @param {String} color
+     * @type {void}
+     */
     onColorPicked: function(old, color) {
         var a = this.$activeColor;
         if (!a)
@@ -415,6 +494,15 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         }, 200);
     },
 
+    /**
+     * When the browser window is resized and the colorpicker menu is opened, the
+     * position of the colorpicker has to be adjusted to the correct value.
+     * This function also takes window edges and menu arrow positioning into 
+     * account.
+     * 
+     * @param {Object} color
+     * @type {void}
+     */
     resize: function(color) {
         if (!this.menu.visible)
             return;
