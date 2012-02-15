@@ -406,8 +406,11 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         a.markerNode.innerHTML = newColor;
         
         this.$colorPickTimer = setTimeout(function() {
-            a.marker[0] = createColorRange(a.pos.row, a.pos.column, line, a.current);
-            doc.replace(a.marker[0], newColor);
+            var range = createColorRange(a.pos.row, a.pos.column, line, a.current);
+            if (!range)
+                return;
+            a.marker[0] = range;
+            doc.replace(range, newColor);
             a.current = newColor;
         }, 200);
     },
