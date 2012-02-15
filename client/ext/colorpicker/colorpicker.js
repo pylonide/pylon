@@ -298,8 +298,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
 
         var type = "hex";
         var orig = color;// = color.replace("#", "");
-        if (namedColors[color])
-            color = namedColors[color].toString(16);
+        if (typeof namedColors[color] != "undefined")
+            color = apf.color.fixHex(namedColors[color].toString(16));
         var rgb = color.match(RGBRe);
         if (rgb && rgb.length >= 3) {
             rgb = {
@@ -311,7 +311,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             type = "rgb";
         }
         else
-            color = "#" + apf.color.fixHex(color.replace("#", ""));
+            color = "#" + apf.color.fixHex(color.replace("#", ""), true);
 
         if (menu.visible && color == this.$activeColor.color && pos.row == this.$activeColor.row)
             return menu.hide();
