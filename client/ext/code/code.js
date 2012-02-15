@@ -150,6 +150,7 @@ module.exports = ext.register("ext/code/code", {
     nodes : [],
 
     fileExtensions : Object.keys(contentTypes),
+    supportedModes: Object.keys(SupportedModes),
     commandManager : new CommandManager(useragent.isMac ? "mac" : "win", defaultCommands),
 
     getState : function(doc) {
