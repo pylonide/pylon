@@ -216,6 +216,10 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             else if (_self.menu && _self.menu.visible)
                 _self.menu.hide();
         });
+        
+        ide.addEventListener("codetools.codedblclick", function(e) {
+            _self.hideColorTooltips(e.editor);
+        });
     },
 
     /**

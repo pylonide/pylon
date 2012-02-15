@@ -28,7 +28,7 @@ module.exports = ext.register("ext/codetools/codetools", {
     
     attachEditorEvents: function(amlEditor) {
         var editor = amlEditor.$editor;
-        var prevRow, prevCol;
+        var prevRow, prevCol, multiClickTimer;
 
         editor.addEventListener("mousemove", function(e) {
             var pos = e.getDocumentPosition();
@@ -55,10 +55,29 @@ module.exports = ext.register("ext/codetools/codetools", {
         });
         
         editor.addEventListener("click", function(e) {
+            clearTimeout(multiClickTimer);
             var pos = e.getDocumentPosition();
             var doc = editor.session.doc;
             
-            ide.dispatchEvent("codetools.codeclick", {
+            multiClickTimer = setTimeout(function() {
+                multiClickTimer = null;
+                ide.dispatchEvent("codetools.codeclick", {
+                    amlEditor: amlEditor,
+                    editor: editor,
+                    pos: pos,
+                    doc: doc
+                });
+            }, 100);
+        });
+        
+        editor.addEventListener("dblclick", function(e) {
+            clearTimeout(multiClickTimer);
+            multiClickTimer = null;
+
+            var pos = e.getDocumentPosition();
+            var doc = editor.session.doc;
+
+            ide.dispatchEvent("codetools.codedblclick", {
                 amlEditor: amlEditor,
                 editor: editor,
                 pos: pos,
