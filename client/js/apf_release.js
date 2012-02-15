@@ -6567,7 +6567,8 @@ if(!node){return null;}apf.setNodeValue(node,value,true);return node;};this.setQ
 };this.appendXml=function(xmlNode,xpath){var insertNode=xpath?apf.createNodeFromXpath(this.data,xpath):this.data;
 if(!insertNode){return null;}if(typeof xmlNode=="string"){xmlNode=apf.getXml(xmlNode);
 }else{if(xmlNode.nodeFunc){xmlNode=xmlNode.getXml();}}if(!xmlNode){return;}xmlNode=apf.xmldb.appendChild(insertNode,xmlNode);
-this.dispatchEvent("update",{xmlNode:xmlNode});return xmlNode;};this.removeXml=function(xmlNode){if(typeof xmlNode=="string"){var xmlNodes=this.data.selectNodes(xmlNode);
+this.dispatchEvent("update",{xmlNode:xmlNode});return xmlNode;};this.removeXml=function(xmlNode){if(!this.data){return;
+}var xmlNodes;if(typeof xmlNode==="string"){xmlNodes=this.data.selectNodes(xmlNode);
 }else{if(!xmlNode.length){xmlNodes=[xmlNode];}}if(xmlNodes.length){apf.xmldb.removeNodeList(xmlNodes);
 }};this.clear=function(){this.load(null);doc=null;};this.reset=function(){var doc=this.data.ownerDocument;
 this.data.parentNode.replaceChild(this.$copy,this.data);this.load(this.$copy);};
