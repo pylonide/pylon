@@ -312,6 +312,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             pos: pos,
             marker: Colors[id],
             editor: editor,
+            ignore: cp.value != color ? 2 : 1,
             start: editor.session.$undoManager.undolength,
             listeners: {
                 onKeyDown: onKeyDown,
@@ -361,6 +362,10 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         var a = this.$activeColor;
         if (!a)
             return;
+        if (a.ignore) {
+            --a.ignore;
+            return;
+        }
         
         clearTimeout(this.$colorPickTimer);
 
