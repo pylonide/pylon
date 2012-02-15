@@ -52,8 +52,9 @@ apf.textbox.masking = function(){
     
     var lastPos = -1;
     var masking = false;
-    var oExt    = this.$ext
-    var initial, pos = [], myvalue, format, fcase, replaceChar;
+    var oInput = this.$input;
+    var pos = [];
+    var initial, myvalue, format, fcase, replaceChar;
 
     this.setPosition = function(setpos){
         setPosition(setpos || lastPos || 0);
@@ -73,8 +74,9 @@ apf.textbox.masking = function(){
                     data += value.substr(i, 1);//initial.substr(i,1) == replaceChar
             }
         }
-        
+
         this.$insertData(data || value);
+        setPosition(myvalue.length);
     };
     
     //Char conversion
@@ -94,14 +96,14 @@ apf.textbox.masking = function(){
         "109": "-",
         "110": ".",
         "110": "/"
-    }
+    };
     
     this.addEventListener("keydown", function(e){
         var key  = e.keyCode,
             stop = false;
 
         switch (key) {
-            case 39:	
+            case 39:
                 //RIGHT
                 setPosition(lastPos + 1);
                 stop = true;
@@ -138,13 +140,6 @@ apf.textbox.masking = function(){
                     window.clipboardData.setData("Text", this.getValue());  
                     stop = true;
                 }
-                /*
-                else if ((key == 86 && ctrlKey) || (shiftKey && key == 45)) {
-                    this.setValue(window.clipboardData.getData("Text"));
-                    setPosition(lastPos);
-                }
-                else
-                    return;*/
             break;
         }
 
@@ -172,13 +167,13 @@ apf.textbox.masking = function(){
         this.$keyHandler = null; //temp solution
         masking = true;
 
-        this.$ext[apf.isIphone ? "onclick" : "onmouseup"] = function(e){
+        this.$input[apf.isIphone ? "onclick" : "onmouseup"] = function(e){
             var pos = Math.min(calcPosFromCursor(), myvalue.length);
             setPosition(pos);
             return false;
         };
         
-        this.$ext.onpaste = function(e){
+        this.$input.onpaste = function(e){
             e = e || window.event;
             e.returnValue = false;
             this.host.setValue(window.clipboardData.getData("Text") || "");
@@ -190,21 +185,15 @@ apf.textbox.masking = function(){
         
         this.getValue = function(){
             if (this.includeNonTypedChars)
-                return initial == this.$ext.value
+                return initial == this.$input.value
                     ? "" 
-                    : this.$ext.value.replace(new RegExp(replaceChar, "g"), "");
+                    : this.$input.value.replace(new RegExp(replaceChar, "g"), "");
             else
                 return myvalue.join("");
         };
         
         this.setValue = function(value){
-            if (this.includeNonTypedChars) {
-                for (var data = "", i = 0; i < initial.length; i++) {
-                    if (initial.substr(i,1) != value.substr(i,1))
-                        data += value.substr(i, 1);//initial.substr(i,1) == replaceChar
-                }
-            }
-            this.$insertData(data);
+            this.$propHandlers["value"].call(this, value);
         };
     };
     
@@ -214,21 +203,24 @@ apf.textbox.masking = function(){
         
         m = m.split(";");
         replaceChar = m.pop();
-        this.includeNonTypedChars = parseInt(m.pop()) !== 0;
+        this.includeNonTypedChars = parseInt(m.pop(), 10) !== 0;
         var mask = m.join(""); //why a join here???
-        var validation = "",
-            visual     = "",
-            mode_case  = "-",
-            strmode    = false,
-            startRight = false,
-            chr;
-        pos = [], format = "", fcase = "";
+        var validation = "";
+        var visual = "";
+        var mode_case = "-";
+        var strmode = false;
+        var startRight = false;
+        var chr;
+        pos = [];
+        format = "";
+        fcase = "";
         
         for (var looppos = -1, i = 0; i < mask.length; i++) {
-            chr = mask.substr(i,1);
+            chr = mask.substr(i, 1);
             
-            if (!chr.match(/[\!\'\"\>\<\\]/))
+            if (!chr.match(/[\!\'\"\>\<\\]/)) {
                 looppos++;
+            }
             else {
                 if (chr == "!")
                     startRight = true;
@@ -250,8 +242,8 @@ apf.textbox.masking = function(){
                 visual += chr;
         }
 
-        this.$ext.value = visual;
-        initial         = visual;
+        this.$input.value = visual;
+        initial = visual;
         //pos = pos;
         myvalue = [];
         //format = format;
@@ -267,7 +259,7 @@ apf.textbox.masking = function(){
     function checkChar(chr, p){
         var f = format.substr(p, 1);
         var c = fcase.substr(p, 1);
-    
+
         if (chr.match(new RegExp(_REF[f])) == null)
             return _FALSE_;
         if (c == ">")
@@ -282,7 +274,7 @@ apf.textbox.masking = function(){
             p = 0;
 
         if (apf.hasMsRangeObject) {
-            var range = oExt.createTextRange();
+            var range = oInput.createTextRange();
             range.expand("textedit");
             range.select();
 
@@ -300,25 +292,27 @@ apf.textbox.masking = function(){
         }
         else {
             if (typeof pos[p] == "undefined") {
-                oExt.selectionStart = oExt.selectionEnd = pos[pos.length - 1] + 1;
+                oInput.selectionStart = oInput.selectionEnd = pos[pos.length - 1] + 1;
                 lastPos = pos.length;
                 return false;
             }
-            oExt.selectionStart = pos[p];
-            oExt.selectionEnd   = pos[p] + 1;
+            oInput.selectionStart = pos[p];
+            oInput.selectionEnd   = pos[p] + 1;
         }
 
         lastPos = p;
     }
     
     function setCharacter(chr){
-        if (pos.length && pos[lastPos] == null) return false;
+        if (pos.length && pos[lastPos] == null)
+            return false;
         
         chr = checkChar(chr, lastPos);
-        if (chr == _FALSE_) return false;
+        if (chr == _FALSE_)
+            return false;
 
         if (apf.hasMsRangeObject) {
-            var range = oExt.createTextRange();
+            var range = oInput.createTextRange();
             range.expand("textedit");
             range.collapse();
             range.moveStart("character", pos[lastPos]);
@@ -328,12 +322,12 @@ apf.textbox.masking = function(){
                 range.select();
         }
         else {
-            var val    = oExt.value,
-                start  = oExt.selectionStart,
-                end    = oExt.selectionEnd;
-            oExt.value = val.substr(0, start) + chr + val.substr(end);
-            oExt.selectionStart = start;
-            oExt.selectionEnd   = end;
+            var val   = oInput.value;
+            var start = oInput.selectionStart;
+            var end   = oInput.selectionEnd;
+            oInput.value = val.substr(0, start) + chr + val.substr(end);
+            oInput.selectionStart = start;
+            oInput.selectionEnd   = end;
         }
         
         myvalue[lastPos] = chr;
@@ -342,10 +336,11 @@ apf.textbox.masking = function(){
     }
     
     function deletePosition(p){
-        if(pos[p] == null) return false;
+        if (pos[p] == null)
+            return false;
         
         if (apf.hasMsRangeObject) {
-            var range = oExt.createTextRange();
+            var range = oInput.createTextRange();
             range.expand("textedit");
             range.collapse();
 
@@ -355,12 +350,12 @@ apf.textbox.masking = function(){
             range.select();
         }
         else {
-            var val    = oExt.value,
-                start  = pos[p],
-                end    = pos[p] + 1;
-            oExt.value = val.substr(0, start) + replaceChar + val.substr(end);
-            oExt.selectionStart = start;
-            oExt.selectionEnd   = end;
+            var val   = oInput.value;
+            var start = pos[p];
+            var end   = pos[p] + 1;
+            oInput.value = val.substr(0, start) + replaceChar + val.substr(end);
+            oInput.selectionStart = start;
+            oInput.selectionEnd   = end;
         }
         
         //ipv lastPos
@@ -368,28 +363,31 @@ apf.textbox.masking = function(){
     }
     
     this.$insertData = function(str){
-        if (str == this.getValue()) return;
-        
+        if (str == this.getValue())
+            return;
+
         var i, j;
         
         try {
-            if (!apf.hasMsRangeObject && oExt.selectionStart == oExt.selectionEnd) {
+            if (!apf.hasMsRangeObject && oInput.selectionStart == oInput.selectionEnd)
                 setPosition(0); // is this always correct? practice will show...
-            }
         }
         catch (ex) {
             // in FF (as we know it), we cannot access the selectStart property
             // when the control/ input doesn't have the focus or is not visible.
             // A workaround is provided here...
-            if (!str) return;
+            if (!str)
+                return;
             var chr, val;
             for (i = 0, j = str.length; i < j; i++) {
                 lastPos = i;
-                if (pos[lastPos] == null) continue;
+                if (pos[lastPos] == null)
+                    continue;
                 chr = checkChar(str.substr(i, 1), i);
-                if (chr == _FALSE_) continue;
-                val = oExt.value;
-                oExt.value = val.substr(0, pos[i]) + chr + val.substr(pos[i] + 1);
+                if (chr == _FALSE_)
+                    continue;
+                val = oInput.value;
+                oInput.value = val.substr(0, pos[i]) + chr + val.substr(pos[i] + 1);
             }
             if (str.length)
                 lastPos++;
@@ -420,7 +418,7 @@ apf.textbox.masking = function(){
         var range, lt = 0;
 
         if (!apf.hasMsRangeObject) {
-            lt = oExt.selectionStart;
+            lt = oInput.selectionStart;
         }
         else {
             range  = document.selection.createRange();

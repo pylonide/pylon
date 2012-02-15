@@ -369,10 +369,11 @@ apf.colorpicker = function(struct, tagName){
             "for": this.id + "_hex"
         });
 
-        new apf.textbox({
+        this.$input = new apf.textbox({
             htmlNode: this.oInputs,
             skinset: skin,
             skin: this["skin-textbox"],
+            mask: "XXXXXX;;_",
             left: 222,
             top: 140,
             width: 60,
