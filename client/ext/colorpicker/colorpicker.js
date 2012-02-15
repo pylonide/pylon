@@ -404,7 +404,13 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 onSelectionChange: onSelectionChange
             }
         };
-        cp.setProperty("value", color);
+        if (type == "rgb") {
+            cp.setProperty("red", rgb.r);
+            cp.setProperty("green", rgb.g);
+            cp.setProperty("blue", rgb.b);
+        }
+        else
+            cp.setProperty("value", color);
 
         this.updateColorTools(editor);
 
