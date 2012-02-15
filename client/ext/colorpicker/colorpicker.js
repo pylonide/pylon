@@ -141,8 +141,11 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                     apf.removeEventListener("keydown", a.listeners.onKeyDown);
                     a.editor.removeEventListener("mousewheel", a.listeners.onScroll);
                     ide.removeEventListener("codetools.cursorchange", a.listeners.onCursorChange);
+                    ide.removeEventListener("codetools.selectionchange", a.listeners.onSelectionChange);
                     delete _self.$activeColor;
                     _self.hideColorTooltips(a.editor);
+                    _self.colorpicker.$input.blur();
+                    a.editor.focus();
                 }
             }
         });
@@ -318,7 +321,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
 
         // set appropriate event listeners, that will be removed when the colorpicker
         // hides.
-        var onKeyDown, onScroll, onCursorChange;
+        var onKeyDown, onScroll, onCursorChange, onSelectionChange;
         var _self = this;
         apf.addEventListener("keydown", onKeyDown = function(e) {
             var a = _self.$activeColor;
@@ -356,6 +359,15 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
               || pos.column < range.start.column || pos.column > range.end.column)
                 menu.hide();
         });
+        
+        ide.addEventListener("codetools.selectionchange", onSelectionChange = function() {
+            var a = _self.$activeColor;
+
+            if (!cp || !a || !cp.visible) 
+                return;
+
+            menu.hide();
+        });
 
         editor.addEventListener("mousewheel", onScroll = function(e) {
             var a = _self.$activeColor;
@@ -371,6 +383,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         this.hideColorTooltips(editor);
         this.showColorTooltip(pos, editor, line, [orig], id);
         menu.show();
+        cp.$input.focus();
         this.$activeColor = {
             color: color,
             markerNode: id,
@@ -386,7 +399,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             listeners: {
                 onKeyDown: onKeyDown,
                 onScroll: onScroll,
-                onCursorChange: onCursorChange
+                onCursorChange: onCursorChange,
+                onSelectionChange: onSelectionChange
             }
         };
         cp.setProperty("value", color);

@@ -68,6 +68,7 @@ module.exports = ext.register("ext/codetools/codetools", {
         
         function cursorChange() {
             var anchor = editor.session.selection.getSelectionAnchor();
+
             ide.dispatchEvent("codetools.cursorchange", {
                 amlEditor: amlEditor,
                 editor: editor,
@@ -78,11 +79,31 @@ module.exports = ext.register("ext/codetools/codetools", {
                 doc: editor.session.doc
             });
         }
+
+        function selectionChange() {
+            var anchor = editor.session.selection.getSelectionAnchor();
+            var lead = editor.session.selection.getSelectionLead();
+
+            if (anchor.row !== lead.row || Math.abs(anchor.column - lead.column) > 1) {
+                ide.dispatchEvent("codetools.selectionchange", {
+                    amlEditor: amlEditor,
+                    editor: editor,
+                    pos: {
+                        start: lead,
+                        end: anchor
+                    },
+                    doc: editor.session.doc
+                });
+            }
+        }
         
         editor.addEventListener("changeSession", function(e) {
-            if (e.oldsession)
+            if (e.oldsession) {
                 e.oldsession.removeEventListener("changeCursor", cursorChange);
+                e.oldsession.removeEventListener("changeSelection", selectionChange);
+            }
             e.session.selection.addEventListener("changeCursor", cursorChange);
+            e.session.selection.addEventListener("changeSelection", selectionChange);
         });
     },
     
