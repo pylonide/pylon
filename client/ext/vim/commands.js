@@ -16,15 +16,11 @@ var operators = require("ext/vim/maps/operators");
 var alias = require("ext/vim/maps/aliases");
 var registers = require("ext/vim/registers");
 
-var NUMBER   = 1;
+var NUMBER = 1;
 var OPERATOR = 2;
-var MOTION   = 3;
-var ACTION   = 4;
-
-//var NORMAL_MODE = 0;
-//var INSERT_MODE = 1;
-//var VISUAL_MODE = 2;
-//getSelectionLead
+var MOTION = 3;
+var ACTION = 4;
+var HMARGIN = 8; // Minimum amount of line separation between margins;
 
 exports.searchStore = {
     current: "",
@@ -39,9 +35,16 @@ exports.searchStore = {
 };
 
 var repeat = function repeat(fn, count, args) {
-    count = parseInt(count);
+    count = parseInt(count, 10);
     while (0 < count--)
         fn.apply(this, args);
+};
+
+var toggleCase = function toggleCase(ch) {
+    if (ch.toUpperCase() === ch)
+        return ch.toLowerCase();
+    else
+        return ch.toUpperCase();
 };
 
 var actions = {
@@ -84,7 +87,7 @@ var actions = {
             editor.selection.selectWord();
             editor.findNext();
             var cursor = editor.selection.getCursor();
-            var range  = editor.session.getWordRange(cursor.row, cursor.column);
+            range = editor.session.getWordRange(cursor.row, cursor.column);
             editor.selection.setSelectionRange(range, true);
         }
     },
@@ -93,22 +96,39 @@ var actions = {
             editor.selection.selectWord();
             editor.findPrevious();
             var cursor = editor.selection.getCursor();
-            var range  = editor.session.getWordRange(cursor.row, cursor.column);
+            range  = editor.session.getWordRange(cursor.row, cursor.column);
             editor.selection.setSelectionRange(range, true);
         }
     },
     "n": {
         fn: function(editor, range, count, param) {
-            editor.findNext(editor.getLastSearchOptions());
+            var options = editor.getLastSearchOptions();
+            options.backwards = false;
+
+            editor.findNext(options);
+            var bottomRow = parseInt(editor.renderer.getLastFullyVisibleRow(), 10);
+            var marginLines = bottomRow - editor.getCursorPosition().row;
+            if (marginLines < HMARGIN) {
+                var scrollTopRow = editor.renderer.getScrollTopRow();
+                editor.scrollToRow(scrollTopRow + (HMARGIN - marginLines));
+            }
             editor.selection.clearSelection();
-            //editor.navigateWordLeft();
         }
     },
     "shift-n": {
         fn: function(editor, range, count, param) {
-            editor.findPrevious(editor.getLastSearchOptions());
+            var options = editor.getLastSearchOptions();
+            options.backwards = true;
+
+            editor.navigateWordLeft();
+            editor.findPrevious(options);
+            var topRow = parseInt(editor.renderer.getFirstVisibleRow(), 10);
+            var marginLines = editor.getCursorPosition().row - topRow;
+            if (marginLines < HMARGIN) {
+                var scrollTopRow = editor.renderer.getScrollTopRow();
+                editor.scrollToRow(scrollTopRow - (HMARGIN - marginLines));
+            }
             editor.selection.clearSelection();
-            //editor.navigateWordLeft();
         }
     },
     "v": {
@@ -489,12 +509,4 @@ var handleCursorMove = exports.onCursorMove = function() {
         handleCursorMove.running = false;
     }
 };
-
-function toggleCase(ch) {
-    if(ch.toUpperCase() === ch)
-        return ch.toLowerCase();
-    else
-        return ch.toUpperCase();
-}
-
 });
