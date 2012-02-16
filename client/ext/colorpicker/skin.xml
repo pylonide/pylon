@@ -1,0 +1,108 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <a:colorpicker name="colorpicker">
+        <a:style><![CDATA[
+            .colorpicker {
+                width       : 356px;
+                height      : 176px;
+                overflow    : hidden;
+                position    : absolute;
+                background  : url(images/colorpicker_background.png);
+                font-family : Arial, Helvetica, sans-serif;
+                z-index     : 2002;
+            }
+            
+            .colorpicker_color {
+                width      : 150px;
+                height     : 150px;
+                left       : 14px;
+                top        : 13px;
+                position   : absolute;
+                background : #f00;
+                overflow   : hidden;
+                cursor     : crosshair;
+            }
+            
+            .colorpicker_color div {
+                position   : absolute;
+                top        : 0;
+                left       : 0;
+                width      : 150px;
+                height     : 150px;
+                background : url(images/colorpicker_overlay.png);
+            }
+            
+            .colorpicker_color div div {
+                position   : absolute;
+                top        : 0;
+                left       : 0;
+                width      : 11px;
+                height     : 11px;
+                overflow   : hidden;
+                background : url(images/colorpicker_select.gif);
+                margin     : -5px 0 0 -5px;
+            }
+            
+            .colorpicker_hue {
+                position : absolute;
+                top      : 13px;
+                left     : 171px;
+                width    : 35px;
+                height   : 150px;
+                cursor   : ns-resize;
+            }
+            
+            .colorpicker_hue div {
+                position   : absolute;
+                width      : 35px;
+                height     : 9px;
+                overflow   : hidden;
+                background : url(images/colorpicker_indic.gif) left top;
+                margin     : -4px 0 0 0;
+                left       : 0px;
+            }
+            
+            .colorpicker_new_color {
+                position   : absolute;
+                width      : 60px;
+                height     : 30px;
+                left       : 213px;
+                top        : 13px;
+                background : #f00;
+            }
+            
+            .colorpicker_current_color {
+                position   : absolute;
+                width      : 60px;
+                height     : 30px;
+                left       : 283px;
+                top        : 13px;
+                background : #f00;
+            }
+        ]]></a:style>
+        
+        <a:presentation>
+            <a:main 
+              selector       = "div[1]" 
+              selector_indic = "div[1]/div/div" 
+              hue            = "div[2]/div"
+              newcolor       = "div[3]" 
+              customcolor    = "div[4]" 
+              inputs         = "div[5]">
+                <div class="colorpicker">
+                    <div class="colorpicker_color">
+                        <div>
+                            <div></div>
+                        </div>
+                    </div>
+                    <div class="colorpicker_hue">
+                        <div></div>
+                    </div>
+                    <div class="colorpicker_new_color"> </div>
+                    <div class="colorpicker_current_color"> </div>
+                    <div class="colorpicker_inputs"> </div>
+                </div>
+            </a:main>
+        </a:presentation>
+    </a:colorpicker>
+</a:skin>
