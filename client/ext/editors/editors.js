@@ -454,6 +454,12 @@ module.exports = ext.register("ext/editors/editors", {
             editorPage = tabEditors.getPage(page.type);
         if (!editorPage) return;
 
+        // fire this event BEFORE editor sessions are swapped.
+        ide.dispatchEvent("beforeeditorswitch", {
+            previousPage: e.previousPage,
+            nextPage: e.nextPage
+        });
+
         if (editorPage.model != page.$model)
             editorPage.setAttribute("model", page.$model);
         if (editorPage.actiontracker != page.$at)
