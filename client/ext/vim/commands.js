@@ -86,6 +86,12 @@ var actions = {
         fn: function(editor, range, count, param) {
             editor.selection.selectWord();
             editor.findNext();
+            var bottomRow = parseInt(editor.renderer.getLastFullyVisibleRow(), 10);
+            var marginLines = bottomRow - editor.getCursorPosition().row;
+            if (marginLines < HMARGIN) {
+                var scrollTopRow = editor.renderer.getScrollTopRow();
+                editor.scrollToRow(scrollTopRow + (HMARGIN - marginLines));
+            }
             var cursor = editor.selection.getCursor();
             range = editor.session.getWordRange(cursor.row, cursor.column);
             editor.selection.setSelectionRange(range, true);
@@ -95,8 +101,14 @@ var actions = {
         fn: function(editor, range, count, param) {
             editor.selection.selectWord();
             editor.findPrevious();
+            var topRow = parseInt(editor.renderer.getFirstVisibleRow(), 10);
+            var marginLines = editor.getCursorPosition().row - topRow;
+            if (marginLines < HMARGIN) {
+                var scrollTopRow = editor.renderer.getScrollTopRow();
+                editor.scrollToRow(scrollTopRow - (HMARGIN - marginLines));
+            }
             var cursor = editor.selection.getCursor();
-            range  = editor.session.getWordRange(cursor.row, cursor.column);
+            range = editor.session.getWordRange(cursor.row, cursor.column);
             editor.selection.setSelectionRange(range, true);
         }
     },
