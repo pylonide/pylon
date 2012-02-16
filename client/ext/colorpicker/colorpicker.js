@@ -232,6 +232,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         ide.addEventListener("beforeeditorswitch", function() {
             if (_self.menu && _self.menu.visible)
                 _self.menu.hide();
+            else
+                _self.hideColorTooltips();
         });
     },
 
