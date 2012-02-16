@@ -760,13 +760,13 @@ apf.vbox = function(struct, tagName){
             this.$ext.setAttribute("style", this.getAttribute("style"));
         this.$ext.className = this.localName;
 
-        this.$vbox    = this.localName == "vbox";
-        this.$int = apf.isGecko && !this.parentNode.$box || !apf.hasFlexibleBox && this.$vbox //@todo reparenting for gecko needs some admin work
+        this.$vbox = this.localName == "vbox";
+        this.$int = apf.isGecko && !(this.parentNode && this.parentNode.$box) || !apf.hasFlexibleBox && this.$vbox //@todo reparenting for gecko needs some admin work
             ? this.$ext.appendChild(doc.createElement("div")) 
             : this.$ext;
         this.$ext.host = this;
         
-        if (apf.isGecko && !this.parentNode.$box) {
+        if (apf.isGecko && !(this.parentNode && this.parentNode.$box)) {
             this.$int.style.width = "100%";
             this.$int.style.height = "100%";
         }
