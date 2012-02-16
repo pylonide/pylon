@@ -6137,8 +6137,8 @@ if(e.currentTarget.$altExt){return false;}}});function myVisibleHandler(e){if(e.
 }if(Math.min($int.scrollHeight,node.maxheight||10000)>$int.offsetHeight){return _self.$resize(true);
 }}if(_self.flex){clearInterval(this.$heighttimer);}},this.flex?1:500);}}}this.$draw=function(){var doc=this.$pHtmlNode.ownerDocument;
 this.$ext=this.$pHtmlNode.appendChild(doc.createElement("div"));if(this.getAttribute("style")){this.$ext.setAttribute("style",this.getAttribute("style"));
-}this.$ext.className=this.localName;this.$vbox=this.localName=="vbox";this.$int=apf.isGecko&&!this.parentNode.$box||!apf.hasFlexibleBox&&this.$vbox?this.$ext.appendChild(doc.createElement("div")):this.$ext;
-this.$ext.host=this;if(apf.isGecko&&!this.parentNode.$box){this.$int.style.width="100%";
+}this.$ext.className=this.localName;this.$vbox=this.localName=="vbox";this.$int=apf.isGecko&&!(this.parentNode&&this.parentNode.$box)||!apf.hasFlexibleBox&&this.$vbox?this.$ext.appendChild(doc.createElement("div")):this.$ext;
+this.$ext.host=this;if(apf.isGecko&&!(this.parentNode&&this.parentNode.$box)){this.$int.style.width="100%";
 this.$int.style.height="100%";}else{if(!apf.hasFlexibleBox&&this.$vbox){this.$int.style.display=apf.INLINE;
 if(apf.needZoomForLayout){this.$int.style.zoom=1;}this.$int.style.width="100%";
 }}if(apf.hasFlexibleBox){this.$display="-"+apf.CSSPREFIX+"-box";this.$int.style.display=apf.CSSPREFIX2+"-box";
