@@ -20,9 +20,11 @@ var namedPart = Object.keys(namedColors).join("|");
 var colorsRe = new RegExp("(#([0-9A-Fa-f]{3,6})\\b)"
     + "|\\b(" + namedPart + ")\\b"
     + "|(rgba?\\(\\s*\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b\\s*,\\s*\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b\\s*,\\s*\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b\\s*(:?\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\))"
-    + "|(rgba?\\(\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\s*(:?\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\))", "gi");
+    + "|(rgba?\\(\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\s*(:?\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\))"
+    + "|(hsl\\(\\s*([1-3]?[1-6]?\\d)+\\s*,\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\))", "gi");
 var RGBRe = new RegExp("(?:rgba?\\(\\s*([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\s*,\\s*([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\s*,\\s*([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\s*(:?\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\))"
     + "|(rgba?\\(\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\s*(:?\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\))");
+var HSLRe = new RegExp("hsl\\(\\s*([1-3]?[1-6]?\\d)+\\s*,\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\)");
 
 var css = require("text!ext/colorpicker/colorpicker.css");
 var markup = require("text!ext/colorpicker/colorpicker.xml");
@@ -188,7 +190,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             var editor = e.editor;
 
             var line = doc.getLine(1);
-            if (!(e.amlEditor.syntax == "css" || e.amlEditor.syntax == "svg" || (line && line.indexOf("<a:skin") > -1)))
+            if (!(e.amlEditor.syntax == "css" || e.amlEditor.syntax == "svg" 
+              || e.amlEditor.syntax == "html" || (line && line.indexOf("<a:skin") > -1)))
                 return;
 
             line = doc.getLine(pos.row);
@@ -209,7 +212,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             var editor = e.editor;
 
             var line = doc.getLine(1);
-            if (!(e.amlEditor.syntax == "css" || e.amlEditor.syntax == "svg" || (line && line.indexOf("<a:skin") > -1)))
+            if (!(e.amlEditor.syntax == "css" || e.amlEditor.syntax == "svg" 
+              || e.amlEditor.syntax == "html" || (line && line.indexOf("<a:skin") > -1)))
                 return;
             //do not show anything when a selection is made...
             var range = editor.selection.getRange();
@@ -324,6 +328,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         if (typeof namedColors[color] != "undefined")
             color = apf.color.fixHex(namedColors[color].toString(16));
         var rgb = color.match(RGBRe);
+        var hsb = color.match(HSLRe);
+        console.log("HSB",hsb);
         if (rgb && rgb.length >= 3) {
             rgb = {
                 r: rgb[1], 
@@ -332,6 +338,15 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             };
             color = apf.color.RGBToHex(rgb);
             type = "rgb";
+        }
+        else if (hsb && hsb.length >= 3) {
+            hsb = {
+                h: hsb[1],
+                s: hsb[2].replace("%", ""),
+                b: hsb[3].replace("%", "")
+            };
+            color = apf.color.HSBToHex(hsb);
+            type = "hsb";
         }
         else
             color = "#" + apf.color.fixHex(color.replace("#", ""), true);
@@ -411,6 +426,11 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             cp.setProperty("green", rgb.g);
             cp.setProperty("blue", rgb.b);
         }
+        else if (type == "hsb") {
+            cp.setProperty("hue", hsb.h);
+            cp.setProperty("saturation", hsb.s);
+            cp.setProperty("brightness", hsb.b);
+        }
         else
             cp.setProperty("value", color);
 
@@ -437,10 +457,11 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         }
 
         var out = [];
-        var color;
+        var origColor, color;
         for (i = 0, l = Math.min(colors.length, 11); i < l; ++i) {
-            color = colors[i];
+            origColor = color = colors[i];
             var rgb = color.match(RGBRe);
+            var hsb = color.match(HSLRe);
             if (rgb && rgb.length >= 3) {
                 rgb = {
                     r: rgb[1], 
@@ -449,10 +470,18 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 };
                 color = apf.color.RGBToHex(rgb);
             }
+            else if (hsb && hsb.length === 3) {
+                hsb = {
+                    h: hsb[1],
+                    s: hsb[2],
+                    b: hsb[3]
+                };
+                color = apf.color.HSBToHex(hsb);
+            }
             else
                 color = apf.color.fixHex(color.replace("#", ""));
             out.push('<span class="color" style="background-color: #', color, 
-                '" data-color="', color, '">&nbsp;</span>');
+                '" data-color="', color, '" title="', origColor, '">&nbsp;</span>');
         }
         this.colortools.innerHTML = "<span>Existing file colors:</span>" + out.join("");
     },
@@ -498,9 +527,21 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 + "\\s*,\\s*" + m[3] + "(\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\)", "i");
             if (!line.match(regex))
                 return;
-            var RGB = apf.color.hexToRGB(color);
+            var rgb = apf.color.hexToRGB(color);
             newLine = line.replace(regex, function(m, prefix, suffix) {
-                return (newColor = prefix + "(" + RGB.r + ", " + RGB.g + ", " + RGB.b + (suffix || "") + ")");
+                return (newColor = prefix + "(" + rgb.r + ", " + rgb.g + ", " + rgb.b + (suffix || "") + ")");
+            });
+        }
+        else if (a.type == "hsb") {
+            var m = a.current.match(HSLRe);
+            var regex = new RegExp("hsl\\(\\s*" + m[1] + "\\s*,\\s*" + m[2] 
+                + "\\s*,\\s*" + m[3] + "\\s*\\)", "i");
+            if (!line.match(regex))
+                return;
+            var hsb = apf.color.hexToHSB(color);
+            newLine = line.replace(regex, function() {
+                return (newColor = "hsl(" + parseInt(hsb.h, 10) + ", " 
+                    + parseInt(hsb.s, 10) + "%, " + parseInt(hsb.b, 10) + "%)");
             });
         }
         a.color = color;
