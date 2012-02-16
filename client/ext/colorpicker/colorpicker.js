@@ -229,13 +229,9 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         });
 
         // hide all markers and the colorpicker upon tab-/ editorswitch
-        ide.addEventListener("editorswitch", function() {
-            var temp = apf.extend({}, Colors);
+        ide.addEventListener("beforeeditorswitch", function() {
             if (_self.menu && _self.menu.visible)
                 _self.menu.hide();
-
-            Colors = temp;
-            _self.hideColorTooltips();
         });
     },
 
