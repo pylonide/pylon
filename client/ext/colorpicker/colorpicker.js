@@ -162,6 +162,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
     hook: function() {
         apf.importCssString(css || "");
 
+        // detect and return a list of colors found on a line from an ACE document.
         function detectColors(pos, line) {
             var colors = line.match(colorsRe);
             if (!colors || !colors.length)
@@ -222,9 +223,19 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             else if (_self.menu && _self.menu.visible)
                 _self.menu.hide();
         });
-        
+
         ide.addEventListener("codetools.codedblclick", function(e) {
             _self.hideColorTooltips(e.editor);
+        });
+
+        // hide all markers and the colorpicker upon tab-/ editorswitch
+        ide.addEventListener("editorswitch", function() {
+            var temp = apf.extend({}, Colors);
+            if (_self.menu && _self.menu.visible)
+                _self.menu.hide();
+
+            Colors = temp;
+            _self.hideColorTooltips();
         });
     },
 
@@ -262,7 +273,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                         pos.row, ",column:", pos.column, ",color:\'", color, "\'});'", (markerId ? " id='" + markerId + "'" : ""), ">", color, "</span>"
                     );
                 }, true);
-                Colors[id] = [range, marker];
+                Colors[id] = [range, marker, editor.session];
             }
             markers.push(marker);
         });
@@ -285,12 +296,13 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             this.menu.hide();
         if (exceptions && !apf.isArray(exceptions))
             exceptions = [exceptions];
-        var marker;
+        var marker, session;
         for (var mid in Colors) {
             marker = Colors[mid][1];
+            session = editor ? editor.session : Colors[mid][2];
             if (exceptions && exceptions.indexOf(marker) > -1)
                 continue;
-            editor.session.removeMarker(marker);
+            session.removeMarker(marker);
             delete Colors[mid];
         }
     },
@@ -346,14 +358,6 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 var at = editor.session.$undoManager;
                 if (at.undolength > a.start)
                     at.undo(at.undolength - a.start);
-            }
-            else {
-                var parent = e.currentTarget.$ext.parentNode;
-                while (parent != document.body) {
-                    if (parent = cp.$ext)
-                        return;
-                    parent = parent.parentNode;
-                }
             }
         });
 
