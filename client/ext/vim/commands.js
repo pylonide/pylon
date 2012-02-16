@@ -86,7 +86,7 @@ var actions = {
         fn: function(editor, range, count, param) {
             editor.selection.selectWord();
             editor.findNext();
-            var bottomRow = parseInt(editor.renderer.getLastFullyVisibleRow(), 10);
+            var bottomRow = editor.renderer.getLastFullyVisibleRow();
             var marginLines = bottomRow - editor.getCursorPosition().row;
             if (marginLines < HMARGIN) {
                 var scrollTopRow = editor.renderer.getScrollTopRow();
@@ -101,7 +101,7 @@ var actions = {
         fn: function(editor, range, count, param) {
             editor.selection.selectWord();
             editor.findPrevious();
-            var topRow = parseInt(editor.renderer.getFirstVisibleRow(), 10);
+            var topRow = editor.renderer.getFirstVisibleRow();
             var marginLines = editor.getCursorPosition().row - topRow;
             if (marginLines < HMARGIN) {
                 var scrollTopRow = editor.renderer.getScrollTopRow();
@@ -118,7 +118,7 @@ var actions = {
             options.backwards = false;
 
             editor.findNext(options);
-            var bottomRow = parseInt(editor.renderer.getLastFullyVisibleRow(), 10);
+            var bottomRow = editor.renderer.getLastFullyVisibleRow();
             var marginLines = bottomRow - editor.getCursorPosition().row;
             if (marginLines < HMARGIN) {
                 var scrollTopRow = editor.renderer.getScrollTopRow();
@@ -134,7 +134,7 @@ var actions = {
 
             editor.navigateWordLeft();
             editor.findPrevious(options);
-            var topRow = parseInt(editor.renderer.getFirstVisibleRow(), 10);
+            var topRow = editor.renderer.getFirstVisibleRow();
             var marginLines = editor.getCursorPosition().row - topRow;
             if (marginLines < HMARGIN) {
                 var scrollTopRow = editor.renderer.getScrollTopRow();
