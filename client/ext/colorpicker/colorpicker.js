@@ -99,8 +99,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         // add listeners for interaction with the colortools element. This element
         // is propagated with colors used inside a document, which can be selected.
         apf.addListener(this.colortools, "mousemove", function(e) {
-            var el = e.srcElement || e.element;
-            if (el.nodeType != 1 || el.className.indexOf("color") == -1)
+            var el = e.srcElement || e.target || e.element;
+            if (!el || el.nodeType != 1 || el.className.indexOf("color") == -1)
                 return;
             var cls;
             var spans = _self.colortools.getElementsByTagName("span");
@@ -114,7 +114,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         });
 
         apf.addListener(this.colortools, "mousedown", function(e) {
-            var el = e.srcElement || e.element;
+            var el = e.srcElement || e.target || e.element;
             if (el.nodeType != 1 || el.className.indexOf("color") == -1)
                 return;
 
@@ -329,7 +329,6 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             color = apf.color.fixHex(namedColors[color].toString(16));
         var rgb = color.match(RGBRe);
         var hsb = color.match(HSLRe);
-        console.log("HSB",hsb);
         if (rgb && rgb.length >= 3) {
             rgb = {
                 r: rgb[1], 
@@ -460,6 +459,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         var origColor, color;
         for (i = 0, l = Math.min(colors.length, 11); i < l; ++i) {
             origColor = color = colors[i];
+            if (typeof namedColors[color] != "undefined")
+                color = apf.color.fixHex(namedColors[color].toString(16));
             var rgb = color.match(RGBRe);
             var hsb = color.match(HSLRe);
             if (rgb && rgb.length >= 3) {
@@ -470,16 +471,16 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 };
                 color = apf.color.RGBToHex(rgb);
             }
-            else if (hsb && hsb.length === 3) {
+            else if (hsb && hsb.length >= 3) {
                 hsb = {
                     h: hsb[1],
-                    s: hsb[2],
-                    b: hsb[3]
+                    s: hsb[2].replace("%", ""),
+                    b: hsb[3].replace("%", "")
                 };
                 color = apf.color.HSBToHex(hsb);
             }
             else
-                color = apf.color.fixHex(color.replace("#", ""));
+                color = apf.color.fixHex(color.replace("#", ""), true);
             out.push('<span class="color" style="background-color: #', color, 
                 '" data-color="', color, '" title="', origColor, '">&nbsp;</span>');
         }
