@@ -17,14 +17,19 @@ var origArrowTop;
 var Colors = {};
 var namedColors = apf.color.colorshex;
 var namedPart = Object.keys(namedColors).join("|");
+var ColorMatches = {
+    rgb: "rgba?\\(\\s*\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b\\s*,\\s*\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b\\s*,\\s*\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b\\s*(:?\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\)",
+    rgb_alt: "rgba?\\(\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\s*(:?\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\)",
+    hsl: "hsl\\(\\s*([1-3]?[1-6]?\\d)+\\s*,\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\)"
+};
 var colorsRe = new RegExp("(#([0-9A-Fa-f]{3,6})\\b)"
     + "|\\b(" + namedPart + ")\\b"
-    + "|(rgba?\\(\\s*\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b\\s*,\\s*\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b\\s*,\\s*\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b\\s*(:?\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\))"
-    + "|(rgba?\\(\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\s*(:?\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\))"
-    + "|(hsl\\(\\s*([1-3]?[1-6]?\\d)+\\s*,\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\))", "gi");
-var RGBRe = new RegExp("(?:rgba?\\(\\s*([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\s*,\\s*([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\s*,\\s*([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\s*(:?\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\))"
-    + "|(rgba?\\(\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\s*(:?\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\))");
-var HSLRe = new RegExp("hsl\\(\\s*([1-3]?[1-6]?\\d)+\\s*,\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\)");
+    + "|(" + ColorMatches.rgb + ")"
+    + "|(" + ColorMatches.rgb_alt + ")"
+    + "|(" + ColorMatches.hsl + ")", "gi");
+var RGBRe = new RegExp("(?:" + ColorMatches.rgb + ")"
+    + "|(?:" + ColorMatches.rgb_alt + ")");
+var HSLRe = new RegExp(ColorMatches.hsl);
 
 var css = require("text!ext/colorpicker/colorpicker.css");
 var markup = require("text!ext/colorpicker/colorpicker.xml");
@@ -120,7 +125,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
 
             var c = apf.color;
             var cp = _self.colorpicker;
-            var hsb = c.hexToHSB(c.fixHex(el.getAttribute("data-color")));
+            var hsb = c.hexToHSB(c.fixHex(el.getAttribute("data-color"), true));
             cp.setAttribute("hue", hsb.h);
             cp.setAttribute("saturation", hsb.s);
             cp.setAttribute("brightness", hsb.b);
@@ -310,6 +315,49 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
     },
 
     /**
+     * Parses any color string and returns an object with the type of color (hex,
+     * rgb or hsb), the color object or string (in the case of hex) and the hex
+     * representation of that color.
+     * 
+     * @param {String} color
+     * @type {Object}
+     */
+    parseColorString: function(color) {
+        var ret = {
+            orig: color
+        };
+        
+        if (typeof namedColors[color] != "undefined")
+            color = apf.color.fixHex(namedColors[color].toString(16));
+        var rgb = color.match(RGBRe);
+        var hsb = color.match(HSLRe);
+        if (rgb && rgb.length >= 3) {
+            ret.rgb = apf.color.fixRGB({
+                r: rgb[1], 
+                g: rgb[2], 
+                b: rgb[3]
+            });
+            ret.hex = apf.color.RGBToHex(rgb);
+            ret.type = "rgb";
+        }
+        else if (hsb && hsb.length >= 3) {
+            ret.hsb = apf.color.fixHSB({
+                h: hsb[1],
+                s: hsb[2].replace("%", ""),
+                b: hsb[3].replace("%", "")
+            });
+            ret.hex = apf.color.HSBToHex(hsb);
+            ret.type = "hsb";
+        }
+        else {
+            ret.hex = apf.color.fixHex(color.replace("#", ""), true);
+            ret.type = "hex";
+        }
+
+        return ret;
+    },
+
+    /**
      * Show or hide the colorpicker, depending on its current state (visible or not).
      * 
      * @param {Range} pos
@@ -323,34 +371,9 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         var menu = this.menu;
         var cp = this.colorpicker;
 
-        var type = "hex";
-        var orig = color;// = color.replace("#", "");
-        if (typeof namedColors[color] != "undefined")
-            color = apf.color.fixHex(namedColors[color].toString(16));
-        var rgb = color.match(RGBRe);
-        var hsb = color.match(HSLRe);
-        if (rgb && rgb.length >= 3) {
-            rgb = {
-                r: rgb[1], 
-                g: rgb[2], 
-                b: rgb[3]
-            };
-            color = apf.color.RGBToHex(rgb);
-            type = "rgb";
-        }
-        else if (hsb && hsb.length >= 3) {
-            hsb = {
-                h: hsb[1],
-                s: hsb[2].replace("%", ""),
-                b: hsb[3].replace("%", "")
-            };
-            color = apf.color.HSBToHex(hsb);
-            type = "hsb";
-        }
-        else
-            color = "#" + apf.color.fixHex(color.replace("#", ""), true);
+        var parsed = this.parseColorString(color);
 
-        if (menu.visible && color == this.$activeColor.color && pos.row == this.$activeColor.row)
+        if (menu.visible && parsed.hex == this.$activeColor.color.orig && pos.row == this.$activeColor.row)
             return menu.hide();
 
         // set appropriate event listeners, that will be removed when the colorpicker
@@ -395,19 +418,18 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             menu.hide();
         });
 
-        var id = "colorpicker" + color + pos.row;
+        var id = "colorpicker" + parsed.hex + pos.row;
         delete this.$activeColor;
         this.hideColorTooltips(editor);
-        this.showColorTooltip(pos, editor, line, [orig], id);
+        this.showColorTooltip(pos, editor, line, [parsed.orig], id);
         menu.show();
         cp.$input.focus();
         this.$activeColor = {
-            color: color,
+            color: parsed,
+            hex: parsed.hex,
             markerNode: id,
-            orig: orig,
             line: line,
-            current: orig,
-            type: type,
+            current: parsed.orig,
             pos: pos,
             marker: Colors[id],
             editor: editor,
@@ -420,18 +442,18 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 onSelectionChange: onSelectionChange
             }
         };
-        if (type == "rgb") {
-            cp.setProperty("red", rgb.r);
-            cp.setProperty("green", rgb.g);
-            cp.setProperty("blue", rgb.b);
+        if (parsed.type == "rgb") {
+            cp.setProperty("red", parsed.rgb.r);
+            cp.setProperty("green", parsed.rgb.g);
+            cp.setProperty("blue", parsed.rgb.b);
         }
-        else if (type == "hsb") {
-            cp.setProperty("hue", hsb.h);
-            cp.setProperty("saturation", hsb.s);
-            cp.setProperty("brightness", hsb.b);
+        else if (parsed.type == "hsb") {
+            cp.setProperty("hue", parsed.hsb.h);
+            cp.setProperty("saturation", parsed.hsb.s);
+            cp.setProperty("brightness", parsed.hsb.b);
         }
         else
-            cp.setProperty("value", color);
+            cp.setProperty("value", parsed.hex);
 
         this.updateColorTools(editor);
 
@@ -454,35 +476,15 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 continue;
             colors = colors.concat(m);
         }
+        colors.makeUnique();
 
         var out = [];
-        var origColor, color;
+        var parsed;
         for (i = 0, l = Math.min(colors.length, 11); i < l; ++i) {
-            origColor = color = colors[i];
-            if (typeof namedColors[color] != "undefined")
-                color = apf.color.fixHex(namedColors[color].toString(16));
-            var rgb = color.match(RGBRe);
-            var hsb = color.match(HSLRe);
-            if (rgb && rgb.length >= 3) {
-                rgb = {
-                    r: rgb[1], 
-                    g: rgb[2], 
-                    b: rgb[3]
-                };
-                color = apf.color.RGBToHex(rgb);
-            }
-            else if (hsb && hsb.length >= 3) {
-                hsb = {
-                    h: hsb[1],
-                    s: hsb[2].replace("%", ""),
-                    b: hsb[3].replace("%", "")
-                };
-                color = apf.color.HSBToHex(hsb);
-            }
-            else
-                color = apf.color.fixHex(color.replace("#", ""), true);
-            out.push('<span class="color" style="background-color: #', color, 
-                '" data-color="', color, '" title="', origColor, '">&nbsp;</span>');
+            parsed = this.parseColorString(colors[i]);
+            
+            out.push('<span class="color" style="background-color: #', parsed.hex, 
+                '" data-color="', parsed.hex, '" title="', parsed.orig, '">&nbsp;</span>');
         }
         this.colortools.innerHTML = "<span>Existing file colors:</span>" + out.join("");
     },
@@ -519,10 +521,10 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 return;
         }
         var newLine, newColor;
-        if (a.type == "hex") {
+        if (a.color.type == "hex") {
             newColor = "#" + color;
         }
-        else if (a.type == "rgb") {
+        else if (a.color.type == "rgb") {
             var m = a.current.match(RGBRe);
             var regex = new RegExp("(rgba?)\\(\\s*" + m[1] + "\\s*,\\s*" + m[2] 
                 + "\\s*,\\s*" + m[3] + "(\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\)", "i");
@@ -533,7 +535,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 return (newColor = prefix + "(" + rgb.r + ", " + rgb.g + ", " + rgb.b + (suffix || "") + ")");
             });
         }
-        else if (a.type == "hsb") {
+        else if (a.color.type == "hsb") {
             var m = a.current.match(HSLRe);
             var regex = new RegExp("hsl\\(\\s*" + m[1] + "\\s*,\\s*" + m[2] 
                 + "\\s*,\\s*" + m[3] + "\\s*\\)", "i");
@@ -545,7 +547,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                     + parseInt(hsb.s, 10) + "%, " + parseInt(hsb.b, 10) + "%)");
             });
         }
-        a.color = color;
+        a.hex = color;
 
         a.markerNode.innerHTML = newColor;
 
@@ -572,10 +574,10 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         if (!this.menu.visible)
             return;
 
-        color = color || this.$activeColor;
-        var pos = color.pos;
-        var orig = color.orig;
-        var line = color.line;
+        var a = color || this.$activeColor;
+        var pos = a.pos;
+        var orig = a.color.orig;
+        var line = a.line;
         var renderer = Editors.currentEditor.amlEditor.$editor.renderer;
         var cp = this.colorpicker;
         var menu = this.menu;
