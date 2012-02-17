@@ -172,10 +172,17 @@ module.exports = ext.register("ext/vim/vim", {
     },
 
     toggle: function(show) {
-        if (show === true && VIM_ENABLED === false)
+        if (show === true && VIM_ENABLED === false) {
             this.enable();
-        else if (show === false && VIM_ENABLED === true)
+        }
+        else if (show === false && VIM_ENABLED === true) {
             this.disable();
+        }
+
+        if (editors && editors.currentEditor && editors.currentEditor.ceEditor) {
+            var domEditor = editors.currentEditor.ceEditor;
+            domEditor.focus();
+        }
     },
 
     init : function() {
