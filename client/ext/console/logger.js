@@ -87,9 +87,32 @@ var createItem = module.exports.test.createItem = function(line, ide) {
 var childBuffer = {};
 var childBufferInterval = {};
 var eventsAttached;
+
+var getOutputElement = function(choice) {
+    var ret = {
+        element: txtConsole.$ext,
+        id: "console"
+    };
+    if (!choice)
+        return ret;
+
+    // legacy support: choice passed as Boolean TRUE means 'use txtOutput'.
+    if (typeof choice == "boolean" && choice) {
+        ret.element = txtOutput.$ext;
+        ret.id = "output";
+    }
+    else if (choice.$ext && choice.id) {
+        ret.element = choice.$ext;
+        ret.id = choice.id;
+    }
+
+    return ret;
+}
+
 module.exports.logNodeStream = function(data, stream, useOutput, ide) {
-    var parentEl = (useOutput ? txtOutput : txtConsole).$ext;
-    var outputId = useOutput ? "output" : "console";
+    var out = getOutputElement(useOutput);
+    var parentEl = out.element;
+    var outputId = out.id;
 
     if (eventsAttached !== true) {
         parentEl.addEventListener("click", function(e) {
@@ -145,8 +168,9 @@ module.exports.log = function(msg, type, pre, post, useOutput) {
         msg = messages[type].replace("__MSG__", msg);
     }
 
-    var parentEl = (useOutput ? txtOutput : txtConsole).$ext;
-    var outputId = useOutput ? "output" : "console";
+    var out = getOutputElement(useOutput);
+    var parentEl = out.element;
+    var outputId = out.id;
 
     if (!bufferInterval[outputId]) {
         setBufferInterval(parentEl, outputId);
