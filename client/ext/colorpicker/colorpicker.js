@@ -19,8 +19,8 @@ var namedColors = apf.color.colorshex;
 var namedPart = Object.keys(namedColors).join("|");
 var ColorMatches = {
     rgb: "rgba?\\(\\s*\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b\\s*,\\s*\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b\\s*,\\s*\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b\\s*(:?\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\)",
-    rgb_alt: "rgba?\\(\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\s*(:?\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\)",
-    hsl: "hsl\\(\\s*([1-3]?[1-6]?\\d)+\\s*,\\s*(\\d?\\d%|100%)+\\s*,\\s*(\\d?\\d%|100%)+\\)"
+    rgb_alt: "rgba?\\(\\s*\\b(\\d{1,2}|100)%\\s*,\\s*\\b(\\d{1,2}|100)%\\s*,\\s*\\b(\\d{1,2}|100)%\\s*(:?\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\)",
+    hsl: "hsl\\(\\s*\\b([1-2][0-9][0-9]|360|3[0-5][0-9]|[1-9][0-9]|[0-9])\\b\\s*,\\s*\\b(\\d{1,2}|100)%\\s*,\\s*\\b(\\d{1,2}|100)%\\)"
 };
 var colorsRe = new RegExp("(#([0-9A-Fa-f]{3,6})\\b)"
     + "|\\b(" + namedPart + ")\\b"
@@ -343,8 +343,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         else if (hsb && hsb.length >= 3) {
             ret.hsb = apf.color.fixHSB({
                 h: hsb[1],
-                s: hsb[2].replace("%", ""),
-                b: hsb[3].replace("%", "")
+                s: hsb[2],
+                b: hsb[3]
             });
             ret.hex = apf.color.HSBToHex(hsb);
             ret.type = "hsb";
