@@ -10,14 +10,12 @@
  *  - Clear markers
  *  - Undo
  * Refresh (button next to dropdown button?)
- * ? On hover of meta-data, pop-out to show commit message
- * Get APF-filtered list instead of doing our own filtering
  * Store and Re-set the state of each file upon entry
  * Skip line numbers in gutter where gray areas exist
  * Clean up the elements fading in & out upon entry and exit
  *  - If history pages stay on left, have them shift out one by one
  * Beginning and end date below the timeline
- * ? Put all the initial UI code into revisions.xml
+ * Page turning on history
  * 
  * Bugs:
  * 
@@ -116,7 +114,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         vbMain.parentNode.appendChild(new apf.vbox({
             anchors: "0 0 0 0",
             id: "vbVersions",
-            "class": "vbZen",
+            "class": "vbZen vbVersions",
             visible: false,
             childNodes : [
                 new apf.hbox({
@@ -133,7 +131,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                                         new apf.hbox({
                                             childNodes : [
                                                 new apf.text({
-                                                    id : "versions_label",
+                                                    id : "versionsLabel",
                                                     "class" : "versions_label",
                                                     value : "",
                                                     flex : "1",
@@ -195,11 +193,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                                 }),
                                 new apf.vbox({
                                     id : "historicalVersionHolder",
-                                    flex : "1",
-                                    onresize : function(e) {
-                                        if (_self.historyGraphics)
-                                            _self.historyGraphics.style.height = this.getHeight() + "px";
-                                    }
+                                    flex : "1"
                                 })
                             ]
                         }),
@@ -208,20 +202,20 @@ module.exports = ext.register("ext/revisions/revisions", {
                             margin : "20 20 0 30",
                             childNodes : [
                                 new apf.vbox({
-                                    height : "104", // 80 + 24 (24 == height of right-side zoom effect)
+                                    height : "104",
                                     childNodes : [
                                         new apf.hbox({
                                             childNodes : [
                                                 new apf.text({
                                                     "class" : "versions_label",
-                                                    id : "current_versions_label",
+                                                    id : "currentVersionsLabel",
                                                     value : "",
                                                     flex : "1",
                                                     margin : "0 10 0 0",
                                                     height : "80"
                                                 }),
                                                 new apf.text({
-                                                    id : "current_doc_label",
+                                                    id : "currentDocLabel",
                                                     "class" : "current_label rounded",
                                                     value : "Current Document",
                                                     height : "30"
@@ -282,63 +276,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             ]
         }));
 
-        this.historicalPlaceholder = new apf.codeeditor({
-            id                : "historicalPlaceholder",
-            visible           : "true",
-            syntax            : "{require('ext/code/code').getSyntax(%[.])}",
-            theme             : "ace/theme/textmate",
-            folding           : "false",
-            overwrite         : "[{require('ext/settings/settings').model}::editors/code/@overwrite]",
-            behaviors         : "[{require('ext/settings/settings').model}::editors/code/@behaviors]",
-            selectstyle       : "[{require('ext/settings/settings').model}::editors/code/@selectstyle]",
-            activeline        : "false",
-            showinvisibles    : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]",
-            showprintmargin   : "false",
-            printmargincolumn : "[{require('ext/settings/settings').model}::editors/code/@printmargincolumn]",
-            softtabs          : "[{require('ext/settings/settings').model}::editors/code/@softtabs]",
-            tabsize           : "[{require('ext/settings/settings').model}::editors/code/@tabsize]",
-            scrollspeed       : "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]",
-            fontsize          : "[{require('ext/settings/settings').model}::editors/code/@fontsize]",
-            wrapmode          : "false",
-            wraplimitmin      : "80",
-            wraplimitmax      : "80",
-            gutter            : "[{require('ext/settings/settings').model}::editors/code/@gutter]",
-            highlightselectedword : "false",
-            autohidehorscrollbar  : "true",
-            "debugger"        : "null",
-            readonly          : "true",
-            style             : "z-index : 99998; position: absolute; top: -10000px; background: #fff"
-        });
-
-        this.historicalVersionEditor = new apf.codeeditor({
-            id                : "historicalVersionEditor",
-            visible           : "true",
-            syntax            : "",//{require('ext/code/code').getSyntax(%[.])}",
-            theme             : "ace/theme/textmate",
-            folding           : "false",
-            overwrite         : "[{require('ext/settings/settings').model}::editors/code/@overwrite]",
-            behaviors         : "[{require('ext/settings/settings').model}::editors/code/@behaviors]",
-            selectstyle       : "[{require('ext/settings/settings').model}::editors/code/@selectstyle]",
-            activeline        : "false",
-            showinvisibles    : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]",
-            showprintmargin   : "false",
-            printmargincolumn : "[{require('ext/settings/settings').model}::editors/code/@printmargincolumn]",
-            softtabs          : "[{require('ext/settings/settings').model}::editors/code/@softtabs]",
-            tabsize           : "[{require('ext/settings/settings').model}::editors/code/@tabsize]",
-            scrollspeed       : "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]",
-            fontsize          : "[{require('ext/settings/settings').model}::editors/code/@fontsize]",
-            wrapmode          : "false",
-            wraplimitmin      : "80",
-            wraplimitmax      : "80",
-            gutter            : "[{require('ext/settings/settings').model}::editors/code/@gutter]",
-            highlightselectedword : "false",
-            autohidehorscrollbar  : "true",
-            "debugger"        : "null",
-            readonly          : "true",
-            style             : "z-index : 99998; position: absolute; background: #fff"
-        });
-
-        this.animateEditorClone = new apf.vbox({
+        var animateEditorClone = new apf.vbox({
             id : "animateEditorClone",
             "class" : "animate_editor_clone",
             style : "z-index : 99999; position: absolute; background: #fff; overflow: hidden",
@@ -373,83 +311,63 @@ module.exports = ext.register("ext/revisions/revisions", {
             ]
         });
 
-        this.currentVersionEditor = new apf.codeeditor({
-            id                : "currentVersionEditor",
-            visible           : "true",
-            syntax            : "{require('ext/code/code').getSyntax(%[.])}",
-            theme             : "ace/theme/textmate",
-            folding           : "false",
-            overwrite         : "[{require('ext/settings/settings').model}::editors/code/@overwrite]",
-            behaviors         : "[{require('ext/settings/settings').model}::editors/code/@behaviors]",
-            selectstyle       : "[{require('ext/settings/settings').model}::editors/code/@selectstyle]",
-            activeline        : "false",
-            showinvisibles    : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]",
-            showprintmargin   : "false",
-            printmargincolumn : "[{require('ext/settings/settings').model}::editors/code/@printmargincolumn]",
-            softtabs          : "[{require('ext/settings/settings').model}::editors/code/@softtabs]",
-            tabsize           : "[{require('ext/settings/settings').model}::editors/code/@tabsize]",
-            scrollspeed       : "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]",
-            fontsize          : "[{require('ext/settings/settings').model}::editors/code/@fontsize]",
-            wrapmode          : "false",
-            wraplimitmin      : "80",
-            wraplimitmax      : "80",
-            gutter            : "[{require('ext/settings/settings').model}::editors/code/@gutter]",
-            highlightselectedword : "false",
-            autohidehorscrollbar  : "true",
-            "debugger"        : "null",
-            readonly          : "true",
-            style             : "z-index : 99998; position: absolute; background: #fff"
-        });
-
         // Wait for the elements to get loaded in...
         setTimeout(function() {
-            /*vbMain.parentNode.appendChild(_self.historicalVersionEditor);
-            vbMain.parentNode.appendChild(_self.historicalPlaceholder);
-            vbMain.parentNode.appendChild(_self.currentVersionEditor);
-            vbMain.parentNode.appendChild(_self.animateEditorClone);*/
+            vbMain.appendChild(animateEditorClone);
 
-            vbVersions.appendChild(_self.historicalVersionEditor);
-            vbVersions.appendChild(_self.historicalPlaceholder);
-            vbVersions.appendChild(_self.currentVersionEditor);
-            vbMain.appendChild(_self.animateEditorClone);
+            _self.historyGraphics = rutil.createElement("div", {
+                "id" : "history_graphics"
+            });
+            var smallGHistory = rutil.createElement("div",  {
+                "id" : "small_ghistory", 
+                "class" : "history_graphic"
+            });
+            var mediumGHistory = rutil.createElement("div", {
+                "id" : "medium_ghistory",
+                "class" : "history_graphic"
+            });
+            var largeGHistory = rutil.createElement("div", {
+                "id" : "large_ghistory",
+                "class" : "history_graphic"
+            });
 
-            _self.historyGraphics = rutil.createElement("div", { "id" : "history_graphics" });
-
-            var smallGHistory = rutil.createElement("div",  { "id" : "small_ghistory",  "class" : "history_graphic" });
             _self.historyGraphics.appendChild(smallGHistory);
-            var mediumGHistory = rutil.createElement("div", { "id" : "medium_ghistory", "class" : "history_graphic" });
             _self.historyGraphics.appendChild(mediumGHistory);
-            var largeGHistory = rutil.createElement("div",  { "id" : "large_ghistory",  "class" : "history_graphic" });
             _self.historyGraphics.appendChild(largeGHistory);
             vbVersions.$ext.appendChild(_self.historyGraphics);
 
-            _self.loading_div = rutil.createElement("div", { "id" : "revisions_loading" });
+            _self.loading_div = rutil.createElement("div", {
+                "id" : "revisions_loading"
+            });
             vbVersions.$ext.appendChild(_self.loading_div);
-
-            currentVersionEditor.$editor.getSession().setUseWrapMode(false);
-            historicalVersionEditor.$editor.getSession().setUseWrapMode(false);
-
-            var cveRenderer = currentVersionEditor.$editor.renderer;
-            var hveRenderer = historicalVersionEditor.$editor.renderer;
-
-            cveRenderer.scrollBar.element.addEventListener("scroll", function(e) {
-                if (!_self.loadingRevision)
-                    hveRenderer.scrollBar.element.scrollTop = e.srcElement.scrollTop;
-            });
-            cveRenderer.scroller.addEventListener("scroll", function(e) {
-                if (!_self.loadingRevision)
-                    hveRenderer.scroller.scrollLeft = e.srcElement.scrollLeft;
-            });
-
-            hveRenderer.scrollBar.element.addEventListener("scroll", function(e) {
-                if (!_self.loadingRevision)
-                    cveRenderer.scrollBar.element.scrollTop = e.srcElement.scrollTop;
-            });
-            hveRenderer.scroller.addEventListener("scroll", function(e) {
-                if (!_self.loadingRevision)
-                    cveRenderer.scroller.scrollLeft = e.srcElement.scrollLeft;
-            });
+            
+            var pgTurner = rutil.createElement("div", { "id" : "page_turner" });
+            hveContainer.$ext.appendChild(pgTurner);
         }, 100);
+
+        currentVersionEditor.$editor.getSession().setUseWrapMode(false);
+        historicalVersionEditor.$editor.getSession().setUseWrapMode(false);
+
+        var cveRenderer = currentVersionEditor.$editor.renderer;
+        var hveRenderer = historicalVersionEditor.$editor.renderer;
+
+        cveRenderer.scrollBar.element.addEventListener("scroll", function(e) {
+            if (!_self.loadingRevision)
+                hveRenderer.scrollBar.element.scrollTop = e.srcElement.scrollTop;
+        });
+        cveRenderer.scroller.addEventListener("scroll", function(e) {
+            if (!_self.loadingRevision)
+                hveRenderer.scroller.scrollLeft = e.srcElement.scrollLeft;
+        });
+
+        hveRenderer.scrollBar.element.addEventListener("scroll", function(e) {
+            if (!_self.loadingRevision)
+                cveRenderer.scrollBar.element.scrollTop = e.srcElement.scrollTop;
+        });
+        hveRenderer.scroller.addEventListener("scroll", function(e) {
+            if (!_self.loadingRevision)
+                cveRenderer.scroller.scrollLeft = e.srcElement.scrollLeft;
+        });
 
         lstCommits.addEventListener("click", function() {
             _self.loadRevisionFromList();
@@ -468,7 +386,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.revisionState.setCurrentFile(file);
 
         var filename = file.split("/").pop();
-        current_doc_label.setValue(filename);
+        currentDocLabel.setValue(filename);
 
         this.requestGitLog();
 
@@ -619,11 +537,19 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         ph = historicalVersionHolder.$ext;
         pos = apf.getAbsolutePosition(ph);
-        historicalVersionEditor.$ext.style.left = pos[0] + "px";
+        /*historicalVersionEditor.$ext.style.left = pos[0] + "px";
         historicalVersionEditor.$ext.style.top  = pos[1] + "px";
 
         historicalVersionEditor.$ext.style.width  = (ph.offsetWidth + 2) + "px";
-        historicalVersionEditor.$ext.style.height = ph.offsetHeight + "px";
+        historicalVersionEditor.$ext.style.height = ph.offsetHeight + "px";*/
+
+        hveContainer.$ext.style.left = pos[0] + "px";
+        hveContainer.$ext.style.top  = pos[1] + "px";
+
+        hveContainer.$ext.style.width  = (ph.offsetWidth + 2) + "px";
+        hveContainer.$ext.style.height = ph.offsetHeight + "px";
+
+        this.historyGraphics.style.height = historicalVersionHolder.getHeight() + "px";
     },
 
     /**
@@ -658,7 +584,25 @@ module.exports = ext.register("ext/revisions/revisions", {
         session.setLastLoadedGitLog(num);
 
         var output = rutil.formulateRevisionMetaData(logData[num], true);
-        versions_label.setValue(output);
+        versionsLabel.setValue(output);
+        apf.tween.single(versionsLabel.$ext, {
+            type : "scrollTop",
+            from : 0,
+            to   : 16,
+            anim : apf.tween.EASEIN,
+            steps : 50,
+            onfinish : function() {
+                setTimeout(function() {
+                    apf.tween.single(versionsLabel.$ext, {
+                        type : "scrollTop",
+                        from : 16,
+                        to   : 0,
+                        anim : apf.tween.EASEOUT,
+                        steps : 50
+                    });
+                }, 1000);
+            }
+        });
 
         var cveSession = currentVersionEditor.$editor.getSession();
         cveSession.setValue(ceEditor.$editor.getSession().getValue());
@@ -885,7 +829,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 metaDataOutput = rutil.formulateRevisionMetaData(lastGitLog, true);
             }
 
-            current_versions_label.setValue(metaDataOutput);
+            currentVersionsLabel.setValue(metaDataOutput);
             session.setMetaDataOutput(metaDataOutput);
             session.setFirstGitShow(false);
         }

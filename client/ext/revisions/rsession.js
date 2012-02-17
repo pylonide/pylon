@@ -106,7 +106,9 @@ module.exports = (function() {
                 attrMessage = apf.xmlentities(apf.htmlentities(arr[i].messageJoinedLower));
                 attrMessage = attrMessage.replace(/(\r\n|\r|\n)/gm, " ").replace(/"/g, "&quot;");
                 out.push("<", elName, " ",
-                    'hash="', arr[i].commit, '" ',
+                    'hash="', arr[i].commitLower, '" ',
+                    'parenthash="', arr[i].parentLower, '" ',
+                    'treehash="', arr[i].treeLower, '" ',
                     'authoremail="', apf.htmlentities(arr[i].author.email), '" ',
                     'authorname="', arr[i].author.fullName, '" ',
                     'committeremail="', apf.htmlentities(arr[i].committer.email), '" ',

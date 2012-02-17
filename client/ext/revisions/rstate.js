@@ -53,10 +53,10 @@ module.exports = (function() {
 
             var gitLog = session.getGitLog();
             var output = rutil.formulateRevisionMetaData(gitLog[session.lastLoadedGitLog], true);
-            versions_label.setValue(output);
+            versionsLabel.setValue(output);
 
             if (session.isFirstGitShow() === false)
-                current_versions_label.setValue(session.metaDataOutput);
+                currentVersionsLabel.setValue(session.metaDataOutput);
 
             timeline.setupTimeline(gitLog);
             tbRevisionsSearch.enable();
