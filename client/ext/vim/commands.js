@@ -47,6 +47,22 @@ var toggleCase = function toggleCase(ch) {
         return ch.toUpperCase();
 };
 
+var ensureScrollMargin = function(editor) {
+    setTimeout(function() {
+        var curPos = editor.getCursorPosition().row;
+        var topRow = editor.renderer.layerConfig.firstRow;
+        var linesToBottom = editor.renderer.layerConfig.lastRow - curPos;
+        var linesToTop = curPos - topRow;
+
+        if (linesToBottom >= 0 && linesToBottom < HMARGIN) {
+            editor.scrollToRow(topRow + (HMARGIN - linesToBottom));
+        }
+        else if (linesToTop >= 0 && linesToTop < HMARGIN) {
+            editor.scrollToRow(topRow - (HMARGIN - linesToTop));
+        }
+    }, 20); // Delay introduced to ensure scroll after async find operation.
+};
+
 var actions = {
     "z": {
         param: true,
@@ -86,12 +102,7 @@ var actions = {
         fn: function(editor, range, count, param) {
             editor.selection.selectWord();
             editor.findNext();
-            var bottomRow = editor.renderer.getLastFullyVisibleRow();
-            var marginLines = bottomRow - editor.getCursorPosition().row;
-            if (marginLines < HMARGIN) {
-                var scrollTopRow = editor.renderer.getScrollTopRow();
-                editor.scrollToRow(scrollTopRow + (HMARGIN - marginLines));
-            }
+            ensureScrollMargin(editor);
             var cursor = editor.selection.getCursor();
             range = editor.session.getWordRange(cursor.row, cursor.column);
             editor.selection.setSelectionRange(range, true);
@@ -101,12 +112,7 @@ var actions = {
         fn: function(editor, range, count, param) {
             editor.selection.selectWord();
             editor.findPrevious();
-            var topRow = editor.renderer.getFirstVisibleRow();
-            var marginLines = editor.getCursorPosition().row - topRow;
-            if (marginLines < HMARGIN) {
-                var scrollTopRow = editor.renderer.getScrollTopRow();
-                editor.scrollToRow(scrollTopRow - (HMARGIN - marginLines));
-            }
+            ensureScrollMargin(editor);
             var cursor = editor.selection.getCursor();
             range = editor.session.getWordRange(cursor.row, cursor.column);
             editor.selection.setSelectionRange(range, true);
@@ -118,12 +124,8 @@ var actions = {
             options.backwards = false;
 
             editor.findNext(options);
-            var bottomRow = editor.renderer.getLastFullyVisibleRow();
-            var marginLines = bottomRow - editor.getCursorPosition().row;
-            if (marginLines < HMARGIN) {
-                var scrollTopRow = editor.renderer.getScrollTopRow();
-                editor.scrollToRow(scrollTopRow + (HMARGIN - marginLines));
-            }
+
+            ensureScrollMargin(editor);
             editor.selection.clearSelection();
         }
     },
@@ -134,12 +136,7 @@ var actions = {
 
             editor.navigateWordLeft();
             editor.findPrevious(options);
-            var topRow = editor.renderer.getFirstVisibleRow();
-            var marginLines = editor.getCursorPosition().row - topRow;
-            if (marginLines < HMARGIN) {
-                var scrollTopRow = editor.renderer.getScrollTopRow();
-                editor.scrollToRow(scrollTopRow - (HMARGIN - marginLines));
-            }
+            ensureScrollMargin(editor);
             editor.selection.clearSelection();
         }
     },
