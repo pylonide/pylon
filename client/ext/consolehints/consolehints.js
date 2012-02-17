@@ -20,7 +20,7 @@ var winHints, selectedHint, animControl, hintsTimer;
 var RE_lastWord = /(\w+)$/;
 var filterCommands = function(commands, word) {
     return commands.filter(function(cmd) {
-        return cmd !== word && cmd.search("^" + word) !== -1;
+        return cmd !== word && cmd.search(new RegExp("^" + word)) !== -1;
     }).sort();
 };
 
@@ -84,74 +84,81 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     excludeParent : true,
 
     init: function() {
-        apf.importCssString(this.css);
-        winHints = document.getElementById("barConsoleHints");
-        apf.addListener(winHints, "mousemove", mouseHandler.bind(this));
-        apf.addListener(winHints, "click", this.click.bind(this));
-
-        Console.messages.commandhints = function(message) {
-            var cmds = message.body;
-            for (var cmd in cmds)
-                Console.allCommands[cmd] = cmds[cmd];
-        };
-
         var _self = this;
-        Console.messages["internal-autocomplete"] = function(message) {
-            var cmds = message.body;
-            console.log(cmds)
-            _self.show(txtConsoleInput, "", cmds.matches, txtConsoleInput.getValue().length - 1);
-        };
-
-        // Asynchronously retrieve commands that other plugins may have
-        // registered, hence the (relatively) long timeout.
-        setTimeout(function() {
-            ide.send(JSON.stringify({
-                command: "commandhints",
-                cwd: Console.getCwd()
-            }));
-        }, 1000);
-
-        var self = this;
-        txtConsoleInput.addEventListener("blur", function(e) { self.hide(); });
-        txtConsoleInput.addEventListener("keyup", function(e) {
-            // Ignore up/down cursor arrows here
-            if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 9) return;
-            var getCmdMatches = function(filtered) {
-                var cli = e.currentTarget;
-                if (filtered.length && filtered[0] !== "[PATH]")
-                    self.show(cli, "", filtered, cli.getValue().length - 1);
-                else {
-                    self.hide();
-                }
+        var initConsoleDeps = function() {
+            apf.importCssString(_self.css);
+            winHints = document.getElementById("barConsoleHints");
+            apf.addListener(winHints, "mousemove", mouseHandler.bind(_self));
+            apf.addListener(winHints, "click", _self.click.bind(_self));
+            
+            Console.messages.commandhints = function(message) {
+                var cmds = message.body;
+                for (var cmd in cmds)
+                    Console.allCommands[cmd] = cmds[cmd];
             };
-
-            var cliValue = e.currentTarget.getValue();
-            if (cliValue)
-                self.getCmdCompletion(cliValue, getCmdMatches);
-            else
-                self.hide();
-        });
-
-        // Below we are overwriting the Console default key events in function of
-        // whether the hints are being displayed or not.
-        var redefinedKeys = {
-            38: "selectUp",
-            40: "selectDown",
-            27: "hide",
-            13: "onEnterKey",
-            9: "onTabKey"
-        };
-
-        Object.keys(redefinedKeys).forEach(function(keyCode) {
-            var previousKey = Console.keyEvents[keyCode];
-            Console.keyEvents[keyCode] = function(target) {
-                if (winHints.style.display === "none" && previousKey)
-                    previousKey(target);
+            Console.messages["internal-autocomplete"] = function(message) {
+                var cmds = message.body;
+                _self.show(txtConsoleInput, "", cmds.matches, txtConsoleInput.getValue().length - 1);
+            };
+    
+            // Asynchronously retrieve commands that other plugins may have
+            // registered, hence the (relatively) long timeout.
+            setTimeout(function() {
+                ide.send({
+                    command: "commandhints",
+                    cwd: Console.getCwd()
+                });
+            }, 1000);
+            
+            txtConsoleInput.addEventListener("blur", function(e) { _self.hide(); });
+            txtConsoleInput.addEventListener("keyup", function(e) {
+                // Ignore up/down cursor arrows here
+                if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 9) return;
+                var getCmdMatches = function(filtered) {
+                    var cli = e.currentTarget;
+                    if (filtered.length && filtered[0] !== "[PATH]")
+                        _self.show(cli, "", filtered, cli.getValue().length - 1);
+                    else {
+                        _self.hide();
+                    }
+                };
+    
+                var cliValue = e.currentTarget.getValue();
+                if (cliValue)
+                    _self.getCmdCompletion(cliValue, getCmdMatches);
                 else
-                    self[redefinedKeys[keyCode]].call(self);
+                    _self.hide();
+            });
+    
+            // Below we are overwriting the Console default key events in function of
+            // whether the hints are being displayed or not.
+            var redefinedKeys = {
+                38: "selectUp",
+                40: "selectDown",
+                27: "hide",
+                13: "onEnterKey",
+                9: "onTabKey"
             };
-        });
+    
+            Object.keys(redefinedKeys).forEach(function(keyCode) {
+                var previousKey = Console.keyEvents[keyCode];
+                Console.keyEvents[keyCode] = function(target) {
+                    if (winHints.style.display === "none" && previousKey)
+                        previousKey(target);
+                    else
+                        _self[redefinedKeys[keyCode]].call(_self);
+                };
+            });
+        };
+        
+        if (Console && Console.messages) {
+            initConsoleDeps();
+        }
+        else {
+            ide.addEventListener("init.ext/console/console", initConsoleDeps);
+        }
     },
+    
     show: function(textbox, base, hints, cursorPos) {
         if (animControl && animControl.stop)
             animControl.stop();

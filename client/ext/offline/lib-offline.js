@@ -173,7 +173,12 @@ var Offline = module.exports = function(namespace, detectUrl){
 
         if (!this.offlineTime) {
             this.offlineTime = new Date().getTime();
-            localStorage[this.namespace + ".offlinetime"] = this.offlineTime;
+            // this can yield errors ('cause it's DOM):
+            // [Exception... "Failure"  nsresult: "0x80004005 (NS_ERROR_FAILURE)"
+            try {
+                localStorage[this.namespace + ".offlinetime"] = this.offlineTime;
+            }
+            catch(ex) {}
         }
 
         this.dispatchEvent("afteroffline");
@@ -196,7 +201,12 @@ var Offline = module.exports = function(namespace, detectUrl){
         this.onLine      = true; //@todo Think about doing this in the callback, because of processes that will now intersect
         this.offlineTime = null;
         
-        delete localStorage[this.namespace + ".offlinetime"];
+        // this can yield errors ('cause it's DOM):
+        // [Exception... "Failure"  nsresult: "0x80004005 (NS_ERROR_FAILURE)"
+        try {
+            delete localStorage[this.namespace + ".offlinetime"];
+        }
+        catch(ex) {}
         
         this.dispatchEvent("afteronline");
 

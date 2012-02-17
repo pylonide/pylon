@@ -191,7 +191,7 @@ module.exports = ext.register("ext/console/console", {
     evalCmd: function(line) {
         parseLine || (parseLine = require("ext/console/parser"));
         var argv = parseLine(line);
-        if (argv.length === 0) // no commmand line input
+        if (!argv || argv.length === 0) // no commmand line input
             return;
 
         // Replace any quotes in the command
