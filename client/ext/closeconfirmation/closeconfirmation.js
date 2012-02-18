@@ -7,6 +7,7 @@
 
 define(function(require, exports, module) {
 
+var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("ext/settings/settings");
 
@@ -24,26 +25,30 @@ module.exports = ext.register("ext/closeconfirmation/closeconfirmation", {
     hook : function () {
         // when unloading the window
         window.onbeforeunload = this.onBeforeUnloadHandler;
-        
-        // init extension, add html
+
+        var _self = this;
+        ide.addEventListener("init.ext/settings/settings", function (e) {
+            // this is the checkbox
+            var warnBeforeExiting = new apf.checkbox({
+                "class" : "underlined",
+                skin  : "checkbox_grey",
+                value : "[general/@confirmexit]",
+                label : "Warn before exiting"
+            });
+            
+            // find the 'General' section in the settings plugin
+            var heading = settings.getHeading("General");
+            heading.appendChild(warnBeforeExiting);
+    
+            // add the checkbox to the node list of the plugin
+            _self.nodes.push(warnBeforeExiting);
+        });
+
+        // init extension
         ext.initExtension(this);
     },
     
-    init : function () {        
-        // this is the checkbox
-        var warnBeforeExiting = new apf.checkbox({
-            "class" : "underlined",
-            skin  : "checkbox_grey",
-            value : "[general/@confirmexit]",
-            label : "Warn before exiting"
-        });
-        
-        // find the 'General' section in the settings plugin
-        var heading = settings.getHeading("General");
-        heading.appendChild(warnBeforeExiting);
-
-        // add the checkbox to the node list of the plugin
-        this.nodes.push(warnBeforeExiting);
+    init : function () {
     },
     
     onBeforeUnloadHandler : function () {
