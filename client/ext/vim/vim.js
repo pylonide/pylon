@@ -72,15 +72,13 @@ module.exports = ext.register("ext/vim/vim", {
             }));
         });
         
-        ide.addEventListener("afteropenfile", function(e) {
-            if (self.deferredStateEnabled !== -1) {
-                if(self.deferredStateEnabled)
-                    self.enable();
-                else
-                    self.disable();
+        ide.addEventListener("afteropenfile", this.$aofListener = function(e) {
+            if(self.deferredStateEnabled)
+                self.enable();
+            else
+                self.disable();
 
-                self.deferredStateEnabled = -1;
-            }
+            ide.removeEventListener("afteropenfile", self.$aofListener);
         });
 
         ide.addEventListener("code.ext:defaultbindingsrestored", function(e) {
@@ -100,8 +98,6 @@ module.exports = ext.register("ext/vim/vim", {
             var domEditor = editors.currentEditor.ceEditor;
             domEditor.focus();
         }
-        
-        this.deferredStateEnabled = -1;
     },
 
     init : function() {
