@@ -24,12 +24,12 @@ var cmds = module.exports = {
             page.$model.data.setAttribute("path", path);
 
             save.saveas(page, function() {
-                console.log(path + " [New] " + lines + "L, ##C written");
+                //console.log(path + " [New] " + lines + "L, ##C written");
             });
         }
         else {
             save.quicksave(null, function() {
-                console.log(page.name + " " + lines +"L, ##C written");
+                //console.log(page.name + " " + lines +"L, ##C written");
             });
         }
     }
