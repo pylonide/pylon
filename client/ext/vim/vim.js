@@ -17,38 +17,37 @@ var handler = require("ext/vim/keyboard").handler;
 var cmdModule = require("ext/vim/commands");
 var commands = cmdModule.commands;
 var cliCmds = require("ext/vim/cli");
+var settings = require("ext/settings/settings");
 
 var VIM_ENABLED = false;
 var OLD_HANDLER;
 
 var onConsoleCommand = function onConsoleCommand(e) {
     var cmd = e.data.command;
-    if (editors && editors.currentEditor && editors.currentEditor.ceEditor &&
-        cmd && typeof cmd === "string") {
-
-        var domEditor = editors.currentEditor.ceEditor;
+    if (cmd && typeof cmd === "string") {
+        
         if (cmd[0] === ":") {
             cmd = cmd.substr(1);
 
             if (cliCmds[cmd]) {
-                cliCmds[cmd](domEditor.$editor, e.data);
+                cliCmds[cmd](ceEditor.$editor, e.data);
             }
             else if (cmd.match(/^\d+$/)) {
-                domEditor.$editor.gotoLine(parseInt(cmd, 10), 0);
-                domEditor.$editor.navigateLineStart();
+                ceEditor.$editor.gotoLine(parseInt(cmd, 10), 0);
+                ceEditor.$editor.navigateLineStart();
             }
             else {
                 console.log("Vim command '" + cmd + "' not implemented.");
             }
 
-            domEditor.focus();
+            ceEditor.focus();
             e.returnValue = false;
         }
         else if (cmd[0] === "/") {
             cmd = cmd.substr(1);
             cmdModule.searchStore.current = cmd;
-            domEditor.$editor.find(cmd, cmdModule.searchStore.options);
-            domEditor.focus();
+            ceEditor.$editor.find(cmd, cmdModule.searchStore.options);
+            ceEditor.focus();
             e.returnValue = false;
         }
     }
@@ -79,42 +78,39 @@ var onCursorMove = function() {
 };
 
 var enableVim = function enableVim() {
-    if (editors.currentEditor && editors.currentEditor.ceEditor) {
-        ext.initExtension(this);
+    ext.initExtension(this);
 
-        var editor = editors.currentEditor.ceEditor.$editor;
-        addCommands(editor, commands);
-        editor.renderer.container.addEventListener("click", onCursorMove, false);
+    var editor = ceEditor.$editor;
+    addCommands(editor, commands);
+    editor.renderer.container.addEventListener("click", onCursorMove, false);
 
-        // Set Vim's own keyboard handle and store the old one.
-        OLD_HANDLER = OLD_HANDLER || editor.getKeyboardHandler();
-        editor.setKeyboardHandler(handler);
+    // Set Vim's own keyboard handle and store the old one.
+    OLD_HANDLER = OLD_HANDLER || editor.getKeyboardHandler();
+    editor.setKeyboardHandler(handler);
 
-        // Set Vim in command (normal) mode
-        commands.stop.exec(editor);
-        VIM_ENABLED = true;
-    }
+    // Set Vim in command (normal) mode
+    commands.stop.exec(editor);
+    VIM_ENABLED = true;
+        
     ide.dispatchEvent("track_action", { type: "vim", action: "enable" });
 };
 
 var disableVim = function() {
-    if (editors.currentEditor && editors.currentEditor.ceEditor) {
-        var editor = editors.currentEditor.ceEditor.$editor;
-        removeCommands(editor, commands);
-        editor.setKeyboardHandler(OLD_HANDLER);
-        commands.start.exec(editor);
-        editor.renderer.container.removeEventListener("click", onCursorMove, false);
-        VIM_ENABLED = false;
+    var editor = ceEditor.$editor;
+    removeCommands(editor, commands);
+    editor.setKeyboardHandler(OLD_HANDLER);
+    commands.start.exec(editor);
+    editor.renderer.container.removeEventListener("click", onCursorMove, false);
+    VIM_ENABLED = false;
 
-        ide.dispatchEvent("track_action", { type: "vim", action: "disable" });
-    }
+    ide.dispatchEvent("track_action", { type: "vim", action: "disable" });
 };
 
 module.exports = ext.register("ext/vim/vim", {
     name  : "Vim mode",
     dev   : "Ajax.org",
     type  : ext.GENERAL,
-    deps  : [editors, code],
+    deps  : [editors, code, settings],
     nodes : [],
     alone : true,
 
@@ -141,29 +137,25 @@ module.exports = ext.register("ext/vim/vim", {
             }));
         });
 
-        var tryEnabling = function (e) {
-            if (e.model) {
-                VIM_ENABLED = apf.isTrue(e.model.queryNode("editors/code").getAttribute("vimmode"));
+        ide.addEventListener("init.ext/code/code", function () {
+            if (settings.model) {
+                VIM_ENABLED = apf.isTrue(settings.model.queryNode("editors/code").getAttribute("vimmode"));
             }
             self.enable(VIM_ENABLED === true);
-        };
-        ide.addEventListener("afteropenfile", tryEnabling);
-        ide.addEventListener("loadsettings", tryEnabling);
-        ide.addEventListener("init.ext/code/code", tryEnabling);
-        ide.addEventListener("code.ext:defaultbindingsrestored", tryEnabling);
+        });
     },
 
     toggle: function(show) {
         this.enable(VIM_ENABLED === false);
-        if (editors && editors.currentEditor && editors.currentEditor.ceEditor) {
-            editors.currentEditor.ceEditor.focus();
+        if (typeof ceEditor !== "undefined") {
+            ceEditor.focus();
         }
     },
 
     init: function() {
         txtConsoleInput.addEventListener("keydown", function(e) {
-            if (e.keyCode === 27) { // ESC is pressed in the CLI
-                editors.currentEditor.ceEditor.focus();
+            if (e.keyCode === 27 && typeof ceEditor !== "undefined") { // ESC is pressed in the CLI
+                ceEditor.focus();
             }
         });
     },
