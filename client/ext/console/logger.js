@@ -70,7 +70,7 @@ var createItem = module.exports.test.createItem = function(line, ide) {
                 return "";
             style = parseInt(style.replace(";", ""), 10);
             // check for end of style delimiters
-            if (open && (style === 39 || (style < 30 && style > 20))) {
+            if (open > 0 && (style === 39 || (style < 30 && style > 20))) {
                 --open;
                 return "</span>";
             }
