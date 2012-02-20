@@ -1,26 +1,24 @@
 /**
  * Vim mode for the Cloud9 IDE
  *
- * @author Sergi Mansilla <sergi AT c9 DOT io>
+ * @author Sergi Mansilla <sergi@c9.io>
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
 define(function(require, exports, module) {
-
 "use strict";
 
 var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var handler = require("ext/vim/keyboard").handler;
-var extSettings = require("ext/settings/settings");
 var cmdModule = require("ext/vim/commands");
 var commands = cmdModule.commands;
 var cliCmds = require("ext/vim/cli");
-var util = require("ext/vim/maps/util");
 
 var VIM_ENABLED = false;
+var VIM_DEFERRED_ENABLED = false;
 var OLD_HANDLER;
 
 var onConsoleCommand = function onConsoleCommand(e) {
@@ -50,7 +48,6 @@ var onConsoleCommand = function onConsoleCommand(e) {
             cmd = cmd.substr(1);
             cmdModule.searchStore.current = cmd;
             domEditor.$editor.find(cmd, cmdModule.searchStore.options);
-            txtConsoleInput.blur();
             domEditor.focus();
             e.returnValue = false;
         }
@@ -88,20 +85,21 @@ var enableVim = function enableVim() {
         var editor = editors.currentEditor.ceEditor.$editor;
         addCommands(editor, commands);
         editor.renderer.container.addEventListener("click", onCursorMove, false);
-
-        if (!OLD_HANDLER)
-            OLD_HANDLER = editor.getKeyboardHandler();
-
-        // Set Vim's own keyboard handle
+        
+        // Set Vim's own keyboard handle and store the old one.
+        OLD_HANDLER = OLD_HANDLER || editor.getKeyboardHandler();
         editor.setKeyboardHandler(handler);
 
-        if (util.currentMode !== "insert") {
-            commands.stop.exec(editor);
-        }
+        // Set Vim in command (normal) mode
+        commands.stop.exec(editor);
         VIM_ENABLED = true;
-
-        ide.dispatchEvent("track_action", {type: "vim", action: "enable"});
     }
+    else {
+        // The editor is not yet ready. this variable ensures that when the next
+        // file is opened the plugin will enable itself.
+        VIM_DEFERRED_ENABLED = true;
+    }
+    ide.dispatchEvent("track_action", { type: "vim", action: "enable" });
 };
 
 var disableVim = function() {
@@ -114,49 +112,50 @@ var disableVim = function() {
         editor.renderer.container.removeEventListener("click", onCursorMove, false);
         VIM_ENABLED = false;
 
-        ide.dispatchEvent("track_action", {type: "vim", action: "disable"});
-    }
-};
-
-var cliKeyDown = function(e) {
-    if (e.keyCode === 27) { // ESC is pressed in the CLI
-        txtConsoleInput.blur();
-        editors.currentEditor.ceEditor.focus();
+        ide.dispatchEvent("track_action", { type: "vim", action: "disable" });
     }
 };
 
 module.exports = ext.register("ext/vim/vim", {
-    name    : "Vim mode",
-    dev     : "Ajax.org",
-    type    : ext.GENERAL,
-    deps    : [editors],
-    nodes   : [],
-    alone   : true,
+    name  : "Vim mode",
+    dev   : "Ajax.org",
+    type  : ext.GENERAL,
+    deps  : [editors],
+    nodes : [],
+    alone : true,
 
     hook : function() {
+        var self = this;
         var menuItem = new apf.item({
             caption: "Vim mode",
             type: "check",
-            checked : "[{require('ext/settings/settings').model}::editors/code/@vimmode]"
+            checked: "[{require('ext/settings/settings').model}::editors/code/@vimmode]",
+            onclick: function() { self.toggle(); }
         });
         // In order to behave like a code extension (i.e. hiding when we are not
         // in a code editor) we import it into the code plugin nodes instead of
         // ours.
         require("ext/code/code").nodes.push(mnuView.appendChild(menuItem));
-
-        var self = this;
-        this.afterOpenFileFn = function() {
-            enableVim.call(self);
+        
+        ide.addEventListener("loadsettings", function(e) {
+            VIM_ENABLED = apf.isTrue(e.model.queryNode("editors/code").getAttribute("vimmode"));
+            self.enable(VIM_ENABLED);
+        });
+        
+        var aofListener = function(e) {
+            self.enable(VIM_DEFERRED_ENABLED === true);
+            ide.removeEventListener("afteropenfile", aofListener);
         };
+        ide.addEventListener("afteropenfile", aofListener);
 
         ide.addEventListener("init.ext/settings/settings", function (e) {
-            var heading = e.ext.getHeading("Code Editor");
-            heading.appendChild(new apf.checkbox({
+            e.ext.getHeading("Code Editor").appendChild(new apf.checkbox({
                 "class" : "underlined",
                 skin  : "checkbox_grey",
                 value : "[editors/code/@vimmode]",
-                label : "Vim mode"
-            }))
+                label : "Vim mode",
+                onclick: function() { self.toggle(); }
+            }));
         });
 
         ide.addEventListener("code.ext:defaultbindingsrestored", function(e) {
@@ -164,42 +163,40 @@ module.exports = ext.register("ext/vim/vim", {
                 enableVim.call(self);
             }
         });
-
-        extSettings.model.addEventListener("update", function(e) {
-            var vimEnabled = e.currentTarget.queryValue("editors/code/@vimmode");
-            self.toggle(vimEnabled === "true");
-        });
     },
 
     toggle: function(show) {
-        if (show === true && VIM_ENABLED === false) {
-            this.enable();
+        this.enable(VIM_ENABLED === false);
+        if (editors && editors.currentEditor && editors.currentEditor.ceEditor) {
+            editors.currentEditor.ceEditor.focus();
         }
-        else if (show === false && VIM_ENABLED === true) {
+    },
+
+    init: function() {
+        txtConsoleInput.addEventListener("keydown", function(e) {
+            if (e.keyCode === 27) { // ESC is pressed in the CLI
+                editors.currentEditor.ceEditor.focus();
+            }
+        });
+    },
+
+    // Enable accepts a `doEnable` argument which executes `disable` if false.
+    enable: function(doEnable) {
+        if (doEnable !== false) {
+            ide.addEventListener("consolecommand", onConsoleCommand);
+            enableVim.call(this);
+        }
+        else {
             this.disable();
         }
-
-        if (editors && editors.currentEditor && editors.currentEditor.ceEditor) {
-            var domEditor = editors.currentEditor.ceEditor;
-            domEditor.focus();
-        }
     },
 
-    init : function() {
-        txtConsoleInput.addEventListener("keydown", cliKeyDown);
-    },
-
-    enable : function() {
-        ide.addEventListener("consolecommand", onConsoleCommand);
-        enableVim.call(this);
-    },
-
-    disable : function() {
+    disable: function() {
         ide.removeEventListener("consolecommand", onConsoleCommand);
         disableVim();
     },
 
-    destroy : function() {
+    destroy: function() {
         this.nodes.forEach(function(item) {
             item.destroy();
         });
