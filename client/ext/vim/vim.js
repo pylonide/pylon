@@ -142,11 +142,10 @@ module.exports = ext.register("ext/vim/vim", {
             self.enable(VIM_ENABLED);
         });
         
-        var aofListener = function(e) {
+        ide.addEventListener("afteropenfile", function aofListener(e) {
             self.enable(VIM_DEFERRED_ENABLED === true);
             ide.removeEventListener("afteropenfile", aofListener);
-        };
-        ide.addEventListener("afteropenfile", aofListener);
+        });
 
         ide.addEventListener("init.ext/settings/settings", function (e) {
             e.ext.getHeading("Code Editor").appendChild(new apf.checkbox({
