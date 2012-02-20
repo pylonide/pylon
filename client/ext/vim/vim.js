@@ -12,13 +12,13 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
+var code = require("ext/code/code");
 var handler = require("ext/vim/keyboard").handler;
 var cmdModule = require("ext/vim/commands");
 var commands = cmdModule.commands;
 var cliCmds = require("ext/vim/cli");
 
 var VIM_ENABLED = false;
-var VIM_DEFERRED_ENABLED = false;
 var OLD_HANDLER;
 
 var onConsoleCommand = function onConsoleCommand(e) {
@@ -85,7 +85,7 @@ var enableVim = function enableVim() {
         var editor = editors.currentEditor.ceEditor.$editor;
         addCommands(editor, commands);
         editor.renderer.container.addEventListener("click", onCursorMove, false);
-        
+
         // Set Vim's own keyboard handle and store the old one.
         OLD_HANDLER = OLD_HANDLER || editor.getKeyboardHandler();
         editor.setKeyboardHandler(handler);
@@ -94,18 +94,12 @@ var enableVim = function enableVim() {
         commands.stop.exec(editor);
         VIM_ENABLED = true;
     }
-    else {
-        // The editor is not yet ready. this variable ensures that when the next
-        // file is opened the plugin will enable itself.
-        VIM_DEFERRED_ENABLED = true;
-    }
     ide.dispatchEvent("track_action", { type: "vim", action: "enable" });
 };
 
 var disableVim = function() {
     if (editors.currentEditor && editors.currentEditor.ceEditor) {
         var editor = editors.currentEditor.ceEditor.$editor;
-
         removeCommands(editor, commands);
         editor.setKeyboardHandler(OLD_HANDLER);
         commands.start.exec(editor);
@@ -120,7 +114,7 @@ module.exports = ext.register("ext/vim/vim", {
     name  : "Vim mode",
     dev   : "Ajax.org",
     type  : ext.GENERAL,
-    deps  : [editors],
+    deps  : [editors, code],
     nodes : [],
     alone : true,
 
@@ -135,17 +129,7 @@ module.exports = ext.register("ext/vim/vim", {
         // In order to behave like a code extension (i.e. hiding when we are not
         // in a code editor) we import it into the code plugin nodes instead of
         // ours.
-        require("ext/code/code").nodes.push(mnuView.appendChild(menuItem));
-        
-        ide.addEventListener("loadsettings", function(e) {
-            VIM_ENABLED = apf.isTrue(e.model.queryNode("editors/code").getAttribute("vimmode"));
-            self.enable(VIM_ENABLED);
-        });
-        
-        ide.addEventListener("afteropenfile", function aofListener(e) {
-            self.enable(VIM_DEFERRED_ENABLED === true);
-            ide.removeEventListener("afteropenfile", aofListener);
-        });
+        code.nodes.push(mnuView.appendChild(menuItem));
 
         ide.addEventListener("init.ext/settings/settings", function (e) {
             e.ext.getHeading("Code Editor").appendChild(new apf.checkbox({
@@ -157,11 +141,16 @@ module.exports = ext.register("ext/vim/vim", {
             }));
         });
 
-        ide.addEventListener("code.ext:defaultbindingsrestored", function(e) {
-            if (VIM_ENABLED === true) {
-                enableVim.call(self);
+        var tryEnabling = function (e) {
+            if (e.model) {
+                VIM_ENABLED = apf.isTrue(e.model.queryNode("editors/code").getAttribute("vimmode"));
             }
-        });
+            self.enable(VIM_ENABLED === true);
+        };
+        ide.addEventListener("afteropenfile", tryEnabling);
+        ide.addEventListener("loadsettings", tryEnabling);
+        ide.addEventListener("init.ext/code/code", tryEnabling);
+        ide.addEventListener("code.ext:defaultbindingsrestored", tryEnabling);
     },
 
     toggle: function(show) {
@@ -182,6 +171,7 @@ module.exports = ext.register("ext/vim/vim", {
     // Enable accepts a `doEnable` argument which executes `disable` if false.
     enable: function(doEnable) {
         if (doEnable !== false) {
+            ide.removeEventListener("consolecommand", onConsoleCommand);
             ide.addEventListener("consolecommand", onConsoleCommand);
             enableVim.call(this);
         }
@@ -196,9 +186,7 @@ module.exports = ext.register("ext/vim/vim", {
     },
 
     destroy: function() {
-        this.nodes.forEach(function(item) {
-            item.destroy();
-        });
+        this.nodes.forEach(function(item) { item.destroy(); });
         this.nodes = [];
     }
 });
