@@ -52,6 +52,8 @@ var createItem = module.exports.test.createItem = function(line, ide) {
     var davPrefix = ide.davPrefix;
     var wsRe = new RegExp(escRegExp(workspaceDir) + "\\/([^:]*)(:\\d+)(:\\d+)*", "g");
 
+    line = apf.escapeXML(line);
+
     if ((line.search(RE_relwsp) !== -1) || (line.search(wsRe) !== -1)) {
         var html = "<a href='#' data-wsp='" + davPrefix + "/$1,$2,$3'>___$1$2$3</a>";
         line = line

@@ -49,3 +49,5 @@ console.log("\n                 40m     41m     42m     43m\
     //    console.log("\033[" + FG + "\033[" + BG + "  " + T + "  \033[0m");
     //});
 });
+
+log("<b>" + levels["fatal"][0] + "Lastly:" + levels["fatal"][1] + " some HTML!</b>");
