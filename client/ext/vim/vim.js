@@ -137,12 +137,14 @@ module.exports = ext.register("ext/vim/vim", {
             }));
         });
 
-        ide.addEventListener("init.ext/code/code", function () {
+        var tryEnabling = function () {
             if (settings.model) {
                 VIM_ENABLED = apf.isTrue(settings.model.queryNode("editors/code").getAttribute("vimmode"));
             }
             self.enable(VIM_ENABLED === true);
-        });
+        };
+        ide.addEventListener("init.ext/code/code", tryEnabling);
+        ide.addEventListener("code.ext:defaultbindingsrestored", tryEnabling);
     },
 
     toggle: function(show) {
