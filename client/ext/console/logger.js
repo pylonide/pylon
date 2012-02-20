@@ -13,16 +13,7 @@ exports.test = {};
 var MAX_LINES = 512;
 var RE_relwsp = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+(?:\.[\w\_\$]+))?(\:\d+)(\:\d+)*/g;
 var RE_URL = /\b((?:(?:https?):(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()[\]{};:'".,<>?«»“”‘’]))/i;
-var RE_COLOR = /\[(?:(\d+);)?(\d+)m/g;
-var colors = {
-    0:  "#eee",
-    31: "red",
-    32: "green",
-    33: "yellow",
-    34: "blue",
-    35: "magenta",
-    36: "cyan"
-};
+var RE_COLOR = /\u001b\[([\d]{1,2})m/g;
 
 // Remove as many elements in the console output area so that between
 // the existing buffer and the stream coming in we have the right
@@ -70,18 +61,26 @@ var createItem = module.exports.test.createItem = function(line, ide) {
     else if (line.search(RE_URL) !== -1) {
         line = line.replace(RE_URL, "<a href='$1' target='_blank'>$1</a>");
     }
-
     return line
         .replace(/\s{2,}/g, function(str) { return strRepeat("&nbsp;", str.length); })
-        .replace(/(\u0007|\u001b)\[(K|2J)/g, "")
-        .replace(RE_COLOR, function(m, extra, color) {
-            var styles = [
-                "color: " + (colors[color] || colors[0]),
-                extra === 1 ? ";font-weight: bold" : "",
-                extra === 4 ? ";text-decoration: underline" : ""
-            ];
-            return "<span style='" + styles.join("").trim() + "'>";
-        });
+        .replace(RE_COLOR, function(m, style) {
+            style = parseInt(style, 10);
+            // check for end of style delimiters
+            if (style === 39 || (style < 30 && style > 20)) {
+                return "</span>"
+            }
+            else {
+                if (style === 1) 
+                    return "<span class=\"term_boldColor\" style=\"font-weight:bold\">";
+                else if (style === 3)
+                    return "<span style=\"font-style:italic\">";
+                else if (style === 4)
+                    return "<span style=\"text-decoration:underline\">";
+                else if (style > 30)
+                    return "<span class=\"term_ansi" + (style % 30) + "Color\">";
+            }
+        })
+        .replace(/(\u0007|\u001b)\[(K|2J)/g, "");
 };
 
 var childBuffer = {};
