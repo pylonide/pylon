@@ -451,9 +451,7 @@ module.exports = ext.register("ext/code/code", {
             // In case the `keybindingschange` event gets fired after other
             // plugins that change keybindings have already changed them (i.e.
             // the vim plugin), we fire an event so these plugins can react to it.
-            ide.dispatchEvent("code.ext:defaultbindingsrestored", {
-                bindings: ceEditor.$editor.getKeyboardHandler()
-            });
+            ide.dispatchEvent("code.ext:defaultbindingsrestored", {});
         });
     },
 
