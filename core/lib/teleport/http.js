@@ -407,37 +407,11 @@ apf.http = function(){
                     + apf.config.queryAppend;
             }
             //#endif
-            
-            // experimental for Firefox Cross Domain problem
-            // http://ubiquity-xforms.googlecode.com/svn/wiki/CrossDomainSubmissionDeployment.wiki
-            //#ifdef __DEBUG
-            //#ifndef __SUPPORT_GWT
-            try {
-                if (apf.isGecko)
-                    netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
-            }
-            catch (e) {
-            //#endif
-            //#endif
-                //Currently we don't support html5 cross domain access
-                if (apf.hasHtml5XDomain
-                  && httpUrl.match(/^http:\/\//)
-                  && !new apf.url(httpUrl).isSameLocation()) {
-                    throw new Error(apf.formatErrorString(0,
-                        this, "Communication error", "Url: " + httpUrl
-                            + "\nReason: Same origin policy in effect"));
-                  }
-            //#ifdef __DEBUG
-            //#ifndef __SUPPORT_GWT
-            }
-            //#endif
-            //#endif
-            //end experimental
 
             http.open(this.method || options.method || "GET", httpUrl, async);
 
             if (options.username) {
-                setRequestHeader("Authorization", "Basic " 
+                setRequestHeader("Authorization", "Basic "
                     + apf.crypto.Base64.encode(options.username + ":" + options.password))
             }
 

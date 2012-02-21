@@ -440,7 +440,6 @@ var apf = {
 
         this.supportVML                = apf.isIE;
         this.supportSVG                = !apf.isIE || apf.isIE > 8;
-        this.hasHtml5XDomain           = apf.versionGecko >= 3.5;
         this.supportCanvas             = !!document.createElement("canvas").getContext;
         this.supportCanvasText         = !!(this.supportCanvas
             && typeof document.createElement("canvas").getContext("2d").fillText == "function")
