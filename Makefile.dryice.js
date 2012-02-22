@@ -70,7 +70,7 @@ function worker(project) {
             worker
         ],
         filter: [ /* copy.filter.uglifyjs */],
-        dest: __dirname + "/client/js/worker.js"
+        dest: __dirname + "/client/js/worker/worker.js"
     });
 }
 

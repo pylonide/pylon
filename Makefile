@@ -4,4 +4,6 @@ package:
 	#git commit -m "new apf_release.js"
 
 worker:
+	mkdir -p client/js/worker
 	./Makefile.dryice.js worker
+	cp support/ace/build/src/worker* client/js/worker
