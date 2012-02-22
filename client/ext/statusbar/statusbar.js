@@ -37,10 +37,9 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     edgeDistance : 3,
     hook : function(){
         var _self = this;
-        ide.addEventListener("openfile", function() {
-            setTimeout(function() {
-                ext.initExtension(_self);
-            }, 1000);
+        ide.addEventListener("afteropenfile", this.$aofListener = function() {
+            ext.initExtension(_self);
+            ide.removeEventListener("afteropenfile", this.$aofListener);
         });
 
         ide.addEventListener("loadsettings", function(e){
