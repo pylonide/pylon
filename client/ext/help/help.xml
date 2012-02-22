@@ -23,7 +23,7 @@
     </a:menu>
     
     <a:menu id="mnuLearning">
-        <a:item id="mnuVimeo" onclick="window.open('http://vimeo.com/user5080429')">Vimeo Channel for Cloud9 IDE</a:item>
+        <a:item id="mnuYouTube" onclick="window.open('http://www.youtube.com/user/c9ide/videos?view=pl')">YouTube Channel for Cloud9 IDE</a:item>
     </a:menu>
 
     <a:menu id="mnuContact">
