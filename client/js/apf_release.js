@@ -647,7 +647,7 @@ if(moveUp){var value;if(refNode){value=(pos[1]-(options.height||o.height||o.cont
 moveLeft=options.autoCorrect&&(x+(options.width||o.width||o.content.offsetWidth))>edgeX;
 if(moveLeft){var value;if(options.ref){value=(pos[0]-(options.width||o.width||o.content.offsetWidth))+(options.ref.offsetWidth);
 }else{value=(edgeX-(options.width||o.width||o.content.offsetWidth)-(parentMenu?(parentMenu.width||parentMenu.content.offsetWidth):0));
-}popup.style.left=value<0?x:value+"px";}else{popup.style.left=x+"px";}}}else{pos=apf.getAbsolutePosition(options.ref,refNode);
+}popup.style.left=value<0?x:(value-1)+"px";}else{popup.style.left=x+"px";}}}else{pos=apf.getAbsolutePosition(options.ref,refNode);
 y=(y||0)+pos[1]+refNode.offsetTop;pos[0]+=refNode.offsetLeft;popup.style.position="fixed";
 popup.style.top=y+"px";if(!options.noleft){popup.style.left=x+"px";}}apf.setStyleClass(popup,moveUp?"upward":"downward",[moveUp?"downward":"upward"]);
 apf.setStyleClass(popup,moveLeft?"moveleft":"moveright",[moveLeft?"moveright":"moveleft"]);
